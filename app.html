@@ -723,11 +723,26 @@ document.getElementById('atualizar').onclick = () => location.reload();
 
 // ---- Notificação push: a assinatura do iPhone vai pro repo (recados-push/iphone.json); o notebook manda o aviso.
 const VAPID_PUBLICA = 'BIx_prIdU34zWy_XRlpx9LFHWf3xtXp-LXn_X-eA5AghjosGa179cth7np_hL5dcLnSw_S030A8vVOsYPf1TU48';
+// Altura real: com o teclado aberto a página encolhe pra área visível (topo e caixa de escrever ficam no lugar);
+// fechado, no app da tela de início, usa a tela inteira (sem faixa preta embaixo).
+const appEl = document.querySelector('.app');
 function ajustaAltura() {
+  const vv = window.visualViewport;
+  const digitando = document.activeElement && document.activeElement.matches('textarea, input');
+  if (digitando && vv) {
+    document.documentElement.style.setProperty('--altura', Math.round(vv.height) + 'px');
+    appEl.style.top = Math.round(vv.offsetTop) + 'px';
+    return;
+  }
+  appEl.style.top = '0px';
+  if (window.scrollY) window.scrollTo(0, 0);
   const naTelaInicio = navigator.standalone || matchMedia('(display-mode: standalone)').matches;
-  if (naTelaInicio && screen.height - window.innerHeight > 40 && !document.activeElement.matches('textarea')) { document.documentElement.style.setProperty('--altura', screen.height + 'px'); return; }
-  const h = (window.visualViewport ? window.visualViewport.height : window.innerHeight); document.documentElement.style.setProperty('--altura', Math.round(Math.max(h, window.innerHeight)) + 'px'); }
-ajustaAltura(); window.addEventListener('resize', ajustaAltura); if (window.visualViewport) window.visualViewport.addEventListener('resize', ajustaAltura);
+  if (naTelaInicio && screen.height - window.innerHeight > 40) { document.documentElement.style.setProperty('--altura', screen.height + 'px'); return; }
+  document.documentElement.style.setProperty('--altura', Math.round(vv ? Math.max(vv.height, window.innerHeight) : window.innerHeight) + 'px');
+}
+ajustaAltura(); window.addEventListener('resize', ajustaAltura);
+if (window.visualViewport) { window.visualViewport.addEventListener('resize', ajustaAltura); window.visualViewport.addEventListener('scroll', ajustaAltura); }
+document.addEventListener('focusin', () => setTimeout(ajustaAltura, 50));
 document.addEventListener('focusout', () => setTimeout(ajustaAltura, 300));
 const swPronto = ('serviceWorker' in navigator) ? navigator.serviceWorker.register('sw.js').catch(() => null) : Promise.resolve(null);
 function chave(b64) { const p = '='.repeat((4 - b64.length % 4) % 4); const r = atob((b64 + p).replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(r, c => c.charCodeAt(0)); }
