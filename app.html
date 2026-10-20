@@ -195,17 +195,17 @@ button:disabled { opacity: .45; cursor: default; }
   font-size: 12px; font-weight: 700; display: grid; place-items: center; }
 #nova { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); width: auto; height: 48px;
   border-radius: 999px; padding: 0 20px; box-shadow: 0 6px 18px rgba(0,0,0,.22); z-index: 3; }
-/* PC (tela larga): igual WhatsApp Web, lista de conversas à esquerda e a conversa aberta à direita */
-@media (min-width: 900px) {
-  .app { max-width: 1400px; display: grid; grid-template-columns: 360px 1fr; grid-template-rows: auto 1fr auto auto auto; }
-  header { grid-column: 1 / -1; border-radius: 0 0 18px 18px; }
-  #lista { grid-column: 1; grid-row: 2 / -1; border-right: 1px solid var(--line); overflow-y: auto; display: block !important; padding-bottom: 80px; }
-  #feed, #note, #citando, #composer { grid-column: 2; }
-  #feed { grid-row: 2; } #note { grid-row: 3; } #citando { grid-row: 4; } #composer { grid-row: 5; }
-  #nova { left: max(16px, calc(50vw - 684px)); right: auto; width: 328px; display: block !important; }
-  #voltar { display: none !important; }
-  .conv.ativa { background: color-mix(in srgb, var(--accent) 14%, transparent); }
-  .desce { right: max(24px, calc(50vw - 676px)); }
+/* Versão web (abrir com ?web=true): igual WhatsApp Web, lista de conversas à esquerda e a conversa aberta à direita */
+@media (min-width: 700px) {
+  body.web .app { max-width: 1400px; display: grid; grid-template-columns: 360px 1fr; grid-template-rows: auto 1fr auto auto auto; }
+  body.web header { grid-column: 1 / -1; border-radius: 0 0 18px 18px; }
+  body.web #lista { grid-column: 1; grid-row: 2 / -1; border-right: 1px solid var(--line); overflow-y: auto; display: block !important; padding-bottom: 80px; }
+  body.web #feed, body.web #note, body.web #citando, body.web #composer { grid-column: 2; }
+  body.web #feed { grid-row: 2; } body.web #note { grid-row: 3; } body.web #citando { grid-row: 4; } body.web #composer { grid-row: 5; }
+  body.web #nova { left: max(16px, calc(50vw - 684px)); right: auto; width: 328px; display: block !important; }
+  body.web #voltar { display: none !important; }
+  body.web .conv.ativa { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+  body.web .desce { right: max(24px, calc(50vw - 676px)); }
 }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
@@ -827,7 +827,9 @@ function askToken() {
 // ---- Lista de conversas (igual WhatsApp): Geral em cima + as de caixas/. Tocar abre; "+ Nova conversa" cria.
 const lista = document.getElementById('lista'), novaBtn = document.getElementById('nova'), voltar = document.getElementById('voltar');
 const logoEl = document.getElementById('logo'), tituloEl = document.getElementById('titulo');
-const largo = () => matchMedia('(min-width: 900px)').matches;   // PC: lista e conversa lado a lado
+const MODO_WEB = new URLSearchParams(location.search).get('web') === 'true';   // versão web: ...?web=true
+if (MODO_WEB) document.body.classList.add('web');
+const largo = () => MODO_WEB && matchMedia('(min-width: 700px)').matches;   // lista e conversa lado a lado
 let conversas = [], sigLista = '', ultimaLista = 0, carregandoLista = null;
 const hdrs = raw => ({ Authorization: 'Bearer ' + token, Accept: raw ? 'application/vnd.github.raw' : 'application/vnd.github+json' });
 async function lerArquivo(arq) {
