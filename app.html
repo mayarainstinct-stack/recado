@@ -492,6 +492,14 @@ function responder(it) {
   citando.hidden = false; box.focus();
 }
 document.getElementById('cit-x').onclick = () => responder(null);
+// Veio da notificação: já abre respondendo a última mensagem que não é dela.
+function responderUltima() {
+  const it = [...lastItems].reverse().find(x => x.from !== 'may');
+  if (it) responder(it); else box.focus();
+  irProFim();
+}
+let querResponder = location.hash === '#responder';
+if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data === 'responder') { load().then(responderUltima).catch(responderUltima); } });
 function gestoResponder(el, it) {
   let x0 = null, y0 = 0, dx = 0, timer = null, seta = null;
   const fim = () => {
@@ -614,7 +622,8 @@ function askToken() {
 }
 let poll = null;
 function start() {
-  form.hidden = false; mais.hidden = false; box.value = store.get('rascunho'); syncBtn(); load().catch(() => {});
+  form.hidden = false; mais.hidden = false; box.value = store.get('rascunho'); syncBtn();
+  load().then(() => { if (querResponder) { querResponder = false; history.replaceState(null, '', location.pathname); responderUltima(); } }).catch(() => {});
   // Busca resposta nova a cada 4 s enquanto a página estiver na tela.
   clearInterval(poll);
   poll = setInterval(() => { if (document.visibilityState === 'visible' && token && !sending) load().catch(() => {}); }, 4000);

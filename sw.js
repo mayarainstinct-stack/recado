@@ -16,8 +16,9 @@ self.addEventListener('push', e => {
 
 self.addEventListener('notificationclick', e => {
   e.notification.close();
+  // Tocou na notificação: abre (ou traz pra frente) já no modo de responder a última mensagem.
   e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cs => {
-    for (const c of cs) { if ('focus' in c) return c.focus(); }
-    return self.clients.openWindow('./');
+    for (const c of cs) { if ('focus' in c) { c.postMessage('responder'); return c.focus(); } }
+    return self.clients.openWindow('./#responder');
   }));
 });
