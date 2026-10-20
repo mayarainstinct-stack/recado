@@ -223,6 +223,11 @@ button:disabled { opacity: .45; cursor: default; }
 .pop .acoes button, .pop .foto-grupo button { width: auto; height: auto; border-radius: 999px; padding: 10px 18px; }
 .pop .acoes .sec, .pop .foto-grupo button { background: var(--bg); color: var(--fg); border: 1px solid var(--line); }
 .conv .av.com-foto { background: center / cover; color: transparent; }
+.anexos { display: flex; gap: 8px; overflow-x: auto; padding: 8px max(10px, env(safe-area-inset-right, 0px)) 0 max(10px, env(safe-area-inset-left, 0px)); background: var(--paper); border-top: 1px solid var(--line); }
+.anexo { position: relative; flex: none; width: 72px; height: 72px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
+.anexo img { width: 100%; height: 100%; object-fit: cover; }
+.anexo button { position: absolute; top: 3px; right: 3px; width: 24px; height: 24px; border-radius: 50%; background: rgba(0,0,0,.6); color: #fff; font-size: 12px; }
+body.web.lado .anexos { grid-column: 2; grid-row: 4; }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
@@ -253,11 +258,12 @@ button:disabled { opacity: .45; cursor: default; }
   <div class="note" id="note" role="alert" hidden></div>
   <div class="citando" id="citando" hidden><div><b id="cit-nome"></b><span id="cit-txt"></span></div><button type="button" id="cit-x" aria-label="Cancelar resposta">✕</button></div>
   <button type="button" class="desce" id="desce" aria-label="Ir pras mensagens novas" hidden>↓<span class="qtd" id="desce-qtd" hidden></span></button>
+  <div class="anexos" id="anexos" hidden></div>
   <form id="composer" autocomplete="off" hidden>
     <button type="button" id="foto" class="clip" aria-label="Enviar foto da galeria">
       <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M21 12.5 12.6 20.9a5.5 5.5 0 0 1-7.8-7.8l8.5-8.5a3.7 3.7 0 0 1 5.2 5.2l-8.5 8.5a1.8 1.8 0 0 1-2.6-2.6l7.8-7.8"/></svg>
     </button>
-    <input type="file" id="arquivo" accept="image/*" hidden>
+    <input type="file" id="arquivo" accept="image/*" multiple hidden>
     <textarea id="texto" rows="1" placeholder="Escreve sua ideia…" aria-label="Recado" enterkeyhint="send"></textarea>
     <div class="gravando" id="gravando" hidden><span class="rec"></span><span id="rec-tempo">0:00</span><span class="dica">solta pra enviar · ◀ arrasta pra cancelar</span></div>
     <button type="button" id="rec-x" class="clip" aria-label="Cancelar áudio" hidden>✕</button>
@@ -578,27 +584,28 @@ document.addEventListener('paste', e => {
   arquivo.dispatchEvent(new Event('change'));
 });
 document.getElementById('foto').onclick = () => { if (!sending) arquivo.click(); };
+// Fotos ficam numa bandeja em cima da caixa (igual WhatsApp): dá pra pôr várias, escrever o texto e só vai ao tocar em Enviar.
+let anexos = [];   // { b64, url }
+const bandeja = document.getElementById('anexos');
+function desenhaBandeja() {
+  bandeja.replaceChildren();
+  anexos.forEach((a, i) => {
+    const d = document.createElement('div'); d.className = 'anexo';
+    const im = document.createElement('img'); im.src = a.url; im.alt = 'Foto ' + (i + 1);
+    const x = document.createElement('button'); x.type = 'button'; x.textContent = '✕'; x.setAttribute('aria-label', 'Tirar esta foto');
+    x.onclick = () => { URL.revokeObjectURL(a.url); anexos.splice(i, 1); desenhaBandeja(); };
+    d.append(im, x); bandeja.append(d);
+  });
+  bandeja.hidden = !anexos.length || form.hidden;
+  syncBtn();
+}
 arquivo.addEventListener('change', async () => {
-  const file = arquivo.files[0]; arquivo.value = ''; if (!file || sending) return;
-  sending = true; syncBtn();
-  overlay.classList.remove('ok'); overlayTxt.textContent = 'Enviando foto…'; overlay.hidden = false;
-  try {
-    const b64 = await reduzir(file);
-    const d = new Date();
-    const nome = 'recados-fotos/' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + '.jpg';
-    const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + nome, {
-      method: 'PUT', headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' },
-      body: JSON.stringify({ message: 'foto do iPhone', content: b64 })
-    });
-    if (!r.ok) throw new Error('upload ' + r.status);
-    const legenda = box.value.trim();
-    box.value = '📷 ' + nome + (legenda ? ' ' + legenda : '');
-    sending = false;
-    form.requestSubmit();   // grava a linha do recado (com a legenda que estiver escrita)
-  } catch (e) {
-    sending = false; syncBtn(); overlay.hidden = true;
-    showNote('A foto não foi. Confere a internet e tenta de novo.', true);
+  const files = [...arquivo.files]; arquivo.value = ''; if (!files.length || sending) return;
+  for (const f of files) {
+    try { const b64 = await reduzir(f); anexos.push({ b64, url: URL.createObjectURL(f) }); }
+    catch (e) { showNote('Uma das fotos não abriu.', true); }
   }
+  desenhaBandeja(); box.focus();
 });
 
 let carregandoAntigas = false;
@@ -749,8 +756,9 @@ const overlay = document.getElementById('overlay');
 const overlayTxt = document.getElementById('overlay-txt');
 function syncBtn() {
   const vazio = !box.value.trim();
-  sendBtn.disabled = sending || (vazio && !gravador);
-  if (typeof micBtn !== 'undefined') { micBtn.hidden = !vazio || !!gravador; sendBtn.hidden = vazio && !gravador; }
+  const temFoto = typeof anexos !== 'undefined' && anexos.length > 0;
+  sendBtn.disabled = sending || (vazio && !gravador && !temFoto);
+  if (typeof micBtn !== 'undefined') { micBtn.hidden = !vazio || !!gravador || temFoto; sendBtn.hidden = vazio && !gravador && !temFoto; }
 }
 // Enter envia (no celular também); Shift+Enter quebra linha no teclado de computador.
 box.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); } });
@@ -759,20 +767,38 @@ box.addEventListener('input', () => { box.style.height = 'auto'; box.style.heigh
 form.addEventListener('submit', async e => {
   e.preventDefault();
   if (gravador) { gravador.stop(); return; }
-  const text = box.value.trim(); if (!text || sending) return;
+  const text = box.value.trim(); if ((!text && !anexos.length) || sending) return;
+  const fotos = anexos.slice();
   sending = true; syncBtn(); showNote('');
   // Tela inteira travada com "Enviando…" até o GitHub confirmar; some sozinha no fim.
   const sendIcon = sendBtn.innerHTML; sendBtn.innerHTML = '<span class="spin" aria-label="Enviando"></span>';
   overlay.classList.remove('ok'); overlayTxt.textContent = 'Enviando…'; overlay.hidden = false; box.blur();
   for (let tentativa = 0; tentativa < 2; tentativa++) {
     try {
+      // 1) fotos da bandeja (uma linha "📷 caminho" por foto; o texto vai junto da primeira)
+      const nomes = [];
+      for (let k = 0; k < fotos.length; k++) {
+        if (fotos[k].nome) { nomes.push(fotos[k].nome); continue; }   // já subiu numa tentativa anterior
+        overlayTxt.textContent = 'Enviando foto ' + (k + 1) + ' de ' + fotos.length + '…';
+        const d = new Date();
+        const nome = 'recados-fotos/' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + '-' + (k + 1) + '.jpg';
+        const rf = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + nome, { method: 'PUT', headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' }, body: JSON.stringify({ message: 'foto do iPhone', content: fotos[k].b64 }) });
+        if (!rf.ok) { const er = new Error('upload ' + rf.status); er.status = rf.status; throw er; }
+        fotos[k].nome = nome; nomes.push(nome);
+      }
+      overlayTxt.textContent = 'Enviando…';
       const f = await gh('GET');
       let md = b64decode(f.content);
-      const linha = '- [' + stamp(new Date()) + '] ' + text.replace(/\r?\n/g, '\\n') + (respondendo ? ' ⟪re: ' + respondendo.nome + ': ' + respondendo.trecho + '⟫' : '');
+      const cita = respondendo ? ' ⟪re: ' + respondendo.nome + ': ' + respondendo.trecho + '⟫' : '';
+      const txt = text.replace(/\r?\n/g, '\\n');
+      const linhas = nomes.length
+        ? nomes.map((n, k) => '- [' + stamp(new Date()) + '] 📷 ' + n + (k === 0 && txt ? ' ' + txt : '') + (k === 0 ? cita : ''))
+        : ['- [' + stamp(new Date()) + '] ' + txt + cita];
       md = md.replace(/\n- \s*$/, '\n');
-      md = md.replace(/\s*$/, '') + '\n' + linha + '\n';
+      md = md.replace(/\s*$/, '') + '\n' + linhas.join('\n') + '\n';
       await gh('PUT', { message: 'recado do iPhone', content: b64encode(md), sha: f.sha });
       store.set(rascKey(), ''); box.value = ''; box.style.height = 'auto'; responder(null);
+      fotos.forEach(x => URL.revokeObjectURL(x.url)); anexos = []; desenhaBandeja();
       await load().catch(() => {});
       overlay.classList.add('ok'); overlayTxt.textContent = 'Enviado';
       await new Promise(r => setTimeout(r, 700));
