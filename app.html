@@ -195,6 +195,18 @@ button:disabled { opacity: .45; cursor: default; }
   font-size: 12px; font-weight: 700; display: grid; place-items: center; }
 #nova { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); width: auto; height: 48px;
   border-radius: 999px; padding: 0 20px; box-shadow: 0 6px 18px rgba(0,0,0,.22); z-index: 3; }
+/* PC (tela larga): igual WhatsApp Web, lista de conversas à esquerda e a conversa aberta à direita */
+@media (min-width: 900px) {
+  .app { max-width: 1400px; display: grid; grid-template-columns: 360px 1fr; grid-template-rows: auto 1fr auto auto auto; }
+  header { grid-column: 1 / -1; border-radius: 0 0 18px 18px; }
+  #lista { grid-column: 1; grid-row: 2 / -1; border-right: 1px solid var(--line); overflow-y: auto; display: block !important; padding-bottom: 80px; }
+  #feed, #note, #citando, #composer { grid-column: 2; }
+  #feed { grid-row: 2; } #note { grid-row: 3; } #citando { grid-row: 4; } #composer { grid-row: 5; }
+  #nova { left: max(16px, calc(50vw - 684px)); right: auto; width: 328px; display: block !important; }
+  #voltar { display: none !important; }
+  .conv.ativa { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+  .desce { right: max(24px, calc(50vw - 676px)); }
+}
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
@@ -815,6 +827,7 @@ function askToken() {
 // ---- Lista de conversas (igual WhatsApp): Geral em cima + as de caixas/. Tocar abre; "+ Nova conversa" cria.
 const lista = document.getElementById('lista'), novaBtn = document.getElementById('nova'), voltar = document.getElementById('voltar');
 const logoEl = document.getElementById('logo'), tituloEl = document.getElementById('titulo');
+const largo = () => matchMedia('(min-width: 900px)').matches;   // PC: lista e conversa lado a lado
 let conversas = [], sigLista = '', ultimaLista = 0, carregandoLista = null;
 const hdrs = raw => ({ Authorization: 'Bearer ' + token, Accept: raw ? 'application/vnd.github.raw' : 'application/vnd.github+json' });
 async function lerArquivo(arq) {
@@ -854,20 +867,20 @@ async function listar(estrito) {
     ultimaLista = Date.now();
     checaOnline();
     showNote('');
-    if (!FILE) desenhaLista();
+    if (!FILE || largo()) desenhaLista();
   } catch (e) {
     if (!FILE) showNote(e.status === 401 ? 'A chave não vale mais. Toca em ⋮ → Trocar chave.' : 'Não consegui ler as conversas. Confere a internet.', true);
     if (estrito || e.status === 401) throw e;
   } finally { syncEl.classList.remove('on'); }
 }
 function desenhaLista() {
-  const sig = JSON.stringify(conversas);
+  const sig = JSON.stringify(conversas) + '|' + FILE;
   if (sig === sigLista && lista.childElementCount) return;
   sigLista = sig;
   const hoje = stamp(new Date()).slice(0, 10);
   lista.replaceChildren();
   conversas.forEach(c => {
-    const el = document.createElement('div'); el.className = 'conv' + (c.nao ? ' nova' : ''); el.tabIndex = 0; el.setAttribute('role', 'button');
+    const el = document.createElement('div'); el.className = 'conv' + (c.nao ? ' nova' : '') + (c.arq === FILE ? ' ativa' : ''); el.tabIndex = 0; el.setAttribute('role', 'button');
     const av = document.createElement('div'); av.className = 'av' + (c.arq === GERAL.arq ? ' logo-r' : ''); av.textContent = c.arq === GERAL.arq ? '' : c.nome.charAt(0).toUpperCase();
     const corpo = document.createElement('div'); corpo.className = 'corpo';
     const l1 = document.createElement('div'); l1.className = 'linha';
@@ -891,6 +904,7 @@ function mostraLista() {
   mostraFazendo(''); showNote(''); menu.hidden = true;
   if (conversas.length) desenhaLista();
   carregaLista().catch(() => {});
+  if (largo()) abrir(GERAL).catch(() => {});   // no PC já abre a Geral do lado
 }
 // Abre uma conversa: zera o estado da tela e carrega o arquivo dela.
 function abrir(c) {
@@ -900,7 +914,8 @@ function abrir(c) {
   novasLaEmCima = 0; desceQtd.hidden = true; desce.hidden = true;
   respondendo = null; citando.hidden = true; mostraFazendo(''); showNote('');
   delete feed.dataset.jaAbriu;
-  lista.hidden = true; novaBtn.hidden = true; feed.hidden = false; feed.replaceChildren(); form.hidden = false;
+  lista.hidden = !largo(); novaBtn.hidden = !largo(); feed.hidden = false; feed.replaceChildren(); form.hidden = false;
+  if (largo()) desenhaLista();
   voltar.hidden = false; logoEl.hidden = true; tituloEl.textContent = c.nome;
   box.value = store.get(rascKey()); box.style.height = 'auto'; syncBtn();
   return load();
@@ -931,7 +946,7 @@ function start() {
   poll = setInterval(() => {
     if (document.visibilityState !== 'visible' || !token || sending) return;
     if (FILE) load().catch(() => {});
-    else if (Date.now() - ultimaLista > 14000) carregaLista().catch(() => {});
+    if ((!FILE || largo()) && Date.now() - ultimaLista > 14000) carregaLista().catch(() => {});
   }, 4000);
 }
 // Toda vez que ela volta pra página depois de um tempo fora, recarrega inteira (pega layout novo) e desce pro fim.
