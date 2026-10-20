@@ -21,33 +21,33 @@
    com um token que fica só no iPhone dela. Nenhum recado mora nesta página. */
 :root {
   --bg: #F2FBF6; --paper: #FFFFFF; --fg: #1E293B; --muted: #64748B; --line: #E2E8F0;
-  --head: #0EA371; --head-fg: #FFFFFF; --mine: #DCFCE7; --mine-fg: #0B3B2C;
+  --head: #0EA371; --head-fg: #FFFFFF; --mine: #6BBF23; --mine-fg: #0E2200;
   --theirs: #FFFFFF; --cinza: #EEF1F4; --accent: #059669; --accent-fg: #FFFFFF; --pink: #6BAD3E; --err: #B91C1C;
   --font-ui: "Figtree", "Segoe UI", system-ui, sans-serif; --font-name: "Young Serif", Georgia, serif;
 }
 @media (prefers-color-scheme: dark) {
   :root { --bg: #08140F; --paper: #0C1A14; --fg: #F1F5F9; --muted: #8B9DAF; --line: #1C3A2E;
-    --head: #0B2A20; --head-fg: #ECFDF5; --mine: #0F3D2E; --mine-fg: #F1F5F9; --theirs: #13261E; --cinza: #1B2522;
+    --head: #0B2A20; --head-fg: #ECFDF5; --mine: #5FAE1A; --mine-fg: #0B1C00; --theirs: #13261E; --cinza: #1B2522;
     --accent: #10B981; --accent-fg: #052E22; --pink: #5FBB53; --err: #FCA5A5; color-scheme: dark; }
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
 body { overflow: hidden; overscroll-behavior: none; }
 body { background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 16px; }
-.app { height: 100%; height: 100dvh; display: flex; flex-direction: column; max-width: 720px; margin: 0 auto; background: var(--paper); }
+.app { position: fixed; inset: 0; margin: 0 auto; height: auto; display: flex; flex-direction: column; max-width: 900px; margin: 0 auto; background: var(--paper); }
 /* Topo no padrão dos apps da Simplificação (promotor/checklist): faixa na cor da marca subindo atrás da barra de status,
    cantos de baixo arredondados, logo + "Recados" + status do agente (online/offline), ⋮ à direita, respiro 16. */
 header { position: relative; z-index: 2; color: var(--head-fg); font-family: -apple-system, "Roboto", "Segoe UI", system-ui, sans-serif;
   background: var(--head);
   background: linear-gradient(160deg, color-mix(in srgb, var(--head) 80%, #fff) 0%, var(--head) 60%);
   border-radius: 0 0 24px 24px; box-shadow: 0 6px 18px color-mix(in srgb, var(--head) 28%, transparent);
-  padding: calc(16px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 14px max(16px, env(safe-area-inset-left, 0px));
-  display: grid; gap: 12px; }
+  padding: calc(8px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 10px max(12px, env(safe-area-inset-left, 0px));
+  display: grid; gap: 8px; border-radius: 0 0 18px 18px; }
 .topo { display: flex; align-items: center; gap: 12px; }
-.logo { width: 46px; height: 46px; border-radius: 14px; flex: none; background: #fff url("apple-touch-icon.png") center / cover;
+.logo { width: 38px; height: 38px; border-radius: 11px; flex: none; background: #fff url("apple-touch-icon.png") center / cover;
   box-shadow: 0 3px 10px rgba(0,0,0,.18), inset 0 0 0 1px rgba(255,255,255,.6); }
-.who { min-width: 0; flex: 1; display: grid; gap: 5px; justify-items: start; }
-.who h1 { margin: 0; font-size: 21px; font-weight: 800; line-height: 1.1; letter-spacing: -.015em; }
+.who { min-width: 0; flex: 1; display: grid; gap: 3px; justify-items: start; }
+.who h1 { margin: 0; font-size: 18px; font-weight: 800; line-height: 1.1; letter-spacing: -.015em; }
 .status { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; background: rgba(255,255,255,.18);
   border-radius: 999px; padding: 4px 10px 4px 8px; transition: background-color .3s ease; }
 .status .dot { width: 8px; height: 8px; border-radius: 50%; background: #BBF7D0; box-shadow: 0 0 0 0 rgba(187,247,208,.7); animation: vivo 2s infinite; }
@@ -98,11 +98,11 @@ textarea:focus-visible { outline: none; }
   font-size: 22px; font-weight: 700; place-items: center; }
 .overlay.ok .spin { display: none; }
 .overlay.ok .ok-mark { display: grid; animation: entra .3s cubic-bezier(.2,.9,.3,1.3) both; }
-#feed { flex: 1; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 6px;
-  padding: 16px max(16px, env(safe-area-inset-right, 0px)) 16px max(16px, env(safe-area-inset-left, 0px)); }
+#feed { flex: 1; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 4px;
+  padding: 10px max(10px, env(safe-area-inset-right, 0px)) 10px max(10px, env(safe-area-inset-left, 0px)); }
 .day { align-self: center; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted);
   background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; margin-block: 8px; }
-.msg { max-width: 82%; padding: 8px 12px 6px; border-radius: 14px; line-height: 1.4; box-shadow: 0 1px 0 var(--line); }
+.msg { max-width: 88%; padding: 7px 11px 5px; border-radius: 14px; line-height: 1.4; box-shadow: 0 1px 0 var(--line); }
 .msg.may { align-self: flex-end; background: var(--mine); color: var(--mine-fg); border-bottom-right-radius: 4px; }
 .msg.lyra { align-self: flex-start; background: var(--theirs); color: var(--fg); border-bottom-left-radius: 4px; }
 /* Balão cinza com a borda lateral na cor hex de quem fala; o nome em cima também na cor (pedido dela) */
@@ -123,7 +123,8 @@ textarea:focus-visible { outline: none; }
 .gravando .rec { width: 10px; height: 10px; border-radius: 50%; background: #EF4444; animation: pisca 1s infinite; }
 .gravando .dica { color: var(--muted); font-size: 13px; margin-left: auto; }
 @keyframes pisca { 50% { opacity: .25; } }
-#mic.on { background: #EF4444; color: #fff; }
+#mic { touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+#mic:active { transform: scale(1.25); background: #EF4444; color: #fff; }
 .citando { display: flex; align-items: center; gap: 10px; margin: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px));
   padding: 8px 10px; border-radius: 12px 12px 0 0; background: var(--paper); border: 1px solid var(--line); border-bottom: 0; }
 .citando > div { flex: 1; min-width: 0; border-left: 4px solid var(--quem, var(--accent)); padding-left: 8px; display: grid; }
@@ -142,14 +143,15 @@ textarea:focus-visible { outline: none; }
 .copiar-btn { width: auto; height: auto; min-height: 40px; border-radius: 999px; padding: 8px 14px; font-size: 13px; letter-spacing: 0; text-transform: none; }
 .tick { font-weight: 700; letter-spacing: -2px; color: var(--muted); }
 .tick.lida { color: var(--accent); }
+.msg.may .tick.lida { color: #0B57D0; }
 .msg.may .meta { color: color-mix(in srgb, var(--mine-fg) 75%, transparent); }
 .meta { display: flex; justify-content: flex-end; gap: 6px; font-size: 11px; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
 .empty, .setup { margin: auto; text-align: center; max-width: 34ch; color: var(--muted); display: grid; gap: 10px; }
 .empty strong, .setup strong { color: var(--fg); font-family: var(--font-name); font-weight: 400; font-size: 20px; }
 .setup input { font: inherit; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
 .setup button { justify-self: center; width: auto; border-radius: 999px; padding: 10px 20px; height: auto; }
-form { display: flex; gap: 8px; align-items: flex-end; border-top: 1px solid var(--line); background: var(--paper);
-  padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+form { display: flex; gap: 6px; align-items: flex-end; border-top: 1px solid var(--line); background: var(--paper);
+  padding: 8px max(10px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
 textarea { flex: 1; min-width: 0; resize: none; max-height: 140px; font: inherit; color: var(--fg); background: var(--bg);
   border: 1px solid var(--line); border-radius: 20px; padding: 11px 14px; min-height: 46px; }
 textarea:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -202,7 +204,7 @@ button:disabled { opacity: .45; cursor: default; }
     </button>
     <input type="file" id="arquivo" accept="image/*" hidden>
     <textarea id="texto" rows="1" placeholder="Escreve sua ideia…" aria-label="Recado" enterkeyhint="send"></textarea>
-    <div class="gravando" id="gravando" hidden><span class="rec"></span><span id="rec-tempo">0:00</span><span class="dica">toca ➤ pra enviar · ✕ cancela</span></div>
+    <div class="gravando" id="gravando" hidden><span class="rec"></span><span id="rec-tempo">0:00</span><span class="dica">solta pra enviar · ◀ arrasta pra cancelar</span></div>
     <button type="button" id="rec-x" class="clip" aria-label="Cancelar áudio" hidden>✕</button>
     <button type="button" id="mic" aria-label="Gravar áudio">
       <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-2.1A7 7 0 0 0 19 12h-2Z"/></svg>
@@ -508,8 +510,32 @@ function mostraGravando(on) {
   if (on) { recInicio = Date.now(); recTimer = setInterval(() => { const sg = Math.floor((Date.now() - recInicio) / 1000); document.getElementById('rec-tempo').textContent = Math.floor(sg / 60) + ':' + pad(sg % 60); }, 250); }
   syncBtn();
 }
-micBtn.onclick = async () => {
+// Igual WhatsApp: segura o microfone pra gravar, solta pra enviar, arrasta pra esquerda pra cancelar.
+let segurando = false, xMic = 0;
+micBtn.addEventListener('pointerdown', e => {
+  e.preventDefault(); segurando = true; xMic = e.clientX;
+  try { micBtn.setPointerCapture(e.pointerId); } catch (err) {}
+  comecaGravar();
+});
+micBtn.addEventListener('pointermove', e => {
+  if (!segurando || !gravador) return;
+  const dx = xMic - e.clientX;
+  gravandoEl.style.opacity = dx > 40 ? String(Math.max(.3, 1 - (dx - 40) / 120)) : '1';
+  if (dx > 120) { segurando = false; cancelado = true; gravandoEl.style.opacity = '1'; gravador.stop(); }
+});
+const soltaMic = () => {
+  if (!segurando) return; segurando = false; gravandoEl.style.opacity = '1';
+  if (!gravador) { pararAoIniciar = true; return; }
+  if (Date.now() - recInicio < 600) { cancelado = true; showNote('Segura o microfone enquanto fala 🎤'); }
+  gravador.stop();
+};
+micBtn.addEventListener('pointerup', soltaMic);
+micBtn.addEventListener('pointercancel', soltaMic);
+micBtn.addEventListener('contextmenu', e => e.preventDefault());
+let pararAoIniciar = false;
+async function comecaGravar() {
   if (gravador || sending) return;
+  pararAoIniciar = false;
   if (!navigator.mediaDevices || !window.MediaRecorder) { showNote('Este navegador não grava áudio. Abre pelo ícone da tela de início.', true); return; }
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -519,8 +545,10 @@ micBtn.onclick = async () => {
     gravador.ondataavailable = e => { if (e.data.size) pedacos.push(e.data); };
     gravador.onstop = () => { stream.getTracks().forEach(t => t.stop()); const g = gravador; gravador = null; mostraGravando(false); if (!cancelado) enviaAudio(new Blob(pedacos, { type: g.mimeType || tipo || 'audio/mp4' })); };
     gravador.start(); mostraGravando(true);
+    if (navigator.vibrate) navigator.vibrate(20);
+    if (pararAoIniciar) { cancelado = true; gravador.stop(); showNote('Segura o microfone enquanto fala 🎤'); }
   } catch (e) { gravador = null; showNote('Sem acesso ao microfone. Libera em Ajustes → Safari → Microfone.', true); }
-};
+}
 recX.onclick = () => { if (gravador) { cancelado = true; gravador.stop(); } };
 async function enviaAudio(blob) {
   if (blob.size < 1500) { showNote('Áudio curto demais.', true); return; }
