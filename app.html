@@ -32,22 +32,24 @@ html, body { height: 100%; margin: 0; }
 body { background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 16px; }
 .app { height: 100%; display: flex; flex-direction: column; max-width: 720px; margin: 0 auto; background: var(--paper); }
 /* Topo no padrão dos apps da Simplificação (promotor/checklist): faixa na cor da marca subindo atrás da barra de status,
-   cantos de baixo arredondados, avatar com iniciais, data pequena + "Olá, May" em negrito, status embaixo, ⋮ à direita, respiro 16. */
+   cantos de baixo arredondados, logo + "Recados" + status do agente (online/offline), ⋮ à direita, respiro 16. */
 header { position: relative; z-index: 2; color: var(--head-fg); font-family: -apple-system, "Roboto", "Segoe UI", system-ui, sans-serif;
   background: linear-gradient(160deg, color-mix(in srgb, var(--head) 80%, #fff) 0%, var(--head) 60%);
   border-radius: 0 0 24px 24px; box-shadow: 0 6px 18px color-mix(in srgb, var(--head) 28%, transparent);
   padding: calc(16px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 14px max(16px, env(safe-area-inset-left, 0px));
   display: grid; gap: 12px; }
 .topo { display: flex; align-items: center; gap: 12px; }
-.avatar { width: 44px; height: 44px; border-radius: 50%; flex: none; display: grid; place-items: center;
-  background: rgba(255,255,255,.22); color: #fff; font-weight: 800; font-size: 17px; letter-spacing: .02em; border: 1.5px solid rgba(255,255,255,.35); }
-.who { min-width: 0; flex: 1; display: grid; gap: 1px; }
-.who small { font-size: 12px; opacity: .85; text-transform: capitalize; }
-.who h1 { margin: 0; font-size: 20px; font-weight: 800; line-height: 1.15; letter-spacing: -.01em; }
-.status { display: flex; align-items: center; gap: 8px; font-size: 12.5px; background: rgba(255,255,255,.16);
-  border-radius: 999px; padding: 6px 12px; justify-self: start; }
-.status .dot { width: 8px; height: 8px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 3px rgba(255,255,255,.25); }
-.status .sync { width: 11px; height: 11px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; display: none; }
+.logo { width: 46px; height: 46px; border-radius: 14px; flex: none; background: #fff url("apple-touch-icon.png") center / cover;
+  box-shadow: 0 3px 10px rgba(0,0,0,.18), inset 0 0 0 1px rgba(255,255,255,.6); }
+.who { min-width: 0; flex: 1; display: grid; gap: 5px; justify-items: start; }
+.who h1 { margin: 0; font-size: 21px; font-weight: 800; line-height: 1.1; letter-spacing: -.015em; }
+.status { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; background: rgba(255,255,255,.18);
+  border-radius: 999px; padding: 4px 10px 4px 8px; transition: background-color .3s ease; }
+.status .dot { width: 8px; height: 8px; border-radius: 50%; background: #BBF7D0; box-shadow: 0 0 0 0 rgba(187,247,208,.7); animation: vivo 2s infinite; }
+.status.off .dot { background: rgba(255,255,255,.55); animation: none; }
+.status.off { background: rgba(0,0,0,.12); }
+@keyframes vivo { 0% { box-shadow: 0 0 0 0 rgba(187,247,208,.7); } 70% { box-shadow: 0 0 0 7px rgba(187,247,208,0); } 100% { box-shadow: 0 0 0 0 rgba(187,247,208,0); } }
+.status .sync { width: 10px; height: 10px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; display: none; }
 .status.on .dot { display: none; }
 .status.on .sync { display: block; animation: gira .8s linear infinite; }
 .icon-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.16); color: var(--head-fg);
@@ -139,11 +141,13 @@ button:disabled { opacity: .45; cursor: default; }
 <div class="app">
   <header>
     <div class="topo">
-      <div class="avatar" aria-hidden="true">M</div>
-      <div class="who"><small id="hoje"></small><h1>Olá, May</h1></div>
+      <div class="logo" aria-hidden="true"></div>
+      <div class="who">
+        <h1>Recados</h1>
+        <span class="status off" id="statusbar"><span class="dot"></span><span class="sync" aria-hidden="true"></span><span id="status">verificando o agente…</span></span>
+      </div>
       <button class="icon-btn" id="mais" type="button" aria-label="Mais opções" hidden>⋮</button>
     </div>
-    <div class="status" id="statusbar"><span class="dot"></span><span class="sync" id="sync" aria-hidden="true"></span><span id="status">Recados com a Lyra · tudo salvo</span></div>
     <div class="menu" id="menu" hidden>
       <button type="button" id="atualizar">Atualizar agora</button>
       <button type="button" id="sair">Trocar chave</button>
@@ -309,7 +313,21 @@ function render(items, manterPosicao) {
 }
 
 const syncEl = document.getElementById('statusbar');
-document.getElementById('hoje').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' });
+const statusTxt = document.getElementById('status');
+// O agente (Claude no notebook) grava a hora no branch "online" a cada ~1 min enquanto o vigia roda.
+async function checaOnline() {
+  try {
+    const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/online.txt?ref=online&t=' + Date.now(),
+      { headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github.raw' } });
+    const ts = parseInt((await r.text()).trim(), 10) * 1000;
+    const on = r.ok && Date.now() - ts < 150000;
+    syncEl.classList.toggle('off', !on);
+    if (on) statusTxt.textContent = 'Agente online agora';
+    else { const min = Math.round((Date.now() - ts) / 60000);
+      statusTxt.textContent = isFinite(min) ? 'Agente offline · visto há ' + (min < 60 ? min + ' min' : Math.round(min / 60) + ' h') : 'Agente offline'; }
+  } catch (e) { syncEl.classList.add('off'); statusTxt.textContent = 'Agente offline'; }
+}
+
 async function load() {
   syncEl.classList.add('on');
   try {
@@ -317,7 +335,7 @@ async function load() {
     const items = parse(b64decode(f.content));
     const same = items.length === lastItems.length && items.every((it, i) => it.text === lastItems[i].text && it.from === lastItems[i].from && it.lida === lastItems[i].lida);
     if (!same) { if (items.length < shown) shown = items.length; lastItems = items; render(items); }
-    showNote(''); return f;
+    checaOnline(); showNote(''); return f;
   }
   catch (e) { showNote(e.status === 401 ? 'A chave não vale mais. Toca em "Trocar chave".' : 'Não consegui ler a caixa. Confere a internet.', true); throw e; }
 }
