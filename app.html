@@ -234,7 +234,9 @@ let janela = 10;
 const vistosAntes = parseInt(store.get('vistos') || '0', 10);
 let inicio = 0;
 
+let renderizando = false;
 function render(items, manterPosicao) {
+  renderizando = true; setTimeout(() => { renderizando = false; }, 100);
   const firstNew = shown < 0 ? items.length : shown;
   const naoVistas = Math.max(0, items.length - vistosAntes);
   inicio = Math.max(0, items.length - Math.max(janela, naoVistas));
@@ -304,7 +306,7 @@ async function load() {
     const f = await gh('GET').finally(() => syncEl.classList.remove('on'));
     const items = parse(b64decode(f.content));
     const same = items.length === lastItems.length && items.every((it, i) => it.text === lastItems[i].text && it.from === lastItems[i].from && it.lida === lastItems[i].lida);
-    if (!same) { if (items.length < shown) shown = items.length; render(items); lastItems = items; }
+    if (!same) { if (items.length < shown) shown = items.length; lastItems = items; render(items); }
     showNote(''); return f;
   }
   catch (e) { showNote(e.status === 401 ? 'A chave não vale mais. Toca em "Trocar chave".' : 'Não consegui ler a caixa. Confere a internet.', true); throw e; }
@@ -356,9 +358,15 @@ arquivo.addEventListener('change', async () => {
   }
 });
 
+let carregandoAntigas = false;
 feed.addEventListener('scroll', () => {
-  if (feed.scrollTop < 40 && inicio > 0 && lastItems.length) { janela += 10; render(lastItems, true); }
+  if (renderizando || carregandoAntigas) return;
+  if (feed.scrollTop < 40 && inicio > 0 && lastItems.length) {
+    carregandoAntigas = true; janela += 10; render(lastItems, true);
+    setTimeout(() => { carregandoAntigas = false; }, 300);
+  }
 });
+function irProFim() { requestAnimationFrame(() => feed.scrollTo({ top: feed.scrollHeight, behavior: 'smooth' })); }
 const overlay = document.getElementById('overlay');
 const overlayTxt = document.getElementById('overlay-txt');
 function syncBtn() { sendBtn.disabled = sending || !box.value.trim(); }
@@ -395,7 +403,7 @@ form.addEventListener('submit', async e => {
     }
   }
   sendBtn.innerHTML = sendIcon; overlay.hidden = true;
-  sending = false; syncBtn();
+  sending = false; syncBtn(); irProFim();
 });
 
 const mais = document.getElementById('mais');
