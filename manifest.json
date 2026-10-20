@@ -1,6 +1,6 @@
 {
-  "name": "Recado pra Lyra",
-  "short_name": "Recado",
+  "name": "Recados",
+  "short_name": "Recados",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#1d4a33",
