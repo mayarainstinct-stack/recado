@@ -104,7 +104,12 @@ textarea:focus-visible { outline: none; }
 .msg { max-width: 82%; padding: 8px 12px 6px; border-radius: 14px; line-height: 1.4; box-shadow: 0 1px 0 var(--line); }
 .msg.may { align-self: flex-end; background: var(--mine); color: var(--mine-fg); border-bottom-right-radius: 4px; }
 .msg.lyra { align-self: flex-start; background: var(--theirs); color: var(--fg); border-bottom-left-radius: 4px; }
-.msg.grupo { background: var(--theirs); background: color-mix(in srgb, var(--quem) 16%, var(--theirs)); border-left: 4px solid var(--quem); }
+/* Balão com a cor EXATA (hex) de quem fala, texto escuro ou claro conforme a cor */
+.msg.grupo { background: var(--quem); color: var(--quem-fg); }
+.msg.grupo .quem { color: var(--quem-fg); opacity: .78; }
+.msg.grupo .meta, .msg.grupo .copiar-bar { color: var(--quem-fg); opacity: .75; }
+.msg.grupo .cita { background: rgba(0,0,0,.12); }
+.msg.grupo .cita span { color: var(--quem-fg); opacity: .85; }
 .msg .quem { font-size: 12.5px; font-weight: 700; margin-bottom: 2px; color: var(--quem); }
 .msg { position: relative; touch-action: pan-y; }
 .msg .cita { display: grid; gap: 1px; margin: 2px 0 6px; padding: 6px 10px; border-radius: 8px; border-left: 4px solid var(--quem);
@@ -283,11 +288,11 @@ let inicio = 0;
 
 // Cores = as que cada projeto usa no VS Code (borda/realce do .vscode/settings.json); Lyra = rosa dela.
 const GRUPO = {
-  lyra: { nome: 'Lyra', cor: '#E1306C' },
-  rm: { nome: 'RM · Recebimento', cor: '#22C55E' },
-  'simp-mobile': { nome: 'SIMP-Mobile', cor: '#2DD4BF' },
-  promotor: { nome: 'Promotor', cor: '#F59E0B' },
-  kds: { nome: 'KDS', cor: '#EAB308' }
+  lyra: { nome: 'Lyra', cor: '#E1306C', texto: '#FFFFFF' },
+  rm: { nome: 'RM · Recebimento', cor: '#22C55E', texto: '#052E16' },
+  'simp-mobile': { nome: 'SIMP-Mobile', cor: '#2DD4BF', texto: '#042F2E' },
+  promotor: { nome: 'Promotor', cor: '#F59E0B', texto: '#2D1A02' },
+  kds: { nome: 'KDS', cor: '#EAB308', texto: '#2A2002' }
 };
 let renderizando = false;
 function render(items, manterPosicao) {
@@ -311,7 +316,7 @@ function render(items, manterPosicao) {
     const el = document.createElement('div'); el.className = 'msg ' + it.from + (it.copiar ? ' copiavel' : '') + (i >= firstNew ? ' novo' : '');
     if (it.quem && GRUPO[it.quem]) {
       // Nome colorido em cima do balão, igual grupo de WhatsApp; o balão ganha um toque da cor de quem fala
-      el.style.setProperty('--quem', GRUPO[it.quem].cor); el.classList.add('grupo');
+      el.style.setProperty('--quem', GRUPO[it.quem].cor); el.style.setProperty('--quem-fg', GRUPO[it.quem].texto); el.classList.add('grupo');
       const nome = document.createElement('div'); nome.className = 'quem'; nome.textContent = GRUPO[it.quem].nome; el.append(nome);
     }
     if (it.re) {
