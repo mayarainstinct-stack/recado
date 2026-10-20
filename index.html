@@ -6,6 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Recados">
 <meta name="theme-color" content="#047857">
+<meta http-equiv="Cache-Control" content="no-cache">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -30,14 +31,36 @@
 html, body { height: 100%; margin: 0; }
 body { background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 16px; }
 .app { height: 100%; display: flex; flex-direction: column; max-width: 720px; margin: 0 auto; background: var(--paper); }
-header { display: flex; align-items: center; gap: 12px; background: var(--head); color: var(--head-fg);
-  padding: calc(12px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px)); }
-.avatar { width: 42px; height: 42px; border-radius: 50%; flex: none; display: grid; place-items: center;
-  background: var(--pink); color: #fff; font-family: var(--font-name); font-size: 20px; }
+header { position: relative; display: flex; align-items: center; gap: 12px; color: var(--head-fg);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--head) 88%, #fff) 0%, var(--head) 55%, color-mix(in srgb, var(--head) 80%, #000) 100%);
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--head) 35%, transparent); z-index: 2;
+  padding: calc(14px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 14px max(16px, env(safe-area-inset-left, 0px)); }
+.avatar { position: relative; width: 46px; height: 46px; border-radius: 14px; flex: none; overflow: visible;
+  background: #fff url("apple-touch-icon.png") center / cover; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+.avatar::after { content: ""; position: absolute; right: -3px; bottom: -3px; width: 13px; height: 13px; border-radius: 50%;
+  background: var(--pink); border: 2.5px solid var(--head); }
 .who { min-width: 0; flex: 1; }
-.who h1 { margin: 0; font-family: var(--font-name); font-weight: 400; font-size: 20px; line-height: 1.1; }
-.who p { margin: 2px 0 0; font-size: 13px; opacity: .8; }
-.icon-btn { background: none; border: 0; color: var(--head-fg); font: inherit; font-size: 13px; opacity: .8; cursor: pointer; padding: 6px; }
+.who h1 { margin: 0; font-family: var(--font-ui); font-weight: 700; font-size: 19px; line-height: 1.15; letter-spacing: -.01em; }
+.who p { margin: 3px 0 0; font-size: 12.5px; opacity: .85; display: flex; align-items: center; gap: 6px; }
+.who p .sync { width: 11px; height: 11px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; opacity: 0; }
+.who p .sync.on { opacity: 1; animation: gira .8s linear infinite; }
+.icon-btn { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,.14); color: var(--head-fg);
+  font-size: 20px; line-height: 1; display: grid; place-items: center; }
+.menu { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); top: calc(62px + env(safe-area-inset-top, 0px));
+  background: var(--paper); color: var(--fg); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.16); padding: 6px; z-index: 5; }
+.menu button { width: 100%; height: auto; border-radius: 8px; background: none; color: var(--fg); padding: 10px 14px; text-align: left; font-weight: 500; display: block; }
+.menu button:hover { background: var(--bg); }
+@keyframes gira { to { transform: rotate(360deg); } }
+.spin { width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid currentColor; border-top-color: transparent; animation: gira .7s linear infinite; }
+.overlay { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center;
+  background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+.overlay-card { display: grid; justify-items: center; gap: 12px; padding: 24px 32px; border-radius: 18px;
+  background: var(--paper); color: var(--fg); box-shadow: 0 10px 30px rgba(0,0,0,.18); }
+.spin.big { width: 38px; height: 38px; border-width: 4px; color: var(--accent); }
+.ok-mark { display: none; width: 38px; height: 38px; border-radius: 50%; background: var(--accent); color: var(--accent-fg);
+  font-size: 22px; font-weight: 700; place-items: center; }
+.overlay.ok .spin { display: none; }
+.overlay.ok .ok-mark { display: grid; animation: entra .3s cubic-bezier(.2,.9,.3,1.3) both; }
 #feed { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;
   padding: 16px max(16px, env(safe-area-inset-right, 0px)) 16px max(16px, env(safe-area-inset-left, 0px)); }
 .day { align-self: center; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted);
@@ -85,20 +108,28 @@ button:disabled { opacity: .45; cursor: default; }
 <body>
 <div class="app">
   <header>
-    <div class="avatar" aria-hidden="true">L</div>
-    <div class="who"><h1>Lyra</h1><p>Salva no seu GitHub. Leio quando o Claude abrir.</p></div>
-    <button class="icon-btn" id="sair" type="button" hidden>Trocar chave</button>
+    <div class="avatar" aria-hidden="true"></div>
+    <div class="who"><h1>Recados</h1><p><span id="status">com a Lyra · salva no seu GitHub</span><span class="sync" id="sync" aria-hidden="true"></span></p></div>
+    <button class="icon-btn" id="mais" type="button" aria-label="Mais opções" hidden>⋯</button>
+    <div class="menu" id="menu" hidden>
+      <button type="button" id="atualizar">Atualizar agora</button>
+      <button type="button" id="sair">Trocar chave</button>
+    </div>
   </header>
 
   <main id="feed" aria-live="polite"></main>
 
   <div class="note" id="note" hidden></div>
   <form id="composer" autocomplete="off" hidden>
-    <textarea id="texto" rows="1" placeholder="Escreve sua ideia…" aria-label="Recado"></textarea>
+    <textarea id="texto" rows="1" placeholder="Escreve sua ideia…" aria-label="Recado" enterkeyhint="send"></textarea>
     <button id="enviar" type="submit" aria-label="Enviar" disabled>
       <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg>
     </button>
   </form>
+</div>
+
+<div class="overlay" id="overlay" hidden role="status" aria-live="assertive">
+  <div class="overlay-card"><span class="spin big"></span><span class="ok-mark">✓</span><strong id="overlay-txt">Enviando…</strong></div>
 </div>
 
 <template id="setup-tpl">
@@ -218,9 +249,11 @@ function render(items) {
   feed.scrollTop = feed.scrollHeight;
 }
 
+const syncEl = document.getElementById('sync');
 async function load() {
+  syncEl.classList.add('on');
   try {
-    const f = await gh('GET');
+    const f = await gh('GET').finally(() => syncEl.classList.remove('on'));
     const items = parse(b64decode(f.content));
     const same = items.length === lastItems.length && items.every((it, i) => it.text === lastItems[i].text && it.from === lastItems[i].from && it.lida === lastItems[i].lida);
     if (!same) { if (items.length < shown) shown = items.length; render(items); lastItems = items; }
@@ -229,13 +262,21 @@ async function load() {
   catch (e) { showNote(e.status === 401 ? 'A chave não vale mais. Toca em "Trocar chave".' : 'Não consegui ler a caixa. Confere a internet.', true); throw e; }
 }
 
+const overlay = document.getElementById('overlay');
+const overlayTxt = document.getElementById('overlay-txt');
 function syncBtn() { sendBtn.disabled = sending || !box.value.trim(); }
+// Enter envia (no celular também); Shift+Enter quebra linha no teclado de computador.
+box.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); } });
 box.addEventListener('input', () => { box.style.height = 'auto'; box.style.height = Math.min(box.scrollHeight, 140) + 'px'; syncBtn(); store.set('rascunho', box.value); });
 
 form.addEventListener('submit', async e => {
   e.preventDefault();
   const text = box.value.trim(); if (!text || sending) return;
-  sending = true; syncBtn(); showNote('Enviando…');
+  sending = true; syncBtn(); showNote('');
+  // Tela inteira travada com "Enviando…" até o GitHub confirmar; some sozinha no fim.
+  const sendIcon = sendBtn.innerHTML; sendBtn.innerHTML = '<span class="spin" aria-label="Enviando"></span>';
+  overlay.classList.remove('ok'); overlayTxt.textContent = 'Enviando…'; overlay.hidden = false; box.blur();
+  const temp = { remove() {} };
   for (let tentativa = 0; tentativa < 2; tentativa++) {
     try {
       const f = await gh('GET');
@@ -244,20 +285,30 @@ form.addEventListener('submit', async e => {
       md = md.replace(/\n- \s*$/, '\n');
       md = md.replace(/\s*$/, '') + '\n' + linha + '\n';
       await gh('PUT', { message: 'recado do iPhone', content: b64encode(md), sha: f.sha });
-      box.value = ''; store.set('rascunho', ''); box.style.height = 'auto';
-      await load(); showNote('Salvo no GitHub ✓');
+      store.set('rascunho', ''); box.value = ''; box.style.height = 'auto';
+      await load().catch(() => {});
+      overlay.classList.add('ok'); overlayTxt.textContent = 'Enviado ✓';
+      await new Promise(r => setTimeout(r, 700));
       break;
     } catch (err) {
       if (err.status === 409 && tentativa === 0) continue;
-      showNote(err.status === 401 ? 'A chave não vale mais. Toca em "Trocar chave".' : 'Não salvou. Confere a internet e tenta de novo.', true);
+      box.value = text;   // o texto continua na caixa pra tentar de novo
+      showNote(err.status === 401 ? 'A chave não vale mais. Toca em ⋯ → Trocar chave.' : 'Não salvou. Confere a internet e tenta de novo.', true);
       break;
     }
   }
+  sendBtn.innerHTML = sendIcon; overlay.hidden = true;
   sending = false; syncBtn();
 });
 
+const mais = document.getElementById('mais');
+const menu = document.getElementById('menu');
+mais.onclick = e => { e.stopPropagation(); menu.hidden = !menu.hidden; };
+document.addEventListener('click', e => { if (!menu.contains(e.target)) menu.hidden = true; });
+document.getElementById('atualizar').onclick = () => location.reload();
+
 function askToken() {
-  form.hidden = true; sair.hidden = true;
+  form.hidden = true; mais.hidden = true; menu.hidden = true;
   feed.replaceChildren(document.getElementById('setup-tpl').content.cloneNode(true));
   document.getElementById('salvar-token').onclick = async () => {
     token = document.getElementById('token').value.trim(); if (!token) return;
@@ -267,12 +318,19 @@ function askToken() {
 }
 let poll = null;
 function start() {
-  form.hidden = false; sair.hidden = false; box.value = store.get('rascunho'); syncBtn(); load().catch(() => {});
+  form.hidden = false; mais.hidden = false; box.value = store.get('rascunho'); syncBtn(); load().catch(() => {});
   // Busca resposta nova a cada 15 s enquanto a página estiver na tela.
   clearInterval(poll);
   poll = setInterval(() => { if (document.visibilityState === 'visible' && token && !sending) load().catch(() => {}); }, 15000);
 }
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && token) load().catch(() => {}); });
+// Toda vez que ela volta pra página depois de um tempo fora, recarrega inteira (pega layout novo) e desce pro fim.
+let saiuEm = 0;
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') { saiuEm = Date.now(); return; }
+  if (saiuEm && Date.now() - saiuEm > 30000 && !sending) { location.reload(); return; }
+  if (token) load().catch(() => {});
+});
+window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
 sair.onclick = () => { store.set('gh-token', ''); token = ''; askToken(); };
 
 token = store.get('gh-token');
