@@ -177,6 +177,24 @@ button:disabled { opacity: .45; cursor: default; }
 @keyframes pula { 0%, 60%, 100% { transform: none; opacity: .5; } 30% { transform: translateY(-4px); opacity: 1; } }
 .note { font-size: 12px; color: var(--muted); text-align: center; padding: 0 16px 8px; }
 .note.err { color: var(--err); }
+.voltar { width: 40px; height: 40px; margin-left: -6px; background: none; color: var(--head-fg); font-size: 26px; line-height: 1; }
+#lista { flex: 1; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; position: relative; padding-bottom: 76px; }
+.conv { display: flex; align-items: center; gap: 12px; padding: 11px max(14px, env(safe-area-inset-right, 0px)) 11px max(14px, env(safe-area-inset-left, 0px));
+  border-bottom: 1px solid var(--line); cursor: pointer; background: var(--paper); }
+.conv:active { background: var(--bg); }
+.conv .av { width: 46px; height: 46px; border-radius: 50%; flex: none; display: grid; place-items: center; font-weight: 700; font-size: 19px;
+  background: color-mix(in srgb, var(--accent) 18%, var(--paper)); color: var(--accent); }
+.conv .av.logo-r { background: #fff url("apple-touch-icon.png") center / cover; }
+.conv .corpo { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.conv .linha { display: flex; align-items: baseline; gap: 8px; }
+.conv .nome { flex: 1; min-width: 0; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.conv .hora { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.conv.nova .hora { color: var(--accent); font-weight: 700; }
+.conv .previa { flex: 1; min-width: 0; font-size: 14px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.conv .badge { flex: none; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--accent); color: var(--accent-fg);
+  font-size: 12px; font-weight: 700; display: grid; place-items: center; }
+#nova { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); width: auto; height: 48px;
+  border-radius: 999px; padding: 0 20px; box-shadow: 0 6px 18px rgba(0,0,0,.22); z-index: 3; }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
@@ -185,9 +203,10 @@ button:disabled { opacity: .45; cursor: default; }
 <div class="app">
   <header>
     <div class="topo">
-      <div class="logo" aria-hidden="true"></div>
+      <button class="voltar" id="voltar" type="button" aria-label="Voltar pra lista de conversas" hidden>←</button>
+      <div class="logo" id="logo" aria-hidden="true"></div>
       <div class="who">
-        <h1>Recados</h1>
+        <h1 id="titulo">Recados</h1>
         <span class="status off" id="statusbar"><span class="dot"></span><span class="sync" aria-hidden="true"></span><span id="status">verificando o agente…</span></span>
       </div>
       <button class="icon-btn" id="mais" type="button" aria-label="Mais opções" aria-haspopup="menu" aria-expanded="false" hidden>⋮</button>
@@ -199,6 +218,8 @@ button:disabled { opacity: .45; cursor: default; }
     </div>
   </header>
 
+  <main id="lista" hidden></main>
+  <button type="button" id="nova" hidden>+ Nova conversa</button>
   <main id="feed"></main>
 
   <div class="note" id="note" role="alert" hidden></div>
@@ -236,8 +257,12 @@ button:disabled { opacity: .45; cursor: default; }
 
 <script>
 const REPO = 'mayarainstinct-stack/Inst';
-const FILE = 'CAIXA-DE-ENTRADA.md';
-const API = 'https://api.github.com/repos/' + REPO + '/contents/' + FILE;
+// Conversas = arquivos: "Geral" é a CAIXA-DE-ENTRADA.md; as outras ficam em caixas/<nome>.md (mesmo formato).
+const GERAL = { arq: 'CAIXA-DE-ENTRADA.md', nome: 'Geral' };
+const apiDe = arq => 'https://api.github.com/repos/' + REPO + '/contents/' + arq.split('/').map(encodeURIComponent).join('/');
+let FILE = null;      // arquivo da conversa aberta (null = está na lista)
+let API = null;
+let nomeConv = '';
 const feed = document.getElementById('feed');
 const note = document.getElementById('note');
 const form = document.getElementById('composer');
@@ -266,6 +291,8 @@ async function gh(method, body) {
   return r.json();
 }
 
+// Título da conversa: primeira linha "# Nome"
+function tituloDe(md) { const m = md.match(/^#\s+(.+?)\s*$/m); return m ? m[1].replace(/^📥\s*/, '') : ''; }
 // Linhas da caixa: "- [DD/MM/AAAA HH:MM] texto" (dela) e "  ↳ Lyra: texto" (resposta).
 function parse(md) {
   const out = []; const lines = md.split('\n'); let on = false;
@@ -307,7 +334,9 @@ let lastItems = [];
 
 // Abre com as últimas 10 + as que ela ainda não viu; rolar até o topo carrega mais 10.
 let janela = 10;
-const vistosAntes = parseInt(store.get('vistos') || '0', 10);
+const vistoKey = arq => arq === GERAL.arq ? 'vistos' : 'vistos:' + arq;   // Geral mantém a chave antiga
+const rascKey = () => FILE === GERAL.arq ? 'rascunho' : 'rascunho:' + FILE;
+let vistosAntes = 0;
 let inicio = 0;
 
 // Cores = as que cada projeto usa no VS Code (borda/realce do .vscode/settings.json); Lyra = rosa dela.
@@ -417,7 +446,7 @@ function render(items, manterPosicao) {
   shown = items.length;
   if (manterPosicao) feed.scrollTop = feed.scrollHeight - alturaAntes + topoAntes;
   else if (pertoDoFim || firstNew === items.length) feed.scrollTop = feed.scrollHeight;
-  if (document.visibilityState === 'visible') store.set('vistos', String(items.length));
+  if (document.visibilityState === 'visible' && FILE) store.set(vistoKey(FILE), String(items.length));
 }
 
 const syncEl = document.getElementById('statusbar');
@@ -448,7 +477,7 @@ async function checaOnline() {
     const on = r.ok && Date.now() - ts < 60000;               // vigia batendo = está olhando = online
     const idade = Date.now() - ts;
     const ausente = r.ok && idade > 60000 && idade < 300000;   // vigia parou há 1–5 min
-    mostraFazendo(on ? linhas.slice(2).join(' ').trim() : '');
+    mostraFazendo(on && FILE ? linhas.slice(2).join(' ').trim() : '');
     syncEl.classList.toggle('ausente', ausente);
     if (ausente) { syncEl.classList.remove('off'); statusTxt.textContent = 'Agente ausente'; mostraFazendo(''); return; }
     syncEl.classList.toggle('off', !on);
@@ -459,14 +488,17 @@ async function checaOnline() {
 }
 
 let ultimaChecagem = 0, carregando = null;
-function load() { return carregando || (carregando = carregar().finally(() => { carregando = null; })); }
+let forcar = false;   // recém-aberta: desenha mesmo que esteja vazia
+function load() { const p = carregando || (carregando = carregar().finally(() => { if (carregando === p) carregando = null; })); return p; }
 async function carregar() {
+  const arq = FILE; if (!arq) return null;
   syncEl.classList.add('on');
   try {
     const f = await gh('GET').finally(() => syncEl.classList.remove('on'));
+    if (FILE !== arq) return f;   // trocou de conversa enquanto baixava
     const items = parse(b64decode(f.content));
     const same = items.length === lastItems.length && items.every((it, i) => it.text === lastItems[i].text && it.from === lastItems[i].from && it.lida === lastItems[i].lida && it.foto === lastItems[i].foto && it.copiar === lastItems[i].copiar && it.transcricao === lastItems[i].transcricao);
-    if (!same) { if (items.length < shown) shown = items.length; lastItems = items; render(items); }
+    if (!same || forcar) { forcar = false; if (items.length < shown) shown = items.length; lastItems = items; render(items); }
     checaOnline();
     showNote(''); return f;
   }
@@ -632,7 +664,7 @@ function responderUltima() {
   irProFim();
 }
 let querResponder = location.hash === '#responder';
-if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data === 'responder') { load().then(responderUltima).catch(responderUltima); } });
+if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data === 'responder') { (FILE === GERAL.arq ? load() : abrir(GERAL)).then(responderUltima).catch(responderUltima); } });
 function gestoResponder(el, it) {
   let x0 = null, y0 = 0, dx = 0, timer = null, seta = null;
   const fim = () => {
@@ -680,7 +712,7 @@ function syncBtn() {
 }
 // Enter envia (no celular também); Shift+Enter quebra linha no teclado de computador.
 box.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); } });
-box.addEventListener('input', () => { box.style.height = 'auto'; box.style.height = Math.min(box.scrollHeight, 140) + 'px'; syncBtn(); store.set('rascunho', box.value); });
+box.addEventListener('input', () => { box.style.height = 'auto'; box.style.height = Math.min(box.scrollHeight, 140) + 'px'; syncBtn(); store.set(rascKey(), box.value); });
 
 form.addEventListener('submit', async e => {
   e.preventDefault();
@@ -698,7 +730,7 @@ form.addEventListener('submit', async e => {
       md = md.replace(/\n- \s*$/, '\n');
       md = md.replace(/\s*$/, '') + '\n' + linha + '\n';
       await gh('PUT', { message: 'recado do iPhone', content: b64encode(md), sha: f.sha });
-      store.set('rascunho', ''); box.value = ''; box.style.height = 'auto'; responder(null);
+      store.set(rascKey(), ''); box.value = ''; box.style.height = 'auto'; responder(null);
       await load().catch(() => {});
       overlay.classList.add('ok'); overlayTxt.textContent = 'Enviado';
       await new Promise(r => setTimeout(r, 700));
@@ -772,28 +804,142 @@ btnNotif.onclick = async () => {
 };
 
 function askToken() {
-  form.hidden = true; mais.hidden = true; menu.hidden = true;
+  form.hidden = true; mais.hidden = true; menu.hidden = true; lista.hidden = true; novaBtn.hidden = true; voltar.hidden = true; logoEl.hidden = false; tituloEl.textContent = 'Recados'; FILE = null; feed.hidden = false;
   feed.replaceChildren(document.getElementById('setup-tpl').content.cloneNode(true));
   document.getElementById('salvar-token').onclick = async () => {
     token = document.getElementById('token').value.trim(); if (!token) return;
-    try { await load(); store.set('gh-token', token); start(); }
+    try { await carregaLista(true); store.set('gh-token', token); start(); }
     catch (e) { token = ''; askToken(); showNote('Essa chave não abriu o repositório Inst. Confere e cola de novo.', true); }
   };
 }
+// ---- Lista de conversas (igual WhatsApp): Geral em cima + as de caixas/. Tocar abre; "+ Nova conversa" cria.
+const lista = document.getElementById('lista'), novaBtn = document.getElementById('nova'), voltar = document.getElementById('voltar');
+const logoEl = document.getElementById('logo'), tituloEl = document.getElementById('titulo');
+let conversas = [], sigLista = '', ultimaLista = 0, carregandoLista = null;
+const hdrs = raw => ({ Authorization: 'Bearer ' + token, Accept: raw ? 'application/vnd.github.raw' : 'application/vnd.github+json' });
+async function lerArquivo(arq) {
+  const r = await fetch(apiDe(arq) + '?t=' + Date.now(), { headers: hdrs(true) });
+  if (!r.ok) { const e = new Error('http ' + r.status); e.status = r.status; throw e; }
+  return r.text();
+}
+function previaDe(it) {
+  const quem = it.from === 'may' ? 'Você: ' : (GRUPO[it.quem] ? GRUPO[it.quem].nome + ': ' : '');
+  const t = it.audio ? '🎤 Áudio' : (it.foto ? '📷 ' + (it.text || 'Foto') : it.text);
+  return quem + String(t || '').replace(/\s+/g, ' ').trim();
+}
+function carregaLista(estrito) {
+  return carregandoLista || (carregandoLista = listar(estrito).finally(() => { carregandoLista = null; }));
+}
+async function listar(estrito) {
+  syncEl.classList.add('on');
+  try {
+    const arqs = [GERAL.arq];
+    const d = await fetch('https://api.github.com/repos/' + REPO + '/contents/caixas?t=' + Date.now(), { headers: hdrs(false) });
+    if (d.status === 401) { const e = new Error('http 401'); e.status = 401; throw e; }
+    if (d.ok) (await d.json()).filter(x => x.type === 'file' && /\.md$/i.test(x.name)).forEach(x => arqs.push(x.path));
+    const lidas = await Promise.all(arqs.map(a => lerArquivo(a).then(md => ({ arq: a, md }), e => { if (a === GERAL.arq) throw e; return null; })));
+    conversas = lidas.filter(Boolean).map(({ arq, md }) => {
+      const items = parse(md);
+      const slug = arq.replace(/^.*\//, '').replace(/\.md$/i, '');
+      const visto = parseInt(store.get(vistoKey(arq)) || '0', 10);
+      if (visto > items.length) store.set(vistoKey(arq), String(items.length));   // arquivo encolheu (Lyra limpou)
+      const nao = items.slice(Math.min(visto, items.length)).filter(x => x.from !== 'may').length;
+      const ult = items[items.length - 1];
+      const comHora = [...items].reverse().find(x => x.time);
+      return { arq, nome: arq === GERAL.arq ? GERAL.nome : (tituloDe(md) || slug), n: items.length, nao, previa: ult ? previaDe(ult) : 'Sem recados ainda', day: comHora ? comHora.day : '', time: comHora ? comHora.time : '' };
+    });
+    const ts = c => { const m = c.day.match(/^(\d\d)\/(\d\d)\/(\d{4})$/); return m ? Date.parse(m[3] + '-' + m[2] + '-' + m[1] + 'T' + (c.time || '00:00')) : 0; };
+    const outras = conversas.filter(c => c.arq !== GERAL.arq).sort((a, b) => ts(b) - ts(a));
+    conversas = [...conversas.filter(c => c.arq === GERAL.arq), ...outras];
+    ultimaLista = Date.now();
+    checaOnline();
+    showNote('');
+    if (!FILE) desenhaLista();
+  } catch (e) {
+    if (!FILE) showNote(e.status === 401 ? 'A chave não vale mais. Toca em ⋮ → Trocar chave.' : 'Não consegui ler as conversas. Confere a internet.', true);
+    if (estrito || e.status === 401) throw e;
+  } finally { syncEl.classList.remove('on'); }
+}
+function desenhaLista() {
+  const sig = JSON.stringify(conversas);
+  if (sig === sigLista && lista.childElementCount) return;
+  sigLista = sig;
+  const hoje = stamp(new Date()).slice(0, 10);
+  lista.replaceChildren();
+  conversas.forEach(c => {
+    const el = document.createElement('div'); el.className = 'conv' + (c.nao ? ' nova' : ''); el.tabIndex = 0; el.setAttribute('role', 'button');
+    const av = document.createElement('div'); av.className = 'av' + (c.arq === GERAL.arq ? ' logo-r' : ''); av.textContent = c.arq === GERAL.arq ? '' : c.nome.charAt(0).toUpperCase();
+    const corpo = document.createElement('div'); corpo.className = 'corpo';
+    const l1 = document.createElement('div'); l1.className = 'linha';
+    const nome = document.createElement('span'); nome.className = 'nome'; nome.textContent = c.nome;
+    const hora = document.createElement('span'); hora.className = 'hora'; hora.textContent = c.day ? (c.day === hoje ? c.time : c.day.slice(0, 5)) : '';
+    l1.append(nome, hora);
+    const l2 = document.createElement('div'); l2.className = 'linha';
+    const pv = document.createElement('span'); pv.className = 'previa'; pv.textContent = c.previa;
+    l2.append(pv);
+    if (c.nao) { const b = document.createElement('span'); b.className = 'badge'; b.textContent = c.nao > 99 ? '99+' : c.nao; l2.append(b); }
+    corpo.append(l1, l2); el.append(av, corpo);
+    el.onclick = () => abrir(c).catch(() => {});
+    el.onkeydown = e => { if (e.key === 'Enter') abrir(c).catch(() => {}); };
+    lista.append(el);
+  });
+}
+function mostraLista() {
+  FILE = null; API = null; nomeConv = '';
+  voltar.hidden = true; logoEl.hidden = false; tituloEl.textContent = 'Recados';
+  feed.hidden = true; form.hidden = true; citando.hidden = true; desce.hidden = true; lista.hidden = false; novaBtn.hidden = false;
+  mostraFazendo(''); showNote(''); menu.hidden = true;
+  if (conversas.length) desenhaLista();
+  carregaLista().catch(() => {});
+}
+// Abre uma conversa: zera o estado da tela e carrega o arquivo dela.
+function abrir(c) {
+  FILE = c.arq; API = apiDe(c.arq); nomeConv = c.nome;
+  vistosAntes = parseInt(store.get(vistoKey(FILE)) || '0', 10);
+  shown = -1; lastItems = []; janela = 10; inicio = 0; forcar = true; carregando = null;
+  novasLaEmCima = 0; desceQtd.hidden = true; desce.hidden = true;
+  respondendo = null; citando.hidden = true; mostraFazendo(''); showNote('');
+  delete feed.dataset.jaAbriu;
+  lista.hidden = true; novaBtn.hidden = true; feed.hidden = false; feed.replaceChildren(); form.hidden = false;
+  voltar.hidden = false; logoEl.hidden = true; tituloEl.textContent = c.nome;
+  box.value = store.get(rascKey()); box.style.height = 'auto'; syncBtn();
+  return load();
+}
+voltar.onclick = () => { if (!sending) mostraLista(); };
+novaBtn.onclick = async () => {
+  const nome = (prompt('Nome da nova conversa') || '').trim().slice(0, 40); if (!nome) return;
+  const slug = nome.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  if (!slug) { showNote('Escolhe um nome com letras ou números.', true); return; }
+  const arq = 'caixas/' + slug + '.md';
+  try {
+    const r = await fetch(apiDe(arq), { method: 'PUT', headers: hdrs(false),
+      body: JSON.stringify({ message: 'nova conversa: ' + nome, content: b64encode('# ' + nome.replace(/[\r\n]+/g, ' ') + '\n\n## Recados\n') }) });
+    if (!r.ok && r.status !== 422) throw new Error('put ' + r.status);   // 422 = já existe: só abre
+    abrir({ arq, nome }).catch(() => {});
+  } catch (e) { showNote('Não consegui criar a conversa. Confere a internet.', true); }
+};
+
 let poll = null;
 function start() {
-  form.hidden = false; mais.hidden = false; box.value = store.get('rascunho'); syncBtn();
-  load().then(() => { if (querResponder) { querResponder = false; history.replaceState(null, '', location.pathname); responderUltima(); } }).catch(() => {});
-  // Busca resposta nova a cada 4 s enquanto a página estiver na tela.
+  mais.hidden = false;
+  if (querResponder) {   // veio da notificação: abre a Geral já respondendo
+    querResponder = false; history.replaceState(null, '', location.pathname);
+    abrir(GERAL).then(responderUltima).catch(() => {});
+  } else mostraLista();
+  // Conversa aberta: busca a cada 4 s; lista de conversas: a cada 15 s (só com a página na tela).
   clearInterval(poll);
-  poll = setInterval(() => { if (document.visibilityState === 'visible' && token && !sending) load().catch(() => {}); }, 4000);
+  poll = setInterval(() => {
+    if (document.visibilityState !== 'visible' || !token || sending) return;
+    if (FILE) load().catch(() => {});
+    else if (Date.now() - ultimaLista > 14000) carregaLista().catch(() => {});
+  }, 4000);
 }
 // Toda vez que ela volta pra página depois de um tempo fora, recarrega inteira (pega layout novo) e desce pro fim.
 let saiuEm = 0;
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') { saiuEm = Date.now(); return; }
   if (saiuEm && Date.now() - saiuEm > 30000 && !sending) { location.reload(); return; }
-  if (token) load().catch(() => {});
+  if (token) (FILE ? load() : carregaLista()).catch(() => {});
 });
 window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
 sair.onclick = () => { store.set('gh-token', ''); token = ''; askToken(); };
