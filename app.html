@@ -434,9 +434,9 @@ function askToken() {
 let poll = null;
 function start() {
   form.hidden = false; mais.hidden = false; box.value = store.get('rascunho'); syncBtn(); load().catch(() => {});
-  // Busca resposta nova a cada 15 s enquanto a página estiver na tela.
+  // Busca resposta nova a cada 8 s enquanto a página estiver na tela.
   clearInterval(poll);
-  poll = setInterval(() => { if (document.visibilityState === 'visible' && token && !sending) load().catch(() => {}); }, 15000);
+  poll = setInterval(() => { if (document.visibilityState === 'visible' && token && !sending) load().catch(() => {}); }, 8000);
 }
 // Toda vez que ela volta pra página depois de um tempo fora, recarrega inteira (pega layout novo) e desce pro fim.
 let saiuEm = 0;
