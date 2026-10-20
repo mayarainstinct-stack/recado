@@ -133,6 +133,8 @@ button:disabled { opacity: .45; cursor: default; }
 .digitando { align-self: flex-start; display: flex; gap: 4px; padding: 12px 14px; border-radius: 14px; border-bottom-left-radius: 4px;
   background: var(--theirs); box-shadow: 0 1px 0 var(--line); }
 .digitando i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: pula 1s infinite ease-in-out; }
+.digitando.fazendo { align-items: center; gap: 5px; }
+.digitando.fazendo span { margin-left: 6px; font-size: 13px; color: var(--muted); font-style: italic; }
 .digitando i:nth-child(2) { animation-delay: .15s; } .digitando i:nth-child(3) { animation-delay: .3s; }
 @keyframes pula { 0%, 60%, 100% { transform: none; opacity: .5; } 30% { transform: translateY(-4px); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .msg.novo, .digitando i { animation: none; } }
@@ -321,13 +323,29 @@ function render(items, manterPosicao) {
 
 const syncEl = document.getElementById('statusbar');
 const statusTxt = document.getElementById('status');
+// "Lyra pesquisando…" embaixo da conversa enquanto ela trabalha no recado
+let fazendoEl = null;
+function mostraFazendo(txt) {
+  if (!txt) { if (fazendoEl) { fazendoEl.remove(); fazendoEl = null; } return; }
+  if (!fazendoEl) {
+    fazendoEl = document.createElement('div'); fazendoEl.className = 'digitando fazendo';
+    fazendoEl.innerHTML = '<i></i><i></i><i></i><span></span>';
+  }
+  fazendoEl.querySelector('span').textContent = txt;
+  if (fazendoEl.parentNode !== feed || feed.lastElementChild !== fazendoEl) {
+    const perto = feed.scrollHeight - feed.scrollTop - feed.clientHeight < 120;
+    feed.append(fazendoEl); if (perto) feed.scrollTop = feed.scrollHeight;
+  }
+}
 // O agente (Claude no notebook) grava a hora no branch "online" a cada ~1 min enquanto o vigia roda.
 async function checaOnline() {
   try {
     const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/online.txt?ref=online&t=' + Date.now(),
       { headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github.raw' } });
-    const ts = parseInt((await r.text()).trim(), 10) * 1000;
+    const linhas = (await r.text()).split(/\r?\n/);
+    const ts = parseInt(linhas[0], 10) * 1000;
     const on = r.ok && Date.now() - ts < 150000;
+    mostraFazendo(on ? linhas.slice(1).join(' ').trim() : '');
     syncEl.classList.toggle('off', !on);
     if (on) statusTxt.textContent = 'Agente online agora';
     else { const min = Math.round((Date.now() - ts) / 60000);
@@ -344,7 +362,7 @@ async function carregar() {
     const items = parse(b64decode(f.content));
     const same = items.length === lastItems.length && items.every((it, i) => it.text === lastItems[i].text && it.from === lastItems[i].from && it.lida === lastItems[i].lida && it.foto === lastItems[i].foto && it.copiar === lastItems[i].copiar);
     if (!same) { if (items.length < shown) shown = items.length; lastItems = items; render(items); }
-    if (Date.now() - ultimaChecagem > 30000) { ultimaChecagem = Date.now(); checaOnline(); }
+    checaOnline();
     showNote(''); return f;
   }
   catch (e) { showNote(e.status === 401 ? 'A chave não vale mais. Toca em ⋮ → Trocar chave.' : 'Não consegui ler a caixa. Confere a internet.', true); throw e; }
@@ -462,9 +480,9 @@ function askToken() {
 let poll = null;
 function start() {
   form.hidden = false; mais.hidden = false; box.value = store.get('rascunho'); syncBtn(); load().catch(() => {});
-  // Busca resposta nova a cada 8 s enquanto a página estiver na tela.
+  // Busca resposta nova a cada 4 s enquanto a página estiver na tela.
   clearInterval(poll);
-  poll = setInterval(() => { if (document.visibilityState === 'visible' && token && !sending) load().catch(() => {}); }, 8000);
+  poll = setInterval(() => { if (document.visibilityState === 'visible' && token && !sending) load().catch(() => {}); }, 4000);
 }
 // Toda vez que ela volta pra página depois de um tempo fora, recarrega inteira (pega layout novo) e desce pro fim.
 let saiuEm = 0;
