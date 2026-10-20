@@ -188,7 +188,7 @@ button:disabled { opacity: .45; cursor: default; }
 .conv .corpo { flex: 1; min-width: 0; display: grid; gap: 2px; }
 .conv .linha { display: flex; align-items: baseline; gap: 8px; }
 .conv .nome { flex: 1; min-width: 0; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.conv .hora { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.conv .hora { flex: none; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .conv.nova .hora { color: var(--accent); font-weight: 700; }
 .conv .previa { flex: 1; min-width: 0; font-size: 14px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .conv .badge { flex: none; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--accent); color: var(--accent-fg);
@@ -196,16 +196,16 @@ button:disabled { opacity: .45; cursor: default; }
 #nova { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); width: auto; height: 48px;
   border-radius: 999px; padding: 0 20px; box-shadow: 0 6px 18px rgba(0,0,0,.22); z-index: 3; }
 /* Versão web (abrir com ?web=true): igual WhatsApp Web, lista de conversas à esquerda e a conversa aberta à direita */
-@media (min-width: 700px) {
-  body.web .app { max-width: 1400px; display: grid; grid-template-columns: 360px 1fr; grid-template-rows: auto 1fr auto auto auto; }
-  body.web header { grid-column: 1 / -1; border-radius: 0 0 18px 18px; }
-  body.web #lista { grid-column: 1; grid-row: 2 / -1; border-right: 1px solid var(--line); overflow-y: auto; display: block !important; padding-bottom: 80px; }
-  body.web #feed, body.web #note, body.web #citando, body.web #composer { grid-column: 2; }
-  body.web #feed { grid-row: 2; } body.web #note { grid-row: 3; } body.web #citando { grid-row: 4; } body.web #composer { grid-row: 5; }
-  body.web #nova { left: max(16px, calc(50vw - 684px)); right: auto; width: 328px; display: block !important; }
-  body.web #voltar { display: none !important; }
-  body.web .conv.ativa { background: color-mix(in srgb, var(--accent) 14%, transparent); }
-  body.web .desce { right: max(24px, calc(50vw - 676px)); }
+@media all {   /* "lado" = a área visível tem 700px ou mais (medido no JS, não na tela do monitor) */
+  body.web.lado .app { max-width: 1400px; display: grid; grid-template-columns: 360px 1fr; grid-template-rows: auto 1fr auto auto auto; }
+  body.web.lado header { grid-column: 1 / -1; border-radius: 0 0 18px 18px; }
+  body.web.lado #lista { grid-column: 1; grid-row: 2 / -1; border-right: 1px solid var(--line); overflow-y: auto; display: block !important; padding-bottom: 80px; }
+  body.web.lado #feed, body.web.lado #note, body.web.lado #citando, body.web.lado #composer { grid-column: 2; }
+  body.web.lado #feed { grid-row: 2; } body.web.lado #note { grid-row: 3; } body.web.lado #citando { grid-row: 4; } body.web.lado #composer { grid-row: 5; }
+  body.web.lado #nova { left: max(16px, calc(50vw - 684px)); right: auto; width: 328px; display: block !important; }
+  body.web.lado #voltar { display: none !important; }
+  body.web.lado .conv.ativa { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+  body.web.lado .desce { right: max(24px, calc(50vw - 676px)); }
 }
 .zoom { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,.92); display: grid; place-items: center; padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px); animation: entra .18s ease-out both; }
 .zoom img { max-width: 100vw; max-height: 100%; object-fit: contain; touch-action: pinch-zoom; }
@@ -289,7 +289,7 @@ const GERAL = { arq: 'CAIXA-DE-ENTRADA.md', nome: 'Geral' };
 const apiDe = arq => 'https://api.github.com/repos/' + REPO + '/contents/' + arq.split('/').map(encodeURIComponent).join('/');
 let FILE = null;      // arquivo da conversa aberta (null = está na lista)
 let API = null;
-let nomeConv = '';
+let nomeConv = '', fotoConv = '';
 const feed = document.getElementById('feed');
 const note = document.getElementById('note');
 const form = document.getElementById('composer');
@@ -846,7 +846,15 @@ const lista = document.getElementById('lista'), novaBtn = document.getElementByI
 const logoEl = document.getElementById('logo'), tituloEl = document.getElementById('titulo');
 const MODO_WEB = new URLSearchParams(location.search).get('web') === 'true';   // versão web: ...?web=true
 if (MODO_WEB) document.body.classList.add('web');
-const largo = () => MODO_WEB && matchMedia('(min-width: 700px)').matches;   // lista e conversa lado a lado
+// lista e conversa lado a lado só quando a ÁREA VISÍVEL da página tem 700px+ (painel lateral do navegador fica no modo celular)
+const largo = () => MODO_WEB && document.documentElement.clientWidth >= 700;
+let eraLargo = null;
+function aplicaLargura() {
+  const l = largo(); document.body.classList.toggle('lado', l);
+  if (eraLargo !== null && l !== eraLargo && token) { if (FILE) abrir({ arq: FILE, nome: nomeConv, foto: fotoConv }).catch(() => {}); else mostraLista(); }
+  eraLargo = l;
+}
+window.addEventListener('resize', () => { clearTimeout(aplicaLargura.t); aplicaLargura.t = setTimeout(aplicaLargura, 150); });
 let conversas = [], sigLista = '', ultimaLista = 0, carregandoLista = null;
 const hdrs = raw => ({ Authorization: 'Bearer ' + token, Accept: raw ? 'application/vnd.github.raw' : 'application/vnd.github+json' });
 async function lerArquivo(arq) {
@@ -918,7 +926,7 @@ function desenhaLista() {
   });
 }
 function mostraLista() {
-  FILE = null; API = null; nomeConv = '';
+  FILE = null; API = null; nomeConv = ''; fotoConv = ''; logoEl.style.backgroundImage = '';
   voltar.hidden = true; logoEl.hidden = false; tituloEl.textContent = 'Recados';
   feed.hidden = true; form.hidden = true; citando.hidden = true; desce.hidden = true; lista.hidden = false; novaBtn.hidden = false;
   mostraFazendo(''); showNote(''); menu.hidden = true;
@@ -928,7 +936,8 @@ function mostraLista() {
 }
 // Abre uma conversa: zera o estado da tela e carrega o arquivo dela.
 function abrir(c) {
-  FILE = c.arq; API = apiDe(c.arq); nomeConv = c.nome;
+  FILE = c.arq; API = apiDe(c.arq); nomeConv = c.nome; fotoConv = c.foto || (conversas.find(x => x.arq === c.arq) || {}).foto || '';
+  logoEl.style.backgroundImage = ''; if (fotoConv) fotoUrl(fotoConv).then(u => { if (FILE === c.arq) logoEl.style.backgroundImage = 'url(' + u + ')'; }).catch(() => {});
   vistosAntes = parseInt(store.get(vistoKey(FILE)) || '0', 10);
   shown = -1; lastItems = []; janela = 10; inicio = 0; forcar = true; carregando = null;
   novasLaEmCima = 0; desceQtd.hidden = true; desce.hidden = true;
@@ -994,6 +1003,7 @@ novaBtn.onclick = () => {
 
 let poll = null;
 function start() {
+  aplicaLargura();
   mais.hidden = false;
   if (querResponder) {   // veio da notificação: abre a Geral já respondendo
     querResponder = false; history.replaceState(null, '', location.pathname);
