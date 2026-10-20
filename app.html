@@ -21,13 +21,13 @@
    com um token que fica só no iPhone dela. Nenhum recado mora nesta página. */
 :root {
   --bg: #F2FBF6; --paper: #FFFFFF; --fg: #1E293B; --muted: #64748B; --line: #E2E8F0;
-  --head: #0EA371; --head-fg: #FFFFFF; --mine: #6BBF23; --mine-fg: #0E2200;
+  --head: #0EA371; --head-fg: #FFFFFF; --mine: #2F9E44; --mine-fg: #FFFFFF;
   --theirs: #FFFFFF; --cinza: #EEF1F4; --accent: #059669; --accent-fg: #FFFFFF; --pink: #6BAD3E; --err: #B91C1C;
   --font-ui: "Figtree", "Segoe UI", system-ui, sans-serif; --font-name: "Young Serif", Georgia, serif;
 }
 @media (prefers-color-scheme: dark) {
   :root { --bg: #08140F; --paper: #0C1A14; --fg: #F1F5F9; --muted: #8B9DAF; --line: #1C3A2E;
-    --head: #0B2A20; --head-fg: #ECFDF5; --mine: #5FAE1A; --mine-fg: #0B1C00; --theirs: #13261E; --cinza: #1B2522;
+    --head: #0B2A20; --head-fg: #ECFDF5; --mine: #237A36; --mine-fg: #F1FFF3; --theirs: #13261E; --cinza: #1B2522;
     --accent: #10B981; --accent-fg: #052E22; --pink: #5FBB53; --err: #FCA5A5; color-scheme: dark; }
 }
 * { box-sizing: border-box; }
@@ -143,7 +143,7 @@ textarea:focus-visible { outline: none; }
 .copiar-btn { width: auto; height: auto; min-height: 40px; border-radius: 999px; padding: 8px 14px; font-size: 13px; letter-spacing: 0; text-transform: none; }
 .tick { font-weight: 700; letter-spacing: -2px; color: var(--muted); }
 .tick.lida { color: var(--accent); }
-.msg.may .tick.lida { color: #0B57D0; }
+.msg.may .tick.lida { color: #9FE0FF; }
 .msg.may .meta { color: color-mix(in srgb, var(--mine-fg) 75%, transparent); }
 .meta { display: flex; justify-content: flex-end; gap: 6px; font-size: 11px; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
 .empty, .setup { margin: auto; text-align: center; max-width: 34ch; color: var(--muted); display: grid; gap: 10px; }
