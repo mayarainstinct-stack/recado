@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Recados">
-<meta name="theme-color" content="#047857">
+<meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -29,11 +30,13 @@
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
+body { overflow: hidden; overscroll-behavior: none; }
 body { background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 16px; }
-.app { height: 100%; display: flex; flex-direction: column; max-width: 720px; margin: 0 auto; background: var(--paper); }
+.app { height: 100%; height: 100dvh; display: flex; flex-direction: column; max-width: 720px; margin: 0 auto; background: var(--paper); }
 /* Topo no padrão dos apps da Simplificação (promotor/checklist): faixa na cor da marca subindo atrás da barra de status,
    cantos de baixo arredondados, logo + "Recados" + status do agente (online/offline), ⋮ à direita, respiro 16. */
 header { position: relative; z-index: 2; color: var(--head-fg); font-family: -apple-system, "Roboto", "Segoe UI", system-ui, sans-serif;
+  background: var(--head);
   background: linear-gradient(160deg, color-mix(in srgb, var(--head) 80%, #fff) 0%, var(--head) 60%);
   border-radius: 0 0 24px 24px; box-shadow: 0 6px 18px color-mix(in srgb, var(--head) 28%, transparent);
   padding: calc(16px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 14px max(16px, env(safe-area-inset-left, 0px));
@@ -56,13 +59,13 @@ header { position: relative; z-index: 2; color: var(--head-fg); font-family: -ap
   font-size: 22px; line-height: 1; display: grid; place-items: center; }
 .menu { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); top: calc(66px + env(safe-area-inset-top, 0px));
   background: var(--paper); color: var(--fg); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.16); padding: 6px; z-index: 5; }
-.menu button { width: 100%; height: auto; border-radius: 8px; background: none; color: var(--fg); padding: 10px 14px; text-align: left; font-weight: 500; display: block; }
+.menu button { width: 100%; height: auto; min-height: 44px; border-radius: 8px; background: none; color: var(--fg); padding: 10px 14px; text-align: left; font-weight: 500; display: block; }
 .menu button:hover { background: var(--bg); }
 @keyframes gira { to { transform: rotate(360deg); } }
 .spin { width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid currentColor; border-top-color: transparent; animation: gira .7s linear infinite; }
 .clip { background: none; color: var(--muted); width: 40px; }
 .clip:hover { color: var(--accent); }
-.msg .foto { display: block; width: 100%; max-width: 260px; min-height: 120px; border-radius: 10px; margin-bottom: 4px;
+.msg .foto { display: block; width: 100%; max-width: 260px; min-height: 120px; max-height: 340px; border-radius: 10px; margin-bottom: 4px;
   background: color-mix(in srgb, var(--accent) 10%, var(--bg)); object-fit: cover; }
 /* Animações leves (só CSS): topo desliza, conversa sobe em cascata, botões respondem ao toque. */
 header { animation: desce .45s cubic-bezier(.2,.8,.2,1) both; }
@@ -81,6 +84,7 @@ button:active:not(:disabled) { transform: scale(.9); }
 @keyframes pulsa { 50% { transform: scale(1.12); } }
 textarea { transition: border-color .2s ease, box-shadow .2s ease; }
 textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); outline: none; }
+textarea:focus-visible { outline: none; }
 .menu:not([hidden]) { animation: abre .18s ease-out both; transform-origin: top right; }
 @keyframes abre { from { opacity: 0; transform: scale(.9); } }
 @media (prefers-reduced-motion: reduce) { header, form, #feed.chegando .msg, #enviar, .menu { animation: none !important; } }
@@ -93,7 +97,7 @@ textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in
   font-size: 22px; font-weight: 700; place-items: center; }
 .overlay.ok .spin { display: none; }
 .overlay.ok .ok-mark { display: grid; animation: entra .3s cubic-bezier(.2,.9,.3,1.3) both; }
-#feed { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;
+#feed { flex: 1; overflow-y: auto; overscroll-behavior: contain; background: var(--bg); display: flex; flex-direction: column; gap: 6px;
   padding: 16px max(16px, env(safe-area-inset-right, 0px)) 16px max(16px, env(safe-area-inset-left, 0px)); }
 .day { align-self: center; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted);
   background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; margin-block: 8px; }
@@ -105,10 +109,10 @@ textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in
 .msg.copiavel .txt { font-size: 14.5px; }
 .copiar-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px;
   font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--accent); }
-.copiar-btn { width: auto; height: auto; border-radius: 999px; padding: 5px 12px; font-size: 13px; letter-spacing: 0; text-transform: none; }
+.copiar-btn { width: auto; height: auto; min-height: 40px; border-radius: 999px; padding: 8px 14px; font-size: 13px; letter-spacing: 0; text-transform: none; }
 .tick { font-weight: 700; letter-spacing: -2px; color: var(--muted); }
 .tick.lida { color: var(--accent); }
-.msg.may .meta { color: color-mix(in srgb, var(--mine-fg) 55%, transparent); }
+.msg.may .meta { color: color-mix(in srgb, var(--mine-fg) 75%, transparent); }
 .meta { display: flex; justify-content: flex-end; gap: 6px; font-size: 11px; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
 .empty, .setup { margin: auto; text-align: center; max-width: 34ch; color: var(--muted); display: grid; gap: 10px; }
 .empty strong, .setup strong { color: var(--fg); font-family: var(--font-name); font-weight: 400; font-size: 20px; }
@@ -154,9 +158,9 @@ button:disabled { opacity: .45; cursor: default; }
     </div>
   </header>
 
-  <main id="feed" aria-live="polite"></main>
+  <main id="feed"></main>
 
-  <div class="note" id="note" hidden></div>
+  <div class="note" id="note" role="alert" hidden></div>
   <form id="composer" autocomplete="off" hidden>
     <button type="button" id="foto" class="clip" aria-label="Enviar foto da galeria">
       <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M21 12.5 12.6 20.9a5.5 5.5 0 0 1-7.8-7.8l8.5-8.5a3.7 3.7 0 0 1 5.2 5.2l-8.5 8.5a1.8 1.8 0 0 1-2.6-2.6l7.8-7.8"/></svg>
@@ -177,7 +181,7 @@ button:disabled { opacity: .45; cursor: default; }
   <div class="setup">
     <strong>Primeira vez neste celular</strong>
     <span>Cola a chave do GitHub (token com acesso só ao repositório Inst). Ela fica guardada só neste iPhone.</span>
-    <input id="token" type="password" placeholder="github_pat_…" autocomplete="off">
+    <input id="token" type="password" aria-label="Chave do GitHub" placeholder="github_pat_…" autocomplete="off">
     <button id="salvar-token" type="button">Salvar chave</button>
   </div>
 </template>
@@ -241,7 +245,6 @@ function parse(md) {
 }
 
 let shown = -1;          // quantos itens já estavam na tela (-1 = primeira carga, sem animação)
-let etag = '';
 let lastItems = [];
 
 // Abre com as últimas 10 + as que ela ainda não viu; rolar até o topo carrega mais 10.
@@ -256,6 +259,7 @@ function render(items, manterPosicao) {
   const naoVistas = Math.max(0, items.length - vistosAntes);
   inicio = Math.max(0, items.length - Math.max(janela, naoVistas));
   const alturaAntes = feed.scrollHeight, topoAntes = feed.scrollTop;
+  const pertoDoFim = alturaAntes - topoAntes - feed.clientHeight < 120;
   feed.replaceChildren();
   if (!items.length) {
     const e = document.createElement('div'); e.className = 'empty';
@@ -283,6 +287,7 @@ function render(items, manterPosicao) {
     if (i >= firstNew && it.from === 'lyra') el.style.animationDelay = '.9s';
     if (it.foto) {
       const img = document.createElement('img'); img.className = 'foto'; img.alt = 'Foto enviada';
+      img.onload = () => { if (feed.scrollHeight - feed.scrollTop - feed.clientHeight < 400) feed.scrollTop = feed.scrollHeight; };
       fotoUrl(it.foto).then(u => { img.src = u; }).catch(() => { img.alt = 'Não carregou a foto'; });
       el.append(img);
     }
@@ -310,7 +315,7 @@ function render(items, manterPosicao) {
   if (firstNew === items.length && !manterPosicao && !feed.dataset.jaAbriu) { feed.dataset.jaAbriu = '1'; feed.classList.add('chegando'); setTimeout(() => feed.classList.remove('chegando'), 1200); }
   shown = items.length;
   if (manterPosicao) feed.scrollTop = feed.scrollHeight - alturaAntes + topoAntes;
-  else feed.scrollTop = feed.scrollHeight;
+  else if (pertoDoFim || firstNew === items.length) feed.scrollTop = feed.scrollHeight;
   if (document.visibilityState === 'visible') store.set('vistos', String(items.length));
 }
 
@@ -330,16 +335,19 @@ async function checaOnline() {
   } catch (e) { syncEl.classList.add('off'); statusTxt.textContent = 'Agente offline'; }
 }
 
-async function load() {
+let ultimaChecagem = 0, carregando = null;
+function load() { return carregando || (carregando = carregar().finally(() => { carregando = null; })); }
+async function carregar() {
   syncEl.classList.add('on');
   try {
     const f = await gh('GET').finally(() => syncEl.classList.remove('on'));
     const items = parse(b64decode(f.content));
-    const same = items.length === lastItems.length && items.every((it, i) => it.text === lastItems[i].text && it.from === lastItems[i].from && it.lida === lastItems[i].lida);
+    const same = items.length === lastItems.length && items.every((it, i) => it.text === lastItems[i].text && it.from === lastItems[i].from && it.lida === lastItems[i].lida && it.foto === lastItems[i].foto && it.copiar === lastItems[i].copiar);
     if (!same) { if (items.length < shown) shown = items.length; lastItems = items; render(items); }
-    checaOnline(); showNote(''); return f;
+    if (Date.now() - ultimaChecagem > 30000) { ultimaChecagem = Date.now(); checaOnline(); }
+    showNote(''); return f;
   }
-  catch (e) { showNote(e.status === 401 ? 'A chave não vale mais. Toca em "Trocar chave".' : 'Não consegui ler a caixa. Confere a internet.', true); throw e; }
+  catch (e) { showNote(e.status === 401 ? 'A chave não vale mais. Toca em ⋮ → Trocar chave.' : 'Não consegui ler a caixa. Confere a internet.', true); throw e; }
 }
 
 // ---- Fotos: ficam no repo privado em recados-fotos/; a página baixa com a chave e mostra.
@@ -347,7 +355,8 @@ const fotos = {};
 function fotoUrl(path) {
   if (!fotos[path]) fotos[path] = fetch('https://api.github.com/repos/' + REPO + '/contents/' + path, {
     headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github.raw' }
-  }).then(r => { if (!r.ok) throw new Error('foto ' + r.status); return r.blob(); }).then(b => URL.createObjectURL(b));
+  }).then(r => { if (!r.ok) throw new Error('foto ' + r.status); return r.blob(); }).then(b => URL.createObjectURL(b))
+    .catch(e => { delete fotos[path]; throw e; });
   return fotos[path];
 }
 function reduzir(file) {
@@ -380,7 +389,7 @@ arquivo.addEventListener('change', async () => {
     if (!r.ok) throw new Error('upload ' + r.status);
     const legenda = box.value.trim();
     box.value = '📷 ' + nome + (legenda ? ' ' + legenda : '');
-    sending = false; overlay.hidden = true;
+    sending = false;
     form.requestSubmit();   // grava a linha do recado (com a legenda que estiver escrita)
   } catch (e) {
     sending = false; syncBtn(); overlay.hidden = true;
@@ -411,7 +420,6 @@ form.addEventListener('submit', async e => {
   // Tela inteira travada com "Enviando…" até o GitHub confirmar; some sozinha no fim.
   const sendIcon = sendBtn.innerHTML; sendBtn.innerHTML = '<span class="spin" aria-label="Enviando"></span>';
   overlay.classList.remove('ok'); overlayTxt.textContent = 'Enviando…'; overlay.hidden = false; box.blur();
-  const temp = { remove() {} };
   for (let tentativa = 0; tentativa < 2; tentativa++) {
     try {
       const f = await gh('GET');
@@ -428,7 +436,7 @@ form.addEventListener('submit', async e => {
     } catch (err) {
       if (err.status === 409 && tentativa === 0) continue;
       box.value = text;   // o texto continua na caixa pra tentar de novo
-      showNote(err.status === 401 ? 'A chave não vale mais. Toca em ⋯ → Trocar chave.' : 'Não salvou. Confere a internet e tenta de novo.', true);
+      showNote(err.status === 401 ? 'A chave não vale mais. Toca em ⋮ → Trocar chave.' : 'Não salvou. Confere a internet e tenta de novo.', true);
       break;
     }
   }
