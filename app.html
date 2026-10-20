@@ -56,6 +56,26 @@ header { position: relative; display: flex; align-items: center; gap: 12px; colo
 .clip:hover { color: var(--accent); }
 .msg .foto { display: block; width: 100%; max-width: 260px; min-height: 120px; border-radius: 10px; margin-bottom: 4px;
   background: color-mix(in srgb, var(--accent) 10%, var(--bg)); object-fit: cover; }
+/* Animações leves (só CSS): topo desliza, conversa sobe em cascata, botões respondem ao toque. */
+header { animation: desce .45s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes desce { from { transform: translateY(-100%); } }
+form { animation: sobe .45s .1s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes sobe { from { transform: translateY(100%); } }
+#feed.chegando .msg { animation: entra .4s cubic-bezier(.2,.9,.3,1.2) both; }
+#feed.chegando .msg:nth-last-child(1) { animation-delay: .35s; }
+#feed.chegando .msg:nth-last-child(2) { animation-delay: .28s; }
+#feed.chegando .msg:nth-last-child(3) { animation-delay: .21s; }
+#feed.chegando .msg:nth-last-child(4) { animation-delay: .14s; }
+#feed.chegando .msg:nth-last-child(5) { animation-delay: .07s; }
+button { transition: transform .12s ease, opacity .2s ease, background-color .2s ease; }
+button:active:not(:disabled) { transform: scale(.9); }
+#enviar:not(:disabled) { animation: pulsa .35s ease-out; }
+@keyframes pulsa { 50% { transform: scale(1.12); } }
+textarea { transition: border-color .2s ease, box-shadow .2s ease; }
+textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); outline: none; }
+.menu:not([hidden]) { animation: abre .18s ease-out both; transform-origin: top right; }
+@keyframes abre { from { opacity: 0; transform: scale(.9); } }
+@media (prefers-reduced-motion: reduce) { header, form, #feed.chegando .msg, #enviar, .menu { animation: none !important; } }
 .overlay { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center;
   background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
 .overlay-card { display: grid; justify-items: center; gap: 12px; padding: 24px 32px; border-radius: 18px;
@@ -270,6 +290,7 @@ function render(items, manterPosicao) {
     }
     feed.append(el);
   });
+  if (firstNew === items.length && !manterPosicao && !feed.dataset.jaAbriu) { feed.dataset.jaAbriu = '1'; feed.classList.add('chegando'); setTimeout(() => feed.classList.remove('chegando'), 1200); }
   shown = items.length;
   if (manterPosicao) feed.scrollTop = feed.scrollHeight - alturaAntes + topoAntes;
   else feed.scrollTop = feed.scrollHeight;
