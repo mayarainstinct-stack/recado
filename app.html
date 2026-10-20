@@ -207,6 +207,21 @@ button:disabled { opacity: .45; cursor: default; }
   body.web .conv.ativa { background: color-mix(in srgb, var(--accent) 14%, transparent); }
   body.web .desce { right: max(24px, calc(50vw - 676px)); }
 }
+.zoom { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,.92); display: grid; place-items: center; padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px); animation: entra .18s ease-out both; }
+.zoom img { max-width: 100vw; max-height: 100%; object-fit: contain; touch-action: pinch-zoom; }
+.zoom button { position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); right: 14px; width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,.18); color: #fff; font-size: 20px; }
+.msg .foto { cursor: zoom-in; }
+.pop { position: fixed; inset: 0; z-index: 55; background: rgba(0,0,0,.45); display: grid; place-items: center; padding: 16px; }
+.pop .caixa { width: 100%; max-width: 380px; background: var(--paper); color: var(--fg); border-radius: 18px; padding: 18px; display: grid; gap: 12px;
+  box-shadow: 0 14px 40px rgba(0,0,0,.3); animation: entra .2s ease-out both; }
+.pop h2 { margin: 0; font-size: 18px; }
+.pop input[type=text] { font: inherit; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+.pop .foto-grupo { display: flex; align-items: center; gap: 12px; }
+.pop .foto-grupo .prev { width: 58px; height: 58px; border-radius: 50%; background: var(--bg) center / cover; border: 1px dashed var(--line); display: grid; place-items: center; font-size: 22px; flex: none; }
+.pop .acoes { display: flex; gap: 8px; justify-content: flex-end; }
+.pop .acoes button, .pop .foto-grupo button { width: auto; height: auto; border-radius: 999px; padding: 10px 18px; }
+.pop .acoes .sec, .pop .foto-grupo button { background: var(--bg); color: var(--fg); border: 1px solid var(--line); }
+.conv .av.com-foto { background: center / cover; color: transparent; }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
@@ -304,6 +319,7 @@ async function gh(method, body) {
 }
 
 // Título da conversa: primeira linha "# Nome"
+function fotoGrupoDe(md) { const m = md.match(/<!--\s*foto:\s*(\S+)\s*-->/); return m ? m[1] : ''; }
 function tituloDe(md) { const m = md.match(/^#\s+(.+?)\s*$/m); return m ? m[1].replace(/^📥\s*/, '') : ''; }
 // Linhas da caixa: "- [DD/MM/AAAA HH:MM] texto" (dela) e "  ↳ Lyra: texto" (resposta).
 function parse(md) {
@@ -420,6 +436,7 @@ function render(items, manterPosicao) {
     if (i >= firstNew && it.from === 'lyra') el.style.animationDelay = '.9s';
     if (it.foto) {
       const img = document.createElement('img'); img.className = 'foto'; img.alt = 'Foto enviada';
+      img.addEventListener('click', e => { e.stopPropagation(); if (img.src) abreZoom(img.src); });
       img.onload = () => { if (feed.scrollHeight - feed.scrollTop - feed.clientHeight < 400) feed.scrollTop = feed.scrollHeight; };
       fotoUrl(it.foto).then(u => { img.src = u; }).catch(() => { img.alt = 'Não carregou a foto'; });
       el.append(img);
@@ -861,7 +878,7 @@ async function listar(estrito) {
       const nao = items.slice(Math.min(visto, items.length)).filter(x => x.from !== 'may').length;
       const ult = items[items.length - 1];
       const comHora = [...items].reverse().find(x => x.time);
-      return { arq, nome: arq === GERAL.arq ? GERAL.nome : (tituloDe(md) || slug), n: items.length, nao, previa: ult ? previaDe(ult) : 'Sem recados ainda', day: comHora ? comHora.day : '', time: comHora ? comHora.time : '' };
+      return { arq, foto: fotoGrupoDe(md), nome: arq === GERAL.arq ? GERAL.nome : (tituloDe(md) || slug), n: items.length, nao, previa: ult ? previaDe(ult) : 'Sem recados ainda', day: comHora ? comHora.day : '', time: comHora ? comHora.time : '' };
     });
     const ts = c => { const m = c.day.match(/^(\d\d)\/(\d\d)\/(\d{4})$/); return m ? Date.parse(m[3] + '-' + m[2] + '-' + m[1] + 'T' + (c.time || '00:00')) : 0; };
     const outras = conversas.filter(c => c.arq !== GERAL.arq).sort((a, b) => ts(b) - ts(a));
@@ -884,6 +901,7 @@ function desenhaLista() {
   conversas.forEach(c => {
     const el = document.createElement('div'); el.className = 'conv' + (c.nao ? ' nova' : '') + (c.arq === FILE ? ' ativa' : ''); el.tabIndex = 0; el.setAttribute('role', 'button');
     const av = document.createElement('div'); av.className = 'av' + (c.arq === GERAL.arq ? ' logo-r' : ''); av.textContent = c.arq === GERAL.arq ? '' : c.nome.charAt(0).toUpperCase();
+    if (c.foto) fotoUrl(c.foto).then(u => { av.classList.add('com-foto'); av.style.backgroundImage = 'url(' + u + ')'; }).catch(() => {});
     const corpo = document.createElement('div'); corpo.className = 'corpo';
     const l1 = document.createElement('div'); l1.className = 'linha';
     const nome = document.createElement('span'); nome.className = 'nome'; nome.textContent = c.nome;
@@ -923,17 +941,55 @@ function abrir(c) {
   return load();
 }
 voltar.onclick = () => { if (!sending) mostraLista(); };
-novaBtn.onclick = async () => {
-  const nome = (prompt('Nome da nova conversa') || '').trim().slice(0, 40); if (!nome) return;
-  const slug = nome.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-  if (!slug) { showNote('Escolhe um nome com letras ou números.', true); return; }
-  const arq = 'caixas/' + slug + '.md';
-  try {
-    const r = await fetch(apiDe(arq), { method: 'PUT', headers: hdrs(false),
-      body: JSON.stringify({ message: 'nova conversa: ' + nome, content: b64encode('# ' + nome.replace(/[\r\n]+/g, ' ') + '\n\n## Recados\n') }) });
-    if (!r.ok && r.status !== 422) throw new Error('put ' + r.status);   // 422 = já existe: só abre
-    abrir({ arq, nome }).catch(() => {});
-  } catch (e) { showNote('Não consegui criar a conversa. Confere a internet.', true); }
+// Foto em tela cheia (toca em qualquer lugar ou no ✕ pra fechar)
+function abreZoom(src) {
+  const z = document.createElement('div'); z.className = 'zoom';
+  const im = document.createElement('img'); im.src = src; im.alt = 'Foto';
+  const x = document.createElement('button'); x.type = 'button'; x.textContent = '✕'; x.setAttribute('aria-label', 'Fechar');
+  z.append(im, x); document.body.append(z);
+  const fecha = () => { z.remove(); document.removeEventListener('keydown', esc); };
+  const esc = e => { if (e.key === 'Escape') fecha(); };
+  z.onclick = fecha; document.addEventListener('keydown', esc);
+}
+// Nova conversa: popup da própria página com nome e foto do grupo
+novaBtn.onclick = () => {
+  const pop = document.createElement('div'); pop.className = 'pop';
+  pop.innerHTML = `<form class="caixa" autocomplete="off"><h2>Nova conversa</h2>
+    <div class="foto-grupo"><div class="prev" id="np-prev">📷</div><button type="button" id="np-foto">Escolher foto</button><input type="file" id="np-arq" accept="image/*" hidden></div>
+    <input type="text" id="np-nome" maxlength="40" placeholder="Nome da conversa (ex.: Casa, Obra, Experfrutty)" required>
+    <div class="acoes"><button type="button" class="sec" id="np-x">Cancelar</button><button type="submit" id="np-ok">Criar</button></div></form>`;
+  document.body.append(pop);
+  const f = pop.querySelector('form'), nomeIn = pop.querySelector('#np-nome'), arqIn = pop.querySelector('#np-arq'), prev = pop.querySelector('#np-prev');
+  let fotoB64 = '';
+  setTimeout(() => nomeIn.focus(), 50);
+  pop.querySelector('#np-x').onclick = () => pop.remove();
+  pop.onclick = e => { if (e.target === pop) pop.remove(); };
+  pop.querySelector('#np-foto').onclick = () => arqIn.click();
+  arqIn.onchange = async () => { const fl = arqIn.files[0]; if (!fl) return;
+    try { fotoB64 = await reduzir(fl); prev.textContent = ''; prev.style.backgroundImage = 'url(data:image/jpeg;base64,' + fotoB64 + ')'; } catch (e) { showNote('Não consegui ler essa foto.', true); } };
+  f.onsubmit = async e => {
+    e.preventDefault();
+    const nome = nomeIn.value.trim().slice(0, 40); if (!nome) return;
+    const slug = nome.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    if (!slug) { showNote('Escolhe um nome com letras ou números.', true); return; }
+    const arq = 'caixas/' + slug + '.md';
+    pop.querySelector('#np-ok').disabled = true;
+    overlay.classList.remove('ok'); overlayTxt.textContent = 'Criando conversa…'; overlay.hidden = false;
+    try {
+      let fotoLinha = '';
+      if (fotoB64) {
+        const caminho = 'recados-fotos/grupo-' + slug + '.jpg';
+        const rf = await fetch(apiDe(caminho), { method: 'PUT', headers: hdrs(false), body: JSON.stringify({ message: 'foto da conversa ' + nome, content: fotoB64 }) });
+        if (rf.ok || rf.status === 422) fotoLinha = '<!-- foto: ' + caminho + ' -->\n';
+      }
+      const r = await fetch(apiDe(arq), { method: 'PUT', headers: hdrs(false),
+        body: JSON.stringify({ message: 'nova conversa: ' + nome, content: b64encode('# ' + nome.replace(/[\r\n]+/g, ' ') + '\n' + fotoLinha + '\n## Recados\n') }) });
+      if (!r.ok && r.status !== 422) throw new Error('put ' + r.status);   // 422 = já existe: só abre
+      pop.remove(); overlay.hidden = true;
+      await carregaLista().catch(() => {});
+      abrir({ arq, nome }).catch(() => {});
+    } catch (err) { overlay.hidden = true; pop.querySelector('#np-ok').disabled = false; showNote('Não consegui criar a conversa. Confere a internet.', true); }
+  };
 };
 
 let poll = null;
