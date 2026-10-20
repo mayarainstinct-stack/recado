@@ -186,7 +186,8 @@ button:disabled { opacity: .45; cursor: default; }
   background: color-mix(in srgb, var(--accent) 18%, var(--paper)); color: var(--accent); }
 .conv .av.logo-r { background: #fff url("apple-touch-icon.png") center / cover; }
 .conv .corpo { flex: 1; min-width: 0; display: grid; gap: 2px; }
-.conv .linha { display: flex; align-items: baseline; gap: 8px; }
+.conv { overflow: hidden; }
+.conv .linha { display: flex; align-items: baseline; gap: 8px; min-width: 0; overflow: hidden; }
 .conv .nome { flex: 1; min-width: 0; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .conv .hora { flex: none; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .conv.nova .hora { color: var(--accent); font-weight: 700; }
@@ -567,6 +568,15 @@ function reduzir(file) {
   });
 }
 const arquivo = document.getElementById('arquivo');
+// Colar imagem (Ctrl+V / colar) com a conversa aberta: vai como foto, igual escolher da galeria
+document.addEventListener('paste', e => {
+  if (!FILE || form.hidden || sending) return;
+  const img = [...(e.clipboardData ? e.clipboardData.items : [])].find(it => it.kind === 'file' && it.type.startsWith('image/'));
+  if (!img) return;
+  e.preventDefault();
+  const dt = new DataTransfer(); dt.items.add(img.getAsFile()); arquivo.files = dt.files;
+  arquivo.dispatchEvent(new Event('change'));
+});
 document.getElementById('foto').onclick = () => { if (!sending) arquivo.click(); };
 arquivo.addEventListener('change', async () => {
   const file = arquivo.files[0]; arquivo.value = ''; if (!file || sending) return;
