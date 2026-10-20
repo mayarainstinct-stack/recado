@@ -104,8 +104,25 @@ textarea:focus-visible { outline: none; }
 .msg { max-width: 82%; padding: 8px 12px 6px; border-radius: 14px; line-height: 1.4; box-shadow: 0 1px 0 var(--line); }
 .msg.may { align-self: flex-end; background: var(--mine); color: var(--mine-fg); border-bottom-right-radius: 4px; }
 .msg.lyra { align-self: flex-start; background: var(--theirs); color: var(--fg); border-bottom-left-radius: 4px; }
-.msg.grupo { background: var(--theirs); background: color-mix(in srgb, var(--quem) 12%, var(--theirs)); border-left: 3px solid var(--quem); }
-.msg .quem { font-size: 12.5px; font-weight: 700; margin-bottom: 2px; color: var(--quem); color: color-mix(in srgb, var(--quem) 70%, var(--fg)); }
+.msg.grupo { background: var(--theirs); background: color-mix(in srgb, var(--quem) 16%, var(--theirs)); border-left: 4px solid var(--quem); }
+.msg .quem { font-size: 12.5px; font-weight: 700; margin-bottom: 2px; color: var(--quem); }
+.msg { position: relative; touch-action: pan-y; }
+.msg .cita { display: grid; gap: 1px; margin: 2px 0 6px; padding: 6px 10px; border-radius: 8px; border-left: 4px solid var(--quem);
+  background: rgba(0,0,0,.06); font-size: 13px; line-height: 1.3; }
+.msg .cita b { color: var(--quem); font-size: 12.5px; }
+.msg .cita span { color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.msg .seta-resp { position: absolute; top: 50%; left: -34px; transform: translateY(-50%); width: 26px; height: 26px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--paper); color: var(--accent); font-size: 14px; opacity: 0; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
+.citando { display: flex; align-items: center; gap: 10px; margin: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px));
+  padding: 8px 10px; border-radius: 12px 12px 0 0; background: var(--paper); border: 1px solid var(--line); border-bottom: 0; }
+.citando > div { flex: 1; min-width: 0; border-left: 4px solid var(--quem, var(--accent)); padding-left: 8px; display: grid; }
+.citando b { font-size: 12.5px; color: var(--quem, var(--accent)); }
+.citando span { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.citando button { width: 32px; height: 32px; background: none; color: var(--muted); font-size: 18px; }
+.desce { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(86px + env(safe-area-inset-bottom, 0px));
+  width: 42px; height: 42px; border-radius: 50%; background: var(--paper); color: var(--fg); box-shadow: 0 2px 10px rgba(0,0,0,.2); z-index: 4; font-size: 18px; }
+.desce .qtd { position: absolute; top: -4px; right: -4px; min-width: 20px; height: 20px; border-radius: 999px; background: var(--accent); color: var(--accent-fg);
+  font-size: 11px; font-weight: 700; display: grid; place-items: center; padding: 0 5px; }
 .txt { white-space: pre-wrap; overflow-wrap: anywhere; }
 .msg.copiavel { border: 1.5px dashed var(--accent); background: color-mix(in srgb, var(--accent) 7%, var(--theirs)); max-width: 92%; }
 .msg.copiavel .txt { font-size: 14.5px; }
@@ -166,6 +183,8 @@ button:disabled { opacity: .45; cursor: default; }
   <main id="feed"></main>
 
   <div class="note" id="note" role="alert" hidden></div>
+  <div class="citando" id="citando" hidden><div><b id="cit-nome"></b><span id="cit-txt"></span></div><button type="button" id="cit-x" aria-label="Cancelar resposta">✕</button></div>
+  <button type="button" class="desce" id="desce" aria-label="Ir pras mensagens novas" hidden>↓<span class="qtd" id="desce-qtd" hidden></span></button>
   <form id="composer" autocomplete="off" hidden>
     <button type="button" id="foto" class="clip" aria-label="Enviar foto da galeria">
       <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M21 12.5 12.6 20.9a5.5 5.5 0 0 1-7.8-7.8l8.5-8.5a3.7 3.7 0 0 1 5.2 5.2l-8.5 8.5a1.8 1.8 0 0 1-2.6-2.6l7.8-7.8"/></svg>
@@ -234,17 +253,21 @@ function parse(md) {
     if (m) {
       const lida = /\s\{lida\}\s*$/.test(m[3]);
       let text = m[3].replace(/\s\{lida\}\s*$/, '').replace(/\\n/g, '\n');
+      const cit = text.match(/\s*⟪re: ([^:⟫]+): ([^⟫]*)⟫\s*$/);   // resposta citando: "⟪re: Nome: trecho⟫"
+      if (cit) text = text.slice(0, cit.index);
       const f = text.match(/^📷 (\S+)\s*([\s\S]*)$/);   // "📷 recados-fotos/arquivo.jpg legenda"
-      out.push({ from: 'may', day: m[1], time: m[2], lida, foto: f ? f[1] : '', text: f ? f[2] : text });
+      out.push({ from: 'may', day: m[1], time: m[2], lida, foto: f ? f[1] : '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: f ? f[2] : text });
       continue;
     }
     // Respostas no estilo grupo: "  ↳ Lyra: …" ou "  ↳ simp-mobile: …" (cada um com a sua cor)
     m = line.match(/^\s+↳ (Lyra|rm|simp-mobile|promotor|kds)( \[copiar\])?: (.*)$/i);
     if (m) {
       out.forEach(it => { if (it.from === 'may') it.lida = true; });   // respondeu = leu tudo antes
-      const txt = m[3].replace(/\\n/g, '\n');
+      let txt = m[3].replace(/\\n/g, '\n');
+      const cit = txt.match(/\s*⟪re: ([^:⟫]+): ([^⟫]*)⟫\s*$/);
+      if (cit) txt = txt.slice(0, cit.index);
       const f = txt.match(/^📷 (\S+)\s*([\s\S]*)$/);   // foto: "📷 recados-fotos/x.jpg legenda"
-      out.push({ from: 'lyra', quem: m[1].toLowerCase(), copiar: !!m[2], foto: f ? f[1] : '', day: out.length ? out[out.length - 1].day : '', time: '', text: f ? f[2] : txt });
+      out.push({ from: 'lyra', quem: m[1].toLowerCase(), copiar: !!m[2], foto: f ? f[1] : '', day: out.length ? out[out.length - 1].day : '', time: '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: f ? f[2] : txt });
     }
   }
   return out;
@@ -291,6 +314,14 @@ function render(items, manterPosicao) {
       el.style.setProperty('--quem', GRUPO[it.quem].cor); el.classList.add('grupo');
       const nome = document.createElement('div'); nome.className = 'quem'; nome.textContent = GRUPO[it.quem].nome; el.append(nome);
     }
+    if (it.re) {
+      const q = document.createElement('div'); q.className = 'cita';
+      q.style.setProperty('--quem', corDe(it.re.nome));
+      const qn = document.createElement('b'); qn.textContent = it.re.nome;
+      const qt = document.createElement('span'); qt.textContent = it.re.trecho;
+      q.append(qn, qt); el.append(q);
+    }
+    gestoResponder(el, it);
     if (it.copiar) {
       // Balão de texto pronto pra copiar (prompt, lista…): botão no topo
       const bar = document.createElement('div'); bar.className = 'copiar-bar';
@@ -332,6 +363,7 @@ function render(items, manterPosicao) {
     feed.append(el);
   });
   if (firstNew === items.length && !manterPosicao && !feed.dataset.jaAbriu) { feed.dataset.jaAbriu = '1'; feed.classList.add('chegando'); setTimeout(() => feed.classList.remove('chegando'), 1200); }
+  if (!pertoDoFim && shown > 0 && items.length > shown) { novasLaEmCima += items.length - shown; desceQtd.textContent = novasLaEmCima; desceQtd.hidden = false; }
   shown = items.length;
   if (manterPosicao) feed.scrollTop = feed.scrollHeight - alturaAntes + topoAntes;
   else if (pertoDoFim || firstNew === items.length) feed.scrollTop = feed.scrollHeight;
@@ -440,6 +472,63 @@ feed.addEventListener('scroll', () => {
     setTimeout(() => { carregandoAntigas = false; }, 300);
   }
 });
+// ---- Responder igual WhatsApp: arrastar o balão pra direita, segurar 0,5 s, ou dois cliques no computador
+let respondendo = null;
+const citando = document.getElementById('citando');
+function corDe(nome) {
+  const n = String(nome).toLowerCase();
+  if (n === 'você') return 'var(--accent)';
+  const k = Object.keys(GRUPO).find(k => k === n || GRUPO[k].nome.toLowerCase() === n);
+  return k ? GRUPO[k].cor : 'var(--accent)';
+}
+function responder(it) {
+  if (!it) { respondendo = null; citando.hidden = true; return; }
+  const nome = it.from === 'may' ? 'Você' : (GRUPO[it.quem] ? GRUPO[it.quem].nome : 'Lyra');
+  const trecho = (it.text || (it.foto ? '📷 Foto' : '')).replace(/[⟪⟫:\n]/g, ' ').slice(0, 80);
+  respondendo = { nome, trecho };
+  citando.style.setProperty('--quem', corDe(nome));
+  document.getElementById('cit-nome').textContent = nome;
+  document.getElementById('cit-txt').textContent = trecho;
+  citando.hidden = false; box.focus();
+}
+document.getElementById('cit-x').onclick = () => responder(null);
+function gestoResponder(el, it) {
+  let x0 = null, y0 = 0, dx = 0, timer = null, seta = null;
+  const fim = () => {
+    clearTimeout(timer);
+    if (dx > 55) responder(it);
+    el.style.transition = 'transform .2s'; el.style.transform = '';
+    if (seta) seta.style.opacity = 0;
+    x0 = null; dx = 0;
+  };
+  el.addEventListener('touchstart', e => {
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; el.style.transition = '';
+    timer = setTimeout(() => { if (Math.abs(dx) < 8) { if (navigator.vibrate) navigator.vibrate(15); responder(it); } }, 500);
+  }, { passive: true });
+  el.addEventListener('touchmove', e => {
+    if (x0 === null) return;
+    dx = e.touches[0].clientX - x0;
+    const dy = Math.abs(e.touches[0].clientY - y0);
+    if (dy > 12 && dx < 12) { clearTimeout(timer); x0 = null; dx = 0; return; }
+    if (dx > 6) {
+      clearTimeout(timer);
+      const d = Math.min(dx, 80); el.style.transform = 'translateX(' + d + 'px)';
+      if (!seta) { seta = document.createElement('span'); seta.className = 'seta-resp'; seta.textContent = '↩'; el.append(seta); }
+      seta.style.opacity = Math.min(1, d / 55);
+    }
+  }, { passive: true });
+  el.addEventListener('touchend', fim); el.addEventListener('touchcancel', fim);
+  el.addEventListener('dblclick', () => responder(it));
+}
+// ---- Botão ↓ com a contagem do que chegou enquanto ela lê lá em cima
+const desce = document.getElementById('desce'), desceQtd = document.getElementById('desce-qtd');
+let novasLaEmCima = 0;
+feed.addEventListener('scroll', () => {
+  const longe = feed.scrollHeight - feed.scrollTop - feed.clientHeight > 300;
+  desce.hidden = !longe;
+  if (!longe) { novasLaEmCima = 0; desceQtd.hidden = true; }
+});
+desce.onclick = () => { irProFim(); novasLaEmCima = 0; desceQtd.hidden = true; };
 function irProFim() { requestAnimationFrame(() => feed.scrollTo({ top: feed.scrollHeight, behavior: 'smooth' })); }
 const overlay = document.getElementById('overlay');
 const overlayTxt = document.getElementById('overlay-txt');
@@ -459,11 +548,11 @@ form.addEventListener('submit', async e => {
     try {
       const f = await gh('GET');
       let md = b64decode(f.content);
-      const linha = '- [' + stamp(new Date()) + '] ' + text.replace(/\r?\n/g, '\\n');
+      const linha = '- [' + stamp(new Date()) + '] ' + text.replace(/\r?\n/g, '\\n') + (respondendo ? ' ⟪re: ' + respondendo.nome + ': ' + respondendo.trecho + '⟫' : '');
       md = md.replace(/\n- \s*$/, '\n');
       md = md.replace(/\s*$/, '') + '\n' + linha + '\n';
       await gh('PUT', { message: 'recado do iPhone', content: b64encode(md), sha: f.sha });
-      store.set('rascunho', ''); box.value = ''; box.style.height = 'auto';
+      store.set('rascunho', ''); box.value = ''; box.style.height = 'auto'; responder(null);
       await load().catch(() => {});
       overlay.classList.add('ok'); overlayTxt.textContent = 'Enviado';
       await new Promise(r => setTimeout(r, 700));
