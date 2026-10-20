@@ -3,8 +3,8 @@
   "short_name": "Recados",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#1d4a33",
-  "theme_color": "#1d4a33",
+  "background_color": "#1E6685",
+  "theme_color": "#1E6685",
   "icons": [
     { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
     { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }

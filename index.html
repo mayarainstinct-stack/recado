@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Recados">
-<meta name="theme-color" content="#1d4a33">
+<meta name="theme-color" content="#1E6685">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -13,18 +13,18 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap">
 <style>
-/* Página estática (GitHub Pages). Cada recado vira uma linha em CAIXA-DE-ENTRADA.md no repo privado, pela API do GitHub,
+/* Paleta da Simplificação (verde #059669, petróleo #1E6685, folha #6BAD3E; escuro com azul #22A7D0). Página estática (GitHub Pages). Cada recado vira uma linha em CAIXA-DE-ENTRADA.md no repo privado, pela API do GitHub,
    com um token que fica só no iPhone dela. Nenhum recado mora nesta página. */
 :root {
-  --bg: #eef3ee; --paper: #f8fbf7; --fg: #16261c; --muted: #5f7466; --line: #d3e0d5;
-  --head: #1d4a33; --head-fg: #f1f8f2; --mine: #cdeccf; --mine-fg: #10301d;
-  --theirs: #ffffff; --accent: #1f8a4c; --accent-fg: #ffffff; --pink: #e1306c;
+  --bg: #F8FAFC; --paper: #FFFFFF; --fg: #1E293B; --muted: #64748B; --line: #E2E8F0;
+  --head: #1E6685; --head-fg: #FFFFFF; --mine: #D7F3E7; --mine-fg: #0B3B2C;
+  --theirs: #FFFFFF; --accent: #059669; --accent-fg: #FFFFFF; --pink: #6BAD3E; --err: #B91C1C;
   --font-ui: "Figtree", "Segoe UI", system-ui, sans-serif; --font-name: "Young Serif", Georgia, serif;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #0e1712; --paper: #121e17; --fg: #e3efe6; --muted: #92a898; --line: #23352a;
-    --head: #15301f; --head-fg: #e8f5ec; --mine: #1f5134; --mine-fg: #e9f8ee; --theirs: #1b2a21;
-    --accent: #3fbf73; --accent-fg: #06150c; --pink: #f06292; color-scheme: dark; }
+  :root { --bg: #0C1521; --paper: #0F1825; --fg: #F1F5F9; --muted: #8B9DAF; --line: #1E3A4F;
+    --head: #152233; --head-fg: #F1F5F9; --mine: #12384A; --mine-fg: #F1F5F9; --theirs: #152233;
+    --accent: #22A7D0; --accent-fg: #0C1521; --pink: #5FBB53; --err: #FCA5A5; color-scheme: dark; }
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
@@ -46,6 +46,9 @@ header { display: flex; align-items: center; gap: 12px; background: var(--head);
 .msg.may { align-self: flex-end; background: var(--mine); color: var(--mine-fg); border-bottom-right-radius: 4px; }
 .msg.lyra { align-self: flex-start; background: var(--theirs); color: var(--fg); border-bottom-left-radius: 4px; }
 .txt { white-space: pre-wrap; overflow-wrap: anywhere; }
+.tick { font-weight: 700; letter-spacing: -2px; color: var(--muted); }
+.tick.lida { color: var(--accent); }
+.msg.may .meta { color: color-mix(in srgb, var(--mine-fg) 55%, transparent); }
 .meta { display: flex; justify-content: flex-end; gap: 6px; font-size: 11px; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
 .empty, .setup { margin: auto; text-align: center; max-width: 34ch; color: var(--muted); display: grid; gap: 10px; }
 .empty strong, .setup strong { color: var(--fg); font-family: var(--font-name); font-weight: 400; font-size: 20px; }
@@ -70,7 +73,7 @@ button:disabled { opacity: .45; cursor: default; }
 @keyframes pula { 0%, 60%, 100% { transform: none; opacity: .5; } 30% { transform: translateY(-4px); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .msg.novo, .digitando i { animation: none; } }
 .note { font-size: 12px; color: var(--muted); text-align: center; padding: 0 16px 8px; }
-.note.err { color: var(--pink); }
+.note.err { color: var(--err); }
 [hidden] { display: none !important; }
 </style>
 </head>
@@ -142,9 +145,16 @@ function parse(md) {
     if (on && /^##\s/.test(line)) break;
     if (!on) continue;
     let m = line.match(/^- \[(\d\d\/\d\d\/\d{4}) (\d\d:\d\d)\] (.*)$/);
-    if (m) { out.push({ from: 'may', day: m[1], time: m[2], text: m[3].replace(/\\n/g, '\n') }); continue; }
+    if (m) {
+      const lida = /\s\{lida\}\s*$/.test(m[3]);
+      out.push({ from: 'may', day: m[1], time: m[2], lida, text: m[3].replace(/\s\{lida\}\s*$/, '').replace(/\\n/g, '\n') });
+      continue;
+    }
     m = line.match(/^\s+↳ Lyra: (.*)$/);
-    if (m) out.push({ from: 'lyra', day: out.length ? out[out.length - 1].day : '', time: '', text: m[1].replace(/\\n/g, '\n') });
+    if (m) {
+      out.forEach(it => { if (it.from === 'may') it.lida = true; });   // respondeu = leu tudo antes
+      out.push({ from: 'lyra', day: out.length ? out[out.length - 1].day : '', time: '', text: m[1].replace(/\\n/g, '\n') });
+    }
   }
   return out;
 }
@@ -168,7 +178,17 @@ function render(items) {
     if (i >= firstNew && it.from === 'lyra') el.style.animationDelay = '.9s';
     const t = document.createElement('div'); t.className = 'txt'; t.textContent = it.text;
     el.append(t);
-    if (it.time) { const m = document.createElement('div'); m.className = 'meta'; m.textContent = it.time; el.append(m); }
+    if (it.time || it.from === 'may') {
+      const m = document.createElement('div'); m.className = 'meta';
+      const h = document.createElement('span'); h.textContent = it.time; m.append(h);
+      if (it.from === 'may') {
+        // Igual ao WhatsApp: ✓ cinza = salvo no GitHub · ✓✓ colorido = a Lyra leu
+        const tk = document.createElement('span'); tk.className = 'tick' + (it.lida ? ' lida' : '');
+        tk.textContent = it.lida ? '✓✓' : '✓'; tk.title = it.lida ? 'Lida pela Lyra' : 'Enviada';
+        m.append(tk);
+      }
+      el.append(m);
+    }
     if (i >= firstNew && it.from === 'lyra') {
       // "digitando…" rápido antes da resposta aparecer
       const dots = document.createElement('div'); dots.className = 'digitando'; dots.innerHTML = '<i></i><i></i><i></i>';
@@ -185,7 +205,7 @@ async function load() {
   try {
     const f = await gh('GET');
     const items = parse(b64decode(f.content));
-    const same = items.length === lastItems.length && items.every((it, i) => it.text === lastItems[i].text && it.from === lastItems[i].from);
+    const same = items.length === lastItems.length && items.every((it, i) => it.text === lastItems[i].text && it.from === lastItems[i].from && it.lida === lastItems[i].lida);
     if (!same) { if (items.length < shown) shown = items.length; render(items); lastItems = items; }
     showNote(''); return f;
   }
