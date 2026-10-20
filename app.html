@@ -104,6 +104,8 @@ textarea:focus-visible { outline: none; }
 .msg { max-width: 82%; padding: 8px 12px 6px; border-radius: 14px; line-height: 1.4; box-shadow: 0 1px 0 var(--line); }
 .msg.may { align-self: flex-end; background: var(--mine); color: var(--mine-fg); border-bottom-right-radius: 4px; }
 .msg.lyra { align-self: flex-start; background: var(--theirs); color: var(--fg); border-bottom-left-radius: 4px; }
+.msg.grupo { background: var(--theirs); background: color-mix(in srgb, var(--quem) 12%, var(--theirs)); border-left: 3px solid var(--quem); }
+.msg .quem { font-size: 12.5px; font-weight: 700; margin-bottom: 2px; color: var(--quem); color: color-mix(in srgb, var(--quem) 70%, var(--fg)); }
 .txt { white-space: pre-wrap; overflow-wrap: anywhere; }
 .msg.copiavel { border: 1.5px dashed var(--accent); background: color-mix(in srgb, var(--accent) 7%, var(--theirs)); max-width: 92%; }
 .msg.copiavel .txt { font-size: 14.5px; }
@@ -155,6 +157,7 @@ button:disabled { opacity: .45; cursor: default; }
       <button class="icon-btn" id="mais" type="button" aria-label="Mais opções" hidden>⋮</button>
     </div>
     <div class="menu" id="menu" hidden>
+      <button type="button" id="notificar">🔔 Ativar notificações</button>
       <button type="button" id="atualizar">Atualizar agora</button>
       <button type="button" id="sair">Trocar chave</button>
     </div>
@@ -235,12 +238,13 @@ function parse(md) {
       out.push({ from: 'may', day: m[1], time: m[2], lida, foto: f ? f[1] : '', text: f ? f[2] : text });
       continue;
     }
-    m = line.match(/^\s+↳ Lyra( \[copiar\])?: (.*)$/);
+    // Respostas no estilo grupo: "  ↳ Lyra: …" ou "  ↳ simp-mobile: …" (cada um com a sua cor)
+    m = line.match(/^\s+↳ (Lyra|rm|simp-mobile|promotor|kds)( \[copiar\])?: (.*)$/i);
     if (m) {
       out.forEach(it => { if (it.from === 'may') it.lida = true; });   // respondeu = leu tudo antes
-      const txt = m[2].replace(/\\n/g, '\n');
-      const f = txt.match(/^📷 (\S+)\s*([\s\S]*)$/);   // a Lyra também manda foto: "📷 recados-fotos/x.jpg legenda"
-      out.push({ from: 'lyra', copiar: !!m[1], foto: f ? f[1] : '', day: out.length ? out[out.length - 1].day : '', time: '', text: f ? f[2] : txt });
+      const txt = m[3].replace(/\\n/g, '\n');
+      const f = txt.match(/^📷 (\S+)\s*([\s\S]*)$/);   // foto: "📷 recados-fotos/x.jpg legenda"
+      out.push({ from: 'lyra', quem: m[1].toLowerCase(), copiar: !!m[2], foto: f ? f[1] : '', day: out.length ? out[out.length - 1].day : '', time: '', text: f ? f[2] : txt });
     }
   }
   return out;
@@ -254,6 +258,14 @@ let janela = 10;
 const vistosAntes = parseInt(store.get('vistos') || '0', 10);
 let inicio = 0;
 
+// Cores = as que cada projeto usa no VS Code (borda/realce do .vscode/settings.json); Lyra = rosa dela.
+const GRUPO = {
+  lyra: { nome: 'Lyra', cor: '#E1306C' },
+  rm: { nome: 'RM · Recebimento', cor: '#22C55E' },
+  'simp-mobile': { nome: 'SIMP-Mobile', cor: '#2DD4BF' },
+  promotor: { nome: 'Promotor', cor: '#F59E0B' },
+  kds: { nome: 'KDS', cor: '#EAB308' }
+};
 let renderizando = false;
 function render(items, manterPosicao) {
   renderizando = true; setTimeout(() => { renderizando = false; }, 100);
@@ -274,6 +286,11 @@ function render(items, manterPosicao) {
     if (i < inicio) return;
     if (it.day && it.day !== last) { const s = document.createElement('div'); s.className = 'day'; s.textContent = it.day; feed.append(s); last = it.day; }
     const el = document.createElement('div'); el.className = 'msg ' + it.from + (it.copiar ? ' copiavel' : '') + (i >= firstNew ? ' novo' : '');
+    if (it.quem && GRUPO[it.quem]) {
+      // Nome colorido em cima do balão, igual grupo de WhatsApp; o balão ganha um toque da cor de quem fala
+      el.style.setProperty('--quem', GRUPO[it.quem].cor); el.classList.add('grupo');
+      const nome = document.createElement('div'); nome.className = 'quem'; nome.textContent = GRUPO[it.quem].nome; el.append(nome);
+    }
     if (it.copiar) {
       // Balão de texto pronto pra copiar (prompt, lista…): botão no topo
       const bar = document.createElement('div'); bar.className = 'copiar-bar';
@@ -467,6 +484,35 @@ const menu = document.getElementById('menu');
 mais.onclick = e => { e.stopPropagation(); menu.hidden = !menu.hidden; };
 document.addEventListener('click', e => { if (!menu.contains(e.target)) menu.hidden = true; });
 document.getElementById('atualizar').onclick = () => location.reload();
+
+// ---- Notificação push: a assinatura do iPhone vai pro repo (recados-push/iphone.json); o notebook manda o aviso.
+const VAPID_PUBLICA = 'BIx_prIdU34zWy_XRlpx9LFHWf3xtXp-LXn_X-eA5AghjosGa179cth7np_hL5dcLnSw_S030A8vVOsYPf1TU48';
+const swPronto = ('serviceWorker' in navigator) ? navigator.serviceWorker.register('sw.js').catch(() => null) : Promise.resolve(null);
+function chave(b64) { const p = '='.repeat((4 - b64.length % 4) % 4); const r = atob((b64 + p).replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(r, c => c.charCodeAt(0)); }
+const btnNotif = document.getElementById('notificar');
+function marcaNotif() { if (window.Notification && Notification.permission === 'granted') btnNotif.textContent = '🔔 Notificações ligadas'; }
+marcaNotif();
+btnNotif.onclick = async () => {
+  menu.hidden = true;
+  const naTela = navigator.standalone || matchMedia('(display-mode: standalone)').matches;
+  if (!('PushManager' in window) || !window.Notification) {
+    showNote(naTela ? 'Este iPhone não aceita notificação de página (precisa iOS 16.4 ou mais novo).' : 'Pra ter notificação, abre pelo ícone da tela de início (Compartilhar → Adicionar à Tela de Início).', true); return;
+  }
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') { showNote('Sem permissão, sem notificação. Dá pra liberar em Ajustes → Notificações.', true); return; }
+    const reg = await swPronto; if (!reg) throw new Error('sw');
+    const sub = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: chave(VAPID_PUBLICA) });
+    const url = 'https://api.github.com/repos/' + REPO + '/contents/recados-push/iphone.json';
+    const h = { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' };
+    const atual = await fetch(url + '?t=' + Date.now(), { headers: h });
+    const corpo = { message: 'assinatura de notificação do iPhone', content: b64encode(JSON.stringify(sub)) };
+    if (atual.ok) corpo.sha = (await atual.json()).sha;
+    const r = await fetch(url, { method: 'PUT', headers: h, body: JSON.stringify(corpo) });
+    if (!r.ok) throw new Error('put ' + r.status);
+    marcaNotif(); showNote('Notificações ligadas ✓');
+  } catch (e) { showNote('Não consegui ligar as notificações. Tenta de novo pelo ícone da tela de início.', true); }
+};
 
 function askToken() {
   form.hidden = true; mais.hidden = true; menu.hidden = true;
