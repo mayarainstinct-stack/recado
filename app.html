@@ -422,7 +422,7 @@ form.addEventListener('submit', async e => {
       await gh('PUT', { message: 'recado do iPhone', content: b64encode(md), sha: f.sha });
       store.set('rascunho', ''); box.value = ''; box.style.height = 'auto';
       await load().catch(() => {});
-      overlay.classList.add('ok'); overlayTxt.textContent = 'Enviado ✓';
+      overlay.classList.add('ok'); overlayTxt.textContent = 'Enviado';
       await new Promise(r => setTimeout(r, 700));
       break;
     } catch (err) {
