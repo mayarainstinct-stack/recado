@@ -46,6 +46,11 @@ header { display: flex; align-items: center; gap: 12px; background: var(--head);
 .msg.may { align-self: flex-end; background: var(--mine); color: var(--mine-fg); border-bottom-right-radius: 4px; }
 .msg.lyra { align-self: flex-start; background: var(--theirs); color: var(--fg); border-bottom-left-radius: 4px; }
 .txt { white-space: pre-wrap; overflow-wrap: anywhere; }
+.msg.copiavel { border: 1.5px dashed var(--accent); background: color-mix(in srgb, var(--accent) 7%, var(--theirs)); max-width: 92%; }
+.msg.copiavel .txt { font-size: 14.5px; }
+.copiar-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px;
+  font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--accent); }
+.copiar-btn { width: auto; height: auto; border-radius: 999px; padding: 5px 12px; font-size: 13px; letter-spacing: 0; text-transform: none; }
 .tick { font-weight: 700; letter-spacing: -2px; color: var(--muted); }
 .tick.lida { color: var(--accent); }
 .msg.may .meta { color: color-mix(in srgb, var(--mine-fg) 55%, transparent); }
@@ -150,10 +155,10 @@ function parse(md) {
       out.push({ from: 'may', day: m[1], time: m[2], lida, text: m[3].replace(/\s\{lida\}\s*$/, '').replace(/\\n/g, '\n') });
       continue;
     }
-    m = line.match(/^\s+↳ Lyra: (.*)$/);
+    m = line.match(/^\s+↳ Lyra( \[copiar\])?: (.*)$/);
     if (m) {
       out.forEach(it => { if (it.from === 'may') it.lida = true; });   // respondeu = leu tudo antes
-      out.push({ from: 'lyra', day: out.length ? out[out.length - 1].day : '', time: '', text: m[1].replace(/\\n/g, '\n') });
+      out.push({ from: 'lyra', copiar: !!m[1], day: out.length ? out[out.length - 1].day : '', time: '', text: m[2].replace(/\\n/g, '\n') });
     }
   }
   return out;
@@ -174,7 +179,19 @@ function render(items) {
   let last = '';
   items.forEach((it, i) => {
     if (it.day && it.day !== last) { const s = document.createElement('div'); s.className = 'day'; s.textContent = it.day; feed.append(s); last = it.day; }
-    const el = document.createElement('div'); el.className = 'msg ' + it.from + (i >= firstNew ? ' novo' : '');
+    const el = document.createElement('div'); el.className = 'msg ' + it.from + (it.copiar ? ' copiavel' : '') + (i >= firstNew ? ' novo' : '');
+    if (it.copiar) {
+      // Balão de texto pronto pra copiar (prompt, lista…): botão no topo
+      const bar = document.createElement('div'); bar.className = 'copiar-bar';
+      const lab = document.createElement('span'); lab.textContent = 'Pronto pra copiar';
+      const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'copiar-btn'; btn.textContent = 'Copiar';
+      btn.addEventListener('click', async () => {
+        try { await navigator.clipboard.writeText(it.text); btn.textContent = 'Copiado ✓'; }
+        catch (e) { const r = document.createRange(); r.selectNodeContents(el.querySelector('.txt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = 'Selecionado'; }
+        setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
+      });
+      bar.append(lab, btn); el.append(bar);
+    }
     if (i >= firstNew && it.from === 'lyra') el.style.animationDelay = '.9s';
     const t = document.createElement('div'); t.className = 'txt'; t.textContent = it.text;
     el.append(t);
