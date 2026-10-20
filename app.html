@@ -232,7 +232,9 @@ function parse(md) {
     m = line.match(/^\s+↳ Lyra( \[copiar\])?: (.*)$/);
     if (m) {
       out.forEach(it => { if (it.from === 'may') it.lida = true; });   // respondeu = leu tudo antes
-      out.push({ from: 'lyra', copiar: !!m[1], day: out.length ? out[out.length - 1].day : '', time: '', text: m[2].replace(/\\n/g, '\n') });
+      const txt = m[2].replace(/\\n/g, '\n');
+      const f = txt.match(/^📷 (\S+)\s*([\s\S]*)$/);   // a Lyra também manda foto: "📷 recados-fotos/x.jpg legenda"
+      out.push({ from: 'lyra', copiar: !!m[1], foto: f ? f[1] : '', day: out.length ? out[out.length - 1].day : '', time: '', text: f ? f[2] : txt });
     }
   }
   return out;
