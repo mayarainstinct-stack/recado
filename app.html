@@ -31,22 +31,28 @@
 html, body { height: 100%; margin: 0; }
 body { background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 16px; }
 .app { height: 100%; display: flex; flex-direction: column; max-width: 720px; margin: 0 auto; background: var(--paper); }
-header { position: relative; display: flex; align-items: center; gap: 12px; color: var(--head-fg);
-  background: linear-gradient(135deg, color-mix(in srgb, var(--head) 88%, #fff) 0%, var(--head) 55%, color-mix(in srgb, var(--head) 80%, #000) 100%);
-  box-shadow: 0 2px 12px color-mix(in srgb, var(--head) 35%, transparent); z-index: 2;
-  padding: calc(14px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 14px max(16px, env(safe-area-inset-left, 0px)); }
-.avatar { position: relative; width: 46px; height: 46px; border-radius: 14px; flex: none; overflow: visible;
-  background: #fff url("apple-touch-icon.png") center / cover; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
-.avatar::after { content: ""; position: absolute; right: -3px; bottom: -3px; width: 13px; height: 13px; border-radius: 50%;
-  background: var(--pink); border: 2.5px solid var(--head); }
-.who { min-width: 0; flex: 1; }
-.who h1 { margin: 0; font-family: var(--font-ui); font-weight: 700; font-size: 19px; line-height: 1.15; letter-spacing: -.01em; }
-.who p { margin: 3px 0 0; font-size: 12.5px; opacity: .85; display: flex; align-items: center; gap: 6px; }
-.who p .sync { width: 11px; height: 11px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; opacity: 0; }
-.who p .sync.on { opacity: 1; animation: gira .8s linear infinite; }
-.icon-btn { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,.14); color: var(--head-fg);
-  font-size: 20px; line-height: 1; display: grid; place-items: center; }
-.menu { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); top: calc(62px + env(safe-area-inset-top, 0px));
+/* Topo no padrão dos apps da Simplificação (promotor/checklist): faixa na cor da marca subindo atrás da barra de status,
+   cantos de baixo arredondados, avatar com iniciais, data pequena + "Olá, May" em negrito, status embaixo, ⋮ à direita, respiro 16. */
+header { position: relative; z-index: 2; color: var(--head-fg); font-family: -apple-system, "Roboto", "Segoe UI", system-ui, sans-serif;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--head) 80%, #fff) 0%, var(--head) 60%);
+  border-radius: 0 0 24px 24px; box-shadow: 0 6px 18px color-mix(in srgb, var(--head) 28%, transparent);
+  padding: calc(16px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 14px max(16px, env(safe-area-inset-left, 0px));
+  display: grid; gap: 12px; }
+.topo { display: flex; align-items: center; gap: 12px; }
+.avatar { width: 44px; height: 44px; border-radius: 50%; flex: none; display: grid; place-items: center;
+  background: rgba(255,255,255,.22); color: #fff; font-weight: 800; font-size: 17px; letter-spacing: .02em; border: 1.5px solid rgba(255,255,255,.35); }
+.who { min-width: 0; flex: 1; display: grid; gap: 1px; }
+.who small { font-size: 12px; opacity: .85; text-transform: capitalize; }
+.who h1 { margin: 0; font-size: 20px; font-weight: 800; line-height: 1.15; letter-spacing: -.01em; }
+.status { display: flex; align-items: center; gap: 8px; font-size: 12.5px; background: rgba(255,255,255,.16);
+  border-radius: 999px; padding: 6px 12px; justify-self: start; }
+.status .dot { width: 8px; height: 8px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 3px rgba(255,255,255,.25); }
+.status .sync { width: 11px; height: 11px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; display: none; }
+.status.on .dot { display: none; }
+.status.on .sync { display: block; animation: gira .8s linear infinite; }
+.icon-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.16); color: var(--head-fg);
+  font-size: 22px; line-height: 1; display: grid; place-items: center; }
+.menu { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); top: calc(66px + env(safe-area-inset-top, 0px));
   background: var(--paper); color: var(--fg); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.16); padding: 6px; z-index: 5; }
 .menu button { width: 100%; height: auto; border-radius: 8px; background: none; color: var(--fg); padding: 10px 14px; text-align: left; font-weight: 500; display: block; }
 .menu button:hover { background: var(--bg); }
@@ -132,9 +138,12 @@ button:disabled { opacity: .45; cursor: default; }
 <body>
 <div class="app">
   <header>
-    <div class="avatar" aria-hidden="true"></div>
-    <div class="who"><h1>Recados</h1><p><span id="status">com a Lyra · salva no seu GitHub</span><span class="sync" id="sync" aria-hidden="true"></span></p></div>
-    <button class="icon-btn" id="mais" type="button" aria-label="Mais opções" hidden>⋯</button>
+    <div class="topo">
+      <div class="avatar" aria-hidden="true">M</div>
+      <div class="who"><small id="hoje"></small><h1>Olá, May</h1></div>
+      <button class="icon-btn" id="mais" type="button" aria-label="Mais opções" hidden>⋮</button>
+    </div>
+    <div class="status" id="statusbar"><span class="dot"></span><span class="sync" id="sync" aria-hidden="true"></span><span id="status">Recados com a Lyra · tudo salvo</span></div>
     <div class="menu" id="menu" hidden>
       <button type="button" id="atualizar">Atualizar agora</button>
       <button type="button" id="sair">Trocar chave</button>
@@ -299,7 +308,8 @@ function render(items, manterPosicao) {
   if (document.visibilityState === 'visible') store.set('vistos', String(items.length));
 }
 
-const syncEl = document.getElementById('sync');
+const syncEl = document.getElementById('statusbar');
+document.getElementById('hoje').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' });
 async function load() {
   syncEl.classList.add('on');
   try {
