@@ -918,7 +918,7 @@ function abrir(c) {
   delete feed.dataset.jaAbriu;
   lista.hidden = !largo(); novaBtn.hidden = !largo(); feed.hidden = false; feed.replaceChildren(); form.hidden = false;
   if (largo()) desenhaLista();
-  voltar.hidden = false; logoEl.hidden = true; tituloEl.textContent = c.nome;
+  voltar.hidden = !MODO_WEB || largo(); logoEl.hidden = !voltar.hidden ? true : false; tituloEl.textContent = c.nome;
   box.value = store.get(rascKey()); box.style.height = 'auto'; syncBtn();
   return load();
 }
@@ -942,7 +942,8 @@ function start() {
   if (querResponder) {   // veio da notificação: abre a Geral já respondendo
     querResponder = false; history.replaceState(null, '', location.pathname);
     abrir(GERAL).then(responderUltima).catch(() => {});
-  } else mostraLista();
+  } else if (MODO_WEB) mostraLista();
+  else abrir(GERAL).catch(() => {});   // celular: só a Geral
   // Conversa aberta: busca a cada 4 s; lista de conversas: a cada 15 s (só com a página na tela).
   clearInterval(poll);
   poll = setInterval(() => {
