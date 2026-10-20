@@ -116,6 +116,14 @@ textarea:focus-visible { outline: none; }
 .msg .cita span { color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .msg .seta-resp { position: absolute; top: 50%; left: -34px; transform: translateY(-50%); width: 26px; height: 26px; border-radius: 50%;
   display: grid; place-items: center; background: var(--paper); color: var(--accent); font-size: 14px; opacity: 0; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
+.msg .audio { display: block; width: 240px; max-width: 100%; height: 40px; margin: 2px 0 4px; }
+.msg .transcricao { font-size: 13.5px; font-style: italic; opacity: .85; white-space: pre-wrap; }
+.gravando { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; height: 46px; padding: 0 14px; border-radius: 20px;
+  background: color-mix(in srgb, #EF4444 10%, var(--bg)); color: var(--fg); font-variant-numeric: tabular-nums; }
+.gravando .rec { width: 10px; height: 10px; border-radius: 50%; background: #EF4444; animation: pisca 1s infinite; }
+.gravando .dica { color: var(--muted); font-size: 13px; margin-left: auto; }
+@keyframes pisca { 50% { opacity: .25; } }
+#mic.on { background: #EF4444; color: #fff; }
 .citando { display: flex; align-items: center; gap: 10px; margin: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px));
   padding: 8px 10px; border-radius: 12px 12px 0 0; background: var(--paper); border: 1px solid var(--line); border-bottom: 0; }
 .citando > div { flex: 1; min-width: 0; border-left: 4px solid var(--quem, var(--accent)); padding-left: 8px; display: grid; }
@@ -194,6 +202,11 @@ button:disabled { opacity: .45; cursor: default; }
     </button>
     <input type="file" id="arquivo" accept="image/*" hidden>
     <textarea id="texto" rows="1" placeholder="Escreve sua ideia…" aria-label="Recado" enterkeyhint="send"></textarea>
+    <div class="gravando" id="gravando" hidden><span class="rec"></span><span id="rec-tempo">0:00</span><span class="dica">toca ➤ pra enviar · ✕ cancela</span></div>
+    <button type="button" id="rec-x" class="clip" aria-label="Cancelar áudio" hidden>✕</button>
+    <button type="button" id="mic" aria-label="Gravar áudio">
+      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-2.1A7 7 0 0 0 19 12h-2Z"/></svg>
+    </button>
     <button id="enviar" type="submit" aria-label="Enviar" disabled>
       <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg>
     </button>
@@ -258,10 +271,13 @@ function parse(md) {
       let text = m[3].replace(/\s\{lida\}\s*$/, '').replace(/\\n/g, '\n');
       const cit = text.match(/\s*⟪re: ([^:⟫]+): ([^⟫]*)⟫\s*$/);   // resposta citando: "⟪re: Nome: trecho⟫"
       if (cit) text = text.slice(0, cit.index);
+      const au = text.match(/^🎤 (\S+)\s*$/);           // "🎤 recados-audios/arquivo.m4a"
       const f = text.match(/^📷 (\S+)\s*([\s\S]*)$/);   // "📷 recados-fotos/arquivo.jpg legenda"
-      out.push({ from: 'may', day: m[1], time: m[2], lida, foto: f ? f[1] : '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: f ? f[2] : text });
+      out.push({ from: 'may', day: m[1], time: m[2], lida, foto: f ? f[1] : '', audio: au ? au[1] : '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: au ? '' : (f ? f[2] : text) });
       continue;
     }
+    const tr = line.match(/^\s+↳ transcrição: (.*)$/);
+    if (tr) { const alvo = [...out].reverse().find(x => x.from === 'may' && x.audio); if (alvo) alvo.transcricao = tr[1]; continue; }
     // Respostas no estilo grupo: "  ↳ Lyra: …" ou "  ↳ simp-mobile: …" (cada um com a sua cor)
     m = line.match(/^\s+↳ (Lyra|rm|simp-mobile|promotor|kds)( \[copiar\])?: (.*)$/i);
     if (m) {
@@ -344,6 +360,14 @@ function render(items, manterPosicao) {
       fotoUrl(it.foto).then(u => { img.src = u; }).catch(() => { img.alt = 'Não carregou a foto'; });
       el.append(img);
     }
+    if (it.audio) {
+      const au = document.createElement('audio'); au.className = 'audio'; au.controls = true; au.preload = 'metadata';
+      fotoUrl(it.audio).then(u => { au.src = u; }).catch(() => {});
+      el.append(au);
+      const tr = document.createElement('div'); tr.className = 'transcricao';
+      tr.textContent = it.transcricao ? '“' + it.transcricao + '”' : 'transcrevendo…';
+      el.append(tr);
+    }
     const t = document.createElement('div'); t.className = 'txt'; t.textContent = it.text;
     if (it.text) el.append(t);
     if (it.time || it.from === 'may') {
@@ -398,11 +422,12 @@ async function checaOnline() {
     // online.txt: [batimento] [última atividade] [o que está fazendo]
     const ts = parseInt(linhas[0], 10) * 1000;
     const ativ = (parseInt(linhas[1], 10) || 0) * 1000;
-    const on = r.ok && Date.now() - ts < 150000;
-    const ausente = on && Date.now() - ativ > 120000;
+    const on = r.ok && Date.now() - ts < 60000;               // vigia batendo = está olhando = online
+    const idade = Date.now() - ts;
+    const ausente = r.ok && idade > 60000 && idade < 300000;   // vigia parou há 1–5 min
     mostraFazendo(on ? linhas.slice(2).join(' ').trim() : '');
     syncEl.classList.toggle('ausente', ausente);
-    if (ausente) { syncEl.classList.remove('off'); statusTxt.textContent = 'Agente ausente'; return; }
+    if (ausente) { syncEl.classList.remove('off'); statusTxt.textContent = 'Agente ausente'; mostraFazendo(''); return; }
     syncEl.classList.toggle('off', !on);
     if (on) statusTxt.textContent = 'Agente online agora';
     else { const min = Math.round((Date.now() - ts) / 60000);
@@ -417,7 +442,7 @@ async function carregar() {
   try {
     const f = await gh('GET').finally(() => syncEl.classList.remove('on'));
     const items = parse(b64decode(f.content));
-    const same = items.length === lastItems.length && items.every((it, i) => it.text === lastItems[i].text && it.from === lastItems[i].from && it.lida === lastItems[i].lida && it.foto === lastItems[i].foto && it.copiar === lastItems[i].copiar);
+    const same = items.length === lastItems.length && items.every((it, i) => it.text === lastItems[i].text && it.from === lastItems[i].from && it.lida === lastItems[i].lida && it.foto === lastItems[i].foto && it.copiar === lastItems[i].copiar && it.transcricao === lastItems[i].transcricao);
     if (!same) { if (items.length < shown) shown = items.length; lastItems = items; render(items); }
     checaOnline();
     showNote(''); return f;
@@ -473,6 +498,50 @@ arquivo.addEventListener('change', async () => {
 });
 
 let carregandoAntigas = false;
+// ---- Áudio: grava no iPhone, sobe pro repo, o notebook transcreve sozinho e escreve embaixo
+const micBtn = document.getElementById('mic'), gravandoEl = document.getElementById('gravando'), recX = document.getElementById('rec-x');
+let gravador = null, pedacos = [], recInicio = 0, recTimer = null, cancelado = false;
+function tipoAudio() { for (const t of ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm']) if (window.MediaRecorder && MediaRecorder.isTypeSupported(t)) return t; return ''; }
+function mostraGravando(on) {
+  gravandoEl.hidden = !on; recX.hidden = !on; box.hidden = on; document.getElementById('foto').hidden = on;
+  clearInterval(recTimer);
+  if (on) { recInicio = Date.now(); recTimer = setInterval(() => { const sg = Math.floor((Date.now() - recInicio) / 1000); document.getElementById('rec-tempo').textContent = Math.floor(sg / 60) + ':' + pad(sg % 60); }, 250); }
+  syncBtn();
+}
+micBtn.onclick = async () => {
+  if (gravador || sending) return;
+  if (!navigator.mediaDevices || !window.MediaRecorder) { showNote('Este navegador não grava áudio. Abre pelo ícone da tela de início.', true); return; }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const tipo = tipoAudio();
+    gravador = new MediaRecorder(stream, tipo ? { mimeType: tipo } : undefined);
+    pedacos = []; cancelado = false;
+    gravador.ondataavailable = e => { if (e.data.size) pedacos.push(e.data); };
+    gravador.onstop = () => { stream.getTracks().forEach(t => t.stop()); const g = gravador; gravador = null; mostraGravando(false); if (!cancelado) enviaAudio(new Blob(pedacos, { type: g.mimeType || tipo || 'audio/mp4' })); };
+    gravador.start(); mostraGravando(true);
+  } catch (e) { gravador = null; showNote('Sem acesso ao microfone. Libera em Ajustes → Safari → Microfone.', true); }
+};
+recX.onclick = () => { if (gravador) { cancelado = true; gravador.stop(); } };
+async function enviaAudio(blob) {
+  if (blob.size < 1500) { showNote('Áudio curto demais.', true); return; }
+  sending = true; syncBtn();
+  overlay.classList.remove('ok'); overlayTxt.textContent = 'Enviando áudio…'; overlay.hidden = false;
+  try {
+    const ext = /webm/.test(blob.type) ? 'webm' : 'm4a';
+    const d = new Date();
+    const nome = 'recados-audios/' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + '.' + ext;
+    const b64 = await new Promise((ok, erro) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1]); fr.onerror = erro; fr.readAsDataURL(blob); });
+    const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + nome, {
+      method: 'PUT', headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' },
+      body: JSON.stringify({ message: 'áudio do iPhone', content: b64 })
+    });
+    if (!r.ok) throw new Error('upload ' + r.status);
+    box.value = '🎤 ' + nome; sending = false;
+    form.requestSubmit();
+  } catch (e) { sending = false; syncBtn(); overlay.hidden = true; showNote('O áudio não foi. Confere a internet e tenta de novo.', true); }
+}
+syncBtn();
+
 feed.addEventListener('scroll', () => {
   if (renderizando || carregandoAntigas) return;
   if (feed.scrollTop < 40 && inicio > 0 && lastItems.length) {
@@ -548,13 +617,18 @@ desce.onclick = () => { irProFim(); novasLaEmCima = 0; desceQtd.hidden = true; }
 function irProFim() { requestAnimationFrame(() => feed.scrollTo({ top: feed.scrollHeight, behavior: 'smooth' })); }
 const overlay = document.getElementById('overlay');
 const overlayTxt = document.getElementById('overlay-txt');
-function syncBtn() { sendBtn.disabled = sending || !box.value.trim(); }
+function syncBtn() {
+  const vazio = !box.value.trim();
+  sendBtn.disabled = sending || (vazio && !gravador);
+  if (typeof micBtn !== 'undefined') { micBtn.hidden = !vazio || !!gravador; sendBtn.hidden = vazio && !gravador; }
+}
 // Enter envia (no celular também); Shift+Enter quebra linha no teclado de computador.
 box.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); } });
 box.addEventListener('input', () => { box.style.height = 'auto'; box.style.height = Math.min(box.scrollHeight, 140) + 'px'; syncBtn(); store.set('rascunho', box.value); });
 
 form.addEventListener('submit', async e => {
   e.preventDefault();
+  if (gravador) { gravador.stop(); return; }
   const text = box.value.trim(); if (!text || sending) return;
   sending = true; syncBtn(); showNote('');
   // Tela inteira travada com "Enviando…" até o GitHub confirmar; some sozinha no fim.
