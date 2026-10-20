@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Recado">
+<meta name="theme-color" content="#1d4a33">
+<title>Recado pra Lyra</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap">
+<style>
+/* Página estática (GitHub Pages). Cada recado vira uma linha em CAIXA-DE-ENTRADA.md no repo privado, pela API do GitHub,
+   com um token que fica só no iPhone dela. Nenhum recado mora nesta página. */
+:root {
+  --bg: #eef3ee; --paper: #f8fbf7; --fg: #16261c; --muted: #5f7466; --line: #d3e0d5;
+  --head: #1d4a33; --head-fg: #f1f8f2; --mine: #cdeccf; --mine-fg: #10301d;
+  --theirs: #ffffff; --accent: #1f8a4c; --accent-fg: #ffffff; --pink: #e1306c;
+  --font-ui: "Figtree", "Segoe UI", system-ui, sans-serif; --font-name: "Young Serif", Georgia, serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0e1712; --paper: #121e17; --fg: #e3efe6; --muted: #92a898; --line: #23352a;
+    --head: #15301f; --head-fg: #e8f5ec; --mine: #1f5134; --mine-fg: #e9f8ee; --theirs: #1b2a21;
+    --accent: #3fbf73; --accent-fg: #06150c; --pink: #f06292; color-scheme: dark; }
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 16px; }
+.app { height: 100%; display: flex; flex-direction: column; max-width: 720px; margin: 0 auto; background: var(--paper); }
+header { display: flex; align-items: center; gap: 12px; background: var(--head); color: var(--head-fg);
+  padding: calc(12px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px)); }
+.avatar { width: 42px; height: 42px; border-radius: 50%; flex: none; display: grid; place-items: center;
+  background: var(--pink); color: #fff; font-family: var(--font-name); font-size: 20px; }
+.who { min-width: 0; flex: 1; }
+.who h1 { margin: 0; font-family: var(--font-name); font-weight: 400; font-size: 20px; line-height: 1.1; }
+.who p { margin: 2px 0 0; font-size: 13px; opacity: .8; }
+.icon-btn { background: none; border: 0; color: var(--head-fg); font: inherit; font-size: 13px; opacity: .8; cursor: pointer; padding: 6px; }
+#feed { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;
+  padding: 16px max(16px, env(safe-area-inset-right, 0px)) 16px max(16px, env(safe-area-inset-left, 0px)); }
+.day { align-self: center; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted);
+  background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; margin-block: 8px; }
+.msg { max-width: 82%; padding: 8px 12px 6px; border-radius: 14px; line-height: 1.4; box-shadow: 0 1px 0 var(--line); }
+.msg.may { align-self: flex-end; background: var(--mine); color: var(--mine-fg); border-bottom-right-radius: 4px; }
+.msg.lyra { align-self: flex-start; background: var(--theirs); color: var(--fg); border-bottom-left-radius: 4px; }
+.txt { white-space: pre-wrap; overflow-wrap: anywhere; }
+.meta { display: flex; justify-content: flex-end; gap: 6px; font-size: 11px; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
+.empty, .setup { margin: auto; text-align: center; max-width: 34ch; color: var(--muted); display: grid; gap: 10px; }
+.empty strong, .setup strong { color: var(--fg); font-family: var(--font-name); font-weight: 400; font-size: 20px; }
+.setup input { font: inherit; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+.setup button { justify-self: center; width: auto; border-radius: 999px; padding: 10px 20px; height: auto; }
+form { display: flex; gap: 8px; align-items: flex-end; border-top: 1px solid var(--line); background: var(--paper);
+  padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+textarea { flex: 1; min-width: 0; resize: none; max-height: 140px; font: inherit; color: var(--fg); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 20px; padding: 10px 14px; }
+textarea:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button { flex: none; width: 46px; height: 46px; border-radius: 50%; border: 0; cursor: pointer; background: var(--accent);
+  color: var(--accent-fg); display: grid; place-items: center; font: inherit; font-weight: 600; }
+button:disabled { opacity: .45; cursor: default; }
+.msg.novo { animation: entra .35s cubic-bezier(.2,.9,.3,1.3) both; }
+.msg.lyra.novo { transform-origin: left bottom; }
+.msg.may.novo { transform-origin: right bottom; }
+@keyframes entra { from { opacity: 0; transform: translateY(10px) scale(.92); } to { opacity: 1; transform: none; } }
+.digitando { align-self: flex-start; display: flex; gap: 4px; padding: 12px 14px; border-radius: 14px; border-bottom-left-radius: 4px;
+  background: var(--theirs); box-shadow: 0 1px 0 var(--line); }
+.digitando i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: pula 1s infinite ease-in-out; }
+.digitando i:nth-child(2) { animation-delay: .15s; } .digitando i:nth-child(3) { animation-delay: .3s; }
+@keyframes pula { 0%, 60%, 100% { transform: none; opacity: .5; } 30% { transform: translateY(-4px); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .msg.novo, .digitando i { animation: none; } }
+.note { font-size: 12px; color: var(--muted); text-align: center; padding: 0 16px 8px; }
+.note.err { color: var(--pink); }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="avatar" aria-hidden="true">L</div>
+    <div class="who"><h1>Lyra</h1><p>Salva no seu GitHub. Leio quando o Claude abrir.</p></div>
+    <button class="icon-btn" id="sair" type="button" hidden>Trocar chave</button>
+  </header>
+
+  <main id="feed" aria-live="polite"></main>
+
+  <div class="note" id="note" hidden></div>
+  <form id="composer" autocomplete="off" hidden>
+    <textarea id="texto" rows="1" placeholder="Escreve sua ideia…" aria-label="Recado"></textarea>
+    <button id="enviar" type="submit" aria-label="Enviar" disabled>
+      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg>
+    </button>
+  </form>
+</div>
+
+<template id="setup-tpl">
+  <div class="setup">
+    <strong>Primeira vez neste celular</strong>
+    <span>Cola a chave do GitHub (token com acesso só ao repositório Inst). Ela fica guardada só neste iPhone.</span>
+    <input id="token" type="password" placeholder="github_pat_…" autocomplete="off">
+    <button id="salvar-token" type="button">Salvar chave</button>
+  </div>
+</template>
+
+<script>
+const REPO = 'mayarainstinct-stack/Inst';
+const FILE = 'CAIXA-DE-ENTRADA.md';
+const API = 'https://api.github.com/repos/' + REPO + '/contents/' + FILE;
+const feed = document.getElementById('feed');
+const note = document.getElementById('note');
+const form = document.getElementById('composer');
+const box = document.getElementById('texto');
+const sendBtn = document.getElementById('enviar');
+const sair = document.getElementById('sair');
+let token = '';
+let sending = false;
+
+const store = {
+  get(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } },
+  set(k, v) { try { v ? localStorage.setItem(k, v) : localStorage.removeItem(k); } catch (e) {} }
+};
+function showNote(t, err) { note.textContent = t; note.className = 'note' + (err ? ' err' : ''); note.hidden = !t; }
+const pad = n => String(n).padStart(2, '0');
+const stamp = d => pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+const b64decode = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\n/g, '')), c => c.charCodeAt(0)));
+const b64encode = s => { let bin = ''; new TextEncoder().encode(s).forEach(b => bin += String.fromCharCode(b)); return btoa(bin); };
+
+async function gh(method, body) {
+  const r = await fetch(API + (method === 'GET' ? '?t=' + Date.now() : ''), {
+    method, headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (!r.ok) { const e = new Error('http ' + r.status); e.status = r.status; throw e; }
+  return r.json();
+}
+
+// Linhas da caixa: "- [DD/MM/AAAA HH:MM] texto" (dela) e "  ↳ Lyra: texto" (resposta).
+function parse(md) {
+  const out = []; const lines = md.split('\n'); let on = false;
+  for (const line of lines) {
+    if (/^##\s+Recados/.test(line)) { on = true; continue; }
+    if (on && /^##\s/.test(line)) break;
+    if (!on) continue;
+    let m = line.match(/^- \[(\d\d\/\d\d\/\d{4}) (\d\d:\d\d)\] (.*)$/);
+    if (m) { out.push({ from: 'may', day: m[1], time: m[2], text: m[3].replace(/\\n/g, '\n') }); continue; }
+    m = line.match(/^\s+↳ Lyra: (.*)$/);
+    if (m) out.push({ from: 'lyra', day: out.length ? out[out.length - 1].day : '', time: '', text: m[1].replace(/\\n/g, '\n') });
+  }
+  return out;
+}
+
+let shown = -1;          // quantos itens já estavam na tela (-1 = primeira carga, sem animação)
+let etag = '';
+let lastItems = [];
+
+function render(items) {
+  const firstNew = shown < 0 ? items.length : shown;
+  feed.replaceChildren();
+  if (!items.length) {
+    const e = document.createElement('div'); e.className = 'empty';
+    e.innerHTML = '<strong>Caixa vazia</strong><span>Tudo que você mandou já foi anotado. Escreve a próxima ideia aqui embaixo.</span>';
+    feed.append(e); return;
+  }
+  let last = '';
+  items.forEach((it, i) => {
+    if (it.day && it.day !== last) { const s = document.createElement('div'); s.className = 'day'; s.textContent = it.day; feed.append(s); last = it.day; }
+    const el = document.createElement('div'); el.className = 'msg ' + it.from + (i >= firstNew ? ' novo' : '');
+    if (i >= firstNew && it.from === 'lyra') el.style.animationDelay = '.9s';
+    const t = document.createElement('div'); t.className = 'txt'; t.textContent = it.text;
+    el.append(t);
+    if (it.time) { const m = document.createElement('div'); m.className = 'meta'; m.textContent = it.time; el.append(m); }
+    if (i >= firstNew && it.from === 'lyra') {
+      // "digitando…" rápido antes da resposta aparecer
+      const dots = document.createElement('div'); dots.className = 'digitando'; dots.innerHTML = '<i></i><i></i><i></i>';
+      feed.append(dots); el.hidden = true;
+      setTimeout(() => { dots.remove(); el.hidden = false; el.style.animationDelay = '0s'; feed.scrollTop = feed.scrollHeight; }, 900);
+    }
+    feed.append(el);
+  });
+  shown = items.length;
+  feed.scrollTop = feed.scrollHeight;
+}
+
+async function load() {
+  try {
+    const f = await gh('GET');
+    const items = parse(b64decode(f.content));
+    const same = items.length === lastItems.length && items.every((it, i) => it.text === lastItems[i].text && it.from === lastItems[i].from);
+    if (!same) { if (items.length < shown) shown = items.length; render(items); lastItems = items; }
+    showNote(''); return f;
+  }
+  catch (e) { showNote(e.status === 401 ? 'A chave não vale mais. Toca em "Trocar chave".' : 'Não consegui ler a caixa. Confere a internet.', true); throw e; }
+}
+
+function syncBtn() { sendBtn.disabled = sending || !box.value.trim(); }
+box.addEventListener('input', () => { box.style.height = 'auto'; box.style.height = Math.min(box.scrollHeight, 140) + 'px'; syncBtn(); store.set('rascunho', box.value); });
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const text = box.value.trim(); if (!text || sending) return;
+  sending = true; syncBtn(); showNote('Enviando…');
+  for (let tentativa = 0; tentativa < 2; tentativa++) {
+    try {
+      const f = await gh('GET');
+      let md = b64decode(f.content);
+      const linha = '- [' + stamp(new Date()) + '] ' + text.replace(/\r?\n/g, '\\n');
+      md = md.replace(/\n- \s*$/, '\n');
+      md = md.replace(/\s*$/, '') + '\n' + linha + '\n';
+      await gh('PUT', { message: 'recado do iPhone', content: b64encode(md), sha: f.sha });
+      box.value = ''; store.set('rascunho', ''); box.style.height = 'auto';
+      await load(); showNote('Salvo no GitHub ✓');
+      break;
+    } catch (err) {
+      if (err.status === 409 && tentativa === 0) continue;
+      showNote(err.status === 401 ? 'A chave não vale mais. Toca em "Trocar chave".' : 'Não salvou. Confere a internet e tenta de novo.', true);
+      break;
+    }
+  }
+  sending = false; syncBtn();
+});
+
+function askToken() {
+  form.hidden = true; sair.hidden = true;
+  feed.replaceChildren(document.getElementById('setup-tpl').content.cloneNode(true));
+  document.getElementById('salvar-token').onclick = async () => {
+    token = document.getElementById('token').value.trim(); if (!token) return;
+    try { await load(); store.set('gh-token', token); start(); }
+    catch (e) { token = ''; askToken(); showNote('Essa chave não abriu o repositório Inst. Confere e cola de novo.', true); }
+  };
+}
+let poll = null;
+function start() {
+  form.hidden = false; sair.hidden = false; box.value = store.get('rascunho'); syncBtn(); load().catch(() => {});
+  // Busca resposta nova a cada 15 s enquanto a página estiver na tela.
+  clearInterval(poll);
+  poll = setInterval(() => { if (document.visibilityState === 'visible' && token && !sending) load().catch(() => {}); }, 15000);
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && token) load().catch(() => {}); });
+sair.onclick = () => { store.set('gh-token', ''); token = ''; askToken(); };
+
+token = store.get('gh-token');
+token ? start() : askToken();
+</script>
+</body>
+</html>
