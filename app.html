@@ -149,6 +149,8 @@ textarea:focus-visible { outline: none; }
 .copiar-btn { width: auto; height: auto; min-height: 40px; border-radius: 999px; padding: 8px 14px; font-size: 13px; letter-spacing: 0; text-transform: none; }
 .tick { font-weight: 700; letter-spacing: -2px; color: var(--muted); }
 .tick.lida { color: var(--accent); }
+.tick.relogio { display: inline-flex; vertical-align: -2px; letter-spacing: 0; }
+.msg.pendente { opacity: .85; }
 .msg.may .tick.lida { color: #9FE0FF; }
 .msg.may .meta { color: color-mix(in srgb, var(--mine-fg) 75%, transparent); }
 .meta { display: flex; justify-content: flex-end; gap: 6px; font-size: 11px; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
@@ -245,6 +247,8 @@ body.web.lado .anexos { grid-column: 2; grid-row: 4; }
       <button class="icon-btn" id="mais" type="button" aria-label="Mais opções" aria-haspopup="menu" aria-expanded="false" hidden>⋮</button>
     </div>
     <div class="menu" id="menu" hidden>
+      <button type="button" id="ir-geral">💬 Mudar para Geral</button>
+      <button type="button" id="ir-trab">💼 Mudar para Trabalho</button>
       <button type="button" id="notificar">🔔 Ativar notificações</button>
       <button type="button" id="atualizar">Atualizar agora</button>
       <button type="button" id="sair">Trocar chave</button>
@@ -293,6 +297,7 @@ body.web.lado .anexos { grid-column: 2; grid-row: 4; }
 const REPO = 'mayarainstinct-stack/Inst';
 // Conversas = arquivos: "Geral" é a CAIXA-DE-ENTRADA.md; as outras ficam em caixas/<nome>.md (mesmo formato).
 const GERAL = { arq: 'CAIXA-DE-ENTRADA.md', nome: 'Geral' };
+const TRAB = { arq: 'caixas/trabalho.md', nome: 'Trabalho' };   // trabalho separado da Geral (May, 21/10/2026); no celular troca pelo ⋮
 const apiDe = arq => 'https://api.github.com/repos/' + REPO + '/contents/' + arq.split('/').map(encodeURIComponent).join('/');
 let FILE = null;      // arquivo da conversa aberta (null = está na lista)
 let API = null;
@@ -464,7 +469,8 @@ function render(items, manterPosicao) {
       if (it.from === 'may') {
         // Igual ao WhatsApp: ✓ cinza = salvo no GitHub · ✓✓ colorido = a Lyra leu
         const tk = document.createElement('span'); tk.className = 'tick' + (it.lida ? ' lida' : '');
-        tk.textContent = it.lida ? '✓✓' : '✓'; tk.title = it.lida ? 'Lida pela Lyra' : 'Enviada';
+        tk.textContent = it.lida ? '✓✓' : '✓'; tk.title = it.lida ? 'Lida pela Lyra' : 'Enviada'; tk.dataset.ts = tsDe(it);
+        if (!it.lida && vigiaViu > tsDe(it) + 90000) { tk.classList.add('lida'); tk.textContent = '✓✓'; tk.title = 'Lida pela Lyra'; }
         m.append(tk);
       }
       el.append(m);
@@ -502,6 +508,26 @@ function mostraFazendo(txt) {
   }
 }
 // O agente (Claude no notebook) grava a hora no branch "online" a cada ~1 min enquanto o vigia roda.
+// ✓✓ = a Lyra leu: o vigia dela bateu depois que o recado chegou (ele avisa a Lyra de toda linha nova).
+let vigiaViu = 0;
+const tsDe = it => { const m = String(it.day || '').match(/^(\d\d)\/(\d\d)\/(\d{4})$/); return m ? Date.parse(m[3] + '-' + m[2] + '-' + m[1] + 'T' + (it.time || '00:00')) : 0; };
+function marcaLidas() {
+  feed.querySelectorAll('.msg.may .tick:not(.lida)').forEach(tk => {
+    const t = +tk.dataset.ts; if (t && vigiaViu > t + 90000) { tk.classList.add('lida'); tk.textContent = '✓✓'; tk.title = 'Lida pela Lyra'; }
+  });
+}
+// Balão "enviando" com relogiozinho, igual WhatsApp (no lugar da tela inteira "Enviando…")
+const RELOGIO = '<svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
+function bolhaPendente(txt) {
+  const el = document.createElement('div'); el.className = 'msg may pendente';
+  if (txt) { const t = document.createElement('div'); t.className = 'txt'; t.textContent = txt; el.append(t); }
+  const m = document.createElement('div'); m.className = 'meta';
+  const h = document.createElement('span'); h.textContent = stamp(new Date()).slice(11, 16); m.append(h);
+  const tk = document.createElement('span'); tk.className = 'tick relogio'; tk.title = 'Enviando'; tk.innerHTML = RELOGIO; m.append(tk);
+  el.append(m);
+  const vazio = feed.querySelector('.empty'); if (vazio) vazio.remove();
+  feed.append(el); irProFim(); return el;
+}
 async function checaOnline() {
   try {
     const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/online.txt?ref=online&t=' + Date.now(),
@@ -509,6 +535,7 @@ async function checaOnline() {
     const linhas = (await r.text()).split(/\r?\n/);
     // online.txt: [batimento] [última atividade] [o que está fazendo]
     const ts = parseInt(linhas[0], 10) * 1000;
+    if (r.ok && ts > vigiaViu) { vigiaViu = ts; marcaLidas(); }
     const ativ = (parseInt(linhas[1], 10) || 0) * 1000;
     const on = r.ok && Date.now() - ts < 60000;               // vigia batendo = está olhando = online
     const idade = Date.now() - ts;
@@ -662,7 +689,7 @@ recX.onclick = () => { if (gravador) { cancelado = true; gravador.stop(); } };
 async function enviaAudio(blob) {
   if (blob.size < 1500) { showNote('Áudio curto demais.', true); return; }
   sending = true; syncBtn();
-  overlay.classList.remove('ok'); overlayTxt.textContent = 'Enviando áudio…'; overlay.hidden = false;
+  const pend = bolhaPendente('🎤 Áudio');
   try {
     const ext = /webm/.test(blob.type) ? 'webm' : 'm4a';
     const d = new Date();
@@ -673,9 +700,9 @@ async function enviaAudio(blob) {
       body: JSON.stringify({ message: 'áudio do iPhone', content: b64 })
     });
     if (!r.ok) throw new Error('upload ' + r.status);
-    box.value = '🎤 ' + nome; sending = false;
+    box.value = '🎤 ' + nome; sending = false; pend.remove();
     form.requestSubmit();
-  } catch (e) { sending = false; syncBtn(); overlay.hidden = true; showNote('O áudio não foi. Confere a internet e tenta de novo.', true); }
+  } catch (e) { sending = false; syncBtn(); pend.remove(); showNote('O áudio não foi. Confere a internet e tenta de novo.', true); }
 }
 syncBtn();
 
@@ -712,11 +739,14 @@ function responderUltima() {
   if (it) responder(it); else box.focus();
   irProFim();
 }
-let querResponder = location.hash === '#responder';
+let querResponder = location.hash.startsWith('#responder');
+const convNotif = decodeURIComponent((location.hash.split('=')[1] || ''));   // #responder=caixas/trabalho.md
+function convPorArq(arq) { return arq === TRAB.arq ? TRAB : (conversas.find(x => x.arq === arq) || GERAL); }
+function abreRespondendo(arq) { const c = convPorArq(arq || GERAL.arq); return (FILE === c.arq ? load() : abrir(c)).then(responderUltima).catch(responderUltima); }
 let rapidoAte = 0;
 function buscaRapido() { rapidoAte = Date.now() + 30000; const t = setInterval(() => { if (Date.now() > rapidoAte || !token) return clearInterval(t); if (FILE && !sending) load().catch(() => {}); }, 1500); }
 if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data === 'novo') buscaRapido(); });
-if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data === 'responder') { (FILE === GERAL.arq ? load() : abrir(GERAL)).then(responderUltima).catch(responderUltima); } });
+if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { const d = e.data || {}; if (d === 'responder' || d.responder !== undefined) abreRespondendo(d.responder); });
 function gestoResponder(el, it) {
   let x0 = null, y0 = 0, dx = 0, timer = null, seta = null;
   const fim = () => {
@@ -773,9 +803,10 @@ form.addEventListener('submit', async e => {
   const text = box.value.trim(); if ((!text && !anexos.length) || sending) return;
   const fotos = anexos.slice();
   sending = true; syncBtn(); showNote('');
-  // Tela inteira travada com "Enviando…" até o GitHub confirmar; some sozinha no fim.
-  const sendIcon = sendBtn.innerHTML; sendBtn.innerHTML = '<span class="spin" aria-label="Enviando"></span>';
-  overlay.classList.remove('ok'); overlayTxt.textContent = 'Enviando…'; overlay.hidden = false; box.blur();
+  // Igual WhatsApp: o balão aparece na hora com o relogiozinho; vira ✓ quando o GitHub confirma.
+  const sendIcon = sendBtn.innerHTML;
+  const pend = bolhaPendente(fotos.length ? '📷 ' + (fotos.length > 1 ? fotos.length + ' fotos' : 'Foto') + (text ? ' ' + text : '') : text);
+  box.value = ''; box.style.height = 'auto';
   for (let tentativa = 0; tentativa < 2; tentativa++) {
     try {
       // 1) fotos da bandeja (uma linha "📷 caminho" por foto; o texto vai junto da primeira)
@@ -803,17 +834,15 @@ form.addEventListener('submit', async e => {
       store.set(rascKey(), ''); box.value = ''; box.style.height = 'auto'; responder(null);
       fotos.forEach(x => URL.revokeObjectURL(x.url)); anexos = []; desenhaBandeja();
       await load().catch(() => {});
-      overlay.classList.add('ok'); overlayTxt.textContent = 'Enviado';
-      await new Promise(r => setTimeout(r, 700));
       break;
     } catch (err) {
       if (err.status === 409 && tentativa === 0) continue;
-      box.value = text;   // o texto continua na caixa pra tentar de novo
+      pend.remove(); box.value = text;   // o texto continua na caixa pra tentar de novo
       showNote(err.status === 401 ? 'A chave não vale mais. Toca em ⋮ → Trocar chave.' : 'Não salvou. Confere a internet e tenta de novo.', true);
       break;
     }
   }
-  sendBtn.innerHTML = sendIcon; overlay.hidden = true;
+  sendBtn.innerHTML = sendIcon; if (pend.isConnected) pend.remove();
   sending = false; syncBtn(); irProFim();
 });
 
@@ -972,10 +1001,12 @@ function mostraLista() {
   mostraFazendo(''); showNote(''); menu.hidden = true;
   if (conversas.length) desenhaLista();
   carregaLista().catch(() => {});
-  if (largo()) abrir(GERAL).catch(() => {});   // no PC já abre a Geral do lado
+  if (largo()) abrir(ultimaConv()).catch(() => {});   // no PC já abre do lado a última que ela viu
 }
 // Abre uma conversa: zera o estado da tela e carrega o arquivo dela.
 function abrir(c) {
+  store.set('ultima-conv', c.arq); store.set('ultima-nome', c.nome);
+  irGeral.hidden = c.arq === GERAL.arq; irTrab.hidden = c.arq === TRAB.arq;
   FILE = c.arq; API = apiDe(c.arq); nomeConv = c.nome; fotoConv = c.foto || (conversas.find(x => x.arq === c.arq) || {}).foto || '';
   logoEl.style.backgroundImage = ''; if (fotoConv) fotoUrl(fotoConv).then(u => { if (FILE === c.arq) logoEl.style.backgroundImage = 'url(' + u + ')'; }).catch(() => {});
   vistosAntes = parseInt(store.get(vistoKey(FILE)) || '0', 10);
@@ -990,6 +1021,16 @@ function abrir(c) {
   return load();
 }
 voltar.onclick = () => { if (!sending) mostraLista(); };
+// Sempre abre a última conversa vista (no celular, só Geral ou Trabalho)
+function ultimaConv() {
+  const arq = store.get('ultima-conv');
+  if (arq === TRAB.arq) return TRAB;
+  if (arq && arq !== GERAL.arq && MODO_WEB) return { arq, nome: store.get('ultima-nome') || arq.replace(/^.*\/|\.md$/g, '') };
+  return GERAL;
+}
+const irGeral = document.getElementById('ir-geral'), irTrab = document.getElementById('ir-trab');
+irGeral.onclick = () => { menu.hidden = true; if (!sending) abrir(GERAL).catch(() => {}); };
+irTrab.onclick = () => { menu.hidden = true; if (!sending) abrir(TRAB).catch(() => {}); };
 // Foto em tela cheia (toca em qualquer lugar ou no ✕ pra fechar)
 function abreZoom(src) {
   const z = document.createElement('div'); z.className = 'zoom';
@@ -1045,11 +1086,11 @@ let poll = null;
 function start() {
   aplicaLargura();
   mais.hidden = false;
-  if (querResponder) {   // veio da notificação: abre a Geral já respondendo
-    querResponder = false; history.replaceState(null, '', location.pathname);
-    abrir(GERAL).then(responderUltima).catch(() => {});
+  if (querResponder) {   // veio da notificação: abre a conversa dela já respondendo
+    querResponder = false; history.replaceState(null, '', location.pathname + location.search);
+    abreRespondendo(convNotif);
   } else if (MODO_WEB) mostraLista();
-  else abrir(GERAL).catch(() => {});   // celular: só a Geral
+  else abrir(ultimaConv()).catch(() => {});   // celular: Geral ou Trabalho, a última que ela viu
   // Conversa aberta: busca a cada 4 s; lista de conversas: a cada 15 s (só com a página na tela).
   clearInterval(poll);
   poll = setInterval(() => {
