@@ -1235,15 +1235,35 @@ function abreItem(cat, it) {   // detalhe: foto grande (toque amplia), dados, li
       it.links.forEach(([nome, url]) => { const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = nome + ' ↗'; ls.append(a); });
       d.append(ls);
     }
-    const manda = txt => { fechaPainel(); abrir(GERAL).then(() => { box.value = txt; syncBtn(); form.requestSubmit(); }).catch(() => {}); };
+    // Manda direto pra caixa da Geral e fica no item (ela pediu pra não ser levada pra tela de mensagens).
+    const manda = async (txt, btn) => {
+      const antes = btn.textContent; btn.disabled = true; btn.textContent = 'Enviando…';
+      const api = apiDe(GERAL.arq);
+      for (let tentativa = 0; tentativa < 4; tentativa++) {
+        try {
+          const r = await fetch(api + '?t=' + Date.now(), { cache: 'no-store', headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' } });
+          if (!r.ok) { const e = new Error('http ' + r.status); e.status = r.status; throw e; }
+          const f = await r.json();
+          let md = b64decode(f.content).replace(/\n- \s*$/, '\n');
+          md = md.replace(/\s*$/, '') + '\n- [' + stamp(new Date()) + '] ' + txt.replace(/\r?\n/g, '\\n') + '\n';
+          const p = await fetch(api, { method: 'PUT', headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' }, body: JSON.stringify({ message: 'recado do iPhone', content: b64encode(md), sha: f.sha }) });
+          if (!p.ok) { const e = new Error('http ' + p.status); e.status = p.status; throw e; }
+          btn.textContent = '✓ Mandado pra Lyra'; return true;
+        } catch (err) {
+          if (err.status === 409 && tentativa < 3) { await new Promise(r => setTimeout(r, 600)); continue; }
+          btn.textContent = err.status === 401 ? '⚠️ Chave vencida (⋮ → Trocar chave)' : '⚠️ Não foi, toca de novo';
+          btn.disabled = false; setTimeout(() => { if (!btn.disabled) btn.textContent = antes; }, 4000); return false;
+        }
+      }
+    };
     const g = document.createElement('button'); g.type = 'button'; g.className = 'gostei'; g.textContent = '⭐ Gostei';
-    g.onclick = () => manda('⭐ Gostei (catálogo, ' + cat.nome + '): ' + it.nome);
+    g.onclick = () => manda('⭐ Gostei (catálogo, ' + cat.nome + '): ' + it.nome, g);
     d.append(g);
     const nb = document.createElement('div'); nb.className = 'nota-box';
     nb.innerHTML = '<label for="nota-item">Quer falar algo sobre esse item?</label><textarea id="nota-item" rows="3" maxlength="400" placeholder="Ex.: gostei dessa, anota pra mim"></textarea><button type="button" class="manda" disabled>Mandar pra Lyra</button>';
     const ta = nb.querySelector('textarea'), mb = nb.querySelector('.manda');
-    ta.oninput = () => { mb.disabled = !ta.value.trim(); };
-    mb.onclick = () => { const t = ta.value.trim(); if (t) manda('📝 Catálogo (' + cat.nome + ') — ' + it.nome + ': ' + t); };
+    ta.oninput = () => { mb.disabled = !ta.value.trim(); if (!mb.disabled) mb.textContent = 'Mandar pra Lyra'; };
+    mb.onclick = async () => { const t = ta.value.trim(); if (t && await manda('📝 Catálogo (' + cat.nome + ') — ' + it.nome + ': ' + t, mb)) ta.value = ''; };
     d.append(nb); c.append(d);
   });
 }
