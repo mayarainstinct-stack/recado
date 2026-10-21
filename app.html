@@ -286,6 +286,12 @@ button:disabled { opacity: .45; cursor: default; }
 .p-lista { display: flex; flex-direction: column; gap: 10px; }
 .p-texto { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; }
 .p-texto h2 { font-size: 18px; margin: 4px 0 8px; } .p-texto h3 { font-size: 16px; margin: 14px 0 6px; color: var(--accent); }
+.check-lista { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.check { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; min-height: 48px; font-size: 15px; line-height: 1.4; cursor: pointer; overflow-wrap: anywhere; }
+.check + .check { border-top: 1px solid var(--line); }
+.check input { flex: none; width: 22px; height: 22px; margin: 0; accent-color: var(--accent); }
+.check input:checked + span { color: var(--muted, #888); text-decoration: line-through; }
+.check-limpa { width: 100%; margin-top: 16px; min-height: 48px; border-radius: 12px; background: var(--paper); color: var(--fg); border: 1px solid var(--line); }
 .p-texto p { margin: 6px 0; } .p-texto ul { margin: 4px 0; padding-left: 20px; } .p-texto li { margin: 4px 0; }
 .pop { position: fixed; inset: 0; z-index: 55; background: rgba(0,0,0,.45); display: grid; place-items: center; padding: 16px; }
 .pop .caixa { width: 100%; max-width: 380px; background: var(--paper); color: var(--fg); border-radius: 18px; padding: 18px; display: grid; gap: 12px;
@@ -1143,6 +1149,50 @@ function abreItemMenu(m) {
   if (m.tipo === 'catalogo') return abreCatalogo();
   if (m.tipo === 'imagens') return abreImagens(m);
   if (m.tipo === 'texto') return abreTexto(m);
+  if (m.tipo === 'viagens') return abreViagens(m);
+}
+// ---- Viagens: menu/viagens.json = { viagens: [{ id, nome, resumo, listas: [{ id, nome, grupos: [{ nome, itens: [[id, texto]] }] }] }] }
+// O que ela marca fica no próprio celular (localStorage), por viagem e por lista.
+const marcados = (v, l) => { try { return new Set(JSON.parse(store.get('viagem:' + v.id + ':' + l.id) || '[]')); } catch (e) { return new Set(); } };
+const guardaMarcados = (v, l, s) => store.set('viagem:' + v.id + ':' + l.id, s.size ? JSON.stringify([...s]) : '');
+const totalItens = l => l.grupos.reduce((n, g) => n + g.itens.length, 0);
+function abreViagens(m) {
+  tela(m.nome, async c => {
+    const p = document.createElement('p'); p.className = 'p-nota'; p.textContent = 'Carregando…'; c.append(p);
+    let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    p.remove();
+    const lista = document.createElement('div'); lista.className = 'p-lista'; c.append(lista);
+    d.viagens.forEach(v => lista.append(botao(v.icone || '🧳', v.nome, v.sub, () => abreViagem(v))));
+  });
+}
+function abreViagem(v) {
+  tela(v.nome, c => {
+    if (v.resumo) { const r = document.createElement('div'); r.className = 'p-texto'; r.textContent = v.resumo; c.append(r); }
+    const lista = document.createElement('div'); lista.className = 'p-lista'; c.append(lista);
+    v.listas.forEach(l => lista.append(botao(l.icone, l.nome, marcados(v, l).size + ' de ' + totalItens(l) + ' feitos · ' + (l.sub || ''), () => abreChecklist(v, l))));
+  });
+}
+function abreChecklist(v, l) {
+  tela(l.nome, c => {
+    const feitos = marcados(v, l), total = totalItens(l);
+    const prog = document.createElement('p'); prog.className = 'p-nota';
+    const conta = () => { prog.textContent = feitos.size + ' de ' + total + ' feitos' + (feitos.size === total ? ' ✅' : ''); };
+    conta(); c.append(prog);
+    l.grupos.forEach(g => {
+      const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = g.nome; c.append(t);
+      const box = document.createElement('div'); box.className = 'check-lista'; c.append(box);
+      g.itens.forEach(([id, texto]) => {
+        const lb = document.createElement('label'); lb.className = 'check';
+        const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = feitos.has(id);
+        const sp = document.createElement('span'); sp.textContent = texto;
+        cb.onchange = () => { cb.checked ? feitos.add(id) : feitos.delete(id); guardaMarcados(v, l, feitos); conta(); };
+        lb.append(cb, sp); box.append(lb);
+      });
+    });
+    const limpa = document.createElement('button'); limpa.type = 'button'; limpa.className = 'gostei check-limpa'; limpa.textContent = 'Desmarcar tudo';
+    limpa.onclick = () => { if (!feitos.size || !confirm('Desmarcar tudo desta lista?')) return; feitos.clear(); guardaMarcados(v, l, feitos); c.querySelectorAll('.check input').forEach(x => { x.checked = false; }); conta(); };
+    c.append(limpa);
+  });
 }
 // ---- Imagens (plantas, referências…): menu/imagens.json = { grupos: [{ nome, imagens: [{ titulo, arq, nota }] }] }
 function abreImagens(m) {
