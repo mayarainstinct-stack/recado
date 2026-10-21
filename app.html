@@ -539,9 +539,9 @@ async function checaOnline() {
     const ts = parseInt(linhas[0], 10) * 1000;
     if (r.ok && ts > vigiaViu) { vigiaViu = ts; marcaLidas(); }
     const ativ = (parseInt(linhas[1], 10) || 0) * 1000;
-    const on = r.ok && Date.now() - ts < 90000;               // de dia o vigia bate de 1 em 1 min               // vigia batendo = está olhando = online
+    const on = r.ok && Date.now() - ts < 330000;              // em horário de trabalho o vigia bate de 5 em 5 min               // vigia batendo = está olhando = online
     const idade = Date.now() - ts;
-    const ausente = r.ok && idade > 90000 && idade < 300000;   // vigia parou há 1–5 min
+    const ausente = r.ok && idade > 330000 && idade < 600000;   // vigia parou há 1–5 min
     // status "caixas/x.md|texto" só aparece naquela conversa; sem prefixo, só na Geral
     let st = on ? linhas.slice(2).join(' ').trim() : '', alvo = GERAL.arq;
     const mm = st.match(/^(caixas\/[^|]+\.md)\|(.*)$/); if (mm) { alvo = mm[1]; st = mm[2].trim(); }
