@@ -216,6 +216,29 @@ button:disabled { opacity: .45; cursor: default; }
 .zoom img { max-width: 100vw; max-height: 100%; object-fit: contain; touch-action: pinch-zoom; }
 .zoom button { position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); right: 14px; width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,.18); color: #fff; font-size: 20px; }
 .msg .foto { cursor: zoom-in; }
+/* Menu e Catálogo: tela cheia, navegação por botões grandes (pensada pro celular) */
+.painel { position: fixed; inset: 0; z-index: 52; background: var(--bg); color: var(--fg); display: flex; flex-direction: column;
+  padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px); animation: entra .18s ease-out both; }
+.p-topo { display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: var(--accent); color: var(--accent-fg); }
+.p-topo button { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.18); color: inherit; font-size: 20px; }
+.p-topo h2 { margin: 0; font-size: 18px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.p-corpo { flex: 1; overflow-y: auto; padding: 16px; display: grid; gap: 12px; align-content: start; }
+.p-extra { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--line); }
+.p-extra button { flex: 1; min-height: 40px; border-radius: 10px; background: var(--paper); color: var(--muted); font-size: 13px; border: 1px solid var(--line); }
+.p-botao { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; padding: 12px 16px; border-radius: 14px;
+  background: var(--paper); color: var(--fg); border: 1px solid var(--line); font-size: 17px; font-weight: 600; text-align: left; }
+.p-botao .ic { font-size: 26px; } .p-botao small { display: block; font-weight: 400; font-size: 13px; color: var(--muted); }
+.p-nota { margin: 0; font-size: 14px; color: var(--muted); line-height: 1.45; }
+.item { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: grid; }
+.item.escolhido { border: 2px solid var(--accent); }
+.item img { width: 100%; max-height: 240px; object-fit: contain; background: #fff; display: block; }
+.item .i-corpo { padding: 12px 14px; display: grid; gap: 6px; }
+.item h3 { margin: 0; font-size: 16px; } .item .preco { font-size: 20px; font-weight: 700; color: var(--accent); }
+.item .med { font-size: 14px; } .item .det { font-size: 13px; color: var(--muted); line-height: 1.4; }
+.item .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.item .links a, .item .gostei { min-height: 40px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 10px; font-size: 14px; text-decoration: none; }
+.item .links a { background: var(--accent); color: var(--accent-fg); }
+.item .gostei { background: var(--bg); color: var(--fg); border: 1px solid var(--line); }
 .pop { position: fixed; inset: 0; z-index: 55; background: rgba(0,0,0,.45); display: grid; place-items: center; padding: 16px; }
 .pop .caixa { width: 100%; max-width: 380px; background: var(--paper); color: var(--fg); border-radius: 18px; padding: 18px; display: grid; gap: 12px;
   box-shadow: 0 14px 40px rgba(0,0,0,.3); animation: entra .2s ease-out both; }
@@ -249,11 +272,9 @@ body.web.lado .anexos { grid-column: 2; grid-row: 4; }
       <button class="icon-btn" id="mais" type="button" aria-label="Mais opções" aria-haspopup="menu" aria-expanded="false" hidden>⋮</button>
     </div>
     <div class="menu" id="menu" hidden>
-      <button type="button" id="ir-geral">💬 Mudar para Geral</button>
-      <button type="button" id="ir-trab">💼 Mudar para Trabalho</button>
-      <button type="button" id="notificar">🔔 Ativar notificações</button>
-      <button type="button" id="atualizar">Atualizar agora</button>
-      <button type="button" id="sair">Trocar chave</button>
+      <button type="button" id="ir-geral">💬 Geral</button>
+      <button type="button" id="ir-trab">💼 Trabalho</button>
+      <button type="button" id="abre-menu">☰ Menu</button>
     </div>
   </header>
 
@@ -280,6 +301,15 @@ body.web.lado .anexos { grid-column: 2; grid-row: 4; }
       <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg>
     </button>
   </form>
+</div>
+
+<div class="painel" id="painel" hidden>
+  <div class="p-topo"><button type="button" id="p-voltar" aria-label="Voltar">←</button><h2 id="p-tit">Menu</h2></div>
+  <div class="p-corpo" id="p-corpo"></div>
+  <div class="p-extra" id="p-extra">
+    <button type="button" id="notificar">🔔 Ativar notificações</button>
+    <button type="button" id="sair">🔑 Trocar chave</button>
+  </div>
 </div>
 
 <div class="overlay" id="overlay" hidden role="status" aria-live="assertive">
@@ -855,7 +885,6 @@ const menu = document.getElementById('menu');
 mais.onclick = e => { e.stopPropagation(); menu.hidden = !menu.hidden; mais.setAttribute('aria-expanded', String(!menu.hidden)); };
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { menu.hidden = true; mais.setAttribute('aria-expanded', 'false'); responder(null); } });
 document.addEventListener('click', e => { if (!menu.contains(e.target)) menu.hidden = true; });
-document.getElementById('atualizar').onclick = () => location.reload();
 
 // ---- Notificação push: a assinatura do iPhone vai pro repo (recados-push/iphone.json); o notebook manda o aviso.
 const VAPID_PUBLICA = 'BIx_prIdU34zWy_XRlpx9LFHWf3xtXp-LXn_X-eA5AghjosGa179cth7np_hL5dcLnSw_S030A8vVOsYPf1TU48';
@@ -1010,7 +1039,7 @@ function mostraLista() {
 // Abre uma conversa: zera o estado da tela e carrega o arquivo dela.
 function abrir(c) {
   store.set('ultima-conv', c.arq); store.set('ultima-nome', c.nome);
-  irGeral.hidden = c.arq === GERAL.arq; irTrab.hidden = c.arq === TRAB.arq;
+  irGeral.hidden = c.arq === GERAL.arq; irTrab.hidden = c.arq === TRAB.arq; abreMenu.hidden = c.arq !== GERAL.arq;   // Trabalho é só trabalho
   FILE = c.arq; API = apiDe(c.arq); nomeConv = c.nome; fotoConv = c.foto || (conversas.find(x => x.arq === c.arq) || {}).foto || '';
   logoEl.style.backgroundImage = ''; if (fotoConv) fotoUrl(fotoConv).then(u => { if (FILE === c.arq) logoEl.style.backgroundImage = 'url(' + u + ')'; }).catch(() => {});
   vistosAntes = parseInt(store.get(vistoKey(FILE)) || '0', 10);
@@ -1032,7 +1061,60 @@ function ultimaConv() {
   if (arq && arq !== GERAL.arq && MODO_WEB) return { arq, nome: store.get('ultima-nome') || arq.replace(/^.*\/|\.md$/g, '') };
   return GERAL;
 }
-const irGeral = document.getElementById('ir-geral'), irTrab = document.getElementById('ir-trab');
+const irGeral = document.getElementById('ir-geral'), irTrab = document.getElementById('ir-trab'), abreMenu = document.getElementById('abre-menu');
+// ---- Menu (só na Geral) → Catálogo: categorias → itens, do mais barato pro mais caro. Dados em catalogo/catalogo.json.
+const painel = document.getElementById('painel'), pCorpo = document.getElementById('p-corpo'), pTit = document.getElementById('p-tit'), pExtra = document.getElementById('p-extra');
+let pilha = [], catalogo = null;
+const reais = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
+function botao(ic, txt, sub, fn) {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'p-botao';
+  b.innerHTML = '<span class="ic"></span><span><span class="t"></span><small></small></span>';
+  b.querySelector('.ic').textContent = ic; b.querySelector('.t').textContent = txt; b.querySelector('small').textContent = sub || '';
+  b.onclick = fn; return b;
+}
+function tela(titulo, montar) { pilha.push([titulo, montar]); desenhaTela(); }
+function desenhaTela() {
+  const [titulo, montar] = pilha[pilha.length - 1];
+  pTit.textContent = titulo; pCorpo.replaceChildren(); pCorpo.scrollTop = 0; pExtra.hidden = pilha.length > 1;
+  montar(pCorpo);
+}
+function fechaPainel() { painel.hidden = true; pilha = []; }
+document.getElementById('p-voltar').onclick = () => { pilha.pop(); if (pilha.length) desenhaTela(); else fechaPainel(); };
+abreMenu.onclick = () => {
+  menu.hidden = true; painel.hidden = false; pilha = [];
+  tela('Menu', c => { c.append(botao('🛍️', 'Catálogo', 'piscina, piso, borda, churrasqueira…', abreCatalogo)); });
+};
+async function abreCatalogo() {
+  tela('Catálogo', async c => {
+    const p = document.createElement('p'); p.className = 'p-nota'; p.textContent = 'Carregando…'; c.append(p);
+    try { catalogo = JSON.parse(await lerArquivo('catalogo/catalogo.json')); }
+    catch (e) { p.textContent = 'Não consegui abrir o catálogo. Confere a internet.'; return; }
+    p.textContent = 'Atualizado em ' + catalogo.atualizado + ' · sempre do mais barato pro mais caro.';
+    catalogo.categorias.forEach(cat => c.append(botao(cat.icone, cat.nome, cat.itens.length + ' opções', () => abreCategoria(cat))));
+  });
+}
+function abreCategoria(cat) {
+  tela(cat.nome, c => {
+    if (cat.nota) { const n = document.createElement('p'); n.className = 'p-nota'; n.textContent = cat.nota + (cat.data ? ' (preços de ' + cat.data + ')' : ''); c.append(n); }
+    cat.itens.forEach(it => {
+      const el = document.createElement('div'); el.className = 'item' + (it.escolhido ? ' escolhido' : '');
+      if (it.foto) {
+        const img = document.createElement('img'); img.alt = it.nome; img.loading = 'lazy'; el.append(img);
+        fotoUrl(it.foto).then(u => { img.src = u; img.onclick = () => abreZoom(u); }).catch(() => img.remove());
+      }
+      const b = document.createElement('div'); b.className = 'i-corpo';
+      const h = document.createElement('h3'); h.textContent = (it.escolhido ? '⭐ ' : '') + it.nome; b.append(h);
+      const pr = document.createElement('div'); pr.className = 'preco'; pr.textContent = it.preco > 0 ? reais(it.preco) + (it.unidade ? ' · ' + it.unidade : '') : 'sem preço'; b.append(pr);
+      if (it.medidas) { const m = document.createElement('div'); m.className = 'med'; m.textContent = '📏 ' + it.medidas; b.append(m); }
+      if (it.detalhe) { const d = document.createElement('div'); d.className = 'det'; d.textContent = it.detalhe; b.append(d); }
+      const ls = document.createElement('div'); ls.className = 'links';
+      (it.links || []).forEach(([nome, url]) => { const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = nome + ' ↗'; ls.append(a); });
+      const g = document.createElement('button'); g.type = 'button'; g.className = 'gostei'; g.textContent = '⭐ Gostei';
+      g.onclick = () => { fechaPainel(); abrir(GERAL).then(() => { box.value = '⭐ Gostei (catálogo, ' + cat.nome + '): ' + it.nome; syncBtn(); form.requestSubmit(); }).catch(() => {}); };
+      ls.append(g); b.append(ls); el.append(b); c.append(el);
+    });
+  });
+}
 irGeral.onclick = () => { menu.hidden = true; if (!sending) abrir(GERAL).catch(() => {}); };
 irTrab.onclick = () => { menu.hidden = true; if (!sending) abrir(TRAB).catch(() => {}); };
 // Foto em tela cheia (toca em qualquer lugar ou no ✕ pra fechar)
