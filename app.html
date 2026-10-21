@@ -151,6 +151,8 @@ textarea:focus-visible { outline: none; }
 .tick.lida { color: var(--accent); }
 .tick.relogio { display: inline-flex; vertical-align: -2px; letter-spacing: 0; }
 .msg.pendente { opacity: .85; }
+.msg.falhou { opacity: 1; outline: 1.5px solid #DC2626; }
+.msg.falhou .tick { color: #DC2626; letter-spacing: 0; }
 .msg.may .tick.lida { color: #9FE0FF; }
 .msg.may .meta { color: color-mix(in srgb, var(--mine-fg) 75%, transparent); }
 .meta { display: flex; justify-content: flex-end; gap: 6px; font-size: 11px; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
@@ -807,7 +809,8 @@ form.addEventListener('submit', async e => {
   const sendIcon = sendBtn.innerHTML;
   const pend = bolhaPendente(fotos.length ? '📷 ' + (fotos.length > 1 ? fotos.length + ' fotos' : 'Foto') + (text ? ' ' + text : '') : text);
   box.value = ''; box.style.height = 'auto';
-  for (let tentativa = 0; tentativa < 2; tentativa++) {
+  let falhou = false;
+  for (let tentativa = 0; tentativa < 4; tentativa++) {
     try {
       // 1) fotos da bandeja (uma linha "📷 caminho" por foto; o texto vai junto da primeira)
       const nomes = [];
@@ -836,13 +839,14 @@ form.addEventListener('submit', async e => {
       await load().catch(() => {});
       break;
     } catch (err) {
-      if (err.status === 409 && tentativa === 0) continue;
-      pend.remove(); box.value = text;   // o texto continua na caixa pra tentar de novo
+      if (err.status === 409 && tentativa < 3) { await new Promise(r => setTimeout(r, 600)); continue; }
+      falhou = true; pend.classList.add('falhou'); const tk = pend.querySelector('.tick'); tk.classList.remove('relogio'); tk.textContent = '⚠️ não foi'; tk.title = 'Não foi enviada';
+      box.value = text;   // o texto continua na caixa pra tentar de novo
       showNote(err.status === 401 ? 'A chave não vale mais. Toca em ⋮ → Trocar chave.' : 'Não salvou. Confere a internet e tenta de novo.', true);
       break;
     }
   }
-  sendBtn.innerHTML = sendIcon; if (pend.isConnected) pend.remove();
+  sendBtn.innerHTML = sendIcon; if (!falhou && pend.isConnected) pend.remove();
   sending = false; syncBtn(); irProFim();
 });
 
