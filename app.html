@@ -834,7 +834,7 @@ function ajustaAltura() {
   // Com o teclado aberto: encolhe pra área visível, pra caixa de escrever ficar logo acima do teclado.
   const vv = window.visualViewport;
   const digitando = document.activeElement && document.activeElement.matches('textarea, input');
-  if (digitando && vv && vv.height < window.innerHeight - 80) {
+  if (digitando && vv) {   // teclado aberto (ou abrindo): a página ocupa só a parte visível, acima do teclado
     appEl.style.top = Math.round(vv.offsetTop) + 'px'; appEl.style.bottom = 'auto'; appEl.style.height = Math.round(vv.height) + 'px';
     return;
   }
@@ -843,7 +843,7 @@ function ajustaAltura() {
 }
 ajustaAltura(); window.addEventListener('resize', ajustaAltura);
 if (window.visualViewport) { window.visualViewport.addEventListener('resize', ajustaAltura); window.visualViewport.addEventListener('scroll', ajustaAltura); }
-document.addEventListener('focusin', () => setTimeout(ajustaAltura, 50));
+document.addEventListener('focusin', () => { [50, 250, 500, 900].forEach(t => setTimeout(ajustaAltura, t)); });   // o teclado do iPhone sobe aos poucos
 document.addEventListener('focusout', () => setTimeout(ajustaAltura, 300));
 const swPronto = ('serviceWorker' in navigator) ? navigator.serviceWorker.register('sw.js').catch(() => null) : Promise.resolve(null);
 function chave(b64) { const p = '='.repeat((4 - b64.length % 4) % 4); const r = atob((b64 + p).replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(r, c => c.charCodeAt(0)); }
