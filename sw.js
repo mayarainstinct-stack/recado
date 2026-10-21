@@ -5,6 +5,8 @@ self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
 self.addEventListener('push', e => {
   let d = {};
   try { d = e.data ? e.data.json() : {}; } catch (err) { d = { body: e.data ? e.data.text() : '' }; }
+  // avisa as páginas abertas pra buscarem a mensagem nova na hora
+  self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cs => cs.forEach(c => c.postMessage('novo')));
   e.waitUntil(self.registration.showNotification(d.title || 'Recados', {
     body: d.body || 'Chegou recado novo',
     icon: 'apple-touch-icon.png',

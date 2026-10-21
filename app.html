@@ -34,7 +34,7 @@
 html, body { height: 100%; margin: 0; }
 body { overflow: hidden; overscroll-behavior: none; }
 body { background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 16px; }
-.app { position: fixed; top: 0; left: 0; right: 0; margin: 0 auto; height: 100vh; height: var(--altura, 100vh); display: flex; flex-direction: column; max-width: 900px; margin: 0 auto; background: var(--paper); }
+.app { position: fixed; top: 0; bottom: 0; left: 0; right: 0; margin: 0 auto; display: flex; flex-direction: column; max-width: 900px; margin: 0 auto; background: var(--paper); }
 /* Topo no padrão dos apps da Simplificação (promotor/checklist): faixa na cor da marca subindo atrás da barra de status,
    cantos de baixo arredondados, logo + "Recados" + status do agente (online/offline), ⋮ à direita, respiro 16. */
 header { position: relative; z-index: 2; color: var(--head-fg); font-family: -apple-system, "Roboto", "Segoe UI", system-ui, sans-serif;
@@ -318,7 +318,7 @@ const b64encode = s => { let bin = ''; new TextEncoder().encode(s).forEach(b => 
 
 async function gh(method, body) {
   const r = await fetch(API + (method === 'GET' ? '?t=' + Date.now() : ''), {
-    method, headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' },
+    method, cache: 'no-store', headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' },
     body: body ? JSON.stringify(body) : undefined
   });
   if (!r.ok) { const e = new Error('http ' + r.status); e.status = r.status; throw e; }
@@ -713,6 +713,9 @@ function responderUltima() {
   irProFim();
 }
 let querResponder = location.hash === '#responder';
+let rapidoAte = 0;
+function buscaRapido() { rapidoAte = Date.now() + 30000; const t = setInterval(() => { if (Date.now() > rapidoAte || !token) return clearInterval(t); if (FILE && !sending) load().catch(() => {}); }, 1500); }
+if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data === 'novo') buscaRapido(); });
 if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data === 'responder') { (FILE === GERAL.arq ? load() : abrir(GERAL)).then(responderUltima).catch(responderUltima); } });
 function gestoResponder(el, it) {
   let x0 = null, y0 = 0, dx = 0, timer = null, seta = null;
@@ -827,18 +830,16 @@ const VAPID_PUBLICA = 'BIx_prIdU34zWy_XRlpx9LFHWf3xtXp-LXn_X-eA5AghjosGa179cth7n
 // fechado, no app da tela de início, usa a tela inteira (sem faixa preta embaixo).
 const appEl = document.querySelector('.app');
 function ajustaAltura() {
+  // Sem teclado: a página vai de cima a baixo da área visível (top 0 / bottom 0), sem cortar nem sobrar faixa.
+  // Com o teclado aberto: encolhe pra área visível, pra caixa de escrever ficar logo acima do teclado.
   const vv = window.visualViewport;
   const digitando = document.activeElement && document.activeElement.matches('textarea, input');
-  if (digitando && vv) {
-    document.documentElement.style.setProperty('--altura', Math.round(vv.height) + 'px');
-    appEl.style.top = Math.round(vv.offsetTop) + 'px';
+  if (digitando && vv && vv.height < window.innerHeight - 80) {
+    appEl.style.top = Math.round(vv.offsetTop) + 'px'; appEl.style.bottom = 'auto'; appEl.style.height = Math.round(vv.height) + 'px';
     return;
   }
-  appEl.style.top = '0px';
+  appEl.style.top = '0px'; appEl.style.bottom = '0px'; appEl.style.height = '';
   if (window.scrollY) window.scrollTo(0, 0);
-  const naTelaInicio = navigator.standalone || matchMedia('(display-mode: standalone)').matches;
-  if (naTelaInicio && screen.height - window.innerHeight > 40) { document.documentElement.style.setProperty('--altura', screen.height + 'px'); return; }
-  document.documentElement.style.setProperty('--altura', Math.round(vv ? Math.max(vv.height, window.innerHeight) : window.innerHeight) + 'px');
 }
 ajustaAltura(); window.addEventListener('resize', ajustaAltura);
 if (window.visualViewport) { window.visualViewport.addEventListener('resize', ajustaAltura); window.visualViewport.addEventListener('scroll', ajustaAltura); }
@@ -897,7 +898,7 @@ window.addEventListener('resize', () => { clearTimeout(aplicaLargura.t); aplicaL
 let conversas = [], sigLista = '', ultimaLista = 0, carregandoLista = null;
 const hdrs = raw => ({ Authorization: 'Bearer ' + token, Accept: raw ? 'application/vnd.github.raw' : 'application/vnd.github+json' });
 async function lerArquivo(arq) {
-  const r = await fetch(apiDe(arq) + '?t=' + Date.now(), { headers: hdrs(true) });
+  const r = await fetch(apiDe(arq) + '?t=' + Date.now(), { headers: hdrs(true), cache: 'no-store' });
   if (!r.ok) { const e = new Error('http ' + r.status); e.status = r.status; throw e; }
   return r.text();
 }
@@ -1062,7 +1063,7 @@ let saiuEm = 0;
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') { saiuEm = Date.now(); return; }
   if (saiuEm && Date.now() - saiuEm > 30000 && !sending) { location.reload(); return; }
-  if (token) (FILE ? load() : carregaLista()).catch(() => {});
+  if (token) { (FILE ? load() : carregaLista()).catch(() => {}); buscaRapido(); }
 });
 window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
 sair.onclick = () => { store.set('gh-token', ''); token = ''; askToken(); };
