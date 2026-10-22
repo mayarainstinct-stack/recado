@@ -832,7 +832,9 @@ function abreRespondendo(arq) { const c = convPorArq(arq || GERAL.arq); return (
 let rapidoAte = 0;
 function buscaRapido() { rapidoAte = Date.now() + 30000; const t = setInterval(() => { if (Date.now() > rapidoAte || !token) return clearInterval(t); if (FILE && !sending) load().catch(() => {}); }, 1500); }
 if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data === 'novo') buscaRapido(); });
-if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { const d = e.data || {}; if (d === 'responder' || d.responder !== undefined) abreRespondendo(d.responder); });
+// Veio de push: guarda a conversa por 1 min, pra o reload da volta não trocar pela do relógio.
+let pushEm = 0;
+if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { const d = e.data || {}; if (d === 'responder' || d.responder !== undefined) { pushEm = Date.now(); store.set('push-conv', (d.responder || GERAL.arq) + '|' + pushEm); abreRespondendo(d.responder); } });
 function gestoResponder(el, it) {
   let x0 = null, y0 = 0, dx = 0, timer = null, seta = null;
   const fim = () => {
@@ -1108,11 +1110,21 @@ function abrir(c) {
   return load();
 }
 voltar.onclick = () => { if (!sending) mostraLista(); };
-// Sempre abre a última conversa vista (no celular, só Geral ou Trabalho)
+// Celular: abre pelo relógio (May, 22/10/2026): seg–sex 8h–18h, fora do almoço (12h–13h) = Trabalho; resto = Geral.
+// Web: abre a última conversa vista.
+function horaDeTrabalho(d = new Date()) {
+  const dia = d.getDay(), h = d.getHours();
+  return dia >= 1 && dia <= 5 && h >= 8 && h < 18 && h !== 12;
+}
 function ultimaConv() {
+  if (!MODO_WEB) {
+    const [pArq, pTs] = store.get('push-conv').split('|');
+    if (pArq && Date.now() - +pTs < 60000) return pArq === TRAB.arq ? TRAB : GERAL;
+    return horaDeTrabalho() ? TRAB : GERAL;
+  }
   const arq = store.get('ultima-conv');
   if (arq === TRAB.arq) return TRAB;
-  if (arq && arq !== GERAL.arq && MODO_WEB) return { arq, nome: store.get('ultima-nome') || arq.replace(/^.*\/|\.md$/g, '') };
+  if (arq && arq !== GERAL.arq) return { arq, nome: store.get('ultima-nome') || arq.replace(/^.*\/|\.md$/g, '') };
   return GERAL;
 }
 const irGeral = document.getElementById('ir-geral'), irTrab = document.getElementById('ir-trab'), abreMenu = document.getElementById('abre-menu');
@@ -1378,7 +1390,7 @@ function start() {
     querResponder = false; history.replaceState(null, '', location.pathname + location.search);
     abreRespondendo(convNotif);
   } else if (MODO_WEB) mostraLista();
-  else abrir(ultimaConv()).catch(() => {});   // celular: Geral ou Trabalho, a última que ela viu
+  else abrir(ultimaConv()).catch(() => {});   // celular: Trabalho no horário de trabalho, senão Geral
   // Conversa aberta: busca a cada 4 s; lista de conversas: a cada 15 s (só com a página na tela).
   clearInterval(poll);
   poll = setInterval(() => {
@@ -1391,7 +1403,7 @@ function start() {
 let saiuEm = 0;
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') { saiuEm = Date.now(); return; }
-  if (saiuEm && Date.now() - saiuEm > 30000 && !sending) { location.reload(); return; }
+  if (saiuEm && Date.now() - saiuEm > 30000 && !sending && Date.now() - pushEm > 5000) { location.reload(); return; }
   if (token) { (FILE ? load() : carregaLista()).catch(() => {}); buscaRapido(); }
 });
 window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
