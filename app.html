@@ -303,6 +303,24 @@ button:disabled { opacity: .45; cursor: default; }
 /* Agenda em cartões: data grande à esquerda, ícone do tipo de compromisso, etiqueta "hoje / amanhã / em N dias" */
 .ag { display: flex; gap: 12px; align-items: flex-start; background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; }
 .ag.passou { opacity: .5; }
+.ag, .cartao { cursor: pointer; } .ag:active, .cartao:active { background: var(--bg); }
+.ficha { position: fixed; inset: 0; z-index: 56; background: rgba(0,0,0,.45); display: flex; align-items: flex-end; justify-content: center; animation: entra .18s ease-out both; }
+.ficha .f-caixa { width: 100%; max-width: 560px; max-height: 88vh; overflow-y: auto; overscroll-behavior: contain; background: var(--paper); color: var(--fg);
+  border-radius: 20px 20px 0 0; padding: 14px 16px calc(16px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 12px; }
+.ficha .f-topo { display: flex; align-items: flex-start; gap: 10px; }
+.ficha .f-topo h3 { flex: 1; margin: 6px 0 0; font-size: 17px; line-height: 1.3; overflow-wrap: anywhere; }
+.ficha .f-topo button { flex: none; width: 38px; height: 38px; border-radius: 50%; background: var(--bg); color: var(--fg); font-size: 18px; }
+.ficha img { width: 100%; border-radius: 12px; background: #fff; cursor: zoom-in; }
+.ficha .f-corpo { font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; }
+.ficha .f-corpo ul { margin: 4px 0; padding-left: 20px; }
+.ficha .nota-box, .p-anota .nota-box { display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+.ficha .nota-box label { font-size: 13px; font-weight: 700; color: var(--muted); }
+.ficha textarea { width: 100%; min-height: 84px; resize: none; font: inherit; font-size: 16px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+.ficha .manda { width: 100%; min-height: 48px; border-radius: 12px; background: var(--accent); color: var(--accent-fg); font-size: 16px; font-weight: 700; }
+.ficha .manda:disabled { opacity: .45; }
+.cartao { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; font-size: 15px; line-height: 1.45; overflow-wrap: anywhere; }
+.cartao h3 { margin: 0 0 4px; font-size: 16px; } .cartao h4 { margin: 10px 0 2px; font-size: 14px; color: var(--accent); }
+.cartao ul { margin: 2px 0; padding-left: 18px; } .cartao li { margin: 2px 0; }
 .ag.perto { border: 2px solid var(--accent); }
 .ag .dt { flex: none; width: 54px; min-height: 54px; border-radius: 12px; background: var(--bg); display: grid; place-content: center; text-align: center; line-height: 1.05; }
 .ag .dt b { font-size: 22px; } .ag .dt small { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted); }
@@ -377,7 +395,7 @@ body.web.lado .anexos { grid-column: 2; grid-row: 4; }
 </div>
 
 <div class="painel" id="painel" hidden>
-  <div class="p-topo"><button type="button" id="p-voltar" aria-label="Voltar">←</button><h2 id="p-tit">Menu</h2></div>
+  <div class="p-topo"><button type="button" id="p-voltar" aria-label="Voltar">←</button><h2 id="p-tit">Menu</h2><button type="button" id="p-anotar" aria-label="Escrever sobre esta tela">📝</button></div>
   <div class="p-corpo" id="p-corpo"></div>
   <div class="p-extra" id="p-extra">
     <button type="button" id="notificar">🔔 Ativar notificações</button>
@@ -1176,6 +1194,7 @@ function desenhaTela() {
   const r = montar(t); if (rolou) Promise.resolve(r).then(() => { if (t.isConnected) pCorpo.scrollTop = rolou; });   // voltando: devolve a rolagem de onde ela estava
 }
 function fechaPainel() { painel.hidden = true; pilha = []; }
+document.getElementById('p-anotar').onclick = () => abreFicha({ titulo: '📝 ' + pTit.textContent, contexto: pTit.textContent });
 document.getElementById('p-voltar').onclick = () => { pilha.pop(); if (pilha.length) desenhaTela(); else fechaPainel(); };
 abreMenu.onclick = () => {
   menu.hidden = true; painel.hidden = false; pilha = [];
@@ -1191,6 +1210,7 @@ abreMenu.onclick = () => {
 function abreItemMenu(m) {
   if (m.tipo === 'catalogo') return abreCatalogo();
   if (m.tipo === 'imagens') return abreImagens(m);
+  if (m.tipo === 'texto' && m.cartoes) return abreCartoes(m);
   if (m.tipo === 'texto') return abreTexto(m);
   if (m.tipo === 'agenda') return abreAgenda(m);
   if (m.tipo === 'viagens') return abreViagens(m);
@@ -1243,12 +1263,13 @@ function abreImagens(m) {
   tela(m.nome, async c => {
     const p = document.createElement('p'); p.className = 'p-nota'; p.textContent = 'Carregando…'; c.append(p);
     let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
-    p.textContent = 'Toca na imagem pra ver grande.';
+    p.textContent = 'Toca na imagem pra ver grande e escrever sobre ela.';
     d.grupos.forEach(g => {
       const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = g.nome; c.append(t);
       g.imagens.forEach(im => {
         const el = document.createElement('div'); el.className = 'item';
-        const ph = fotoDe({ nome: im.titulo, foto: im.arq }, { icone: m.icone }, true); el.append(ph);
+        const ph = fotoDe({ nome: im.titulo, foto: im.arq }, { icone: m.icone }, false); el.append(ph);
+        el.onclick = () => { const n = document.createElement('div'); n.textContent = im.nota || ''; abreFicha({ titulo: im.titulo, foto: im.arq, corpo: im.nota ? n : null, contexto: 'Imagem (' + im.titulo + ')' }); };
         const b = document.createElement('div'); b.className = 'i-corpo';
         const h = document.createElement('h3'); h.textContent = im.titulo; b.append(h);
         if (im.nota) { const n = document.createElement('div'); n.className = 'det'; n.textContent = im.nota; b.append(n); }
@@ -1329,7 +1350,81 @@ function abreAgenda(m) {
       const corpoEl = document.createElement('div'); neg(corpoEl, corpo); cx.append(corpoEl);
       if (foto) { const im = document.createElement('img'); im.alt = ''; cx.append(im); fotoUrl(foto).then(u => { im.src = u; im.onclick = () => abreZoom(u); }).catch(() => im.remove()); }
       el.append(dt, cx); c.append(el); ult = el;
+      el.onclick = () => abreFicha({ titulo: (rot ? rot + ' · ' : '') + iconeDe(txt), foto, corpo: el.cloneNode(true), contexto: 'Agenda (' + (rot || corpo.slice(0, 40)) + ')' });
     });
+  });
+}
+async function mandaPraLyra(txt, btn) {   // manda direto pra caixa da Geral, sem sair da tela
+  const antes = btn.textContent; btn.disabled = true; btn.textContent = 'Enviando…';
+  const api = apiDe(GERAL.arq);
+  for (let tentativa = 0; tentativa < 4; tentativa++) {
+    try {
+      const r = await fetch(api + '?t=' + Date.now(), { cache: 'no-store', headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' } });
+      if (!r.ok) { const e = new Error('http ' + r.status); e.status = r.status; throw e; }
+      const f = await r.json();
+      let md = b64decode(f.content).replace(/\n- \s*$/, '\n');
+      md = md.replace(/\s*$/, '') + '\n- [' + stamp(new Date()) + '] ' + txt.replace(/\r?\n/g, '\\n') + '\n';
+      const p = await fetch(api, { method: 'PUT', headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' }, body: JSON.stringify({ message: 'recado do iPhone', content: b64encode(md), sha: f.sha }) });
+      if (!p.ok) { const e = new Error('http ' + p.status); e.status = p.status; throw e; }
+      btn.textContent = '✓ Mandado pra Lyra'; return true;
+    } catch (err) {
+      if (err.status === 409 && tentativa < 3) { await new Promise(r => setTimeout(r, 600)); continue; }
+      btn.textContent = err.status === 401 ? '⚠️ Chave vencida (⋮ → Trocar chave)' : '⚠️ Não foi, toca de novo';
+      btn.disabled = false; setTimeout(() => { if (!btn.disabled) btn.textContent = antes; }, 4000); return false;
+    }
+  }
+}
+// Caixinha "📝 Anotar" (May, 22/10: "todo lugar tem q dar pra mim escrever"): manda pra Geral com o contexto na frente
+function notaBox(contexto) {
+  const nb = document.createElement('div'); nb.className = 'nota-box';
+  nb.innerHTML = '<label>📝 Escrever sobre isso</label><textarea rows="3" maxlength="600" placeholder="Escreve aqui, vai pra Lyra"></textarea><button type="button" class="manda" disabled>Mandar pra Lyra</button>';
+  const ta = nb.querySelector('textarea'), mb = nb.querySelector('.manda');
+  ta.oninput = () => { mb.disabled = !ta.value.trim(); if (!mb.disabled) mb.textContent = 'Mandar pra Lyra'; };
+  mb.onclick = async () => { const t = ta.value.trim(); if (t && await mandaPraLyra('📝 ' + contexto + ': ' + t, mb)) ta.value = ''; };
+  return nb;
+}
+// Ficha: popup por cima de tudo, com o detalhe (foto grande, texto) e a caixinha de anotação embaixo
+function abreFicha({ titulo, foto, corpo, contexto }) {
+  const f = document.createElement('div'); f.className = 'ficha'; f.setAttribute('role', 'dialog'); f.setAttribute('aria-label', titulo || 'Detalhe');
+  const cx = document.createElement('div'); cx.className = 'f-caixa';
+  const topo = document.createElement('div'); topo.className = 'f-topo';
+  const h = document.createElement('h3'); h.textContent = titulo || '';
+  const x = document.createElement('button'); x.type = 'button'; x.textContent = '✕'; x.setAttribute('aria-label', 'Fechar');
+  topo.append(h, x); cx.append(topo);
+  if (foto) { const im = document.createElement('img'); im.alt = titulo || ''; cx.append(im); fotoUrl(foto).then(u => { im.src = u; im.onclick = () => abreZoom(u); }).catch(() => im.remove()); }
+  if (corpo) { const c = document.createElement('div'); c.className = 'f-corpo'; c.append(corpo); cx.append(c); }
+  cx.append(notaBox(contexto || titulo || 'Anotação'));
+  f.append(cx); document.body.append(f);
+  const fecha = () => { f.remove(); document.removeEventListener('keydown', esc, true); };
+  const esc = e => { if (e.key === 'Escape' && !document.querySelector('.zoom')) { e.stopPropagation(); fecha(); } };
+  x.onclick = fecha; f.onclick = e => { if (e.target === f) fecha(); }; document.addEventListener('keydown', esc, true);
+  return f;
+}
+// ---- Texto em cartões (Comida e água…): cada "## " vira um cartão; "### " subtítulo; "- " item. Tocar abre a ficha com anotação.
+function abreCartoes(m) {
+  tela(m.nome, async c => {
+    const p = document.createElement('p'); p.className = 'p-nota'; p.textContent = 'Carregando…'; c.append(p);
+    let md; try { md = await lerArquivo(m.arq); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    p.remove();
+    const neg = (el, txt) => txt.split(/(\*\*[^*]+\*\*)/).forEach(parte => {
+      if (/^\*\*[^*]+\*\*$/.test(parte)) { const b = document.createElement('b'); b.textContent = parte.slice(2, -2); el.append(b); }
+      else if (parte) el.append(document.createTextNode(parte));
+    });
+    let card = null, ul = null;
+    md.split(/\r?\n/).forEach(l => {
+      if (/^# /.test(l) || /^\s*<!--/.test(l) || !l.trim()) { ul = null; return; }
+      if (/^## /.test(l)) {
+        card = document.createElement('div'); card.className = 'cartao'; ul = null;
+        const h = document.createElement('h3'); neg(h, l.slice(3)); card.append(h); c.append(card);
+        const este = card; card.onclick = () => abreFicha({ titulo: h.textContent, corpo: este.cloneNode(true), contexto: m.nome + ' (' + h.textContent + ')' });
+        return;
+      }
+      const alvo = card || c;
+      if (/^###+ /.test(l)) { const h = document.createElement('h4'); neg(h, l.replace(/^#+ /, '')); alvo.append(h); ul = null; return; }
+      if (/^\s*[-*] /.test(l)) { if (!ul) { ul = document.createElement('ul'); alvo.append(ul); } const li = document.createElement('li'); neg(li, l.replace(/^\s*[-*] /, '')); ul.append(li); return; }
+      const n = document.createElement('p'); n.className = card ? '' : 'p-nota'; neg(n, l.replace(/^>\s?/, '')); alvo.append(n); ul = null;
+    });
+    const fc = c.querySelector('.ficha'); if (fc) fc.remove();
   });
 }
 async function abreCatalogo() {
@@ -1383,26 +1478,7 @@ function abreItem(cat, it) {   // detalhe: foto grande (toque amplia), dados, li
       d.append(ls);
     }
     // Manda direto pra caixa da Geral e fica no item (ela pediu pra não ser levada pra tela de mensagens).
-    const manda = async (txt, btn) => {
-      const antes = btn.textContent; btn.disabled = true; btn.textContent = 'Enviando…';
-      const api = apiDe(GERAL.arq);
-      for (let tentativa = 0; tentativa < 4; tentativa++) {
-        try {
-          const r = await fetch(api + '?t=' + Date.now(), { cache: 'no-store', headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' } });
-          if (!r.ok) { const e = new Error('http ' + r.status); e.status = r.status; throw e; }
-          const f = await r.json();
-          let md = b64decode(f.content).replace(/\n- \s*$/, '\n');
-          md = md.replace(/\s*$/, '') + '\n- [' + stamp(new Date()) + '] ' + txt.replace(/\r?\n/g, '\\n') + '\n';
-          const p = await fetch(api, { method: 'PUT', headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' }, body: JSON.stringify({ message: 'recado do iPhone', content: b64encode(md), sha: f.sha }) });
-          if (!p.ok) { const e = new Error('http ' + p.status); e.status = p.status; throw e; }
-          btn.textContent = '✓ Mandado pra Lyra'; return true;
-        } catch (err) {
-          if (err.status === 409 && tentativa < 3) { await new Promise(r => setTimeout(r, 600)); continue; }
-          btn.textContent = err.status === 401 ? '⚠️ Chave vencida (⋮ → Trocar chave)' : '⚠️ Não foi, toca de novo';
-          btn.disabled = false; setTimeout(() => { if (!btn.disabled) btn.textContent = antes; }, 4000); return false;
-        }
-      }
-    };
+    const manda = mandaPraLyra;
     const g = document.createElement('button'); g.type = 'button'; g.className = 'gostei'; g.textContent = '⭐ Gostei';
     g.onclick = () => manda('⭐ Gostei (catálogo, ' + cat.nome + '): ' + it.nome, g);
     d.append(g);
