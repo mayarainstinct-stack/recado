@@ -151,6 +151,7 @@ textarea:focus-visible { outline: none; }
 .desce .qtd { position: absolute; top: -4px; right: -4px; min-width: 20px; height: 20px; border-radius: 999px; background: var(--accent); color: var(--accent-fg);
   font-size: 11px; font-weight: 700; display: grid; place-items: center; padding: 0 5px; }
 .txt { white-space: pre-wrap; overflow-wrap: anywhere; }
+.txt a { color: inherit; text-decoration: underline; text-underline-offset: 2px; font-weight: 600; }
 .msg.copiavel { border: 1.5px dashed var(--accent); background: color-mix(in srgb, var(--accent) 7%, var(--theirs)); max-width: 92%; }
 .msg.copiavel .txt { font-size: 14.5px; }
 .copiar-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px;
@@ -438,6 +439,20 @@ const store = {
   get(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } },
   set(k, v) { try { v ? localStorage.setItem(k, v) : localStorage.removeItem(k); } catch (e) {} }
 };
+// texto com link tocável: https://..., www... e instagram.com/... (sem innerHTML)
+const RE_LINK = /(https?:\/\/[^\s<>"]+|www\.[^\s<>"]+|(?:instagram\.com|youtube\.com|youtu\.be|twitch\.tv)\/[^\s<>"]+)/gi;
+function linkar(el, txt) {
+  txt = txt || ''; let i = 0;
+  for (const m of txt.matchAll(RE_LINK)) {
+    let u = m[0].replace(/[.,;:!?)\]]+$/, '');
+    if (m.index > i) el.append(txt.slice(i, m.index));
+    const a = document.createElement('a'); a.textContent = u;
+    a.href = /^https?:/i.test(u) ? u : 'https://' + u; a.target = '_blank'; a.rel = 'noopener';
+    a.addEventListener('click', e => e.stopPropagation());
+    el.append(a); i = m.index + u.length;
+  }
+  if (i < txt.length) el.append(txt.slice(i));
+}
 function showNote(t, err) { note.textContent = t; note.className = 'note' + (err ? ' err' : ''); note.hidden = !t; }
 const pad = n => String(n).padStart(2, '0');
 const stamp = d => pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
@@ -587,7 +602,7 @@ function render(items, manterPosicao) {
       tr.textContent = it.transcricao ? '“' + it.transcricao + '”' : 'transcrevendo…';
       el.append(tr);
     }
-    const t = document.createElement('div'); t.className = 'txt'; t.textContent = it.text;
+    const t = document.createElement('div'); t.className = 'txt'; linkar(t, it.text);
     if (it.text) el.append(t);
     if (it.time || it.from === 'may') {
       const m = document.createElement('div'); m.className = 'meta';
