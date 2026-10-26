@@ -1647,6 +1647,17 @@ novaBtn.onclick = () => {
 };
 
 let poll = null;
+// Academia (May, 26/10): no horário do treino a página abre SEMPRE no checklist de hoje; a seta ← volta pra conversa.
+// menu/treino.json → abrir: { dias: [1..5] (0 = dom), de: 'HH:MM', ate: 'HH:MM', viagem: id, lista: id }
+async function abreTreinoSeHora() {
+  let d; try { d = JSON.parse(await lerArquivo('menu/treino.json')); } catch (e) { return; }
+  const a = d.abrir; if (!a) return;
+  const agora = new Date(), hm = String(agora.getHours()).padStart(2, '0') + ':' + String(agora.getMinutes()).padStart(2, '0');
+  if (!(a.dias || []).includes(agora.getDay()) || hm < a.de || hm > a.ate) return;
+  const v = d.viagens.find(x => x.id === a.viagem) || d.viagens[0]; const l = v && v.listas.find(x => x.id === a.lista);
+  if (!l || !painel.hidden) return;
+  menu.hidden = true; painel.hidden = false; pilha = []; abreChecklist(v, l);
+}
 function start() {
   aplicaLargura();
   mais.hidden = false;
@@ -1655,6 +1666,7 @@ function start() {
     abreRespondendo(convNotif, fotoNotif);
   } else if (MODO_WEB) mostraLista();
   else abrir(ultimaConv()).catch(() => {});   // celular: Trabalho no horário de trabalho, senão Geral
+  if (!MODO_WEB) abreTreinoSeHora();   // na hora da academia, abre (e reabre) direto no treino de hoje
   // Conversa aberta: busca a cada 4 s; lista de conversas: a cada 15 s (só com a página na tela).
   clearInterval(poll);
   poll = setInterval(() => {
