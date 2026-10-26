@@ -60,6 +60,7 @@ header { position: relative; z-index: 2; color: var(--head-fg); font-family: -ap
 .status.on .sync { display: block; animation: gira .8s linear infinite; }
 .icon-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.16); color: var(--head-fg);
   font-size: 22px; line-height: 1; display: grid; place-items: center; }
+.menu.no-painel { position: fixed; z-index: 57; }   /* aberto de dentro do Menu: fica por cima do painel */
 .menu { position: absolute; right: max(12px, env(safe-area-inset-right, 0px)); top: calc(62px + env(safe-area-inset-top, 0px));
   min-width: 232px; background: var(--paper); color: var(--fg); border: 1px solid var(--line); border-radius: 16px; padding: 6px; z-index: 5;
   box-shadow: 0 12px 32px rgba(0,0,0,.22), 0 2px 6px rgba(0,0,0,.10); }
@@ -402,7 +403,7 @@ body.web.lado .anexos { grid-column: 2; grid-row: 4; }
 </div>
 
 <div class="painel" id="painel" hidden>
-  <div class="p-topo"><button type="button" id="p-voltar" aria-label="Voltar">←</button><h2 id="p-tit">Menu</h2><button type="button" id="p-anotar" aria-label="Escrever sobre esta tela">📝</button></div>
+  <div class="p-topo"><button type="button" id="p-voltar" aria-label="Voltar">←</button><h2 id="p-tit">Menu</h2><button type="button" id="p-anotar" aria-label="Escrever sobre esta tela">📝</button><button type="button" id="p-mais" aria-label="Mais opções" aria-haspopup="menu">⋮</button></div>
   <div class="p-corpo" id="p-corpo"></div>
   <div class="p-extra" id="p-extra">
     <button type="button" id="notificar">🔔 Ativar notificações</button>
@@ -1031,7 +1032,8 @@ form.addEventListener('submit', async e => {
 
 const mais = document.getElementById('mais');
 const menu = document.getElementById('menu');
-mais.onclick = e => { e.stopPropagation(); menu.hidden = !menu.hidden; mais.setAttribute('aria-expanded', String(!menu.hidden)); };
+mais.onclick = e => { e.stopPropagation(); if (typeof menuCasa !== 'undefined' && menu.parentElement !== menuCasa) menuCasa.append(menu);
+  if (typeof ocultosConversa !== 'undefined' && ocultosConversa) { [irGeral.hidden, irTrab.hidden, abreMenu.hidden] = ocultosConversa; ocultosConversa = null; } menu.classList.remove('no-painel'); menu.hidden = !menu.hidden; mais.setAttribute('aria-expanded', String(!menu.hidden)); };
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
   if (!painel.hidden && !document.querySelector('.zoom, .pop')) { document.getElementById('p-voltar').click(); return; }   // painel do Menu: Esc = voltar uma tela
@@ -1193,6 +1195,7 @@ function mostraLista() {
 function abrir(c) {
   store.set('ultima-conv', c.arq); store.set('ultima-nome', c.nome);
   irGeral.hidden = c.arq === GERAL.arq; irTrab.hidden = c.arq === TRAB.arq; abreMenu.hidden = c.arq !== GERAL.arq;   // Trabalho é só trabalho
+  if (typeof ocultosConversa !== 'undefined') ocultosConversa = null;
   FILE = c.arq; API = apiDe(c.arq); nomeConv = c.nome; fotoConv = c.foto || (conversas.find(x => x.arq === c.arq) || {}).foto || '';
   logoEl.style.backgroundImage = ''; if (fotoConv) fotoUrl(fotoConv).then(u => { if (FILE === c.arq) logoEl.style.backgroundImage = 'url(' + u + ')'; }).catch(() => {});
   vistosAntes = parseInt(store.get(vistoKey(FILE)) || '0', 10);
@@ -1563,8 +1566,14 @@ function abreItem(cat, it) {   // detalhe: foto grande (toque amplia), dados, li
     d.append(nb); c.append(d);
   });
 }
-irGeral.onclick = () => { menu.hidden = true; if (!sending) abrir(GERAL).catch(() => {}); };
-irTrab.onclick = () => { menu.hidden = true; if (!sending) abrir(TRAB).catch(() => {}); };
+irGeral.onclick = () => { menu.hidden = true; fechaPainel(); if (!sending) abrir(GERAL).catch(() => {}); };
+irTrab.onclick = () => { menu.hidden = true; fechaPainel(); if (!sending) abrir(TRAB).catch(() => {}); };
+// ⋮ também em toda tela do Menu (May, 26/10): navegar a qualquer minuto sem voltar tela por tela
+const menuCasa = menu.parentElement;   // o header: lá dentro o menu fica preso atrás do painel (z-index do header), então sai pro body
+let ocultosConversa = null;   // dentro do Menu mostra as 3 opções; ao voltar pro ⋮ da conversa, devolve o que ela escondia
+document.getElementById('p-mais').onclick = e => { e.stopPropagation(); document.body.append(menu); menu.classList.add('no-painel');
+  if (!ocultosConversa) ocultosConversa = [irGeral.hidden, irTrab.hidden, abreMenu.hidden];
+  irGeral.hidden = irTrab.hidden = abreMenu.hidden = false; menu.hidden = !menu.hidden; };
 // Foto em tela cheia: toca em qualquer lugar ou no ✕ pra fechar; arrastar pro lado (ou ← →) troca pela anterior/seguinte da conversa.
 function fotosDaConversa() { return lastItems.flatMap(x => x.fotos || []); }
 function abreZoom(src, path) {
