@@ -224,8 +224,14 @@ button:disabled { opacity: .45; cursor: default; }
 }
 .zoom { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,.92); display: grid; place-items: center; padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px); animation: entra .18s ease-out both; }
 .zoom img { max-width: 100vw; max-height: 100%; object-fit: contain; touch-action: pinch-zoom; }
-.zoom button { position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); right: 14px; width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,.18); color: #fff; font-size: 20px; }
+.zoom .zx { position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); right: 14px; width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,.18); color: #fff; font-size: 20px; }
+.zoom .zcont { position: absolute; top: calc(20px + env(safe-area-inset-top, 0px)); left: 16px; padding: 4px 12px; border-radius: 14px; background: rgba(255,255,255,.18); color: #fff; font-size: 15px; font-variant-numeric: tabular-nums; }
+.zoom .zsalvar { position: absolute; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); padding: 11px 26px; border-radius: 22px; background: rgba(255,255,255,.22); color: #fff; font-size: 16px; font-weight: 600; }
 .msg .foto { cursor: zoom-in; }
+.album .grade { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; width: 100%; max-width: 280px; }
+.album .foto.mini { max-width: none; min-height: 0; height: 132px; margin: 0; }
+.album .foto-x.mini { margin: 0; padding: 10px; font-size: 12px; display: grid; place-items: center; height: 132px; }
+.album .baixar-tudo { width: auto; height: auto; white-space: nowrap; display: block; margin: 6px 0 4px; border: 0; padding: 8px 14px; border-radius: 16px; background: color-mix(in srgb, var(--accent) 18%, transparent); color: inherit; font-size: 14px; font-weight: 600; }
 .msg .foto-x { padding: 14px 16px; margin-bottom: 4px; border-radius: 10px; background: rgba(0,0,0,.08); font-size: 14px; opacity: .8; }
 /* Menu e Catálogo: tela cheia, navegação por botões grandes (pensada pro celular) */
 .painel { position: fixed; inset: 0; z-index: 52; background: var(--bg); color: var(--fg); display: flex; flex-direction: column;
@@ -486,7 +492,7 @@ function parse(md) {
       if (cit) text = text.slice(0, cit.index);
       const au = text.match(/^🎤 (\S+)\s*$/);           // "🎤 recados-audios/arquivo.m4a"
       const f = text.match(/^📷 (\S+)\s*([\s\S]*)$/);   // "📷 recados-fotos/arquivo.jpg legenda"
-      out.push({ from: 'may', day: m[1], time: m[2], lida, foto: f ? f[1] : '', audio: au ? au[1] : '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: au ? '' : (f ? f[2] : text) });
+      out.push({ from: 'may', day: m[1], time: m[2], lida, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], audio: au ? au[1] : '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: au ? '' : (f ? f[2] : text) });
       continue;
     }
     const tr = line.match(/^\s+↳ transcrição: (.*)$/);
@@ -501,7 +507,7 @@ function parse(md) {
       const cit = txt.match(/\s*⟪re: ([^:⟫]+): ([^⟫]*)⟫\s*$/);
       if (cit) txt = txt.slice(0, cit.index);
       const f = txt.match(/^📷 (\S+)\s*([\s\S]*)$/);   // foto: "📷 recados-fotos/x.jpg legenda"
-      out.push({ from: 'lyra', quem: m[1].toLowerCase(), copiar: !!m[2], opcoes: m[4] ? m[4].split('|').map(x => x.trim()).filter(Boolean) : null, foto: f ? f[1] : '', day: out.length ? out[out.length - 1].day : '', time: '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: f ? f[2] : txt });
+      out.push({ from: 'lyra', quem: m[1].toLowerCase(), copiar: !!m[2], opcoes: m[4] ? m[4].split('|').map(x => x.trim()).filter(Boolean) : null, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], day: out.length ? out[out.length - 1].day : '', time: '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: f ? f[2] : txt });
     }
   }
   return out;
@@ -584,9 +590,32 @@ function render(items, manterPosicao) {
       bar.append(lab, btn); el.append(bar);
     }
     if (i >= firstNew && it.from === 'lyra') el.style.animationDelay = '.9s';
-    if (it.foto) {
+    if (it.fotos && it.fotos.length > 1) {
+      // Álbum: "📷 a.png,b.png,c.png legenda" = uma mensagem com grade de miniaturas + Baixar tudo
+      const alb = document.createElement('div'); alb.className = 'album';
+      const grade = document.createElement('div'); grade.className = 'grade';
+      const prontos = {};   // caminho -> File já pronto (o share do iOS precisa sair logo do toque)
+      it.fotos.forEach(fp => {
+        const im = document.createElement('img'); im.className = 'foto mini'; im.alt = 'Foto do álbum';
+        im.addEventListener('click', e => { e.stopPropagation(); if (im.src) abreZoom(im.src, fp); });
+        fotoUrl(fp).then(u => { im.src = u; return fetch(u).then(r => r.blob()).then(bl => { prontos[fp] = new File([bl], fp.split('/').pop(), { type: bl.type || tipoDe(fp) }); }); })
+          .catch(e => { const x = document.createElement('div'); x.className = 'foto-x mini'; x.textContent = '📷 apagada'; im.replaceWith(x); });
+        grade.append(im);
+      });
+      const bt = document.createElement('button'); bt.type = 'button'; bt.className = 'baixar-tudo'; bt.textContent = '⬇️ Baixar tudo (' + it.fotos.length + ')';
+      bt.addEventListener('click', async e => {
+        e.stopPropagation();
+        const arqs = it.fotos.map(fp => prontos[fp]).filter(Boolean);
+        if (!arqs.length) { showNote('As fotos ainda estão carregando.', true); return; }
+        try {
+          if (navigator.canShare && navigator.canShare({ files: arqs })) { await navigator.share({ files: arqs }); return; }   // iOS: "Salvar N imagens"
+          for (const f of arqs) { const a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = f.name; document.body.append(a); a.click(); a.remove(); await new Promise(r => setTimeout(r, 350)); }
+        } catch (err) { if (err && err.name !== 'AbortError') showNote('Não consegui baixar as fotos.', true); }
+      });
+      alb.append(grade, bt); el.append(alb);
+    } else if (it.foto) {
       const img = document.createElement('img'); img.className = 'foto'; img.alt = 'Foto enviada';
-      img.addEventListener('click', e => { e.stopPropagation(); if (img.src) abreZoom(img.src); });
+      img.addEventListener('click', e => { e.stopPropagation(); if (img.src) abreZoom(img.src, it.foto); });
       img.onload = () => { if (feed.scrollHeight - feed.scrollTop - feed.clientHeight < 400) feed.scrollTop = feed.scrollHeight; };
       fotoUrl(it.foto).then(u => { img.src = u; }).catch(e => {   // foto de análise sai do repo em 24h: mostra aviso, não caixa quebrada
         const x = document.createElement('div'); x.className = 'foto-x'; x.textContent = e.status === 404 ? '📷 Foto apagada' : '📷 Não carregou a foto';
@@ -885,15 +914,20 @@ function responderUltima() {
   irProFim();
 }
 let querResponder = location.hash.startsWith('#responder');
-const convNotif = decodeURIComponent((location.hash.split('=')[1] || ''));   // #responder=caixas/trabalho.md
+const hashPush = new URLSearchParams(location.hash.slice(1));
+const convNotif = hashPush.get('responder') || '';
+const fotoNotif = hashPush.get('foto') || '';   // #responder=caixas/trabalho.md
 function convPorArq(arq) { return arq === TRAB.arq ? TRAB : (conversas.find(x => x.arq === arq) || GERAL); }
-function abreRespondendo(arq) { const c = convPorArq(arq || GERAL.arq); return (FILE === c.arq ? load() : abrir(c)).then(responderUltima).catch(responderUltima); }
+function abreRespondendo(arq, foto) {
+  const c = convPorArq(arq || GERAL.arq), fim = () => { if (foto) { fotoUrl(foto).then(u => abreZoom(u, foto)).catch(() => showNote('Essa foto já saiu do repositório.', true)); irProFim(); } else responderUltima(); };
+  return (FILE === c.arq ? load() : abrir(c)).then(fim).catch(fim);
+}
 let rapidoAte = 0;
 function buscaRapido() { rapidoAte = Date.now() + 30000; const t = setInterval(() => { if (Date.now() > rapidoAte || !token) return clearInterval(t); if (FILE && !sending) load().catch(() => {}); }, 1500); }
 if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data === 'novo') buscaRapido(); });
 // Veio de push: guarda a conversa por 1 min, pra o reload da volta não trocar pela do relógio.
 let pushEm = 0;
-if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { const d = e.data || {}; if (d === 'responder' || d.responder !== undefined) { pushEm = Date.now(); store.set('push-conv', (d.responder || GERAL.arq) + '|' + pushEm); abreRespondendo(d.responder); } });
+if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { const d = e.data || {}; if (d === 'responder' || d.responder !== undefined) { pushEm = Date.now(); store.set('push-conv', (d.responder || GERAL.arq) + '|' + pushEm); abreRespondendo(d.responder, d.foto); } });
 function gestoResponder(el, it) {
   let x0 = null, y0 = 0, dx = 0, timer = null, seta = null;
   const fim = () => {
@@ -1507,15 +1541,45 @@ function abreItem(cat, it) {   // detalhe: foto grande (toque amplia), dados, li
 }
 irGeral.onclick = () => { menu.hidden = true; if (!sending) abrir(GERAL).catch(() => {}); };
 irTrab.onclick = () => { menu.hidden = true; if (!sending) abrir(TRAB).catch(() => {}); };
-// Foto em tela cheia (toca em qualquer lugar ou no ✕ pra fechar)
-function abreZoom(src) {
+// Foto em tela cheia: toca em qualquer lugar ou no ✕ pra fechar; arrastar pro lado (ou ← →) troca pela anterior/seguinte da conversa.
+function fotosDaConversa() { return lastItems.flatMap(x => x.fotos || []); }
+function abreZoom(src, path) {
   const z = document.createElement('div'); z.className = 'zoom';
   const im = document.createElement('img'); im.src = src; im.alt = 'Foto';
-  const x = document.createElement('button'); x.type = 'button'; x.textContent = '✕'; x.setAttribute('aria-label', 'Fechar');
-  z.append(im, x); document.body.append(z);
+  const x = document.createElement('button'); x.type = 'button'; x.className = 'zx'; x.textContent = '✕'; x.setAttribute('aria-label', 'Fechar');
+  const cont = document.createElement('div'); cont.className = 'zcont'; cont.hidden = true;
+  const salvar = document.createElement('button'); salvar.type = 'button'; salvar.className = 'zsalvar'; salvar.textContent = 'Salvar';
+  z.append(im, cont, salvar, x); document.body.append(z);
+  const lista = fotosDaConversa(); let i = path ? lista.indexOf(path) : -1;
+  const mostraCont = () => { cont.hidden = i < 0 || lista.length < 2; cont.textContent = (i + 1) + ' / ' + lista.length; };
+  mostraCont();
+  let ocupado = false;
+  const vai = async dir => {   // dir: -1 anterior, +1 seguinte; pula foto que já saiu do repo
+    if (i < 0 || ocupado) return; ocupado = true;
+    try { for (let k = i + dir; k >= 0 && k < lista.length; k += dir) { try { const u = await fotoUrl(lista[k]); i = k; im.src = u; mostraCont(); break; } catch (e) {} } }
+    finally { ocupado = false; }
+  };
+  salvar.onclick = async e => {
+    e.stopPropagation();
+    const nome = ((i >= 0 ? lista[i] : path) || 'foto.jpg').split('/').pop();
+    try {
+      const blob = await (await fetch(im.src)).blob();
+      const arq = new File([blob], nome, { type: blob.type || tipoDe(nome) });
+      if (navigator.canShare && navigator.canShare({ files: [arq] })) { await navigator.share({ files: [arq] }); return; }   // iOS: folha de compartilhar → "Salvar imagem"
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nome; document.body.append(a); a.click(); a.remove();
+    } catch (err) { if (err && err.name !== 'AbortError') showNote('Não consegui salvar a foto.', true); }
+  };
+  x.onclick = e => { e.stopPropagation(); fecha(); };
   const fecha = () => { z.remove(); document.removeEventListener('keydown', esc); };
-  const esc = e => { if (e.key === 'Escape') fecha(); };
-  z.onclick = fecha; document.addEventListener('keydown', esc);
+  const esc = e => { if (e.key === 'Escape') fecha(); else if (e.key === 'ArrowLeft') vai(-1); else if (e.key === 'ArrowRight') vai(1); };
+  let t0 = null;
+  z.addEventListener('touchstart', e => { t0 = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null; }, { passive: true });
+  z.addEventListener('touchend', e => {
+    if (!t0) return; const t = e.changedTouches[0], dx = t.clientX - t0.x, dy = t.clientY - t0.y; t0 = null;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) { z.dataset.sw = '1'; setTimeout(() => { delete z.dataset.sw; }, 400); vai(dx < 0 ? 1 : -1); }
+  });
+  z.onclick = () => { if (!z.dataset.sw) fecha(); };
+  document.addEventListener('keydown', esc);
 }
 // Nova conversa: popup da própria página com nome e foto do grupo
 novaBtn.onclick = () => {
@@ -1564,7 +1628,7 @@ function start() {
   mais.hidden = false;
   if (querResponder) {   // veio da notificação: abre a conversa dela já respondendo
     querResponder = false; history.replaceState(null, '', location.pathname + location.search);
-    abreRespondendo(convNotif);
+    abreRespondendo(convNotif, fotoNotif);
   } else if (MODO_WEB) mostraLista();
   else abrir(ultimaConv()).catch(() => {});   // celular: Trabalho no horário de trabalho, senão Geral
   // Conversa aberta: busca a cada 4 s; lista de conversas: a cada 15 s (só com a página na tela).

@@ -1,4 +1,4 @@
-// Service worker dos Recados: só serve pra notificação push (iPhone com a página na tela de início, iOS 16.4+).
+// v2 (foto no push). Service worker dos Recados: só serve pra notificação push (iPhone com a página na tela de início, iOS 16.4+).
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
 
@@ -12,7 +12,7 @@ self.addEventListener('push', e => {
     icon: 'apple-touch-icon.png',
     badge: 'favicon.png',
     tag: 'recados-' + (d.conv || 'geral'),
-    data: { conv: d.conv || '' },
+    data: { conv: d.conv || '', foto: d.foto || '' },
     renotify: true
   }));
 });
@@ -20,9 +20,9 @@ self.addEventListener('push', e => {
 self.addEventListener('notificationclick', e => {
   e.notification.close();
   // Tocou na notificação: abre (ou traz pra frente) a conversa certa (Geral ou Trabalho) já no modo de responder.
-  const conv = (e.notification.data && e.notification.data.conv) || '';
+  const conv = (e.notification.data && e.notification.data.conv) || '', foto = (e.notification.data && e.notification.data.foto) || '';
   e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cs => {
-    for (const c of cs) { if ('focus' in c) { c.postMessage({ responder: conv }); return c.focus(); } }
-    return self.clients.openWindow('./#responder=' + encodeURIComponent(conv));
+    for (const c of cs) { if ('focus' in c) { c.postMessage({ responder: conv, foto }); return c.focus(); } }
+    return self.clients.openWindow('./#responder=' + encodeURIComponent(conv) + (foto ? '&foto=' + encodeURIComponent(foto) : ''));
   }));
 });
