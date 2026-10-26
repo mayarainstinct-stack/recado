@@ -1665,6 +1665,9 @@ async function abreTreinoSeHora() {
   if (!(a.dias || []).includes(agora.getDay()) || hm < a.de || hm > a.ate) return;
   const v = d.viagens.find(x => x.id === a.viagem) || d.viagens[0]; const l = v && v.listas.find(x => x.id === a.lista);
   if (!l || !painel.hidden) return;
+  const hoje = agora.toISOString().slice(0, 10);
+  if (store.get('treino-feito') === hoje) return;   // terminou o treino hoje: não abre mais (May, 26/10)
+  if (marcados(v, l).size >= totalItens(l)) { store.set('treino-feito', hoje); return; }   // tudo marcado = terminou
   menu.hidden = true; painel.hidden = false; pilha = []; abreChecklist(v, l);
 }
 function start() {
