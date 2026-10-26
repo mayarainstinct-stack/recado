@@ -1307,23 +1307,47 @@ function abreChecklist(v, l) {
     c.append(limpa);
   });
 }
-// ---- Imagens (plantas, referências…): menu/imagens.json = { grupos: [{ nome, imagens: [{ titulo, arq, nota }] }] }
+// ---- Imagens (plantas, referências…): menu/imagens.json = { grupos: [{ nome, capa?, imagens: [{ titulo, arq, nota }] }] }
+// Cada grupo é um ÁLBUM (May, 26/10): primeiro a lista de álbuns com capa; tocando, as imagens dele + Baixar tudo.
 function abreImagens(m) {
   tela(m.nome, async c => {
     const p = document.createElement('p'); p.className = 'p-nota'; p.textContent = 'Carregando…'; c.append(p);
     let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
-    p.textContent = 'Toca na imagem pra ver grande e escrever sobre ela.';
+    p.textContent = 'Toca num álbum pra abrir.';
     d.grupos.forEach(g => {
-      const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = g.nome; c.append(t);
-      g.imagens.forEach(im => {
-        const el = document.createElement('div'); el.className = 'item';
-        const ph = fotoDe({ nome: im.titulo, foto: im.arq }, { icone: m.icone }, false); el.append(ph);
-        el.onclick = () => { const n = document.createElement('div'); n.textContent = im.nota || ''; abreFicha({ titulo: im.titulo, foto: im.arq, corpo: im.nota ? n : null, contexto: 'Imagem (' + im.titulo + ')' }); };
-        const b = document.createElement('div'); b.className = 'i-corpo';
-        const h = document.createElement('h3'); h.textContent = im.titulo; b.append(h);
-        if (im.nota) { const n = document.createElement('div'); n.className = 'det'; n.textContent = im.nota; b.append(n); }
-        el.append(b); c.append(el);
-      });
+      if (!g.imagens.length) return;
+      const el = document.createElement('div'); el.className = 'item';
+      el.append(fotoDe({ nome: g.nome, foto: g.capa || g.imagens[0].arq }, { icone: m.icone }, false));   // capa: opcional no json
+      const b = document.createElement('div'); b.className = 'i-corpo';
+      const h = document.createElement('h3'); h.textContent = g.nome; b.append(h);
+      const n = document.createElement('div'); n.className = 'det'; n.textContent = g.imagens.length + (g.imagens.length > 1 ? ' imagens' : ' imagem'); b.append(n);
+      el.append(b); el.onclick = () => abreAlbum(g, m); c.append(el);
+    });
+  });
+}
+function abreAlbum(g, m) {
+  tela(g.nome, c => {
+    const prontos = {};   // arq -> File já baixado (o share do iOS precisa sair logo do toque)
+    const caixa = document.createElement('div'); caixa.className = 'album';
+    const bt = document.createElement('button'); bt.type = 'button'; bt.className = 'baixar-tudo'; bt.textContent = '⬇️ Baixar tudo (' + g.imagens.length + ')';
+    bt.onclick = async () => {
+      const arqs = g.imagens.map(im => prontos[im.arq]).filter(Boolean);
+      if (!arqs.length) { showNote('As imagens ainda estão carregando.', true); return; }
+      try {
+        if (navigator.canShare && navigator.canShare({ files: arqs })) { await navigator.share({ files: arqs }); return; }   // iOS: "Salvar N imagens"
+        for (const f of arqs) { const a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = f.name; document.body.append(a); a.click(); a.remove(); await new Promise(r => setTimeout(r, 350)); }
+      } catch (err) { if (err && err.name !== 'AbortError') showNote('Não consegui baixar as imagens.', true); }
+    };
+    caixa.append(bt); c.append(caixa);
+    g.imagens.forEach(im => {
+      fotoUrl(im.arq).then(u => fetch(u)).then(r => r.blob()).then(bl => { prontos[im.arq] = new File([bl], im.arq.split('/').pop(), { type: bl.type || tipoDe(im.arq) }); }).catch(() => {});
+      const el = document.createElement('div'); el.className = 'item';
+      const ph = fotoDe({ nome: im.titulo, foto: im.arq }, { icone: m.icone }, false); el.append(ph);
+      el.onclick = () => { const n = document.createElement('div'); n.textContent = im.nota || ''; abreFicha({ titulo: im.titulo, foto: im.arq, corpo: im.nota ? n : null, contexto: 'Imagem (' + im.titulo + ')' }); };
+      const b = document.createElement('div'); b.className = 'i-corpo';
+      const h = document.createElement('h3'); h.textContent = im.titulo; b.append(h);
+      if (im.nota) { const n = document.createElement('div'); n.className = 'det'; n.textContent = im.nota; b.append(n); }
+      el.append(b); c.append(el);
     });
   });
 }
