@@ -227,7 +227,7 @@ button:disabled { opacity: .45; cursor: default; }
 .zoom img { max-width: 100vw; max-height: 100%; object-fit: contain; touch-action: pinch-zoom; }
 .zoom .zx { position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); right: 14px; width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,.18); color: #fff; font-size: 20px; }
 .zoom .zcont { position: absolute; top: calc(20px + env(safe-area-inset-top, 0px)); left: 16px; padding: 4px 12px; border-radius: 14px; background: rgba(255,255,255,.18); color: #fff; font-size: 15px; font-variant-numeric: tabular-nums; }
-.zoom .zsalvar { position: absolute; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); padding: 11px 26px; border-radius: 22px; background: rgba(255,255,255,.22); color: #fff; font-size: 16px; font-weight: 600; }
+.zoom .zsalvar { position: absolute; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); width: auto; height: auto; min-height: 44px; white-space: nowrap; padding: 11px 26px; border-radius: 22px; background: rgba(255,255,255,.22); color: #fff; font-size: 16px; font-weight: 600; }
 .msg .foto { cursor: zoom-in; }
 .album .grade { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; width: 100%; max-width: 280px; }
 .album .foto.mini { max-width: none; min-height: 0; height: 132px; margin: 0; }
@@ -1346,7 +1346,7 @@ function abreAlbum(g, m) {
       fotoUrl(im.arq).then(u => fetch(u)).then(r => r.blob()).then(bl => { prontos[im.arq] = new File([bl], im.arq.split('/').pop(), { type: bl.type || tipoDe(im.arq) }); }).catch(() => {});
       const el = document.createElement('div'); el.className = 'item';
       const ph = fotoDe({ nome: im.titulo, foto: im.arq }, { icone: m.icone }, false); el.append(ph);
-      el.onclick = () => { const n = document.createElement('div'); n.textContent = im.nota || ''; abreFicha({ titulo: im.titulo, foto: im.arq, corpo: im.nota ? n : null, contexto: 'Imagem (' + im.titulo + ')' }); };
+      el.onclick = () => { const n = document.createElement('div'); n.textContent = im.nota || ''; abreFicha({ titulo: im.titulo, foto: im.arq, corpo: im.nota ? n : null, contexto: 'Imagem (' + im.titulo + ')', fotos: g.imagens.map(x => x.arq) }); };
       const b = document.createElement('div'); b.className = 'i-corpo';
       const h = document.createElement('h3'); h.textContent = im.titulo; b.append(h);
       if (im.nota) { const n = document.createElement('div'); n.className = 'det'; n.textContent = im.nota; b.append(n); }
@@ -1460,14 +1460,14 @@ function notaBox(contexto) {
   return nb;
 }
 // Ficha: popup por cima de tudo, com o detalhe (foto grande, texto) e a caixinha de anotação embaixo
-function abreFicha({ titulo, foto, corpo, contexto }) {
+function abreFicha({ titulo, foto, corpo, contexto, fotos }) {
   const f = document.createElement('div'); f.className = 'ficha'; f.setAttribute('role', 'dialog'); f.setAttribute('aria-label', titulo || 'Detalhe');
   const cx = document.createElement('div'); cx.className = 'f-caixa';
   const topo = document.createElement('div'); topo.className = 'f-topo';
   const h = document.createElement('h3'); h.textContent = titulo || '';
   const x = document.createElement('button'); x.type = 'button'; x.textContent = '✕'; x.setAttribute('aria-label', 'Fechar');
   topo.append(h, x); cx.append(topo);
-  if (foto) { const im = document.createElement('img'); im.alt = titulo || ''; cx.append(im); fotoUrl(foto).then(u => { im.src = u; im.onclick = () => abreZoom(u); }).catch(() => im.remove()); }
+  if (foto) { const im = document.createElement('img'); im.alt = titulo || ''; cx.append(im); fotoUrl(foto).then(u => { im.src = u; im.onclick = () => abreZoom(u, foto, fotos); }).catch(() => im.remove()); }
   if (corpo) { const c = document.createElement('div'); c.className = 'f-corpo'; c.append(corpo); cx.append(c); }
   cx.append(notaBox(contexto || titulo || 'Anotação'));
   f.append(cx); document.body.append(f);
@@ -1576,14 +1576,14 @@ document.getElementById('p-mais').onclick = e => { e.stopPropagation(); document
   irGeral.hidden = irTrab.hidden = abreMenu.hidden = false; menu.hidden = !menu.hidden; };
 // Foto em tela cheia: toca em qualquer lugar ou no ✕ pra fechar; arrastar pro lado (ou ← →) troca pela anterior/seguinte da conversa.
 function fotosDaConversa() { return lastItems.flatMap(x => x.fotos || []); }
-function abreZoom(src, path) {
+function abreZoom(src, path, listaFotos) {   // listaFotos: as fotos do álbum (sem ela, as da conversa)
   const z = document.createElement('div'); z.className = 'zoom';
   const im = document.createElement('img'); im.src = src; im.alt = 'Foto';
   const x = document.createElement('button'); x.type = 'button'; x.className = 'zx'; x.textContent = '✕'; x.setAttribute('aria-label', 'Fechar');
   const cont = document.createElement('div'); cont.className = 'zcont'; cont.hidden = true;
   const salvar = document.createElement('button'); salvar.type = 'button'; salvar.className = 'zsalvar'; salvar.textContent = 'Salvar';
   z.append(im, cont, salvar, x); document.body.append(z);
-  const lista = fotosDaConversa(); let i = path ? lista.indexOf(path) : -1;
+  const lista = listaFotos || fotosDaConversa(); let i = path ? lista.indexOf(path) : -1;
   const mostraCont = () => { cont.hidden = i < 0 || lista.length < 2; cont.textContent = (i + 1) + ' / ' + lista.length; };
   mostraCont();
   let ocupado = false;
