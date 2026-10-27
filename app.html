@@ -1270,7 +1270,14 @@ function abreItemMenu(m) {
 // ---- Viagens: menu/viagens.json = { viagens: [{ id, nome, resumo, listas: [{ id, nome, grupos: [{ nome, itens: [[id, texto]] }] }] }] }
 // O que ela marca fica no próprio celular (localStorage), por viagem e por lista.
 const marcados = (v, l) => { try { return new Set(JSON.parse(store.get('viagem:' + v.id + ':' + l.id) || '[]')); } catch (e) { return new Set(); } };
-const guardaMarcados = (v, l, s) => store.set('viagem:' + v.id + ':' + l.id, s.size ? JSON.stringify([...s]) : '');
+const diaLocal = () => new Date().toLocaleDateString('sv');   // AAAA-MM-DD no fuso dela (toISOString virava o dia às 21h)
+const guardaMarcados = (v, l, s) => {
+  store.set('viagem:' + v.id + ':' + l.id, s.size ? JSON.stringify([...s]) : '');
+  if (v._arq !== 'menu/treino.json') return;   // treino em andamento (May, 27/10): marcou 1 item = a tela do treino fica aberta até marcar tudo
+  if (s.size >= totalItens(l)) { store.set('treino-ativo', ''); store.set('treino-feito', diaLocal()); }
+  else if (s.size) store.set('treino-ativo', JSON.stringify({ dia: diaLocal(), v: v.id, l: l.id }));
+  else store.set('treino-ativo', '');
+};
 const totalItens = l => l.grupos.reduce((n, g) => n + g.itens.length, 0);
 function abreViagens(m) {
   tela(m.nome, async c => {
@@ -1278,7 +1285,7 @@ function abreViagens(m) {
     let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
     p.remove();
     const lista = document.createElement('div'); lista.className = 'p-lista'; c.append(lista);
-    d.viagens.forEach(v => lista.append(botao(v.icone || '🧳', v.nome, v.sub, () => abreViagem(v))));
+    d.viagens.forEach(v => { v._arq = m.arq; lista.append(botao(v.icone || '🧳', v.nome, v.sub, () => abreViagem(v))); });
   });
 }
 function abreViagem(v) {
@@ -1658,14 +1665,22 @@ novaBtn.onclick = () => {
 let poll = null;
 // Academia (May, 26/10): no horário do treino a página abre SEMPRE no checklist de hoje; a seta ← volta pra conversa.
 // menu/treino.json → abrir: { dias: [1..5] (0 = dom), de: 'HH:MM', ate: 'HH:MM', viagem: id, lista: id }
+// Além disso (May, 27/10): começou um treino (marcou 1 item) => reabre nele a qualquer hora do dia, até marcar tudo.
 async function abreTreinoSeHora() {
   let d; try { d = JSON.parse(await lerArquivo('menu/treino.json')); } catch (e) { return; }
+  d.viagens.forEach(x => { x._arq = 'menu/treino.json'; });
+  const hoje = diaLocal();
+  let ativo = null; try { ativo = JSON.parse(store.get('treino-ativo') || 'null'); } catch (e) {}
+  if (ativo && ativo.dia === hoje && painel.hidden) {
+    const va = d.viagens.find(x => x.id === ativo.v), la = va && va.listas.find(x => x.id === ativo.l);
+    if (la && marcados(va, la).size < totalItens(la)) { menu.hidden = true; painel.hidden = false; pilha = []; abreChecklist(va, la); return; }
+    store.set('treino-ativo', '');
+  }
   const a = d.abrir; if (!a) return;
   const agora = new Date(), hm = String(agora.getHours()).padStart(2, '0') + ':' + String(agora.getMinutes()).padStart(2, '0');
   if (!(a.dias || []).includes(agora.getDay()) || hm < a.de || hm > a.ate) return;
   const v = d.viagens.find(x => x.id === a.viagem) || d.viagens[0]; const l = v && v.listas.find(x => x.id === a.lista);
   if (!l || !painel.hidden) return;
-  const hoje = agora.toISOString().slice(0, 10);
   if (store.get('treino-feito') === hoje) return;   // terminou o treino hoje: não abre mais (May, 26/10)
   if (marcados(v, l).size >= totalItens(l)) { store.set('treino-feito', hoje); return; }   // tudo marcado = terminou
   menu.hidden = true; painel.hidden = false; pilha = []; abreChecklist(v, l);
