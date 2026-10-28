@@ -500,15 +500,16 @@ function parse(md) {
     if (tr) { const alvo = [...out].reverse().find(x => x.from === 'may' && x.audio); if (alvo) alvo.transcricao = tr[1]; continue; }
     // Respostas no estilo grupo: "  ↳ Lyra: …" ou "  ↳ simp-mobile: …" (cada um com a sua cor)
     // "[op: A|B|C]" = balão de múltipla escolha (ela toca e a resposta vai citando a pergunta)
-    m = line.match(/^\s+↳ (Lyra|rm|simp-mobile|promotor|kds)( \[copiar\])?(?: \[op: ([^\]]+)\])?: (.*)$/i);
-    if (m) { m = [m[0], m[1], m[2], m[4], m[3]]; }
+    m = line.match(/^\s+↳ (Lyra|rm|simp-mobile|promotor|kds)(?: \[(\d\d\/\d\d\/\d{4}) (\d\d:\d\d)\])?( \[copiar\])?(?: \[op: ([^\]]+)\])?: (.*)$/i);
+    // carimbo opcional logo depois do nome: "↳ Lyra [DD/MM/AAAA HH:MM]: texto"; sem ele a resposta herda o dia e fica sem hora
+    if (m) { m = [m[0], m[1], m[4], m[6], m[5], m[2], m[3]]; }
     if (m) {
       out.forEach(it => { if (it.from === 'may') it.lida = true; });   // respondeu = leu tudo antes
       let txt = m[3].replace(/\\n/g, '\n');
       const cit = txt.match(/\s*⟪re: ([^:⟫]+): ([^⟫]*)⟫\s*$/);
       if (cit) txt = txt.slice(0, cit.index);
       const f = txt.match(/^📷 (\S+)\s*([\s\S]*)$/);   // foto: "📷 recados-fotos/x.jpg legenda"
-      out.push({ from: 'lyra', quem: m[1].toLowerCase(), copiar: !!m[2], opcoes: m[4] ? m[4].split('|').map(x => x.trim()).filter(Boolean) : null, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], day: out.length ? out[out.length - 1].day : '', time: '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: f ? f[2] : txt });
+      out.push({ from: 'lyra', quem: m[1].toLowerCase(), copiar: !!m[2], opcoes: m[4] ? m[4].split('|').map(x => x.trim()).filter(Boolean) : null, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], day: m[5] || (out.length ? out[out.length - 1].day : ''), time: m[6] || '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: f ? f[2] : txt });
     }
   }
   return out;

@@ -1,4 +1,4 @@
-// v2 (foto no push). Service worker dos Recados: só serve pra notificação push (iPhone com a página na tela de início, iOS 16.4+).
+// v3 (hora nas respostas; foto no push). Service worker dos Recados: só serve pra notificação push (iPhone com a página na tela de início, iOS 16.4+).
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
 
