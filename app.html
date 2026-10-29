@@ -1274,12 +1274,23 @@ const marcados = (v, l) => { try { return new Set(JSON.parse(store.get('viagem:'
 const diaLocal = () => new Date().toLocaleDateString('sv');   // AAAA-MM-DD no fuso dela (toISOString virava o dia às 21h)
 const guardaMarcados = (v, l, s) => {
   store.set('viagem:' + v.id + ':' + l.id, s.size ? JSON.stringify([...s]) : '');
-  if (v._arq !== 'menu/treino.json') return;   // treino em andamento (May, 27/10): marcou 1 item = a tela do treino fica aberta até marcar tudo
+  if (v._arq !== 'menu/treino.json') return;
+  if (s.size) { const m = diasMarcados(); m[diaLocal()] = l.nome; store.set('treino-dias', JSON.stringify(m)); }
+  // treino em andamento (May, 27/10): marcou 1 item = a tela do treino fica aberta até marcar tudo
   if (s.size >= totalItens(l)) { store.set('treino-ativo', ''); store.set('treino-feito', diaLocal()); }
   else if (s.size) store.set('treino-ativo', JSON.stringify({ dia: diaLocal(), v: v.id, l: l.id }));
   else store.set('treino-ativo', '');
 };
 const totalItens = l => l.grupos.reduce((n, g) => n + g.itens.length, 0);
+// Treino (May, 29/10): as marcações zeram sozinhas toda segunda-feira (semana nova = contar o treino de novo, do começo).
+const segundaDe = (d = new Date()) => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x.toLocaleDateString('sv'); };
+function zeraSemanaTreino(viagens) {
+  const seg = segundaDe(); if (store.get('treino-semana') === seg) return;
+  viagens.forEach(v => v.listas.forEach(l => store.set('viagem:' + v.id + ':' + l.id, '')));
+  store.set('treino-ativo', ''); store.set('treino-feito', ''); store.set('treino-semana', seg);
+}
+// Dia treinado = marcou item no checklist do dia (guardado só neste aparelho; o histórico com cargas continua sendo o menu/treino.json).
+const diasMarcados = () => { try { return JSON.parse(store.get('treino-dias') || '{}'); } catch (e) { return {}; } };
 function abreViagens(m) {
   tela(m.nome, async c => {
     const p = document.createElement('p'); p.className = 'p-nota'; p.textContent = 'Carregando…'; c.append(p);
@@ -1291,7 +1302,8 @@ function abreViagens(m) {
   });
 }
 function montaTreino(c, d) {
-  const b = botao('📊', 'Estatística', 'treinos feitos, semana, cargas', () => abreEstatistica(d.historico || [])); b.classList.add('treino-est'); c.append(b);
+  zeraSemanaTreino(d.viagens);
+  const b = botao('📊', 'Estatística', 'semana, cargas, comparação com a base', () => abreEstatistica(d.historico || [])); b.classList.add('treino-est'); c.append(b);
   d.viagens.forEach(v => {
     if (v.resumo) { const r = document.createElement('div'); r.className = 'p-texto'; r.textContent = v.resumo; c.append(r); }
     const lista = document.createElement('div'); lista.className = 'p-lista'; c.append(lista);
@@ -1319,8 +1331,31 @@ function abreEstatistica(h) {
     if (!feitos.length) { const p = document.createElement('p'); p.className = 'p-nota'; p.textContent = 'Ainda não tem treino registrado.'; c.append(p); return; }
     card('Resumo', [
       distintos.length + (distintos.length === 1 ? ' treino feito' : ' treinos feitos') + ' no total, ' + noMes + ' neste mês.',
-      'Esta semana (seg a dom): ' + naSemana + (naSemana === 1 ? ' dia' : ' dias') + ' de treino' + (naSemana ? ' (' + distintos.filter(s => dt(s) >= iniSemana).map(dm).join(', ') + ').' : '.'),
       desde === 0 ? 'Último treino: hoje.' : 'Último treino: ' + dm(distintos[distintos.length - 1]) + ', faz ' + desde + (desde === 1 ? ' dia.' : ' dias.')]);
+    // Semana (só leitura, seg a dom): cada dia, se treinou e o que fez. Não edita nada; a marcação acontece no checklist do dia.
+    const NOMES = ['seg', 'ter', 'qua', 'qui', 'sex', 'sáb', 'dom'], kgT = n => String(n).replace('.', ',') + ' kg';
+    const marc = diasMarcados();
+    const semana = (ini, titulo) => {
+      const s = document.createElement('div'); s.className = 'p-sec'; s.textContent = titulo; c.append(s);
+      const x = document.createElement('div'); x.className = 'p-texto'; c.append(x);
+      let n = 0, cargas = {};
+      for (let i = 0; i < 7; i++) {
+        const dia = new Date(ini); dia.setDate(ini.getDate() + i); const k = dia.toLocaleDateString('sv');
+        const regs = h.filter(y => y.dia === k), marcou = marc[k];
+        const p = document.createElement('p'), b = document.createElement('b'); b.textContent = NOMES[i] + ' ' + dm(k) + ': '; p.append(b);
+        if (regs.length) { n++; p.append(regs.map(y => y.nome + ' — ' + (y.ex || []).map(e => e.n + (e.kg != null ? ' ' + kgT(e.kg) : '')).join(', ')).join(' | ')); regs.forEach(y => (y.ex || []).forEach(e => { if (e.kg != null) cargas[e.n] = e.kg; })); }
+        else if (marcou) { n++; p.append('treinou (' + marcou + ')'); }
+        else p.append(dia > hoje ? '·' : 'não treinou');
+        x.append(p);
+      }
+      const t = document.createElement('p'); t.textContent = n + (n === 1 ? ' dia treinado.' : ' dias treinados.'); x.append(t);
+      return { n, cargas };
+    };
+    const BASE = '2026-10-26', base = semana(dt(BASE), 'Semana base (26/10 a 01/11)');
+    if (+iniSemana !== +dt(BASE)) {
+      const atual = semana(iniSemana, 'Esta semana (seg a dom)');
+      card('Comparação com a semana base', [atual.n + ' dias treinados contra ' + base.n + ' na base.'].concat(Object.keys(atual.cargas).map(e => base.cargas[e] != null ? e + ': ' + kgT(atual.cargas[e]) + ' (base ' + kgT(base.cargas[e]) + ')' : e + ': ' + kgT(atual.cargas[e]) + ' (não estava na base)')));
+    } else card('Comparação com a semana base', ['Esta semana é a semana base: daqui pra frente cada semana nova é comparada com ela (dias treinados e cargas).']);
     const g = {}; feitos.forEach(x => { g[x.grupo] = (g[x.grupo] || 0) + 1; });
     card('Por grupo', Object.entries(g).sort((a, b) => b[1] - a[1]).map(([k, n]) => k + ': ' + n + (n === 1 ? ' treino' : ' treinos')));
     const ev = {}; feitos.forEach(x => (x.ex || []).forEach(e => { if (e.kg != null) (ev[e.n] = ev[e.n] || []).push([x.dia, e.kg]); }));
@@ -1349,13 +1384,16 @@ function abreChecklist(v, l) {
     l.grupos.forEach(g => {
       const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = g.nome; c.append(t);
       const box = document.createElement('div'); box.className = 'check-lista'; c.append(box);
-      g.itens.forEach(([id, texto]) => {
-        const lb = document.createElement('label'); lb.className = 'check';
+      const sobe = v._arq === 'menu/treino.json';   // treino: o que falta fica em cima, o concluído desce pro fim
+      const ordena = () => { if (sobe) [...box.children].sort((a, b) => (a.querySelector('input').checked - b.querySelector('input').checked) || (a._i - b._i)).forEach(x => box.append(x)); };
+      g.itens.forEach(([id, texto], i) => {
+        const lb = document.createElement('label'); lb.className = 'check'; lb._i = i;
         const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = feitos.has(id);
         const sp = document.createElement('span'); sp.textContent = texto;
-        cb.onchange = () => { cb.checked ? feitos.add(id) : feitos.delete(id); guardaMarcados(v, l, feitos); conta(); };
+        cb.onchange = () => { cb.checked ? feitos.add(id) : feitos.delete(id); guardaMarcados(v, l, feitos); conta(); ordena(); };
         lb.append(cb, sp); box.append(lb);
       });
+      ordena();
     });
     const limpa = document.createElement('button'); limpa.type = 'button'; limpa.className = 'gostei check-limpa'; limpa.textContent = 'Desmarcar tudo';
     limpa.onclick = () => { if (!feitos.size || !confirm('Desmarcar tudo desta lista?')) return; feitos.clear(); guardaMarcados(v, l, feitos); c.querySelectorAll('.check input').forEach(x => { x.checked = false; }); conta(); };
@@ -1714,6 +1752,7 @@ let poll = null;
 async function abreTreinoSeHora() {
   let d; try { d = JSON.parse(await lerArquivo('menu/treino.json')); } catch (e) { return; }
   d.viagens.forEach(x => { x._arq = 'menu/treino.json'; });
+  zeraSemanaTreino(d.viagens);
   const hoje = diaLocal();
   let ativo = null; try { ativo = JSON.parse(store.get('treino-ativo') || 'null'); } catch (e) {}
   if (ativo && ativo.dia === hoje && painel.hidden) {
