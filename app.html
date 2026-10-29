@@ -1285,8 +1285,52 @@ function abreViagens(m) {
     const p = document.createElement('p'); p.className = 'p-nota'; p.textContent = 'Carregando…'; c.append(p);
     let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
     p.remove();
+    if (m.arq === 'menu/treino.json') { d.viagens.forEach(v => { v._arq = m.arq; }); return montaTreino(c, d); }   // Treino (May, 29/10): os treinos já aparecem direto, sem passar pela lista de viagens
     const lista = document.createElement('div'); lista.className = 'p-lista'; c.append(lista);
     d.viagens.forEach(v => { v._arq = m.arq; lista.append(botao(v.icone || '🧳', v.nome, v.sub, () => abreViagem(v))); });
+  });
+}
+function montaTreino(c, d) {
+  const b = botao('📊', 'Estatística', 'treinos feitos, semana, cargas', () => abreEstatistica(d.historico || [])); b.classList.add('treino-est'); c.append(b);
+  d.viagens.forEach(v => {
+    if (v.resumo) { const r = document.createElement('div'); r.className = 'p-texto'; r.textContent = v.resumo; c.append(r); }
+    const lista = document.createElement('div'); lista.className = 'p-lista'; c.append(lista);
+    v.listas.forEach(l => lista.append(botao(l.icone, l.nome, marcados(v, l).size + ' de ' + totalItens(l) + ' feitos · ' + (l.sub || ''), () => abreChecklist(v, l))));
+  });
+}
+// Estatística do Treino: só o que está em "historico" do menu/treino.json (cada treino feito: dia AAAA-MM-DD, grupo, exercícios com kg quando anotado). Sem peso corporal.
+function abreEstatistica(h) {
+  tela('Estatística', c => {
+    const num = s => s.split('-').map(Number);                       // AAAA-MM-DD → [a, m, d] sem passar por fuso
+    const dt = s => { const [a, m, d] = num(s); return new Date(a, m - 1, d); };
+    const hoje = dt(diaLocal()), dias = Math.round;
+    const iniSemana = new Date(hoje); iniSemana.setDate(hoje.getDate() - ((hoje.getDay() + 6) % 7));   // semana começa na segunda
+    const feitos = h.filter(x => dt(x.dia) <= hoje).sort((a, b) => a.dia < b.dia ? -1 : 1);
+    const distintos = [...new Set(feitos.map(x => x.dia))];
+    const noMes = distintos.filter(s => dt(s).getMonth() === hoje.getMonth() && dt(s).getFullYear() === hoje.getFullYear()).length;
+    const naSemana = distintos.filter(s => dt(s) >= iniSemana).length;
+    const ult = distintos.length ? dt(distintos[distintos.length - 1]) : null;
+    const desde = ult ? dias((hoje - ult) / 864e5) : null;
+    const dm = s => s.slice(8) + '/' + s.slice(5, 7);
+    const card = (titulo, linhas) => {
+      const s = document.createElement('div'); s.className = 'p-sec'; s.textContent = titulo; c.append(s);
+      const x = document.createElement('div'); x.className = 'p-texto'; linhas.forEach(l => { const p = document.createElement('p'); p.textContent = l; x.append(p); }); c.append(x);
+    };
+    if (!feitos.length) { const p = document.createElement('p'); p.className = 'p-nota'; p.textContent = 'Ainda não tem treino registrado.'; c.append(p); return; }
+    card('Resumo', [
+      distintos.length + (distintos.length === 1 ? ' treino feito' : ' treinos feitos') + ' no total, ' + noMes + ' neste mês.',
+      'Esta semana (seg a dom): ' + naSemana + (naSemana === 1 ? ' dia' : ' dias') + ' de treino' + (naSemana ? ' (' + distintos.filter(s => dt(s) >= iniSemana).map(dm).join(', ') + ').' : '.'),
+      desde === 0 ? 'Último treino: hoje.' : 'Último treino: ' + dm(distintos[distintos.length - 1]) + ', faz ' + desde + (desde === 1 ? ' dia.' : ' dias.')]);
+    const g = {}; feitos.forEach(x => { g[x.grupo] = (g[x.grupo] || 0) + 1; });
+    card('Por grupo', Object.entries(g).sort((a, b) => b[1] - a[1]).map(([k, n]) => k + ': ' + n + (n === 1 ? ' treino' : ' treinos')));
+    const ev = {}; feitos.forEach(x => (x.ex || []).forEach(e => { if (e.kg != null) (ev[e.n] = ev[e.n] || []).push([x.dia, e.kg]); }));
+    const kg = n => String(n).replace('.', ',') + ' kg';
+    card('Evolução de carga', Object.keys(ev).length ? Object.entries(ev).map(([n, a]) => {
+      if (a.length === 1) return n + ': ' + kg(a[0][1]) + ' em ' + dm(a[0][0]) + ' (ainda 1 registro).';
+      const dif = a[a.length - 1][1] - a[0][1];
+      return n + ': ' + a.map(([s, k]) => kg(k) + ' (' + dm(s) + ')').join(' → ') + (dif > 0 ? ', +' + String(dif).replace('.', ',') + ' kg.' : dif < 0 ? ', ' + String(dif).replace('.', ',') + ' kg.' : ', igual.');
+    }) : ['Nenhuma carga registrada ainda.']);
+    card('Treinos feitos', feitos.slice().reverse().map(x => dm(x.dia) + ' · ' + x.nome));
   });
 }
 function abreViagem(v) {
