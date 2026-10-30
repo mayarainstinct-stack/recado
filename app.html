@@ -115,6 +115,8 @@ textarea:focus-visible { outline: none; }
 .msg.grupo { background: var(--cinza); color: var(--fg); border-left: 4px solid var(--quem); }
 .msg.grupo .quem { color: var(--quem); }
 .msg .quem { font-size: 12.5px; font-weight: 700; margin-bottom: 2px; color: var(--quem); }
+.marca { font-weight: 700; }
+.marca-cor { color: var(--quem); }
 .msg { position: relative; touch-action: pan-y; }
 .msg .cita { display: grid; gap: 1px; margin: 2px 0 6px; padding: 6px 10px; border-radius: 8px; border-left: 4px solid var(--quem);
   background: rgba(0,0,0,.06); font-size: 13px; line-height: 1.3; }
@@ -448,11 +450,22 @@ const store = {
 };
 // texto com link tocável: https://..., www... e instagram.com/... (sem innerHTML)
 const RE_LINK = /(https?:\/\/[^\s<>"]+|www\.[^\s<>"]+|(?:instagram\.com|youtube\.com|youtu\.be|twitch\.tv)\/[^\s<>"]+)/gi;
+// @Menção: @Orfeu, @Vega etc — colore se bater com alguém do GRUPO, senão fica neutro
+const RE_MARCA = /(@[A-Za-zÀ-ÿ][\wÀ-ÿ-]*)/g;
+const RE_LINK_OU_MARCA = new RegExp(RE_LINK.source + '|' + RE_MARCA.source, 'gi');
 function linkar(el, txt) {
   txt = txt || ''; let i = 0;
-  for (const m of txt.matchAll(RE_LINK)) {
-    let u = m[0].replace(/[.,;:!?)\]]+$/, '');
+  for (const m of txt.matchAll(RE_LINK_OU_MARCA)) {
     if (m.index > i) el.append(txt.slice(i, m.index));
+    if (m[0][0] === '@') {
+      const nome = m[0].slice(1);
+      const chave = Object.keys(GRUPO).find(k => k === nome.toLowerCase() || GRUPO[k].nome.toLowerCase().startsWith(nome.toLowerCase()));
+      const s = document.createElement('span'); s.textContent = m[0]; s.className = 'marca';
+      if (chave) { s.style.setProperty('--quem', GRUPO[chave].cor); s.classList.add('marca-cor'); }
+      el.append(s); i = m.index + m[0].length;
+      continue;
+    }
+    let u = m[0].replace(/[.,;:!?)\]]+$/, '');
     const a = document.createElement('a'); a.textContent = u;
     a.href = /^https?:/i.test(u) ? u : 'https://' + u; a.target = '_blank'; a.rel = 'noopener';
     a.addEventListener('click', e => e.stopPropagation());
