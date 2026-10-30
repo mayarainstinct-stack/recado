@@ -375,6 +375,7 @@ body.web.lado .anexos { grid-column: 2; grid-row: 4; }
     <div class="menu" id="menu" hidden>
       <button type="button" id="ir-geral"><span class="mi">💬</span>Geral</button>
       <button type="button" id="ir-trab"><span class="mi">💼</span>Trabalho</button>
+      <button type="button" id="ir-casa" hidden><span class="mi">🏠</span>Casa</button>
       <button type="button" id="abre-menu"><span class="mi">☰</span>Menu</button>
     </div>
   </header>
@@ -431,6 +432,7 @@ const REPO = 'mayarainstinct-stack/Inst';
 // Conversas = arquivos: "Geral" é a CAIXA-DE-ENTRADA.md; as outras ficam em caixas/<nome>.md (mesmo formato).
 const GERAL = { arq: 'CAIXA-DE-ENTRADA.md', nome: 'Geral' };
 const TRAB = { arq: 'caixas/trabalho.md', nome: 'Trabalho' };   // trabalho separado da Geral (May, 21/10/2026); no celular troca pelo ⋮
+const CASA = { arq: 'caixas/casa-pcs.md', nome: 'Casa (PCs)' };   // PCs de casa (May, 30/10/2026); só abre depois das 19h
 const apiDe = arq => 'https://api.github.com/repos/' + REPO + '/contents/' + arq.split('/').map(encodeURIComponent).join('/');
 let FILE = null;      // arquivo da conversa aberta (null = está na lista)
 let API = null;
@@ -940,7 +942,7 @@ let querResponder = location.hash.startsWith('#responder');
 const hashPush = new URLSearchParams(location.hash.slice(1));
 const convNotif = hashPush.get('responder') || '';
 const fotoNotif = hashPush.get('foto') || '';   // #responder=caixas/trabalho.md
-function convPorArq(arq) { return arq === TRAB.arq ? TRAB : (conversas.find(x => x.arq === arq) || GERAL); }
+function convPorArq(arq) { return arq === TRAB.arq ? TRAB : (arq === CASA.arq ? CASA : (conversas.find(x => x.arq === arq) || GERAL)); }
 function abreRespondendo(arq, foto) {
   const c = convPorArq(arq || GERAL.arq), fim = () => { if (foto) { fotoUrl(foto).then(u => abreZoom(u, foto)).catch(() => showNote('Essa foto já saiu do repositório.', true)); irProFim(); } else responderUltima(); };
   return (FILE === c.arq ? load() : abrir(c)).then(fim).catch(fim);
@@ -1055,7 +1057,7 @@ form.addEventListener('submit', async e => {
 const mais = document.getElementById('mais');
 const menu = document.getElementById('menu');
 mais.onclick = e => { e.stopPropagation(); if (typeof menuCasa !== 'undefined' && menu.parentElement !== menuCasa) menuCasa.append(menu);
-  if (typeof ocultosConversa !== 'undefined' && ocultosConversa) { [irGeral.hidden, irTrab.hidden, abreMenu.hidden] = ocultosConversa; ocultosConversa = null; } menu.classList.remove('no-painel'); menu.hidden = !menu.hidden; mais.setAttribute('aria-expanded', String(!menu.hidden)); };
+  if (typeof ocultosConversa !== 'undefined' && ocultosConversa) { [irGeral.hidden, irTrab.hidden, irCasa.hidden, abreMenu.hidden] = ocultosConversa; ocultosConversa = null; } menu.classList.remove('no-painel'); menu.hidden = !menu.hidden; mais.setAttribute('aria-expanded', String(!menu.hidden)); };
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
   if (!painel.hidden && !document.querySelector('.zoom, .pop')) { document.getElementById('p-voltar').click(); return; }   // painel do Menu: Esc = voltar uma tela
@@ -1216,7 +1218,7 @@ function mostraLista() {
 // Abre uma conversa: zera o estado da tela e carrega o arquivo dela.
 function abrir(c) {
   store.set('ultima-conv', c.arq); store.set('ultima-nome', c.nome);
-  irGeral.hidden = c.arq === GERAL.arq; irTrab.hidden = c.arq === TRAB.arq; abreMenu.hidden = c.arq !== GERAL.arq;   // Trabalho é só trabalho
+  irGeral.hidden = c.arq === GERAL.arq; irTrab.hidden = c.arq === TRAB.arq; irCasa.hidden = c.arq === CASA.arq || !horaDeCasa(); abreMenu.hidden = c.arq !== GERAL.arq;   // Trabalho é só trabalho; Casa só depois das 19h
   if (typeof ocultosConversa !== 'undefined') ocultosConversa = null;
   FILE = c.arq; API = apiDe(c.arq); nomeConv = c.nome; fotoConv = c.foto || (conversas.find(x => x.arq === c.arq) || {}).foto || '';
   logoEl.style.backgroundImage = ''; if (fotoConv) fotoUrl(fotoConv).then(u => { if (FILE === c.arq) logoEl.style.backgroundImage = 'url(' + u + ')'; }).catch(() => {});
@@ -1238,18 +1240,22 @@ function horaDeTrabalho(d = new Date()) {
   const dia = d.getDay(), h = d.getHours();
   return dia >= 1 && dia <= 5 && h >= 8 && h < 18 && h !== 12;
 }
+function horaDeCasa(d = new Date()) { return d.getHours() >= 19; }   // Casa (PCs) só abre depois das 19h (May, 30/10/2026)
 function ultimaConv() {
   if (!MODO_WEB) {
     const [pArq, pTs] = store.get('push-conv').split('|');
-    if (pArq && Date.now() - +pTs < 60000) return pArq === TRAB.arq ? TRAB : GERAL;
-    return horaDeTrabalho() ? TRAB : GERAL;
+    if (pArq && Date.now() - +pTs < 60000) return pArq === TRAB.arq ? TRAB : (pArq === CASA.arq ? CASA : GERAL);
+    if (horaDeTrabalho()) return TRAB;
+    if (horaDeCasa()) return CASA;
+    return GERAL;
   }
   const arq = store.get('ultima-conv');
   if (arq === TRAB.arq) return TRAB;
+  if (arq === CASA.arq) return CASA;
   if (arq && arq !== GERAL.arq) return { arq, nome: store.get('ultima-nome') || arq.replace(/^.*\/|\.md$/g, '') };
   return GERAL;
 }
-const irGeral = document.getElementById('ir-geral'), irTrab = document.getElementById('ir-trab'), abreMenu = document.getElementById('abre-menu');
+const irGeral = document.getElementById('ir-geral'), irTrab = document.getElementById('ir-trab'), irCasa = document.getElementById('ir-casa'), abreMenu = document.getElementById('abre-menu');
 // ---- Menu (só na Geral) → Catálogo: categorias → itens, do mais barato pro mais caro. Dados em catalogo/catalogo.json.
 const painel = document.getElementById('painel'), pCorpo = document.getElementById('p-corpo'), pTit = document.getElementById('p-tit'), pExtra = document.getElementById('p-extra');
 let pilha = [], catalogo = null;
@@ -1679,12 +1685,13 @@ function abreItem(cat, it) {   // detalhe: foto grande (toque amplia), dados, li
 }
 irGeral.onclick = () => { menu.hidden = true; fechaPainel(); if (!sending) abrir(GERAL).catch(() => {}); };
 irTrab.onclick = () => { menu.hidden = true; fechaPainel(); if (!sending) abrir(TRAB).catch(() => {}); };
+irCasa.onclick = () => { menu.hidden = true; fechaPainel(); if (!sending) abrir(CASA).catch(() => {}); };
 // ⋮ também em toda tela do Menu (May, 26/10): navegar a qualquer minuto sem voltar tela por tela
 const menuCasa = menu.parentElement;   // o header: lá dentro o menu fica preso atrás do painel (z-index do header), então sai pro body
 let ocultosConversa = null;   // dentro do Menu mostra as 3 opções; ao voltar pro ⋮ da conversa, devolve o que ela escondia
 document.getElementById('p-mais').onclick = e => { e.stopPropagation(); document.body.append(menu); menu.classList.add('no-painel');
-  if (!ocultosConversa) ocultosConversa = [irGeral.hidden, irTrab.hidden, abreMenu.hidden];
-  irGeral.hidden = irTrab.hidden = abreMenu.hidden = false; menu.hidden = !menu.hidden; };
+  if (!ocultosConversa) ocultosConversa = [irGeral.hidden, irTrab.hidden, irCasa.hidden, abreMenu.hidden];
+  irGeral.hidden = irTrab.hidden = abreMenu.hidden = false; irCasa.hidden = !horaDeCasa(); menu.hidden = !menu.hidden; };
 // Foto em tela cheia: toca em qualquer lugar ou no ✕ pra fechar; arrastar pro lado (ou ← →) troca pela anterior/seguinte da conversa.
 function fotosDaConversa() { return lastItems.flatMap(x => x.fotos || []); }
 function abreZoom(src, path, listaFotos) {   // listaFotos: as fotos do álbum (sem ela, as da conversa)
