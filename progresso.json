@@ -5,609 +5,1768 @@
    "pct": 55,
    "estimado": true,
    "console": "PlayStation 4",
-   "principal": true
+   "principal": true,
+   "capa": "https://upload.wikimedia.org/wikipedia/en/6/6c/Batman_Arkham_Knight_Cover_Art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Depois da parte do dirigível, na missão do Charada em que a Mulher-Gato está presa e precisa tomar os frascos."
   },
   "Horizon Zero Dawn": {
    "pct": 45,
-   "estimado": true
+   "estimado": true,
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/3/3e/Horizon_Zero_Dawn_cover_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "A caminho da tribo do Sol, do outro lado do mapa."
   },
   "Cyberpunk 2077": {
    "pct": 10,
-   "estimado": true
+   "estimado": true,
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/9/9f/Cyberpunk_2077_box_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Começo do Ato 1, no apartamento, depois de algumas missões."
   },
   "Ghost of Tsushima": {
    "pct": 22,
-   "estimado": false
+   "estimado": false,
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/b/b6/Ghost_of_Tsushima.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Cerca de 22% pelo contador do próprio jogo."
   },
   "Final Fantasy XV": {
    "pct": 18,
-   "estimado": true
+   "estimado": true,
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/5/5a/FF_XV_cover_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Na praia, perto de um clube, depois de invadir o reino."
   },
   "The Last of Us Remasterizado": {
    "pct": 45,
-   "estimado": true
+   "estimado": true,
+   "console": "PlayStation 4",
+   "parei": "Segunda volta: na área das fábricas, depois do hotel e do pântano."
   },
   "Uncharted 4": {
    "pct": 10,
-   "estimado": true
+   "estimado": true,
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/1/1a/Uncharted_4_box_artwork.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "No começo, na parte em que um container é tirado do mar."
   },
   "God of War": {
    "pct": 10,
-   "estimado": true
+   "estimado": true,
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/a/a7/God_of_War_4_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Logo depois da luta que termina com um tronco de árvore."
   },
   "inFAMOUS: Second Son": {
    "pct": 40,
-   "estimado": true
+   "estimado": true,
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/3/34/Infamous_second_son_boxart.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Na cidade, com os poderes de fumaça e neon; já destruiu três tanques de guerra."
   },
   "Until Dawn": {
    "pct": 20,
-   "estimado": true
+   "estimado": true,
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/d/d7/Until_Dawn_cover_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Fez algumas partes do começo."
   },
   "Ratchet & Clank": {
    "pct": 45,
    "estimado": true,
    "console": "PlayStation 4",
-   "principal": true
+   "principal": true,
+   "capa": "https://upload.wikimedia.org/wikipedia/en/3/37/Ratchet_and_Clank_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "No mundo das corridas, indo bem."
   },
   "Watch Dogs": {
    "pct": 15,
-   "estimado": false
+   "estimado": false,
+   "console": "PlayStation 4",
+   "parei": "Cerca de 15% do jogo."
   },
   "Mafia III": {
    "pct": 25,
-   "estimado": true
+   "estimado": true,
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/9/9f/Mafia_III_cover_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Passou da missão de matar o líder num local; depois o amigo quebra o portão com o carro."
   },
   "Ōkami": {
    "pct": 10,
-   "estimado": true
+   "estimado": true,
+   "console": "PlayStation 2",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/b/be/OkamiNTSCcoverFinal.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Na primeira ponte construída com pintura, bem no começo."
   },
   "Shadow of the Colossus": {
    "pct": 50,
    "estimado": true,
    "console": "PlayStation 2",
-   "principal": true
+   "principal": true,
+   "capa": "https://upload.wikimedia.org/wikipedia/en/f/f8/Shadow_of_the_Colossus_%282005%29_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "No colosso da praia, o que fica mais embaixo."
   },
   "Tomb Raider: Anniversary": {
    "pct": 10,
-   "estimado": true
+   "estimado": true,
+   "console": "PlayStation 2",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/f/f1/Tomb_Raider_-_Anniversary.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Até a parte do urso no acampamento, no início no Peru."
   },
   "Resident Evil 4": {
    "pct": 15,
-   "estimado": true
+   "estimado": true,
+   "console": "PlayStation 2",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/d/d9/Resi4-gc-cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Passou da primeira vila."
   },
   "Mega Man X4": {
    "pct": 80,
    "estimado": true,
    "console": "PS1",
-   "principal": true
+   "principal": true,
+   "capa": "https://upload.wikimedia.org/wikipedia/en/b/bf/Mega_Man_X4_PSX.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Já derrotou os 8 Mavericks e está na 1ª fase da fortaleza do Sigma."
   },
   "Killer Instinct": {
    "pct": 90,
    "estimado": true,
    "console": "Super Nintendo",
-   "principal": true
+   "principal": true,
+   "parei": "Tentando zerar com o Spinal; a fita não salva, então precisa ser numa sentada só."
   },
   "Donkey Kong Country 2": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "console": "Super Nintendo",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/c/c3/DK_Country_2.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só o começo."
   },
   "Donkey Kong Country 1": {
    "pct": 0,
-   "estimado": true
+   "estimado": true,
+   "console": "Super Nintendo",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/1/1a/Donkey_Kong_Country_SNES_cover.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
   },
   "Futebol Brasileiro": {
    "pct": 10,
-   "estimado": true
+   "estimado": true,
+   "console": "Super Nintendo"
   },
   "Speedy Gonzales": {
    "pct": 70,
-   "estimado": true
+   "estimado": true,
+   "console": "Super Nintendo",
+   "parei": "Chegou até o mundo dos foguetes."
   },
   "Mega Man X5": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "PS1",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/8/8d/Mmx5box.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Na fila de propósito, depois do X4."
   },
   "Parasite Eve": {
    "pct": 15,
-   "estimado": true
+   "estimado": true,
+   "console": "PS1",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/3/3f/Parasite_Eve_Coverart.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Primeiro dos seis dias, depois do teatro, na luta com a cantora em que se cai num buraco."
   },
   "Castlevania: Symphony of the Night": {
    "pct": 3,
-   "estimado": true
+   "estimado": true,
+   "console": "PS1",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/c/cf/Castlevania_SOTN_PAL.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Passou o prólogo e o diálogo com o Drácula e parou, só testando."
   },
   "Metal Gear Solid": {
    "pct": 8,
-   "estimado": true
+   "estimado": true,
+   "console": "PS1",
+   "parei": "Passou o elevador do começo e subiu, ainda no início."
   },
   "Chrono Cross": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "PS1",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/9/9a/Chronocrossbox.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Ainda não começou; foi gravado por causa do Chrono Trigger."
   },
   "Chrono Trigger": {
    "pct": 10,
-   "estimado": true
+   "estimado": true,
+   "parei": "Jogou só um pouco."
   },
   "Contra: Legacy of War": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "console": "PS1",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/4/44/Contra_-_Legacy_of_War_Coverart.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Jogou só um pouco do começo."
   },
   "Resident Evil": {
    "pct": 2,
-   "estimado": true
+   "estimado": true,
+   "console": "PS1",
+   "parei": "Só abriu."
   },
   "Gran Turismo 1 e 2": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "PS1",
+   "parei": "Ainda não abriu."
   },
   "Crash Team Racing": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "console": "PS1",
+   "parei": "Duas ou três corridas."
   },
   "Twisted Metal 2": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "console": "PS1",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/d/dd/Twisted_Metal_2.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Jogou um pouco."
   },
   "Spyro": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "console": "PS1",
+   "parei": "Cerca de 3 fases, na versão com dublagem do remake."
   },
   "Bugs Bunny & Taz: Time Busters": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "console": "PS1",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/f/f7/Bugs_and_Taz_Time_Busters_Game_Cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só o começo."
   },
   "Medal of Honor": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "console": "PS1",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/e/e9/Medal_of_Honor_%281999_video_game%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só o primeiro mapa."
   },
   "Harry Potter": {
    "pct": 60,
-   "estimado": true
+   "estimado": true,
+   "console": "PS1",
+   "parei": "Chegou à câmara em que é preciso descer e pular, aprendeu magia e foi à cabana do Hagrid."
   },
   "Sheep Raider": {
    "pct": 80,
-   "estimado": true
+   "estimado": true,
+   "console": "PS1",
+   "parei": "Foi quase até o fim."
   },
   "Lilo & Stitch": {
    "pct": 60,
-   "estimado": true
+   "estimado": true,
+   "console": "PS1",
+   "parei": "Passou de 8 fases."
   },
   "Fighting Force": {
    "pct": 10,
-   "estimado": true
+   "estimado": true,
+   "console": "PS1",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/4/47/PlayStation_Fighting_Force_Cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Passou de duas fases."
   },
   "Deadpool": {
    "pct": 65,
    "estimado": true,
    "console": "Xbox 360",
-   "principal": true
+   "principal": true,
+   "capa": "https://upload.wikimedia.org/wikipedia/en/4/41/Deadpool_video_game_cover.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Cerca de dois terços do jogo."
   },
   "Max Payne 3": {
    "pct": 10,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/2/21/Max_Payne_3_Cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Algumas missões."
   },
   "Halo: Reach": {
    "pct": 30,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/5/5c/Halo-_Reach_box_art.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Chegou numa parte interna com o capitão."
   },
   "Castlevania: Lords of Shadow 2": {
    "pct": 45,
    "estimado": true,
    "console": "Xbox 360",
-   "principal": true
+   "principal": true,
+   "capa": "https://upload.wikimedia.org/wikipedia/en/6/6c/Castlevania_Lords_of_Shadow_2_boxart.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Venceu a caçadora biomecânica, depois do lobo branco, do rato e do guarda gigante."
   },
   "Bully: Scholarship Edition": {
    "pct": 25,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/6/63/Bully_frontcover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Capítulo 1, na missão de levar o Fatty ao banheiro."
   },
   "Alice: Madness Returns": {
    "pct": 25,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/d/d8/AliceMadnessReturns.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Capítulo 2, no Domínio do Chapeleiro, depois do rato das caldeiras."
   },
   "Devil May Cry 4": {
    "pct": 35,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/b/bb/DMC4COVER.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Perto de um estaleiro, depois do tutorial contra o Dante."
   },
   "Zelda: Tears of the Kingdom": {
    "pct": 40,
-   "estimado": true
+   "estimado": true,
+   "console": "Nintendo Switch",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/f/fb/The_Legend_of_Zelda_Tears_of_the_Kingdom_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Faltam o herói da água e o do fogo; está na cidade dos Zora."
   },
   "Super Mario Odyssey": {
    "pct": 40,
-   "estimado": true
+   "estimado": true,
+   "console": "Nintendo Switch",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/8/8d/Super_Mario_Odyssey.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Segunda volta, no Reino da Madeira."
   },
   "Pokémon Legends: Arceus": {
    "pct": 30,
-   "estimado": true
+   "estimado": true,
+   "console": "Nintendo Switch",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/9/9c/Pokemon_Legends_Arceus_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Procurando a Ursaluna no Pântano Carmim."
   },
   "Pokémon Scarlet": {
    "pct": 95,
-   "estimado": true
+   "estimado": true,
+   "console": "Nintendo Switch",
+   "parei": "Descendo a Área Zero, a última área do jogo."
   },
   "Rayman Legends": {
    "pct": 40,
-   "estimado": true
+   "estimado": true,
+   "console": "Nintendo Switch",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/f/f6/Rayman_Legends_Box_Art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "No 3º mundo."
   },
   "Pokémon Omega Ruby": {
    "pct": 30,
    "estimado": true,
    "console": "Nintendo 3DS",
-   "principal": true
+   "principal": true,
+   "parei": "Em Mauville, com a Acro Bike e a vitória sobre o Wattson, 3 insígnias."
   },
   "Super Mario 3D Land": {
    "pct": 3,
-   "estimado": true
+   "estimado": true,
+   "console": "Nintendo 3DS",
+   "parei": "Só a primeira fase."
   },
   "Yoshi's New Island": {
    "pct": 1,
-   "estimado": true
+   "estimado": true,
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/8/81/Yoshinewislandboxart3ds.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só a abertura da história."
   },
   "Angry Birds Trilogy": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/1/18/Angry_Birds_Trilogy_3DS.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Algumas fases do Rio."
   },
   "Pokémon Rumble Blast": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/1/18/Pokeblast3d.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Passou do Zekrom na primeira missão."
   },
   "Donkey Kong Country Returns 3D": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Nintendo 3DS"
   },
   "Mega Man Legacy Collection": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/2/2d/Mega_Man_Legacy_Collection_box_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
   },
   "Zelda: Majora's Mask": {
    "pct": 30,
-   "estimado": true
+   "estimado": true,
+   "console": "Switch (emulador no PC)",
+   "parei": "Jogou bastante, com hack de todos os itens desde o começo."
   },
   "Zelda: Ocarina of Time": {
    "pct": 8,
-   "estimado": true
+   "estimado": true,
+   "console": "Switch (emulador no PC)",
+   "parei": "Chegou à Rainha Gohma, a chefe da primeira dungeon."
   },
   "Horizon Chase Turbo": {
    "pct": 25,
-   "estimado": true
+   "estimado": true,
+   "console": "PlayStation 4",
+   "parei": "No Chile, entre o mundo 3 e o 4."
   },
   "Super Mario Bros. Wonder": {
    "pct": 50,
-   "estimado": true
+   "estimado": true,
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/a/a3/Mariowonder.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Meio do mapa, em frente a uma planta gigante, depois do mundo do deserto."
   },
   "Donkey Kong Country: Tropical Freeze": {
    "pct": 10,
-   "estimado": true
+   "estimado": true,
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/f/fb/DKC5_box_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Bem no começo, umas 4 ou 5 fases."
   },
   "Donkey Kong Country Returns": {
    "pct": 10,
-   "estimado": true
+   "estimado": true,
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/1/1f/Donkeykongcountryreturns.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Bem no começo, umas duas fases."
   },
   "25 to Life": {
    "pct": 3,
-   "estimado": true
+   "estimado": true,
+   "console": "PlayStation 2",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/b/b4/25_To_Life_Coverart.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Pedaços da primeira fase."
   },
   "It Takes Two": {
    "pct": 35,
-   "estimado": true
+   "estimado": true,
+   "capa": "https://upload.wikimedia.org/wikipedia/en/a/aa/It_Takes_Two_cover_art.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Na parte das abelhas (jogo cooperativo)."
   },
   "A Way Out": {
    "pct": 65,
-   "estimado": true
+   "estimado": true,
+   "parei": "Já no México (jogo cooperativo)."
   },
   "Kung Fu Panda 2": {
    "pct": 10,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/e/e3/Kung_fu_panda_2_xbox_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
   },
   "LEGO The Lord of the Rings": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/a/a0/Lego_Lord_of_the_Rings_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
   },
   "Pac-Man and the Ghostly Adventures": {
    "pct": 8,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "parei": "Duas fases."
   },
   "LEGO Star Wars: The Video Game": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/8/81/Legostarwarsthevideogame.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Primeira missão."
   },
   "UFC Personal Trainer": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/f/fb/UFCTrainerCover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
   },
   "DBZ: Ultimate Tenkaichi": {
    "pct": 0,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/6/65/DBZ_Ultimate_Tenkaichi.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só nas lutas."
   },
   "Skylanders": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Xbox 360"
   },
   "Evil West": {
    "pct": 60,
-   "estimado": true
+   "estimado": true,
+   "parei": "Indo para o terço final, onde fica mais escuro, matando um conde."
   },
   "Crash Bandicoot 4": {
    "pct": 83,
-   "estimado": true
+   "estimado": true,
+   "capa": "https://upload.wikimedia.org/wikipedia/en/3/39/Crash_Bandicoot_4_Box_Art.jpeg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Mundo oriental com vitórias-régias gigantes, depois do mundo da cidade à noite."
   },
   "Star Wars Jedi: Fallen Order": {
    "pct": 50,
-   "estimado": true
+   "estimado": true,
+   "capa": "https://upload.wikimedia.org/wikipedia/en/1/13/Cover_art_of_Star_Wars_Jedi_Fallen_Order.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "No Kashyyyk, depois da fortaleza dos stormtroopers."
   },
   "Alan Wake": {
    "pct": 3,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/1/1f/Alan_Wake_Game_Cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só a cena inicial na ponte."
   },
   "Shrek the Third": {
    "pct": 10,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/0/01/Shrek_the_Third_video_game_console_neutral_boxart.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
   },
   "The Amazing Spider-Man": {
    "pct": 3,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/f/f2/The_Amazing_Spider-Man_%282012_video_game%29_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Primeira missão."
   },
   "Red Dead: Undead Nightmare": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/5/59/Red_Dead_Redemption_-_Undead_Nightmare_cover.JPG?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Jogou um pouco."
   },
   "Mega Man X Collection": {
    "pct": 80,
-   "estimado": true
+   "estimado": true,
+   "console": "PlayStation 2",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/4/46/Mega_Man_X_Collection_Coverart.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Coletânea com X1 a X6; X1 a X3 zerados."
   },
-  "RE4": {
-   "pct": 15,
-   "estimado": true
-  },
-  "RE: Code Veronica": {
+  "Resident Evil: Code Veronica": {
    "pct": 55,
-   "estimado": true
+   "estimado": true,
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/4/44/RECV_boxart.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Na virada em que se troca de personagem e se chega à ilha."
   },
-  "RE6": {
+  "Resident Evil 6": {
    "pct": 15,
-   "estimado": true
+   "estimado": true,
+   "console": "PC",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/1/11/Resident_Evil_6_box_artwork.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Até uma parte de igreja."
   },
   "Resident Evil 5": {
    "pct": 85,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/5/58/Resident_Evil_5_Box_Artwork.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Quase zerou; a primeira volta perdeu o save."
   },
   "The Witcher 3": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/0/0c/Witcher_3_cover_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
   },
   "Black": {
    "pct": 8,
-   "estimado": true
+   "estimado": true,
+   "console": "PlayStation 2",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/a/ad/Black_cover_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Primeira fase."
   },
   "Super Metroid": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Super Nintendo",
+   "parei": "Fita que não abre no console; roda pelo flashcart."
   },
   "Sonic Blast Man": {
    "pct": 20,
-   "estimado": true
+   "estimado": true,
+   "console": "Super Nintendo",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/b/b4/Sonic_Blast_Man_Poster.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Uma tarde de beat 'em up; o jogo tem 5 fases."
   },
   "Lethal Enforcers": {
    "pct": 2,
-   "estimado": true
+   "estimado": true,
+   "console": "Super Nintendo",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/0/0a/Lethal_Enforcers.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só abriu; falta uma pistola de luz."
   },
   "Aladdin": {
    "pct": 8,
-   "estimado": true
+   "estimado": true,
+   "console": "Super Nintendo",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/f/fd/Disney%27s_Aladdin_%28SNES%29_cover_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Venceu o primeiro chefe, o do fim da cidade."
   },
   "Vida de Inseto": {
    "pct": 3,
-   "estimado": true
+   "estimado": true,
+   "console": "Super Nintendo",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/8/83/A_Bug%27s_Life_Coverart.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Uma fase."
   },
   "Sonic 4": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "console": "Super Nintendo",
+   "parei": "Só abriu para ver."
   },
   "Super Mario World": {
    "pct": 25,
-   "estimado": true
+   "estimado": true,
+   "console": "Super Nintendo",
+   "parei": "Até o Vanilla Dome, o 2º mundo."
   },
   "Contra III: The Alien Wars": {
    "pct": 60,
-   "estimado": true
+   "estimado": true,
+   "console": "Super Nintendo",
+   "parei": "Sozinha chega até a 4ª das 6 fases; já zerou em dupla."
   },
   "Top Gear": {
    "pct": 81,
-   "estimado": true
+   "estimado": true,
+   "console": "Super Nintendo",
+   "parei": "Chegou em fases mais longas, em corridas no Canadá."
   },
   "Bomberman 64: The Second Attack": {
    "pct": 60,
-   "estimado": true
+   "estimado": true,
+   "console": "Nintendo 64",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/a/a3/Bomberman64sa_box.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Chegou perto da parte da lua ou do sol, numa casa com estátuas."
   },
   "Castle Crashers": {
    "pct": 20,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/b/b0/Castle_Crashers_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Segunda fase; em outra partida entrou na floresta."
   },
   "Dead or Alive": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Xbox 360"
   },
   "Forza Horizon 1": {
    "pct": 1,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/7/77/Forza_Horizon_boxart.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só a primeira corrida."
   },
   "Gears of War 3": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/d/dc/Gears_of_War_3_box_artwork.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
   },
   "Halo 4": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/9/92/Halo_4_box_artwork.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
   },
   "Como Treinar seu Dragão 2": {
    "pct": 2,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "parei": "Só o voo inicial."
   },
   "Kameo": {
    "pct": 3,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/0/0f/Kameocover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só o começo."
   },
   "NieR": {
    "pct": 2,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/5/56/Nier_%28game_box_art%29.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só o prólogo."
   },
   "Ratatouille": {
    "pct": 25,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/3/31/Ratatouille_Coverart.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Já na cidade, na parte do gato e do camburão."
   },
   "Red Dead Redemption": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/a/a7/Red_Dead_Redemption.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
   },
   "Street Fighter X Tekken": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/f/fb/SF-X-Tekken_box_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
   },
   "The Orange Box": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/2/23/Hltob-win-cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
   },
   "Transformers: Dark of the Moon": {
    "pct": 20,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/4/42/Transformers_Dark_of_the_Moon_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Passou da vila em que se anda em cima das casas."
   },
   "Two Worlds II": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/1/12/Two_Worlds_II.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
   },
   "Banjo-Kazooie: Nuts & Bolts": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/6/63/Banjo-Kazooie_Nuts_%26_Bolts_Game_Cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "A corrida inicial."
   },
   "Ben 10 Ultimate Alien: Cosmic Destruction": {
    "pct": 15,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "parei": "Num deserto com bichos gigantes."
   },
   "Green Lantern: Rise of the Manhunters": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/8/8f/Green_Lantern_Rise_Of_The_Manhunters.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Primeira fase."
   },
   "CoD Black Ops II": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/0/05/Call_of_Duty_Black_Ops_II_box_artwork.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Campanha não iniciada; jogou 2 mapas do modo zumbi."
   },
   "CoD Modern Warfare 3": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/b/bf/Call_of_Duty_Modern_Warfare_3_box_art.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Algumas fases."
   },
   "Left 4 Dead 2": {
    "pct": 15,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/b/ba/Left4Dead2.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Algumas fases."
   },
   "Carros": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Xbox 360",
+   "parei": "Jogou algumas corridas do 3, sem história, por copas."
   },
   "Rayman Origins": {
    "pct": 10,
-   "estimado": true
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/7/7f/Rayman_Origins_Box_Art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Algumas fases."
   },
   "GTA San Andreas": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "PlayStation 2",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/c/c4/GTASABOX.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
   },
   "Need for Speed Most Wanted": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/b/b0/Nfs-most-wanted-2012-gen-packart.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
   },
   "Donkey Kong 64": {
    "pct": 40,
-   "estimado": true
+   "estimado": true,
+   "console": "Nintendo 64",
+   "parei": "Com os 5 Kongs, na Frantic Factory, o 5º de 8 mundos."
   },
   "Zelda: Link's Awakening": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/7/74/The_Legend_of_Zelda_Link%27s_Awakening_%282019_video_game%29.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só abriu."
   },
   "Yoshi's Crafted World": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/3/38/Yoshi%27s_Crafted_World.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só abriu."
   },
   "Dragon Ball FighterZ": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/a/ad/DBFZ_cover_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só as batalhas avulsas."
   },
   "Super Mario 3D World Bowser's Fury": {
    "pct": 15,
-   "estimado": true
+   "estimado": true,
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/5/5e/Super_Mario_3D_World_box_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Até pegar a Plessie, depois da primeira batalha com o Bowser."
   },
   "Pokémon Let's Go Eevee": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "console": "Switch (emulador no PC)",
+   "parei": "Jogou a demo inteira no Switch."
   },
   "Pokémon Mystery Dungeon DX": {
    "pct": 10,
-   "estimado": true
+   "estimado": true,
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/9/9e/Pok%C3%A9mon_Mystery_Dungeon_Rescue_Team_DX.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Na cidade, perto do lago, após o primeiro chefão (Skarmory)."
   },
   "Pokémon Brilliant Diamond": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Switch (emulador no PC)",
+   "parei": "Só abriu."
   },
   "Kirby Star Allies": {
    "pct": 15,
-   "estimado": true
+   "estimado": true,
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/6/65/Kirby_Star_Allies.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Umas 5 fases."
   },
   "Paper Mario: The Thousand-Year Door": {
    "pct": 0,
-   "estimado": false
+   "estimado": false,
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/1/18/Paper_Mario_The_Thousand-Year_Door_%28artwork%29.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só abriu o remake."
   },
   "New Pokémon Snap": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/f/f1/Newpokemonsnap.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Umas duas trilhas."
   },
   "The Plucky Squire": {
    "pct": 30,
-   "estimado": true
-  },
-  "DKC Tropical Freeze": {
-   "pct": 10,
-   "estimado": true
+   "estimado": true,
+   "console": "Switch (emulador no PC)",
+   "parei": "Passou da saída do livro para o quarto em 3D."
   },
   "Gravity Circuit": {
    "pct": 25,
-   "estimado": true
+   "estimado": true,
+   "console": "Switch (emulador no PC)",
+   "parei": "Umas 2 ou 3 fases."
   },
   "Gravity Rush 2": {
    "pct": 20,
-   "estimado": true
+   "estimado": true,
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/9/94/Gravity_Rush_2.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Chegou à cidade com sombras pretas no chão."
   },
   "Overcooked": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/6/69/Overcooked_cover_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Primeiro jogo, só o início."
   },
   "Sonic Frontiers": {
    "pct": 3,
-   "estimado": true
+   "estimado": true,
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/0/0f/SonicFrontiersCoverArt.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Fases deslizando em corrimões."
   },
   "Death Stranding": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "console": "PC",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/2/22/Death_Stranding.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Duas ou três entregas, no episódio 1."
   },
   "Bayonetta Origins": {
    "pct": 20,
-   "estimado": true
+   "estimado": true,
+   "console": "Switch (emulador no PC)",
+   "parei": "Com o Cheshire, passou da floresta e de um chefão."
   },
   "Blasphemous 2": {
    "pct": 10,
-   "estimado": true
+   "estimado": true,
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/3/3c/Blasphemous_2_cover_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Algumas partes; mapa muito grande."
   },
   "Cult of the Lamb": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/d/d4/Cult_of_the_Lamb_Key_Art.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Jogou a demo inteira no Switch."
   },
   "Saints Row": {
    "pct": 5,
-   "estimado": true
+   "estimado": true,
+   "parei": "Até a praça da cidade, quando o mundo livre abre."
   },
   "Halo Infinite": {
    "pct": 3,
-   "estimado": true
+   "estimado": true,
+   "console": "PC",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/1/14/Halo_Infinite.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só o começo."
   },
   "Little Nightmares 3": {
    "console": "PC",
-   "principal": true
+   "principal": true,
+   "parei": "Esmagou a monstra de seis braços na prensa e passou para o espelho seguinte."
+  },
+  "Metroid Dread": {
+   "pct": 100,
+   "estimado": false,
+   "console": "Nintendo Switch",
+   "parei": "Zerado."
+  },
+  "Pokémon Sword": {
+   "pct": 100,
+   "estimado": false,
+   "console": "Nintendo Switch",
+   "parei": "Zerado, venceu o campeão da liga."
+  },
+  "Sky: Filhos da Luz": {
+   "pct": 100,
+   "estimado": false,
+   "console": "Nintendo Switch",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/6/69/Sky_video_game.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "História zerada."
+  },
+  "Little Nightmares": {
+   "pct": 100,
+   "estimado": false,
+   "console": "PlayStation 4",
+   "parei": "Zerado."
+  },
+  "Little Nightmares II": {
+   "pct": 100,
+   "estimado": false,
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/8/84/Little_Nightmares_II_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Zerado."
+  },
+  "Mortal Kombat X": {
+   "pct": 100,
+   "estimado": false,
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/d/d0/Mortal_Kombat_X_Cover_Art.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Zerado."
+  },
+  "Mortal Kombat 11": {
+   "pct": 100,
+   "estimado": false,
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/7/7e/Mortal_Kombat_11_cover_art.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Zerado, com a DLC."
+  },
+  "Marvel's Spider-Man": {
+   "pct": 100,
+   "estimado": false,
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/e/e1/Spider-Man_PS4_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Zerado."
+  },
+  "Spider-Man: Miles Morales": {
+   "pct": 100,
+   "estimado": false,
+   "console": "PC",
+   "parei": "Zerado."
+  },
+  "Zelda: Breath of the Wild": {
+   "pct": 100,
+   "estimado": false,
+   "console": "Wii U (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/c/c6/The_Legend_of_Zelda_Breath_of_the_Wild.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Zerado."
+  },
+  "Power Rangers: Battle for the Grid": {
+   "pct": 100,
+   "estimado": false,
+   "console": "PC",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/b/bf/Power_Rangers_Battle_for_the_Grid.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Zerado."
+  },
+  "Mighty Morphin Power Rangers: Rita's Rewind": {
+   "pct": 100,
+   "estimado": false,
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/2/2c/Rita%27s_Rewind_Game_Cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Zerado para liberar o Ranger Verde."
+  },
+  "Prince of Persia: The Sands of Time": {
+   "pct": 100,
+   "estimado": false,
+   "console": "PC",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/8/86/Sands_of_time_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Zerado."
+  },
+  "Prince of Persia: Warrior Within": {
+   "pct": 100,
+   "estimado": false,
+   "console": "PC",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/6/6f/Prince_of_Persia_-_Warrior_Within_Coverart.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Zerado."
+  },
+  "Mega Man X": {
+   "pct": 100,
+   "estimado": false,
+   "console": "Super Nintendo",
+   "parei": "Zerado várias vezes."
+  },
+  "Mega Man X2": {
+   "pct": 100,
+   "estimado": false,
+   "console": "PlayStation 2",
+   "parei": "Zerado."
+  },
+  "Mega Man X3": {
+   "pct": 100,
+   "estimado": false,
+   "console": "PlayStation 2",
+   "parei": "Zerado."
+  },
+  "Injustice 2": {
+   "pct": 100,
+   "estimado": false,
+   "console": "PC",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/3/36/Injustice_2_Cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Zerado, com o final do Superman."
+  },
+  "Donkey Kong Country 3": {
+   "pct": 100,
+   "estimado": false,
+   "console": "Super Nintendo",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/c/cc/Dkc3_snes_boxart.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Zerado várias vezes."
+  },
+  "Mortal Kombat Trilogy": {
+   "pct": 100,
+   "estimado": false,
+   "console": "Super Nintendo",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/7/70/MKTBox.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Zerado inúmeras vezes."
+  },
+  "Super Bomberman 2": {
+   "pct": 100,
+   "estimado": false,
+   "console": "Super Nintendo",
+   "parei": "Zerado várias vezes."
+  },
+  "Bomberman Hero": {
+   "pct": 100,
+   "estimado": false,
+   "console": "Nintendo 64",
+   "parei": "Zerado."
+  },
+  "Sonic Wings": {
+   "pct": 100,
+   "estimado": false,
+   "console": "Super Nintendo",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/e/eb/Aero_Fighters_Poster.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Zerado."
+  },
+  "Kirby 64: The Crystal Shards": {
+   "pct": 100,
+   "estimado": false,
+   "console": "Nintendo 64",
+   "parei": "Zerado."
+  },
+  "Pokémon Diamond": {
+   "pct": 100,
+   "estimado": false,
+   "parei": "Zerado."
+  },
+  "Pokémon Black": {
+   "pct": 100,
+   "estimado": false,
+   "parei": "Zerado."
+  },
+  "Pokémon Ruby": {
+   "pct": 100,
+   "estimado": false,
+   "parei": "Zerado."
+  },
+  "Pokémon X": {
+   "pct": 100,
+   "estimado": false,
+   "parei": "Zerado."
+  },
+  "Pokémon Mystery Dungeon (GBA e DS)": {
+   "parei": "Foi longe nas duas versões."
+  },
+  "Pokémon Legends: Z-A": {
+   "pct": 30,
+   "estimado": true,
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/2/2d/Pokemon_Legends_Z-A_Key_Art_Logo.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "No rank F do Z-A Royale, depois de vencer o Vinnie."
+  },
+  "Asphalt Legends": {
+   "pct": 8,
+   "estimado": true,
+   "console": "Nintendo Switch",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/8/83/Asphalt_Legends_Cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "2ª copa, corrida 12 de 15, com todos os objetivos."
+  },
+  "Hollow": {
+   "pct": 10,
+   "estimado": true,
+   "console": "Nintendo Switch",
+   "parei": "Cerca de 3 horas explorando uma nave escura, sem saber o que fazer."
+  },
+  "20XX": {
+   "pct": 10,
+   "estimado": true,
+   "console": "Switch (emulador no PC)",
+   "parei": "Na parte dos portais para escolher a fase."
+  },
+  "The Long Dark": {
+   "pct": 5,
+   "estimado": true,
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/6/68/The_Long_Dark_Key_Art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Saiu do vale e passou pelas cavernas."
+  },
+  "Brütal Legend": {
+   "pct": 8,
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/8/83/BrutalLegendCover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Passou algumas partes e parou."
+  },
+  "Limbo": {
+   "pct": 20,
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/c/cc/Limbo_Box_Art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "No acampamento das crianças que armam armadilhas, no fim da floresta."
+  },
+  "Lost Planet 3": {
+   "pct": 5,
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/7/76/Lost_Planet_3.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só o começo, na parte do gelo."
+  },
+  "Asura's Wrath": {
+   "pct": 5,
+   "estimado": true,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/d/d8/Asura%27s_Wrath_Cover_Art.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Primeira parte de hack and slash."
+  },
+  "Overcooked 2": {
+   "pct": 20,
+   "estimado": true,
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/0/03/Overcooked_2_cover_art.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Até a fase 6, a do balão no ar."
+  },
+  "Stray": {
+   "console": "Nintendo Switch",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/f/f1/Stray_cover_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "pct": 100
+  },
+  "Mario Kart 8 Deluxe": {
+   "console": "Nintendo Switch",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/b/b5/MarioKart8Boxart.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Já jogou todas as taças; falta só o passe de pistas extras."
+  },
+  "Zelda: Skyward Sword HD": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo Switch",
+   "parei": "Ainda não começou."
+  },
+  "Fortnite": {
+   "console": "Nintendo Switch"
+  },
+  "Dauntless": {
+   "console": "Nintendo Switch"
+  },
+  "Fall Guys": {
+   "console": "Nintendo Switch"
+  },
+  "Faaast Penguin": {
+   "console": "Nintendo Switch",
+   "parei": "Corrida de pinguins descendo a montanha; jogou só para uma live."
+  },
+  "Kirby Clash": {
+   "console": "Nintendo Switch",
+   "parei": "Lutou com alguns inimigos."
+  },
+  "Pokémon Unite": {
+   "console": "Nintendo Switch"
+  },
+  "Pokémon Champions": {
+   "console": "Nintendo Switch"
+  },
+  "Sonic X Shadow Generations": {
+   "console": "Switch (emulador no PC)"
+  },
+  "Hyrule Warriors: Definitive Edition": {
+   "console": "Switch (emulador no PC)",
+   "parei": "Algumas missões."
+  },
+  "Hyrule Warriors: Age of Calamity": {
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/e/e1/Hyrule_Warriors_Age_Of_Calamity.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Algumas missões."
+  },
+  "Luigi's Mansion 3": {
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/3/38/Luigi%27s_Mansion_3.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Trava muito no emulador."
+  },
+  "Mario Party Jamboree": {
+   "console": "Switch (emulador no PC)",
+   "parei": "Partidas em multiplayer."
+  },
+  "Super Mario Party": {
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/6/6c/Super_Mario_Party.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Super Smash Bros. Ultimate": {
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/5/50/Super_Smash_Bros._Ultimate.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Pokkén Tournament DX": {
+   "console": "Switch (emulador no PC)",
+   "parei": "Só abriu."
+  },
+  "Mario Strikers": {
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/4/4e/Mario_strikers_battle_league.jpeg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só abriu."
+  },
+  "Mario & Luigi: Brothership": {
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/0/0f/Mario_%26_Luigi_-_Brothership_%28cover_art%29.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Super Mario Maker 2": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Switch (emulador no PC)",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/c/c7/Super_Mario_Maker_2.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só abriu."
+  },
+  "New Super Mario Bros. U Deluxe": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Switch (emulador no PC)",
+   "parei": "Só abriu."
+  },
+  "Kirby and the Forgotten Land": {
+   "pct": 5,
+   "estimado": true,
+   "console": "Switch (emulador no PC)",
+   "parei": "Só a demo no Switch."
+  },
+  "Jumanji: The Video Game": {
+   "console": "Switch (emulador no PC)"
+  },
+  "Cuphead": {
+   "console": "PC",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/e/eb/Cuphead_%28artwork%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Jogou um pouco."
+  },
+  "Mega Man Legends": {
+   "pct": 5,
+   "estimado": true,
+   "console": "Nintendo 64",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/3/3d/MMLegendsBox.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Na primeira cidade, sem entender o objetivo."
+  },
+  "Mega Man Battle Network": {
+   "parei": "Jogou bastante, sem salvar."
+  },
+  "Castlevania: Legacy of Darkness": {
+   "console": "Nintendo 64",
+   "parei": "Jogou com o Cornell, o lobisomem."
+  },
+  "Harvest Moon 64": {
+   "console": "Nintendo 64",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/6/6a/Harvest_Moon_64_Coverart.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Jogado em emulador."
+  },
+  "Harvest Moon (SNES)": {
+   "console": "Super Nintendo",
+   "parei": "Jogou quase inteiro."
+  },
+  "Harvest Moon: Back to Nature": {
+   "console": "PS1",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/b/bf/Harvest_Moon_Back_to_Nature.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Story of Seasons: Trio of Towns": {
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/8/86/Story_of_seasons_trio_of_towns_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Jogo para relaxar, sem meta de zerar."
+  },
+  "Pokémon Super Mystery Dungeon": {
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/5/5c/Pokemon_Super_Mystery_Dungeon.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Pokémon Mystery Dungeon: Gates to Infinity": {
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/5/55/PMD_MIL_boxart.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Pokémon Y": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS",
+   "parei": "Na fila do 3DS."
+  },
+  "Pokémon Ultra Moon": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS",
+   "parei": "Na fila do 3DS, depois do Omega Ruby."
+  },
+  "Pokémon Sun": {
+   "console": "Nintendo 3DS",
+   "parei": "Jogado em 2018 e não zerado; parou nas ilhas."
+  },
+  "Bomberman Blitz": {
+   "pct": 5,
+   "estimado": true,
+   "console": "Nintendo 3DS",
+   "parei": "Jogou um pouco."
+  },
+  "Bravely Default": {
+   "console": "Nintendo 3DS"
+  },
+  "Rhythm Heaven Megamix": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/c/cc/Rhythm_Heaven_Megamix_Cover_Art.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Super Street Fighter IV 3D Edition": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS"
+  },
+  "Star Fox 64 3D": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/0/00/Star_Fox_64_3D_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Kingdom Hearts 3D: Dream Drop Distance": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/2/2b/KH3D_Euro_Cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Paper Mario: Sticker Star": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/a/a6/PaperMarioStickerStarCover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Kirby: Triple Deluxe": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/1/1d/Kirbytstest.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Super Smash Bros. for 3DS": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS"
+  },
+  "Mario & Luigi: Bowser's Inside Story + Bowser Jr.'s Journey": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS"
+  },
+  "Super Mario Maker for 3DS": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/d/da/Super_Mario_Maker_Artwork.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Face Raiders": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS"
+  },
+  "The Legend of Zelda: Tri Force Heroes": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/d/db/The_Legend_of_Zelda_Tri_Force_Heroes_Boxart.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Dragon Ball Fusions": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/9/90/Dragon_Ball_Fusions_Cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Animal Crossing: New Leaf": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/0/04/AnimalCrossingNewLeafNABoxart.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "New Super Mario Bros. 2": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/3/35/New_Super_Mario_Bros._2_box_artwork.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Mario Kart 7": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS"
+  },
+  "Luigi's Mansion: Dark Moon": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/a/a4/Luigi%27s_Mansion_Dark_Moon_%28Boxart%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Sonic Lost World": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/b/bf/Sonic_Lost_World_Wii_U_Box_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "The Legend of Zelda: Ocarina of Time 3D": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/3/30/The_Legend_of_Zelda_Ocarina_of_Time_3D_box_art.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "The Legend of Zelda: Majora's Mask 3D": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Nintendo 3DS",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/d/d1/Majora%27s_Mask_3D_cover.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Crash Bandicoot N. Sane Trilogy": {
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/d/de/Crash_Bandicoot_N._Sane_Trilogy_cover_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Jogou um pouco de cada um dos três, mais como arcade."
+  },
+  "Dreams": {
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/3/3f/Dreams_cover_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Jogo de criação, sem fim."
+  },
+  "Destiny": {
+   "console": "PlayStation 4",
+   "parei": "Jogou um pouco."
+  },
+  "Grand Theft Auto V": {
+   "capa": "https://upload.wikimedia.org/wikipedia/en/a/a5/Grand_Theft_Auto_V.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Zerado em dupla."
+  },
+  "Red Dead Redemption II": {
+   "capa": "https://upload.wikimedia.org/wikipedia/en/4/44/Red_Dead_Redemption_II.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Zerado em dupla."
+  },
+  "The Crew": {
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/f/ff/The_Crew_box_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Servidores desligados, não funciona mais."
+  },
+  "God of War III Remastered": {
+   "console": "PlayStation 4",
+   "parei": "Passou da parte da Gaia, só para ver."
+  },
+  "God of War Ragnarök": {
+   "console": "PlayStation 4",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/e/ee/God_of_War_Ragnar%C3%B6k_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só o começo, com o barco."
+  },
+  "Mega Man Legacy Collection 1+2": {
+   "console": "PlayStation 4"
+  },
+  "eFootball": {
+   "console": "PlayStation 4"
+  },
+  "Destiny 2": {
+   "console": "PC",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/0/05/Destiny_2_%28artwork%29.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Jogou por um tempo."
+  },
+  "Bioshock": {
+   "console": "PC",
+   "parei": "Jogou bastante."
+  },
+  "BioShock 2": {
+   "console": "PC",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/8/8c/Bioshock2_cover.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Jogou bastante."
+  },
+  "BioShock Infinite": {
+   "console": "PC",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/a/a3/Official_cover_art_for_Bioshock_Infinite.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Jogou bastante."
+  },
+  "God of War (PS2)": {
+   "pct": 10,
+   "estimado": true,
+   "console": "PlayStation 2",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/b/b5/God_of_War_%282005%29_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Fez a parte do barco da Hidra, a abertura do jogo."
+  },
+  "God of War II": {
+   "console": "PlayStation 2",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/2/25/God_of_War_II_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só abriu e iniciou."
+  },
+  "Innocent Life: A Futuristic Harvest Moon": {
+   "console": "PlayStation 2",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/b/ba/Innocent_Life_-_A_Futuristic_Harvest_Moon.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só o tutorial."
+  },
+  "Gran Turismo 4": {
+   "console": "PlayStation 2",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/0/06/Gran_Turismo_4.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Midnight Club 3: DUB Edition Remix": {
+   "console": "PlayStation 2"
+  },
+  "Devil May Cry": {
+   "console": "PlayStation 2",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/1/1e/DMC1FrontCover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só abriu."
+  },
+  "Dragon Ball Z: Budokai Tenkaichi 4": {
+   "console": "PlayStation 2",
+   "parei": "Mod brasileiro do Budokai Tenkaichi 3, com mais personagens."
+  },
+  "Darkwatch": {
+   "console": "PlayStation 2",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/9/95/Darkwatch.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Jogou só o começo, na parte do trem."
+  },
+  "Kingdom Hearts II Final Mix": {
+   "console": "PlayStation 2",
+   "parei": "Só abriu."
+  },
+  "Worms Armageddon": {
+   "console": "PS1",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/e/e5/Wa-win-cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Partidas avulsas."
+  },
+  "Jackie Chan Stuntmaster": {
+   "console": "PS1",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/e/e6/JackieChanStuntmaster.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só abriu."
+  },
+  "3Xtreme": {
+   "console": "PS1",
+   "parei": "Só abriu."
+  },
+  "Crash Bandicoot (trilogia PS1)": {
+   "console": "PS1",
+   "parei": "Jogou mais como arcade."
+  },
+  "Fable III": {
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/f/f1/Fableiii.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só abriu."
+  },
+  "Injustice: Gods Among Us": {
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/f/f8/Injustice_Gods_Among_Us_Cover_Art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Não zerou."
+  },
+  "Halo 3": {
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/b/b4/Halo_3_final_boxshot.JPG?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Far Cry 3": {
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/c/c6/Far_Cry_3_PAL_box_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Jogou bastante."
+  },
+  "Far Cry 4": {
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/6/63/Far_Cry_4_box_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Mortal Kombat (2011)": {
+   "console": "Xbox 360",
+   "parei": "Não zerou."
+  },
+  "Mortal Kombat vs. DC Universe": {
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/6/6b/Mortal_Kombat_vs._DC_Universe_Coverart.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Não zerou."
+  },
+  "Gears of War": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Xbox 360",
+   "parei": "Nunca abriu."
+  },
+  "Gears of War: Judgment": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/0/00/Gears_of_War-_Judgment_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Nunca abriu."
+  },
+  "Guitar Hero III: Legends of Rock": {
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/9/93/Guitar-hero-iii-cover-image.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Plants vs. Zombies": {
+   "console": "Xbox 360",
+   "parei": "Jogo casual."
+  },
+  "Plants vs. Zombies: Garden Warfare": {
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/5/5d/Garden_Warfare_cover_art.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só online, não funciona nesse console."
+  },
+  "El Chavo Kart": {
+   "console": "Xbox 360"
+  },
+  "Kinect Adventures!": {
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/0/04/Kinect_Adventures_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Coletânea de minigames."
+  },
+  "Brunswick Pro Bowling": {
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/f/f2/Brunswick_Pro_Bowling.JPG?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Disney Infinity": {
+   "console": "Xbox 360",
+   "parei": "Precisa da base e dos bonecos."
+  },
+  "FIFA 15": {
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/2/23/FIFA_15_Cover_Art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Medal of Honor (2010)": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/b/ba/Medal_of_Honor_2010_Box_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Nunca abriu."
+  },
+  "Sports Island Freedom": {
+   "console": "Xbox 360"
+  },
+  "Dragon Ball Z for Kinect": {
+   "console": "Xbox 360"
+  },
+  "Blur": {
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/c/c8/Blur_%28video_game%29.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Algumas corridas."
+  },
+  "Midnight Club: Los Angeles": {
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/e/ea/Midnight_Club-Los_Angeles.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só abriu."
+  },
+  "Zoo Tycoon": {
+   "console": "Xbox 360"
+  },
+  "Worms Ultimate Mayhem": {
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/0/06/WormsUMBoxart.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Worms 3D": {
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/b/bd/Worms_3D_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Minecraft": {
+   "console": "Xbox 360"
+  },
+  "Kinect Sports": {
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/a/ae/Kinect_Sports.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Kinect Sports: Season Two": {
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/1/11/Kinect_Sports_Season_Two.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Fruit Ninja Kinect": {
+   "console": "Xbox 360"
+  },
+  "Viva Piñata": {
+   "console": "Xbox 360",
+   "parei": "Só abriu."
+  },
+  "Trine 2": {
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/0/0b/Trine_2_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Jogo cooperativo."
+  },
+  "SpongeBob HeroPants": {
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/f/f8/SpongeBob_HeroPants_NA_game_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "Assassin's Creed II": {
+   "pct": 0,
+   "estimado": false,
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/7/77/Assassins_Creed_2_Box_Art.JPG?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "Só assistiu."
+  },
+  "Dante's Inferno": {
+   "console": "Xbox 360",
+   "capa": "https://upload.wikimedia.org/wikipedia/en/c/c6/Dante%27s_Inferno.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "parei": "O disco dá erro e não abre."
+  },
+  "Falling Skies: The Game": {
+   "console": "Xbox 360"
   }
  }
 }
