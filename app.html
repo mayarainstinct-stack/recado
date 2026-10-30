@@ -500,7 +500,7 @@ function parse(md) {
     if (tr) { const alvo = [...out].reverse().find(x => x.from === 'may' && x.audio); if (alvo) alvo.transcricao = tr[1]; continue; }
     // Respostas no estilo grupo: "  ↳ Lyra: …" ou "  ↳ simp-mobile: …" (cada um com a sua cor)
     // "[op: A|B|C]" = balão de múltipla escolha (ela toca e a resposta vai citando a pergunta)
-    m = line.match(/^\s+↳ (Lyra|Orfeu|Nyx|Vega|pc4|rm|simp-mobile|promotor|kds)(?: \[(\d\d\/\d\d\/\d{4}) (\d\d:\d\d)\])?( \[copiar\])?(?: \[op: ([^\]]+)\])?: (.*)$/i);
+    m = line.match(/^\s+↳ (Lyra|Orfeu|Nyx|Vega|pc1|pc2|pc3|pc4|rm|simp-mobile|promotor|kds)(?: \[(\d\d\/\d\d\/\d{4}) (\d\d:\d\d)\])?( \[copiar\])?(?: \[op: ([^\]]+)\])?: (.*)$/i);
     // carimbo opcional logo depois do nome: "↳ Lyra [DD/MM/AAAA HH:MM]: texto"; sem ele a resposta herda o dia e fica sem hora
     if (m) { m = [m[0], m[1], m[4], m[6], m[5], m[2], m[3]]; }
     if (m) {
@@ -535,7 +535,11 @@ const GRUPO = {
   orfeu: { nome: 'Orfeu (PC1)', cor: '#E31B23', texto: '#2D0A0A' },
   nyx: { nome: 'Nyx (PC2)', cor: '#6FCF00', texto: '#0E2A00' },
   vega: { nome: 'Vega (PC3)', cor: '#1D4ED8', texto: '#06173A' },
-  pc4: { nome: 'PC4', cor: '#A855F7', texto: '#260A3A' }
+  pc4: { nome: 'PC4', cor: '#A855F7', texto: '#260A3A' },
+  // aliases: mensagens antigas (antes de escolherem nome) ficaram assinadas "PC1/PC2/PC3"
+  pc1: { nome: 'Orfeu (PC1)', cor: '#E31B23', texto: '#2D0A0A' },
+  pc2: { nome: 'Nyx (PC2)', cor: '#6FCF00', texto: '#0E2A00' },
+  pc3: { nome: 'Vega (PC3)', cor: '#1D4ED8', texto: '#06173A' }
 };
 let renderizando = false;
 function render(items, manterPosicao) {
