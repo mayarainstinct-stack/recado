@@ -500,7 +500,7 @@ function parse(md) {
     if (tr) { const alvo = [...out].reverse().find(x => x.from === 'may' && x.audio); if (alvo) alvo.transcricao = tr[1]; continue; }
     // Respostas no estilo grupo: "  ↳ Lyra: …" ou "  ↳ simp-mobile: …" (cada um com a sua cor)
     // "[op: A|B|C]" = balão de múltipla escolha (ela toca e a resposta vai citando a pergunta)
-    m = line.match(/^\s+↳ (Lyra|rm|simp-mobile|promotor|kds|pc1|pc2|pc3|pc4)(?: \[(\d\d\/\d\d\/\d{4}) (\d\d:\d\d)\])?( \[copiar\])?(?: \[op: ([^\]]+)\])?: (.*)$/i);
+    m = line.match(/^\s+↳ (Lyra|Orfeu|Nyx|Vega|pc4|rm|simp-mobile|promotor|kds)(?: \[(\d\d\/\d\d\/\d{4}) (\d\d:\d\d)\])?( \[copiar\])?(?: \[op: ([^\]]+)\])?: (.*)$/i);
     // carimbo opcional logo depois do nome: "↳ Lyra [DD/MM/AAAA HH:MM]: texto"; sem ele a resposta herda o dia e fica sem hora
     if (m) { m = [m[0], m[1], m[4], m[6], m[5], m[2], m[3]]; }
     if (m) {
@@ -532,9 +532,9 @@ const GRUPO = {
   'simp-mobile': { nome: 'SIMP-Mobile', cor: '#2DD4BF', texto: '#042F2E' },
   promotor: { nome: 'Promotor', cor: '#F59E0B', texto: '#2D1A02' },
   kds: { nome: 'KDS', cor: '#EAB308', texto: '#2A2002' },
-  pc1: { nome: 'PC1', cor: '#E31B23', texto: '#2D0A0A' },
-  pc2: { nome: 'PC2', cor: '#6FCF00', texto: '#0E2A00' },
-  pc3: { nome: 'PC3', cor: '#1D4ED8', texto: '#06173A' },
+  orfeu: { nome: 'Orfeu (PC1)', cor: '#E31B23', texto: '#2D0A0A' },
+  nyx: { nome: 'Nyx (PC2)', cor: '#6FCF00', texto: '#0E2A00' },
+  vega: { nome: 'Vega (PC3)', cor: '#1D4ED8', texto: '#06173A' },
   pc4: { nome: 'PC4', cor: '#A855F7', texto: '#260A3A' }
 };
 let renderizando = false;
