@@ -1088,14 +1088,17 @@ form.addEventListener('submit', async e => {
       md = md.replace(/\n- \s*$/, '\n');
       md = md.replace(/\s*$/, '') + '\n' + linhas.join('\n') + '\n';
       await gh('PUT', { message: 'recado do iPhone', content: b64encode(md), sha: f.sha });
-      store.set(rascKey(), ''); box.value = ''; box.style.height = 'auto'; responder(null);
+      // não força box.value='' aqui: se ela já começou a digitar a PRÓXIMA mensagem enquanto
+      // esperava o envio (às vezes demora, com retry de 409), isso apagava o que ela tava escrevendo
+      store.set(rascKey(), box.value); responder(null);
       fotos.forEach(x => URL.revokeObjectURL(x.url)); anexos = []; desenhaBandeja();
       await load().catch(() => {});
       break;
     } catch (err) {
       if (err.status === 409 && tentativa < 3) { await new Promise(r => setTimeout(r, 600)); continue; }
       falhou = true; pend.classList.add('falhou'); const tk = pend.querySelector('.tick'); tk.classList.remove('relogio'); tk.textContent = '⚠️ não foi'; tk.title = 'Não foi enviada';
-      box.value = text;   // o texto continua na caixa pra tentar de novo
+      // só devolve o texto que falhou pra caixa se ela não começou a digitar outra coisa nesse meio tempo
+      if (!box.value.trim()) { box.value = text; store.set(rascKey(), text); }
       showNote(err.status === 401 ? 'A chave não vale mais. Toca em ⋮ → Trocar chave.' : 'Não salvou. Confere a internet e tenta de novo.', true);
       break;
     }
