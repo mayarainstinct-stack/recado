@@ -1,0 +1,613 @@
+{
+ "atualizado": "30/10/2026",
+ "jogos": {
+  "Batman: Arkham Knight": {
+   "pct": 55,
+   "estimado": true,
+   "console": "PlayStation 4",
+   "principal": true
+  },
+  "Horizon Zero Dawn": {
+   "pct": 45,
+   "estimado": true
+  },
+  "Cyberpunk 2077": {
+   "pct": 10,
+   "estimado": true
+  },
+  "Ghost of Tsushima": {
+   "pct": 22,
+   "estimado": false
+  },
+  "Final Fantasy XV": {
+   "pct": 18,
+   "estimado": true
+  },
+  "The Last of Us Remasterizado": {
+   "pct": 45,
+   "estimado": true
+  },
+  "Uncharted 4": {
+   "pct": 10,
+   "estimado": true
+  },
+  "God of War": {
+   "pct": 10,
+   "estimado": true
+  },
+  "inFAMOUS: Second Son": {
+   "pct": 40,
+   "estimado": true
+  },
+  "Until Dawn": {
+   "pct": 20,
+   "estimado": true
+  },
+  "Ratchet & Clank": {
+   "pct": 45,
+   "estimado": true,
+   "console": "PlayStation 4",
+   "principal": true
+  },
+  "Watch Dogs": {
+   "pct": 15,
+   "estimado": false
+  },
+  "Mafia III": {
+   "pct": 25,
+   "estimado": true
+  },
+  "Ōkami": {
+   "pct": 10,
+   "estimado": true
+  },
+  "Shadow of the Colossus": {
+   "pct": 50,
+   "estimado": true,
+   "console": "PlayStation 2",
+   "principal": true
+  },
+  "Tomb Raider: Anniversary": {
+   "pct": 10,
+   "estimado": true
+  },
+  "Resident Evil 4": {
+   "pct": 15,
+   "estimado": true
+  },
+  "Mega Man X4": {
+   "pct": 80,
+   "estimado": true,
+   "console": "PS1",
+   "principal": true
+  },
+  "Killer Instinct": {
+   "pct": 90,
+   "estimado": true,
+   "console": "Super Nintendo",
+   "principal": true
+  },
+  "Donkey Kong Country 2": {
+   "pct": 5,
+   "estimado": true
+  },
+  "Donkey Kong Country 1": {
+   "pct": 0,
+   "estimado": true
+  },
+  "Futebol Brasileiro": {
+   "pct": 10,
+   "estimado": true
+  },
+  "Speedy Gonzales": {
+   "pct": 70,
+   "estimado": true
+  },
+  "Mega Man X5": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Parasite Eve": {
+   "pct": 15,
+   "estimado": true
+  },
+  "Castlevania: Symphony of the Night": {
+   "pct": 3,
+   "estimado": true
+  },
+  "Metal Gear Solid": {
+   "pct": 8,
+   "estimado": true
+  },
+  "Chrono Cross": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Chrono Trigger": {
+   "pct": 10,
+   "estimado": true
+  },
+  "Contra: Legacy of War": {
+   "pct": 5,
+   "estimado": true
+  },
+  "Resident Evil": {
+   "pct": 2,
+   "estimado": true
+  },
+  "Gran Turismo 1 e 2": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Crash Team Racing": {
+   "pct": 5,
+   "estimado": true
+  },
+  "Twisted Metal 2": {
+   "pct": 5,
+   "estimado": true
+  },
+  "Spyro": {
+   "pct": 5,
+   "estimado": true
+  },
+  "Bugs Bunny & Taz: Time Busters": {
+   "pct": 5,
+   "estimado": true
+  },
+  "Medal of Honor": {
+   "pct": 5,
+   "estimado": true
+  },
+  "Harry Potter": {
+   "pct": 60,
+   "estimado": true
+  },
+  "Sheep Raider": {
+   "pct": 80,
+   "estimado": true
+  },
+  "Lilo & Stitch": {
+   "pct": 60,
+   "estimado": true
+  },
+  "Fighting Force": {
+   "pct": 10,
+   "estimado": true
+  },
+  "Deadpool": {
+   "pct": 65,
+   "estimado": true,
+   "console": "Xbox 360",
+   "principal": true
+  },
+  "Max Payne 3": {
+   "pct": 10,
+   "estimado": true
+  },
+  "Halo: Reach": {
+   "pct": 30,
+   "estimado": true
+  },
+  "Castlevania: Lords of Shadow 2": {
+   "pct": 45,
+   "estimado": true,
+   "console": "Xbox 360",
+   "principal": true
+  },
+  "Bully: Scholarship Edition": {
+   "pct": 25,
+   "estimado": true
+  },
+  "Alice: Madness Returns": {
+   "pct": 25,
+   "estimado": true
+  },
+  "Devil May Cry 4": {
+   "pct": 35,
+   "estimado": true
+  },
+  "Zelda: Tears of the Kingdom": {
+   "pct": 40,
+   "estimado": true
+  },
+  "Super Mario Odyssey": {
+   "pct": 40,
+   "estimado": true
+  },
+  "Pokémon Legends: Arceus": {
+   "pct": 30,
+   "estimado": true
+  },
+  "Pokémon Scarlet": {
+   "pct": 95,
+   "estimado": true
+  },
+  "Rayman Legends": {
+   "pct": 40,
+   "estimado": true
+  },
+  "Pokémon Omega Ruby": {
+   "pct": 30,
+   "estimado": true,
+   "console": "Nintendo 3DS",
+   "principal": true
+  },
+  "Super Mario 3D Land": {
+   "pct": 3,
+   "estimado": true
+  },
+  "Yoshi's New Island": {
+   "pct": 1,
+   "estimado": true
+  },
+  "Angry Birds Trilogy": {
+   "pct": 5,
+   "estimado": true
+  },
+  "Pokémon Rumble Blast": {
+   "pct": 5,
+   "estimado": true
+  },
+  "Donkey Kong Country Returns 3D": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Mega Man Legacy Collection": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Zelda: Majora's Mask": {
+   "pct": 30,
+   "estimado": true
+  },
+  "Zelda: Ocarina of Time": {
+   "pct": 8,
+   "estimado": true
+  },
+  "Horizon Chase Turbo": {
+   "pct": 25,
+   "estimado": true
+  },
+  "Super Mario Bros. Wonder": {
+   "pct": 50,
+   "estimado": true
+  },
+  "Donkey Kong Country: Tropical Freeze": {
+   "pct": 10,
+   "estimado": true
+  },
+  "Donkey Kong Country Returns": {
+   "pct": 10,
+   "estimado": true
+  },
+  "25 to Life": {
+   "pct": 3,
+   "estimado": true
+  },
+  "It Takes Two": {
+   "pct": 35,
+   "estimado": true
+  },
+  "A Way Out": {
+   "pct": 65,
+   "estimado": true
+  },
+  "Kung Fu Panda 2": {
+   "pct": 10,
+   "estimado": true
+  },
+  "LEGO The Lord of the Rings": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Pac-Man and the Ghostly Adventures": {
+   "pct": 8,
+   "estimado": true
+  },
+  "LEGO Star Wars: The Video Game": {
+   "pct": 5,
+   "estimado": true
+  },
+  "UFC Personal Trainer": {
+   "pct": 0,
+   "estimado": false
+  },
+  "DBZ: Ultimate Tenkaichi": {
+   "pct": 0,
+   "estimado": true
+  },
+  "Skylanders": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Evil West": {
+   "pct": 60,
+   "estimado": true
+  },
+  "Crash Bandicoot 4": {
+   "pct": 83,
+   "estimado": true
+  },
+  "Star Wars Jedi: Fallen Order": {
+   "pct": 50,
+   "estimado": true
+  },
+  "Alan Wake": {
+   "pct": 3,
+   "estimado": true
+  },
+  "Shrek the Third": {
+   "pct": 10,
+   "estimado": true
+  },
+  "The Amazing Spider-Man": {
+   "pct": 3,
+   "estimado": true
+  },
+  "Red Dead: Undead Nightmare": {
+   "pct": 5,
+   "estimado": true
+  },
+  "Mega Man X Collection": {
+   "pct": 80,
+   "estimado": true
+  },
+  "RE4": {
+   "pct": 15,
+   "estimado": true
+  },
+  "RE: Code Veronica": {
+   "pct": 55,
+   "estimado": true
+  },
+  "RE6": {
+   "pct": 15,
+   "estimado": true
+  },
+  "Resident Evil 5": {
+   "pct": 85,
+   "estimado": true
+  },
+  "The Witcher 3": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Black": {
+   "pct": 8,
+   "estimado": true
+  },
+  "Super Metroid": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Sonic Blast Man": {
+   "pct": 20,
+   "estimado": true
+  },
+  "Lethal Enforcers": {
+   "pct": 2,
+   "estimado": true
+  },
+  "Aladdin": {
+   "pct": 8,
+   "estimado": true
+  },
+  "Vida de Inseto": {
+   "pct": 3,
+   "estimado": true
+  },
+  "Sonic 4": {
+   "pct": 5,
+   "estimado": true
+  },
+  "Super Mario World": {
+   "pct": 25,
+   "estimado": true
+  },
+  "Contra III: The Alien Wars": {
+   "pct": 60,
+   "estimado": true
+  },
+  "Top Gear": {
+   "pct": 81,
+   "estimado": true
+  },
+  "Bomberman 64: The Second Attack": {
+   "pct": 60,
+   "estimado": true
+  },
+  "Castle Crashers": {
+   "pct": 20,
+   "estimado": true
+  },
+  "Dead or Alive": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Forza Horizon 1": {
+   "pct": 1,
+   "estimado": true
+  },
+  "Gears of War 3": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Halo 4": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Como Treinar seu Dragão 2": {
+   "pct": 2,
+   "estimado": true
+  },
+  "Kameo": {
+   "pct": 3,
+   "estimado": true
+  },
+  "NieR": {
+   "pct": 2,
+   "estimado": true
+  },
+  "Ratatouille": {
+   "pct": 25,
+   "estimado": true
+  },
+  "Red Dead Redemption": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Street Fighter X Tekken": {
+   "pct": 0,
+   "estimado": false
+  },
+  "The Orange Box": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Transformers: Dark of the Moon": {
+   "pct": 20,
+   "estimado": true
+  },
+  "Two Worlds II": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Banjo-Kazooie: Nuts & Bolts": {
+   "pct": 5,
+   "estimado": true
+  },
+  "Ben 10 Ultimate Alien: Cosmic Destruction": {
+   "pct": 15,
+   "estimado": true
+  },
+  "Green Lantern: Rise of the Manhunters": {
+   "pct": 5,
+   "estimado": true
+  },
+  "CoD Black Ops II": {
+   "pct": 0,
+   "estimado": false
+  },
+  "CoD Modern Warfare 3": {
+   "pct": 5,
+   "estimado": true
+  },
+  "Left 4 Dead 2": {
+   "pct": 15,
+   "estimado": true
+  },
+  "Carros": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Rayman Origins": {
+   "pct": 10,
+   "estimado": true
+  },
+  "GTA San Andreas": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Need for Speed Most Wanted": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Donkey Kong 64": {
+   "pct": 40,
+   "estimado": true
+  },
+  "Zelda: Link's Awakening": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Yoshi's Crafted World": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Dragon Ball FighterZ": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Super Mario 3D World Bowser's Fury": {
+   "pct": 15,
+   "estimado": true
+  },
+  "Pokémon Let's Go Eevee": {
+   "pct": 5,
+   "estimado": true
+  },
+  "Pokémon Mystery Dungeon DX": {
+   "pct": 10,
+   "estimado": true
+  },
+  "Pokémon Brilliant Diamond": {
+   "pct": 0,
+   "estimado": false
+  },
+  "Kirby Star Allies": {
+   "pct": 15,
+   "estimado": true
+  },
+  "Paper Mario: The Thousand-Year Door": {
+   "pct": 0,
+   "estimado": false
+  },
+  "New Pokémon Snap": {
+   "pct": 5,
+   "estimado": true
+  },
+  "The Plucky Squire": {
+   "pct": 30,
+   "estimado": true
+  },
+  "DKC Tropical Freeze": {
+   "pct": 10,
+   "estimado": true
+  },
+  "Gravity Circuit": {
+   "pct": 25,
+   "estimado": true
+  },
+  "Gravity Rush 2": {
+   "pct": 20,
+   "estimado": true
+  },
+  "Overcooked": {
+   "pct": 5,
+   "estimado": true
+  },
+  "Sonic Frontiers": {
+   "pct": 3,
+   "estimado": true
+  },
+  "Death Stranding": {
+   "pct": 5,
+   "estimado": true
+  },
+  "Bayonetta Origins": {
+   "pct": 20,
+   "estimado": true
+  },
+  "Blasphemous 2": {
+   "pct": 10,
+   "estimado": true
+  },
+  "Cult of the Lamb": {
+   "pct": 5,
+   "estimado": true
+  },
+  "Saints Row": {
+   "pct": 5,
+   "estimado": true
+  },
+  "Halo Infinite": {
+   "pct": 3,
+   "estimado": true
+  },
+  "Little Nightmares 3": {
+   "console": "PC",
+   "principal": true
+  }
+ }
+}
