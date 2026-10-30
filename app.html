@@ -116,7 +116,7 @@ textarea:focus-visible { outline: none; }
 .msg.grupo .quem { color: var(--quem); }
 .msg .quem { font-size: 12.5px; font-weight: 700; margin-bottom: 2px; color: var(--quem); }
 .marca { font-weight: 700; }
-.marca-cor { background: var(--quem); color: #FFFFFF; border-radius: 999px; padding: 1px 8px; font-size: 13px; display: inline-block; line-height: 1.5; }
+.marca-cor { background: var(--quem); color: #FFFFFF; border-radius: 999px; padding: 1px 9px; margin: 0 1px; font-size: 13px; display: inline-block; line-height: 1.6; vertical-align: text-bottom; }
 .mencoes { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); }
 .mencoes button { width: auto; height: auto; padding: 4px 12px; border-radius: 999px; font-size: 13.5px; font-weight: 700;
   background: var(--quem); color: #FFFFFF; border: none; }
@@ -466,7 +466,9 @@ function linkar(el, txt) {
     if (m[0][0] === '@') {
       const nome = m[0].slice(1);
       const chave = Object.keys(GRUPO).find(k => k === nome.toLowerCase() || GRUPO[k].nome.toLowerCase().startsWith(nome.toLowerCase()));
-      const s = document.createElement('span'); s.textContent = m[0]; s.className = 'marca';
+      const s = document.createElement('span'); s.className = 'marca';
+      // nome sempre no padrão (maiúscula certa), não importa como foi digitado -- evita "@orfeu" e "@Orfeu" com visual diferente
+      s.textContent = chave ? '@' + GRUPO[chave].nome.replace(/\s*\(.*\)$/, '') : m[0];
       if (chave) { s.style.setProperty('--quem', GRUPO[chave].cor); s.classList.add('marca-cor'); }
       el.append(s); i = m.index + m[0].length;
       continue;
