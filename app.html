@@ -132,7 +132,7 @@ textarea:focus-visible { outline: none; }
 .msg.grupo .quem { color: var(--quem); }
 .msg .quem { font-size: 12.5px; font-weight: 700; margin-bottom: 2px; color: var(--quem); display: flex; align-items: center; gap: 6px; }
 .quem .avatar { width: 17px; height: 17px; border-radius: 50%; background: var(--quem); color: var(--quem-fg); font-size: 10px;
-  font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background-size: cover; background-position: center; }
 .marca { font-weight: 700; }
 .marca-cor { background: linear-gradient(var(--quem), color-mix(in srgb, var(--quem) 70%, black)); color: #FFFFFF; border-radius: 999px;
   padding: 1px 9px; margin: 0 1px; font-size: 13px; display: inline-block; line-height: 1.6; vertical-align: text-bottom; }
@@ -586,15 +586,15 @@ let inicio = 0;
 
 // Cores = as que cada projeto usa no VS Code (borda/realce do .vscode/settings.json); Lyra = rosa dela.
 const GRUPO = {
-  lyra: { nome: 'Lyra', cor: '#E1306C', texto: '#FFFFFF' },
+  lyra: { nome: 'Lyra', cor: '#E1306C', texto: '#FFFFFF', foto: 'recados-fotos/20261031-005747-avatar-lyra.png' },
   rm: { nome: 'RM · Recebimento', cor: '#22C55E', texto: '#052E16' },
   'simp-mobile': { nome: 'SIMP-Mobile', cor: '#2DD4BF', texto: '#042F2E' },
   promotor: { nome: 'Promotor', cor: '#F59E0B', texto: '#2D1A02' },
   kds: { nome: 'KDS', cor: '#EAB308', texto: '#2A2002' },
-  orfeu: { nome: 'Orfeu (PC1)', cor: '#E31B23', texto: '#2D0A0A' },
-  nyx: { nome: 'Nyx (PC2)', cor: '#6FCF00', texto: '#0E2A00' },
-  vega: { nome: 'Vega (PC3)', cor: '#1D4ED8', texto: '#06173A' },
-  pc4: { nome: 'PC4', cor: '#FFCB05', texto: '#2A2002' },
+  orfeu: { nome: 'Orfeu (PC1)', cor: '#E31B23', texto: '#2D0A0A', foto: 'recados-fotos/20261031-005747-avatar-orfeu.png' },
+  nyx: { nome: 'Nyx (PC2)', cor: '#6FCF00', texto: '#0E2A00', foto: 'recados-fotos/20261031-005747-avatar-nyx.png' },
+  vega: { nome: 'Vega (PC3)', cor: '#1D4ED8', texto: '#06173A', foto: 'recados-fotos/20261031-005747-avatar-vega.png' },
+  pc4: { nome: 'PC4', cor: '#FFCB05', texto: '#2A2002', foto: 'recados-fotos/20261031-005747-avatar-hermes.png' },
   // aliases: mensagens antigas (antes de escolherem nome) ficaram assinadas "PC1/PC2/PC3"
   pc1: { nome: 'Orfeu (PC1)', cor: '#E31B23', texto: '#2D0A0A' },
   pc2: { nome: 'Nyx (PC2)', cor: '#6FCF00', texto: '#0E2A00' },
@@ -639,6 +639,7 @@ function render(items, manterPosicao) {
       el.style.setProperty('--quem', GRUPO[it.quem].cor); el.style.setProperty('--quem-fg', GRUPO[it.quem].texto); el.classList.add('grupo');
       const nome = document.createElement('div'); nome.className = 'quem';
       const av = document.createElement('span'); av.className = 'avatar'; av.textContent = GRUPO[it.quem].nome.charAt(0).toUpperCase();
+      if (GRUPO[it.quem].foto) fotoUrl(GRUPO[it.quem].foto).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.textContent = ''; }).catch(() => {});   // falhou: fica a letra
       const nomeTxt = document.createElement('span'); nomeTxt.textContent = GRUPO[it.quem].nome;
       nome.append(av, nomeTxt); el.append(nome);
     }
