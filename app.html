@@ -471,7 +471,7 @@ const REPO = 'mayarainstinct-stack/Inst';
 // Conversas = arquivos: "Geral" é a CAIXA-DE-ENTRADA.md; as outras ficam em caixas/<nome>.md (mesmo formato).
 const GERAL = { arq: 'CAIXA-DE-ENTRADA.md', nome: 'Geral' };
 const TRAB = { arq: 'caixas/trabalho.md', nome: 'Trabalho' };   // trabalho separado da Geral (May, 21/10/2026); no celular troca pelo ⋮
-const CASA = { arq: 'caixas/casa-pcs.md', nome: 'Casa (PCs)', participantes: ['orfeu', 'nyx', 'vega', 'pc4'] };   // PCs de casa (May, 30/10/2026); só abre depois das 19h; participantes = quem escreve casa/online/online-<chave>.json
+const CASA = { arq: 'caixas/casa-pcs.md', nome: 'Casa (PCs)', participantes: ['orfeu', 'nyx', 'vega', 'pc4', 'lyra'] };   // PCs de casa (May, 30/10/2026); só abre depois das 19h; participantes = quem escreve casa/online/online-<chave>.json
 const apiDe = arq => 'https://api.github.com/repos/' + REPO + '/contents/' + arq.split('/').map(encodeURIComponent).join('/');
 let FILE = null;      // arquivo da conversa aberta (null = está na lista)
 let API = null;
