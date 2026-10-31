@@ -1460,7 +1460,7 @@ function horaDeTrabalho(d = new Date()) {
   const dia = d.getDay(), h = d.getHours();
   return dia >= 1 && dia <= 5 && h >= 8 && h < 18 && h !== 12;
 }
-function horaDeCasa(d = new Date()) { const h = d.getHours(); return h >= 19 || h < 8; }   // Casa (PCs): 19h-7h59 (cobre virar a meia-noite); bug corrigido 31/10/2026 — sumia depois das 00h
+function horaDeCasa(d = new Date()) { const h = d.getHours(), dia = d.getDay(); return h >= 19 || h < 8 || dia === 0 || dia === 6; }   // Casa (PCs): 19h-7h59 em dia de semana, mas fim de semana fica acessível o dia todo (pedido dela, 31/10/2026)
 function ultimaConv() {
   if (!MODO_WEB) {
     const [pArq, pTs] = store.get('push-conv').split('|');
