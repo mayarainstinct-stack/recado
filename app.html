@@ -505,35 +505,46 @@ function tituloDe(md) { const m = md.match(/^#\s+(.+?)\s*$/m); return m ? m[1].r
 function parse(md) {
   const out = []; const lines = md.split(/\r?\n/); let on = false;   // \r: arquivo salvo no Windows
   for (const line of lines) {
-    if (/^##\s+Recados/.test(line)) { on = true; continue; }
-    if (on && /^##\s/.test(line)) break;
-    if (!on) continue;
-    let m = line.match(/^- \[(\d\d\/\d\d\/\d{4}) (\d\d:\d\d)\] (.*)$/);
-    if (m) {
-      const lida = /\s\{lida\}\s*$/.test(m[3]);
-      let text = m[3].replace(/\s\{lida\}\s*$/, '').replace(/\\n/g, '\n');
-      const cit = text.match(/\s*⟪re: ([^:⟫]+): ([^⟫]*)⟫\s*$/);   // resposta citando: "⟪re: Nome: trecho⟫"
-      if (cit) text = text.slice(0, cit.index);
-      const au = text.match(/^🎤 (\S+)\s*$/);           // "🎤 recados-audios/arquivo.m4a"
-      const f = text.match(/^📷 (\S+)\s*([\s\S]*)$/);   // "📷 recados-fotos/arquivo.jpg legenda"
-      out.push({ from: 'may', day: m[1], time: m[2], lida, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], audio: au ? au[1] : '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: au ? '' : (f ? f[2] : text) });
-      continue;
-    }
-    const tr = line.match(/^\s+↳ transcrição: (.*)$/);
-    if (tr) { const alvo = [...out].reverse().find(x => x.from === 'may' && x.audio); if (alvo) alvo.transcricao = tr[1]; continue; }
-    // Respostas no estilo grupo: "  ↳ Lyra: …" ou "  ↳ simp-mobile: …" (cada um com a sua cor)
-    // "[op: A|B|C]" = balão de múltipla escolha (ela toca e a resposta vai citando a pergunta)
-    m = line.match(/^\s+↳ (Lyra|Orfeu|Nyx|Vega|pc1|pc2|pc3|pc4|rm|simp-mobile|promotor|kds)(?: \[(\d\d\/\d\d\/\d{4}) (\d\d:\d\d)\])?( \[copiar\])?(?: \[op: ([^\]]+)\])?: (.*)$/i);
-    // carimbo opcional logo depois do nome: "↳ Lyra [DD/MM/AAAA HH:MM]: texto"; sem ele a resposta herda o dia e fica sem hora
-    if (m) { m = [m[0], m[1], m[4], m[6], m[5], m[2], m[3]]; }
-    if (m) {
-      out.forEach(it => { if (it.from === 'may') it.lida = true; });   // respondeu = leu tudo antes
-      let txt = m[3].replace(/\\n/g, '\n');
-      const cit = txt.match(/\s*⟪re: ([^:⟫]+): ([^⟫]*)⟫\s*$/);
-      if (cit) txt = txt.slice(0, cit.index);
-      const f = txt.match(/^📷 (\S+)\s*([\s\S]*)$/);   // foto: "📷 recados-fotos/x.jpg legenda"
-      out.push({ from: 'lyra', quem: m[1].toLowerCase(), copiar: !!m[2], opcoes: m[4] ? m[4].split('|').map(x => x.trim()).filter(Boolean) : null, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], day: m[5] || (out.length ? out[out.length - 1].day : ''), time: m[6] || '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: f ? f[2] : txt });
-    }
+    // Cada linha é isolada num try: uma linha mal formada (ex.: um Claude de outra máquina que editou
+    // o .md direto e deixou quebra de linha real em vez de "\n", ou formato inesperado) não pode derrubar
+    // a leitura do resto da conversa -- ela é ignorada/anexada e a gente segue pras próximas linhas.
+    try {
+      if (/^##\s+Recados/.test(line)) { on = true; continue; }
+      if (on && /^##\s/.test(line)) break;
+      if (!on) continue;
+      let m = line.match(/^- \[(\d\d\/\d\d\/\d{4}) (\d\d:\d\d)\] (.*)$/);
+      if (m) {
+        const lida = /\s\{lida\}\s*$/.test(m[3]);
+        let text = m[3].replace(/\s\{lida\}\s*$/, '').replace(/\\n/g, '\n');
+        const cit = text.match(/\s*⟪re: ([^:⟫]+): ([^⟫]*)⟫\s*$/);   // resposta citando: "⟪re: Nome: trecho⟫"
+        if (cit) text = text.slice(0, cit.index);
+        const au = text.match(/^🎤 (\S+)\s*$/);           // "🎤 recados-audios/arquivo.m4a"
+        const f = text.match(/^📷 (\S+)\s*([\s\S]*)$/);   // "📷 recados-fotos/arquivo.jpg legenda"
+        out.push({ from: 'may', day: m[1], time: m[2], lida, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], audio: au ? au[1] : '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: au ? '' : (f ? f[2] : text) });
+        continue;
+      }
+      const tr = line.match(/^\s+↳ transcrição: (.*)$/);
+      if (tr) { const alvo = [...out].reverse().find(x => x.from === 'may' && x.audio); if (alvo) alvo.transcricao = tr[1]; continue; }
+      // Respostas no estilo grupo: "  ↳ Lyra: …" ou "  ↳ simp-mobile: …" (cada um com a sua cor)
+      // "[op: A|B|C]" = balão de múltipla escolha (ela toca e a resposta vai citando a pergunta)
+      m = line.match(/^\s+↳ (Lyra|Orfeu|Nyx|Vega|pc1|pc2|pc3|pc4|rm|simp-mobile|promotor|kds)(?: \[(\d\d\/\d\d\/\d{4}) (\d\d:\d\d)\])?( \[copiar\])?(?: \[op: ([^\]]+)\])?: (.*)$/i);
+      // carimbo opcional logo depois do nome: "↳ Lyra [DD/MM/AAAA HH:MM]: texto"; sem ele a resposta herda o dia e fica sem hora
+      if (m) { m = [m[0], m[1], m[4], m[6], m[5], m[2], m[3]]; }
+      if (m) {
+        out.forEach(it => { if (it.from === 'may') it.lida = true; });   // respondeu = leu tudo antes
+        let txt = m[3].replace(/\\n/g, '\n');
+        const cit = txt.match(/\s*⟪re: ([^:⟫]+): ([^⟫]*)⟫\s*$/);
+        if (cit) txt = txt.slice(0, cit.index);
+        const f = txt.match(/^📷 (\S+)\s*([\s\S]*)$/);   // foto: "📷 recados-fotos/x.jpg legenda"
+        out.push({ from: 'lyra', quem: m[1].toLowerCase(), copiar: !!m[2], opcoes: m[4] ? m[4].split('|').map(x => x.trim()).filter(Boolean) : null, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], day: m[5] || (out.length ? out[out.length - 1].day : ''), time: m[6] || '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: f ? f[2] : txt });
+      } else if (line.trim() && out.length) {
+        // Linha solta dentro de "## Recados" que não bate em nenhum padrão conhecido: provavelmente
+        // quebra de linha REAL (em vez de "\n" escapado) dentro da mesma mensagem. Em vez de sumir com
+        // o resto do texto, encosta como continuação da última linha lida -- não perde o conteúdo.
+        const ult = out[out.length - 1];
+        ult.text = (ult.text ? ult.text + '\n' : '') + line.trim();
+      }
+    } catch (e) { /* linha ruim: ignora e segue pras próximas, não derruba a conversa toda */ }
   }
   return out;
 }
@@ -769,7 +780,7 @@ async function carregar() {
   try {
     const f = await gh('GET').finally(() => syncEl.classList.remove('on'));
     if (FILE !== arq) return f;   // trocou de conversa enquanto baixava
-    const items = parse(b64decode(f.content));
+    let items; try { items = parse(b64decode(f.content)); } catch (e2) { items = lastItems; }   // md malformado não trava a conversa já carregada
     const same = items.length === lastItems.length && items.every((it, i) => it.text === lastItems[i].text && it.from === lastItems[i].from && it.lida === lastItems[i].lida && it.foto === lastItems[i].foto && it.copiar === lastItems[i].copiar && it.transcricao === lastItems[i].transcricao);
     if (!same || forcar) { forcar = false; if (items.length < shown) shown = items.length; lastItems = items; render(items); }
     checaOnline();
@@ -907,8 +918,12 @@ async function enviaAudio(blob) {
       body: JSON.stringify({ message: 'áudio do iPhone', content: b64 })
     });
     if (!r.ok) throw new Error('upload ' + r.status);
+    // o upload do áudio demora (4G); se ela já tinha começado a escrever a próxima mensagem enquanto
+    // subia, guarda esse rascunho e devolve pra caixa depois -- senão o áudio apagava o que ela tava digitando
+    const rascunho = box.value;
     box.value = '🎤 ' + nome; sending = false; pend.remove();
     form.requestSubmit();
+    if (rascunho.trim()) { box.value = rascunho; box.style.height = 'auto'; box.style.height = Math.min(box.scrollHeight, 140) + 'px'; store.set(rascKey(), rascunho); syncBtn(); }
   } catch (e) { sending = false; syncBtn(); pend.remove(); showNote('O áudio não foi. Confere a internet e tenta de novo.', true); }
 }
 syncBtn();
@@ -1091,7 +1106,9 @@ form.addEventListener('submit', async e => {
       // não força box.value='' aqui: se ela já começou a digitar a PRÓXIMA mensagem enquanto
       // esperava o envio (às vezes demora, com retry de 409), isso apagava o que ela tava escrevendo
       store.set(rascKey(), box.value); responder(null);
-      fotos.forEach(x => URL.revokeObjectURL(x.url)); anexos = []; desenhaBandeja();
+      // tira da bandeja só as fotos DESTA mensagem -- se ela colocou outra foto nova enquanto esta
+      // ainda subia (upload lento no 4G), aquela foto nova não pode desaparecer
+      fotos.forEach(x => URL.revokeObjectURL(x.url)); anexos = anexos.filter(a => !fotos.includes(a)); desenhaBandeja();
       await load().catch(() => {});
       break;
     } catch (err) {
@@ -1213,7 +1230,7 @@ async function listar(estrito) {
     if (d.ok) (await d.json()).filter(x => x.type === 'file' && /\.md$/i.test(x.name)).forEach(x => arqs.push(x.path));
     const lidas = await Promise.all(arqs.map(a => lerArquivo(a).then(md => ({ arq: a, md }), e => { if (a === GERAL.arq) throw e; return null; })));
     conversas = lidas.filter(Boolean).map(({ arq, md }) => {
-      const items = parse(md);
+      let items = []; try { items = parse(md); } catch (e2) { items = []; }   // uma caixa com formato ruim não pode derrubar a lista das outras
       const slug = arq.replace(/^.*\//, '').replace(/\.md$/i, '');
       const visto = parseInt(store.get(vistoKey(arq)) || '0', 10);
       if (visto > items.length) store.set(vistoKey(arq), String(items.length));   // arquivo encolheu (Lyra limpou)
