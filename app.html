@@ -562,7 +562,7 @@ function parse(md) {
       if (tr) { const alvo = [...out].reverse().find(x => x.from === 'may' && x.audio); if (alvo) alvo.transcricao = tr[1]; continue; }
       // Respostas no estilo grupo: "  ↳ Lyra: …" ou "  ↳ simp-mobile: …" (cada um com a sua cor)
       // "[op: A|B|C]" = balão de múltipla escolha (ela toca e a resposta vai citando a pergunta)
-      m = line.match(/^\s+↳ (Lyra|Orfeu|Nyx|Vega|pc1|pc2|pc3|pc4|rm|simp-mobile|promotor|kds)(?: \[(\d\d\/\d\d\/\d{4}) (\d\d:\d\d)\])?( \[copiar\])?(?: \[op: ([^\]]+)\])?: (.*)$/i);
+      m = line.match(new RegExp('^\\s+↳ (' + RE_QUEM_NOMES + ')(?: \\[(\\d\\d/\\d\\d/\\d{4}) (\\d\\d:\\d\\d)\\])?( \\[copiar\\])?(?: \\[op: ([^\\]]+)\\])?: (.*)$', 'i'));
       // carimbo opcional logo depois do nome: "↳ Lyra [DD/MM/AAAA HH:MM]: texto"; sem ele a resposta herda o dia e fica sem hora
       if (m) { m = [m[0], m[1], m[4], m[6], m[5], m[2], m[3]]; }
       if (m) {
@@ -612,6 +612,10 @@ const GRUPO = {
   hermes: { nome: 'Hermes (PC4)', cor: '#FFCB05', texto: '#2A2002', foto: 'recados-fotos/20261031-005747-avatar-hermes.png' },   // alias de pc4, mesma cor
   darksigma: { nome: 'DarkSigma', cor: '#9333EA', texto: '#FFFFFF', foto: 'recados-fotos/20261031-010359-1.jpg' }   // hipotetico, roxo igual o Sigma do conselho
 };
+// Nomes aceitos em "  ↳ Nome: ..." — sempre as chaves do GRUPO, pra nunca mais esquecer de
+// sincronizar isso com GRUPO na mão quando adicionar alguém (bug: Hermes/DarkSigma adicionados
+// no GRUPO mas não aqui, mensagem deles sumia sem avisar).
+const RE_QUEM_NOMES = Object.keys(GRUPO).map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
 // Copia o texto puro da mensagem pro clipboard; cai pra execCommand em navegador mobile antigo que não tem Clipboard API.
 async function copiaTexto(texto) {
   let ok = true;
