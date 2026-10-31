@@ -830,7 +830,7 @@ function fmtVisto(iso) {
   const t = Date.parse(iso || '');
   if (!isFinite(t)) return { texto: 'nunca visto', online: false };
   const min = (Date.now() - t) / 60000;
-  if (min > 15) {
+  if (min > 5.5) {   // mesma janela do heartbeat global (checaOnline, 330000ms) — consistente com "Agente online agora"
     const h = min / 60;
     return { texto: 'offline · visto há ' + (h < 1 ? Math.round(min) + ' min' : (h < 24 ? Math.round(h) + ' h' : Math.round(h / 24) + ' d')), online: false };
   }
@@ -863,7 +863,11 @@ async function atualizaOnlineGrupo(forcar) {
   if (!forcar && (Date.now() - ultimaOnlineGrupo < 20000 || onlineGrupoCarregando)) return;
   ultimaOnlineGrupo = Date.now();
   onlineGrupoCarregando = Promise.all(conv.participantes.map(k =>
-    lerArquivo('casa/online/online-' + k + '.json').then(txt => { try { return { chave: k, ...JSON.parse(txt) }; } catch (e) { return null; } }, () => null)   // 404 (ou outro erro) = esse agente não aparece, sem mostrar erro
+    // lido da branch "online" (igual o online.txt global), não da branch normal — é o heartbeat do status.sh, atualiza sem sujar o histórico
+    fetch('https://api.github.com/repos/' + REPO + '/contents/casa/online/online-' + k + '.json?ref=online&t=' + Date.now(),
+      { headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github.raw' } })
+      .then(r => { if (!r.ok) throw new Error('http ' + r.status); return r.text(); })
+      .then(txt => { try { return { chave: k, ...JSON.parse(txt) }; } catch (e) { return null; } }, () => null)   // 404 (ou outro erro) = esse agente não aparece, sem mostrar erro
   )).then(lista => {
     onlineGrupoLista = lista.filter(Boolean);
     const n = onlineGrupoLista.filter(p => fmtVisto(p.ultimaAtualizacao).online).length;
