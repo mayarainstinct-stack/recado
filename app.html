@@ -60,6 +60,22 @@ header { position: relative; z-index: 2; color: var(--head-fg); font-family: -ap
 .status.on .sync { display: block; animation: gira .8s linear infinite; }
 .icon-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.16); color: var(--head-fg);
   font-size: 22px; line-height: 1; display: grid; place-items: center; }
+/* Badge "N agentes online agora" (só em conversa de grupo, ex. Casa (PCs)): toca pra abrir a lista com foto + visto por último */
+.online-badge { width: auto; height: auto; justify-self: start; background: rgba(255,255,255,.18); color: var(--head-fg);
+  border-radius: 999px; padding: 4px 10px; font-size: 11.5px; font-weight: 700; }
+.online-pop { position: absolute; left: max(12px, env(safe-area-inset-left, 0px)); top: calc(96px + env(safe-area-inset-top, 0px));
+  min-width: 220px; max-width: 280px; max-height: 60vh; overflow-y: auto; background: var(--paper); color: var(--fg);
+  border: 1px solid var(--line); border-radius: 16px; padding: 6px; z-index: 5; display: grid; gap: 2px;
+  box-shadow: 0 12px 32px rgba(0,0,0,.22), 0 2px 6px rgba(0,0,0,.10); }
+.online-pop:not([hidden]) { animation: abre .18s ease-out both; transform-origin: top left; }
+.online-pop .vazio { padding: 10px 8px; font-size: 13px; color: var(--muted); }
+.online-pop .pessoa { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 10px; }
+.online-pop .av { width: 32px; height: 32px; border-radius: 50%; flex: none; display: grid; place-items: center; font-weight: 700;
+  font-size: 13px; background-size: cover; background-position: center; }
+.online-pop .info { min-width: 0; display: grid; gap: 1px; }
+.online-pop .nome { font-weight: 700; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.online-pop .visto { font-size: 12px; color: var(--muted); }
+.online-pop .visto.ag { color: var(--accent); font-weight: 600; }
 .menu.no-painel { position: fixed; z-index: 57; }   /* aberto de dentro do Menu: fica por cima do painel */
 .menu { position: absolute; right: max(12px, env(safe-area-inset-right, 0px)); top: calc(62px + env(safe-area-inset-top, 0px));
   min-width: 232px; background: var(--paper); color: var(--fg); border: 1px solid var(--line); border-radius: 16px; padding: 6px; z-index: 5;
@@ -381,9 +397,11 @@ body.web.lado .anexos { grid-column: 2; grid-row: 4; }
       <div class="who">
         <h1 id="titulo">Recados</h1>
         <span class="status off" id="statusbar"><span class="dot"></span><span class="sync" aria-hidden="true"></span><span id="status">verificando o agente…</span></span>
+        <button type="button" class="online-badge" id="onlineBadge" hidden aria-haspopup="true" aria-expanded="false"></button>
       </div>
       <button class="icon-btn" id="mais" type="button" aria-label="Mais opções" aria-haspopup="menu" aria-expanded="false" hidden>⋮</button>
     </div>
+    <div class="online-pop" id="onlinePop" hidden></div>
     <div class="menu" id="menu" hidden>
       <button type="button" id="ir-geral"><span class="mi">💬</span>Geral</button>
       <button type="button" id="ir-trab"><span class="mi">💼</span>Trabalho</button>
@@ -445,7 +463,7 @@ const REPO = 'mayarainstinct-stack/Inst';
 // Conversas = arquivos: "Geral" é a CAIXA-DE-ENTRADA.md; as outras ficam em caixas/<nome>.md (mesmo formato).
 const GERAL = { arq: 'CAIXA-DE-ENTRADA.md', nome: 'Geral' };
 const TRAB = { arq: 'caixas/trabalho.md', nome: 'Trabalho' };   // trabalho separado da Geral (May, 21/10/2026); no celular troca pelo ⋮
-const CASA = { arq: 'caixas/casa-pcs.md', nome: 'Casa (PCs)' };   // PCs de casa (May, 30/10/2026); só abre depois das 19h
+const CASA = { arq: 'caixas/casa-pcs.md', nome: 'Casa (PCs)', participantes: ['orfeu', 'nyx', 'vega', 'pc4'] };   // PCs de casa (May, 30/10/2026); só abre depois das 19h; participantes = quem escreve casa/online/online-<chave>.json
 const apiDe = arq => 'https://api.github.com/repos/' + REPO + '/contents/' + arq.split('/').map(encodeURIComponent).join('/');
 let FILE = null;      // arquivo da conversa aberta (null = está na lista)
 let API = null;
@@ -800,7 +818,66 @@ async function checaOnline() {
     else { const min = Math.round((Date.now() - ts) / 60000);
       statusTxt.textContent = isFinite(min) ? 'Agente offline · visto há ' + (min < 60 ? min + ' min' : Math.round(min / 60) + ' h') : 'Agente offline'; }
   } catch (e) { syncEl.classList.add('off'); statusTxt.textContent = 'Agente offline'; }
+  atualizaOnlineGrupo();
 }
+
+// ---- "N agentes online agora" por conversa de grupo (ex. Casa (PCs)): um casa/online/online-<chave>.json por agente
+// (cada um só escreve o seu — sem risco de conflito), lido com o mesmo lerArquivo() da lista de conversas. 404 = esse
+// agente ainda não apareceu, sem erro na tela. Threshold de "online" ~15 min; depois disso mostra "offline · visto há…".
+const onlineBadge = document.getElementById('onlineBadge'), onlinePop = document.getElementById('onlinePop');
+let onlineGrupoLista = [], ultimaOnlineGrupo = 0, onlineGrupoCarregando = null;
+function fmtVisto(iso) {
+  const t = Date.parse(iso || '');
+  if (!isFinite(t)) return { texto: 'nunca visto', online: false };
+  const min = (Date.now() - t) / 60000;
+  if (min > 15) {
+    const h = min / 60;
+    return { texto: 'offline · visto há ' + (h < 1 ? Math.round(min) + ' min' : (h < 24 ? Math.round(h) + ' h' : Math.round(h / 24) + ' d')), online: false };
+  }
+  if (min < 1) return { texto: 'agora', online: true };
+  return { texto: 'há ' + Math.round(min) + ' min', online: true };
+}
+function nomeDe(p) { return p.nome || (GRUPO[p.chave] ? GRUPO[p.chave].nome.replace(/\s*\(.*\)$/, '') : p.chave); }
+function desenhaOnlinePop() {
+  onlinePop.replaceChildren();
+  if (!onlineGrupoLista.length) { const v = document.createElement('div'); v.className = 'vazio'; v.textContent = 'Nenhum agente apareceu ainda.'; onlinePop.append(v); return; }
+  onlineGrupoLista.forEach(p => {
+    const cor = GRUPO[p.chave] ? GRUPO[p.chave].cor : 'var(--accent)', texto = GRUPO[p.chave] ? GRUPO[p.chave].texto : '#fff';
+    const row = document.createElement('div'); row.className = 'pessoa';
+    const av = document.createElement('div'); av.className = 'av'; av.style.background = cor; av.style.color = texto;
+    av.textContent = nomeDe(p).charAt(0).toUpperCase();
+    if (p.foto) fotoUrl(p.foto).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.textContent = ''; }).catch(() => {});   // falhou/404: fica a letra
+    const info = document.createElement('div'); info.className = 'info';
+    const nome = document.createElement('div'); nome.className = 'nome'; nome.textContent = nomeDe(p);
+    const v = fmtVisto(p.ultimaAtualizacao);
+    const visto = document.createElement('div'); visto.className = 'visto' + (v.online ? ' ag' : '');
+    visto.textContent = v.online ? (v.texto === 'agora' ? 'online agora' : 'visto ' + v.texto) : v.texto;
+    info.append(nome, visto); row.append(av, info); onlinePop.append(row);
+  });
+}
+async function atualizaOnlineGrupo(forcar) {
+  const conv = FILE ? convPorArq(FILE) : null;
+  if (!conv || !conv.participantes) { onlineBadge.hidden = true; onlinePop.hidden = true; return; }
+  onlineBadge.hidden = false;
+  if (!forcar && (Date.now() - ultimaOnlineGrupo < 20000 || onlineGrupoCarregando)) return;
+  ultimaOnlineGrupo = Date.now();
+  onlineGrupoCarregando = Promise.all(conv.participantes.map(k =>
+    lerArquivo('casa/online/online-' + k + '.json').then(txt => { try { return { chave: k, ...JSON.parse(txt) }; } catch (e) { return null; } }, () => null)   // 404 (ou outro erro) = esse agente não aparece, sem mostrar erro
+  )).then(lista => {
+    onlineGrupoLista = lista.filter(Boolean);
+    const n = onlineGrupoLista.filter(p => fmtVisto(p.ultimaAtualizacao).online).length;
+    onlineBadge.textContent = n + (n === 1 ? ' agente online agora' : ' agentes online agora');
+    if (!onlinePop.hidden) desenhaOnlinePop();
+  }).finally(() => { onlineGrupoCarregando = null; });
+  return onlineGrupoCarregando;
+}
+onlineBadge.onclick = e => {
+  e.stopPropagation();
+  onlinePop.hidden = !onlinePop.hidden; onlineBadge.setAttribute('aria-expanded', String(!onlinePop.hidden));
+  if (!onlinePop.hidden) desenhaOnlinePop();
+};
+document.addEventListener('click', e => { if (!onlinePop.hidden && !onlinePop.contains(e.target) && !onlineBadge.contains(e.target)) { onlinePop.hidden = true; onlineBadge.setAttribute('aria-expanded', 'false'); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !onlinePop.hidden) { onlinePop.hidden = true; onlineBadge.setAttribute('aria-expanded', 'false'); } });
 
 let ultimaChecagem = 0, carregando = null;
 let forcar = false;   // recém-aberta: desenha mesmo que esteja vazia
@@ -1312,7 +1389,7 @@ function mostraLista() {
   FILE = null; API = null; nomeConv = ''; fotoConv = ''; logoEl.style.backgroundImage = '';
   voltar.hidden = true; logoEl.hidden = false; tituloEl.textContent = 'Recados';
   feed.hidden = true; form.hidden = true; citando.hidden = true; desce.hidden = true; lista.hidden = false; novaBtn.hidden = false;
-  mostraFazendo(''); showNote(''); menu.hidden = true;
+  mostraFazendo(''); showNote(''); menu.hidden = true; onlineBadge.hidden = true; onlinePop.hidden = true;
   if (conversas.length) desenhaLista();
   carregaLista().catch(() => {});
   if (largo()) abrir(ultimaConv()).catch(() => {});   // no PC já abre do lado a última que ela viu
