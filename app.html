@@ -1293,7 +1293,7 @@ function horaDeTrabalho(d = new Date()) {
   const dia = d.getDay(), h = d.getHours();
   return dia >= 1 && dia <= 5 && h >= 8 && h < 18 && h !== 12;
 }
-function horaDeCasa(d = new Date()) { return d.getHours() >= 19; }   // Casa (PCs) só abre depois das 19h (May, 30/10/2026)
+function horaDeCasa(d = new Date()) { const h = d.getHours(); return h >= 19 || h < 8; }   // Casa (PCs): 19h-7h59 (cobre virar a meia-noite); bug corrigido 31/10/2026 — sumia depois das 00h
 function ultimaConv() {
   if (!MODO_WEB) {
     const [pArq, pTs] = store.get('push-conv').split('|');
