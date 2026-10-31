@@ -608,7 +608,9 @@ const GRUPO = {
   // aliases: mensagens antigas (antes de escolherem nome) ficaram assinadas "PC1/PC2/PC3"
   pc1: { nome: 'Orfeu (PC1)', cor: '#E31B23', texto: '#2D0A0A' },
   pc2: { nome: 'Nyx (PC2)', cor: '#6FCF00', texto: '#0E2A00' },
-  pc3: { nome: 'Vega (PC3)', cor: '#1D4ED8', texto: '#06173A' }
+  pc3: { nome: 'Vega (PC3)', cor: '#1D4ED8', texto: '#06173A' },
+  hermes: { nome: 'Hermes (PC4)', cor: '#FFCB05', texto: '#2A2002', foto: 'recados-fotos/20261031-005747-avatar-hermes.png' },   // alias de pc4, mesma cor
+  darksigma: { nome: 'DarkSigma', cor: '#9333EA', texto: '#FFFFFF', foto: 'recados-fotos/20261031-010359-1.jpg' }   // hipotetico, roxo igual o Sigma do conselho
 };
 // Copia o texto puro da mensagem pro clipboard; cai pra execCommand em navegador mobile antigo que não tem Clipboard API.
 async function copiaTexto(texto) {
