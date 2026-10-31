@@ -663,7 +663,13 @@ function render(items, manterPosicao) {
       el.style.setProperty('--quem', GRUPO[it.quem].cor); el.style.setProperty('--quem-fg', GRUPO[it.quem].texto); el.classList.add('grupo');
       const nome = document.createElement('div'); nome.className = 'quem';
       const av = document.createElement('span'); av.className = 'avatar'; av.textContent = GRUPO[it.quem].nome.charAt(0).toUpperCase();
-      if (GRUPO[it.quem].foto) fotoUrl(GRUPO[it.quem].foto).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.textContent = ''; }).catch(() => {});   // falhou: fica a letra
+      if (GRUPO[it.quem].foto) {
+        const fp = GRUPO[it.quem].foto;
+        fotoUrl(fp).then(u => {
+          av.style.backgroundImage = 'url(' + u + ')'; av.textContent = '';
+          av.style.cursor = 'pointer'; av.addEventListener('click', e => { e.stopPropagation(); abreZoom(u, fp); });
+        }).catch(() => {});   // falhou: fica a letra, sem clique
+      }
       const nomeTxt = document.createElement('span'); nomeTxt.textContent = GRUPO[it.quem].nome;
       nome.append(av, nomeTxt); el.append(nome);
     }
@@ -873,7 +879,10 @@ function desenhaOnlinePop() {
     const av = document.createElement('div'); av.className = 'av'; av.style.background = cor; av.style.color = texto;
     av.textContent = nomeDe(p).charAt(0).toUpperCase();
     const fotoP = p.foto || (GRUPO[p.chave] && GRUPO[p.chave].foto);   // prioriza a foto do heartbeat; sem ela, usa a foto fixa do GRUPO
-    if (fotoP) fotoUrl(fotoP).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.textContent = ''; }).catch(() => {});   // falhou/404: fica a letra
+    if (fotoP) fotoUrl(fotoP).then(u => {
+      av.style.backgroundImage = 'url(' + u + ')'; av.textContent = '';
+      av.style.cursor = 'pointer'; av.addEventListener('click', e => { e.stopPropagation(); abreZoom(u, fotoP); });
+    }).catch(() => {});   // falhou/404: fica a letra, sem clique
     const info = document.createElement('div'); info.className = 'info';
     const nome = document.createElement('div'); nome.className = 'nome'; nome.textContent = nomeDe(p);
     const v = fmtVisto(p.ultimaAtualizacao);
