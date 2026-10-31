@@ -177,6 +177,7 @@ textarea:focus-visible { outline: none; }
 .desce .qtd { position: absolute; top: -4px; right: -4px; min-width: 20px; height: 20px; border-radius: 999px; background: var(--accent); color: var(--accent-fg);
   font-size: 11px; font-weight: 700; display: grid; place-items: center; padding: 0 5px; }
 .txt { white-space: pre-wrap; overflow-wrap: anywhere; }
+.msg:has(.copiar-msg) .txt { padding-right: 24px; }   /* a setinha de opções não pode cobrir o fim do texto */
 .txt a { color: inherit; text-decoration: underline; text-underline-offset: 2px; font-weight: 600; }
 .msg.copiavel { border: 1.5px dashed var(--accent); background: color-mix(in srgb, var(--accent) 7%, var(--theirs)); max-width: 92%; }
 .msg.copiavel .txt { font-size: 14.5px; }
@@ -871,7 +872,8 @@ function desenhaOnlinePop() {
     const row = document.createElement('div'); row.className = 'pessoa';
     const av = document.createElement('div'); av.className = 'av'; av.style.background = cor; av.style.color = texto;
     av.textContent = nomeDe(p).charAt(0).toUpperCase();
-    if (p.foto) fotoUrl(p.foto).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.textContent = ''; }).catch(() => {});   // falhou/404: fica a letra
+    const fotoP = p.foto || (GRUPO[p.chave] && GRUPO[p.chave].foto);   // prioriza a foto do heartbeat; sem ela, usa a foto fixa do GRUPO
+    if (fotoP) fotoUrl(fotoP).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.textContent = ''; }).catch(() => {});   // falhou/404: fica a letra
     const info = document.createElement('div'); info.className = 'info';
     const nome = document.createElement('div'); nome.className = 'nome'; nome.textContent = nomeDe(p);
     const v = fmtVisto(p.ultimaAtualizacao);
@@ -892,9 +894,9 @@ async function atualizaOnlineGrupo(forcar) {
     fetch('https://api.github.com/repos/' + REPO + '/contents/casa/online/online-' + k + '.json?ref=online&t=' + Date.now(),
       { headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github.raw' } })
       .then(r => { if (!r.ok) throw new Error('http ' + r.status); return r.text(); })
-      .then(txt => { try { return { chave: k, ...JSON.parse(txt) }; } catch (e) { return null; } }, () => null)   // 404 (ou outro erro) = esse agente não aparece, sem mostrar erro
+      .then(txt => { try { return { chave: k, ...JSON.parse(txt) }; } catch (e) { return { chave: k }; } }, () => ({ chave: k }))   // 404 (ou outro erro) = esse agente ainda não bateu heartbeat, mas aparece na lista como "nunca visto"
   )).then(lista => {
-    onlineGrupoLista = lista.filter(Boolean);
+    onlineGrupoLista = lista;   // sempre os participantes todos (mesmo quem nunca apareceu), pra lista nunca ficar vazia
     const n = onlineGrupoLista.filter(p => fmtVisto(p.ultimaAtualizacao).online).length;
     onlineBadge.textContent = n + (n === 1 ? ' agente online agora' : ' agentes online agora');
     if (!onlinePop.hidden) desenhaOnlinePop();
