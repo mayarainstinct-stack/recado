@@ -857,8 +857,9 @@ function desenhaOnlinePop() {
 }
 async function atualizaOnlineGrupo(forcar) {
   const conv = FILE ? convPorArq(FILE) : null;
-  if (!conv || !conv.participantes) { onlineBadge.hidden = true; onlinePop.hidden = true; return; }
+  if (!conv || !conv.participantes) { onlineBadge.hidden = true; onlinePop.hidden = true; syncEl.hidden = false; return; }
   onlineBadge.hidden = false;
+  syncEl.hidden = true;   // em grupo (ex. Casa) o selo "N agentes online agora" substitui o selo global único, não mostra os dois
   if (!forcar && (Date.now() - ultimaOnlineGrupo < 20000 || onlineGrupoCarregando)) return;
   ultimaOnlineGrupo = Date.now();
   onlineGrupoCarregando = Promise.all(conv.participantes.map(k =>
