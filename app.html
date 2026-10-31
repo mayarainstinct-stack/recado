@@ -183,11 +183,18 @@ textarea:focus-visible { outline: none; }
 .copiar-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px;
   font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--accent); }
 .copiar-btn { width: auto; height: auto; min-height: 40px; border-radius: 999px; padding: 8px 14px; font-size: 13px; letter-spacing: 0; text-transform: none; }
-/* Botão 📋 no canto de toda mensagem com texto — o toque longo pra selecionar bugava no celular, então ela copia por aqui */
+/* Setinha no canto de toda mensagem com texto (igual WhatsApp) — toca e abre menu com "Copiar".
+   Existe porque o toque longo pra selecionar bugava no celular (gestoResponder brigava com a seleção). */
 .msg .copiar-msg { position: absolute; top: 4px; right: 6px; width: 21px; height: 21px; min-height: 0; border-radius: 50%; border: none;
-  background: rgba(0,0,0,.14); color: inherit; font-size: 10.5px; font-weight: 400; display: grid; place-items: center; opacity: .5; padding: 0; }
+  background: rgba(0,0,0,.14); color: inherit; font-size: 13px; line-height: 1; font-weight: 700; display: grid; place-items: center; opacity: .5; padding: 0; }
 .msg .copiar-msg:active { opacity: 1; }
-.msg .copiar-msg.ok { opacity: 1; }
+.msg-menu-pop { position: fixed; min-width: 150px; background: var(--paper); color: var(--fg); border: 1px solid var(--line);
+  border-radius: 12px; padding: 4px; z-index: 20; box-shadow: 0 12px 32px rgba(0,0,0,.22), 0 2px 6px rgba(0,0,0,.10); }
+.msg-menu-pop:not([hidden]) { animation: abre .15s ease-out both; transform-origin: top right; }
+.msg-menu-pop button { width: 100%; height: auto; min-height: 42px; border-radius: 8px; background: none; color: var(--fg);
+  padding: 0 12px; text-align: left; font-size: 14.5px; font-weight: 600; }
+.msg-menu-pop button:active { background: var(--bg); }
+@media (hover: hover) { .msg-menu-pop button:hover { background: var(--bg); } }
 .tick { font-weight: 700; letter-spacing: -2px; color: var(--muted); }
 .tick.lida { color: var(--accent); }
 .tick.relogio { display: inline-flex; vertical-align: -2px; letter-spacing: 0; }
@@ -601,7 +608,7 @@ const GRUPO = {
   pc3: { nome: 'Vega (PC3)', cor: '#1D4ED8', texto: '#06173A' }
 };
 // Copia o texto puro da mensagem pro clipboard; cai pra execCommand em navegador mobile antigo que não tem Clipboard API.
-async function copiaTexto(btn, texto) {
+async function copiaTexto(texto) {
   let ok = true;
   try { await navigator.clipboard.writeText(texto); }
   catch (e) {
@@ -610,10 +617,26 @@ async function copiaTexto(btn, texto) {
       document.body.append(ta); ta.focus(); ta.select(); document.execCommand('copy'); ta.remove();
     } catch (e2) { ok = false; }
   }
-  if (!ok) { showNote('Não consegui copiar. Segura o dedo no texto pra selecionar.', true); return; }
-  const orig = btn.textContent; btn.textContent = '✓'; btn.classList.add('ok');
-  setTimeout(() => { btn.textContent = orig; btn.classList.remove('ok'); }, 1500);
+  showNote(ok ? 'Copiado!' : 'Não consegui copiar. Segura o dedo no texto pra selecionar.', !ok);
 }
+// Menu de opções da mensagem (igual WhatsApp: toca a setinha, abre "Copiar"). Um popup só, reaproveitado,
+// reposicionado perto do botão tocado — mais leve que ter um popup por mensagem.
+const msgMenuPop = document.createElement('div'); msgMenuPop.className = 'msg-menu-pop'; msgMenuPop.hidden = true;
+document.body.append(msgMenuPop);
+function fechaMenuMsg() { msgMenuPop.hidden = true; }
+function abreMenuMsg(btn, texto) {
+  msgMenuPop.replaceChildren();
+  const op = document.createElement('button'); op.type = 'button'; op.textContent = '📋 Copiar';
+  op.addEventListener('click', e => { e.stopPropagation(); fechaMenuMsg(); copiaTexto(texto); });
+  msgMenuPop.append(op);
+  const r = btn.getBoundingClientRect();
+  msgMenuPop.style.top = (r.bottom + 4) + 'px';
+  msgMenuPop.style.right = (window.innerWidth - r.right) + 'px';
+  msgMenuPop.hidden = false;
+}
+document.addEventListener('click', e => { if (!msgMenuPop.hidden && !msgMenuPop.contains(e.target)) fechaMenuMsg(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !msgMenuPop.hidden) fechaMenuMsg(); });
+feed?.addEventListener('scroll', fechaMenuMsg, { passive: true });
 let renderizando = false;
 function render(items, manterPosicao) {
   renderizando = true; setTimeout(() => { renderizando = false; }, 100);
@@ -721,10 +744,11 @@ function render(items, manterPosicao) {
     const t = document.createElement('div'); t.className = 'txt'; linkar(t, it.text);
     if (it.text) el.append(t);
     if (it.text && !it.copiar) {
-      // Botão 📋 em toda mensagem com texto: no celular o toque-e-segure pra selecionar bugava, então ela copia tocando aqui
-      const cpy = document.createElement('button'); cpy.type = 'button'; cpy.className = 'copiar-msg'; cpy.title = 'Copiar mensagem'; cpy.textContent = '📋';
+      // Setinha no canto (igual WhatsApp) em toda mensagem com texto: toca e abre menu com "Copiar".
+      // Existe porque no celular o toque-e-segure pra selecionar bugava (ver gestoResponder/feed scroll).
+      const cpy = document.createElement('button'); cpy.type = 'button'; cpy.className = 'copiar-msg'; cpy.title = 'Opções da mensagem'; cpy.textContent = '⌄';
       cpy.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
-      cpy.addEventListener('click', e => { e.stopPropagation(); copiaTexto(cpy, it.text); });
+      cpy.addEventListener('click', e => { e.stopPropagation(); abreMenuMsg(cpy, it.text); });
       el.append(cpy);
     }
     if (it.time || it.from === 'may') {
