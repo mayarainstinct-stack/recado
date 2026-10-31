@@ -114,7 +114,9 @@ textarea:focus-visible { outline: none; }
 /* Balão cinza com a borda lateral na cor hex de quem fala; o nome em cima também na cor (pedido dela) */
 .msg.grupo { background: var(--cinza); color: var(--fg); }
 .msg.grupo .quem { color: var(--quem); }
-.msg .quem { font-size: 12.5px; font-weight: 700; margin-bottom: 2px; color: var(--quem); }
+.msg .quem { font-size: 12.5px; font-weight: 700; margin-bottom: 2px; color: var(--quem); display: flex; align-items: center; gap: 6px; }
+.quem .avatar { width: 17px; height: 17px; border-radius: 50%; background: var(--quem); color: var(--quem-fg); font-size: 10px;
+  font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .marca { font-weight: 700; }
 .marca-cor { background: linear-gradient(var(--quem), color-mix(in srgb, var(--quem) 70%, black)); color: #FFFFFF; border-radius: 999px;
   padding: 1px 9px; margin: 0 1px; font-size: 13px; display: inline-block; line-height: 1.6; vertical-align: text-bottom; }
@@ -165,6 +167,11 @@ textarea:focus-visible { outline: none; }
 .copiar-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px;
   font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--accent); }
 .copiar-btn { width: auto; height: auto; min-height: 40px; border-radius: 999px; padding: 8px 14px; font-size: 13px; letter-spacing: 0; text-transform: none; }
+/* Botão 📋 no canto de toda mensagem com texto — o toque longo pra selecionar bugava no celular, então ela copia por aqui */
+.msg .copiar-msg { position: absolute; top: 4px; right: 6px; width: 21px; height: 21px; min-height: 0; border-radius: 50%; border: none;
+  background: rgba(0,0,0,.14); color: inherit; font-size: 10.5px; font-weight: 400; display: grid; place-items: center; opacity: .5; padding: 0; }
+.msg .copiar-msg:active { opacity: 1; }
+.msg .copiar-msg.ok { opacity: 1; }
 .tick { font-weight: 700; letter-spacing: -2px; color: var(--muted); }
 .tick.lida { color: var(--accent); }
 .tick.relogio { display: inline-flex; vertical-align: -2px; letter-spacing: 0; }
@@ -575,6 +582,20 @@ const GRUPO = {
   pc2: { nome: 'Nyx (PC2)', cor: '#6FCF00', texto: '#0E2A00' },
   pc3: { nome: 'Vega (PC3)', cor: '#1D4ED8', texto: '#06173A' }
 };
+// Copia o texto puro da mensagem pro clipboard; cai pra execCommand em navegador mobile antigo que não tem Clipboard API.
+async function copiaTexto(btn, texto) {
+  let ok = true;
+  try { await navigator.clipboard.writeText(texto); }
+  catch (e) {
+    try {
+      const ta = document.createElement('textarea'); ta.value = texto; ta.style.position = 'fixed'; ta.style.top = '-9999px'; ta.style.left = '-9999px';
+      document.body.append(ta); ta.focus(); ta.select(); document.execCommand('copy'); ta.remove();
+    } catch (e2) { ok = false; }
+  }
+  if (!ok) { showNote('Não consegui copiar. Segura o dedo no texto pra selecionar.', true); return; }
+  const orig = btn.textContent; btn.textContent = '✓'; btn.classList.add('ok');
+  setTimeout(() => { btn.textContent = orig; btn.classList.remove('ok'); }, 1500);
+}
 let renderizando = false;
 function render(items, manterPosicao) {
   renderizando = true; setTimeout(() => { renderizando = false; }, 100);
@@ -598,7 +619,10 @@ function render(items, manterPosicao) {
     if (it.quem && GRUPO[it.quem]) {
       // Nome colorido em cima do balão, igual grupo de WhatsApp; o balão ganha um toque da cor de quem fala
       el.style.setProperty('--quem', GRUPO[it.quem].cor); el.style.setProperty('--quem-fg', GRUPO[it.quem].texto); el.classList.add('grupo');
-      const nome = document.createElement('div'); nome.className = 'quem'; nome.textContent = GRUPO[it.quem].nome; el.append(nome);
+      const nome = document.createElement('div'); nome.className = 'quem';
+      const av = document.createElement('span'); av.className = 'avatar'; av.textContent = GRUPO[it.quem].nome.charAt(0).toUpperCase();
+      const nomeTxt = document.createElement('span'); nomeTxt.textContent = GRUPO[it.quem].nome;
+      nome.append(av, nomeTxt); el.append(nome);
     }
     if (it.re) {
       const q = document.createElement('div'); q.className = 'cita';
@@ -677,6 +701,13 @@ function render(items, manterPosicao) {
     }
     const t = document.createElement('div'); t.className = 'txt'; linkar(t, it.text);
     if (it.text) el.append(t);
+    if (it.text && !it.copiar) {
+      // Botão 📋 em toda mensagem com texto: no celular o toque-e-segure pra selecionar bugava, então ela copia tocando aqui
+      const cpy = document.createElement('button'); cpy.type = 'button'; cpy.className = 'copiar-msg'; cpy.title = 'Copiar mensagem'; cpy.textContent = '📋';
+      cpy.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
+      cpy.addEventListener('click', e => { e.stopPropagation(); copiaTexto(cpy, it.text); });
+      el.append(cpy);
+    }
     if (it.time || it.from === 'may') {
       const m = document.createElement('div'); m.className = 'meta';
       const h = document.createElement('span'); h.textContent = it.time; m.append(h);
@@ -930,6 +961,7 @@ syncBtn();
 
 feed.addEventListener('scroll', () => {
   if (renderizando || carregandoAntigas) return;
+  if (getSelection().toString()) return;   // selecionando texto pra copiar: um scroll momentâneo não pode trocar a lista debaixo do dedo
   if (feed.scrollTop < 40 && inicio > 0 && lastItems.length) {
     carregandoAntigas = true; janela += 10; render(lastItems, true);
     setTimeout(() => { carregandoAntigas = false; }, 300);
@@ -987,7 +1019,7 @@ function gestoResponder(el, it) {
   };
   el.addEventListener('touchstart', e => {
     x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; el.style.transition = '';
-    timer = setTimeout(() => { if (Math.abs(dx) < 8) { if (navigator.vibrate) navigator.vibrate(15); responder(it); } }, 500);
+    timer = setTimeout(() => { if (Math.abs(dx) < 8 && !getSelection().toString()) { if (navigator.vibrate) navigator.vibrate(15); responder(it); } }, 500);
   }, { passive: true });
   el.addEventListener('touchmove', e => {
     if (x0 === null) return;
