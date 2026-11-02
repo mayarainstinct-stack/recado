@@ -884,7 +884,7 @@ function desenhaOnlinePop() {
   onlineGrupoLista.forEach(p => {
     const cor = GRUPO[p.chave] ? GRUPO[p.chave].cor : 'var(--accent)', texto = GRUPO[p.chave] ? GRUPO[p.chave].texto : '#fff';
     const row = document.createElement('div'); row.className = 'pessoa';
-    const av = document.createElement('div'); av.className = 'av'; av.style.background = cor; av.style.color = texto;
+    const av = document.createElement('div'); av.className = 'av'; av.style.backgroundColor = cor; av.style.color = texto;
     av.textContent = nomeDe(p).charAt(0).toUpperCase();
     const fotoP = p.foto || (GRUPO[p.chave] && GRUPO[p.chave].foto);   // prioriza a foto do heartbeat; sem ela, usa a foto fixa do GRUPO
     if (fotoP) fotoUrl(fotoP).then(u => {
