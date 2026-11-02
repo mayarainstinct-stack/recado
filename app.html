@@ -1446,7 +1446,7 @@ function mostraLista() {
 // Abre uma conversa: zera o estado da tela e carrega o arquivo dela.
 function abrir(c) {
   store.set('ultima-conv', c.arq); store.set('ultima-nome', c.nome);
-  irGeral.hidden = c.arq === GERAL.arq; irTrab.hidden = c.arq === TRAB.arq; irCasa.hidden = c.arq === CASA.arq || !horaDeCasa(); abreMenu.hidden = c.arq !== GERAL.arq;   // Trabalho é só trabalho; Casa só depois das 19h
+  irGeral.hidden = c.arq === GERAL.arq; irTrab.hidden = c.arq === TRAB.arq; irCasa.hidden = c.arq === CASA.arq; abreMenu.hidden = c.arq !== GERAL.arq;   // Trabalho é só trabalho; Casa sempre acessível (pedido dela, 02/11/2026)
   if (typeof ocultosConversa !== 'undefined') ocultosConversa = null;
   FILE = c.arq; API = apiDe(c.arq); nomeConv = c.nome; fotoConv = c.foto || (conversas.find(x => x.arq === c.arq) || {}).foto || '';
   logoEl.style.backgroundImage = ''; convAv.style.backgroundImage = ''; convAv.hidden = true;
@@ -1920,7 +1920,7 @@ const menuCasa = menu.parentElement;   // o header: lá dentro o menu fica preso
 let ocultosConversa = null;   // dentro do Menu mostra as 3 opções; ao voltar pro ⋮ da conversa, devolve o que ela escondia
 document.getElementById('p-mais').onclick = e => { e.stopPropagation(); document.body.append(menu); menu.classList.add('no-painel');
   if (!ocultosConversa) ocultosConversa = [irGeral.hidden, irTrab.hidden, irCasa.hidden, abreMenu.hidden];
-  irGeral.hidden = irTrab.hidden = abreMenu.hidden = false; irCasa.hidden = !horaDeCasa(); menu.hidden = !menu.hidden; };
+  irGeral.hidden = irTrab.hidden = irCasa.hidden = abreMenu.hidden = false; menu.hidden = !menu.hidden; };
 // Foto em tela cheia: toca em qualquer lugar ou no ✕ pra fechar; arrastar pro lado (ou ← →) troca pela anterior/seguinte da conversa.
 function fotosDaConversa() { return lastItems.flatMap(x => x.fotos || []); }
 function abreZoom(src, path, listaFotos) {   // listaFotos: as fotos do álbum (sem ela, as da conversa)
