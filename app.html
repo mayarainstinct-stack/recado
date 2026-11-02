@@ -195,7 +195,8 @@ textarea:focus-visible { outline: none; }
   border-radius: 12px; padding: 4px; z-index: 20; box-shadow: 0 12px 32px rgba(0,0,0,.22), 0 2px 6px rgba(0,0,0,.10); }
 .msg-menu-pop:not([hidden]) { animation: abre .15s ease-out both; transform-origin: top right; }
 .msg-menu-pop button { width: 100%; height: auto; min-height: 42px; border-radius: 8px; background: none; color: var(--fg);
-  padding: 0 12px; text-align: left; font-size: 14.5px; font-weight: 600; }
+  padding: 0 12px; text-align: left; font-size: 14.5px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+.msg-menu-pop button svg { flex: none; }
 .msg-menu-pop button:active { background: var(--bg); }
 @media (hover: hover) { .msg-menu-pop button:hover { background: var(--bg); } }
 .tick { font-weight: 700; letter-spacing: -2px; color: var(--muted); }
@@ -656,13 +657,16 @@ async function excluirMensagem(it) {
     }
   }
 }
+// Ícones sem emoji (pedido dela, 02/11/2026) -- SVG de traço, herda a cor do texto via currentColor.
+const SVG_COPIAR = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+const SVG_EXCLUIR = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
 function abreMenuMsg(btn, it) {
   msgMenuPop.replaceChildren();
-  const op = document.createElement('button'); op.type = 'button'; op.textContent = '📋 Copiar';
+  const op = document.createElement('button'); op.type = 'button'; op.innerHTML = SVG_COPIAR + '<span>Copiar</span>';
   op.addEventListener('click', e => { e.stopPropagation(); fechaMenuMsg(); copiaTexto(it.text); });
   msgMenuPop.append(op);
   if (it._linha !== undefined) {
-    const ex = document.createElement('button'); ex.type = 'button'; ex.textContent = '🗑️ Excluir';
+    const ex = document.createElement('button'); ex.type = 'button'; ex.innerHTML = SVG_EXCLUIR + '<span>Excluir</span>';
     ex.addEventListener('click', e => { e.stopPropagation(); excluirMensagem(it); });
     msgMenuPop.append(ex);
   }
