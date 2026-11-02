@@ -537,7 +537,8 @@ function tituloDe(md) { const m = md.match(/^#\s+(.+?)\s*$/m); return m ? m[1].r
 // Linhas da caixa: "- [DD/MM/AAAA HH:MM] texto" (dela) e "  ↳ Lyra: texto" (resposta).
 function parse(md) {
   const out = []; const lines = md.split(/\r?\n/); let on = false;   // \r: arquivo salvo no Windows
-  for (const line of lines) {
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
     // Cada linha é isolada num try: uma linha mal formada (ex.: um Claude de outra máquina que editou
     // o .md direto e deixou quebra de linha real em vez de "\n", ou formato inesperado) não pode derrubar
     // a leitura do resto da conversa -- ela é ignorada/anexada e a gente segue pras próximas linhas.
@@ -553,11 +554,11 @@ function parse(md) {
         if (cit) text = text.slice(0, cit.index);
         const au = text.match(/^🎤 (\S+)\s*$/);           // "🎤 recados-audios/arquivo.m4a"
         const f = text.match(/^📷 (\S+)\s*([\s\S]*)$/);   // "📷 recados-fotos/arquivo.jpg legenda"
-        out.push({ from: 'may', day: m[1], time: m[2], lida, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], audio: au ? au[1] : '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: au ? '' : (f ? f[2] : text) });
+        out.push({ from: 'may', day: m[1], time: m[2], lida, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], audio: au ? au[1] : '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: au ? '' : (f ? f[2] : text), _linha: i });
         continue;
       }
       const tr = line.match(/^\s+↳ transcrição: (.*)$/);
-      if (tr) { const alvo = [...out].reverse().find(x => x.from === 'may' && x.audio); if (alvo) alvo.transcricao = tr[1]; continue; }
+      if (tr) { const alvo = [...out].reverse().find(x => x.from === 'may' && x.audio); if (alvo) { alvo.transcricao = tr[1]; alvo._linhaTr = i; } continue; }
       // Respostas no estilo grupo: "  ↳ Lyra: …" ou "  ↳ simp-mobile: …" (cada um com a sua cor)
       // "[op: A|B|C]" = balão de múltipla escolha (ela toca e a resposta vai citando a pergunta)
       m = line.match(new RegExp('^\\s+(?:↳|->) (' + RE_QUEM_NOMES + ')(?: \\[(?:(\\d\\d/\\d\\d/\\d{4}) )?(\\d\\d:\\d\\d)\\])?( \\[copiar\\])?(?: \\[op: ([^\\]]+)\\])?: (.*)$', 'i'));
@@ -571,7 +572,7 @@ function parse(md) {
         const cit = txt.match(/\s*⟪re: ([^:⟫]+): ([^⟫]*)⟫\s*$/);
         if (cit) txt = txt.slice(0, cit.index);
         const f = txt.match(/^📷 (\S+)\s*([\s\S]*)$/);   // foto: "📷 recados-fotos/x.jpg legenda"
-        out.push({ from: 'lyra', quem: m[1].toLowerCase(), copiar: !!m[2], opcoes: m[4] ? m[4].split('|').map(x => x.trim()).filter(Boolean) : null, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], day: m[5] || (out.length ? out[out.length - 1].day : ''), time: m[6] || '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: f ? f[2] : txt });
+        out.push({ from: 'lyra', quem: m[1].toLowerCase(), copiar: !!m[2], opcoes: m[4] ? m[4].split('|').map(x => x.trim()).filter(Boolean) : null, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], day: m[5] || (out.length ? out[out.length - 1].day : ''), time: m[6] || '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: f ? f[2] : txt, _linha: i });
       } else if (line.trim() && out.length) {
         // Linha solta dentro de "## Recados" que não bate em nenhum padrão conhecido: provavelmente
         // quebra de linha REAL (em vez de "\n" escapado) dentro da mesma mensagem. Em vez de sumir com
@@ -633,11 +634,38 @@ async function copiaTexto(texto) {
 const msgMenuPop = document.createElement('div'); msgMenuPop.className = 'msg-menu-pop'; msgMenuPop.hidden = true;
 document.body.append(msgMenuPop);
 function fechaMenuMsg() { msgMenuPop.hidden = true; }
-function abreMenuMsg(btn, texto) {
+// Excluir: remove a(s) linha(s) de verdade do arquivo no GitHub (índice gravado pelo parse() em
+// it._linha/_linhaTr). Fica fora do alcance pra fragmento colado (parse() não sabe a linha exata)
+// -- aí não aparece a opção, em vez de excluir a linha errada.
+async function excluirMensagem(it) {
+  fechaMenuMsg();
+  overlay.hidden = false; overlayTxt.textContent = 'Excluindo…';
+  for (let tentativa = 0; tentativa < 4; tentativa++) {
+    try {
+      const f = await gh('GET');
+      const linhas = b64decode(f.content).split(/\r?\n/);
+      if (linhas[it._linha] === undefined) throw new Error('linha não existe mais');
+      const remover = it._linhaTr !== undefined ? [it._linha, it._linhaTr] : [it._linha];
+      remover.sort((a, b) => b - a).forEach(idx => linhas.splice(idx, 1));   // de trás pra frente, pra não desalinhar o outro índice
+      await gh('PUT', { message: 'exclui mensagem', content: b64encode(linhas.join('\n')), sha: f.sha });
+      overlay.hidden = true; forcar = true; load().catch(() => {}); showNote('Mensagem excluída.');
+      return;
+    } catch (err) {
+      if (err.status === 409 && tentativa < 3) { await new Promise(r => setTimeout(r, 600)); continue; }
+      overlay.hidden = true; showNote('Não consegui excluir. Confere a internet e tenta de novo.', true); return;
+    }
+  }
+}
+function abreMenuMsg(btn, it) {
   msgMenuPop.replaceChildren();
   const op = document.createElement('button'); op.type = 'button'; op.textContent = '📋 Copiar';
-  op.addEventListener('click', e => { e.stopPropagation(); fechaMenuMsg(); copiaTexto(texto); });
+  op.addEventListener('click', e => { e.stopPropagation(); fechaMenuMsg(); copiaTexto(it.text); });
   msgMenuPop.append(op);
+  if (it._linha !== undefined) {
+    const ex = document.createElement('button'); ex.type = 'button'; ex.textContent = '🗑️ Excluir';
+    ex.addEventListener('click', e => { e.stopPropagation(); excluirMensagem(it); });
+    msgMenuPop.append(ex);
+  }
   const r = btn.getBoundingClientRect();
   msgMenuPop.style.top = (r.bottom + 4) + 'px';
   msgMenuPop.style.right = (window.innerWidth - r.right) + 'px';
@@ -763,7 +791,7 @@ function render(items, manterPosicao) {
       // Existe porque no celular o toque-e-segure pra selecionar bugava (ver gestoResponder/feed scroll).
       const cpy = document.createElement('button'); cpy.type = 'button'; cpy.className = 'copiar-msg'; cpy.title = 'Opções da mensagem'; cpy.textContent = '⌄';
       cpy.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
-      cpy.addEventListener('click', e => { e.stopPropagation(); abreMenuMsg(cpy, it.text); });
+      cpy.addEventListener('click', e => { e.stopPropagation(); abreMenuMsg(cpy, it); });
       el.append(cpy);
     }
     if (it.time || it.from === 'may') {
