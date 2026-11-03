@@ -130,7 +130,7 @@ textarea:focus-visible { outline: none; }
 .msg.may { align-self: flex-end; background: var(--mine); color: var(--mine-fg); border-bottom-right-radius: 4px; }
 .msg.lyra { align-self: flex-start; background: var(--theirs); color: var(--fg); border-bottom-left-radius: 4px; }
 /* Balão cinza com a borda lateral na cor hex de quem fala; o nome em cima também na cor (pedido dela) */
-.msg.grupo { background: var(--cinza); color: var(--fg); }
+.msg.grupo { background: color-mix(in srgb, var(--quem) 16%, var(--cinza)); color: var(--fg); }   /* fundo na cor de quem fala (May, 03/11/2026) */
 .msg.grupo .quem { color: var(--quem); }
 .msg .quem { font-size: 12.5px; font-weight: 700; margin-bottom: 2px; color: var(--quem); display: flex; align-items: center; gap: 6px; }
 .quem .avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--quem); color: var(--quem-fg); font-size: 13px;
@@ -599,8 +599,11 @@ let inicio = 0;
 // Cores = as que cada projeto usa no VS Code (borda/realce do .vscode/settings.json); Lyra = rosa dela.
 const GRUPO = {
   lyra: { nome: 'Lyra', cor: '#E1306C', texto: '#FFFFFF', foto: 'recados-fotos/20261031-005747-avatar-lyra.png' },
+  // Trabalho (May, 03/11/2026): "um L pra Lyra, um K pro KDS, um R pro RM, um P pro promotor, um C pro checklist, um A pro acompanhamento"
   rm: { nome: 'RM · Recebimento', cor: '#22C55E', texto: '#052E16' },
-  'simp-mobile': { nome: 'SIMP-Mobile', cor: '#2DD4BF', texto: '#042F2E' },
+  'simp-mobile': { nome: 'Checklist', cor: '#2DD4BF', texto: '#042F2E' },
+  checklist: { nome: 'Checklist', cor: '#2DD4BF', texto: '#042F2E' },
+  acompanhamentos: { nome: 'Acompanhamentos', cor: '#940088', texto: '#FFFFFF' },
   promotor: { nome: 'Promotor', cor: '#F59E0B', texto: '#2D1A02' },
   kds: { nome: 'KDS', cor: '#EAB308', texto: '#2A2002' },
   orfeu: { nome: 'Orfeu (PC1)', cor: '#E31B23', texto: '#2D0A0A', foto: 'recados-fotos/20261031-005747-avatar-orfeu.png' },
@@ -703,7 +706,7 @@ function render(items, manterPosicao) {
       el.style.setProperty('--quem', GRUPO[it.quem].cor); el.style.setProperty('--quem-fg', GRUPO[it.quem].texto); el.classList.add('grupo');
       const nome = document.createElement('div'); nome.className = 'quem';
       const av = document.createElement('span'); av.className = 'avatar'; av.textContent = GRUPO[it.quem].nome.charAt(0).toUpperCase();
-      if (GRUPO[it.quem].foto) {
+      if (GRUPO[it.quem].foto && FILE !== TRAB.arq) {   // Trabalho = so a letra; foto so nas outras (May, 03/11/2026: "aqui tem q ser so o L, no geral pode por foto")
         const fp = GRUPO[it.quem].foto;
         fotoUrl(fp).then(u => {
           av.style.backgroundImage = 'url(' + u + ')'; av.textContent = '';
@@ -1589,6 +1592,12 @@ function abreViagens(m) {
 function montaTreino(c, d) {
   zeraSemanaTreino(d.viagens);
   const b = botao('📊', 'Estatística', 'semana, cargas, comparação com a base', () => abreEstatistica(d.historico || [])); b.classList.add('treino-est'); c.append(b);
+  const folga = () => store.get('treino-folga') === diaLocal() || (d.folgas || []).includes(diaLocal());
+  const bf = botao('🛋️', folga() ? 'Hoje é folga' : 'Hoje não vou', folga() ? 'o treino não abre sozinho hoje · tocar desfaz' : 'o treino não abre sozinho hoje', () => {
+    if (store.get('treino-folga') === diaLocal()) { store.set('treino-folga', ''); showNote('Folga desfeita: o treino volta a abrir no horário'); }
+    else { store.set('treino-folga', diaLocal()); showNote('Beleza, hoje o treino não abre sozinho'); }
+    c.replaceChildren(); montaTreino(c, d);
+  }); c.append(bf);
   d.viagens.forEach(v => {
     if (v.resumo) { const r = document.createElement('div'); r.className = 'p-texto'; r.textContent = v.resumo; c.append(r); }
     const lista = document.createElement('div'); lista.className = 'p-lista'; c.append(lista);
@@ -2039,6 +2048,9 @@ async function abreTreinoSeHora() {
   d.viagens.forEach(x => { x._arq = 'menu/treino.json'; });
   zeraSemanaTreino(d.viagens);
   const hoje = diaLocal();
+  // Folga (May, 03/11/2026: "nao vou na academia hj, nao precisa abrir automatico, criar uma variavel pra salvar isso"):
+  // dia de folga = o treino nao abre sozinho. Botao "Hoje nao vou" (neste aparelho) ou "folgas" no menu/treino.json (todo aparelho).
+  if (store.get('treino-folga') === hoje || (d.folgas || []).includes(hoje)) return;
   let ativo = null; try { ativo = JSON.parse(store.get('treino-ativo') || 'null'); } catch (e) {}
   if (ativo && ativo.dia === hoje && painel.hidden) {
     const va = d.viagens.find(x => x.id === ativo.v), la = va && va.listas.find(x => x.id === ativo.l);
