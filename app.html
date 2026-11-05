@@ -819,10 +819,10 @@ function render(items, manterPosicao) {
           av.style.cursor = 'pointer'; av.addEventListener('click', e => { e.stopPropagation(); abreZoom(u, fp); });
         }).catch(() => {});   // falhou: fica a letra, sem clique
       }
-      const nomeTxt = document.createElement('span'); nomeTxt.textContent = g.nome;
+      const nomeTxt = document.createElement('span'); nomeTxt.textContent = g.nome.replace(/\s*\(PC\d\)$/i, '');   // na conversa sem "(PC1)" (May, 05/11/2026)
       if (g === EU) { nomeTxt.textContent = ''; [...g.nome].forEach(c => { const l = document.createElement('span'); l.className = 'letra'; l.textContent = c; nomeTxt.append(l); }); }   // M vermelho, a amarelo, y verde (reggae, May 05/11/2026)
       const rotulo = document.createElement('span'); rotulo.className = 'rotulo'; rotulo.append(nomeTxt);
-      if (g.cargo) { const cg = document.createElement('small'); cg.className = 'cargo'; cg.textContent = g.cargo; rotulo.append(cg); }   // cargo na linha de baixo do nome (May, 05/11/2026)
+      if (g.cargo) { const cg = document.createElement('small'); cg.className = 'cargo'; cg.textContent = g.cargo.replace(/\s+do PC\d$/i, ''); rotulo.append(cg); }   // cargo na linha de baixo do nome (May, 05/11/2026)
       nome.append(av, rotulo); el.append(nome);
     }
     if (it.re) {
