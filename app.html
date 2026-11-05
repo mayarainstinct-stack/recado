@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.5">
+<meta name="app-versao" content="2026-11-05.6">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -19,7 +19,7 @@
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
 <style>
-/* Paleta da Simplificação (verde #059669, petróleo #1E6685, folha #6BAD3E; escuro com azul #22A7D0). Página estática (GitHub Pages). Cada recado vira uma linha em CAIXA-DE-ENTRADA.md no repo privado, pela API do GitHub,
+/* Paleta (verde #059669, petróleo #1E6685, folha #6BAD3E; escuro com azul #22A7D0). Página estática (GitHub Pages). Cada recado vira uma linha em CAIXA-DE-ENTRADA.md no repo privado, pela API do GitHub,
    com um token que fica só no iPhone dela. Nenhum recado mora nesta página. */
 :root {
   --bg: #F2FBF6; --paper: #FFFFFF; --fg: #1E293B; --muted: #64748B; --line: #E2E8F0;
@@ -37,7 +37,7 @@ html, body { height: 100%; margin: 0; }
 body { overflow: hidden; overscroll-behavior: none; }
 body { background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 16px; }
 .app { position: fixed; top: 0; bottom: 0; left: 0; right: 0; margin: 0 auto; display: flex; flex-direction: column; max-width: 900px; margin: 0 auto; background: var(--paper); }
-/* Topo no padrão dos apps da Simplificação (promotor/checklist): faixa na cor da marca subindo atrás da barra de status,
+/* Topo no padrão de app mobile: faixa na cor da marca subindo atrás da barra de status,
    cantos de baixo arredondados, logo + "Recados" + status do agente (online/offline), ⋮ à direita, respiro 16. */
 header { position: relative; z-index: 2; color: var(--head-fg); font-family: -apple-system, "Roboto", "Segoe UI", system-ui, sans-serif;
   background: var(--head);
@@ -244,8 +244,15 @@ textarea:focus-visible { outline: none; }
   .msg.may.eu .meta { color: var(--muted); }
   .msg.may.eu .cita { background: rgba(255,255,255,.06); }
   .msg.may.eu .cita span { color: var(--muted); }
-  .msg.may .quem.eu .rotulo > span:first-child { align-self: flex-start; background: linear-gradient(90deg, #E31B23, #FACC15, #22C55E); -webkit-background-clip: text; background-clip: text; }   /* no escuro o nome vira degradê reggae (May, 05/11/2026) */
-  .msg.may .quem.eu .letra:nth-child(n) { color: transparent; }
+  .msg.may .quem.eu .rotulo > span:first-child { align-self: flex-start; }
+  .msg.may .quem.eu .letra:nth-child(2) { color: #FACC15; }   /* reserva sem recorte: cada letra na cor dela, clareada pro escuro */
+  .msg.may .quem.eu .letra:nth-child(3) { color: #22C55E; }
+}
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {   /* transparente só onde o recorte funciona, senão o nome some */
+  @media (prefers-color-scheme: dark) {
+    .msg.may .quem.eu .rotulo > span:first-child { background: linear-gradient(90deg, #E31B23, #FACC15, #22C55E); -webkit-background-clip: text; background-clip: text; }   /* no escuro o nome vira degradê reggae (May, 05/11/2026) */
+    .msg.may .quem.eu .letra:nth-child(n) { color: transparent; }
+  }
 }
 .msg.falhou { opacity: 1; outline: 1.5px solid #DC2626; }
 .msg.falhou .tick { color: #DC2626; letter-spacing: 0; }
@@ -428,7 +435,8 @@ button:disabled { opacity: .45; cursor: default; }
   box-shadow: 0 14px 40px rgba(0,0,0,.3); animation: entra .2s ease-out both; }
 .pop h2 { margin: 0; font-size: 18px; }
 .msg.grupo.sigma { border: 3px solid transparent; background: linear-gradient(color-mix(in srgb, #9333EA 16%, var(--cinza)), color-mix(in srgb, #9333EA 16%, var(--cinza))) padding-box, linear-gradient(135deg, #9333EA, #9CA3AF, #0A0A0A) border-box; }   /* Sigma em 3 cores, roxo, cinza e preto (05/11/2026) */
-.msg.sigma .quem .rotulo > span:first-child { background: linear-gradient(90deg, #A855F7, #9CA3AF); -webkit-background-clip: text; background-clip: text; color: transparent; align-self: flex-start; }
+.msg.sigma .quem .rotulo > span:first-child { color: #A855F7; align-self: flex-start; }   /* cor sólida de reserva; o degradê só onde o recorte funciona */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) { .msg.sigma .quem .rotulo > span:first-child { background: linear-gradient(90deg, #A855F7, #9CA3AF); -webkit-background-clip: text; background-clip: text; color: transparent; } }
 .cracha-pop .caixa.cracha { position: relative; max-width: 360px; max-height: calc(100dvh - 32px); padding: 0; gap: 0; overflow: hidden; display: flex; flex-direction: column; border: 2px solid color-mix(in srgb, var(--quem) 70%, transparent); box-shadow: 0 0 0 1px rgba(0,0,0,.3), 0 0 28px color-mix(in srgb, var(--quem) 45%, transparent), 0 14px 40px rgba(0,0,0,.4); }
 .cracha-pop .caixa.cracha.eu { border-color: transparent; background: linear-gradient(var(--paper), var(--paper)) padding-box, linear-gradient(135deg, #E31B23, #FACC15, #22C55E) border-box; box-shadow: 0 0 28px rgba(250,204,21,.25), 0 14px 40px rgba(0,0,0,.4); }
 .cracha-pop .caixa.cracha.sigma { border-color: transparent; background: linear-gradient(var(--paper), var(--paper)) padding-box, linear-gradient(135deg, #9333EA, #9CA3AF, #0A0A0A) border-box; }
@@ -789,7 +797,9 @@ function parse(md) {
         // o resto do texto, encosta como continuação da última linha lida -- não perde o conteúdo.
         // Nome fora do GRUPO ("  ↳ Fulano: ...") cai aqui também: vira continuação, nunca falante novo (regra da May, 05/11/2026).
         const ult = out[out.length - 1];
-        ult.text = (ult.text ? ult.text + '\n' : '') + line.trim(); ult._extras.push(i);   // _extras: o Excluir leva junto
+        ult.text = (ult.text ? ult.text + '\n' : '') + line.trim();
+        if (/^\s*(?:↳|->|- \[)/.test(line)) ult._alheio = true;   // fala de outro ("↳ Fulano:"): ela e o que vem embaixo dela não são desta mensagem
+        else if (!ult._alheio) ult._extras.push(i);   // _extras: o Excluir leva junto só a continuação desta mensagem
       }
     } catch (e) { /* linha ruim: ignora e segue pras próximas, não derruba a conversa toda */ }
   }
@@ -924,7 +934,7 @@ function conteudoSeguro(f) {
   return md;
 }
 // Excluir: acha a linha pelo TEXTO (it._raw), não só pela posição -- se alguém gravou no meio, o índice velho
-// apontava pra mensagem de outra pessoa. Não achou = não apaga nada. Leva junto as continuações e a transcrição.
+// apontava pra mensagem de outra pessoa. Não achou = não apaga nada. Leva junto a transcrição e as continuações (nunca fala de outro).
 async function excluirMensagem(it) {
   fechaMenuMsg();
   overlay.hidden = false; overlayTxt.textContent = 'Excluindo…';
@@ -971,9 +981,28 @@ feed?.addEventListener('scroll', fechaMenuMsg, { passive: true });
 let renderizando = false;
 const fotoAlt = {};   // altura de cada foto já carregada (caminho -> px)
 const audioPronto = {};   // caminho -> blob: do áudio que ela já ouviu
+// Áudio com um toque só no iPhone (05/11/2026): o WebKit libera o elemento que deu play() dentro do toque, mas play() sem src
+// não garante isso. No toque ele toca 10 ms de silêncio de verdade (WAV embutido) e fica liberado; quando o arquivo chega, já fora
+// do toque, troca o src e toca no mesmo elemento. Se mesmo assim o iPhone recusar, avisa em vez de ficar parado sem explicação.
+const SILENCIO = 'data:audio/wav;base64,UklGRnQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YVAAAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==';
+function ouvirAudio(au, caminho, ouvir) {
+  ouvir.replaceWith(au); au._baixando = true;   // _baixando: o render não troca este elemento enquanto o arquivo não chega
+  au.src = SILENCIO; au.play().catch(() => {});
+  fotoUrl(caminho).then(u => {
+    audioPronto[caminho] = u; au.src = u; const tocou = au.play(); au._baixando = false;
+    return tocou.catch(err => { if (err && err.name === 'NotAllowedError') showNote('Áudio pronto: toca no play pra ouvir.'); });
+  }).catch(err => {
+    au._baixando = false; au.removeAttribute('src');
+    if (au.isConnected) au.replaceWith(ouvir);
+    showNote(err.status === 404 ? 'Esse áudio já saiu do repositório.' : 'Não consegui baixar o áudio.', true);
+  });
+}
 const tocando = () => [...feed.querySelectorAll('audio')].some(a => !a.paused);
 function render(items, manterPosicao) {
   renderizando = true; setTimeout(() => { renderizando = false; }, 100);
+  // áudio tocando (ou baixando depois do toque) passa inteiro pro balão novo: tirar e pôr de volta na mesma tarefa não pausa.
+  // Vale pra todo redesenho (poll, excluir, envio, antigas), não só o do poll.
+  const vivos = {}; feed.querySelectorAll('audio').forEach(a => { if ((!a.paused || a._baixando) && a.dataset.audio) vivos[a.dataset.audio] = a; });
   const firstNew = shown < 0 ? items.length : shown;
   if (vistoMarca === undefined && items.length) vistoMarca = lerVisto(FILE, items);
   const naoVistas = Math.max(0, items.length - primeiroNaoVisto(items, vistoMarca));
@@ -1092,17 +1121,17 @@ function render(items, manterPosicao) {
     }
     if (it.audio) {
       // áudio só baixa no play (05/11/2026): antes cada redesenho da conversa baixava todos; já baixado = player direto
-      const au = document.createElement('audio'); au.className = 'audio'; au.controls = true; au.preload = 'metadata';
-      au.addEventListener('pause', () => { if (FILE) load().catch(() => {}); });   // o poll não redesenha com áudio tocando: parou, busca o que chegou
-      if (audioPronto[it.audio]) { au.src = audioPronto[it.audio]; el.append(au); }
+      const au = vivos[it.audio] || document.createElement('audio');
+      if (vivos[it.audio]) { delete vivos[it.audio]; el.append(au); }
       else {
-        const ouvir = document.createElement('button'); ouvir.type = 'button'; ouvir.className = 'ouvir'; ouvir.innerHTML = icone('headphones') + ' Ouvir áudio';
-        ouvir.addEventListener('click', e => {
-          e.stopPropagation(); ouvir.replaceWith(au);
-          au.play().catch(() => {});   // no toque: libera o play do iPhone pra quando o arquivo chegar
-          fotoUrl(it.audio).then(u => { audioPronto[it.audio] = u; au.src = u; return au.play(); }).catch(err => { if (!audioPronto[it.audio] && err && err.name !== 'NotAllowedError') { au.replaceWith(ouvir); showNote(err.status === 404 ? 'Esse áudio já saiu do repositório.' : 'Não consegui baixar o áudio.', true); } });
-        });
-        el.append(ouvir);
+        au.className = 'audio'; au.controls = true; au.preload = 'metadata'; au.dataset.audio = it.audio;
+        au.addEventListener('pause', () => { if (FILE && !au._baixando) load().catch(() => {}); });   // o poll não redesenha com áudio tocando: parou, busca o que chegou
+        if (audioPronto[it.audio]) { au.src = audioPronto[it.audio]; el.append(au); }
+        else {
+          const ouvir = document.createElement('button'); ouvir.type = 'button'; ouvir.className = 'ouvir'; ouvir.innerHTML = icone('headphones') + ' Ouvir áudio';
+          ouvir.addEventListener('click', e => { e.stopPropagation(); ouvirAudio(au, it.audio, ouvir); });
+          el.append(ouvir);
+        }
       }
       const tr = document.createElement('div'); tr.className = 'transcricao';
       tr.textContent = it.transcricao ? '“' + it.transcricao + '”' : 'transcrevendo…';
@@ -1181,15 +1210,31 @@ function marcaLidas() {
 }
 // Balão "enviando" com relogiozinho, igual WhatsApp (no lugar da tela inteira "Enviando…")
 const RELOGIO = '<svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
-// ---- Envio (05/11/2026): cada mensagem vira um pendente { id, arq, text, re, fotos, linhas } até o GitHub confirmar.
-// Não foi: fica guardado no aparelho (texto, citação e só os CAMINHOS das fotos que já subiram, nunca base64) e o balão
-// vira "não foi, toque para reenviar", inclusive depois de recarregar. O render recoloca os balões no fim (antes o replaceChildren arrancava).
+// ---- Envio (05/11/2026): cada mensagem vira um pendente { id, arq, text, re, fotos, audio, linhas } até o GitHub confirmar.
+// Guardado no aparelho assim que nasce (o iOS pode matar o app no meio do PUT) e tirado só no sucesso: texto, citação, só os
+// CAMINHOS das fotos que já subiram (nunca base64) e o áudio gravado no IndexedDB. Não foi = balão "não foi, toque para reenviar",
+// inclusive depois de recarregar. O render recoloca os balões no fim (antes o replaceChildren arrancava).
 const pendentes = {};   // id -> { p, el }
 const PEND_KEY = 'pendentes';
 function lerPendentes() { try { const l = JSON.parse(store.get(PEND_KEY) || '[]'); return Array.isArray(l) ? l : []; } catch (e) { return []; } }
-const paraGuardar = p => ({ id: p.id, arq: p.arq, text: p.text, re: p.re, fotos: p.fotos.filter(x => x.nome).map(x => x.nome), perdidas: (p.perdidas || 0) + p.fotos.filter(x => !x.nome).length, linhas: p.linhas || null, em: p.em });
+const paraGuardar = p => ({ id: p.id, arq: p.arq, text: p.text, re: p.re, fotos: p.fotos.filter(x => x.nome).map(x => x.nome), perdidas: (p.perdidas || 0) + p.fotos.filter(x => !x.nome).length, audio: p.audio ? { nome: p.audio.nome, subiu: !!p.audio.subiu, tentou: !!p.audio.tentou } : null, linhas: p.linhas || null, em: p.em });
 function guardaPendente(p) { store.set(PEND_KEY, JSON.stringify([...lerPendentes().filter(x => x.id !== p.id), paraGuardar(p)])); }
-function tiraPendente(id) { const l = lerPendentes().filter(x => x.id !== id); store.set(PEND_KEY, l.length ? JSON.stringify(l) : ''); }
+function tiraPendente(id) { const t = lerPendentes(), l = t.filter(x => x.id !== id); if (t.some(x => x.id === id && x.audio)) tiraAudio(id); store.set(PEND_KEY, l.length ? JSON.stringify(l) : ''); }
+// Áudio do pendente no IndexedDB (localStorage não aguenta binário): { buf, tipo } por id. Falhou = fica só na memória (perde no reload).
+function idbAudios(modo, fn) {
+  return new Promise((ok, erro) => {
+    setTimeout(() => erro(new Error('idb demorou')), 4000);   // Safari já teve open() que nunca respondia: não trava o envio
+    try {
+      const rq = indexedDB.open('recados', 1);
+      rq.onupgradeneeded = () => rq.result.createObjectStore('audios');
+      rq.onerror = () => erro(rq.error);
+      rq.onsuccess = () => { const db = rq.result; try { const tx = db.transaction('audios', modo), r = fn(tx.objectStore('audios')); tx.oncomplete = () => { db.close(); ok(r.result); }; tx.onerror = tx.onabort = () => { db.close(); erro(tx.error); }; } catch (e) { db.close(); erro(e); } };
+    } catch (e) { erro(e); }
+  });
+}
+async function guardaAudio(id, blob) { try { const buf = await blob.arrayBuffer(); await idbAudios('readwrite', st => st.put({ buf, tipo: blob.type }, id)); return true; } catch (e) { return false; } }
+async function audioGuardado(id) { try { const r = await idbAudios('readonly', st => st.get(id)); return r && r.buf ? new Blob([r.buf], { type: r.tipo || 'audio/mp4' }) : null; } catch (e) { return null; } }
+function tiraAudio(id) { idbAudios('readwrite', st => st.delete(id)).catch(() => {}); }
 // A linha já está na caixa? (o PUT pode ter gravado e a resposta se perdido: troca de Wi-Fi pra 4G, túnel). "ultimas" = só no fim do arquivo.
 function jaGravado(md, linhas, ultimas) {
   if (!linhas || !linhas.length) return false;
@@ -1223,9 +1268,10 @@ function marcaPend(el, p, falhou) {
   else { tk.classList.add('relogio'); tk.innerHTML = RELOGIO; tk.title = 'Enviando'; }
   infoPend(el, falhou && p.perdidas ? (p.perdidas > 1 ? p.perdidas + ' fotos não subiram' : '1 foto não subiu') : horaDe(p.em));
 }
-function novoPendente(text, fotos, arq) {
-  const p = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), arq, text, re: respondendo ? { nome: respondendo.nome, trecho: respondendo.trecho } : null, fotos, linhas: null, em: Date.now() };
+function novoPendente(text, fotos, arq, extra) {
+  const p = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), arq, text, re: respondendo ? { nome: respondendo.nome, trecho: respondendo.trecho } : null, fotos, audio: null, linhas: null, em: Date.now(), ...extra };
   const x = pendentes[p.id] = { p, el: bolhaPendente(p) };
+  guardaPendente(p);   // já no aparelho: o iOS pode matar o app no meio do envio (antes só guardava depois de falhar)
   if (FILE === arq) { const vazio = feed.querySelector('.empty'); if (vazio) vazio.remove(); feed.append(x.el); irProFim(); }
   return x;
 }
@@ -1266,13 +1312,28 @@ async function enviar(p, el) {
     for (let tentativa = 0; tentativa < 5; tentativa++) {
       let pus = false;
       try {
+        // 0) áudio: sobe o arquivo antes da linha, sempre com o mesmo nome; no reenvio confere antes se o PUT de antes chegou (sem órfão em dobro)
+        if (p.audio && !p.audio.subiu) {
+          infoPend(el, 'subindo áudio');
+          const urlA = apiDe(p.audio.nome);
+          let ja = false;
+          if (p.audio.tentou) { let r = await api(urlA, { method: 'HEAD', tempo: 20000 }); if (r.status !== 200 && r.status !== 404) r = await api(urlA, RAW); if (r.status !== 404 && !r.ok) throw erroDe(r.status); ja = r.ok; }   // HEAD = GET sem baixar o áudio; sem suporte, cai pro GET
+          if (!ja) {
+            const blob = p.audio.blob || await audioGuardado(p.id);
+            if (!blob) throw Object.assign(new Error('áudio perdido'), { audioPerdido: true });
+            const b64 = await new Promise((ok2, erro2) => { const fr = new FileReader(); fr.onload = () => ok2(String(fr.result).split(',')[1]); fr.onerror = erro2; fr.readAsDataURL(blob); });
+            p.audio.tentou = true; guardaPendente(p);
+            await apiOk(urlA, { method: 'PUT', body: JSON.stringify({ message: 'áudio do iPhone', content: b64 }) });
+          }
+          p.audio.subiu = true; delete p.audio.blob; tiraAudio(p.id); guardaPendente(p);
+        }
         // 1) fotos (uma linha "📷 caminho" por foto; o texto vai junto da primeira); a que já subiu não sobe de novo
         for (let k = 0; k < p.fotos.length; k++) {
           const ft = p.fotos[k]; if (ft.nome || !ft.b64) continue;
           infoPend(el, p.fotos.length > 1 ? 'foto ' + (k + 1) + '/' + p.fotos.length : 'subindo foto');
           const nome = nomeArq('recados-fotos', new Date(), k + 1, ft.ext || 'jpg');
           await apiOk(apiDe(nome), { method: 'PUT', body: JSON.stringify({ message: 'foto do iPhone', content: ft.b64 }) });
-          ft.nome = nome; delete ft.b64;
+          ft.nome = nome; delete ft.b64; guardaPendente(p);   // caminho da foto que subiu já fica no aparelho
         }
         p.fotos = p.fotos.filter(x => x.nome);
         infoPend(el, horaDe(p.em));
@@ -1282,6 +1343,7 @@ async function enviar(p, el) {
         if (jaGravado(md, p.linhas)) { ok = adotaEscrita(p.arq, md, f.sha, null); break; }   // reenvio de uma que tinha ido sim
         const s = stamp(new Date()), nomes = p.fotos.map(x => x.nome);
         p.linhas = nomes.length ? nomes.map((n, k) => '- [' + s + '] 📷 ' + n + (k === 0 && txt ? ' ' + txt : '') + (k === 0 ? cita : '')) : ['- [' + s + '] ' + txt + cita];
+        guardaPendente(p);   // linhas no aparelho antes do PUT: morreu no meio, o jaGravado da próxima abertura evita a duplicata
         md = md.replace(/\n- \s*$/, '\n');
         md = md.replace(/\s*$/, '') + '\n' + p.linhas.join('\n') + '\n';
         descartaLeituras(); pus = true;
@@ -1299,7 +1361,7 @@ async function enviar(p, el) {
     }
   } finally {
     if (ok) { delete pendentes[p.id]; tiraPendente(p.id); el.remove(); desenhaEscrita(p.arq, ok); }
-    else { guardaPendente(p); marcaPend(el, p, true); if (FILE === p.arq && !el.isConnected) recolocaPendentes(); showNote(msgErro(erro || {}, 'salvar'), true); }
+    else { guardaPendente(p); marcaPend(el, p, true); if (FILE === p.arq && !el.isConnected) recolocaPendentes(); showNote(erro && erro.audioPerdido ? 'O áudio não ficou guardado no aparelho. Descarta e grava de novo.' : msgErro(erro || {}, p.audio && !p.audio.subiu ? 'mandar o áudio' : 'salvar'), true); }
     sending = false; syncBtn(); irProFim();
   }
   return !!ok;
@@ -1307,7 +1369,7 @@ async function enviar(p, el) {
 // os que não foram em outra abertura do app voltam como balão "não foi"
 lerPendentes().forEach(r => {
   if (!r || !r.id || !r.arq || pendentes[r.id]) return;
-  const p = { id: r.id, arq: r.arq, text: r.text || '', re: r.re || null, fotos: (r.fotos || []).map(nome => ({ nome })), perdidas: r.perdidas || 0, linhas: r.linhas || null, em: r.em || Date.now() };
+  const p = { id: r.id, arq: r.arq, text: r.text || '', re: r.re || null, fotos: (r.fotos || []).map(nome => ({ nome })), perdidas: r.perdidas || 0, audio: r.audio && r.audio.nome ? { nome: r.audio.nome, subiu: !!r.audio.subiu, tentou: !!r.audio.tentou, guardou: true } : null, linhas: r.linhas || null, em: r.em || Date.now() };   // áudio: o arquivo volta do IndexedDB no reenvio
   const el = bolhaPendente(p); marcaPend(el, p, true); pendentes[p.id] = { p, el };
 });
 // Status fora do load() (05/11/2026): antes ia junto de cada busca de 4 s. online.txt a cada 45 s; na Geral (grupo) quem diz é o heartbeat de cada um (60 s).
@@ -1433,6 +1495,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !onlinePop
 
 let ultimaChecagem = 0, carregando = null;
 let forcar = false;   // recém-aberta: desenha mesmo que esteja vazia
+let shaLido = null;   // "arq|sha" da última leitura que a tela já mostra
 function load() { const p = carregando || (carregando = carregar().finally(() => { if (carregando === p) carregando = null; })); return p; }
 async function carregar() {
   const arq = FILE, gen = leituraGen; if (!arq) return null;
@@ -1440,6 +1503,8 @@ async function carregar() {
   try {
     const f = await gh('GET').finally(() => syncEl.classList.remove('on'));
     if (FILE !== arq || gen !== leituraGen) return f;   // trocou de conversa, ou saiu antes de um PUT nosso (traria a caixa sem a mensagem)
+    // mesmo sha da última leitura já aplicada na tela: nada mudou, pula decode + parse + comparação (o 304 só poupa a rede, o corpo vem igual)
+    if (!forcar && f.sha && shaLido === arq + '|' + f.sha) { ultimaLeituraOk = Date.now(); showNote(''); return f; }
     let md = ''; try { md = b64decode(f.content); } catch (e2) {}
     if (gravado && gravado.arq === arq && Date.now() < gravado.ate && md && !jaGravado(md, gravado.linhas)) return f;   // API ainda com a versão de antes do PUT
     if (md) ultimaLeitura = { arq, f };
@@ -1449,6 +1514,7 @@ async function carregar() {
     ultimaLeituraOk = Date.now();
     if (!forcar && tocando()) { showNote(''); return f; }   // áudio tocando: redesenhar recriava o <audio> e cortava; ao pausar ele busca de novo
     if (!same || forcar) { forcar = false; if (items.length < shown) shown = items.length; lastItems = items; render(items); }
+    shaLido = md ? arq + '|' + f.sha : null;   // só depois de aplicar: com áudio tocando (return acima) a próxima leitura ainda redesenha
     showNote(''); return f;
   }
   catch (e) { if (FILE === arq) showNote(msgErro(e, 'ler a caixa'), true); throw e; }
@@ -1604,21 +1670,17 @@ async function comecaGravar() {
   } catch (e) { gravador = null; showNote('Sem acesso ao microfone. Libera em Ajustes → Safari → Microfone.', true); }
 }
 recX.onclick = () => { if (gravador) { cancelado = true; gravador.stop(); } };
+// O áudio vai no pendente (nome fixo + gravação na memória e no IndexedDB): falhou o upload = "não foi" com reenvio, até depois
+// de recarregar (antes a gravação ia pro lixo). Arquivo e linha sobem pelo mesmo enviar(), sem passar pela caixa de texto.
 async function enviaAudio(blob) {
   if (blob.size < 1500) { showNote('Áudio curto demais.', true); return; }
   if (sending || !FILE) return;
-  sending = true; syncBtn();
-  const { p, el } = novoPendente('🎤 ', [], FILE); responder(null);
-  let nome;
-  try {
-    const ext = /webm/.test(blob.type) ? 'webm' : 'm4a';
-    nome = nomeArq('recados-audios', new Date(), 0, ext);
-    const b64 = await new Promise((ok, erro) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1]); fr.onerror = erro; fr.readAsDataURL(blob); });
-    await apiOk(apiDe(nome), { method: 'PUT', body: JSON.stringify({ message: 'áudio do iPhone', content: b64 }) });
-  } catch (e) { sending = false; syncBtn(); largaPendente(p.id); showNote(msgErro(e, 'mandar o áudio'), true); return; }
-  // o áudio já subiu: a linha vai pelo mesmo envio das mensagens (sem passar pela caixa de texto, que pode ter rascunho);
-  // se a linha não for, o balão fica "não foi" com o caminho guardado e dá pra reenviar (antes o áudio ficava órfão no repo)
-  p.text = '🎤 ' + nome; sending = false;
+  sending = true; syncBtn();   // segura outro envio enquanto grava no IndexedDB
+  const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6), arq = FILE;
+  const guardou = await guardaAudio(id, blob);   // antes do balão: o pendente nasce com o arquivo já no aparelho
+  const nome = nomeArq('recados-audios', new Date(), 0, /webm/.test(blob.type) ? 'webm' : 'm4a');
+  const { p, el } = novoPendente('🎤 ' + nome, [], arq, { id, audio: { nome, blob, guardou } }); responder(null);
+  sending = false;
   await enviar(p, el);
 }
 syncBtn();
@@ -1727,9 +1789,16 @@ function gestoResponder(el, it) {
 // ---- Botão ↓ com a contagem do que chegou enquanto ela lê lá em cima
 const desce = document.getElementById('desce'), desceQtd = document.getElementById('desce-qtd');
 let novasLaEmCima = 0, grudado = true, ultimaRolagem = 0;   // grudado = estava no fim antes da última mudança de altura
+// ultimaRolagem só conta rolagem DELA (dedo arrastando, roda do mouse e a inércia que vem logo depois); a que o app faz sozinho
+// (mensagem chegando, foto carregando, irProFim) não tem gesto antes e engolia o toque duplo logo depois (05/11/2026)
+let gestoRolagem = 0, rolagemDela = false, ultimoEvRolagem = 0;
+const marcaGesto = () => { gestoRolagem = Date.now(); };
+feed.addEventListener('touchmove', marcaGesto, { passive: true }); feed.addEventListener('wheel', marcaGesto, { passive: true });
 feed.addEventListener('scroll', () => {
-  const dist = feed.scrollHeight - feed.scrollTop - feed.clientHeight, longe = dist > 300;
-  grudado = dist < 120; ultimaRolagem = Date.now();
+  const dist = feed.scrollHeight - feed.scrollTop - feed.clientHeight, longe = dist > 300, agora = Date.now();
+  rolagemDela = agora - gestoRolagem < 150 || (rolagemDela && agora - ultimoEvRolagem < 150);   // inércia: eventos seguidos de uma rolagem dela
+  ultimoEvRolagem = agora; if (rolagemDela) ultimaRolagem = agora;
+  grudado = dist < 120;
   desce.hidden = !longe;
   if (!longe) { novasLaEmCima = 0; desceQtd.hidden = true; }
 });
@@ -2606,7 +2675,7 @@ function nadaPendente() {
   const ativo = document.activeElement;
   return !sending && !gravador && !anexos.length && !respondendo && !(ativo && ativo.matches('textarea, input')) && painel.hidden
     && !document.querySelector('.msg.pendente:not(.falhou), .pop, .zoom') && ![...document.querySelectorAll('audio')].some(a => !a.paused)
-    && !Object.values(pendentes).some(x => x.p.fotos.some(f => f.b64));   // "não foi" sobrevive ao reload; foto que não subiu (base64 só na memória), não
+    && !Object.values(pendentes).some(x => x.p.fotos.some(f => f.b64) || (x.p.audio && !x.p.audio.subiu && !x.p.audio.guardou));   // "não foi" sobrevive ao reload; foto que não subiu (base64 só na memória) e áudio fora do IndexedDB, não
 }
 let saiuEm = 0;
 function voltouPraPagina(longe) {
