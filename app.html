@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.11">
+<meta name="app-versao" content="2026-11-05.12">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -790,7 +790,8 @@ function parse(md, arq) {
         // só "[HH:MM]": herda o dia de cima; "[00:10]" logo depois de "23:50" é o dia seguinte (virada da meia-noite)
         const ant = out[out.length - 1]; let day = m[5] || (ant ? ant.day : '');
         if (!m[5] && m[6] && ant && ant.time >= '20:00' && m[6] < '04:00') day = diaSeguinte(day);
-        out.push({ from: 'lyra', quem: ALIAS_QUEM[m[1].toLowerCase()] || m[1].toLowerCase(), copiar: !!m[2], opcoes: m[4] ? m[4].split('|').map(x => x.trim()).filter(Boolean) : null, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], day, time: m[6] || '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: f ? f[2] : txt, _linha: i, _raw: line, _extras: [] });
+        const auAg = txt.match(RE_AUDIO);
+        out.push({ from: 'lyra', quem: ALIAS_QUEM[m[1].toLowerCase()] || m[1].toLowerCase(), copiar: !!m[2], opcoes: m[4] ? m[4].split('|').map(x => x.trim()).filter(Boolean) : null, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], day, time: m[6] || '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, audio: auAg ? auAg[1] : '', text: auAg ? '' : (f ? f[2] : txt), _linha: i, _raw: line, _extras: [] });   // agente também manda áudio: "↳ Orfeu [hora]: 🎤 recados-audios/x.m4a"
       } else if (line.trim() && out.length) {
         // Linha solta dentro de "## Recados" que não bate em nenhum padrão conhecido: provavelmente
         // quebra de linha REAL (em vez de "\n" escapado) dentro da mesma mensagem. Em vez de sumir com
