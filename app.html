@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.6">
+<meta name="app-versao" content="2026-11-05.7">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -1007,6 +1007,9 @@ function render(items, manterPosicao) {
   if (vistoMarca === undefined && items.length) vistoMarca = lerVisto(FILE, items);
   const naoVistas = Math.max(0, items.length - primeiroNaoVisto(items, vistoMarca));
   inicio = Math.max(0, items.length - Math.max(janela, naoVistas));
+  // a última dela sempre entra (05/11/2026): 46 falas de agente seguidas abriam a Geral sem nenhuma mensagem dela ("sumiram")
+  const ultMay = items.map(x => x.from).lastIndexOf('may');
+  if (ultMay >= 0 && ultMay < inicio && inicio - ultMay <= 150) inicio = ultMay;
   const alturaAntes = feed.scrollHeight, topoAntes = feed.scrollTop, primeira = shown < 0;
   const distFim = alturaAntes - topoAntes - feed.clientHeight, pertoDoFim = distFim < 120;
   // Âncora (05/11/2026, "rolagem pula"): o primeiro balão visível e onde ele estava; o replaceChildren zera a altura,
@@ -1689,7 +1692,7 @@ feed.addEventListener('scroll', () => {
   if (renderizando || carregandoAntigas) return;
   if (getSelection().toString()) return;   // selecionando texto pra copiar: um scroll momentâneo não pode trocar a lista debaixo do dedo
   if (feed.scrollTop < 40 && inicio > 0 && lastItems.length) {
-    carregandoAntigas = true; janela += 10; render(lastItems, true);
+    carregandoAntigas = true; janela = lastItems.length - inicio + 10; render(lastItems, true);   // a partir do que está na tela: com não vistas (ou a última dela) além da janela, "+10" não trazia nada
     setTimeout(() => { carregandoAntigas = false; }, 300);
   }
 });
