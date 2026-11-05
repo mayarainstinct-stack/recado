@@ -214,6 +214,9 @@ textarea:focus-visible { outline: none; }
 .tick.lida { color: var(--accent); }
 .tick.relogio { display: inline-flex; vertical-align: -2px; letter-spacing: 0; }
 .msg.pendente { opacity: .85; }
+.msg.may.eu.pendente { opacity: 1; background: linear-gradient(#FFFFFF, #FFFFFF) padding-box, linear-gradient(90deg, #E31B23, #FACC15, #22C55E, #FACC15, #E31B23) 0 0 / 300% 100% border-box; animation: enviando 1.6s linear infinite; }   /* degradê correndo na borda = ainda enviando (May, 05/11/2026) */
+@keyframes enviando { to { background-position: 0 0, 150% 0; } }
+@media (prefers-reduced-motion: reduce) { .msg.may.eu.pendente { animation: none; opacity: .85; } }
 .msg.falhou { opacity: 1; outline: 1.5px solid #DC2626; }
 .msg.falhou .tick { color: #DC2626; letter-spacing: 0; }
 .msg.may .tick.lida { color: #9FE0FF; }
