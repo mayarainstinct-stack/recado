@@ -202,6 +202,7 @@ textarea:focus-visible { outline: none; }
 .msg .copiar-msg { position: absolute; top: 4px; right: 6px; width: 21px; height: 21px; min-height: 0; border-radius: 50%; border: none;
   background: rgba(0,0,0,.14); color: inherit; font-size: 13px; line-height: 1; font-weight: 700; display: grid; place-items: center; opacity: .5; padding: 0; }
 .msg .copiar-msg:active { opacity: 1; }
+.msg:has(.quem) .copiar-msg { top: 16.5px; }   /* com robozinho de 40 px: alinha a setinha no meio da linha do nome */
 .msg-menu-pop { position: fixed; min-width: 150px; background: var(--paper); color: var(--fg); border: 1px solid var(--line);
   border-radius: 12px; padding: 4px; z-index: 20; box-shadow: 0 12px 32px rgba(0,0,0,.22), 0 2px 6px rgba(0,0,0,.10); }
 .msg-menu-pop:not([hidden]) { animation: abre .15s ease-out both; transform-origin: top right; }
@@ -816,7 +817,7 @@ function render(items, manterPosicao) {
     if (it.text && !it.copiar) {
       // Setinha no canto (igual WhatsApp) em toda mensagem com texto: toca e abre menu com "Copiar".
       // Existe porque no celular o toque-e-segure pra selecionar bugava (ver gestoResponder/feed scroll).
-      const cpy = document.createElement('button'); cpy.type = 'button'; cpy.className = 'copiar-msg'; cpy.title = 'Opções da mensagem'; cpy.textContent = '⌄';
+      const cpy = document.createElement('button'); cpy.type = 'button'; cpy.className = 'copiar-msg'; cpy.title = 'Opções da mensagem'; cpy.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';   // SVG centralizado (o ⌄ de texto ficava caído e é emoji-like)
       cpy.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
       cpy.addEventListener('click', e => { e.stopPropagation(); abreMenuMsg(cpy, it); });
       el.append(cpy);
