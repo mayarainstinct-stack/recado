@@ -133,14 +133,16 @@ textarea:focus-visible { outline: none; }
 .msg.grupo { background: color-mix(in srgb, var(--quem) 16%, var(--cinza)); color: var(--fg); }   /* fundo na cor de quem fala (May, 03/11/2026) */
 .msg.grupo .quem { color: var(--quem); }
 /* Balão da May: branco, mais clean (May, 05/11/2026: "deixa meu balão branco"); as 2 cores dela ficam só no nome e no aro do avatar */
-.msg.may.eu { border: 2px solid transparent; background: linear-gradient(#FFFFFF, #FFFFFF) padding-box, linear-gradient(135deg, #E31B23, #22C55E) border-box; color: #1A1A1A; box-shadow: 0 1px 2px rgba(0,0,0,.12); }   /* borda vermelha e verde (May, 05/11/2026) */
+.msg.may.eu { border: 3.5px solid transparent; background: linear-gradient(#FFFFFF, #FFFFFF) padding-box, linear-gradient(135deg, #E31B23, #FACC15, #22C55E) border-box; color: #1A1A1A; box-shadow: 0 1px 2px rgba(0,0,0,.12); }   /* borda vermelha e verde (May, 05/11/2026) */
 .msg.may.eu .meta { color: #6B7280; }
 .msg.may.eu .tick.lida { color: #1E8A40; }
 .msg.may.eu .cita { background: #F3F4F6; }
 .msg.may.eu .cita b { color: #B91C22; }
 .msg.may.eu .cita span { color: #4B5563; }
-.msg.may .quem.eu span:last-child { background: linear-gradient(90deg, #E31B23, #1E8A40); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.msg.may .quem.eu .avatar { background-color: #111111; box-shadow: 0 0 0 2px #E31B23, 0 0 0 4px #22C55E; }
+.msg.may .quem.eu .letra:nth-child(1) { color: #E31B23; }
+.msg.may .quem.eu .letra:nth-child(2) { color: #CA8A04; }
+.msg.may .quem.eu .letra:nth-child(3) { color: #1E8A40; }
+.msg.may .quem.eu .avatar { background-color: transparent; box-shadow: none; background-size: contain; background-repeat: no-repeat; }   /* a imagem dela já é redonda e transparente, sem aro (May, 05/11/2026) */
 .msg .quem { font-size: 14px; font-weight: 700; margin-bottom: 4px; padding-right: 26px; color: var(--quem); display: flex; align-items: center; gap: 6px; }
 .quem .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--quem); color: var(--quem-fg); font-size: 17px;   /* era 26px, pequeno demais no celular (May, 05/11/2026) */
   font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background-size: cover; background-position: center; }
@@ -728,6 +730,7 @@ function render(items, manterPosicao) {
         }).catch(() => {});   // falhou: fica a letra, sem clique
       }
       const nomeTxt = document.createElement('span'); nomeTxt.textContent = g.nome;
+      if (g === EU) { nomeTxt.textContent = ''; [...g.nome].forEach(c => { const l = document.createElement('span'); l.className = 'letra'; l.textContent = c; nomeTxt.append(l); }); }   // M vermelho, a amarelo, y verde (reggae, May 05/11/2026)
       nome.append(av, nomeTxt); el.append(nome);
     }
     if (it.re) {
@@ -877,7 +880,7 @@ function marcaLidas() {
 // Balão "enviando" com relogiozinho, igual WhatsApp (no lugar da tela inteira "Enviando…")
 const RELOGIO = '<svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
 function bolhaPendente(txt) {
-  const el = document.createElement('div'); el.className = 'msg may pendente';
+  const el = document.createElement('div'); el.className = 'msg may pendente' + (FILE === GERAL.arq ? ' eu' : '');   // no Geral já nasce branquinho, igual fica depois de enviado
   if (txt) { const t = document.createElement('div'); t.className = 'txt'; t.textContent = txt; el.append(t); }
   const m = document.createElement('div'); m.className = 'meta';
   const h = document.createElement('span'); h.textContent = stamp(new Date()).slice(11, 16); m.append(h);
