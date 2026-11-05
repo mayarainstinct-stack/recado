@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.16">
+<meta name="app-versao" content="2026-11-05.17">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -154,7 +154,7 @@ textarea:focus-visible { outline: none; }
 .msg.may .quem.eu .letra:nth-child(1) { color: #E31B23; }
 .msg.may .quem.eu .letra:nth-child(2) { color: #CA8A04; }
 .msg.may .quem.eu .letra:nth-child(3) { color: #1E8A40; }
-.msg.may .quem.eu .avatar { background-color: transparent; box-shadow: none; background-size: 104%; background-repeat: no-repeat; background-position: center; width: 46px; height: 46px; }   /* 104%: o brilho do aro dela deixava o círculo menor que o dos robôs (May, 05/11/2026) */   /* a imagem dela já é redonda e transparente, sem aro (May, 05/11/2026) */
+.msg.may .quem.eu .avatar { background-color: transparent; box-shadow: none; background-size: contain; background-repeat: no-repeat; background-position: center; width: 46px; height: 46px; }   /* 104%: o brilho do aro dela deixava o círculo menor que o dos robôs (May, 05/11/2026) */   /* a imagem dela já é redonda e transparente, sem aro (May, 05/11/2026) */
 .msg .quem { font-size: 16px; font-weight: 700; margin-bottom: 4px; padding-right: 26px; color: var(--quem); display: flex; align-items: center; gap: 6px; }
 .quem .rotulo { display: flex; flex-direction: column; min-width: 0; line-height: 1.15; }
 .quem .cargo { font-size: 11.5px; font-weight: 500; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -309,7 +309,7 @@ button:disabled { opacity: .45; cursor: default; }
 .conv:active { background: var(--bg); }
 .conv .av { width: 46px; height: 46px; border-radius: 50%; flex: none; display: grid; place-items: center; font-weight: 700; font-size: 19px;
   background: color-mix(in srgb, var(--accent) 18%, var(--paper)); color: var(--accent); }
-.conv .av.logo-r { background: #fff url("apple-touch-icon.png") center / cover; }
+.conv .av.logo-r { background: #0E0F12 url("avatares/grupo-geral-96.png") center / cover; }   /* Geral = os robôs, não o R (May, 05/11/2026) */
 .conv .corpo { flex: 1; min-width: 0; display: grid; gap: 2px; }
 .conv { overflow: hidden; }
 .conv .linha { display: flex; align-items: baseline; gap: 8px; min-width: 0; overflow: hidden; }
@@ -371,6 +371,30 @@ button:disabled { opacity: .45; cursor: default; }
 .p-botao small { display: block; margin-top: 2px; font-weight: 500; font-size: 13px; color: var(--muted); }
 .p-botao .chev { flex: none; font-size: 26px; line-height: 1; color: var(--muted); font-weight: 400; }
 .p-botao:active { background: var(--bg); }
+/* Dados do grupo, tipo o do WhatsApp: foto grande, mídia, links, docs e participantes (May, 05/11/2026) */
+.titulo-linha, #logo, #convAv { cursor: pointer; }
+.ig-hero { display: grid; justify-items: center; gap: 6px; text-align: center; padding: 8px 0 4px; }
+.ig-foto { width: 128px; height: 128px; border-radius: 50%; background: #0E0F12 center / cover; display: grid; place-items: center; font-size: 48px; font-weight: 800; color: #fff; }
+.ig-hero h3 { margin: 6px 0 0; font-size: 24px; font-weight: 800; letter-spacing: -.01em; }
+.ig-hero span { font-size: 14px; color: var(--muted); }
+.ig-desc { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; font-size: 14.5px; line-height: 1.45; }
+.ig-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 4px; }
+.ig-tabs button { width: auto; height: auto; min-height: 44px; border-radius: 10px; background: none; color: var(--muted); font-size: 13px; font-weight: 700; display: grid; gap: 1px; place-items: center; padding: 4px 2px; }
+.ig-tabs button small { font-size: 11px; font-weight: 600; }
+.ig-tabs button.ativa { background: var(--accent); color: var(--accent-fg); }
+.ig-grade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; border-radius: 14px; overflow: hidden; }
+.ig-grade button { width: 100%; height: auto; aspect-ratio: 1; padding: 0; border-radius: 0; background: var(--cinza) center / cover; }
+.ig-vazio { text-align: center; color: var(--muted); font-size: 14px; padding: 18px 8px; }
+.ig-audio audio { width: 100%; margin-top: 8px; }
+.ig-gente { display: flex; flex-direction: column; background: var(--paper); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+.ig-gente button { width: 100%; height: auto; display: flex; align-items: center; justify-content: flex-start; gap: 12px; min-height: 64px; padding: 10px 14px; background: none; color: inherit; text-align: left; border-top: 1px solid var(--line); border-radius: 0; }
+.ig-gente button:first-child { border-top: 0; }
+.ig-gente .av { flex: none; width: 44px; height: 44px; border-radius: 50%; background: var(--cinza) center / cover; display: grid; place-items: center; font-weight: 800; color: #fff; }
+.ig-gente .tx { flex: 1; min-width: 0; line-height: 1.25; }
+.ig-gente b { display: block; font-size: 15.5px; }
+.ig-gente small { display: block; font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ig-gente .st { flex: none; font-size: 12px; font-weight: 700; color: var(--muted); }
+.ig-gente .st.on { color: var(--accent); }
 .p-nota { margin: 0; font-size: 14px; color: var(--muted); line-height: 1.45; overflow-wrap: anywhere; }
 /* Cartão compacto da lista: título, foto, preço; toque abre o detalhe */
 .item { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; display: block; cursor: pointer;
@@ -692,6 +716,7 @@ const ICONES_SVG = {
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5"/>',
   money: '<circle cx="12" cy="12" r="9"/><path d="M14.5 9.5C14 8.5 13.2 8 12 8c-1.5 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1 2-2.5 2c-1.2 0-2-.5-2.5-1.500M12 6v2M12 16v2"/>',
   doc: '<path d="M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6"/>',
+  link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
   moon: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.500z"/>',
   generico: '<rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="12" cy="12" r="1.5"/>'
 };
@@ -706,6 +731,7 @@ document.querySelectorAll('[data-i]').forEach(e => { e.innerHTML = icone(e.datas
 const REPO = 'mayarainstinct-stack/Inst';
 // Conversas = arquivos: "Geral" é a CAIXA-DE-ENTRADA.md; as outras ficam em caixas/<nome>.md (mesmo formato).
 const GERAL = { arq: 'CAIXA-DE-ENTRADA.md', nome: 'Geral', participantes: ['may', 'lyra', 'orfeu', 'nyx', 'vega', 'hermes', 'sigma'] };   // Casa (PCs) juntada na Geral numa coisa só (pedido dela, 02/11/2026); participantes = quem escreve casa/online/online-<chave>.json
+const FOTO_GERAL = 'avatares/grupo-geral-192.png';   // os robôs juntos, estático no Pages (May, 05/11/2026)
 const TRAB = { arq: 'caixas/trabalho.md', nome: 'Trabalho' };   // trabalho separado da Geral (May, 21/10/2026); no celular troca pelo ⋮
 const apiDe = arq => 'https://api.github.com/repos/' + REPO + '/contents/' + arq.split('/').map(encodeURIComponent).join('/');
 let FILE = null;      // arquivo da conversa aberta (null = está na lista)
@@ -2285,6 +2311,7 @@ function abrir(c) {
   FILE = c.arq; API = apiDe(c.arq); nomeConv = c.nome; fotoConv = c.foto || (conversas.find(x => x.arq === c.arq) || {}).foto || '';
   logoEl.style.backgroundImage = ''; convAv.style.backgroundImage = ''; convAv.hidden = true;
   if (fotoConv) fotoUrl(fotoConv).then(u => { if (FILE === c.arq) { logoEl.style.backgroundImage = 'url(' + u + ')'; convAv.style.backgroundImage = 'url(' + u + ')'; convAv.hidden = false; } }).catch(() => {});
+  else if (c.arq === GERAL.arq) { logoEl.style.backgroundImage = convAv.style.backgroundImage = 'url(' + FOTO_GERAL + ')'; convAv.hidden = false; }
   vistoMarca = undefined;
   shown = -1; lastItems = []; janela = 10; inicio = 0; forcar = true; carregando = null;
   novasLaEmCima = 0; desceQtd.hidden = true; desce.hidden = true;
@@ -2337,6 +2364,88 @@ function desenhaTela() {
 function fechaPainel() { painel.hidden = true; pilha = []; }
 document.getElementById('p-anotar').onclick = () => abreFicha({ titulo: 'Anotar · ' + pTit.textContent, contexto: pTit.textContent });
 document.getElementById('p-voltar').onclick = () => { pilha.pop(); if (pilha.length) desenhaTela(); else fechaPainel(); };
+// ---- Dados da conversa (tocar no nome ou na foto lá em cima): foto, quem participa e tudo que já foi mandado nela
+const EXT_IMG = /\.(png|jpe?g|webp|gif)$/i, EXT_AUDIO = /\.(m4a|webm|mp3|wav|ogg)$/i, EXT_TEXTO = /\.(md|txt|json|csv|py|sh|ps1|html|svg)$/i;
+const RE_CAMINHO = /(?:^|[\s(`'"])((?:[\w.-]+\/)+[\w.-]+\.(?:png|jpe?g|webp|gif|m4a|webm|mp3|wav|ogg|md|pdf|json|txt|csv|docx?|xlsx?|pptx?|zip|apk|cdr|psd|ps1|py|sh|html|svg))(?=$|[\s),.;:`'"!?])/gi;
+function anexosDaConversa(itens) {
+  const tipos = { midia: [], audio: [], link: [], doc: [] }, vistos = new Set();
+  const poe = (tipo, valor, it) => { if (vistos.has(valor)) return; vistos.add(valor); tipos[tipo].push({ valor, quem: it.from === 'may' ? 'May' : ((GRUPO[it.quem] || {}).nome || it.quem || '').replace(/\s*\(.*\)$/, ''), dia: it.day || '', hora: it.time || '' }); };
+  itens.slice().reverse().forEach(it => {   // mais novo primeiro, igual o WhatsApp
+    (it.fotos || []).forEach(f => poe('midia', f, it));
+    if (it.audio) poe('audio', it.audio, it);
+    const txt = it.text || '';
+    (txt.match(RE_LINK) || []).forEach(u => poe('link', (/^https?:/i.test(u) ? '' : 'https://') + u.replace(/[.,;:!?)\]`'*]+$/, ''), it));   // o mesmo RE_LINK que vira link no balão
+    for (const m of txt.replace(RE_LINK, ' ').matchAll(RE_CAMINHO)) { const c = m[1]; poe(EXT_IMG.test(c) ? 'midia' : EXT_AUDIO.test(c) ? 'audio' : 'doc', c, it); }
+  });
+  return tipos;
+}
+function abreInfoConversa() {
+  if (!FILE) return;
+  const conv = convPorArq(FILE), geral = FILE === GERAL.arq, nome = nomeConv || conv.nome || 'Conversa', arqAberto = FILE;
+  const falaram = [...new Set(lastItems.filter(x => x.quem).map(x => x.quem))];
+  const gente = ['may', ...(conv.participantes || falaram).filter(k => k !== 'may' && GRUPO[k])].filter((k, i, a) => a.indexOf(k) === i);
+  const anexos = anexosDaConversa(lastItems);
+  menu.hidden = true; painel.hidden = false; pilha = [];
+  tela(geral ? 'Dados do grupo' : 'Dados da conversa', c => {
+    const hero = document.createElement('div'); hero.className = 'ig-hero';
+    const ft = document.createElement('div'); ft.className = 'ig-foto';
+    if (geral) { ft.style.backgroundImage = 'url(avatares/grupo-geral-512.png)'; ft.setAttribute('role', 'button'); ft.setAttribute('aria-label', 'Ver a foto do grupo'); ft.onclick = () => abreZoom('avatares/grupo-geral-512.png', '', []); }
+    else if (fotoConv) fotoUrl(fotoConv).then(u => { ft.style.backgroundImage = 'url(' + u + ')'; }).catch(() => {});
+    else ft.textContent = nome.charAt(0).toUpperCase();
+    const h = document.createElement('h3'); h.textContent = nome;
+    const sub = document.createElement('span'); sub.textContent = (gente.length > 2 ? 'Grupo · ' : 'Conversa · ') + gente.length + ' participantes';
+    hero.append(ft, h, sub); c.append(hero);
+    if (geral) { const d = document.createElement('div'); d.className = 'ig-desc'; d.textContent = 'A casa toda: a May e os robôs, cada um com o seu trabalho. Recado pra um só: escreve @ e o nome.'; c.append(d); }
+    const sec = t => { const e = document.createElement('div'); e.className = 'p-sec'; e.textContent = t; c.append(e); };
+    const total = anexos.midia.length + anexos.audio.length + anexos.link.length + anexos.doc.length;
+    sec('Mídia, links e docs · ' + total);
+    const tabs = document.createElement('div'); tabs.className = 'ig-tabs'; tabs.setAttribute('role', 'tablist');
+    const area = document.createElement('div'); area.className = 'p-lista';
+    const ABAS = [['midia', 'Mídia'], ['audio', 'Áudios'], ['link', 'Links'], ['doc', 'Docs']];
+    const quando = a => [a.quem, a.dia && a.dia.slice(0, 5), a.hora].filter(Boolean).join(' · ');
+    const desenha = qual => {
+      [...tabs.children].forEach((b, i) => { const on = ABAS[i][0] === qual; b.classList.toggle('ativa', on); b.setAttribute('aria-selected', String(on)); });
+      area.replaceChildren(); const lista = anexos[qual];
+      if (!lista.length) { const v = document.createElement('div'); v.className = 'ig-vazio'; v.textContent = qual === 'midia' ? 'Nenhuma foto nesta conversa ainda.' : qual === 'audio' ? 'Nenhum áudio ainda.' : qual === 'link' ? 'Nenhum link ainda.' : 'Nenhum documento ainda.'; area.append(v); return; }
+      if (qual === 'midia') {
+        const g = document.createElement('div'); g.className = 'ig-grade'; const caminhos = lista.map(a => a.valor);
+        lista.forEach(a => {
+          const b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', 'Foto de ' + quando(a)); g.append(b);
+          fotoUrl(a.valor).then(u => { b.style.backgroundImage = 'url(' + u + ')'; b.onclick = () => abreZoom(u, a.valor, caminhos); }).catch(() => { b.disabled = true; });
+        });
+        area.append(g); return;
+      }
+      lista.forEach(a => {
+        const nomeArq = a.valor.split('/').pop();
+        if (qual === 'link') { let host = a.valor; try { host = new URL(a.valor).host.replace(/^www\./, ''); } catch (e) {} area.append(botao('link', host, a.valor.replace(/^https?:\/\//, '').slice(0, 80) + ' · ' + quando(a), () => window.open(a.valor, '_blank', 'noopener'))); return; }
+        if (qual === 'audio') {
+          const b = botao('mic', nomeArq, quando(a), () => { if (b.querySelector('audio')) return; const au = document.createElement('audio'); au.controls = true; b.querySelector('.tx').append(au); b.classList.add('ig-audio'); fotoUrl(a.valor, true).then(u => { au.src = u; au.play().catch(() => {}); }).catch(() => showNote('Não consegui abrir esse áudio.', true)); });
+          area.append(b); return;
+        }
+        area.append(botao('doc', nomeArq, a.valor.split('/').slice(0, -1).join('/') + ' · ' + quando(a), async () => {
+          try {
+            if (EXT_TEXTO.test(a.valor)) { const pre = document.createElement('pre'); pre.style.cssText = 'white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; font-size: 13px;'; pre.textContent = await lerArquivo(a.valor); abreFicha({ titulo: nomeArq, corpo: pre, contexto: 'Documento ' + a.valor }); }
+            else { const u = await fotoUrl(a.valor, true); baixaArquivo(await (await fetch(u)).blob(), nomeArq); }
+          } catch (e) { showNote(e && e.status === 404 ? 'Esse arquivo não existe mais (ou mudou de lugar).' : 'Não consegui abrir. Confere a internet.', true); }
+        }));
+      });
+    };
+    ABAS.forEach(([k, t]) => { const b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab'); b.append(t); const n = document.createElement('small'); n.textContent = anexos[k].length; b.append(n); b.onclick = () => desenha(k); tabs.append(b); });
+    c.append(tabs, area); desenha(anexos.midia.length ? 'midia' : anexos.doc.length ? 'doc' : anexos.link.length ? 'link' : 'audio');
+    sec(gente.length + ' participantes');
+    const lg = document.createElement('div'); lg.className = 'ig-gente'; c.append(lg);
+    gente.forEach(k => {
+      const g = k === 'may' ? EU : GRUPO[k], b = document.createElement('button'); b.type = 'button';
+      const av = document.createElement('span'); av.className = 'av'; av.style.backgroundColor = g.cor; av.textContent = g.nome.charAt(0);
+      if (g.foto) fotoUrl(g.foto).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.textContent = ''; }).catch(() => {});
+      const tx = document.createElement('span'); tx.className = 'tx'; const nb = document.createElement('b'); nb.textContent = k === 'may' ? 'Você' : g.nome.replace(/\s*\(.*\)$/, ''); const cg = document.createElement('small'); cg.textContent = g.cargo || ''; tx.append(nb, cg);
+      const hb = (onlineGrupoLista || []).find(x => x.chave === k), v = hb && hb.ultimaAtualizacao ? fmtVisto(hb.ultimaAtualizacao) : null;
+      const st = document.createElement('span'); st.className = 'st' + (k === 'may' || (v && v.online) ? ' on' : ''); st.textContent = k === 'may' ? 'online' : k === 'sigma' && !v ? 'itinerante' : v ? (v.online ? 'online' : v.texto) : '';
+      b.append(av, tx, st); b.onclick = () => { if (FILE === arqAberto) abreCracha(k); }; lg.append(b);
+    });
+  });
+}
+[tituloEl.parentElement, logoEl, convAv].forEach(e => e.addEventListener('click', () => { if (FILE) abreInfoConversa(); }));
 abreMenu.onclick = () => {
   menu.hidden = true; painel.hidden = false; pilha = [];
   tela('Menu', c => {
