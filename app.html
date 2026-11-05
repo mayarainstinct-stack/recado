@@ -419,6 +419,20 @@ button:disabled { opacity: .45; cursor: default; }
 .pop .caixa { width: 100%; max-width: 380px; background: var(--paper); color: var(--fg); border-radius: 18px; padding: 18px; display: grid; gap: 12px;
   box-shadow: 0 14px 40px rgba(0,0,0,.3); animation: entra .2s ease-out both; }
 .pop h2 { margin: 0; font-size: 18px; }
+.ficha-pop .caixa.ficha { max-width: 360px; max-height: calc(100dvh - 32px); overflow-y: auto; padding: 0 0 16px; gap: 0; border-top: 6px solid var(--quem); }
+.ficha-pop .caixa.ficha.eu { border-top: 6px solid transparent; border-image: linear-gradient(90deg, #E31B23, #FACC15, #22C55E) 1; }
+.ficha-topo { display: grid; justify-items: center; gap: 4px; padding: 20px 16px 14px; text-align: center; background: color-mix(in srgb, var(--quem) 12%, transparent); }
+.ficha-av { width: 104px; height: 104px; border-radius: 50%; background: var(--quem) center / cover no-repeat; display: grid; place-items: center; font-size: 40px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+.ficha.eu .ficha-av { background-color: transparent; }
+.ficha-topo h2 { font-size: 22px; }
+.ficha-cargo { font-size: 14px; font-weight: 600; color: var(--quem); }
+.ficha.eu .ficha-cargo { color: var(--fg); }
+.ficha-status { font-size: 12.5px; color: var(--muted); }
+.ficha-status.on { color: var(--accent); font-weight: 600; }
+.ficha-dados { margin: 0; padding: 6px 16px 12px; display: grid; gap: 2px; }
+.ficha-dados dt { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-top: 10px; }
+.ficha-dados dd { margin: 0; font-size: 15px; line-height: 1.4; overflow-wrap: anywhere; }
+.ficha > .sec { justify-self: end; margin: 4px 16px 0; width: auto; height: auto; border-radius: 999px; padding: 10px 18px; background: var(--bg); color: var(--fg); border: 1px solid var(--line); }
 .pop input[type=text] { font: inherit; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
 .pop .foto-grupo { display: flex; align-items: center; gap: 12px; }
 .pop .foto-grupo .prev { width: 58px; height: 58px; border-radius: 50%; background: var(--bg) center / cover; border: 1px dashed var(--line); display: grid; place-items: center; font-size: 22px; flex: none; }
@@ -721,6 +735,38 @@ const GRUPO = {
 };
 // A May também aparece com robozinho no Geral, como "agente humana", nas duas cores dela (May, 05/11/2026)
 const EU = { nome: 'May', cor: '#E31B23', cor2: '#22C55E', texto: '#FFFFFF', foto: 'recados-fotos/avatar-may-192.png' };
+// Ficha (crachá) de cada um, ao tocar no nome ou na foto (May, 05/11/2026): máquina, IP, o que faz e o olhar
+const FICHA = {
+  may: { pc: 'Humana · a chefe da casa', maquina: 'Celular dela e todos os PCs', faz: 'Dev fullstack, design, produção musical, estúdio de design e o fangame Pokémon ACT.', olhar: 'A dona de tudo: decide, pede e aprova.' },
+  lyra: { pc: 'Notebook do serviço', maquina: 'Notebook do trabalho da May', faz: 'Fica com ela no serviço das 8h às 18h: agenda, recados e a ponte com os robôs de casa.', olhar: 'Quem usa e quem vai receber: facilita a vida dela? Dá pra decidir com um sim ou não?' },
+  orfeu: { pc: 'PC1 · PC1', maquina: 'hardware omitido', faz: 'Servidor de arquivos da casa, rede, git, House Bridge e o estúdio (FL Studio, Ampero, Fast Track Pro).', olhar: 'A base que segura tudo: o que acontece quando quebra, o peso no PC e fluxo limpo de produtor.' },
+  nyx: { pc: 'PC2 · PC2', maquina: 'hardware omitido', faz: 'Jogos e emulação: saves, mods, FPS, launcher e a mesa digitalizadora.', olhar: 'Desempenho e hardware real: medido, não chutado, e sempre com saída reversível.' },
+  vega: { pc: 'PC3 · PC do jogador', maquina: 'hardware omitido', faz: 'Operação e suporte do PC do jogador (GTA V, FiveM, LoL) sem atrapalhar quem está jogando.', olhar: 'O cliente final usando de verdade, na hora errada: se trava no pior momento, é defeito.' },
+  hermes: { pc: 'PC4 · captura e lives', maquina: 'PC de live do jogador (recebe o HDMI do Vega)', faz: 'Leva e traz: captura, transmissão e entrega das mensagens entre todo mundo.', olhar: 'A estrada entre quem manda e quem recebe: chegou inteiro, pra pessoa certa, e se fez entender?' },
+  sigma: { pc: 'Sem PC ainda', maquina: 'Roda como agente nas revisões', faz: 'Revisor-Chefe: aponta o que quebra, o que falta e o que não vale, sempre com o que fazer.', olhar: 'O do problema e do custo: enxerga o furo que ninguém quer ver.' }
+};
+const ALIAS_FICHA = { pc1: 'orfeu', pc2: 'nyx', pc3: 'vega', pc4: 'hermes', darksigma: 'sigma' };
+function abreFicha(chave) {
+  const k = ALIAS_FICHA[chave] || chave, g = k === 'may' ? EU : GRUPO[k], f = FICHA[k];
+  if (!g || !f) return;
+  const hb = (onlineGrupoLista || []).find(x => x.chave === k) || {}, v = fmtVisto(hb.ultimaAtualizacao);
+  const pop = document.createElement('div'); pop.className = 'pop ficha-pop';
+  const cx = document.createElement('div'); cx.className = 'caixa ficha' + (g === EU ? ' eu' : ''); cx.style.setProperty('--quem', g.cor);
+  const topo = document.createElement('div'); topo.className = 'ficha-topo';
+  const av = document.createElement('div'); av.className = 'ficha-av'; av.textContent = g.nome.charAt(0);
+  if (g.foto) fotoUrl(g.foto).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.textContent = ''; }).catch(() => {});
+  const nm = document.createElement('h2'); nm.textContent = g.nome.replace(/\s*\(PC\d\)$/i, '');
+  const cg = document.createElement('div'); cg.className = 'ficha-cargo'; cg.textContent = (g.cargo || (g === EU ? 'Agente humana' : '')).replace(/\s+do PC\d$/i, '');
+  const st = document.createElement('div'); st.className = 'ficha-status' + (k === 'may' || v.online ? ' on' : ''); st.textContent = k === 'may' ? 'online agora' : (v.online ? (v.texto === 'agora' ? 'online agora' : 'visto ' + v.texto) : v.texto);
+  topo.append(av, nm, cg, st);
+  const lista = document.createElement('dl'); lista.className = 'ficha-dados';
+  [['Onde roda', f.pc], ['IP', hb.ip || (['may', 'lyra', 'sigma'].includes(k) ? '' : 'ainda não mandou')], ['Máquina', f.maquina], ['O que faz', f.faz], ['Meu olhar', f.olhar], ['Fazendo agora', hb.fazendo || '']].forEach(([t, d]) => {
+    if (!d) return; const dt = document.createElement('dt'); dt.textContent = t; const dd = document.createElement('dd'); dd.textContent = d; lista.append(dt, dd);
+  });
+  const ok = document.createElement('button'); ok.type = 'button'; ok.className = 'sec'; ok.textContent = 'Fechar'; ok.onclick = () => pop.remove();
+  cx.append(topo, lista, ok); pop.append(cx); document.body.append(pop);
+  pop.onclick = e => { if (e.target === pop) pop.remove(); };
+}
 // Nomes aceitos em "  ↳ Nome: ..." — sempre as chaves do GRUPO, pra nunca mais esquecer de
 // sincronizar isso com GRUPO na mão quando adicionar alguém (bug: Hermes/DarkSigma adicionados
 // no GRUPO mas não aqui, mensagem deles sumia sem avisar).
@@ -816,14 +862,14 @@ function render(items, manterPosicao) {
         const fp = g.foto;
         fotoUrl(fp).then(u => {
           av.style.backgroundImage = 'url(' + u + ')'; av.textContent = '';
-          av.style.cursor = 'pointer'; av.addEventListener('click', e => { e.stopPropagation(); abreZoom(u, fp); });
-        }).catch(() => {});   // falhou: fica a letra, sem clique
+        }).catch(() => {});   // falhou: fica a letra
       }
       const nomeTxt = document.createElement('span'); nomeTxt.textContent = g.nome.replace(/\s*\(PC\d\)$/i, '');   // na conversa sem "(PC1)" (May, 05/11/2026)
       if (g === EU) { nomeTxt.textContent = ''; [...g.nome].forEach(c => { const l = document.createElement('span'); l.className = 'letra'; l.textContent = c; nomeTxt.append(l); }); }   // M vermelho, a amarelo, y verde (reggae, May 05/11/2026)
       const rotulo = document.createElement('span'); rotulo.className = 'rotulo'; rotulo.append(nomeTxt);
       if (g.cargo) { const cg = document.createElement('small'); cg.className = 'cargo'; cg.textContent = g.cargo.replace(/\s+do PC\d$/i, ''); rotulo.append(cg); }   // cargo na linha de baixo do nome (May, 05/11/2026)
       nome.append(av, rotulo); el.append(nome);
+      nome.style.cursor = 'pointer'; nome.addEventListener('click', e => { e.stopPropagation(); abreFicha(g === EU ? 'may' : it.quem); });
     }
     if (it.re) {
       const q = document.createElement('div'); q.className = 'cita';
@@ -1046,14 +1092,14 @@ function desenhaOnlinePop() {
     const fotoP = p.foto || (gp && gp.foto);   // prioriza a foto do heartbeat; sem ela, usa a foto fixa do GRUPO
     if (fotoP) fotoUrl(fotoP).then(u => {
       av.style.backgroundImage = 'url(' + u + ')'; av.textContent = '';
-      av.style.cursor = 'pointer'; av.addEventListener('click', e => { e.stopPropagation(); abreZoom(u, fotoP); });
-    }).catch(() => {});   // falhou/404: fica a letra, sem clique
+    }).catch(() => {});   // falhou/404: fica a letra
     const info = document.createElement('div'); info.className = 'info';
     const nome = document.createElement('div'); nome.className = 'nome'; nome.textContent = nomeDe(p);
     const v = fmtVisto(p.ultimaAtualizacao);
     const visto = document.createElement('div'); visto.className = 'visto' + (v.online ? ' on' : '');
     visto.textContent = v.online ? (v.texto === 'agora' ? 'online agora' : 'visto ' + v.texto) : v.texto;
     info.append(nome, visto); row.append(av, info); onlinePop.append(row);
+    row.style.cursor = 'pointer'; row.addEventListener('click', e => { e.stopPropagation(); abreFicha(p.chave); });
   });
 }
 async function atualizaOnlineGrupo(forcar) {
