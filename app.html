@@ -132,8 +132,9 @@ textarea:focus-visible { outline: none; }
 /* Balão cinza com a borda lateral na cor hex de quem fala; o nome em cima também na cor (pedido dela) */
 .msg.grupo { background: color-mix(in srgb, var(--quem) 16%, var(--cinza)); color: var(--fg); }   /* fundo na cor de quem fala (May, 03/11/2026) */
 .msg.grupo .quem { color: var(--quem); }
+.msg.may.eu { background: linear-gradient(135deg, color-mix(in srgb, var(--quem) 24%, var(--cinza)), color-mix(in srgb, var(--quem2) 24%, var(--cinza))); color: var(--fg); }
+.msg.may.eu .meta { color: var(--muted); }
 .msg.may .quem.eu span:last-child { background: linear-gradient(90deg, var(--quem), var(--quem2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.msg.may .quem.eu .avatar { box-shadow: 0 0 0 2px var(--quem), 0 0 0 4px var(--quem2); }
 .msg .quem { font-size: 12.5px; font-weight: 700; margin-bottom: 2px; color: var(--quem); display: flex; align-items: center; gap: 6px; }
 .quem .avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--quem); color: var(--quem-fg); font-size: 13px;
   font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background-size: cover; background-position: center; }
@@ -709,7 +710,7 @@ function render(items, manterPosicao) {
     const g = it.quem && GRUPO[it.quem] ? GRUPO[it.quem] : (it.from === 'may' && FILE === GERAL.arq ? EU : null);
     if (g) {
       // Nome colorido em cima do balão, igual grupo de WhatsApp; o balão ganha um toque da cor de quem fala
-      el.style.setProperty('--quem', g.cor); el.style.setProperty('--quem-fg', g.texto); if (g !== EU) el.classList.add('grupo');
+      el.style.setProperty('--quem', g.cor); el.style.setProperty('--quem-fg', g.texto); el.classList.add(g === EU ? 'eu' : 'grupo');
       if (g.cor2) el.style.setProperty('--quem2', g.cor2);
       const nome = document.createElement('div'); nome.className = 'quem' + (g === EU ? ' eu' : '');
       const av = document.createElement('span'); av.className = 'avatar'; av.textContent = g.nome.charAt(0).toUpperCase();
