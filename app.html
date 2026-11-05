@@ -142,7 +142,7 @@ textarea:focus-visible { outline: none; }
 .msg.may .quem.eu .letra:nth-child(1) { color: #E31B23; }
 .msg.may .quem.eu .letra:nth-child(2) { color: #CA8A04; }
 .msg.may .quem.eu .letra:nth-child(3) { color: #1E8A40; }
-.msg.may .quem.eu .avatar { background-color: transparent; box-shadow: none; background-size: contain; background-repeat: no-repeat; }   /* a imagem dela já é redonda e transparente, sem aro (May, 05/11/2026) */
+.msg.may .quem.eu .avatar { background-color: transparent; box-shadow: none; }   /* a imagem dela já vem redonda e transparente: sem fundo nem aro, igual aos outros (May, 05/11/2026) */
 .msg .quem { font-size: 14px; font-weight: 700; margin-bottom: 4px; padding-right: 26px; color: var(--quem); display: flex; align-items: center; gap: 6px; }
 .quem .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--quem); color: var(--quem-fg); font-size: 17px;   /* era 26px, pequeno demais no celular (May, 05/11/2026) */
   font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background-size: cover; background-position: center; }
@@ -950,7 +950,7 @@ function desenhaOnlinePop() {
   onlinePop.replaceChildren();
   if (!onlineGrupoLista.length) { const v = document.createElement('div'); v.className = 'vazio'; v.textContent = 'Nenhum agente apareceu ainda.'; onlinePop.append(v); return; }
   onlineGrupoLista.forEach(p => {
-    const gp = p.chave === 'may' ? EU : GRUPO[p.chave], cor = gp ? gp.cor : 'var(--accent)', texto = gp ? gp.texto : '#fff';
+    const gp = p.chave === 'may' ? EU : GRUPO[p.chave], cor = p.chave === 'may' ? 'transparent' : (gp ? gp.cor : 'var(--accent)'), texto = gp ? gp.texto : '#fff';
     const row = document.createElement('div'); row.className = 'pessoa';
     const av = document.createElement('div'); av.className = 'av'; av.style.backgroundColor = cor; av.style.color = texto;
     av.textContent = nomeDe(p).charAt(0).toUpperCase();
