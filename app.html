@@ -132,9 +132,11 @@ textarea:focus-visible { outline: none; }
 /* Balão cinza com a borda lateral na cor hex de quem fala; o nome em cima também na cor (pedido dela) */
 .msg.grupo { background: color-mix(in srgb, var(--quem) 16%, var(--cinza)); color: var(--fg); }   /* fundo na cor de quem fala (May, 03/11/2026) */
 .msg.grupo .quem { color: var(--quem); }
-.msg.may.eu { background: linear-gradient(135deg, color-mix(in srgb, var(--quem) 24%, var(--cinza)), color-mix(in srgb, var(--quem2) 24%, var(--cinza))); color: var(--fg); }
-.msg.may.eu .meta { color: var(--muted); }
-.msg.may .quem.eu span:last-child { background: linear-gradient(90deg, var(--quem), var(--quem2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+/* Balão da May: inteiro nas 2 cores dela, vermelho puxando pro verde, nome em branco (ela escolheu esta, 05/11/2026 11:54) */
+.msg.may.eu { background: linear-gradient(135deg, #B91C22 0%, #7A1F3A 50%, #1E8A40 100%); color: #FFFFFF; }
+.msg.may.eu .meta { color: rgba(255,255,255,.75); }
+.msg.may .quem.eu { color: #FFFFFF; }
+.msg.may .quem.eu .avatar { box-shadow: 0 0 0 2px rgba(255,255,255,.35); }
 .msg .quem { font-size: 12.5px; font-weight: 700; margin-bottom: 2px; color: var(--quem); display: flex; align-items: center; gap: 6px; }
 .quem .avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--quem); color: var(--quem-fg); font-size: 13px;
   font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background-size: cover; background-position: center; }
@@ -474,7 +476,7 @@ body.web.lado .anexos { grid-column: 2; grid-row: 4; }
 <script>
 const REPO = 'mayarainstinct-stack/Inst';
 // Conversas = arquivos: "Geral" é a CAIXA-DE-ENTRADA.md; as outras ficam em caixas/<nome>.md (mesmo formato).
-const GERAL = { arq: 'CAIXA-DE-ENTRADA.md', nome: 'Geral', participantes: ['orfeu', 'nyx', 'vega', 'hermes', 'lyra'] };   // Casa (PCs) juntada na Geral numa coisa só (pedido dela, 02/11/2026); participantes = quem escreve casa/online/online-<chave>.json
+const GERAL = { arq: 'CAIXA-DE-ENTRADA.md', nome: 'Geral', participantes: ['may', 'lyra', 'orfeu', 'nyx', 'vega', 'hermes', 'sigma'] };   // Casa (PCs) juntada na Geral numa coisa só (pedido dela, 02/11/2026); participantes = quem escreve casa/online/online-<chave>.json
 const TRAB = { arq: 'caixas/trabalho.md', nome: 'Trabalho' };   // trabalho separado da Geral (May, 21/10/2026); no celular troca pelo ⋮
 const apiDe = arq => 'https://api.github.com/repos/' + REPO + '/contents/' + arq.split('/').map(encodeURIComponent).join('/');
 let FILE = null;      // arquivo da conversa aberta (null = está na lista)
@@ -932,16 +934,16 @@ function fazendoGrupo() {
     return t.toLowerCase().startsWith(n.toLowerCase()) ? t : n + ' está ' + (/^\p{Lu}\p{Ll}/u.test(t) ? t.charAt(0).toLowerCase() + t.slice(1) : t);
   });
 }
-function nomeDe(p) { return p.nome || (GRUPO[p.chave] ? GRUPO[p.chave].nome.replace(/\s*\(.*\)$/, '') : p.chave); }
+function nomeDe(p) { return p.nome || (p.chave === 'may' ? EU.nome : null) || (GRUPO[p.chave] ? GRUPO[p.chave].nome.replace(/\s*\(.*\)$/, '') : p.chave); }
 function desenhaOnlinePop() {
   onlinePop.replaceChildren();
   if (!onlineGrupoLista.length) { const v = document.createElement('div'); v.className = 'vazio'; v.textContent = 'Nenhum agente apareceu ainda.'; onlinePop.append(v); return; }
   onlineGrupoLista.forEach(p => {
-    const cor = GRUPO[p.chave] ? GRUPO[p.chave].cor : 'var(--accent)', texto = GRUPO[p.chave] ? GRUPO[p.chave].texto : '#fff';
+    const gp = p.chave === 'may' ? EU : GRUPO[p.chave], cor = gp ? gp.cor : 'var(--accent)', texto = gp ? gp.texto : '#fff';
     const row = document.createElement('div'); row.className = 'pessoa';
     const av = document.createElement('div'); av.className = 'av'; av.style.backgroundColor = cor; av.style.color = texto;
     av.textContent = nomeDe(p).charAt(0).toUpperCase();
-    const fotoP = p.foto || (GRUPO[p.chave] && GRUPO[p.chave].foto);   // prioriza a foto do heartbeat; sem ela, usa a foto fixa do GRUPO
+    const fotoP = p.foto || (gp && gp.foto);   // prioriza a foto do heartbeat; sem ela, usa a foto fixa do GRUPO
     if (fotoP) fotoUrl(fotoP).then(u => {
       av.style.backgroundImage = 'url(' + u + ')'; av.textContent = '';
       av.style.cursor = 'pointer'; av.addEventListener('click', e => { e.stopPropagation(); abreZoom(u, fotoP); });
@@ -962,7 +964,9 @@ async function atualizaOnlineGrupo(forcar) {
   syncEl.hidden = true;   // em grupo (ex. Casa) o selo "N agentes online agora" substitui o selo global único, não mostra os dois
   if (!forcar && (Date.now() - ultimaOnlineGrupo < 20000 || onlineGrupoCarregando)) return;
   ultimaOnlineGrupo = Date.now();
-  onlineGrupoCarregando = Promise.all(conv.participantes.map(k =>
+  onlineGrupoCarregando = Promise.all(conv.participantes.map(k => k === 'may'
+    ? Promise.resolve({ chave: 'may', nome: EU.nome, foto: EU.foto, ultimaAtualizacao: new Date().toISOString() })   // ela mesma: se o app está aberto, ela está online
+    :
     // lido da branch "online" (igual o online.txt global), não da branch normal — é o heartbeat do status.sh, atualiza sem sujar o histórico
     fetch('https://api.github.com/repos/' + REPO + '/contents/casa/online/online-' + k + '.json?ref=online&t=' + Date.now(),
       { headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github.raw' } })
