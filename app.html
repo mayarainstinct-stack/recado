@@ -154,6 +154,8 @@ textarea:focus-visible { outline: none; }
 .msg.may .quem.eu .letra:nth-child(3) { color: #1E8A40; }
 .msg.may .quem.eu .avatar { background-color: transparent; box-shadow: none; background-size: 104%; background-repeat: no-repeat; background-position: center; width: 46px; height: 46px; }   /* 104%: o brilho do aro dela deixava o círculo menor que o dos robôs (May, 05/11/2026) */   /* a imagem dela já é redonda e transparente, sem aro (May, 05/11/2026) */
 .msg .quem { font-size: 14px; font-weight: 700; margin-bottom: 4px; padding-right: 26px; color: var(--quem); display: flex; align-items: center; gap: 6px; }
+.quem .rotulo { display: flex; flex-direction: column; min-width: 0; line-height: 1.15; }
+.quem .cargo { font-size: 11.5px; font-weight: 500; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .quem .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--quem); color: var(--quem-fg); font-size: 17px;   /* era 26px, pequeno demais no celular (May, 05/11/2026) */
   font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background-size: cover; background-position: center; }
 .marca { font-weight: 700; }
@@ -697,7 +699,7 @@ let inicio = 0;
 
 // Cores = as que cada projeto usa no VS Code (borda/realce do .vscode/settings.json); Lyra = rosa dela.
 const GRUPO = {
-  lyra: { nome: 'Lyra', cor: '#E1306C', texto: '#FFFFFF', foto: 'recados-fotos/20261031-005747-avatar-lyra.png' },
+  lyra: { nome: 'Lyra', cargo: 'Secretária Executiva da May', cor: '#E1306C', texto: '#FFFFFF', foto: 'recados-fotos/20261031-005747-avatar-lyra.png' },
   // Trabalho (May, 03/11/2026): "um L pra Lyra, um K pro KDS, um R pro RM, um P pro promotor, um C pro checklist, um A pro acompanhamento"
   rm: { nome: 'RM · Recebimento', cor: '#22C55E', texto: '#052E16' },
   'simp-mobile': { nome: 'Checklist', cor: '#2DD4BF', texto: '#042F2E' },
@@ -705,17 +707,17 @@ const GRUPO = {
   acompanhamentos: { nome: 'Acompanhamentos', cor: '#940088', texto: '#FFFFFF' },
   promotor: { nome: 'Promotor', cor: '#F59E0B', texto: '#2D1A02' },
   kds: { nome: 'KDS', cor: '#EAB308', texto: '#2A2002' },
-  orfeu: { nome: 'Orfeu (PC1)', cor: '#E31B23', texto: '#2D0A0A', foto: 'recados-fotos/20261031-005747-avatar-orfeu.png' },
-  nyx: { nome: 'Nyx (PC2)', cor: '#6FCF00', texto: '#0E2A00', foto: 'recados-fotos/20261031-005747-avatar-nyx.png' },
-  vega: { nome: 'Vega (PC3)', cor: '#1D4ED8', texto: '#06173A', foto: 'recados-fotos/20261031-005747-avatar-vega.png' },
-  pc4: { nome: 'PC4', cor: '#FFCB05', texto: '#2A2002', foto: 'recados-fotos/20261031-005747-avatar-hermes.png' },
+  orfeu: { nome: 'Orfeu (PC1)', cargo: 'Diretor de Infra e Estúdio do PC1', cor: '#E31B23', texto: '#2D0A0A', foto: 'recados-fotos/20261031-005747-avatar-orfeu.png' },
+  nyx: { nome: 'Nyx (PC2)', cargo: 'Gerente de Jogos e Emulação da Casa', cor: '#6FCF00', texto: '#0E2A00', foto: 'recados-fotos/20261031-005747-avatar-nyx.png' },
+  vega: { nome: 'Vega (PC3)', cargo: 'Chefe de Operações e Suporte do PC3', cor: '#1D4ED8', texto: '#06173A', foto: 'recados-fotos/20261031-005747-avatar-vega.png' },
+  pc4: { nome: 'PC4', cargo: 'Diretor de Entrega e Transmissão', cor: '#FFCB05', texto: '#2A2002', foto: 'recados-fotos/20261031-005747-avatar-hermes.png' },
   // aliases: mensagens antigas (antes de escolherem nome) ficaram assinadas "PC1/PC2/PC3"
-  pc1: { nome: 'Orfeu (PC1)', cor: '#E31B23', texto: '#2D0A0A' },
-  pc2: { nome: 'Nyx (PC2)', cor: '#6FCF00', texto: '#0E2A00' },
-  pc3: { nome: 'Vega (PC3)', cor: '#1D4ED8', texto: '#06173A' },
-  hermes: { nome: 'Hermes (PC4)', cor: '#FFCB05', texto: '#2A2002', foto: 'recados-fotos/20261031-005747-avatar-hermes.png' },   // alias de pc4, mesma cor
+  pc1: { nome: 'Orfeu (PC1)', cargo: 'Diretor de Infra e Estúdio do PC1', cor: '#E31B23', texto: '#2D0A0A' },
+  pc2: { nome: 'Nyx (PC2)', cargo: 'Gerente de Jogos e Emulação da Casa', cor: '#6FCF00', texto: '#0E2A00' },
+  pc3: { nome: 'Vega (PC3)', cargo: 'Chefe de Operações e Suporte do PC3', cor: '#1D4ED8', texto: '#06173A' },
+  hermes: { nome: 'Hermes (PC4)', cargo: 'Diretor de Entrega e Transmissão', cor: '#FFCB05', texto: '#2A2002', foto: 'recados-fotos/20261031-005747-avatar-hermes.png' },   // alias de pc4, mesma cor
   darksigma: { nome: 'DarkSigma', cor: '#9333EA', texto: '#FFFFFF', foto: 'recados-fotos/20261031-010359-1.jpg' },   // hipotetico, roxo igual o Sigma do conselho
-  sigma: { nome: 'Sigma', cor: '#9333EA', texto: '#FFFFFF', foto: 'recados-fotos/avatar-sigma-96.png' }   // Revisor-Chefe (05/11/2026); sem ele aqui o "↳ Sigma" grudava na mensagem de cima
+  sigma: { nome: 'Sigma', cargo: 'Revisor-Chefe', cor: '#9333EA', texto: '#FFFFFF', foto: 'recados-fotos/avatar-sigma-96.png' }   // Revisor-Chefe (05/11/2026); sem ele aqui o "↳ Sigma" grudava na mensagem de cima
 };
 // A May também aparece com robozinho no Geral, como "agente humana", nas duas cores dela (May, 05/11/2026)
 const EU = { nome: 'May', cor: '#E31B23', cor2: '#22C55E', texto: '#FFFFFF', foto: 'recados-fotos/avatar-may-192.png' };
@@ -819,7 +821,9 @@ function render(items, manterPosicao) {
       }
       const nomeTxt = document.createElement('span'); nomeTxt.textContent = g.nome;
       if (g === EU) { nomeTxt.textContent = ''; [...g.nome].forEach(c => { const l = document.createElement('span'); l.className = 'letra'; l.textContent = c; nomeTxt.append(l); }); }   // M vermelho, a amarelo, y verde (reggae, May 05/11/2026)
-      nome.append(av, nomeTxt); el.append(nome);
+      const rotulo = document.createElement('span'); rotulo.className = 'rotulo'; rotulo.append(nomeTxt);
+      if (g.cargo) { const cg = document.createElement('small'); cg.className = 'cargo'; cg.textContent = g.cargo; rotulo.append(cg); }   // cargo na linha de baixo do nome (May, 05/11/2026)
+      nome.append(av, rotulo); el.append(nome);
     }
     if (it.re) {
       const q = document.createElement('div'); q.className = 'cita';
