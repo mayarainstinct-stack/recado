@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.13">
+<meta name="app-versao" content="2026-11-05.14">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -1769,21 +1769,32 @@ micBtn.addEventListener('pointerup', soltaMic);
 micBtn.addEventListener('pointercancel', soltaMic);
 micBtn.addEventListener('contextmenu', e => e.preventDefault());
 let pararAoIniciar = false;
+// microfone: pede uma vez e reaproveita o mesmo stream na sessão (no app da tela de início o iOS pergunta a cada getUserMedia);
+// solta sozinho 2 min depois da última gravação ou quando o app vai pro fundo, pra não ficar com o microfone aberto
+let micStream = null, micSolta = null;
+function soltaMicStream() { clearTimeout(micSolta); if (micStream) micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+async function pegaMic() {
+  clearTimeout(micSolta);
+  if (micStream && micStream.getAudioTracks().some(t => t.readyState === 'live')) return micStream;
+  micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  return micStream;
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden && !gravador) soltaMicStream(); });
 async function comecaGravar() {
   if (gravador || sending) return;
   pararAoIniciar = false;
   if (!navigator.mediaDevices || !window.MediaRecorder) { showNote('Este navegador não grava áudio. Abre pelo ícone da tela de início.', true); return; }
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const stream = await pegaMic();
     const tipo = tipoAudio();
     gravador = new MediaRecorder(stream, tipo ? { mimeType: tipo } : undefined);
     pedacos = []; cancelado = false;
     gravador.ondataavailable = e => { if (e.data.size) pedacos.push(e.data); };
-    gravador.onstop = () => { stream.getTracks().forEach(t => t.stop()); const g = gravador; gravador = null; mostraGravando(false); if (!cancelado) enviaAudio(new Blob(pedacos, { type: g.mimeType || tipo || 'audio/mp4' })); };
+    gravador.onstop = () => { clearTimeout(micSolta); micSolta = setTimeout(soltaMicStream, 120000); const g = gravador; gravador = null; mostraGravando(false); if (!cancelado) enviaAudio(new Blob(pedacos, { type: g.mimeType || tipo || 'audio/mp4' })); };
     gravador.start(); mostraGravando(true);
     if (navigator.vibrate) navigator.vibrate(20);
     if (pararAoIniciar) { cancelado = true; gravador.stop(); showNote('Segura o microfone enquanto fala'); }
-  } catch (e) { gravador = null; showNote('Sem acesso ao microfone. Libera em Ajustes → Safari → Microfone.', true); }
+  } catch (e) { gravador = null; soltaMicStream(); showNote('Sem acesso ao microfone. Libera em Ajustes → Apps → Safari → Microfone (Permitir) e, no site, toca em aA → Ajustes do Site → Microfone → Permitir.', true); }
 }
 recX.onclick = () => { if (gravador) { cancelado = true; gravador.stop(); } };
 // O áudio vai no pendente (nome fixo + gravação na memória e no IndexedDB): falhou o upload = "não foi" com reenvio, até depois
