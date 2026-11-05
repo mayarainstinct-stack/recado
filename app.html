@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.1">
+<meta name="app-versao" content="2026-11-05.2">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -16,7 +16,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap">
+<!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
 <style>
 /* Paleta da Simplificação (verde #059669, petróleo #1E6685, folha #6BAD3E; escuro com azul #22A7D0). Página estática (GitHub Pages). Cada recado vira uma linha em CAIXA-DE-ENTRADA.md no repo privado, pela API do GitHub,
    com um token que fica só no iPhone dela. Nenhum recado mora nesta página. */
@@ -24,7 +25,7 @@
   --bg: #F2FBF6; --paper: #FFFFFF; --fg: #1E293B; --muted: #64748B; --line: #E2E8F0;
   --head: #0EA371; --head-fg: #FFFFFF; --mine: #2F9E44; --mine-fg: #FFFFFF;
   --theirs: #FFFFFF; --cinza: #EEF1F4; --accent: #059669; --accent-fg: #FFFFFF; --pink: #6BAD3E; --err: #B91C1C;
-  --font-ui: "Figtree", "Segoe UI", system-ui, sans-serif; --font-name: "Young Serif", Georgia, serif;
+  --font-ui: "Figtree", -apple-system, "Segoe UI", system-ui, sans-serif; --font-name: "Young Serif", Georgia, serif;
 }
 @media (prefers-color-scheme: dark) {
   :root { --bg: #08140F; --paper: #0C1A14; --fg: #F1F5F9; --muted: #8B9DAF; --line: #1C3A2E;
@@ -671,13 +672,51 @@ const stamp = d => pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getF
 const b64decode = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\n/g, '')), c => c.charCodeAt(0)));
 const b64encode = s => { let bin = ''; new TextEncoder().encode(s).forEach(b => bin += String.fromCharCode(b)); return btoa(bin); };
 
+// ---- Rede (05/11/2026): todo pedido à API passa por aqui.
+// cache 'no-cache' sem "?t=": o navegador revalida com ETag (304 quando nada mudou, não gasta limite) e o preflight do CORS fica guardado.
+// Timeout: 20 s leitura, 90 s envio; o timer segue até o corpo ser lido, então r.json()/r.text() também não travam (abort depois de lido não faz nada).
+let limiteAte = 0, chaveVencida = false, pausaPollAte = 0;
+const erroDe = (status, extra) => Object.assign(new Error('http ' + status), { status }, extra);
+async function api(url, op = {}) {
+  if (Date.now() < limiteAte) throw erroDe(429, { limite: true });   // esperando o GitHub liberar: nem tenta
+  const ctl = new AbortController(), envio = op.method && op.method !== 'GET';
+  setTimeout(() => ctl.abort(), op.tempo || (envio ? 90000 : 20000));
+  let r;
+  try { r = await fetch(url, { cache: 'no-cache', ...op, headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json', ...(op.headers || {}) }, signal: ctl.signal }); }
+  catch (e) { throw Object.assign(new Error(e.name === 'AbortError' ? 'timeout' : 'rede'), e.name === 'AbortError' ? { timeout: true } : { rede: true }); }
+  if (r.status === 401) chaveVenceu();
+  if (r.status === 429 || (r.status === 403 && (r.headers.get('x-ratelimit-remaining') === '0' || r.headers.get('retry-after')))) {
+    const ra = +r.headers.get('retry-after'), reset = +r.headers.get('x-ratelimit-reset');
+    limiteAte = ra ? Date.now() + ra * 1000 : reset ? reset * 1000 + 1000 : Date.now() + 60000;   // limite secundário sem cabeçalho: 1 min
+    throw erroDe(r.status, { limite: true });
+  }
+  if (r.status >= 500) pausaPollAte = Date.now() + 30000;   // GitHub fora: o polling dá um respiro de 30 s
+  return r;
+}
+async function apiOk(url, op) { const r = await api(url, op); if (!r.ok) throw erroDe(r.status); return r; }
+const RAW = { headers: { Accept: 'application/vnd.github.raw' } };
+// 401: para o polling e pede a chave de novo (sem atropelar envio, foto na bandeja ou texto pela metade)
+function chaveVenceu() {
+  if (chaveVencida) return; chaveVencida = true; clearInterval(poll); poll = null;
+  setTimeout(() => { if (!chaveVencida || !token) return; if (nadaPendente()) askToken(); showNote(MSG_CHAVE, true); }, 0);
+}
+const MSG_CHAVE = 'A chave não vale mais. Toca em ⋮ → Trocar chave.';
+const horaDe = t => pad(new Date(t).getHours()) + ':' + pad(new Date(t).getMinutes());
+// Mensagem certa pra cada erro: chave, limite, sem rede, demora, GitHub fora. "acao" = o que não deu ("ler a caixa").
+function msgErro(e, acao) {
+  if (e.inseguro) return AVISO_INSEGURO;
+  if (e.status === 401) return MSG_CHAVE;
+  if (e.limite) return 'Limite do GitHub por agora. O app volta a buscar sozinho às ' + horaDe(limiteAte) + '.';
+  if (e.status === 403) return 'A chave não tem permissão pra ' + acao + '.';
+  if (e.rede || navigator.onLine === false) return 'Sem internet. Não consegui ' + acao + '.';
+  if (e.timeout) return 'O GitHub demorou demais. Não consegui ' + acao + ', tenta de novo.';
+  if (e.status >= 500) return 'O GitHub está instável agora. Não consegui ' + acao + ', tenta daqui a pouco.';
+  return 'Não consegui ' + acao + '. Confere a internet e tenta de novo.';
+}
+// versão curta pro selo de status no topo
+const statusFalha = e => e.status === 401 ? 'Chave vencida' : e.limite ? 'Limite do GitHub' : (e.rede || navigator.onLine === false) ? 'Sem internet' : 'Sem resposta do GitHub';
 async function gh(method, body) {
-  const r = await fetch(API + (method === 'GET' ? '?t=' + Date.now() : ''), {
-    method, cache: 'no-store', headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' },
-    body: body ? JSON.stringify(body) : undefined
-  });
-  if (!r.ok) { const e = new Error('http ' + r.status); e.status = r.status; throw e; }
-  return r.json();
+  return (await apiOk(API, { method, body: body ? JSON.stringify(body) : undefined })).json();
 }
 
 // Título da conversa: primeira linha "# Nome"
@@ -789,7 +828,7 @@ async function abreCracha(chave) {
   const cx = el('div', 'caixa cracha' + (g === EU ? ' eu' : '') + (k === 'sigma' ? ' sigma' : '')); cx.style.setProperty('--quem-fg', g.texto || '#fff'); cx.style.setProperty('--quem', g.cor);
   const topo = el('div', 'ficha-topo');
   const av = el('div', 'ficha-av' + (on ? ' on' : ''), g.nome.charAt(0));
-  if (g.foto) fotoUrl(g.foto).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.textContent = ''; av.style.cursor = 'zoom-in'; av.onclick = () => abreZoom(u, g.foto); }).catch(() => {});   // foto da ficha abre a foto grande
+  if (g.foto) fotoUrl(g.foto, true).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.textContent = ''; av.style.cursor = 'zoom-in'; av.onclick = () => abreZoom(u, g.foto); }).catch(() => {});   // foto da ficha abre a foto grande (original: a miniatura de 96 px fica borrada em 112 px)
   const nv = f.atr.reduce((a, x) => a + x[1], 0);   // "nível" = soma dos atributos, só pra brincar
   topo.append(av, el('div', 'ficha-classe', f.classe), el('h2', '', g.nome.replace(/\s*\(PC\d\)$/i, '')),
     el('div', 'ficha-cargo', (g.cargo || (g === EU ? 'Agente humana' : '')).replace(/\s+do PC\d$/i, '')),
@@ -862,7 +901,7 @@ async function excluirMensagem(it) {
       return;
     } catch (err) {
       if (err.status === 409 && tentativa < 3) { await new Promise(r => setTimeout(r, 600)); continue; }
-      overlay.hidden = true; showNote(err.inseguro ? AVISO_INSEGURO : 'Não consegui excluir. Confere a internet e tenta de novo.', true); return;
+      overlay.hidden = true; showNote(msgErro(err, 'excluir'), true); return;
     }
   }
 }
@@ -1095,10 +1134,17 @@ function bolhaPendente(txt, ic) {
   const vazio = feed.querySelector('.empty'); if (vazio) vazio.remove();
   feed.append(el); irProFim(); return el;
 }
+// Status fora do load() (05/11/2026): antes ia junto de cada busca de 4 s. online.txt a cada 45 s; na Geral (grupo) quem diz é o heartbeat de cada um (60 s).
+let ultimoOnline = 0;
+function checaStatus(forcar) {
+  if (FILE && convPorArq(FILE).participantes) return atualizaOnlineGrupo(forcar);
+  if (!forcar && Date.now() - ultimoOnline < 45000) return;
+  ultimoOnline = Date.now(); checaOnline();
+}
 async function checaOnline() {
   try {
-    const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/online.txt?ref=online&t=' + Date.now(),
-      { headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github.raw' } });
+    const r = await api('https://api.github.com/repos/' + REPO + '/contents/online.txt?ref=online', RAW);
+    if (!r.ok) throw erroDe(r.status);
     const linhas = (await r.text()).split(/\r?\n/);
     // online.txt: [batimento] [última atividade] [o que está fazendo]
     const ts = parseInt(linhas[0], 10) * 1000;
@@ -1118,7 +1164,10 @@ async function checaOnline() {
     if (on) statusTxt.textContent = 'Agente online agora';
     else { const min = Math.round((Date.now() - ts) / 60000);
       statusTxt.textContent = isFinite(min) ? 'Agente offline · visto há ' + (min < 60 ? min + ' min' : Math.round(min / 60) + ' h') : 'Agente offline'; }
-  } catch (e) { syncEl.classList.add('off'); statusTxt.textContent = 'Agente offline'; }
+  } catch (e) {   // "Agente offline" só quando a API respondeu; aqui foi a rede/chave/limite que falhou
+    syncEl.classList.add('off'); syncEl.classList.remove('ausente');
+    statusTxt.textContent = e.status === 404 ? 'Agente offline' : statusFalha(e);
+  }
   atualizaOnlineGrupo();
 }
 
@@ -1176,18 +1225,20 @@ async function atualizaOnlineGrupo(forcar) {
   onlineBadge.hidden = false;
   mostraFazendo(fazendoGrupo());
   syncEl.hidden = true;   // em grupo (ex. Casa) o selo "N agentes online agora" substitui o selo global único, não mostra os dois
-  if (!forcar && (Date.now() - ultimaOnlineGrupo < 20000 || onlineGrupoCarregando)) return;
+  if (onlineGrupoCarregando || (!forcar && Date.now() - ultimaOnlineGrupo < 60000)) return onlineGrupoCarregando;   // 60 s (era 20 s): 6 arquivos por rodada; o agente bate de 5 em 5 min
   ultimaOnlineGrupo = Date.now();
   onlineGrupoCarregando = Promise.all(conv.participantes.map(k => k === 'may'
     ? Promise.resolve({ chave: 'may', nome: EU.nome, foto: EU.foto, ultimaAtualizacao: new Date().toISOString() })   // ela mesma: se o app está aberto, ela está online
     :
     // lido da branch "online" (igual o online.txt global), não da branch normal — é o heartbeat do status.sh, atualiza sem sujar o histórico
-    fetch('https://api.github.com/repos/' + REPO + '/contents/casa/online/online-' + k + '.json?ref=online&t=' + Date.now(),
-      { headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github.raw' } })
-      .then(r => { if (!r.ok) throw new Error('http ' + r.status); return r.text(); })
-      .then(txt => { try { return { chave: k, ...JSON.parse(txt) }; } catch (e) { return { chave: k }; } }, () => ({ chave: k }))   // 404 (ou outro erro) = esse agente ainda não bateu heartbeat, mas aparece na lista como "nunca visto"
+    api('https://api.github.com/repos/' + REPO + '/contents/casa/online/online-' + k + '.json?ref=online', RAW)
+      .then(r => { if (!r.ok) throw erroDe(r.status); return r.text(); })
+      .then(txt => { try { return { chave: k, ...JSON.parse(txt) }; } catch (e) { return { chave: k }; } }, e => e.status === 404 ? { chave: k } : { chave: k, falhou: e })   // 404 = esse agente ainda não bateu heartbeat, aparece como "nunca visto"
   )).then(lista => {
     if (FILE !== conv.arq) return;
+    // ninguém respondeu por rede/chave/limite: não é "0 online", é sem conexão; guarda a lista anterior
+    const falha = lista.filter(p => p.chave !== 'may').every(p => p.falhou) && (lista.find(p => p.falhou) || {}).falhou;
+    if (falha) { onlineBadge.textContent = statusFalha(falha); return; }
     onlineGrupoLista = lista;   // sempre os participantes todos (mesmo quem nunca apareceu), pra lista nunca ficar vazia
     mostraFazendo(fazendoGrupo());
     const n = onlineGrupoLista.filter(p => fmtVisto(p.ultimaAtualizacao).online).length;
@@ -1216,10 +1267,9 @@ async function carregar() {
     let items; try { items = parse(b64decode(f.content)); } catch (e2) { items = lastItems; }   // md malformado não trava a conversa já carregada
     const same = items.length === lastItems.length && items.every((it, i) => it.text === lastItems[i].text && it.from === lastItems[i].from && it.lida === lastItems[i].lida && it.foto === lastItems[i].foto && it.copiar === lastItems[i].copiar && it.transcricao === lastItems[i].transcricao);
     if (!same || forcar) { forcar = false; if (items.length < shown) shown = items.length; lastItems = items; render(items); }
-    checaOnline();
     showNote(''); return f;
   }
-  catch (e) { showNote(e.status === 401 ? 'A chave não vale mais. Toca em ⋮ → Trocar chave.' : 'Não consegui ler a caixa. Confere a internet.', true); throw e; }
+  catch (e) { if (FILE === arq) showNote(msgErro(e, 'ler a caixa'), true); throw e; }
 }
 
 // ---- Fotos: ficam no repo privado em recados-fotos/; a página baixa com a chave e mostra.
@@ -1231,10 +1281,19 @@ function tipoDe(path) {
   if (/\.webp$/i.test(path)) return 'image/webp';
   return 'image/jpeg';
 }
-function fotoUrl(path) {
-  if (!fotos[path]) fotos[path] = fetch('https://api.github.com/repos/' + REPO + '/contents/' + path, {
-    headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github.raw' }
-  }).then(r => { if (!r.ok) { const e = new Error('foto ' + r.status); e.status = r.status; throw e; } return r.arrayBuffer(); })
+// Mascotes (só os desenhos de robô, nunca foto de gente; Pages é público): miniatura 96 px estática no próprio site,
+// sem API nem chave e com cache do navegador. Falhou = cai no caminho de sempre pelo repo privado (May aprovou, 05/11/2026).
+const AVATAR_PAGES = {
+  'recados-fotos/20261031-005747-avatar-lyra.png': 'avatares/lyra-96.png', 'recados-fotos/20261031-005747-avatar-orfeu.png': 'avatares/orfeu-96.png',
+  'recados-fotos/20261031-005747-avatar-nyx.png': 'avatares/nyx-96.png', 'recados-fotos/20261031-005747-avatar-vega.png': 'avatares/vega-96.png',
+  'recados-fotos/20261031-005747-avatar-hermes.png': 'avatares/hermes-96.png', 'recados-fotos/avatar-sigma-96.png': 'avatares/sigma-96.png',
+  'recados-fotos/avatar-may-192.png': 'avatares/may-96.png'
+};
+function fotoUrl(path, original) {   // original: pula a miniatura (ficha e zoom)
+  const pg = !original && AVATAR_PAGES[path];
+  if (pg) return fotos[pg] || (fotos[pg] = new Promise((ok, erro) => { const im = new Image(); im.onload = () => ok(pg); im.onerror = erro; im.src = pg; }).catch(() => fotoUrl(path, true)));
+  if (!fotos[path]) fotos[path] = api('https://api.github.com/repos/' + REPO + '/contents/' + path, { ...RAW, cache: 'default', tempo: 60000 })   // foto não muda: cache normal
+    .then(r => { if (!r.ok) { const e = new Error('foto ' + r.status); e.status = r.status; throw e; } return r.arrayBuffer(); })
     .then(buf => URL.createObjectURL(new Blob([buf], { type: tipoDe(path) })))
     .catch(e => { if (e.status !== 404) delete fotos[path]; throw e; });   // 404 = foto já apagada: não busca de novo
   return fotos[path];
@@ -1368,18 +1427,14 @@ async function enviaAudio(blob) {
     const d = new Date();
     const nome = 'recados-audios/' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + '.' + ext;
     const b64 = await new Promise((ok, erro) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1]); fr.onerror = erro; fr.readAsDataURL(blob); });
-    const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + nome, {
-      method: 'PUT', headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' },
-      body: JSON.stringify({ message: 'áudio do iPhone', content: b64 })
-    });
-    if (!r.ok) throw new Error('upload ' + r.status);
+    await apiOk('https://api.github.com/repos/' + REPO + '/contents/' + nome, { method: 'PUT', body: JSON.stringify({ message: 'áudio do iPhone', content: b64 }) });
     // o upload do áudio demora (4G); se ela já tinha começado a escrever a próxima mensagem enquanto
     // subia, guarda esse rascunho e devolve pra caixa depois -- senão o áudio apagava o que ela tava digitando
     const rascunho = box.value;
     box.value = '🎤 ' + nome; sending = false; pend.remove();
     form.requestSubmit();
     if (rascunho.trim()) { box.value = rascunho; box.style.height = 'auto'; box.style.height = Math.min(box.scrollHeight, 140) + 'px'; store.set(rascKey(), rascunho); syncBtn(); }
-  } catch (e) { sending = false; syncBtn(); pend.remove(); showNote('O áudio não foi. Confere a internet e tenta de novo.', true); }
+  } catch (e) { sending = false; syncBtn(); pend.remove(); showNote(msgErro(e, 'mandar o áudio'), true); }
 }
 syncBtn();
 
@@ -1434,7 +1489,7 @@ function abreRespondendo(arq, foto) {
 }
 let rapidoAte = 0, rapidoT = null;
 // um timer só: chamar de novo só estica o prazo (antes cada push/volta criava outro setInterval em paralelo)
-function buscaRapido() { rapidoAte = Date.now() + 30000; if (rapidoT) return; rapidoT = setInterval(() => { if (Date.now() > rapidoAte || !token) { clearInterval(rapidoT); rapidoT = null; return; } if (FILE && !sending) load().catch(() => {}); }, 1500); }
+function buscaRapido() { rapidoAte = Date.now() + 30000; if (rapidoT) return; rapidoT = setInterval(() => { if (Date.now() > rapidoAte || !token || chaveVencida) { clearInterval(rapidoT); rapidoT = null; return; } if (FILE && !sending && Date.now() >= limiteAte) load().catch(() => {}); }, 1500); }
 if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data === 'novo') buscaRapido(); });
 // Veio de push: guarda a conversa por 1 min, pra o reload da volta não trocar pela do relógio.
 let pushEm = 0;
@@ -1552,49 +1607,51 @@ form.addEventListener('submit', async e => {
   const pend = bolhaPendente(fotos.length ? (fotos.length > 1 ? fotos.length + ' fotos' : 'Foto') + (text ? ' ' + text : '') : text, fotos.length ? 'cam' : '');
   box.value = ''; box.style.height = 'auto';
   let falhou = false;
-  for (let tentativa = 0; tentativa < 4; tentativa++) {
-    try {
-      // 1) fotos da bandeja (uma linha "📷 caminho" por foto; o texto vai junto da primeira)
-      const nomes = [];
-      for (let k = 0; k < fotos.length; k++) {
-        if (fotos[k].nome) { nomes.push(fotos[k].nome); continue; }   // já subiu numa tentativa anterior
-        overlayTxt.textContent = 'Enviando foto ' + (k + 1) + ' de ' + fotos.length + '…';
-        const d = new Date();
-        const nome = 'recados-fotos/' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + '-' + (k + 1) + '.' + (fotos[k].ext || 'jpg');
-        const rf = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + nome, { method: 'PUT', headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' }, body: JSON.stringify({ message: 'foto do iPhone', content: fotos[k].b64 }) });
-        if (!rf.ok) { const er = new Error('upload ' + rf.status); er.status = rf.status; throw er; }
-        fotos[k].nome = nome; nomes.push(nome);
+  try {   // finally: aconteça o que for, "sending" volta a false (antes podia ficar true e travar o app)
+    for (let tentativa = 0; tentativa < 4; tentativa++) {
+      try {
+        // 1) fotos da bandeja (uma linha "📷 caminho" por foto; o texto vai junto da primeira)
+        const nomes = [];
+        for (let k = 0; k < fotos.length; k++) {
+          if (fotos[k].nome) { nomes.push(fotos[k].nome); continue; }   // já subiu numa tentativa anterior
+          overlayTxt.textContent = 'Enviando foto ' + (k + 1) + ' de ' + fotos.length + '…';
+          const d = new Date();
+          const nome = 'recados-fotos/' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + '-' + (k + 1) + '.' + (fotos[k].ext || 'jpg');
+          await apiOk('https://api.github.com/repos/' + REPO + '/contents/' + nome, { method: 'PUT', body: JSON.stringify({ message: 'foto do iPhone', content: fotos[k].b64 }) });
+          fotos[k].nome = nome; nomes.push(nome);
+        }
+        overlayTxt.textContent = 'Enviando…';
+        const f = await gh('GET');
+        let md = conteudoSeguro(f);
+        const cita = respondendo ? ' ⟪re: ' + respondendo.nome + ': ' + respondendo.trecho + '⟫' : '';
+        const txt = text.replace(/\r?\n/g, '\\n');
+        const linhas = nomes.length
+          ? nomes.map((n, k) => '- [' + stamp(new Date()) + '] 📷 ' + n + (k === 0 && txt ? ' ' + txt : '') + (k === 0 ? cita : ''))
+          : ['- [' + stamp(new Date()) + '] ' + txt + cita];
+        md = md.replace(/\n- \s*$/, '\n');
+        md = md.replace(/\s*$/, '') + '\n' + linhas.join('\n') + '\n';
+        await gh('PUT', { message: 'recado do iPhone', content: b64encode(md), sha: f.sha });
+        // não força box.value='' aqui: se ela já começou a digitar a PRÓXIMA mensagem enquanto
+        // esperava o envio (às vezes demora, com retry de 409), isso apagava o que ela tava escrevendo
+        store.set(rascKey(), box.value); responder(null);
+        // tira da bandeja só as fotos DESTA mensagem -- se ela colocou outra foto nova enquanto esta
+        // ainda subia (upload lento no 4G), aquela foto nova não pode desaparecer
+        fotos.forEach(x => URL.revokeObjectURL(x.url)); anexos = anexos.filter(a => !fotos.includes(a)); desenhaBandeja();
+        await load().catch(() => {});
+        break;
+      } catch (err) {
+        if (err.status === 409 && tentativa < 3) { await new Promise(r => setTimeout(r, 600)); continue; }
+        falhou = true; pend.classList.add('falhou'); const tk = pend.querySelector('.tick'); tk.classList.remove('relogio'); tk.innerHTML = icone('warn') + ' não foi'; tk.title = 'Não foi enviada';
+        // só devolve o texto que falhou pra caixa se ela não começou a digitar outra coisa nesse meio tempo
+        if (!box.value.trim()) { box.value = text; store.set(rascKey(), text); }
+        showNote(msgErro(err, 'salvar'), true);
+        break;
       }
-      overlayTxt.textContent = 'Enviando…';
-      const f = await gh('GET');
-      let md = conteudoSeguro(f);
-      const cita = respondendo ? ' ⟪re: ' + respondendo.nome + ': ' + respondendo.trecho + '⟫' : '';
-      const txt = text.replace(/\r?\n/g, '\\n');
-      const linhas = nomes.length
-        ? nomes.map((n, k) => '- [' + stamp(new Date()) + '] 📷 ' + n + (k === 0 && txt ? ' ' + txt : '') + (k === 0 ? cita : ''))
-        : ['- [' + stamp(new Date()) + '] ' + txt + cita];
-      md = md.replace(/\n- \s*$/, '\n');
-      md = md.replace(/\s*$/, '') + '\n' + linhas.join('\n') + '\n';
-      await gh('PUT', { message: 'recado do iPhone', content: b64encode(md), sha: f.sha });
-      // não força box.value='' aqui: se ela já começou a digitar a PRÓXIMA mensagem enquanto
-      // esperava o envio (às vezes demora, com retry de 409), isso apagava o que ela tava escrevendo
-      store.set(rascKey(), box.value); responder(null);
-      // tira da bandeja só as fotos DESTA mensagem -- se ela colocou outra foto nova enquanto esta
-      // ainda subia (upload lento no 4G), aquela foto nova não pode desaparecer
-      fotos.forEach(x => URL.revokeObjectURL(x.url)); anexos = anexos.filter(a => !fotos.includes(a)); desenhaBandeja();
-      await load().catch(() => {});
-      break;
-    } catch (err) {
-      if (err.status === 409 && tentativa < 3) { await new Promise(r => setTimeout(r, 600)); continue; }
-      falhou = true; pend.classList.add('falhou'); const tk = pend.querySelector('.tick'); tk.classList.remove('relogio'); tk.innerHTML = icone('warn') + ' não foi'; tk.title = 'Não foi enviada';
-      // só devolve o texto que falhou pra caixa se ela não começou a digitar outra coisa nesse meio tempo
-      if (!box.value.trim()) { box.value = text; store.set(rascKey(), text); }
-      showNote(err.inseguro ? AVISO_INSEGURO : err.status === 401 ? 'A chave não vale mais. Toca em ⋮ → Trocar chave.' : 'Não salvou. Confere a internet e tenta de novo.', true);
-      break;
     }
+  } finally {
+    sendBtn.innerHTML = sendIcon; if (!falhou && pend.isConnected) pend.remove();
+    sending = false; syncBtn(); irProFim();
   }
-  sendBtn.innerHTML = sendIcon; if (!falhou && pend.isConnected) pend.remove();
-  sending = false; syncBtn(); irProFim();
 });
 
 const mais = document.getElementById('mais');
@@ -1645,12 +1702,10 @@ btnNotif.onclick = async () => {
     const reg = await swPronto; if (!reg) throw new Error('sw');
     const sub = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: chave(VAPID_PUBLICA) });
     const url = 'https://api.github.com/repos/' + REPO + '/contents/recados-push/iphone.json';
-    const h = { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' };
-    const atual = await fetch(url + '?t=' + Date.now(), { headers: h });
+    const atual = await api(url);
     const corpo = { message: 'assinatura de notificação do iPhone', content: b64encode(JSON.stringify(sub)) };
     if (atual.ok) corpo.sha = (await atual.json()).sha;
-    const r = await fetch(url, { method: 'PUT', headers: h, body: JSON.stringify(corpo) });
-    if (!r.ok) throw new Error('put ' + r.status);
+    await apiOk(url, { method: 'PUT', body: JSON.stringify(corpo) });
     marcaNotif(); showNote('Notificações ligadas');
   } catch (e) { showNote('Não consegui ligar as notificações. Tenta de novo pelo ícone da tela de início.', true); }
 };
@@ -1679,30 +1734,31 @@ function aplicaLargura() {
 }
 window.addEventListener('resize', () => { clearTimeout(aplicaLargura.t); aplicaLargura.t = setTimeout(aplicaLargura, 150); });
 let conversas = [], sigLista = '', ultimaLista = 0, carregandoLista = null;
-const hdrs = raw => ({ Authorization: 'Bearer ' + token, Accept: raw ? 'application/vnd.github.raw' : 'application/vnd.github+json' });
-async function lerArquivo(arq) {
-  const r = await fetch(apiDe(arq) + '?t=' + Date.now(), { headers: hdrs(true), cache: 'no-store' });
-  if (!r.ok) { const e = new Error('http ' + r.status); e.status = r.status; throw e; }
-  return r.text();
-}
+async function lerArquivo(arq) { return (await apiOk(apiDe(arq), RAW)).text(); }
 function previaDe(it) {
   const quem = it.from === 'may' ? 'Você: ' : (GRUPO[it.quem] ? GRUPO[it.quem].nome + ': ' : '');
   const t = it.audio ? '\u0001mic\u0001Áudio' : (it.foto ? '\u0001cam\u0001' + (it.text || 'Foto') : it.text);
   return quem + String(t || '').replace(/\s+/g, ' ').trim();
 }
+const caixaCache = {};   // arq -> { sha, md, items } da última leitura
+const parseSeguro = md => { try { return parse(md); } catch (e) { return []; } };   // uma caixa com formato ruim não pode derrubar a lista das outras
 function carregaLista(estrito) {
   return carregandoLista || (carregandoLista = listar(estrito).finally(() => { carregandoLista = null; }));
 }
 async function listar(estrito) {
   syncEl.classList.add('on');
   try {
-    const arqs = [GERAL.arq];
-    const d = await fetch('https://api.github.com/repos/' + REPO + '/contents/caixas?t=' + Date.now(), { headers: hdrs(false) });
-    if (d.status === 401) { const e = new Error('http 401'); e.status = 401; throw e; }
-    if (d.ok) (await d.json()).filter(x => x.type === 'file' && /\.md$/i.test(x.name)).forEach(x => arqs.push(x.path));
-    const lidas = await Promise.all(arqs.map(a => lerArquivo(a).then(md => ({ arq: a, md }), e => { if (a === GERAL.arq) throw e; return null; })));
-    conversas = lidas.filter(Boolean).map(({ arq, md }) => {
-      let items = []; try { items = parse(md); } catch (e2) { items = []; }   // uma caixa com formato ruim não pode derrubar a lista das outras
+    const arqs = [{ path: GERAL.arq, sha: '' }];
+    const d = await api('https://api.github.com/repos/' + REPO + '/contents/caixas');
+    if (d.status === 401) throw erroDe(401);
+    if (d.ok) (await d.json()).filter(x => x.type === 'file' && /\.md$/i.test(x.name)).forEach(x => arqs.push({ path: x.path, sha: x.sha }));
+    // só baixa a caixa cujo sha mudou (a listagem da pasta já traz); a Geral não está em caixas/, vai pelo 304 do no-cache
+    const lidas = await Promise.all(arqs.map(({ path: a, sha }) => {
+      const c = caixaCache[a];
+      if (sha && c && c.sha === sha) return c;
+      return lerArquivo(a).then(md => { const items = parseSeguro(md); return (caixaCache[a] = { arq: a, sha, md, items }); }, e => { if (a === GERAL.arq) throw e; return null; });
+    }));
+    conversas = lidas.filter(Boolean).map(({ arq, md, items }) => {
       const slug = arq.replace(/^.*\//, '').replace(/\.md$/i, '');
       const visto = parseInt(store.get(vistoKey(arq)) || '0', 10);
       if (visto > items.length) store.set(vistoKey(arq), String(items.length));   // arquivo encolheu (Lyra limpou)
@@ -1715,11 +1771,11 @@ async function listar(estrito) {
     const outras = conversas.filter(c => c.arq !== GERAL.arq).sort((a, b) => ts(b) - ts(a));
     conversas = [...conversas.filter(c => c.arq === GERAL.arq), ...outras];
     ultimaLista = Date.now();
-    checaOnline();
+    checaStatus();
     showNote('');
     if (!FILE || largo()) desenhaLista();
   } catch (e) {
-    if (!FILE) showNote(e.status === 401 ? 'A chave não vale mais. Toca em ⋮ → Trocar chave.' : 'Não consegui ler as conversas. Confere a internet.', true);
+    if (!FILE) showNote(msgErro(e, 'ler as conversas'), true);
     if (estrito || e.status === 401) throw e;
   } finally { syncEl.classList.remove('on'); }
 }
@@ -1776,6 +1832,7 @@ function abrir(c) {
   if (largo()) desenhaLista();
   voltar.hidden = !MODO_WEB || largo(); logoEl.hidden = !voltar.hidden ? true : false; tituloEl.textContent = c.nome;
   box.value = store.get(rascKey()); box.style.height = 'auto'; syncBtn();
+  checaStatus(true);
   return load();
 }
 voltar.onclick = () => { if (!sending) mostraLista(); };
@@ -2098,20 +2155,17 @@ function abreAgenda(m) {
 }
 async function mandaPraLyra(txt, btn) {   // manda direto pra caixa da Geral, sem sair da tela
   const antes = btn.innerHTML; btn.disabled = true; btn.textContent = 'Enviando…';
-  const api = apiDe(GERAL.arq);
+  const url = apiDe(GERAL.arq);
   for (let tentativa = 0; tentativa < 4; tentativa++) {
     try {
-      const r = await fetch(api + '?t=' + Date.now(), { cache: 'no-store', headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' } });
-      if (!r.ok) { const e = new Error('http ' + r.status); e.status = r.status; throw e; }
-      const f = await r.json();
+      const f = await (await apiOk(url)).json();   // escrita lê o JSON (precisa do sha)
       let md = conteudoSeguro(f).replace(/\n- \s*$/, '\n');
       md = md.replace(/\s*$/, '') + '\n- [' + stamp(new Date()) + '] ' + txt.replace(/\r?\n/g, '\\n') + '\n';
-      const p = await fetch(api, { method: 'PUT', headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' }, body: JSON.stringify({ message: 'recado do iPhone', content: b64encode(md), sha: f.sha }) });
-      if (!p.ok) { const e = new Error('http ' + p.status); e.status = p.status; throw e; }
+      await apiOk(url, { method: 'PUT', body: JSON.stringify({ message: 'recado do iPhone', content: b64encode(md), sha: f.sha }) });
       btn.innerHTML = icone('check') + ' Mandado pra Lyra'; return true;
     } catch (err) {
       if (err.status === 409 && tentativa < 3) { await new Promise(r => setTimeout(r, 600)); continue; }
-      btn.innerHTML = icone('warn') + (err.inseguro ? ' Caixa vazia ou cheia demais, não gravei' : err.status === 401 ? ' Chave vencida (menu → Trocar chave)' : ' Não foi, toca de novo');
+      btn.innerHTML = icone('warn') + (err.inseguro ? ' Caixa vazia ou cheia demais, não gravei' : err.status === 401 ? ' Chave vencida (menu → Trocar chave)' : err.limite ? ' Limite do GitHub, tenta às ' + horaDe(limiteAte) : (err.rede || navigator.onLine === false) ? ' Sem internet, toca de novo' : ' Não foi, toca de novo');
       btn.disabled = false; setTimeout(() => { if (!btn.disabled) btn.innerHTML = antes; }, 4000); return false;
     }
   }
@@ -2308,16 +2362,16 @@ novaBtn.onclick = () => {
       let fotoLinha = '';
       if (fotoB64) {
         const caminho = 'recados-fotos/grupo-' + slug + '.' + fotoExt;
-        const rf = await fetch(apiDe(caminho), { method: 'PUT', headers: hdrs(false), body: JSON.stringify({ message: 'foto da conversa ' + nome, content: fotoB64 }) });
+        const rf = await api(apiDe(caminho), { method: 'PUT', body: JSON.stringify({ message: 'foto da conversa ' + nome, content: fotoB64 }) });
         if (rf.ok || rf.status === 422) fotoLinha = '<!-- foto: ' + caminho + ' -->\n';
       }
-      const r = await fetch(apiDe(arq), { method: 'PUT', headers: hdrs(false),
+      const r = await api(apiDe(arq), { method: 'PUT',
         body: JSON.stringify({ message: 'nova conversa: ' + nome, content: b64encode('# ' + nome.replace(/[\r\n]+/g, ' ') + '\n' + fotoLinha + '\n## Recados\n') }) });
-      if (!r.ok && r.status !== 422) throw new Error('put ' + r.status);   // 422 = já existe: só abre
+      if (!r.ok && r.status !== 422) throw erroDe(r.status);   // 422 = já existe: só abre
       pop.remove(); overlay.hidden = true;
       await carregaLista().catch(() => {});
       abrir({ arq, nome }).catch(() => {});
-    } catch (err) { overlay.hidden = true; pop.querySelector('#np-ok').disabled = false; showNote('Não consegui criar a conversa. Confere a internet.', true); }
+    } catch (err) { overlay.hidden = true; pop.querySelector('#np-ok').disabled = false; showNote(msgErro(err, 'criar a conversa'), true); }
   };
 };
 
@@ -2349,7 +2403,7 @@ async function abreTreinoSeHora() {
   menu.hidden = true; painel.hidden = false; pilha = []; abreChecklist(v, l);
 }
 function start() {
-  aplicaLargura();
+  chaveVencida = false; aplicaLargura();
   mais.hidden = false;
   if (querResponder) {   // veio da notificação: abre a conversa dela já respondendo
     querResponder = false; history.replaceState(null, '', location.pathname + location.search);
@@ -2357,12 +2411,14 @@ function start() {
   } else if (MODO_WEB) mostraLista();
   else abrir(ultimaConv()).catch(() => {});   // celular: Trabalho no horário de trabalho, senão Geral
   if (!MODO_WEB) abreTreinoSeHora();   // na hora da academia, abre (e reabre) direto no treino de hoje
-  // Conversa aberta: busca a cada 4 s; lista de conversas: a cada 15 s (só com a página na tela).
+  // Conversa aberta: busca a cada 4 s (com 304 quase de graça); lista de conversas: a cada 15 s; status: 45-60 s (só com a página na tela).
+  // Parado: chave vencida (401), limite do GitHub até o reset, GitHub fora (5xx) por 30 s.
   clearInterval(poll);
   poll = setInterval(() => {
-    if (document.visibilityState !== 'visible' || !token || sending) return;
+    if (document.visibilityState !== 'visible' || !token || sending || chaveVencida || Date.now() < Math.max(limiteAte, pausaPollAte)) return;
     if (FILE) load().catch(() => {});
     if ((!FILE || largo()) && Date.now() - ultimaLista > 14000) carregaLista().catch(() => {});
+    checaStatus();
   }, 4000);
 }
 // Volta pra página: busca o que chegou (sem recarregar: o reload perdia fotos na bandeja, áudio, citação e nota).
@@ -2378,8 +2434,8 @@ function nadaPendente() {
 }
 let saiuEm = 0;
 function voltouPraPagina(longe) {
-  if (!token) return;
-  (FILE ? load() : carregaLista()).catch(() => {}); buscaRapido();
+  if (!token || chaveVencida) return;
+  (FILE ? load() : carregaLista()).catch(() => {}); buscaRapido(); checaStatus();
   if (longe && Date.now() - pushEm > 5000) versaoNova().then(nova => { if (nova && nadaPendente()) location.reload(); });
 }
 document.addEventListener('visibilitychange', () => {
