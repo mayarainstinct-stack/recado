@@ -1002,6 +1002,7 @@ function tipoDe(path) {
   if (/\.m4a$/i.test(path)) return 'audio/mp4';
   if (/\.webm$/i.test(path)) return 'audio/webm';
   if (/\.png$/i.test(path)) return 'image/png';
+  if (/\.webp$/i.test(path)) return 'image/webp';
   return 'image/jpeg';
 }
 function fotoUrl(path) {
@@ -1012,14 +1013,35 @@ function fotoUrl(path) {
     .catch(e => { if (e.status !== 404) delete fotos[path]; throw e; });   // 404 = foto já apagada: não busca de novo
   return fotos[path];
 }
-function reduzir(file) {
+// Decide o formato da foto que vai pro repo: com transparência (PNG/WebP/GIF com alfa) mantém PNG; senão JPEG como sempre.
+function formatoFoto(tipoOrigem, temAlfa) {
+  if (temAlfa && /^image\/(png|webp|gif)$/i.test(tipoOrigem || '')) return { mime: 'image/png', ext: 'png' };
+  return { mime: 'image/jpeg', ext: 'jpg' };
+}
+const MAX_BYTES_PNG = 1500000;   // PNG com alfa passando disso: reduz a resolução (nunca troca por JPEG)
+function reduzir(file) {   // devolve { b64, mime, ext }
   return new Promise((ok, erro) => {
     const img = new Image(); const url = URL.createObjectURL(file);
     img.onload = () => {
-      const max = 1400, k = Math.min(1, max / Math.max(img.width, img.height));
-      const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
-      ok(c.toDataURL('image/jpeg', 0.8).split(',')[1]);
+      URL.revokeObjectURL(url);
+      const max = 1400;
+      let k = Math.min(1, max / Math.max(img.width, img.height));
+      const desenha = kk => {
+        const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(img.width * kk)); c.height = Math.max(1, Math.round(img.height * kk));
+        const cx = c.getContext('2d'); cx.drawImage(img, 0, 0, c.width, c.height); return { c, cx };
+      };
+      let { c, cx } = desenha(k);
+      let temAlfa = false;
+      if (/^image\/(png|webp|gif)$/i.test(file.type || '')) {
+        try { const d = cx.getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < d.length; i += 4) if (d[i] < 255) { temAlfa = true; break; } } catch (e) {}
+      }
+      const fmt = formatoFoto(file.type, temAlfa);
+      if (fmt.ext === 'png') {
+        let b64 = c.toDataURL('image/png').split(',')[1];
+        while (b64.length * 0.75 > MAX_BYTES_PNG && k > 0.2) { k *= 0.8; ({ c } = desenha(k)); b64 = c.toDataURL('image/png').split(',')[1]; }
+        return ok({ b64, mime: fmt.mime, ext: fmt.ext });
+      }
+      ok({ b64: c.toDataURL('image/jpeg', 0.8).split(',')[1], mime: fmt.mime, ext: fmt.ext });
     };
     img.onerror = () => erro(new Error('imagem'));
     img.src = url;
@@ -1054,7 +1076,7 @@ function desenhaBandeja() {
 arquivo.addEventListener('change', async () => {
   const files = [...arquivo.files]; arquivo.value = ''; if (!files.length || sending) return;
   for (const f of files) {
-    try { const b64 = await reduzir(f); anexos.push({ b64, url: URL.createObjectURL(f) }); }
+    try { const rd = await reduzir(f); anexos.push({ b64: rd.b64, ext: rd.ext, url: URL.createObjectURL(f) }); }
     catch (e) { showNote('Uma das fotos não abriu.', true); }
   }
   desenhaBandeja(); box.focus();
@@ -1295,7 +1317,7 @@ form.addEventListener('submit', async e => {
         if (fotos[k].nome) { nomes.push(fotos[k].nome); continue; }   // já subiu numa tentativa anterior
         overlayTxt.textContent = 'Enviando foto ' + (k + 1) + ' de ' + fotos.length + '…';
         const d = new Date();
-        const nome = 'recados-fotos/' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + '-' + (k + 1) + '.jpg';
+        const nome = 'recados-fotos/' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + '-' + (k + 1) + '.' + (fotos[k].ext || 'jpg');
         const rf = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + nome, { method: 'PUT', headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' }, body: JSON.stringify({ message: 'foto do iPhone', content: fotos[k].b64 }) });
         if (!rf.ok) { const er = new Error('upload ' + rf.status); er.status = rf.status; throw er; }
         fotos[k].nome = nome; nomes.push(nome);
@@ -2022,13 +2044,13 @@ novaBtn.onclick = () => {
     <div class="acoes"><button type="button" class="sec" id="np-x">Cancelar</button><button type="submit" id="np-ok">Criar</button></div></form>`;
   document.body.append(pop);
   const f = pop.querySelector('form'), nomeIn = pop.querySelector('#np-nome'), arqIn = pop.querySelector('#np-arq'), prev = pop.querySelector('#np-prev');
-  let fotoB64 = '';
+  let fotoB64 = '', fotoExt = 'jpg';
   setTimeout(() => nomeIn.focus(), 50);
   pop.querySelector('#np-x').onclick = () => pop.remove();
   pop.onclick = e => { if (e.target === pop) pop.remove(); };
   pop.querySelector('#np-foto').onclick = () => arqIn.click();
   arqIn.onchange = async () => { const fl = arqIn.files[0]; if (!fl) return;
-    try { fotoB64 = await reduzir(fl); prev.textContent = ''; prev.style.backgroundImage = 'url(data:image/jpeg;base64,' + fotoB64 + ')'; } catch (e) { showNote('Não consegui ler essa foto.', true); } };
+    try { const rd = await reduzir(fl); fotoB64 = rd.b64; fotoExt = rd.ext; prev.textContent = ''; prev.style.backgroundImage = 'url(data:' + rd.mime + ';base64,' + fotoB64 + ')'; } catch (e) { showNote('Não consegui ler essa foto.', true); } };
   f.onsubmit = async e => {
     e.preventDefault();
     const nome = nomeIn.value.trim().slice(0, 40); if (!nome) return;
@@ -2040,7 +2062,7 @@ novaBtn.onclick = () => {
     try {
       let fotoLinha = '';
       if (fotoB64) {
-        const caminho = 'recados-fotos/grupo-' + slug + '.jpg';
+        const caminho = 'recados-fotos/grupo-' + slug + '.' + fotoExt;
         const rf = await fetch(apiDe(caminho), { method: 'PUT', headers: hdrs(false), body: JSON.stringify({ message: 'foto da conversa ' + nome, content: fotoB64 }) });
         if (rf.ok || rf.status === 422) fotoLinha = '<!-- foto: ' + caminho + ' -->\n';
       }
