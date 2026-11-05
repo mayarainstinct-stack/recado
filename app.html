@@ -236,8 +236,8 @@ textarea:focus-visible { outline: none; }
   .msg.may.eu .meta { color: var(--muted); }
   .msg.may.eu .cita { background: rgba(255,255,255,.06); }
   .msg.may.eu .cita span { color: var(--muted); }
-  .msg.may .quem.eu .letra:nth-child(2) { color: #FACC15; }
-  .msg.may .quem.eu .letra:nth-child(3) { color: #22C55E; }
+  .msg.may .quem.eu .rotulo > span:first-child { background: linear-gradient(90deg, #E31B23, #FACC15, #22C55E); -webkit-background-clip: text; background-clip: text; }   /* no escuro o nome vira degradê reggae (May, 05/11/2026) */
+  .msg.may .quem.eu .letra:nth-child(n) { color: transparent; }
 }
 .msg.falhou { opacity: 1; outline: 1.5px solid #DC2626; }
 .msg.falhou .tick { color: #DC2626; letter-spacing: 0; }
