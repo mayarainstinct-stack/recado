@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.10">
+<meta name="app-versao" content="2026-11-05.11">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -747,7 +747,7 @@ const diaSeguinte = d => { const m = String(d || '').match(/^(\d\d)\/(\d\d)\/(\d
 const RE_MAY = /^- \[(\d\d\/\d\d\/\d{4}) (\d\d:\d\d)\] (.*)$/, RE_LIDA = /\s\{lida\}\s*$/, RE_CIT = /\s*⟪re: ([^:⟫]+): ([^⟫]*)⟫\s*$/;   // citando: "⟪re: Nome: trecho⟫"
 const RE_AUDIO = /^🎤 (\S+)\s*$/, RE_FOTO = /^📷 (\S+)\s*([\s\S]*)$/, RE_TRANSCR = /^\s+↳ transcrição: (.*)$/;   // "🎤 recados-audios/x.m4a", "📷 recados-fotos/x.jpg legenda"
 // Linhas da caixa: "- [DD/MM/AAAA HH:MM] texto" (dela) e "  ↳ Lyra: texto" (resposta).
-function parse(md) {
+function parse(md, arq) {
   const out = []; const lines = md.split(/\r?\n/); let on = false;   // \r: arquivo salvo no Windows
   let lidasAte = 0;   // respondeu = leu tudo antes: marca no fim, pelo índice da última resposta (antes era um forEach por resposta)
   for (let i = 0; i < lines.length; i++) {
@@ -774,9 +774,9 @@ function parse(md) {
       }
       const tr = line.match(RE_TRANSCR);
       if (tr) { const alvo = [...out].reverse().find(x => x.from === 'may' && x.audio); if (alvo) { alvo.transcricao = tr[1]; alvo._linhaTr = i; alvo._extras.push(i); } continue; }
-      // Respostas no estilo grupo: "  ↳ Lyra: …" ou "  ↳ simp-mobile: …" (cada um com a sua cor)
+      // Respostas no estilo grupo: "  ↳ Lyra: …" ou "  ↳ Orfeu: …" (cada um com a sua cor)
       // "[op: A|B|C]" = balão de múltipla escolha (ela toca e a resposta vai citando a pergunta)
-      m = line.match(RE_RESP);
+      m = line.match(RE_RESP) || (arq === TRAB.arq && !grupoTrabOk ? line.match(RE_RESP_LIVRE) : null);   // Trabalho sem o grupo-trabalho.json: falante ganha rótulo neutro, não gruda na mensagem de cima
       // carimbo opcional logo depois do nome: "↳ Lyra [DD/MM/AAAA HH:MM]: texto"; sem ele (ou só com "[HH:MM]", sem
       // data) a resposta herda o dia da mensagem anterior. "->" também é aceito no lugar de "↳" (erro comum de
       // digitação de alguns PCs) pra uma resposta mal formatada não ficar colada como continuação da msg de outra pessoa.
@@ -835,13 +835,6 @@ let inicio = 0;
 // Cores = as que cada projeto usa no VS Code (borda/realce do .vscode/settings.json); Lyra = rosa dela.
 const GRUPO = {
   lyra: { nome: 'Lyra', cargo: 'Organizadora e Comunicadora', cor: '#E1306C', texto: '#FFFFFF', foto: 'recados-fotos/20261031-005747-avatar-lyra.png' },
-  // Trabalho (May, 03/11/2026): "um L pra Lyra, um K pro KDS, um R pro RM, um P pro promotor, um C pro checklist, um A pro acompanhamento"
-  rm: { nome: 'RM · Recebimento', cor: '#22C55E', texto: '#052E16' },
-  'simp-mobile': { nome: 'Checklist', cor: '#2DD4BF', texto: '#042F2E' },
-  checklist: { nome: 'Checklist', cor: '#2DD4BF', texto: '#042F2E' },
-  acompanhamentos: { nome: 'Acompanhamentos', cor: '#940088', texto: '#FFFFFF' },
-  promotor: { nome: 'Promotor', cor: '#F59E0B', texto: '#2D1A02' },
-  kds: { nome: 'KDS', cor: '#EAB308', texto: '#2A2002' },
   orfeu: { nome: 'Orfeu (PC1)', cargo: 'Infra e Produtor', cor: '#E31B23', texto: '#2D0A0A', foto: 'recados-fotos/20261031-005747-avatar-orfeu.png' },
   nyx: { nome: 'Nyx (PC2)', cargo: 'Gamer e Testadora', cor: '#6FCF00', texto: '#0E2A00', foto: 'recados-fotos/20261031-005747-avatar-nyx.png' },
   vega: { nome: 'Vega (PC3)', cargo: 'Técnico e Operador', cor: '#1D4ED8', texto: '#06173A', foto: 'recados-fotos/20261031-005747-avatar-vega.png' },
@@ -854,6 +847,22 @@ const GRUPO = {
   sigma: { nome: 'Sigma', cargo: 'Revisor e Crítico', cor: '#9333EA', texto: '#FFFFFF', foto: 'recados-fotos/avatar-sigma-96.png' }   // Revisor-Chefe (05/11/2026); sem ele aqui o "↳ Sigma" grudava na mensagem de cima
 };
 // A May também aparece com robozinho no Geral, como "agente humana", nas duas cores dela (May, 05/11/2026)
+// Falantes do Trabalho (um por projeto, letra + cor) ficam no Inst privado, casa/grupo-trabalho.json: este repo é público (05/11/2026).
+// Lido antes da primeira leitura do Trabalho e somado ao GRUPO; falhou = rótulo neutro "Trabalho" e tenta de novo em 1 min.
+const TRAB_NEUTRO = { nome: 'Trabalho', cor: '#64748B', texto: '#FFFFFF' };
+let grupoTrabOk = false, grupoTrabP = null, grupoTrabEm = 0;
+function garanteGrupoTrab() {
+  if (grupoTrabOk || !token) return Promise.resolve();
+  if (grupoTrabP) return grupoTrabP;
+  if (Date.now() - grupoTrabEm < 60000) return Promise.resolve();
+  grupoTrabEm = Date.now();
+  return grupoTrabP = lerArquivo('casa/grupo-trabalho.json').then(t => {
+    const g = JSON.parse(t);
+    Object.keys(g).forEach(k => { if (!GRUPO[k] && g[k] && g[k].nome && g[k].cor) GRUPO[k] = g[k]; });   // nunca troca quem já é da casa
+    montaReQuem(); grupoTrabOk = true;
+    delete caixaCache[TRAB.arq]; if (FILE === TRAB.arq) forcar = true;   // prévia e tela que já saíram com o rótulo neutro
+  }).catch(() => {}).finally(() => { grupoTrabP = null; });
+}
 const EU = { nome: 'May', cargo: 'Dev, Designer e Musicista', cor: '#E31B23', cor2: '#22C55E', texto: '#FFFFFF', foto: 'recados-fotos/avatar-may-192.png' };
 // Ficha (crachá de jogo) de cada um, ao tocar no nome ou na foto (May, 05/11/2026): abas Perfil, Atributos, Máquina
 let FICHA = null;   // dados da ficha (máquina, IP, o que faz) ficam no Inst privado, casa/fichas.json: este repo é público (05/11/2026)
@@ -904,9 +913,16 @@ async function abreCracha(chave) {
 // Nomes aceitos em "  ↳ Nome: ..." — sempre as chaves do GRUPO (+ ALIAS_QUEM), pra nunca mais esquecer de
 // sincronizar isso com GRUPO na mão quando adicionar alguém (bug: Hermes/DarkSigma adicionados
 // no GRUPO mas não aqui, mensagem deles sumia sem avisar).
-const RE_QUEM_NOMES = [...Object.keys(GRUPO), ...Object.keys(ALIAS_QUEM)].map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
-const RE_RESP = new RegExp('^\\s+(?:↳|->) (' + RE_QUEM_NOMES + ')(?: \\[(?:(\\d\\d/\\d\\d/\\d{4}) )?(\\d\\d:\\d\\d)\\])?( \\[copiar\\])?(?: \\[op: ([^\\]]+)\\])?: (.*)$', 'i');
-const RE_AGENTE_SETA = new RegExp('^(' + RE_QUEM_NOMES + ') → ([\\s\\S]*)$', 'i');   // só "→": "KDS -> ver" digitado por ela no Trabalho continua dela
+// Remontadas quando o grupo do Trabalho chega (garanteGrupoTrab). RE_RESP_LIVRE = qualquer nome, só pro Trabalho sem esse grupo.
+const reResp = nomes => new RegExp('^\\s+(?:↳|->) (' + nomes + ')(?: \\[(?:(\\d\\d/\\d\\d/\\d{4}) )?(\\d\\d:\\d\\d)\\])?( \\[copiar\\])?(?: \\[op: ([^\\]]+)\\])?: (.*)$', 'i');
+const RE_RESP_LIVRE = reResp('[\\w.-]+');
+let RE_QUEM_NOMES, RE_RESP, RE_AGENTE_SETA;
+function montaReQuem() {
+  RE_QUEM_NOMES = [...Object.keys(GRUPO), ...Object.keys(ALIAS_QUEM)].map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+  RE_RESP = reResp(RE_QUEM_NOMES);
+  RE_AGENTE_SETA = new RegExp('^(' + RE_QUEM_NOMES + ') → ([\\s\\S]*)$', 'i');   // só "→": "Fulano -> ver" digitado por ela no Trabalho continua dela
+}
+montaReQuem();
 // Copia o texto puro da mensagem pro clipboard; cai pra execCommand em navegador mobile antigo que não tem Clipboard API.
 async function copiaTexto(texto) {
   let ok = true;
@@ -942,7 +958,7 @@ async function excluirMensagem(it) {
     try {
       const f = await gh('GET');
       const md = conteudoSeguro(f), eol = md.includes('\r\n') ? '\r\n' : '\n';   // arquivo salvo no Windows continua \r\n
-      const achados = parse(md).filter(x => x._raw === it._raw).sort((a, b) => Math.abs(a._linha - it._linha) - Math.abs(b._linha - it._linha));
+      const achados = parse(md, FILE).filter(x => x._raw === it._raw).sort((a, b) => Math.abs(a._linha - it._linha) - Math.abs(b._linha - it._linha));
       if (!achados.length) { overlay.hidden = true; showNote('Essa mensagem mudou ou já saiu da caixa. Não excluí nada.', true); forcar = true; load().catch(() => {}); return; }
       const alvo = achados[0], linhas = md.split(/\r?\n/);
       [alvo._linha, ...alvo._extras].sort((a, b) => b - a).forEach(idx => linhas.splice(idx, 1));   // de trás pra frente, pra não desalinhar os outros índices
@@ -1030,7 +1046,7 @@ function render(items, manterPosicao) {
     if (diaNum(it.day) > ultDia) { const s = document.createElement('div'); s.className = 'day'; s.textContent = it.day; feed.append(s); ultDia = diaNum(it.day); }
     const el = document.createElement('div'); el.className = 'msg ' + it.from + (it.copiar ? ' copiavel' : '') + (i >= firstNew ? ' novo' : ''); el.dataset.i = i;
     let ops = null;
-    const g = it.quem && GRUPO[it.quem] ? GRUPO[it.quem] : (it.from === 'may' && FILE === GERAL.arq ? EU : null);
+    const g = it.quem && GRUPO[it.quem] ? GRUPO[it.quem] : (it.from === 'may' && FILE === GERAL.arq ? EU : (it.quem && FILE === TRAB.arq ? TRAB_NEUTRO : null));
     if (g) {
       // Nome colorido em cima do balão, igual grupo de WhatsApp; o balão ganha um toque da cor de quem fala
       el.style.setProperty('--quem', g.cor); el.style.setProperty('--quem-fg', g.texto); el.classList.add(g === EU ? 'eu' : 'grupo'); if (it.quem === 'sigma') el.classList.add('sigma');
@@ -1504,6 +1520,7 @@ async function carregar() {
   const arq = FILE, gen = leituraGen; if (!arq) return null;
   syncEl.classList.add('on');
   try {
+    if (arq === TRAB.arq) await garanteGrupoTrab();   // antes do primeiro parse/desenho do Trabalho
     const f = await gh('GET').finally(() => syncEl.classList.remove('on'));
     if (FILE !== arq || gen !== leituraGen) return f;   // trocou de conversa, ou saiu antes de um PUT nosso (traria a caixa sem a mensagem)
     // mesmo sha da última leitura já aplicada na tela: nada mudou, pula decode + parse + comparação (o 304 só poupa a rede, o corpo vem igual)
@@ -1511,7 +1528,7 @@ async function carregar() {
     let md = ''; try { md = b64decode(f.content); } catch (e2) {}
     if (gravado && gravado.arq === arq && Date.now() < gravado.ate && md && !jaGravado(md, gravado.linhas)) return f;   // API ainda com a versão de antes do PUT
     if (md) ultimaLeitura = { arq, f };
-    let items; try { if (!md) throw 0; items = parse(md); } catch (e2) { items = lastItems; }   // md malformado não trava a conversa já carregada
+    let items; try { if (!md) throw 0; items = parse(md, arq); } catch (e2) { items = lastItems; }   // md malformado não trava a conversa já carregada
     // _raw cobre nome, carimbo, foto, áudio, citação e opções da linha; _linha = posição (Excluir); day = dia herdado/virada
     const same = items.length === lastItems.length && items.every((it, i) => { const o = lastItems[i]; return it._raw === o._raw && it._linha === o._linha && it.text === o.text && it.day === o.day && it.lida === o.lida && it.transcricao === o.transcricao; });
     ultimaLeituraOk = Date.now();
@@ -1968,13 +1985,14 @@ function previaDe(it) {
 // prévia limpa (05/11/2026): sem **, crase, # de título, > de citação, [ ] de checklist e [texto](link) vira só o texto
 const semMarkdown = t => t.replace(/\[([^\]\n]+)\]\((?:https?:[^)\s]+)\)/g, '$1').replace(/\*\*([^*\n]+)\*\*/g, '$1').replace(/`([^`\n]+)`/g, '$1').replace(/(^|\n)\s*(?:#+\s+|>\s?|[-*]\s+\[[ xX]\]\s+)/g, '$1').replace(/__([^_\n]+)__/g, '$1');
 const caixaCache = {};   // arq -> { sha, md, items } da última leitura
-const parseSeguro = md => { try { return parse(md); } catch (e) { return []; } };   // uma caixa com formato ruim não pode derrubar a lista das outras
+const parseSeguro = (md, arq) => { try { return parse(md, arq); } catch (e) { return []; } };   // uma caixa com formato ruim não pode derrubar a lista das outras
 function carregaLista(estrito) {
   return carregandoLista || (carregandoLista = listar(estrito).finally(() => { carregandoLista = null; }));
 }
 async function listar(estrito) {
   syncEl.classList.add('on');
   try {
+    await garanteGrupoTrab();   // prévia do Trabalho já com os nomes
     const arqs = [{ path: GERAL.arq, sha: '' }];
     const d = await api('https://api.github.com/repos/' + REPO + '/contents/caixas');
     if (d.status === 401) throw erroDe(401);
@@ -1983,7 +2001,7 @@ async function listar(estrito) {
     const lidas = await Promise.all(arqs.map(({ path: a, sha }) => {
       const c = caixaCache[a];
       if (sha && c && c.sha === sha) return c;
-      return lerArquivo(a).then(md => { const items = parseSeguro(md); return (caixaCache[a] = { arq: a, sha, md, items }); }, e => { if (a === GERAL.arq) throw e; return null; });
+      return lerArquivo(a).then(md => { const items = parseSeguro(md, a); return (caixaCache[a] = { arq: a, sha, md, items }); }, e => { if (a === GERAL.arq) throw e; return null; });
     }));
     conversas = lidas.filter(Boolean).map(({ arq, md, items }) => {
       const slug = arq.replace(/^.*\//, '').replace(/\.md$/i, '');
@@ -2653,7 +2671,7 @@ async function abreTreinoSeHora() {
   menu.hidden = true; painel.hidden = false; pilha = []; abreChecklist(v, l);
 }
 function start() {
-  chaveVencida = false; aplicaLargura();
+  chaveVencida = false; aplicaLargura(); grupoTrabEm = 0;   // chave nova: tenta o grupo do Trabalho de novo na hora
   mais.hidden = false;
   const veioDoPush = trataHashPush();   // veio da notificação: abre a conversa dela já respondendo
   if (!veioDoPush) { if (MODO_WEB) mostraLista(); else abrir(ultimaConv()).catch(() => {}); }   // celular: Trabalho no horário de trabalho, senão Geral
