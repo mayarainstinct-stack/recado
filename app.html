@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.3">
+<meta name="app-versao" content="2026-11-05.4">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -206,6 +206,8 @@ textarea:focus-visible { outline: none; }
 .txt { white-space: pre-wrap; overflow-wrap: anywhere; }
 .msg:has(.copiar-msg) .txt { padding-right: 24px; }   /* a setinha de opções não pode cobrir o fim do texto */
 .txt a { color: inherit; text-decoration: underline; text-underline-offset: 2px; font-weight: 600; }
+.txt code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .88em; background: rgba(0,0,0,.08); padding: 1px 5px; border-radius: 5px; overflow-wrap: anywhere; }
+.msg .ouvir { width: auto; height: auto; min-height: 40px; display: flex; align-items: center; gap: 6px; margin: 2px 0 4px; padding: 8px 14px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 18%, transparent); color: inherit; font-size: 14px; font-weight: 600; }
 .msg.copiavel { border: 1.5px dashed var(--accent); background: color-mix(in srgb, var(--accent) 7%, var(--theirs)); max-width: 92%; }
 .msg.copiavel .txt { font-size: 14.5px; }
 .copiar-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px;
@@ -646,18 +648,22 @@ const store = {
 const RE_LINK = /(https?:\/\/[^\s<>"]+|www\.[^\s<>"]+|(?:instagram\.com|youtube\.com|youtu\.be|twitch\.tv)\/[^\s<>"]+)/gi;
 // @Menção: @Orfeu, @Vega etc — colore se bater com alguém do GRUPO, senão fica neutro
 const RE_MARCA = /(@[A-Za-zÀ-ÿ][\wÀ-ÿ-]*)/g;
-const RE_LINK_OU_MARCA = new RegExp(RE_LINK.source + '|' + RE_MARCA.source, 'gi');
-function linkar(el, txt) {
+// Markdown mínimo dos agentes (05/11/2026): `código` e **negrito** (sem innerHTML; dentro do negrito ainda vale link e @)
+const RE_RICO = new RegExp('(`[^`\\n]+`)|(\\*\\*[^*\\n]+\\*\\*)|' + RE_LINK.source + '|' + RE_MARCA.source, 'gi');
+const NOMES_MAY = ['may', 'mayara', 'mah'];   // @May: só a cor dela na menção, ela não vira falante de agente
+function linkar(el, txt, dentro) {
   txt = txt || ''; let i = 0;
-  for (const m of txt.matchAll(RE_LINK_OU_MARCA)) {
+  for (const m of txt.matchAll(RE_RICO)) {
     if (m.index > i) el.append(txt.slice(i, m.index));
+    if (m[1]) { const c = document.createElement('code'); c.textContent = m[1].slice(1, -1); el.append(c); i = m.index + m[0].length; continue; }
+    if (m[2]) { const b = document.createElement('b'); dentro ? b.append(m[2].slice(2, -2)) : linkar(b, m[2].slice(2, -2), true); el.append(b); i = m.index + m[0].length; continue; }
     if (m[0][0] === '@') {
-      const nome = m[0].slice(1);
-      const chave = Object.keys(GRUPO).find(k => k === nome.toLowerCase() || GRUPO[k].nome.toLowerCase().startsWith(nome.toLowerCase()));
+      const nome = m[0].slice(1), eu = NOMES_MAY.includes(nome.toLowerCase());
+      const chave = eu ? null : Object.keys(GRUPO).find(k => k === nome.toLowerCase() || GRUPO[k].nome.toLowerCase().startsWith(nome.toLowerCase()));
       const s = document.createElement('span'); s.className = 'marca';
       // nome sempre no padrão (maiúscula certa), não importa como foi digitado -- evita "@orfeu" e "@Orfeu" com visual diferente
-      s.textContent = chave ? '@' + GRUPO[chave].nome.replace(/\s*\(.*\)$/, '') : m[0];
-      if (chave) { s.style.setProperty('--quem', GRUPO[chave].cor); s.classList.add('marca-cor'); }
+      s.textContent = eu ? '@' + EU.nome : chave ? '@' + GRUPO[chave].nome.replace(/\s*\(.*\)$/, '') : m[0];
+      if (chave || eu) { s.style.setProperty('--quem', eu ? EU.cor : GRUPO[chave].cor); s.classList.add('marca-cor'); }
       el.append(s); i = m.index + m[0].length;
       continue;
     }
@@ -678,7 +684,7 @@ const b64encode = s => { let bin = ''; new TextEncoder().encode(s).forEach(b => 
 // ---- Rede (05/11/2026): todo pedido à API passa por aqui.
 // cache 'no-cache' sem "?t=": o navegador revalida com ETag (304 quando nada mudou, não gasta limite) e o preflight do CORS fica guardado.
 // Timeout: 20 s leitura, 90 s envio; o timer segue até o corpo ser lido, então r.json()/r.text() também não travam (abort depois de lido não faz nada).
-let limiteAte = 0, chaveVencida = false, pausaPollAte = 0;
+let limiteAte = 0, chaveVencida = false, pausaPollAte = 0, limiteResta = '', ultimaLeituraOk = 0;
 const erroDe = (status, extra) => Object.assign(new Error('http ' + status), { status }, extra);
 async function api(url, op = {}) {
   if (Date.now() < limiteAte) throw erroDe(429, { limite: true });   // esperando o GitHub liberar: nem tenta
@@ -687,6 +693,7 @@ async function api(url, op = {}) {
   let r;
   try { r = await fetch(url, { cache: 'no-cache', ...op, headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json', ...(op.headers || {}) }, signal: ctl.signal }); }
   catch (e) { throw Object.assign(new Error(e.name === 'AbortError' ? 'timeout' : 'rede'), e.name === 'AbortError' ? { timeout: true } : { rede: true }); }
+  const resta = r.headers.get('x-ratelimit-remaining'); if (resta !== null) limiteResta = resta + ' de ' + (r.headers.get('x-ratelimit-limit') || '?');   // pro Diagnóstico
   if (r.status === 401) chaveVenceu();
   if (r.status === 429 || (r.status === 403 && (r.headers.get('x-ratelimit-remaining') === '0' || r.headers.get('retry-after')))) {
     const ra = +r.headers.get('retry-after'), reset = +r.headers.get('x-ratelimit-reset');
@@ -725,9 +732,16 @@ async function gh(method, body) {
 // Título da conversa: primeira linha "# Nome"
 function fotoGrupoDe(md) { const m = md.match(/<!--\s*foto:\s*(\S+)\s*-->/); return m ? m[1] : ''; }
 function tituloDe(md) { const m = md.match(/^#\s+(.+?)\s*$/m); return m ? m[1].replace(/^📥\s*/, '') : ''; }
+// Dia "DD/MM/AAAA" como número AAAAMMDD (comparar) e o dia seguinte (virada da meia-noite)
+const diaNum = d => { const m = String(d || '').match(/^(\d\d)\/(\d\d)\/(\d{4})$/); return m ? +(m[3] + m[2] + m[1]) : 0; };
+const diaSeguinte = d => { const m = String(d || '').match(/^(\d\d)\/(\d\d)\/(\d{4})$/); if (!m) return d; const x = new Date(+m[3], +m[2] - 1, +m[1] + 1); return pad(x.getDate()) + '/' + pad(x.getMonth() + 1) + '/' + x.getFullYear(); };
+// Regex do parse compiladas uma vez (05/11/2026); a da resposta (RE_RESP) fica depois do GRUPO, que ela usa.
+const RE_MAY = /^- \[(\d\d\/\d\d\/\d{4}) (\d\d:\d\d)\] (.*)$/, RE_LIDA = /\s\{lida\}\s*$/, RE_CIT = /\s*⟪re: ([^:⟫]+): ([^⟫]*)⟫\s*$/;   // citando: "⟪re: Nome: trecho⟫"
+const RE_AUDIO = /^🎤 (\S+)\s*$/, RE_FOTO = /^📷 (\S+)\s*([\s\S]*)$/, RE_TRANSCR = /^\s+↳ transcrição: (.*)$/;   // "🎤 recados-audios/x.m4a", "📷 recados-fotos/x.jpg legenda"
 // Linhas da caixa: "- [DD/MM/AAAA HH:MM] texto" (dela) e "  ↳ Lyra: texto" (resposta).
 function parse(md) {
   const out = []; const lines = md.split(/\r?\n/); let on = false;   // \r: arquivo salvo no Windows
+  let lidasAte = 0;   // respondeu = leu tudo antes: marca no fim, pelo índice da última resposta (antes era um forEach por resposta)
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     // Cada linha é isolada num try: uma linha mal formada (ex.: um Claude de outra máquina que editou
@@ -737,33 +751,38 @@ function parse(md) {
       if (/^##\s+Recados/.test(line)) { on = true; continue; }
       if (on && /^##\s/.test(line)) break;
       if (!on) continue;
-      let m = line.match(/^- \[(\d\d\/\d\d\/\d{4}) (\d\d:\d\d)\] (.*)$/);
+      let m = line.match(RE_MAY);
       if (m) {
-        const lida = /\s\{lida\}\s*$/.test(m[3]);
-        let text = m[3].replace(/\s\{lida\}\s*$/, '').replace(/\\n/g, '\n');
-        const cit = text.match(/\s*⟪re: ([^:⟫]+): ([^⟫]*)⟫\s*$/);   // resposta citando: "⟪re: Nome: trecho⟫"
+        const lida = RE_LIDA.test(m[3]);
+        let text = m[3].replace(RE_LIDA, '').replace(/\\n/g, '\n');
+        const cit = text.match(RE_CIT);
         if (cit) text = text.slice(0, cit.index);
-        const au = text.match(/^🎤 (\S+)\s*$/);           // "🎤 recados-audios/arquivo.m4a"
-        const f = text.match(/^📷 (\S+)\s*([\s\S]*)$/);   // "📷 recados-fotos/arquivo.jpg legenda"
+        // agente que escreveu como linha dela ("- [hora] Lyra → @Orfeu ..."): balão do agente, só com nome do GRUPO e a seta "→"
+        const ag = text.match(RE_AGENTE_SETA);
+        if (ag) { lidasAte = out.length; out.push({ from: 'lyra', quem: ALIAS_QUEM[ag[1].toLowerCase()] || ag[1].toLowerCase(), copiar: false, opcoes: null, foto: '', fotos: [], day: m[1], time: m[2], re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: ag[2], _linha: i, _raw: line, _extras: [] }); continue; }
+        const au = text.match(RE_AUDIO), f = text.match(RE_FOTO);
         out.push({ from: 'may', day: m[1], time: m[2], lida, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], audio: au ? au[1] : '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: au ? '' : (f ? f[2] : text), _linha: i, _raw: line, _extras: [] });
         continue;
       }
-      const tr = line.match(/^\s+↳ transcrição: (.*)$/);
+      const tr = line.match(RE_TRANSCR);
       if (tr) { const alvo = [...out].reverse().find(x => x.from === 'may' && x.audio); if (alvo) { alvo.transcricao = tr[1]; alvo._linhaTr = i; alvo._extras.push(i); } continue; }
       // Respostas no estilo grupo: "  ↳ Lyra: …" ou "  ↳ simp-mobile: …" (cada um com a sua cor)
       // "[op: A|B|C]" = balão de múltipla escolha (ela toca e a resposta vai citando a pergunta)
-      m = line.match(new RegExp('^\\s+(?:↳|->) (' + RE_QUEM_NOMES + ')(?: \\[(?:(\\d\\d/\\d\\d/\\d{4}) )?(\\d\\d:\\d\\d)\\])?( \\[copiar\\])?(?: \\[op: ([^\\]]+)\\])?: (.*)$', 'i'));
+      m = line.match(RE_RESP);
       // carimbo opcional logo depois do nome: "↳ Lyra [DD/MM/AAAA HH:MM]: texto"; sem ele (ou só com "[HH:MM]", sem
       // data) a resposta herda o dia da mensagem anterior. "->" também é aceito no lugar de "↳" (erro comum de
       // digitação de alguns PCs) pra uma resposta mal formatada não ficar colada como continuação da msg de outra pessoa.
       if (m) { m = [m[0], m[1], m[4], m[6], m[5], m[2], m[3]]; }
       if (m) {
-        out.forEach(it => { if (it.from === 'may') it.lida = true; });   // respondeu = leu tudo antes
+        lidasAte = out.length;
         let txt = m[3].replace(/\\n/g, '\n');
-        const cit = txt.match(/\s*⟪re: ([^:⟫]+): ([^⟫]*)⟫\s*$/);
+        const cit = txt.match(RE_CIT);
         if (cit) txt = txt.slice(0, cit.index);
-        const f = txt.match(/^📷 (\S+)\s*([\s\S]*)$/);   // foto: "📷 recados-fotos/x.jpg legenda"
-        out.push({ from: 'lyra', quem: ALIAS_QUEM[m[1].toLowerCase()] || m[1].toLowerCase(), copiar: !!m[2], opcoes: m[4] ? m[4].split('|').map(x => x.trim()).filter(Boolean) : null, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], day: m[5] || (out.length ? out[out.length - 1].day : ''), time: m[6] || '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: f ? f[2] : txt, _linha: i, _raw: line, _extras: [] });
+        const f = txt.match(RE_FOTO);   // foto: "📷 recados-fotos/x.jpg legenda"
+        // só "[HH:MM]": herda o dia de cima; "[00:10]" logo depois de "23:50" é o dia seguinte (virada da meia-noite)
+        const ant = out[out.length - 1]; let day = m[5] || (ant ? ant.day : '');
+        if (!m[5] && m[6] && ant && ant.time >= '20:00' && m[6] < '04:00') day = diaSeguinte(day);
+        out.push({ from: 'lyra', quem: ALIAS_QUEM[m[1].toLowerCase()] || m[1].toLowerCase(), copiar: !!m[2], opcoes: m[4] ? m[4].split('|').map(x => x.trim()).filter(Boolean) : null, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], day, time: m[6] || '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: f ? f[2] : txt, _linha: i, _raw: line, _extras: [] });
       } else if (line.trim() && out.length) {
         // Linha solta dentro de "## Recados" que não bate em nenhum padrão conhecido: provavelmente
         // quebra de linha REAL (em vez de "\n" escapado) dentro da mesma mensagem. Em vez de sumir com
@@ -774,6 +793,7 @@ function parse(md) {
       }
     } catch (e) { /* linha ruim: ignora e segue pras próximas, não derruba a conversa toda */ }
   }
+  for (let k = 0; k < lidasAte; k++) if (out[k].from === 'may') out[k].lida = true;
   return out;
 }
 
@@ -782,9 +802,24 @@ let lastItems = [];
 
 // Abre com as últimas 10 + as que ela ainda não viu; rolar até o topo carrega mais 10.
 let janela = 10;
-const vistoKey = arq => arq === GERAL.arq ? 'vistos' : 'vistos:' + arq;   // Geral mantém a chave antiga
+// Visto = carimbo + linha da última mensagem vista (05/11/2026), não mais a contagem: o arquivador tira linhas do começo e a contagem
+// passava a contar tudo como visto. A contagem antiga ("vistos") vira marca na primeira leitura e sai do aparelho.
+const vistoKey = arq => arq === GERAL.arq ? 'visto-em' : 'visto-em:' + arq, vistoAntigoKey = arq => arq === GERAL.arq ? 'vistos' : 'vistos:' + arq;
 const rascKey = () => FILE === GERAL.arq ? 'rascunho' : 'rascunho:' + FILE;
-let vistosAntes = 0;
+const marcaDe = it => ({ ts: tsDe(it), raw: String(it._raw || '').slice(0, 300) });
+function lerVisto(arq, items) {
+  let v = null; try { v = JSON.parse(store.get(vistoKey(arq)) || 'null'); } catch (e) {}
+  const n = parseInt(store.get(vistoAntigoKey(arq)) || '0', 10);
+  if (!v && n > 0 && items.length) { v = marcaDe(items[Math.min(n, items.length) - 1]); store.set(vistoKey(arq), JSON.stringify(v)); store.set(vistoAntigoKey(arq), ''); }
+  return v;
+}
+function primeiroNaoVisto(items, v) {   // índice da primeira não vista; sem marca = tudo novo (igual antes)
+  if (!v) return 0;
+  for (let i = items.length - 1; i >= 0; i--) if (tsDe(items[i]) === v.ts && String(items[i]._raw || '').slice(0, 300) === v.raw) return i + 1;
+  const i = items.findIndex(it => tsDe(it) > v.ts);   // a linha vista saiu (arquivada/excluída): vale o carimbo
+  return i < 0 ? items.length : i;
+}
+let vistoMarca;   // undefined = ainda não leu a marca desta conversa
 let inicio = 0;
 
 // Cores = as que cada projeto usa no VS Code (borda/realce do .vscode/settings.json); Lyra = rosa dela.
@@ -860,6 +895,8 @@ async function abreCracha(chave) {
 // sincronizar isso com GRUPO na mão quando adicionar alguém (bug: Hermes/DarkSigma adicionados
 // no GRUPO mas não aqui, mensagem deles sumia sem avisar).
 const RE_QUEM_NOMES = [...Object.keys(GRUPO), ...Object.keys(ALIAS_QUEM)].map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+const RE_RESP = new RegExp('^\\s+(?:↳|->) (' + RE_QUEM_NOMES + ')(?: \\[(?:(\\d\\d/\\d\\d/\\d{4}) )?(\\d\\d:\\d\\d)\\])?( \\[copiar\\])?(?: \\[op: ([^\\]]+)\\])?: (.*)$', 'i');
+const RE_AGENTE_SETA = new RegExp('^(' + RE_QUEM_NOMES + ') → ([\\s\\S]*)$', 'i');   // só "→": "KDS -> ver" digitado por ela no Trabalho continua dela
 // Copia o texto puro da mensagem pro clipboard; cai pra execCommand em navegador mobile antigo que não tem Clipboard API.
 async function copiaTexto(texto) {
   let ok = true;
@@ -933,10 +970,13 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !msgMenuPo
 feed?.addEventListener('scroll', fechaMenuMsg, { passive: true });
 let renderizando = false;
 const fotoAlt = {};   // altura de cada foto já carregada (caminho -> px)
+const audioPronto = {};   // caminho -> blob: do áudio que ela já ouviu
+const tocando = () => [...feed.querySelectorAll('audio')].some(a => !a.paused);
 function render(items, manterPosicao) {
   renderizando = true; setTimeout(() => { renderizando = false; }, 100);
   const firstNew = shown < 0 ? items.length : shown;
-  const naoVistas = Math.max(0, items.length - vistosAntes);
+  if (vistoMarca === undefined && items.length) vistoMarca = lerVisto(FILE, items);
+  const naoVistas = Math.max(0, items.length - primeiroNaoVisto(items, vistoMarca));
   inicio = Math.max(0, items.length - Math.max(janela, naoVistas));
   const alturaAntes = feed.scrollHeight, topoAntes = feed.scrollTop, primeira = shown < 0;
   const distFim = alturaAntes - topoAntes - feed.clientHeight, pertoDoFim = distFim < 120;
@@ -952,10 +992,10 @@ function render(items, manterPosicao) {
     feed.append(e); recolocaPendentes(); return;
   }
   if (inicio > 0) { const mais = document.createElement('div'); mais.className = 'day'; mais.textContent = '↑ role pra ver as antigas'; feed.append(mais); }
-  let last = '';
+  let ultDia = 0;   // separador de dia só avança: agente com relógio em UTC não faz "05/11 → 04/11 → 05/11"
   items.forEach((it, i) => {
     if (i < inicio) return;
-    if (it.day && it.day !== last) { const s = document.createElement('div'); s.className = 'day'; s.textContent = it.day; feed.append(s); last = it.day; }
+    if (diaNum(it.day) > ultDia) { const s = document.createElement('div'); s.className = 'day'; s.textContent = it.day; feed.append(s); ultDia = diaNum(it.day); }
     const el = document.createElement('div'); el.className = 'msg ' + it.from + (it.copiar ? ' copiavel' : '') + (i >= firstNew ? ' novo' : ''); el.dataset.i = i;
     let ops = null;
     const g = it.quem && GRUPO[it.quem] ? GRUPO[it.quem] : (it.from === 'may' && FILE === GERAL.arq ? EU : null);
@@ -1016,7 +1056,7 @@ function render(items, manterPosicao) {
       const grade = document.createElement('div'); grade.className = 'grade';
       const prontos = {};   // caminho -> File já pronto (o share do iOS precisa sair logo do toque)
       it.fotos.forEach(fp => {
-        const im = document.createElement('img'); im.className = 'foto mini'; im.alt = 'Foto do álbum';
+        const im = document.createElement('img'); im.className = 'foto mini'; im.alt = 'Foto do álbum'; im.loading = 'lazy'; im.decoding = 'async';
         im.addEventListener('click', e => { e.stopPropagation(); if (im.src) abreZoom(im.src, fp); });
         fotoUrl(fp).then(u => { im.src = u; return fetch(u).then(r => r.blob()).then(bl => { prontos[fp] = new File([bl], fp.split('/').pop(), { type: bl.type || tipoDe(fp) }); }); })
           .catch(e => { const x = document.createElement('div'); x.className = 'foto-x mini'; x.innerHTML = icone('cam') + ' apagada'; im.replaceWith(x); });
@@ -1029,12 +1069,12 @@ function render(items, manterPosicao) {
         if (!arqs.length) { showNote('As fotos ainda estão carregando.', true); return; }
         try {
           if (navigator.canShare && navigator.canShare({ files: arqs })) { await navigator.share({ files: arqs }); return; }   // iOS: "Salvar N imagens"
-          for (const f of arqs) { const a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = f.name; document.body.append(a); a.click(); a.remove(); await new Promise(r => setTimeout(r, 350)); }
+          for (const f of arqs) { baixaArquivo(f, f.name); await new Promise(r => setTimeout(r, 350)); }
         } catch (err) { if (err && err.name !== 'AbortError') showNote('Não consegui baixar as fotos.', true); }
       });
       alb.append(grade, bt); el.append(alb);
     } else if (it.foto) {
-      const img = document.createElement('img'); img.className = 'foto'; img.alt = 'Foto enviada';
+      const img = document.createElement('img'); img.className = 'foto'; img.alt = 'Foto enviada'; img.loading = 'lazy'; img.decoding = 'async';
       img.addEventListener('click', e => { e.stopPropagation(); if (img.src) abreZoom(img.src, it.foto); });
       if (fotoAlt[it.foto]) img.style.minHeight = fotoAlt[it.foto] + 'px';   // já carregou antes: reserva o espaço, o redesenho não pula
       img.onload = () => {
@@ -1051,9 +1091,19 @@ function render(items, manterPosicao) {
       el.append(img);
     }
     if (it.audio) {
+      // áudio só baixa no play (05/11/2026): antes cada redesenho da conversa baixava todos; já baixado = player direto
       const au = document.createElement('audio'); au.className = 'audio'; au.controls = true; au.preload = 'metadata';
-      fotoUrl(it.audio).then(u => { au.src = u; }).catch(() => {});
-      el.append(au);
+      au.addEventListener('pause', () => { if (FILE) load().catch(() => {}); });   // o poll não redesenha com áudio tocando: parou, busca o que chegou
+      if (audioPronto[it.audio]) { au.src = audioPronto[it.audio]; el.append(au); }
+      else {
+        const ouvir = document.createElement('button'); ouvir.type = 'button'; ouvir.className = 'ouvir'; ouvir.innerHTML = icone('headphones') + ' Ouvir áudio';
+        ouvir.addEventListener('click', e => {
+          e.stopPropagation(); ouvir.replaceWith(au);
+          au.play().catch(() => {});   // no toque: libera o play do iPhone pra quando o arquivo chegar
+          fotoUrl(it.audio).then(u => { audioPronto[it.audio] = u; au.src = u; return au.play(); }).catch(err => { if (!audioPronto[it.audio] && err && err.name !== 'NotAllowedError') { au.replaceWith(ouvir); showNote(err.status === 404 ? 'Esse áudio já saiu do repositório.' : 'Não consegui baixar o áudio.', true); } });
+        });
+        el.append(ouvir);
+      }
       const tr = document.createElement('div'); tr.className = 'transcricao';
       tr.textContent = it.transcricao ? '“' + it.transcricao + '”' : 'transcrevendo…';
       el.append(tr);
@@ -1072,10 +1122,11 @@ function render(items, manterPosicao) {
       const m = document.createElement('div'); m.className = 'meta';
       const h = document.createElement('span'); h.textContent = it.time; m.append(h);
       if (it.from === 'may') {
-        // Igual ao WhatsApp: ✓ cinza = salvo no GitHub · ✓✓ colorido = a Lyra leu
+        // Igual ao WhatsApp: ✓ cinza = salvo no GitHub · ✓✓ colorido = a Lyra leu. Na Geral (grupo) só com resposta "↳" depois
+        // dela: o batimento do vigia é de quem bateu por último e acendia ✓✓ em tudo (05/11/2026)
         const tk = document.createElement('span'); tk.className = 'tick' + (it.lida ? ' lida' : '');
-        tk.innerHTML = icone(it.lida ? 'check2' : 'check'); tk.title = it.lida ? 'Lida pela Lyra' : 'Enviada'; tk.dataset.ts = tsDe(it);
-        if (!it.lida && vigiaViu > tsDe(it) + 90000) { tk.classList.add('lida'); tk.innerHTML = icone('check2'); tk.title = 'Lida pela Lyra'; }
+        tk.innerHTML = icone(it.lida ? 'check2' : 'check'); tk.title = it.lida ? (FILE === GERAL.arq ? 'Respondida' : 'Lida pela Lyra') : 'Enviada'; tk.dataset.ts = tsDe(it);
+        if (!it.lida && FILE !== GERAL.arq && vigiaViu > tsDe(it) + 90000) { tk.classList.add('lida'); tk.innerHTML = icone('check2'); tk.title = 'Lida pela Lyra'; }
         m.append(tk);
       }
       el.append(m);
@@ -1094,7 +1145,7 @@ function render(items, manterPosicao) {
     feed.scrollTop = a ? feed.scrollTop + a.getBoundingClientRect().top - topoFeed - ancY : feed.scrollHeight - feed.clientHeight - distFim;
   }
   if (document.visibilityState === 'visible' && FILE) {
-    store.set(vistoKey(FILE), String(items.length));
+    store.set(vistoKey(FILE), JSON.stringify(marcaDe(items[items.length - 1])));
     const c = conversas.find(x => x.arq === FILE);   // no PC a lista fica do lado: tira a bolinha na hora, sem esperar a próxima busca
     if (c && c.nao) { c.nao = 0; if (largo()) desenhaLista(); }
   }
@@ -1123,6 +1174,7 @@ function mostraFazendo(txt) {
 let vigiaViu = 0;
 const tsDe = it => { const m = String(it.day || '').match(/^(\d\d)\/(\d\d)\/(\d{4})$/); return m ? Date.parse(m[3] + '-' + m[2] + '-' + m[1] + 'T' + (it.time || '00:00')) : 0; };
 function marcaLidas() {
+  if (FILE === GERAL.arq) return;   // Geral: ✓✓ só por resposta (parse)
   feed.querySelectorAll('.msg.may .tick:not(.lida)').forEach(tk => {
     const t = +tk.dataset.ts; if (t && vigiaViu > t + 90000) { tk.classList.add('lida'); tk.innerHTML = icone('check2'); tk.title = 'Lida pela Lyra'; }
   });
@@ -1218,9 +1270,8 @@ async function enviar(p, el) {
         for (let k = 0; k < p.fotos.length; k++) {
           const ft = p.fotos[k]; if (ft.nome || !ft.b64) continue;
           infoPend(el, p.fotos.length > 1 ? 'foto ' + (k + 1) + '/' + p.fotos.length : 'subindo foto');
-          const d = new Date();
-          const nome = 'recados-fotos/' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + '-' + (k + 1) + '.' + (ft.ext || 'jpg');
-          await apiOk('https://api.github.com/repos/' + REPO + '/contents/' + nome, { method: 'PUT', body: JSON.stringify({ message: 'foto do iPhone', content: ft.b64 }) });
+          const nome = nomeArq('recados-fotos', new Date(), k + 1, ft.ext || 'jpg');
+          await apiOk(apiDe(nome), { method: 'PUT', body: JSON.stringify({ message: 'foto do iPhone', content: ft.b64 }) });
           ft.nome = nome; delete ft.b64;
         }
         p.fotos = p.fotos.filter(x => x.nome);
@@ -1393,7 +1444,10 @@ async function carregar() {
     if (gravado && gravado.arq === arq && Date.now() < gravado.ate && md && !jaGravado(md, gravado.linhas)) return f;   // API ainda com a versão de antes do PUT
     if (md) ultimaLeitura = { arq, f };
     let items; try { if (!md) throw 0; items = parse(md); } catch (e2) { items = lastItems; }   // md malformado não trava a conversa já carregada
-    const same = items.length === lastItems.length && items.every((it, i) => it.text === lastItems[i].text && it.from === lastItems[i].from && it.lida === lastItems[i].lida && it.foto === lastItems[i].foto && it.copiar === lastItems[i].copiar && it.transcricao === lastItems[i].transcricao);
+    // _raw cobre nome, carimbo, foto, áudio, citação e opções da linha; _linha = posição (Excluir); day = dia herdado/virada
+    const same = items.length === lastItems.length && items.every((it, i) => { const o = lastItems[i]; return it._raw === o._raw && it._linha === o._linha && it.text === o.text && it.day === o.day && it.lida === o.lida && it.transcricao === o.transcricao; });
+    ultimaLeituraOk = Date.now();
+    if (!forcar && tocando()) { showNote(''); return f; }   // áudio tocando: redesenhar recriava o <audio> e cortava; ao pausar ele busca de novo
     if (!same || forcar) { forcar = false; if (items.length < shown) shown = items.length; lastItems = items; render(items); }
     showNote(''); return f;
   }
@@ -1420,12 +1474,16 @@ const AVATAR_PAGES = {
 function fotoUrl(path, original) {   // original: pula a miniatura (ficha e zoom)
   const pg = !original && AVATAR_PAGES[path];
   if (pg) return fotos[pg] || (fotos[pg] = new Promise((ok, erro) => { const im = new Image(); im.onload = () => ok(pg); im.onerror = erro; im.src = pg; }).catch(() => fotoUrl(path, true)));
-  if (!fotos[path]) fotos[path] = api('https://api.github.com/repos/' + REPO + '/contents/' + path, { ...RAW, cache: 'default', tempo: 60000 })   // foto não muda: cache normal
+  if (!fotos[path]) fotos[path] = api(apiDe(path), { ...RAW, cache: 'default', tempo: 60000 })   // foto não muda: cache normal; apiDe codifica cada pedaço do caminho
     .then(r => { if (!r.ok) { const e = new Error('foto ' + r.status); e.status = r.status; throw e; } return r.arrayBuffer(); })
     .then(buf => URL.createObjectURL(new Blob([buf], { type: tipoDe(path) })))
     .catch(e => { if (e.status !== 404) delete fotos[path]; throw e; });   // 404 = foto já apagada: não busca de novo
   return fotos[path];
 }
+// Baixar no computador: link temporário que é solto logo depois (o das fotos da conversa fica, é o cache da tela)
+function baixaArquivo(blob, nome) { const a = document.createElement('a'), u = URL.createObjectURL(blob); a.href = u; a.download = nome; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 10000); }
+// nome único no repo: duas fotos (ou áudios) no mesmo segundo davam o mesmo nome e o PUT sem sha falhava
+const nomeArq = (pasta, d, k, ext) => pasta + '/' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + (k ? '-' + k : '') + '-' + Math.random().toString(36).slice(2, 6) + '.' + ext;
 // Decide o formato da foto que vai pro repo: com transparência (PNG/WebP/GIF com alfa) mantém PNG; senão JPEG como sempre.
 function formatoFoto(tipoOrigem, temAlfa) {
   if (temAlfa && /^image\/(png|webp|gif)$/i.test(tipoOrigem || '')) return { mime: 'image/png', ext: 'png' };
@@ -1554,10 +1612,9 @@ async function enviaAudio(blob) {
   let nome;
   try {
     const ext = /webm/.test(blob.type) ? 'webm' : 'm4a';
-    const d = new Date();
-    nome = 'recados-audios/' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + '.' + ext;
+    nome = nomeArq('recados-audios', new Date(), 0, ext);
     const b64 = await new Promise((ok, erro) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1]); fr.onerror = erro; fr.readAsDataURL(blob); });
-    await apiOk('https://api.github.com/repos/' + REPO + '/contents/' + nome, { method: 'PUT', body: JSON.stringify({ message: 'áudio do iPhone', content: b64 }) });
+    await apiOk(apiDe(nome), { method: 'PUT', body: JSON.stringify({ message: 'áudio do iPhone', content: b64 }) });
   } catch (e) { sending = false; syncBtn(); largaPendente(p.id); showNote(msgErro(e, 'mandar o áudio'), true); return; }
   // o áudio já subiu: a linha vai pelo mesmo envio das mensagens (sem passar pela caixa de texto, que pode ter rascunho);
   // se a linha não for, o balão fica "não foi" com o caminho guardado e dá pra reenviar (antes o áudio ficava órfão no repo)
@@ -1690,7 +1747,12 @@ function syncBtn() {
 // Toca OU navega com ↑↓ + Enter/Tab, igual autocomplete de verdade.
 const mencoesEl = document.getElementById('mencoes');
 let mencaoSel = -1;   // índice destacado na lista de sugestões; -1 = nenhuma (lista fechada)
-function nomesGrupo() { return [...new Set(Object.values(GRUPO).map(g => g.nome.replace(/\s*\(.*\)$/, '')))]; }
+// sugestão só de quem está na conversa (05/11/2026): os participantes da Geral; nas outras, quem já falou nela (vazia = os da Geral)
+function nomesGrupo() {
+  const conv = !FILE || FILE === GERAL.arq ? GERAL : convPorArq(FILE), falaram = lastItems.filter(x => x.quem).map(x => x.quem);
+  const chaves = conv.participantes || (falaram.length ? falaram : GERAL.participantes);
+  return [...new Set(chaves.filter(k => GRUPO[k]).map(k => GRUPO[k].nome.replace(/\s*\(.*\)$/, '')))];
+}
 function escolheMencao(n, m, antes, pos) {
   const comeco = antes.slice(0, antes.length - m[0].length) + m[1] + '@' + n + ' ';
   box.value = comeco + box.value.slice(pos);
@@ -1829,8 +1891,10 @@ async function lerArquivo(arq) { return (await apiOk(apiDe(arq), RAW)).text(); }
 function previaDe(it) {
   const quem = it.from === 'may' ? 'Você: ' : (GRUPO[it.quem] ? GRUPO[it.quem].nome + ': ' : '');
   const t = it.audio ? '\u0001mic\u0001Áudio' : (it.foto ? '\u0001cam\u0001' + (it.text || 'Foto') : it.text);
-  return quem + String(t || '').replace(/\s+/g, ' ').trim();
+  return quem + semMarkdown(String(t || '')).replace(/\s+/g, ' ').trim();
 }
+// prévia limpa (05/11/2026): sem **, crase, # de título, > de citação, [ ] de checklist e [texto](link) vira só o texto
+const semMarkdown = t => t.replace(/\[([^\]\n]+)\]\((?:https?:[^)\s]+)\)/g, '$1').replace(/\*\*([^*\n]+)\*\*/g, '$1').replace(/`([^`\n]+)`/g, '$1').replace(/(^|\n)\s*(?:#+\s+|>\s?|[-*]\s+\[[ xX]\]\s+)/g, '$1').replace(/__([^_\n]+)__/g, '$1');
 const caixaCache = {};   // arq -> { sha, md, items } da última leitura
 const parseSeguro = md => { try { return parse(md); } catch (e) { return []; } };   // uma caixa com formato ruim não pode derrubar a lista das outras
 function carregaLista(estrito) {
@@ -1851,9 +1915,7 @@ async function listar(estrito) {
     }));
     conversas = lidas.filter(Boolean).map(({ arq, md, items }) => {
       const slug = arq.replace(/^.*\//, '').replace(/\.md$/i, '');
-      const visto = parseInt(store.get(vistoKey(arq)) || '0', 10);
-      if (visto > items.length) store.set(vistoKey(arq), String(items.length));   // arquivo encolheu (Lyra limpou)
-      const nao = items.slice(Math.min(visto, items.length)).filter(x => x.from !== 'may').length;
+      const nao = items.slice(primeiroNaoVisto(items, lerVisto(arq, items))).filter(x => x.from !== 'may').length;
       const ult = items[items.length - 1];
       const comHora = [...items].reverse().find(x => x.time);
       return { arq, foto: fotoGrupoDe(md), nome: arq === GERAL.arq ? GERAL.nome : (tituloDe(md) || slug), n: items.length, nao, previa: ult ? previaDe(ult) : 'Sem recados ainda', day: comHora ? comHora.day : '', time: comHora ? comHora.time : '' };
@@ -1861,7 +1923,7 @@ async function listar(estrito) {
     const ts = c => { const m = c.day.match(/^(\d\d)\/(\d\d)\/(\d{4})$/); return m ? Date.parse(m[3] + '-' + m[2] + '-' + m[1] + 'T' + (c.time || '00:00')) : 0; };
     const outras = conversas.filter(c => c.arq !== GERAL.arq).sort((a, b) => ts(b) - ts(a));
     conversas = [...conversas.filter(c => c.arq === GERAL.arq), ...outras];
-    ultimaLista = Date.now();
+    ultimaLista = ultimaLeituraOk = Date.now();
     checaStatus();
     showNote('');
     if (!FILE || largo()) desenhaLista();
@@ -1914,7 +1976,7 @@ function abrir(c) {
   FILE = c.arq; API = apiDe(c.arq); nomeConv = c.nome; fotoConv = c.foto || (conversas.find(x => x.arq === c.arq) || {}).foto || '';
   logoEl.style.backgroundImage = ''; convAv.style.backgroundImage = ''; convAv.hidden = true;
   if (fotoConv) fotoUrl(fotoConv).then(u => { if (FILE === c.arq) { logoEl.style.backgroundImage = 'url(' + u + ')'; convAv.style.backgroundImage = 'url(' + u + ')'; convAv.hidden = false; } }).catch(() => {});
-  vistosAntes = parseInt(store.get(vistoKey(FILE)) || '0', 10);
+  vistoMarca = undefined;
   shown = -1; lastItems = []; janela = 10; inicio = 0; forcar = true; carregando = null;
   novasLaEmCima = 0; desceQtd.hidden = true; desce.hidden = true;
   respondendo = null; citando.hidden = true; mostraFazendo(''); showNote('');
@@ -1975,8 +2037,25 @@ abreMenu.onclick = () => {
     const lista = document.createElement('div'); lista.className = 'p-lista'; c.append(lista);
     lerArquivo('menu/menu.json').then(t => JSON.parse(t).itens).catch(() => [{ tipo: 'catalogo', icone: 'bag', nome: 'Catálogo', sub: 'piscina, piso, borda, churrasqueira…' }])
       .then(itens => itens.forEach(m => lista.append(botao(m.icone, m.nome, m.sub, () => abreItemMenu(m)))));
+    const s = document.createElement('div'); s.className = 'p-sec'; s.textContent = 'App'; c.append(s);
+    c.append(botao('question', 'Diagnóstico', 'versão, última leitura, limite do GitHub', abreDiagnostico));
   });
 };
+// Diagnóstico (05/11/2026): só leitura, pra "tá lento / não chega" virar dado
+function abreDiagnostico() {
+  tela('Diagnóstico', c => {
+    const x = document.createElement('div'); x.className = 'p-texto'; c.append(x);
+    const linha = (t, v) => { const p = document.createElement('p'), b = document.createElement('b'); b.textContent = t + ': '; p.append(b, v); x.append(p); };
+    const perm = window.Notification ? { granted: 'ligada', denied: 'bloqueada (Ajustes → Notificações)', default: 'ainda não pedida' }[Notification.permission] || Notification.permission : 'este navegador não tem';
+    linha('Versão do app', VERSAO || 'sem versão');
+    linha('Última leitura que deu certo', ultimaLeituraOk ? horaDe(ultimaLeituraOk) + ' (' + fmtVisto(new Date(ultimaLeituraOk).toISOString()).texto.replace(/^offline · visto /, '') + ')' : 'nenhuma ainda');
+    linha('Limite do GitHub restante', limiteResta || 'ainda não sei');
+    if (Date.now() < limiteAte) linha('Parado pelo limite até', horaDe(limiteAte));
+    linha('Chave', chaveVencida ? 'vencida' : token ? 'ok' : 'sem chave');
+    linha('Notificação', perm);
+    linha('Internet', navigator.onLine === false ? 'sem conexão' : 'conectado');
+  });
+}
 function abreItemMenu(m) {
   if (m.tipo === 'catalogo') return abreCatalogo();
   if (m.tipo === 'imagens') return abreImagens(m);
@@ -2152,7 +2231,7 @@ function abreAlbum(g, m) {
       if (!arqs.length) { showNote('As imagens ainda estão carregando.', true); return; }
       try {
         if (navigator.canShare && navigator.canShare({ files: arqs })) { await navigator.share({ files: arqs }); return; }   // iOS: "Salvar N imagens"
-        for (const f of arqs) { const a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = f.name; document.body.append(a); a.click(); a.remove(); await new Promise(r => setTimeout(r, 350)); }
+        for (const f of arqs) { baixaArquivo(f, f.name); await new Promise(r => setTimeout(r, 350)); }
       } catch (err) { if (err && err.name !== 'AbortError') showNote('Não consegui baixar as imagens.', true); }
     };
     caixa.append(bt); c.append(caixa);
@@ -2238,7 +2317,7 @@ function abreAgenda(m) {
       }
       if (tp.textContent.trim()) cx.append(tp);
       const corpoEl = document.createElement('div'); neg(corpoEl, corpo); cx.append(corpoEl);
-      if (foto) { const im = document.createElement('img'); im.alt = ''; cx.append(im); fotoUrl(foto).then(u => { im.src = u; im.onclick = () => abreZoom(u); }).catch(() => im.remove()); }
+      if (foto) { const im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; im.decoding = 'async'; cx.append(im); fotoUrl(foto).then(u => { im.src = u; im.onclick = () => abreZoom(u); }).catch(() => im.remove()); }
       el.append(dt, cx); c.append(el); ult = el;
       el.onclick = () => abreFicha({ titulo: rot || 'Agenda', foto, corpo: el.cloneNode(true), contexto: 'Agenda (' + (rot || corpo.slice(0, 40)) + ')' });
     });
@@ -2278,7 +2357,7 @@ function abreFicha({ titulo, foto, corpo, contexto, fotos }) {
   const h = document.createElement('h3'); h.textContent = titulo || '';
   const x = document.createElement('button'); x.type = 'button'; x.innerHTML = icone('close'); x.setAttribute('aria-label', 'Fechar');
   topo.append(h, x); cx.append(topo);
-  if (foto) { const im = document.createElement('img'); im.alt = titulo || ''; cx.append(im); fotoUrl(foto).then(u => { im.src = u; im.onclick = () => abreZoom(u, foto, fotos); }).catch(() => im.remove()); }
+  if (foto) { const im = document.createElement('img'); im.alt = titulo || ''; im.decoding = 'async'; cx.append(im); fotoUrl(foto).then(u => { im.src = u; im.onclick = () => abreZoom(u, foto, fotos); }).catch(() => im.remove()); }
   if (corpo) { const c = document.createElement('div'); c.className = 'f-corpo'; c.append(corpo); cx.append(c); }
   cx.append(notaBox(contexto || titulo || 'Anotação'));
   f.append(cx); document.body.append(f);
@@ -2323,6 +2402,7 @@ async function abreCatalogo() {
     catalogo.categorias.forEach(cat => c.append(botao(cat.icone, cat.nome, cat.itens.length + ' opções', () => abreCategoria(cat))));
   });
 }
+const linkSeguro = u => /^https?:\/\//i.test(String(u || '').trim());
 const freteDe = it => /frete gr[aá]tis/i.test(it.detalhe || '') ? ['frete grátis', 1] : ['frete: consultar no app', 0];
 function precoLinha(it) {   // preço em destaque + frete ao lado
   const pl = document.createElement('div'); pl.className = 'preco-l';
@@ -2333,7 +2413,7 @@ function precoLinha(it) {   // preço em destaque + frete ao lado
 function fotoDe(it, cat, zoom) {   // faixa com o ícone da categoria (sem foto, ou enquanto carrega); a foto entra por cima
   const ph = document.createElement('div'); ph.className = 'ph' + (it.foto ? '' : ' sem'); ph.innerHTML = icone(cat.icone || 'bag');
   if (it.foto) {
-    const img = document.createElement('img'); img.alt = it.nome; img.loading = 'lazy'; ph.append(img);
+    const img = document.createElement('img'); img.alt = it.nome; img.loading = 'lazy'; img.decoding = 'async'; ph.append(img);
     fotoUrl(it.foto).then(u => { img.onload = () => img.classList.add('ok'); img.src = u; if (zoom) img.onclick = () => abreZoom(u); }).catch(() => img.remove());
   }
   return ph;
@@ -2359,9 +2439,10 @@ function abreItem(cat, it) {   // detalhe: foto grande (toque amplia), dados, li
     d.append(fotoDe(it, cat, true), h, precoLinha(it));
     if (it.medidas) { const m = document.createElement('div'); m.className = 'med'; m.innerHTML = icone('ruler') + ' '; m.append(document.createTextNode(it.medidas)); d.append(m); }
     if (it.detalhe) { const t = document.createElement('div'); t.className = 'det'; t.textContent = it.detalhe; d.append(t); }
-    if ((it.links || []).length) {
+    const links = (it.links || []).filter(l => Array.isArray(l) && linkSeguro(l[1]));   // vindo de JSON: só http(s), nada de "javascript:"
+    if (links.length) {
       const ls = document.createElement('div'); ls.className = 'links';
-      it.links.forEach(([nome, url]) => { const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = nome + ' ↗'; ls.append(a); });
+      links.forEach(([nome, url]) => { const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = nome + ' ↗'; ls.append(a); });
       d.append(ls);
     }
     // Manda direto pra caixa da Geral e fica no item (ela pediu pra não ser levada pra tela de mensagens).
@@ -2410,7 +2491,7 @@ function abreZoom(src, path, listaFotos) {   // listaFotos: as fotos do álbum (
       const blob = await (await fetch(im.src)).blob();
       const arq = new File([blob], nome, { type: blob.type || tipoDe(nome) });
       if (navigator.canShare && navigator.canShare({ files: [arq] })) { await navigator.share({ files: [arq] }); return; }   // iOS: folha de compartilhar → "Salvar imagem"
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nome; document.body.append(a); a.click(); a.remove();
+      baixaArquivo(blob, nome);
     } catch (err) { if (err && err.name !== 'AbortError') showNote('Não consegui salvar a foto.', true); }
   };
   x.onclick = e => { e.stopPropagation(); fecha(); };
@@ -2470,8 +2551,12 @@ let poll = null;
 // Academia (May, 26/10): no horário do treino a página abre SEMPRE no checklist de hoje; a seta ← volta pra conversa.
 // menu/treino.json → abrir: { dias: [1..5] (0 = dom), de: 'HH:MM', ate: 'HH:MM', viagem: id, lista: id }
 // Além disso (May, 27/10): começou um treino (marcou 1 item) => reabre nele a qualquer hora do dia, até marcar tudo.
+// Não abre por cima de quem está respondendo (05/11/2026): veio de notificação, citação, rascunho, foto na bandeja ou gravando.
+const ocupadaNaConversa = () => Date.now() - pushEm < 60000 || !!respondendo || !!box.value.trim() || anexos.length > 0 || !!gravador;
 async function abreTreinoSeHora() {
+  if (ocupadaNaConversa()) return;
   let d; try { d = JSON.parse(await lerArquivo('menu/treino.json')); } catch (e) { return; }
+  if (ocupadaNaConversa()) return;   // o push pode ter chegado enquanto lia o treino.json
   d.viagens.forEach(x => { x._arq = 'menu/treino.json'; });
   zeraSemanaTreino(d.viagens);
   const hoje = diaLocal();
@@ -2491,15 +2576,16 @@ async function abreTreinoSeHora() {
   if (!l || !painel.hidden) return;
   if (store.get('treino-feito') === hoje) return;   // terminou o treino hoje: não abre mais (May, 26/10)
   if (marcados(v, l).size >= totalItens(l)) { store.set('treino-feito', hoje); return; }   // tudo marcado = terminou
+  if (store.get('treino-auto') === hoje) return;   // pelo horário abre sozinho só 1x por dia; fechou = o Treino continua no Menu (05/11/2026)
+  store.set('treino-auto', hoje);
   menu.hidden = true; painel.hidden = false; pilha = []; abreChecklist(v, l);
 }
 function start() {
   chaveVencida = false; aplicaLargura();
   mais.hidden = false;
-  if (trataHashPush()) { /* veio da notificação: abre a conversa dela já respondendo */ }
-  else if (MODO_WEB) mostraLista();
-  else abrir(ultimaConv()).catch(() => {});   // celular: Trabalho no horário de trabalho, senão Geral
-  if (!MODO_WEB) abreTreinoSeHora();   // na hora da academia, abre (e reabre) direto no treino de hoje
+  const veioDoPush = trataHashPush();   // veio da notificação: abre a conversa dela já respondendo
+  if (!veioDoPush) { if (MODO_WEB) mostraLista(); else abrir(ultimaConv()).catch(() => {}); }   // celular: Trabalho no horário de trabalho, senão Geral
+  if (!MODO_WEB && !veioDoPush) abreTreinoSeHora();   // na hora da academia, abre direto no treino de hoje (não se veio de notificação)
   // Conversa aberta: busca a cada 4 s (com 304 quase de graça); lista de conversas: a cada 15 s; status: 45-60 s (só com a página na tela).
   // Parado: chave vencida (401), limite do GitHub até o reset, GitHub fora (5xx) por 30 s.
   clearInterval(poll);
