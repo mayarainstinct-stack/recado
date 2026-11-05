@@ -153,7 +153,7 @@ textarea:focus-visible { outline: none; }
 .msg.may .quem.eu .letra:nth-child(2) { color: #CA8A04; }
 .msg.may .quem.eu .letra:nth-child(3) { color: #1E8A40; }
 .msg.may .quem.eu .avatar { background-color: transparent; box-shadow: none; background-size: 104%; background-repeat: no-repeat; background-position: center; width: 46px; height: 46px; }   /* 104%: o brilho do aro dela deixava o círculo menor que o dos robôs (May, 05/11/2026) */   /* a imagem dela já é redonda e transparente, sem aro (May, 05/11/2026) */
-.msg .quem { font-size: 14px; font-weight: 700; margin-bottom: 4px; padding-right: 26px; color: var(--quem); display: flex; align-items: center; gap: 6px; }
+.msg .quem { font-size: 16px; font-weight: 700; margin-bottom: 4px; padding-right: 26px; color: var(--quem); display: flex; align-items: center; gap: 6px; }
 .quem .rotulo { display: flex; flex-direction: column; min-width: 0; line-height: 1.15; }
 .quem .cargo { font-size: 11.5px; font-weight: 500; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .quem .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--quem); color: var(--quem-fg); font-size: 17px;   /* era 26px, pequeno demais no celular (May, 05/11/2026) */
@@ -740,7 +740,7 @@ let inicio = 0;
 
 // Cores = as que cada projeto usa no VS Code (borda/realce do .vscode/settings.json); Lyra = rosa dela.
 const GRUPO = {
-  lyra: { nome: 'Lyra', cargo: 'Secretária', cor: '#E1306C', texto: '#FFFFFF', foto: 'recados-fotos/20261031-005747-avatar-lyra.png' },
+  lyra: { nome: 'Lyra', cargo: 'Secretária e Organizadora', cor: '#E1306C', texto: '#FFFFFF', foto: 'recados-fotos/20261031-005747-avatar-lyra.png' },
   // Trabalho (May, 03/11/2026): "um L pra Lyra, um K pro KDS, um R pro RM, um P pro promotor, um C pro checklist, um A pro acompanhamento"
   rm: { nome: 'RM · Recebimento', cor: '#22C55E', texto: '#052E16' },
   'simp-mobile': { nome: 'Checklist', cor: '#2DD4BF', texto: '#042F2E' },
@@ -749,16 +749,16 @@ const GRUPO = {
   promotor: { nome: 'Promotor', cor: '#F59E0B', texto: '#2D1A02' },
   kds: { nome: 'KDS', cor: '#EAB308', texto: '#2A2002' },
   orfeu: { nome: 'Orfeu (PC1)', cargo: 'Técnico e Produtor', cor: '#E31B23', texto: '#2D0A0A', foto: 'recados-fotos/20261031-005747-avatar-orfeu.png' },
-  nyx: { nome: 'Nyx (PC2)', cargo: 'Especialista em Jogos', cor: '#6FCF00', texto: '#0E2A00', foto: 'recados-fotos/20261031-005747-avatar-nyx.png' },
-  vega: { nome: 'Vega (PC3)', cargo: 'Suporte', cor: '#1D4ED8', texto: '#06173A', foto: 'recados-fotos/20261031-005747-avatar-vega.png' },
-  pc4: { nome: 'PC4', cargo: 'Mensageiro', cor: '#FFCB05', texto: '#2A2002', foto: 'recados-fotos/20261031-005747-avatar-hermes.png' },
+  nyx: { nome: 'Nyx (PC2)', cargo: 'Gamer e Testadora', cor: '#6FCF00', texto: '#0E2A00', foto: 'recados-fotos/20261031-005747-avatar-nyx.png' },
+  vega: { nome: 'Vega (PC3)', cargo: 'Suporte e Operação', cor: '#1D4ED8', texto: '#06173A', foto: 'recados-fotos/20261031-005747-avatar-vega.png' },
+  pc4: { nome: 'PC4', cargo: 'Mensageiro e Operador de Live', cor: '#FFCB05', texto: '#2A2002', foto: 'recados-fotos/20261031-005747-avatar-hermes.png' },
   // aliases: mensagens antigas (antes de escolherem nome) ficaram assinadas "PC1/PC2/PC3"
   pc1: { nome: 'Orfeu (PC1)', cargo: 'Técnico e Produtor', cor: '#E31B23', texto: '#2D0A0A' },
-  pc2: { nome: 'Nyx (PC2)', cargo: 'Especialista em Jogos', cor: '#6FCF00', texto: '#0E2A00' },
-  pc3: { nome: 'Vega (PC3)', cargo: 'Suporte', cor: '#1D4ED8', texto: '#06173A' },
-  hermes: { nome: 'Hermes (PC4)', cargo: 'Mensageiro', cor: '#FFCB05', texto: '#2A2002', foto: 'recados-fotos/20261031-005747-avatar-hermes.png' },   // alias de pc4, mesma cor
+  pc2: { nome: 'Nyx (PC2)', cargo: 'Gamer e Testadora', cor: '#6FCF00', texto: '#0E2A00' },
+  pc3: { nome: 'Vega (PC3)', cargo: 'Suporte e Operação', cor: '#1D4ED8', texto: '#06173A' },
+  hermes: { nome: 'Hermes (PC4)', cargo: 'Mensageiro e Operador de Live', cor: '#FFCB05', texto: '#2A2002', foto: 'recados-fotos/20261031-005747-avatar-hermes.png' },   // alias de pc4, mesma cor
   darksigma: { nome: 'DarkSigma', cor: '#9333EA', texto: '#FFFFFF', foto: 'recados-fotos/20261031-010359-1.jpg' },   // hipotetico, roxo igual o Sigma do conselho
-  sigma: { nome: 'Sigma', cargo: 'Revisor', cor: '#9333EA', texto: '#FFFFFF', foto: 'recados-fotos/avatar-sigma-96.png' }   // Revisor-Chefe (05/11/2026); sem ele aqui o "↳ Sigma" grudava na mensagem de cima
+  sigma: { nome: 'Sigma', cargo: 'Revisor e Crítico', cor: '#9333EA', texto: '#FFFFFF', foto: 'recados-fotos/avatar-sigma-96.png' }   // Revisor-Chefe (05/11/2026); sem ele aqui o "↳ Sigma" grudava na mensagem de cima
 };
 // A May também aparece com robozinho no Geral, como "agente humana", nas duas cores dela (May, 05/11/2026)
 const EU = { nome: 'May', cargo: 'Dev, Design e Música', cor: '#E31B23', cor2: '#22C55E', texto: '#FFFFFF', foto: 'recados-fotos/avatar-may-192.png' };
