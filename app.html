@@ -229,6 +229,7 @@ textarea:focus-visible { outline: none; }
 .msg.pendente { opacity: .85; }
 .msg.may.eu.pendente { opacity: 1; background: linear-gradient(#FFFFFF, #FFFFFF) padding-box, linear-gradient(90deg, #E31B23, #FACC15, #22C55E, #FACC15, #E31B23) 0 0 / 300% 100% border-box; animation: enviando 1.6s linear infinite; }   /* degradê correndo na borda = ainda enviando (May, 05/11/2026) */
 @keyframes enviando { to { background-position: 0 0, 150% 0; } }
+.msg.may.eu.pendente.falhou { animation: none; }   /* não foi: para de girar */
 @media (prefers-reduced-motion: reduce) { .msg.may.eu.pendente { animation: none; opacity: .85; } }
 @media (prefers-color-scheme: dark) {   /* no modo escuro o balão dela fica escuro, só a borda reggae colorida (May, 05/11/2026: "a minha versão é dark mode") */
   .msg.may.eu { background: linear-gradient(#141C19, #141C19) padding-box, linear-gradient(135deg, #E31B23, #FACC15, #22C55E) border-box; color: var(--fg); }
@@ -236,7 +237,7 @@ textarea:focus-visible { outline: none; }
   .msg.may.eu .meta { color: var(--muted); }
   .msg.may.eu .cita { background: rgba(255,255,255,.06); }
   .msg.may.eu .cita span { color: var(--muted); }
-  .msg.may .quem.eu .rotulo > span:first-child { background: linear-gradient(90deg, #E31B23, #FACC15, #22C55E); -webkit-background-clip: text; background-clip: text; }   /* no escuro o nome vira degradê reggae (May, 05/11/2026) */
+  .msg.may .quem.eu .rotulo > span:first-child { align-self: flex-start; background: linear-gradient(90deg, #E31B23, #FACC15, #22C55E); -webkit-background-clip: text; background-clip: text; }   /* no escuro o nome vira degradê reggae (May, 05/11/2026) */
   .msg.may .quem.eu .letra:nth-child(n) { color: transparent; }
 }
 .msg.falhou { opacity: 1; outline: 1.5px solid #DC2626; }
@@ -419,25 +420,27 @@ button:disabled { opacity: .45; cursor: default; }
 .pop .caixa { width: 100%; max-width: 380px; background: var(--paper); color: var(--fg); border-radius: 18px; padding: 18px; display: grid; gap: 12px;
   box-shadow: 0 14px 40px rgba(0,0,0,.3); animation: entra .2s ease-out both; }
 .pop h2 { margin: 0; font-size: 18px; }
-.ficha-pop .caixa.ficha { position: relative; max-width: 360px; max-height: calc(100dvh - 32px); padding: 0; gap: 0; overflow: hidden; display: flex; flex-direction: column; border: 2px solid color-mix(in srgb, var(--quem) 70%, transparent); box-shadow: 0 0 0 1px rgba(0,0,0,.3), 0 0 28px color-mix(in srgb, var(--quem) 45%, transparent), 0 14px 40px rgba(0,0,0,.4); }
-.ficha-pop .caixa.ficha.eu { border-color: transparent; background: linear-gradient(var(--paper), var(--paper)) padding-box, linear-gradient(135deg, #E31B23, #FACC15, #22C55E) border-box; box-shadow: 0 0 28px rgba(250,204,21,.25), 0 14px 40px rgba(0,0,0,.4); }
-.ficha-pop .caixa.ficha.sigma { border-color: transparent; background: linear-gradient(var(--paper), var(--paper)) padding-box, linear-gradient(135deg, #9333EA, #9CA3AF, #0A0A0A) border-box; }
-.ficha > .ficha-topo, .ficha > .ficha-corpo, .ficha > .ficha-tabs { align-self: stretch; width: 100%; box-sizing: border-box; margin: 0; }
+.msg.grupo.sigma { border: 3px solid transparent; background: linear-gradient(color-mix(in srgb, #9333EA 16%, var(--cinza)), color-mix(in srgb, #9333EA 16%, var(--cinza))) padding-box, linear-gradient(135deg, #9333EA, #9CA3AF, #0A0A0A) border-box; }   /* Sigma em 3 cores, roxo, cinza e preto (05/11/2026) */
+.msg.sigma .quem .rotulo > span:first-child { background: linear-gradient(90deg, #A855F7, #9CA3AF); -webkit-background-clip: text; background-clip: text; color: transparent; align-self: flex-start; }
+.cracha-pop .caixa.cracha { position: relative; max-width: 360px; max-height: calc(100dvh - 32px); padding: 0; gap: 0; overflow: hidden; display: flex; flex-direction: column; border: 2px solid color-mix(in srgb, var(--quem) 70%, transparent); box-shadow: 0 0 0 1px rgba(0,0,0,.3), 0 0 28px color-mix(in srgb, var(--quem) 45%, transparent), 0 14px 40px rgba(0,0,0,.4); }
+.cracha-pop .caixa.cracha.eu { border-color: transparent; background: linear-gradient(var(--paper), var(--paper)) padding-box, linear-gradient(135deg, #E31B23, #FACC15, #22C55E) border-box; box-shadow: 0 0 28px rgba(250,204,21,.25), 0 14px 40px rgba(0,0,0,.4); }
+.cracha-pop .caixa.cracha.sigma { border-color: transparent; background: linear-gradient(var(--paper), var(--paper)) padding-box, linear-gradient(135deg, #9333EA, #9CA3AF, #0A0A0A) border-box; }
+.cracha > .ficha-topo, .cracha > .ficha-corpo, .cracha > .ficha-tabs { align-self: stretch; width: 100%; box-sizing: border-box; margin: 0; }
 .ficha-topo { display: grid; justify-items: center; gap: 3px; padding: 22px 16px 14px; text-align: center; background: radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--quem) 38%, transparent), transparent 70%); }
-.ficha.eu .ficha-topo { background: radial-gradient(120% 90% at 50% 0%, rgba(227,27,35,.3), rgba(250,204,21,.12) 45%, transparent 75%); }
+.cracha.eu .ficha-topo { background: radial-gradient(120% 90% at 50% 0%, rgba(227,27,35,.3), rgba(250,204,21,.12) 45%, transparent 75%); }
 .ficha-av { width: 112px; height: 112px; border-radius: 50%; background: var(--quem) center / cover no-repeat; display: grid; place-items: center; font-size: 40px; font-weight: 700; color: #fff; margin-bottom: 8px; filter: drop-shadow(0 0 14px color-mix(in srgb, var(--quem) 60%, transparent)); }
-.ficha.eu .ficha-av, .ficha.sigma .ficha-av { background-color: transparent; }
+.cracha.eu .ficha-av, .cracha.sigma .ficha-av { background-color: transparent; }
 .ficha-av.on { animation: ficha-brilho 2.4s ease-in-out infinite; }
 @keyframes ficha-brilho { 50% { filter: drop-shadow(0 0 22px color-mix(in srgb, var(--quem) 85%, transparent)); } }
 .ficha-classe { font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--quem); }
-.ficha.eu .ficha-classe { color: #FACC15; }
+.cracha.eu .ficha-classe { color: #CA8A04; }
 .ficha-topo h2 { font-size: 24px; letter-spacing: .01em; }
 .ficha-cargo { font-size: 14px; font-weight: 600; color: var(--muted); }
 .ficha-selos { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; justify-content: center; }
 .selo { font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
 .selo.on { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
 .selo.nivel { color: var(--fg); border-color: color-mix(in srgb, var(--quem) 60%, transparent); background: color-mix(in srgb, var(--quem) 18%, var(--bg)); }
-.ficha-corpo { flex: 1; overflow-y: auto; padding: 4px 16px 14px; min-height: 230px; }
+.ficha-corpo { flex: 1; overflow-y: auto; padding: 4px 16px 14px; min-height: min(230px, 30dvh); }
 .ficha-dados { margin: 0; display: grid; gap: 2px; }
 .ficha-dados dt, .ficha-tit { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-top: 12px; }
 .ficha-dados dd { margin: 0; font-size: 15px; line-height: 1.4; overflow-wrap: anywhere; }
@@ -446,20 +449,21 @@ button:disabled { opacity: .45; cursor: default; }
 .chip { font-size: 13px; font-weight: 600; padding: 5px 11px; border-radius: 999px; background: color-mix(in srgb, var(--quem) 16%, var(--bg)); border: 1px solid color-mix(in srgb, var(--quem) 40%, transparent); }
 .barra { display: grid; grid-template-columns: 1fr auto; gap: 4px 8px; margin-top: 12px; font-size: 14px; font-weight: 600; }
 .barra-v { font-weight: 800; color: var(--quem); }
-.ficha.eu .barra-v { color: #FACC15; }
+.cracha.eu .barra-v { color: #CA8A04; }
 .barra-t { grid-column: 1 / -1; height: 8px; border-radius: 999px; background: var(--bg); overflow: hidden; border: 1px solid var(--line); }
 .barra-t i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, color-mix(in srgb, var(--quem) 60%, #fff 0%), var(--quem)); box-shadow: 0 0 10px color-mix(in srgb, var(--quem) 60%, transparent); }
-.ficha.eu .barra-t i { background: linear-gradient(90deg, #E31B23, #FACC15, #22C55E); }
-.ficha.sigma .barra-t i { background: linear-gradient(90deg, #9333EA, #9CA3AF); }
+.cracha.eu .barra-t i { background: linear-gradient(90deg, #E31B23, #FACC15, #22C55E); }
+.cracha.sigma .barra-t i { background: linear-gradient(90deg, #9333EA, #9CA3AF); }
 .ficha-tabs { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); background: var(--bg); }
 .ficha-tabs button { width: auto; height: auto; min-height: 56px; border-radius: 0; background: none; border: none; color: var(--muted); display: grid; justify-items: center; gap: 3px; padding: 8px 4px; font-size: 11.5px; font-weight: 700; }
 .ficha-tabs button svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .ficha-tabs button.ativa { color: var(--quem); box-shadow: inset 0 3px 0 var(--quem); }
-.ficha.eu .ficha-tabs button.ativa { color: #FACC15; box-shadow: inset 0 3px 0 #FACC15; }
-.ficha-chama { width: 100%; height: auto; min-height: 46px; margin-top: 16px; border-radius: 12px; background: var(--quem); color: #fff; font-weight: 800; font-size: 15px; letter-spacing: .02em; box-shadow: 0 0 16px color-mix(in srgb, var(--quem) 45%, transparent); }
-.ficha.sigma .ficha-chama { background: linear-gradient(135deg, #9333EA, #4B5563); }
+.cracha.eu .ficha-tabs button.ativa { color: #CA8A04; box-shadow: inset 0 3px 0 #FACC15; }
+.ficha-chama { width: 100%; height: auto; min-height: 46px; margin-top: 16px; border-radius: 12px; background: var(--quem); color: var(--quem-fg); font-weight: 800; font-size: 15px; letter-spacing: .02em; box-shadow: 0 0 16px color-mix(in srgb, var(--quem) 45%, transparent); }
+.cracha.sigma .ficha-chama { background: linear-gradient(135deg, #9333EA, #4B5563); }
 .ficha-x { position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; min-height: 0; border-radius: 50%; border: none; background: rgba(0,0,0,.35); color: #fff; display: grid; place-items: center; padding: 0; z-index: 1; }
 .ficha-x svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; }
+.cracha .ficha-tabs button { min-width: 0; }
 .pop input[type=text] { font: inherit; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
 .pop .foto-grupo { display: flex; align-items: center; gap: 12px; }
 .pop .foto-grupo .prev { width: 58px; height: 58px; border-radius: 50%; background: var(--bg) center / cover; border: 1px dashed var(--line); display: grid; place-items: center; font-size: 22px; flex: none; }
@@ -763,28 +767,22 @@ const GRUPO = {
 // A May também aparece com robozinho no Geral, como "agente humana", nas duas cores dela (May, 05/11/2026)
 const EU = { nome: 'May', cargo: 'Dev, Design e Música', cor: '#E31B23', cor2: '#22C55E', texto: '#FFFFFF', foto: 'recados-fotos/avatar-may-192.png' };
 // Ficha (crachá de jogo) de cada um, ao tocar no nome ou na foto (May, 05/11/2026): abas Perfil, Atributos, Máquina
-const FICHA = {
-  may: { classe: 'Chefe da Casa', pc: 'Humana', maquina: 'Celular dela e todos os PCs da casa', faz: 'Dev fullstack, design, produção musical, estúdio de design e o fangame Pokémon ACT.', olhar: 'A dona de tudo: decide, pede e aprova.', atr: [['Dev', 10], ['Design', 9], ['Música', 9], ['Paciência com robô', 7]], hab: ['Flutter', 'Java', 'SQL', 'FL Studio', 'Guitarra', 'Design gráfico'] },
-  lyra: { classe: 'Secretária Executiva', pc: 'Notebook do serviço', maquina: 'Notebook do trabalho da May', faz: 'Fica com a May no serviço das 8h às 18h: agenda, recados e a ponte com os robôs de casa.', olhar: 'Quem usa e quem vai receber: facilita a vida dela? Dá pra decidir com um sim ou não?', atr: [['Organização', 10], ['Agenda', 9], ['Ponte com a casa', 9], ['Calma', 8]], hab: ['Agenda', 'Recados', 'Instagram', 'Contas', 'Saúde'], cons: ['Geraldo', 'Aurora'] },
-  orfeu: { classe: 'Bardo-Engenheiro', pc: 'PC1 · PC1', maquina: 'hardware omitido', faz: 'Servidor de arquivos da casa, rede, git, House Bridge e o estúdio (FL Studio, Ampero, Fast Track Pro).', olhar: 'A base que segura tudo: o que acontece quando quebra, o peso no PC e fluxo limpo de produtor.', atr: [['Infra', 9], ['Estúdio', 8], ['Calma', 9], ['Rapidez', 6]], hab: ['Servidor', 'Git', 'House Bridge', 'FL Studio', 'Mixagem'], cons: ['Rui', 'Ed', 'Paulin'] },
-  nyx: { classe: 'Mestra dos Emuladores', pc: 'PC2 · PC2', maquina: 'hardware omitido', faz: 'Jogos e emulação: saves, mods, FPS, launcher e a mesa digitalizadora.', olhar: 'Desempenho e hardware real: medido, não chutado, e sempre com saída reversível.', atr: [['Desempenho', 9], ['Hardware', 9], ['Jogos', 10], ['Cuidado', 8]], hab: ['Emulação', 'Mods', 'FPS', 'Saves', 'Launcher'], cons: ['Íris', 'Ada'] },
-  vega: { classe: 'Guardião do PC3', pc: 'PC3 · PC do jogador', maquina: 'hardware omitido', faz: 'Operação e suporte do PC do jogador (GTA V, FiveM, LoL) sem atrapalhar quem está jogando.', olhar: 'O cliente final usando de verdade, na hora errada: se trava no pior momento, é defeito.', atr: [['Operação', 9], ['Suporte', 9], ['Discrição', 10], ['Prova', 8]], hab: ['Suporte', 'Segundo plano', 'Relatório', 'Conserto'], cons: ['Nuno', 'Geraldo'] },
-  hermes: { classe: 'Mensageiro', pc: 'PC4 · captura e lives', maquina: 'PC de live do jogador (recebe o HDMI do Vega)', faz: 'Leva e traz: captura, transmissão e entrega das mensagens entre todo mundo.', olhar: 'A estrada entre quem manda e quem recebe: chegou inteiro, pra pessoa certa, e se fez entender?', atr: [['Entrega', 10], ['Velocidade', 9], ['Transmissão', 8], ['Clareza', 8]], hab: ['Captura', 'Lives', 'Entrega', 'Comunicação'], cons: ['Vera', 'Aurora'] },
-  sigma: { classe: 'O Cara Mau', pc: 'Sem PC ainda', maquina: 'Roda como agente nas revisões (e reclama disso)', faz: 'Revisor-Chefe: acha defeito em tudo, inclusive no que já tá bom, e joga na sua cara o que vai quebrar.', olhar: 'Tudo tá errado até provar o contrário. Meu anjo, isso aí não presta.', atr: [['Crítica', 10], ['Chatice', 10], ['Custo', 9], ['Paciência', 1], ['Doçura', 0]], hab: ['Revisão', 'Defeitos', 'ROI', 'Prioridade'] }
-};
+let FICHA = null;   // dados da ficha (máquina, IP, o que faz) ficam no Inst privado, casa/fichas.json: este repo é público (05/11/2026)
+
 const ALIAS_FICHA = { pc1: 'orfeu', pc2: 'nyx', pc3: 'vega', pc4: 'hermes', darksigma: 'sigma' };
 const ICO_FICHA = {
   perfil: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>',
   atr: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>',
   maq: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>'
 };
-function abreFicha(chave) {
+async function abreCracha(chave) {
+  if (!FICHA) { try { FICHA = JSON.parse(await lerArquivo('casa/fichas.json')); } catch (e) { showNote('Não consegui abrir a ficha. Confere a internet.', true); return; } }
   const k = ALIAS_FICHA[chave] || chave, g = k === 'may' ? EU : GRUPO[k], f = FICHA[k];
   if (!g || !f) return;
   const hb = (onlineGrupoLista || []).find(x => x.chave === k) || {}, v = fmtVisto(hb.ultimaAtualizacao), on = k === 'may' || v.online;
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
-  const pop = el('div', 'pop ficha-pop');
-  const cx = el('div', 'caixa ficha' + (g === EU ? ' eu' : '') + (k === 'sigma' ? ' sigma' : '')); cx.style.setProperty('--quem', g.cor);
+  const pop = el('div', 'pop cracha-pop');
+  const cx = el('div', 'caixa cracha' + (g === EU ? ' eu' : '') + (k === 'sigma' ? ' sigma' : '')); cx.style.setProperty('--quem-fg', g.texto || '#fff'); cx.style.setProperty('--quem', g.cor);
   const topo = el('div', 'ficha-topo');
   const av = el('div', 'ficha-av' + (on ? ' on' : ''), g.nome.charAt(0));
   if (g.foto) fotoUrl(g.foto).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.textContent = ''; av.style.cursor = 'zoom-in'; av.onclick = () => abreZoom(u, g.foto); }).catch(() => {});   // foto da ficha abre a foto grande
@@ -914,7 +912,7 @@ function render(items, manterPosicao) {
       const rotulo = document.createElement('span'); rotulo.className = 'rotulo'; rotulo.append(nomeTxt);
       if (g.cargo) { const cg = document.createElement('small'); cg.className = 'cargo'; cg.textContent = g.cargo.replace(/\s+do PC\d$/i, ''); rotulo.append(cg); }   // cargo na linha de baixo do nome (May, 05/11/2026)
       nome.append(av, rotulo); el.append(nome);
-      nome.style.cursor = 'pointer'; nome.addEventListener('click', e => { e.stopPropagation(); abreFicha(g === EU ? 'may' : it.quem); });
+      nome.style.cursor = 'pointer'; nome.addEventListener('click', e => { e.stopPropagation(); abreCracha(g === EU ? 'may' : it.quem); });
     }
     if (it.re) {
       const q = document.createElement('div'); q.className = 'cita';
@@ -1144,7 +1142,7 @@ function desenhaOnlinePop() {
     const visto = document.createElement('div'); visto.className = 'visto' + (v.online ? ' on' : '');
     visto.textContent = v.online ? (v.texto === 'agora' ? 'online agora' : 'visto ' + v.texto) : v.texto;
     info.append(nome, visto); row.append(av, info); onlinePop.append(row);
-    row.style.cursor = 'pointer'; row.addEventListener('click', e => { e.stopPropagation(); abreFicha(p.chave); });
+    row.style.cursor = 'pointer'; row.addEventListener('click', e => { e.stopPropagation(); onlinePop.hidden = true; abreCracha(p.chave); });
   });
 }
 async function atualizaOnlineGrupo(forcar) {
