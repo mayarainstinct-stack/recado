@@ -836,17 +836,19 @@ function render(items, manterPosicao) {
 const syncEl = document.getElementById('statusbar');
 const statusTxt = document.getElementById('status');
 // "Lyra pesquisando…" embaixo da conversa enquanto ela trabalha no recado
-let fazendoEl = null;
+// na Geral (grupo) é uma linha por agente ativo agora ("Orfeu está pesquisando…"), vinda do online-<chave>.json de cada um
+let fazendoEls = [];
 function mostraFazendo(txt) {
-  if (!txt) { if (fazendoEl) { fazendoEl.remove(); fazendoEl = null; } return; }
-  if (!fazendoEl) {
-    fazendoEl = document.createElement('div'); fazendoEl.className = 'digitando fazendo';
-    fazendoEl.innerHTML = '<i></i><i></i><i></i><span></span>';
+  const txts = (Array.isArray(txt) ? txt : [txt]).filter(Boolean);
+  while (fazendoEls.length > txts.length) fazendoEls.pop().remove();
+  while (fazendoEls.length < txts.length) {
+    const el = document.createElement('div'); el.className = 'digitando fazendo';
+    el.innerHTML = '<i></i><i></i><i></i><span></span>'; fazendoEls.push(el);
   }
-  fazendoEl.querySelector('span').textContent = txt;
-  if (fazendoEl.parentNode !== feed || feed.lastElementChild !== fazendoEl) {
+  txts.forEach((t, i) => { fazendoEls[i].querySelector('span').textContent = t; });
+  if (fazendoEls.length && fazendoEls.some((el, i) => el.parentNode !== feed || feed.children[feed.children.length - fazendoEls.length + i] !== el)) {
     const perto = feed.scrollHeight - feed.scrollTop - feed.clientHeight < 120;
-    feed.append(fazendoEl); if (perto) feed.scrollTop = feed.scrollHeight;
+    feed.append(...fazendoEls); if (perto) feed.scrollTop = feed.scrollHeight;
   }
 }
 // O agente (Claude no notebook) grava a hora no branch "online" a cada ~1 min enquanto o vigia roda.
@@ -885,9 +887,10 @@ async function checaOnline() {
     // status "caixas/x.md|texto" só aparece naquela conversa; sem prefixo, só na Geral
     let st = on ? linhas.slice(2).join(' ').trim() : '', alvo = GERAL.arq;
     const mm = st.match(/^(caixas\/[^|]+\.md)\|(.*)$/); if (mm) { alvo = mm[1]; st = mm[2].trim(); }
-    mostraFazendo(FILE && FILE === alvo ? st : '');
+    const grupo = FILE && convPorArq(FILE).participantes;   // em grupo o "fazendo" é por agente (atualizaOnlineGrupo), o online.txt global é de quem bateu por último
+    if (!grupo) mostraFazendo(FILE && FILE === alvo ? st : '');
     syncEl.classList.toggle('ausente', ausente);
-    if (ausente) { syncEl.classList.remove('off'); statusTxt.textContent = 'Agente ausente'; mostraFazendo(''); return; }
+    if (ausente) { syncEl.classList.remove('off'); statusTxt.textContent = 'Agente ausente'; if (!grupo) mostraFazendo(''); atualizaOnlineGrupo(); return; }
     syncEl.classList.toggle('off', !on);
     if (on) statusTxt.textContent = 'Agente online agora';
     else { const min = Math.round((Date.now() - ts) / 60000);
@@ -911,6 +914,15 @@ function fmtVisto(iso) {
   }
   if (min < 1) return { texto: 'agora', online: true };
   return { texto: 'há ' + Math.round(min) + ' min', online: true };
+}
+function fazendoGrupo() {
+  return onlineGrupoLista.filter(p => {
+    const t = String(p.fazendo || '').trim(), em = Date.parse(p.fazendoEm || p.ultimaAtualizacao || '');
+    return t && fmtVisto(p.ultimaAtualizacao).online && isFinite(em) && Date.now() - em < 600000;   // texto esquecido (agente não limpou) some depois de 10 min
+  }).map(p => {
+    const t = String(p.fazendo).trim(), n = nomeDe(p);
+    return t.toLowerCase().startsWith(n.toLowerCase()) ? t : n + ' está ' + (/^\p{Lu}\p{Ll}/u.test(t) ? t.charAt(0).toLowerCase() + t.slice(1) : t);
+  });
 }
 function nomeDe(p) { return p.nome || (GRUPO[p.chave] ? GRUPO[p.chave].nome.replace(/\s*\(.*\)$/, '') : p.chave); }
 function desenhaOnlinePop() {
@@ -938,6 +950,7 @@ async function atualizaOnlineGrupo(forcar) {
   const conv = FILE ? convPorArq(FILE) : null;
   if (!conv || !conv.participantes) { onlineBadge.hidden = true; onlinePop.hidden = true; syncEl.hidden = false; return; }
   onlineBadge.hidden = false;
+  mostraFazendo(fazendoGrupo());
   syncEl.hidden = true;   // em grupo (ex. Casa) o selo "N agentes online agora" substitui o selo global único, não mostra os dois
   if (!forcar && (Date.now() - ultimaOnlineGrupo < 20000 || onlineGrupoCarregando)) return;
   ultimaOnlineGrupo = Date.now();
@@ -948,7 +961,9 @@ async function atualizaOnlineGrupo(forcar) {
       .then(r => { if (!r.ok) throw new Error('http ' + r.status); return r.text(); })
       .then(txt => { try { return { chave: k, ...JSON.parse(txt) }; } catch (e) { return { chave: k }; } }, () => ({ chave: k }))   // 404 (ou outro erro) = esse agente ainda não bateu heartbeat, mas aparece na lista como "nunca visto"
   )).then(lista => {
+    if (FILE !== conv.arq) return;
     onlineGrupoLista = lista;   // sempre os participantes todos (mesmo quem nunca apareceu), pra lista nunca ficar vazia
+    mostraFazendo(fazendoGrupo());
     const n = onlineGrupoLista.filter(p => fmtVisto(p.ultimaAtualizacao).online).length;
     onlineBadge.textContent = n + (n === 1 ? ' agente online agora' : ' agentes online agora');
     if (!onlinePop.hidden) desenhaOnlinePop();
