@@ -455,48 +455,97 @@ button:disabled { opacity: .45; cursor: default; }
 .msg.grupo.sigma { border: 3px solid transparent; background: linear-gradient(color-mix(in srgb, #9333EA 16%, var(--cinza)), color-mix(in srgb, #9333EA 16%, var(--cinza))) padding-box, linear-gradient(135deg, #9333EA, #9CA3AF, #0A0A0A) border-box; }   /* Sigma em 3 cores, roxo, cinza e preto (05/11/2026) */
 .msg.sigma .quem .rotulo > span:first-child { color: #A855F7; align-self: flex-start; }   /* cor sólida de reserva; o degradê só onde o recorte funciona */
 @supports ((-webkit-background-clip: text) or (background-clip: text)) { .msg.sigma .quem .rotulo > span:first-child { background: linear-gradient(90deg, #A855F7, #9CA3AF); -webkit-background-clip: text; background-clip: text; color: transparent; } }
-.cracha-pop .caixa.cracha { position: relative; max-width: 360px; max-height: calc(100dvh - 32px); padding: 0; gap: 0; overflow: hidden; display: flex; flex-direction: column; border: 2px solid color-mix(in srgb, var(--quem) 70%, transparent); box-shadow: 0 0 0 1px rgba(0,0,0,.3), 0 0 28px color-mix(in srgb, var(--quem) 45%, transparent), 0 14px 40px rgba(0,0,0,.4); }
-.cracha-pop .caixa.cracha.eu { border-color: transparent; background: linear-gradient(var(--paper), var(--paper)) padding-box, linear-gradient(135deg, #E31B23, #FACC15, #22C55E) border-box; box-shadow: 0 0 28px rgba(250,204,21,.25), 0 14px 40px rgba(0,0,0,.4); }
-.cracha-pop .caixa.cracha.sigma { border-color: transparent; background: linear-gradient(var(--paper), var(--paper)) padding-box, linear-gradient(135deg, #9333EA, #9CA3AF, #0A0A0A) border-box; }
-.cracha > .ficha-topo, .cracha > .ficha-corpo, .cracha > .ficha-tabs { align-self: stretch; width: 100%; box-sizing: border-box; margin: 0; }
-.ficha-topo { display: grid; justify-items: center; gap: 3px; padding: 22px 16px 14px; text-align: center; background: radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--quem) 38%, transparent), transparent 70%); }
-.cracha.eu .ficha-topo { background: radial-gradient(120% 90% at 50% 0%, rgba(227,27,35,.3), rgba(250,204,21,.12) 45%, transparent 75%); }
-.ficha-av { width: 112px; height: 112px; border-radius: 50%; background: var(--quem) center / cover no-repeat; display: grid; place-items: center; font-size: 40px; font-weight: 700; color: #fff; margin-bottom: 8px; filter: drop-shadow(0 0 14px color-mix(in srgb, var(--quem) 60%, transparent)); }
-.cracha.eu .ficha-av, .cracha.sigma .ficha-av { background-color: transparent; }
-.ficha-av.on { animation: ficha-brilho 2.4s ease-in-out infinite; }
-@keyframes ficha-brilho { 50% { filter: drop-shadow(0 0 22px color-mix(in srgb, var(--quem) 85%, transparent)); } }
-.ficha-classe { font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--quem); }
-.cracha.eu .ficha-classe { color: #CA8A04; }
-.ficha-topo h2 { font-size: 24px; letter-spacing: .01em; }
-.ficha-cargo { font-size: 14px; font-weight: 600; color: var(--muted); }
-.ficha-selos { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; justify-content: center; }
-.selo { font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
-.selo.on { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
-.selo.nivel { color: var(--fg); border-color: color-mix(in srgb, var(--quem) 60%, transparent); background: color-mix(in srgb, var(--quem) 18%, var(--bg)); }
-.ficha-corpo { flex: 1; overflow-y: auto; padding: 4px 16px 14px; min-height: min(230px, 30dvh); }
-.ficha-dados { margin: 0; display: grid; gap: 2px; }
-.ficha-dados dt, .ficha-tit { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-top: 12px; }
-.ficha-dados dd { margin: 0; font-size: 15px; line-height: 1.4; overflow-wrap: anywhere; }
-.ficha-bloco { display: grid; gap: 6px; }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { font-size: 13px; font-weight: 600; padding: 5px 11px; border-radius: 999px; background: color-mix(in srgb, var(--quem) 16%, var(--bg)); border: 1px solid color-mix(in srgb, var(--quem) 40%, transparent); }
 .barra { display: grid; grid-template-columns: 1fr auto; gap: 4px 8px; margin-top: 12px; font-size: 14px; font-weight: 600; }
-.barra-v { font-weight: 800; color: var(--quem); }
-.cracha.eu .barra-v { color: #CA8A04; }
-.barra-t { grid-column: 1 / -1; height: 8px; border-radius: 999px; background: var(--bg); overflow: hidden; border: 1px solid var(--line); }
-.barra-t i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, color-mix(in srgb, var(--quem) 60%, #fff 0%), var(--quem)); box-shadow: 0 0 10px color-mix(in srgb, var(--quem) 60%, transparent); }
-.cracha.eu .barra-t i { background: linear-gradient(90deg, #E31B23, #FACC15, #22C55E); }
-.cracha.sigma .barra-t i { background: linear-gradient(90deg, #9333EA, #9CA3AF); }
-.ficha-tabs { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); background: var(--bg); }
-.ficha-tabs button { width: auto; height: auto; min-height: 56px; border-radius: 0; background: none; border: none; color: var(--muted); display: grid; justify-items: center; gap: 3px; padding: 8px 4px; font-size: 11.5px; font-weight: 700; }
-.ficha-tabs button svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.ficha-tabs button.ativa { color: var(--quem); box-shadow: inset 0 3px 0 var(--quem); }
-.cracha.eu .ficha-tabs button.ativa { color: #CA8A04; box-shadow: inset 0 3px 0 #FACC15; }
-.ficha-chama { width: 100%; height: auto; min-height: 46px; margin-top: 16px; border-radius: 12px; background: var(--quem); color: var(--quem-fg); font-weight: 800; font-size: 15px; letter-spacing: .02em; box-shadow: 0 0 16px color-mix(in srgb, var(--quem) 45%, transparent); }
-.cracha.sigma .ficha-chama { background: linear-gradient(135deg, #9333EA, #4B5563); }
-.ficha-x { position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; min-height: 0; border-radius: 50%; border: none; background: rgba(0,0,0,.35); color: #fff; display: grid; place-items: center; padding: 0; z-index: 1; }
-.ficha-x svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; }
-.cracha .ficha-tabs button { min-width: 0; }
+.cracha-pop { background: rgba(0,0,0,.62); padding: 12px 16px; }
+.ct { width: min(100%, 372px); display: grid; gap: 10px; animation: entra .2s ease-out both; --escuro: color-mix(in srgb, var(--quem) 7%, #030303); --borda: linear-gradient(145deg, color-mix(in srgb, var(--quem) 65%, #fff), var(--quem) 35%, color-mix(in srgb, var(--quem) 60%, #000)); --claro: color-mix(in srgb, var(--quem) 78%, #fff); }
+.ct.eu { --borda: linear-gradient(150deg, #E31B23, #FACC15 50%, #22C55E); }
+.ct.sigma { --borda: linear-gradient(150deg, #9333EA, #9CA3AF 55%, #0A0A0A); --claro: #C084FC; }
+.ct-x { justify-self: end; width: 36px; height: 36px; min-height: 0; border-radius: 50%; border: none; background: rgba(255,255,255,.16); color: #fff; display: grid; place-items: center; padding: 0; }
+.ct svg { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.ct-x svg { width: 16px; height: 16px; stroke-width: 2.6; }
+.ct-cena { perspective: 1400px; }
+.ct-carta { display: grid; height: min(calc((100vw - 32px) * 1.4), 520px, calc(100dvh - 156px)); transform-style: preserve-3d; transition: transform .55s cubic-bezier(.3,.7,.2,1); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.ct-carta.virada { transform: rotateY(180deg); }
+.ct-face { grid-area: 1 / 1; min-height: 0; padding: 6px; border-radius: 22px; background: var(--borda); -webkit-backface-visibility: hidden; backface-visibility: hidden; box-shadow: 0 0 28px color-mix(in srgb, var(--quem) 38%, transparent), 0 18px 44px rgba(0,0,0,.5); color: #fff; font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,.6), 0 0 12px rgba(0,0,0,.3); }
+.ct-verso { transform: rotateY(180deg); }
+.ct-in { height: 100%; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; box-shadow: inset 0 0 0 1px rgba(255,255,255,.14);
+  background: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1.5px) 0 0 / 9px 9px, repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0 1px, transparent 1px 7px), linear-gradient(158deg, var(--quem) 0%, color-mix(in srgb, var(--quem) 45%, var(--escuro)) 22%, var(--escuro) 60%); }
+.ct.eu .ct-in { background: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1.5px) 0 0 / 9px 9px, repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0 1px, transparent 1px 7px), radial-gradient(90% 55% at 100% 100%, rgba(34,197,94,.22), transparent 70%), radial-gradient(70% 40% at 100% 0%, rgba(250,204,21,.16), transparent 70%), linear-gradient(158deg, #E31B23 0%, #6E0E12 24%, #120606 66%); }
+.ct.sigma .ct-in { background: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1.5px) 0 0 / 9px 9px, repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0 1px, transparent 1px 7px), linear-gradient(158deg, #9333EA 0%, #4B2A6B 22%, #2A2D33 46%, #060507 78%); }
+.ct-cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 14px 0; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; }
+.ct-id { font-size: 15px; letter-spacing: .05em; padding: 3px 10px; border-radius: 8px; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.2); }
+.ct-quem { display: grid; grid-template-columns: 118px 1fr; gap: 14px; align-items: center; padding: 14px 14px 4px; }
+.ct-av { width: 118px; height: 118px; border-radius: 50%; background: color-mix(in srgb, var(--quem) 55%, #000) center / cover no-repeat; display: grid; place-items: center; font-size: 46px; filter: drop-shadow(0 6px 14px rgba(0,0,0,.45)) drop-shadow(0 0 16px color-mix(in srgb, var(--quem) 50%, transparent)); }
+.ct-av.foto { background-color: transparent; cursor: zoom-in; }
+.ct-nome { font-size: 28px; line-height: 1.05; overflow-wrap: anywhere; }
+.ct-cargo { font-size: 14px; line-height: 1.25; margin-top: 5px; }
+.ct-classe { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; margin-top: 6px; color: rgba(255,255,255,.8); }
+.ct-pills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.ct-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; padding: 3px 8px; border-radius: 999px; background: rgba(0,0,0,.32); border: 1px solid rgba(255,255,255,.14); }
+.ct-pill i { width: 7px; height: 7px; border-radius: 50%; background: #9CA3AF; }
+.ct-pill.on i { background: #4ADE80; box-shadow: 0 0 8px #4ADE80; }
+.ct-faz { margin: 6px 14px 0; font-size: 13px; line-height: 1.4; }
+.ct-frente .ct-olhar { margin: 10px 14px 0; }
+.ct-maq { margin: 10px 14px 0; display: flex; gap: 6px; flex-wrap: wrap; font-size: 11.5px; }
+.ct-maq span { display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px; border-radius: 8px; background: rgba(0,0,0,.32); border: 1px solid rgba(255,255,255,.12); }
+.ct-maq svg { width: 13px; height: 13px; }
+.ct-tit { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.75); }
+.ct-ins { margin: auto 14px 0; padding: 9px 8px 10px; border-radius: 14px; background: rgba(0,0,0,.34); border: 1px solid rgba(255,255,255,.1); display: grid; gap: 8px; }
+.ct-ins-fila { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.ct-in1 { display: grid; justify-items: center; align-content: start; gap: 4px; text-align: center; font-size: 10.5px; line-height: 1.2; overflow-wrap: anywhere; }
+.ct-in1 svg { width: 38px; height: 38px; stroke: none; filter: drop-shadow(0 2px 4px rgba(0,0,0,.5)); }
+.ct-in1 .a { fill: var(--quem); stroke: rgba(255,255,255,.85); stroke-width: 1.6; } .ct-in1 .b { fill: rgba(0,0,0,.32); } .ct-in1 .c { fill: #fff; }
+.ct.eu .ct-in1:not(.vazia):nth-child(3n+1) .a { fill: #E31B23; } .ct.eu .ct-in1:not(.vazia):nth-child(3n+2) .a { fill: #EAB308; } .ct.eu .ct-in1:not(.vazia):nth-child(3n) .a { fill: #16A34A; }
+.ct.sigma .ct-in1:not(.vazia):nth-child(even) .a { fill: #6B7280; }
+.ct-in1.vazia { color: rgba(255,255,255,.45); } .ct-in1.vazia .a { fill: none; stroke: rgba(255,255,255,.35); stroke-dasharray: 3 3; } .ct-in1.vazia .b, .ct-in1.vazia .c { display: none; }
+.ct-in1 small { font-size: 9.5px; color: rgba(255,255,255,.7); }
+.ct-pe { padding: 10px 14px 12px; display: grid; gap: 6px; }
+.ct-chama { width: 100%; height: auto; min-height: 44px; border-radius: 12px; background: var(--quem); color: var(--quem-fg); font-weight: 800; font-size: 15px; text-shadow: none; box-shadow: 0 4px 14px rgba(0,0,0,.35); }
+.ct.sigma .ct-chama { background: linear-gradient(135deg, #9333EA, #4B5563); }
+.ct-vira { width: 100%; height: auto; min-height: 30px; background: none; border: none; color: rgba(255,255,255,.75); display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-shadow: inherit; padding: 2px; }
+.ct-vira svg { width: 15px; height: 15px; }
+.ct-vcab { display: grid; grid-template-columns: 40px 1fr auto; gap: 10px; align-items: center; padding: 12px 14px 8px; border-bottom: 1px solid rgba(255,255,255,.12); }
+.ct-vcab .ct-av { width: 40px; height: 40px; font-size: 18px; filter: drop-shadow(0 2px 6px rgba(0,0,0,.5)); }
+.ct-vcab b { display: block; font-size: 17px; line-height: 1.1; } .ct-vcab .ct-tit { margin-top: 2px; }
+.ct-painel { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 4px 14px 12px; }
+.ct-painel .ct-tit { margin: 14px 0 6px; }
+.ct-bar { display: grid; grid-template-columns: 1fr auto; gap: 3px 8px; margin-top: 7px; font-size: 13px; }
+.ct-bar em { font-style: normal; color: var(--claro); }
+.ct-seg { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; }
+.ct-seg i { height: 9px; border-radius: 3px; background: rgba(255,255,255,.13); }
+.ct-seg i.on { background: var(--claro); box-shadow: 0 0 6px color-mix(in srgb, var(--quem) 70%, transparent); }
+.ct.eu .ct-seg i.on:nth-child(-n+3) { background: #F43F46; } .ct.eu .ct-seg i.on:nth-child(n+4):nth-child(-n+7) { background: #FACC15; } .ct.eu .ct-seg i.on:nth-child(n+8) { background: #4ADE80; }
+.ct.sigma .ct-seg i.on:nth-child(n+6) { background: #9CA3AF; }
+.ct-ff { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ct-ff > div { padding: 9px 10px; border-radius: 12px; background: rgba(0,0,0,.32); border: 1px solid rgba(255,255,255,.1); font-size: 12.5px; line-height: 1.35; }
+.ct-ff .ct-tit { display: flex; align-items: center; gap: 4px; margin: 0 0 4px; }
+.ct-ff svg { width: 13px; height: 13px; stroke-width: 2.8; }
+.ct-ff .forte svg { color: #4ADE80; } .ct-ff .fraco svg { color: #F87171; }
+.ct-olhar { margin-top: 12px; font-size: 12.5px; line-height: 1.4; padding-left: 10px; border-left: 3px solid var(--claro); }
+.ct-selos { display: flex; flex-wrap: wrap; gap: 6px; }
+.ct-selos span { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 5px 9px; border-radius: 8px; background: rgba(0,0,0,.32); border: 1px solid color-mix(in srgb, var(--claro) 55%, transparent); }
+.ct-selos svg { width: 12px; height: 12px; }
+.ct-placar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 10px; }
+.ct-placar div { display: grid; justify-items: center; padding: 8px 4px; border-radius: 12px; background: rgba(0,0,0,.34); border: 1px solid rgba(255,255,255,.12); font-size: 10.5px; text-align: center; }
+.ct-placar b { font-size: 24px; line-height: 1.1; color: var(--claro); }
+.ct-dados { margin: 0; display: grid; gap: 8px; padding-top: 10px; }
+.ct-dados div { display: grid; grid-template-columns: 22px 1fr; gap: 2px 8px; padding: 9px 10px; border-radius: 12px; background: rgba(0,0,0,.3); }
+.ct-dados svg { width: 18px; height: 18px; grid-row: span 2; color: var(--claro); }
+.ct-dados dt { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.72); }
+.ct-dados dd { margin: 0; font-size: 13.5px; line-height: 1.35; overflow-wrap: anywhere; }
+.ct-tempo { list-style: none; margin: 0; padding: 0; display: grid; }
+.ct-tempo li { position: relative; padding: 0 0 12px 22px; font-size: 13px; line-height: 1.35; }
+.ct-tempo li::before { content: ""; position: absolute; left: 3px; top: 4px; width: 9px; height: 9px; border-radius: 50%; background: var(--claro); box-shadow: 0 0 8px var(--quem); }
+.ct-tempo li::after { content: ""; position: absolute; left: 7px; top: 16px; bottom: 0; width: 2px; background: rgba(255,255,255,.2); }
+.ct-tempo li:last-child::after { display: none; }
+.ct-tempo small { display: block; font-size: 10.5px; color: rgba(255,255,255,.7); letter-spacing: .04em; }
+.ct-painel .ct-ins-fila { row-gap: 12px; padding: 10px 4px; border-radius: 14px; background: rgba(0,0,0,.3); }
+.ct-abas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 4px; border-radius: 16px; background: #0B0B0E; border: 1px solid rgba(255,255,255,.1); }
+.ct-abas button { width: auto; height: auto; min-width: 0; min-height: 54px; border-radius: 12px; border: none; background: none; color: rgba(255,255,255,.62); display: grid; justify-items: center; align-content: center; gap: 3px; padding: 6px 2px; font-size: 11px; font-weight: 800; }
+.ct-abas button svg { width: 22px; height: 22px; }
+.ct-abas button.ativa { color: #fff; background: color-mix(in srgb, var(--quem) 30%, transparent); box-shadow: inset 0 -3px 0 var(--claro); }
+.ct.eu .ct-abas button.ativa { background: linear-gradient(135deg, rgba(227,27,35,.3), rgba(250,204,21,.18), rgba(34,197,94,.24)); box-shadow: inset 0 -3px 0 #FACC15; }
+@media (prefers-reduced-motion: reduce) { .ct-carta { transition: none; } }
 .pop input[type=text] { font: inherit; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
 .pop .foto-grupo { display: flex; align-items: center; gap: 12px; }
 .pop .foto-grupo .prev { width: 58px; height: 58px; border-radius: 50%; background: var(--bg) center / cover; border: 1px dashed var(--line); display: grid; place-items: center; font-size: 22px; flex: none; }
@@ -883,50 +932,98 @@ function garanteGrupoTrab() {
   }).catch(() => {}).finally(() => { grupoTrabP = null; });
 }
 const EU = { nome: 'May', cargo: 'Dev, Designer e Musicista', cor: '#E31B23', cor2: '#22C55E', texto: '#FFFFFF', foto: 'recados-fotos/avatar-may-192.png' };
-// Ficha (crachá de jogo) de cada um, ao tocar no nome ou na foto (May, 05/11/2026): abas Perfil, Atributos, Máquina
+// Ficha (cartão de treinador) de cada um, ao tocar no nome ou na foto (May, 05/11/2026): frente = identidade; verso = Atributos, Máquina, Conquistas
+// Abas embaixo e a virada são uma coisa só: Perfil = frente; as outras 3 = verso com aquele painel. Tocar no cartão vira pro último painel do verso.
 let FICHA = null;   // dados da ficha (máquina, IP, o que faz) ficam no Inst privado, casa/fichas.json: este repo é público (05/11/2026)
 
 // "↳ DarkSigma: ..." (nome antigo) = Sigma; não é falante separado (May, 05/11/2026: no app só May, Lyra, Orfeu, Nyx, Vega, Hermes e Sigma)
 const ALIAS_QUEM = { darksigma: 'sigma' };
 const ALIAS_FICHA = { pc1: 'orfeu', pc2: 'nyx', pc3: 'vega', pc4: 'hermes', darksigma: 'sigma' };
+const svgF = d => '<svg viewBox="0 0 24 24" aria-hidden="true">' + d + '</svg>';
 const ICO_FICHA = {
-  perfil: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>',
-  atr: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>',
-  maq: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>'
+  perfil: svgF('<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>'),
+  atr: svgF('<path d="M5 20V10M12 20V4M19 20v-7"/>'),
+  maq: svgF('<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>'),
+  conq: svgF('<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8"/>'),
+  vira: svgF('<path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/>'),
+  fechar: svgF('<path d="M6 6l12 12M18 6L6 18"/>'),
+  ip: svgF('<path d="M2 9a15 15 0 0 1 20 0M5.5 12.5a10 10 0 0 1 13 0M9 16a5 5 0 0 1 6 0"/><circle cx="12" cy="19.5" r=".8"/>'),
+  sobe: svgF('<path d="M12 19V5M6 11l6-6 6 6"/>'),
+  desce: svgF('<path d="M12 5v14M6 13l6 6 6-6"/>'),
+  estrela: svgF('<path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/>'),
+  pessoa: svgF('<circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3-5.5 7-5.5s7 2 7 5.5"/>'),
+  onde: svgF('<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>'),
+  relogio: svgF('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
+  agora: svgF('<path d="M4 12h3l3-7 4 14 3-7h3"/>')
 };
+const INSIGNIA = '<svg viewBox="0 0 40 40" aria-hidden="true"><path class="a" d="M20 2l15 8.5v19L20 38 5 29.5v-19z"/><path class="b" d="M20 7l11 6.3v13.4L20 33 9 26.7V13.3z"/><path class="c" d="M20 12.5l2.3 4.7 5.2.8-3.8 3.7.9 5.2-4.6-2.4-4.6 2.4.9-5.2-3.8-3.7 5.2-.8z"/></svg>';
 async function abreCracha(chave) {
   if (!FICHA) { try { FICHA = JSON.parse(await lerArquivo('casa/fichas.json')); } catch (e) { showNote('Não consegui abrir a ficha. Confere a internet.', true); return; } }
   const k = ALIAS_FICHA[chave] || chave, g = k === 'may' ? EU : GRUPO[k], f = FICHA[k];
   if (!g || !f) return;
   const hb = (onlineGrupoLista || []).find(x => x.chave === k) || {}, v = fmtVisto(hb.ultimaAtualizacao), on = k === 'may' || v.online;
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
-  const pop = el('div', 'pop cracha-pop');
-  const cx = el('div', 'caixa cracha' + (g === EU ? ' eu' : '') + (k === 'sigma' ? ' sigma' : '')); cx.style.setProperty('--quem-fg', g.texto || '#fff'); cx.style.setProperty('--quem', g.cor);
-  const topo = el('div', 'ficha-topo');
-  const av = el('div', 'ficha-av' + (on ? ' on' : ''), g.nome.charAt(0));
-  if (g.foto) fotoUrl(g.foto, true).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.textContent = ''; av.style.cursor = 'zoom-in'; av.onclick = () => abreZoom(u, g.foto); }).catch(() => {});   // foto da ficha abre a foto grande (original: a miniatura de 96 px fica borrada em 112 px)
-  const nv = f.atr.reduce((a, x) => a + x[1], 0);   // "nível" = soma dos atributos, só pra brincar
-  topo.append(av, el('div', 'ficha-classe', f.classe), el('h2', '', g.nome.replace(/\s*\(PC\d\)$/i, '')),
-    el('div', 'ficha-cargo', (g.cargo || (g === EU ? 'Agente humana' : '')).replace(/\s+do PC\d$/i, '')),
-    el('div', 'ficha-selos'));
-  const selos = topo.lastChild;
-  selos.append(el('span', 'selo nivel', 'Nv. ' + nv), el('span', 'selo' + (on ? ' on' : ''), k === 'may' ? 'online agora' : (v.online ? (v.texto === 'agora' ? 'online agora' : 'visto ' + v.texto) : v.texto)));
-  const dados = (pares) => { const dl = el('dl', 'ficha-dados'); pares.forEach(([t, d]) => { if (!d) return; dl.append(el('dt', '', t), el('dd', '', d)); }); return dl; };
-  const abaPerfil = el('div', 'ficha-aba');
-  abaPerfil.append(dados([['O que faz', f.faz], ['Meu olhar', f.olhar], ['Fazendo agora', hb.fazendo || '']]));
-  if (f.cons) { const c = el('div', 'ficha-bloco'); c.append(el('div', 'ficha-tit', 'Conselheiros que vivem em mim')); const w = el('div', 'chips'); f.cons.forEach(n => w.append(el('span', 'chip', n))); c.append(w); abaPerfil.append(c); }
-  if (k !== 'may') { const chama = el('button', 'ficha-chama', 'Mandar recado pra ' + g.nome.replace(/\s*\(PC\d\)$/i, '')); chama.type = 'button'; chama.onclick = () => { const t = document.getElementById('texto'); if (t) { const n = '@' + g.nome.replace(/\s*\(PC\d\)$/i, '') + ' '; if (!t.value.startsWith(n)) t.value = n + t.value; t.dispatchEvent(new Event('input')); pop.remove(); t.focus(); } }; abaPerfil.append(chama); }
-  const abaAtr = el('div', 'ficha-aba');
-  f.atr.forEach(([n, val]) => { const b = el('div', 'barra'); b.append(el('span', 'barra-n', n), el('span', 'barra-v', val)); const t = el('div', 'barra-t'); const fill = el('i'); fill.style.width = (val * 10) + '%'; t.append(fill); b.append(t); abaAtr.append(b); });
-  const hc = el('div', 'ficha-bloco'); hc.append(el('div', 'ficha-tit', 'Habilidades')); const hw = el('div', 'chips'); f.hab.forEach(n => hw.append(el('span', 'chip', n))); hc.append(hw); abaAtr.append(hc);
-  const abaMaq = el('div', 'ficha-aba');
-  abaMaq.append(dados([['Onde roda', f.pc], ['IP', hb.ip || (['may', 'lyra', 'sigma'].includes(k) ? '' : 'ainda não mandou')], ['Máquina', f.maquina], ['Último sinal', k === 'may' ? '' : v.texto]]));
-  const abas = [['perfil', 'Perfil', abaPerfil], ['atr', 'Atributos', abaAtr], ['maq', 'Máquina', abaMaq]];
-  const corpo = el('div', 'ficha-corpo'), barra = el('nav', 'ficha-tabs');
-  const vai = (id) => { abas.forEach(([a, , c]) => { c.hidden = a !== id; }); barra.querySelectorAll('button').forEach(b => b.classList.toggle('ativa', b.dataset.a === id)); };
-  abas.forEach(([id, rot, c]) => { corpo.append(c); const b = el('button'); b.type = 'button'; b.dataset.a = id; b.innerHTML = ICO_FICHA[id]; b.append(el('span', '', rot)); b.onclick = () => vai(id); barra.append(b); });
-  const fecha = el('button', 'ficha-x'); fecha.type = 'button'; fecha.title = 'Fechar'; fecha.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>'; fecha.onclick = () => pop.remove();
-  cx.append(fecha, topo, corpo, barra); pop.append(cx); document.body.append(pop); vai('perfil');
+  const ic = (id, cls, txt) => { const e = el('span', cls); e.innerHTML = ICO_FICHA[id]; if (txt != null) e.append(txt); return e; };
+  const nome = g.nome.replace(/\s*\(PC\d\)$/i, ''), cargo = f.cargo || (g.cargo || (g === EU ? 'Agente humana' : '')).replace(/\s+do PC\d$/i, '');
+  const num = 'Nº ' + (f.id || '---'), atr = f.atr || [], ins = f.insignias || [], ent = (f.entregas || []).slice(0, 3);
+  const pop = el('div', 'pop cracha-pop'); pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'Ficha de ' + nome);
+  const ct = el('div', 'ct' + (g === EU ? ' eu' : '') + (k === 'sigma' ? ' sigma' : '')); ct.style.setProperty('--quem', g.cor); ct.style.setProperty('--quem-fg', g.texto || '#fff');
+  const avatar = (grande) => {
+    const av = el('div', 'ct-av', nome.charAt(0));
+    if (g.foto) fotoUrl(g.foto, true).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.textContent = ''; av.classList.add('foto'); if (grande) { av.setAttribute('role', 'button'); av.setAttribute('aria-label', 'Ver a foto de ' + nome); av.onclick = e => { e.stopPropagation(); abreZoom(u, g.foto); }; } }).catch(() => {});   // foto da ficha abre a foto grande (original: a miniatura de 96 px fica borrada)
+    return av;
+  };
+  const insignia = (it) => { const d = el('div', 'ct-in1' + (it ? '' : ' vazia')); d.innerHTML = INSIGNIA; d.append(el('span', '', it ? it.nome : 'Próxima')); if (it && it.data) d.append(el('small', '', it.data.slice(0, 5))); return d; };
+  const virar = (txt) => { const b = el('button', 'ct-vira'); b.type = 'button'; b.innerHTML = ICO_FICHA.vira; b.append(txt); b.onclick = e => { e.stopPropagation(); vai(aba === 'perfil' ? ultVerso : 'perfil'); }; return b; };
+  const fr = el('div', 'ct-face ct-frente'), fi = el('div', 'ct-in'); fr.append(fi);
+  const cab = el('div', 'ct-cab'); cab.append(el('span', '', g === EU ? 'Dona da casa' : 'Agente da casa'), el('span', 'ct-id', num));
+  const quem = el('div', 'ct-quem'), lado = el('div');
+  lado.append(el('div', 'ct-nome', nome), el('div', 'ct-cargo', cargo));
+  if (f.classe && f.classe !== cargo) lado.append(el('div', 'ct-classe', f.classe));
+  const pills = el('div', 'ct-pills'), st = el('span', 'ct-pill' + (on ? ' on' : '')); st.append(el('i'), k === 'may' ? 'online agora' : k === 'sigma' && !hb.ultimaAtualizacao ? 'itinerante' : (v.online ? (v.texto === 'agora' ? 'online agora' : 'visto ' + v.texto) : v.texto));
+  pills.append(st, el('span', 'ct-pill', 'Nv. ' + atr.reduce((a, x) => a + x[1], 0))); lado.append(pills);   // "nível" = soma dos atributos, só pra brincar
+  quem.append(avatar(true), lado);
+  const maq = el('div', 'ct-maq'); maq.append(ic('maq', null, f.pcCurto || f.pc)); if (hb.ip) maq.append(ic('ip', null, hb.ip));
+  const insBox = el('div', 'ct-ins'), fila = el('div', 'ct-ins-fila'); [0, 1, 2].forEach(i => fila.append(insignia(ins[ins.length - 1 - i])));
+  insBox.append(el('div', 'ct-tit', 'Insígnias'), fila);
+  const pe = el('div', 'ct-pe');
+  if (k !== 'may') { const chama = el('button', 'ct-chama', 'Mandar recado pra ' + nome); chama.type = 'button'; chama.onclick = e => { e.stopPropagation(); const t = document.getElementById('texto'); if (t) { const n = '@' + nome + ' '; if (!t.value.startsWith(n)) t.value = n + t.value; t.dispatchEvent(new Event('input')); pop.remove(); t.focus(); } }; pe.append(chama); }
+  pe.append(virar('Toque no cartão pra virar'));
+  fi.append(cab, quem, el('div', 'ct-faz', f.faz), maq); if (k === 'may' && f.olhar) fi.append(el('div', 'ct-olhar', f.olhar));   // ela não tem o botão de recado: o olhar ocupa o lugar
+  fi.append(insBox, pe);
+  const vs = el('div', 'ct-face ct-verso'), vi = el('div', 'ct-in'); vs.append(vi);
+  const vcab = el('div', 'ct-vcab'), vtit = el('div', 'ct-tit'), vnome = el('div'); vnome.append(el('b', '', nome), vtit); vcab.append(avatar(false), vnome, el('span', 'ct-id', num));
+  const painel = el('div', 'ct-painel');
+  const bloco = (tit, ...filhos) => { const d = el('div'); if (tit) d.append(el('div', 'ct-tit', tit)); d.append(...filhos); return d; };
+  const selos = (lista, icone) => { const w = el('div', 'ct-selos'); lista.forEach(n => w.append(ic(icone, null, n))); return w; };
+  const pAtr = el('div');
+  if (f.placar) { const pl = el('div', 'ct-placar'); [['revisoes', 'Revisões'], ['defeitos', 'Defeitos achados'], ['consertados', 'Consertados']].forEach(([c, r]) => { const d = el('div'); d.append(el('b', '', f.placar[c]), r); pl.append(d); }); pAtr.append(pl); }
+  atr.forEach(([n, val]) => { const b = el('div', 'ct-bar'); b.setAttribute('role', 'meter'); b.setAttribute('aria-label', n); b.setAttribute('aria-valuemin', 0); b.setAttribute('aria-valuemax', 10); b.setAttribute('aria-valuenow', val); b.append(el('span', '', n), el('em', '', val + '/10')); const s = el('div', 'ct-seg'); for (let i = 0; i < 10; i++) s.append(el('i', i < val ? 'on' : '')); b.append(s); pAtr.append(b); });
+  if (f.forte || f.fraco) { const ff = el('div', 'ct-ff'); [['forte', 'Forte', 'sobe'], ['fraco', 'Fraco', 'desce']].forEach(([c, r, i]) => { if (!f[c]) return; const d = el('div', c), t = ic(i, 'ct-tit', r); d.append(t, f[c]); ff.append(d); }); pAtr.append(bloco('Forte × fraco', ff)); }
+  if (f.hab) pAtr.append(bloco('Habilidades', selos(f.hab, 'estrela')));
+  if (f.cons) pAtr.append(bloco('Conselheiros que incorpora', selos(f.cons, 'pessoa')));
+  if (f.olhar) pAtr.append(el('div', 'ct-olhar', f.olhar));
+  const pMaq = el('dl', 'ct-dados');
+  [['onde', 'Onde roda', f.onde || f.pc], ['maq', 'PC', f.onde ? f.pc : ''], ['ip', 'IP', hb.ip || (['may', 'lyra', 'sigma'].includes(k) ? '' : 'ainda não mandou')], ['maq', 'Máquina', f.maquina], ['relogio', 'Último sinal', k === 'may' ? '' : v.texto], ['agora', 'Fazendo agora', hb.fazendo || '']]
+    .forEach(([i, t, d]) => { if (!d) return; const w = el('div'); w.innerHTML = ICO_FICHA[i]; w.append(el('dt', '', t), el('dd', '', d)); pMaq.append(w); });
+  const pConq = el('div'), todas = el('div', 'ct-ins-fila'); ins.slice().reverse().forEach(it => todas.append(insignia(it))); if (!ins.length) todas.append(insignia(null));
+  pConq.append(bloco('Insígnias', todas));
+  if (ent.length) { const ol = el('ol', 'ct-tempo'); ent.forEach(it => { const li = el('li'); li.append(el('small', '', it.data || ''), it.nome); ol.append(li); }); pConq.append(bloco('Últimas entregas', ol)); }
+  const paineis = { atr: pAtr, maq: pMaq, conq: pConq };
+  Object.values(paineis).forEach(p => painel.append(p));
+  vi.append(vcab, painel, el('div', 'ct-pe')); vi.lastChild.append(virar('Toque pra ver a frente'));
+  const cena = el('div', 'ct-cena'), carta = el('div', 'ct-carta'); carta.append(fr, vs); cena.append(carta);
+  const abas = [['perfil', 'Perfil'], ['atr', 'Atributos'], ['maq', 'Máquina'], ['conq', 'Conquistas']], nav = el('nav', 'ct-abas'); nav.setAttribute('aria-label', 'Abas da ficha');
+  let aba = 'perfil', ultVerso = 'atr';
+  function vai(id) {
+    aba = id; if (id !== 'perfil') { ultVerso = id; Object.entries(paineis).forEach(([a, p]) => { p.hidden = a !== id; }); vtit.textContent = abas.find(x => x[0] === id)[1]; painel.scrollTop = 0; }
+    carta.classList.toggle('virada', id !== 'perfil'); fr.inert = id !== 'perfil'; vs.inert = id === 'perfil';
+    nav.querySelectorAll('button').forEach(b => { const a = b.dataset.a === id; b.classList.toggle('ativa', a); b.setAttribute('aria-current', a ? 'true' : 'false'); });
+  }
+  abas.forEach(([id, rot]) => { const b = el('button'); b.type = 'button'; b.dataset.a = id; b.innerHTML = ICO_FICHA[id]; b.append(el('span', '', rot)); b.onclick = () => vai(id); nav.append(b); });
+  carta.onclick = e => { if (e.target.closest('button, a, [role=button]')) return; vai(aba === 'perfil' ? ultVerso : 'perfil'); };
+  const fecha = el('button', 'ct-x'); fecha.type = 'button'; fecha.title = 'Fechar'; fecha.setAttribute('aria-label', 'Fechar'); fecha.innerHTML = ICO_FICHA.fechar; fecha.onclick = () => pop.remove();
+  ct.append(fecha, cena, nav); pop.append(ct); document.body.append(pop); vai('perfil');
   pop.onclick = e => { if (e.target === pop) pop.remove(); };
 }
 // Nomes aceitos em "  ↳ Nome: ..." — sempre as chaves do GRUPO (+ ALIAS_QUEM), pra nunca mais esquecer de
