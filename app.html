@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.4">
+<meta name="app-versao" content="2026-11-05.5">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -1663,7 +1663,7 @@ function responderUltima() {
   if (it) responder(it); else box.focus();
   irProFim();
 }
-function convPorArq(arq) { return arq === TRAB.arq ? TRAB : (conversas.find(x => x.arq === arq) || GERAL); }
+function convPorArq(arq) { return arq === TRAB.arq ? TRAB : arq === GERAL.arq ? GERAL : (conversas.find(x => x.arq === arq) || GERAL); }   // a Geral é sempre o GERAL (o item da lista não tem participantes)
 function abreRespondendo(arq, foto) {
   const c = convPorArq(arq || GERAL.arq), fim = () => { if (foto) { fotoUrl(foto).then(u => abreZoom(u, foto)).catch(() => showNote('Essa foto já saiu do repositório.', true)); irProFim(); } else responderUltima(); };
   return (FILE === c.arq ? load() : abrir(c)).then(fim).catch(fim);
