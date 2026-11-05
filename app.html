@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.12">
+<meta name="app-versao" content="2026-11-05.13">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -178,7 +178,26 @@ textarea:focus-visible { outline: none; }
 .msg.may .cita span { color: color-mix(in srgb, var(--mine-fg) 85%, transparent); }
 .msg .seta-resp { position: absolute; top: 50%; left: -34px; transform: translateY(-50%); width: 26px; height: 26px; border-radius: 50%;
   display: grid; place-items: center; background: var(--paper); color: var(--accent); font-size: 14px; opacity: 0; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
-.msg .audio { display: block; width: 240px; max-width: 100%; height: 40px; margin: 2px 0 4px; }
+/* player de áudio igual ao do WhatsApp (05/11/2026): play redondo, barrinha com bolinha, tempo embaixo, microfone que vira 1x/1,5x/2x tocando */
+.player { --cor: var(--quem, var(--accent)); --cor-fg: var(--quem-fg, var(--accent-fg)); display: flex; align-items: center; gap: 10px; width: 270px; max-width: 100%; margin: 4px 0 2px; }
+.msg.may:not(.eu) .player { --cor: var(--mine-fg); --cor-fg: var(--mine); }   /* balão verde: verde da cor do agente sumia */
+.player audio, .player [hidden] { display: none; }
+.player .tocar { width: 42px; height: 42px; background: var(--cor); color: var(--cor-fg); position: relative; }
+.player .tocar svg { width: 20px; height: 20px; }
+.player.baixando .tocar::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; border: 2.5px solid transparent; border-top-color: var(--cor); animation: gira .8s linear infinite; }
+.player .meio { flex: 1; min-width: 0; display: grid; padding-top: 12px; }
+.player .barra { position: relative; height: 24px; display: flex; align-items: center; touch-action: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }   /* touch-action: o dedo arrasta a bolinha, não rola a conversa */
+.player .barra[aria-disabled="true"] { cursor: default; }
+.player .barra:focus-visible { outline: 2px solid var(--cor); outline-offset: 2px; border-radius: 6px; }
+.player .trilho { flex: 1; height: 3px; border-radius: 2px; background: color-mix(in srgb, currentColor 22%, transparent); overflow: hidden; }
+.player .feito { height: 100%; width: var(--pos, 0%); background: var(--cor); }
+.player .bolinha { position: absolute; top: 50%; left: var(--pos, 0%); width: 13px; height: 13px; margin: -6.5px 0 0 -6.5px; border-radius: 50%; background: var(--cor); transition: transform .12s; }
+.player.arrastando .bolinha { transform: scale(1.4); }
+.player .tempo { font-size: 11.5px; opacity: .75; font-variant-numeric: tabular-nums; margin-top: -3px; }
+.player .lado { flex: none; width: 46px; display: grid; place-items: center; }
+.player .mic-av { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--cor) 16%, transparent); color: var(--cor); }
+.player .mic-av svg.i { width: 22px; height: 22px; }
+.player .vel { width: auto; min-width: 44px; height: 28px; padding: 0 9px; border-radius: 999px; background: color-mix(in srgb, currentColor 14%, transparent); color: inherit; font-size: 12.5px; font-weight: 700; }
 .msg .transcricao { font-size: 13.5px; font-style: italic; opacity: .85; white-space: pre-wrap; }
 .gravando { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; height: 46px; padding: 0 14px; border-radius: 20px;
   background: color-mix(in srgb, #EF4444 10%, var(--bg)); color: var(--fg); font-variant-numeric: tabular-nums; }
@@ -207,7 +226,6 @@ textarea:focus-visible { outline: none; }
 .msg:has(.copiar-msg) .txt { padding-right: 24px; }   /* a setinha de opções não pode cobrir o fim do texto */
 .txt a { color: inherit; text-decoration: underline; text-underline-offset: 2px; font-weight: 600; }
 .txt code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .88em; background: rgba(0,0,0,.08); padding: 1px 5px; border-radius: 5px; overflow-wrap: anywhere; }
-.msg .ouvir { width: auto; height: auto; min-height: 40px; display: flex; align-items: center; gap: 6px; margin: 2px 0 4px; padding: 8px 14px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 18%, transparent); color: inherit; font-size: 14px; font-weight: 600; }
 .msg.copiavel { border: 1.5px dashed var(--accent); background: color-mix(in srgb, var(--accent) 7%, var(--theirs)); max-width: 92%; }
 .msg.copiavel .txt { font-size: 14.5px; }
 .copiar-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px;
@@ -1002,24 +1020,112 @@ const audioPronto = {};   // caminho -> blob: do áudio que ela já ouviu
 // não garante isso. No toque ele toca 10 ms de silêncio de verdade (WAV embutido) e fica liberado; quando o arquivo chega, já fora
 // do toque, troca o src e toca no mesmo elemento. Se mesmo assim o iPhone recusar, avisa em vez de ficar parado sem explicação.
 const SILENCIO = 'data:audio/wav;base64,UklGRnQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YVAAAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==';
-function ouvirAudio(au, caminho, ouvir) {
-  ouvir.replaceWith(au); au._baixando = true;   // _baixando: o render não troca este elemento enquanto o arquivo não chega
-  au.src = SILENCIO; au.play().catch(() => {});
+function ouvirAudio(pl) {
+  const au = pl._au, caminho = pl.dataset.audio;
+  au._baixando = true; au._cancelou = false;   // _baixando: o render não troca este player enquanto o arquivo não chega
+  au.src = SILENCIO; au.play().catch(() => {}); pl._pinta();
   fotoUrl(caminho).then(u => {
-    audioPronto[caminho] = u; au.src = u; const tocou = au.play(); au._baixando = false;
-    return tocou.catch(err => { if (err && err.name === 'NotAllowedError') showNote('Áudio pronto: toca no play pra ouvir.'); });
+    audioPronto[caminho] = u; au.src = u; aplicaVel(au);   // trocar o src volta a velocidade pro padrão
+    const tocou = au._cancelou ? null : tocaAudio(au); au._baixando = false; pl._pinta();   // _cancelou: pausou (ou deu play em outro) enquanto baixava
+    return tocou;
   }).catch(err => {
-    au._baixando = false; au.removeAttribute('src');
-    if (au.isConnected) au.replaceWith(ouvir);
+    au._baixando = false; au.removeAttribute('src'); au.load(); pl._pinta();
     showNote(err.status === 404 ? 'Esse áudio já saiu do repositório.' : 'Não consegui baixar o áudio.', true);
   });
+}
+function tocaAudio(au) {
+  return au.play().catch(err => {
+    if (err && err.name === 'NotAllowedError') showNote('Áudio pronto: toca no play pra ouvir.');
+    else if (err && err.name === 'NotSupportedError') showNote('Esse áudio não abre neste aparelho (formato).', true);
+  });
+}
+// Player igual ao do WhatsApp (05/11/2026): o <audio> fica escondido dentro do .player e o render passa o .player inteiro
+// pro balão novo, então posição, velocidade e o "baixando" sobrevivem ao poll. Velocidade vale pra todos, igual no WhatsApp.
+const SVG_PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.6v12.8c0 .8.9 1.3 1.6.8l9.8-6.4c.6-.4.6-1.2 0-1.6L9.6 4.8C8.9 4.3 8 4.8 8 5.6z" fill="currentColor"/></svg>';
+const SVG_PAUSA = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4.5" width="4.2" height="15" rx="1.3" fill="currentColor"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="1.3" fill="currentColor"/></svg>';
+const VELS = [1, 1.5, 2];
+let velAudio = VELS.includes(+store.get('audio-vel')) ? +store.get('audio-vel') : 1;
+const mmss = s => { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+const velTxt = v => String(v).replace('.', ',') + 'x';
+function aplicaVel(au) { au.defaultPlaybackRate = velAudio; au.playbackRate = velAudio; }
+function playerAudio(caminho) {
+  const pl = document.createElement('div'); pl.className = 'player'; pl.dataset.audio = caminho;
+  const au = pl._au = document.createElement('audio'); au.preload = 'metadata'; au.dataset.audio = caminho;
+  const bt = document.createElement('button'); bt.type = 'button'; bt.className = 'tocar';
+  const meio = document.createElement('div'); meio.className = 'meio';
+  const barra = document.createElement('div'); barra.className = 'barra'; barra.tabIndex = 0;
+  barra.setAttribute('role', 'slider'); barra.setAttribute('aria-label', 'Posição do áudio'); barra.setAttribute('aria-valuemin', '0');
+  barra.innerHTML = '<div class="trilho"><div class="feito"></div></div><div class="bolinha"></div>';
+  const tempo = document.createElement('div'); tempo.className = 'tempo';
+  meio.append(barra, tempo);
+  const lado = document.createElement('div'); lado.className = 'lado';
+  const mic = document.createElement('span'); mic.className = 'mic-av'; mic.innerHTML = icone('mic');
+  const vel = document.createElement('button'); vel.type = 'button'; vel.className = 'vel';
+  lado.append(mic, vel); pl.append(au, bt, meio, lado);
+  let arrastando = null, icTocando = null;   // arrastando = segundos sob o dedo (só aplica ao soltar, igual WhatsApp)
+  const dur = () => !au._baixando && isFinite(au.duration) && au.duration > 0 ? au.duration : 0;   // o silêncio do desbloqueio (10 ms) não conta
+  const pinta = pl._pinta = () => {
+    const d = dur(), pos = arrastando !== null ? arrastando : (au._baixando ? 0 : au.currentTime), toca = au._baixando ? !au._cancelou : !au.paused;
+    pl.style.setProperty('--pos', (d ? Math.min(100, pos / d * 100) : 0) + '%');
+    pl.classList.toggle('baixando', !!au._baixando && !au._cancelou);
+    if (icTocando !== toca) { icTocando = toca; bt.innerHTML = toca ? SVG_PAUSA : SVG_PLAY; bt.setAttribute('aria-label', toca ? 'Pausar áudio' : 'Tocar áudio'); }
+    bt.classList.toggle('ouvir', !au.getAttribute('src'));   // ouvir = ainda não baixou
+    const comecou = toca || pos > 0;
+    tempo.textContent = comecou && d ? mmss(pos) + ' / ' + mmss(Math.round(d)) : mmss(d ? Math.round(d) : pos);   // total arredondado: áudio de 0,9 s não aparece como 0:00   // parado no começo mostra a duração; tocando, decorrido / total
+    barra.setAttribute('aria-valuemax', String(Math.round(d))); barra.setAttribute('aria-valuenow', String(Math.round(pos)));
+    barra.setAttribute('aria-valuetext', d ? mmss(pos) + ' de ' + mmss(d) : 'áudio ainda não carregado'); barra.setAttribute('aria-disabled', String(!d));
+    mic.hidden = comecou; vel.hidden = !comecou;   // pílula de velocidade no lugar do microfone enquanto toca
+    vel.textContent = velTxt(velAudio); vel.setAttribute('aria-label', 'Velocidade ' + velTxt(velAudio) + ', toca pra trocar');
+  };
+  ['play', 'pause', 'timeupdate', 'durationchange', 'loadedmetadata', 'ratechange', 'emptied'].forEach(ev => au.addEventListener(ev, pinta));
+  // um áudio por vez: o play de um pausa os outros; o toque dela também desiste do que ainda baixava (o evento play chega atrasado, não serve pra isso)
+  const paraOutros = desiste => feed.querySelectorAll('.player').forEach(o => { if (o === pl || !o._au) return; if (desiste && o._au._baixando) o._au._cancelou = true; if (!o._au.paused) o._au.pause(); o._pinta(); });
+  au.addEventListener('play', () => {
+    paraOutros(false);
+    if (au._baixando) return;
+    if (au.playbackRate !== velAudio) aplicaVel(au);
+    const anda = () => { if (au.paused || !au.isConnected) return; pinta(); requestAnimationFrame(anda); };   // bolinha anda lisa (timeupdate é 4x/s)
+    requestAnimationFrame(anda);
+  });
+  au.addEventListener('ended', () => { if (au._baixando) return; au.currentTime = 0; pinta(); });   // acabou: volta pro começo, igual WhatsApp
+  au.addEventListener('pause', () => { if (FILE && !au._baixando) load().catch(() => {}); });   // o poll não redesenha com áudio tocando: parou, busca o que chegou
+  bt.addEventListener('click', e => {
+    e.stopPropagation();
+    if (au._baixando) { au._cancelou = !au._cancelou; pinta(); return; }
+    if (au.paused) paraOutros(true);
+    if (!au.getAttribute('src')) return ouvirAudio(pl);
+    if (au.paused) tocaAudio(au); else au.pause();
+  });
+  vel.addEventListener('click', e => {
+    e.stopPropagation(); velAudio = VELS[(VELS.indexOf(velAudio) + 1) % VELS.length]; store.set('audio-vel', velAudio === 1 ? '' : String(velAudio));
+    feed.querySelectorAll('.player').forEach(o => { if (o._au) { aplicaVel(o._au); o._pinta(); } });
+  });
+  const seg = e => { const r = barra.getBoundingClientRect(); return Math.min(1, Math.max(0, (e.clientX - r.left) / (r.width || 1))) * dur(); };
+  barra.addEventListener('pointerdown', e => {
+    if (!dur()) return;
+    e.preventDefault(); e.stopPropagation(); try { barra.setPointerCapture(e.pointerId); } catch (e2) {}
+    arrastando = seg(e); pl.classList.add('arrastando'); pinta();
+  });
+  barra.addEventListener('pointermove', e => { if (arrastando === null) return; arrastando = seg(e); pinta(); });
+  const solta = e => { if (arrastando === null) return; if (e.type === 'pointerup') au.currentTime = arrastando; arrastando = null; pl.classList.remove('arrastando'); pinta(); };
+  barra.addEventListener('pointerup', solta); barra.addEventListener('pointercancel', solta);
+  barra.addEventListener('click', e => e.stopPropagation());
+  barra.addEventListener('keydown', e => {
+    const d = dur(); if (!d) return;
+    const k = { ArrowRight: 5, ArrowUp: 5, ArrowLeft: -5, ArrowDown: -5 }[e.key], t = k !== undefined ? au.currentTime + k : e.key === 'Home' ? 0 : e.key === 'End' ? d : null;
+    if (t === null) return; e.preventDefault(); au.currentTime = Math.min(d, Math.max(0, t));
+  });
+  if (audioPronto[caminho]) { au.src = audioPronto[caminho]; aplicaVel(au); }   // já baixado: player direto, sem baixar de novo
+  pinta();
+  return pl;
 }
 const tocando = () => [...feed.querySelectorAll('audio')].some(a => !a.paused);
 function render(items, manterPosicao) {
   renderizando = true; setTimeout(() => { renderizando = false; }, 100);
   // áudio tocando (ou baixando depois do toque) passa inteiro pro balão novo: tirar e pôr de volta na mesma tarefa não pausa.
   // Vale pra todo redesenho (poll, excluir, envio, antigas), não só o do poll.
-  const vivos = {}; feed.querySelectorAll('audio').forEach(a => { if ((!a.paused || a._baixando) && a.dataset.audio) vivos[a.dataset.audio] = a; });
+  // pausado no meio também passa (05/11/2026, player novo): o poll não pode zerar onde ela parou
+  const vivos = {}; feed.querySelectorAll('.player').forEach(p => { const a = p._au; if (a && (!a.paused || a._baixando || (a.currentTime > 0 && !a.ended))) vivos[p.dataset.audio] = p; });
   const firstNew = shown < 0 ? items.length : shown;
   if (vistoMarca === undefined && items.length) vistoMarca = lerVisto(FILE, items);
   const naoVistas = Math.max(0, items.length - primeiroNaoVisto(items, vistoMarca));
@@ -1141,21 +1247,10 @@ function render(items, manterPosicao) {
     }
     if (it.audio) {
       // áudio só baixa no play (05/11/2026): antes cada redesenho da conversa baixava todos; já baixado = player direto
-      const au = vivos[it.audio] || document.createElement('audio');
-      if (vivos[it.audio]) { delete vivos[it.audio]; el.append(au); }
-      else {
-        au.className = 'audio'; au.controls = true; au.preload = 'metadata'; au.dataset.audio = it.audio;
-        au.addEventListener('pause', () => { if (FILE && !au._baixando) load().catch(() => {}); });   // o poll não redesenha com áudio tocando: parou, busca o que chegou
-        if (audioPronto[it.audio]) { au.src = audioPronto[it.audio]; el.append(au); }
-        else {
-          const ouvir = document.createElement('button'); ouvir.type = 'button'; ouvir.className = 'ouvir'; ouvir.innerHTML = icone('headphones') + ' Ouvir áudio';
-          ouvir.addEventListener('click', e => { e.stopPropagation(); ouvirAudio(au, it.audio, ouvir); });
-          el.append(ouvir);
-        }
-      }
+      const pl = vivos[it.audio] || playerAudio(it.audio); delete vivos[it.audio]; el.append(pl);
       const tr = document.createElement('div'); tr.className = 'transcricao';
       tr.textContent = it.transcricao ? '“' + it.transcricao + '”' : 'transcrevendo…';
-      el.append(tr);
+      if (it.transcricao || it.from === 'may') el.append(tr);   // quem transcreve é a Lyra, só o áudio dela; o de agente ficava "transcrevendo…" pra sempre
     }
     const t = document.createElement('div'); t.className = 'txt'; linkar(t, it.text);
     if (it.text) el.append(t);
@@ -1787,6 +1882,7 @@ function gestoResponder(el, it) {
   };
   el.addEventListener('touchstart', e => {
     x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; t0 = ultimoToque = Date.now(); mexeu = false; segurou = false; el.style.transition = '';
+    if (e.target.closest('.player')) { x0 = null; alvoOk = false; clearTimeout(timer); return; }   // arrastar a bolinha do áudio pro lado não é responder
     alvoOk = e.touches.length === 1 && !e.target.closest('a, button, img, audio, .quem, .opcoes');
     // segurar = 0,6 s com o dedo parado e sem rolagem desde que encostou
     timer = setTimeout(() => { if (!mexeu && ultimaRolagem < t0 - 250 && !getSelection().toString()) { segurou = true; if (navigator.vibrate) navigator.vibrate(15); responder(it); } }, 600);
@@ -1805,7 +1901,7 @@ function gestoResponder(el, it) {
     }
   }, { passive: true });
   el.addEventListener('touchend', fim); el.addEventListener('touchcancel', fim);
-  el.addEventListener('dblclick', e => { if (Date.now() - ultimoToque > 1000 && !e.target.closest('a, button, img, audio')) responder(it); });   // mouse; no toque quem decide é o fim()
+  el.addEventListener('dblclick', e => { if (Date.now() - ultimoToque > 1000 && !e.target.closest('a, button, img, audio, .player')) responder(it); });   // mouse; no toque quem decide é o fim()
 }
 // ---- Botão ↓ com a contagem do que chegou enquanto ela lê lá em cima
 const desce = document.getElementById('desce'), desceQtd = document.getElementById('desce-qtd');
