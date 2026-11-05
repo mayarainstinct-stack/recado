@@ -84,7 +84,17 @@ header { position: relative; z-index: 2; color: var(--head-fg); font-family: -ap
   box-shadow: 0 12px 32px rgba(0,0,0,.22), 0 2px 6px rgba(0,0,0,.10); }
 .menu button { width: 100%; height: auto; min-height: 48px; border-radius: 10px; background: none; color: var(--fg); padding: 0 14px; text-align: left;
   font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 14px; }
-.menu button .mi { width: 28px; flex: none; text-align: center; font-size: 20px; }
+.menu button .mi { width: 28px; flex: none; text-align: center; font-size: 20px; display: grid; place-items: center; }
+svg.i { width: 1em; height: 1em; flex: none; vertical-align: -.15em; }
+.tick svg.i { width: 1.25em; height: 1.25em; vertical-align: -.3em; }
+.ok-mark svg.i { width: 22px; height: 22px; stroke-width: 2.6; }
+.p-botao .chev svg.i { width: 20px; height: 20px; }
+.desce svg.i { width: 20px; height: 20px; }
+.baixar-tudo svg.i, .gostei svg.i, #notificar svg.i, #sair svg.i, .nota-box label svg.i, .foto-x svg.i, .manda svg.i { margin-right: 6px; }
+#notificar svg.i, #sair svg.i { width: 20px; height: 20px; margin-right: 0; }
+.detalhe .gostei { gap: 0; }
+.nota-box label svg.i { color: var(--muted); }
+.i-corpo h3 svg.i, .detalhe h3 svg.i { color: #E5A400; margin-right: 6px; }
 .menu button:not([hidden]) ~ button:not([hidden]) { border-top: 1px solid var(--line); border-radius: 0 0 10px 10px; }
 .menu button:active { background: var(--bg); }
 @media (hover: hover) { .menu button:hover { background: var(--bg); } .clip:hover { color: var(--accent); } }
@@ -142,7 +152,7 @@ textarea:focus-visible { outline: none; }
 .msg.may .quem.eu .letra:nth-child(1) { color: #E31B23; }
 .msg.may .quem.eu .letra:nth-child(2) { color: #CA8A04; }
 .msg.may .quem.eu .letra:nth-child(3) { color: #1E8A40; }
-.msg.may .quem.eu .avatar { background-color: transparent; box-shadow: none; }   /* a imagem dela já vem redonda e transparente: sem fundo nem aro, igual aos outros (May, 05/11/2026) */
+.msg.may .quem.eu .avatar { background-color: transparent; box-shadow: none; background-size: cover; background-repeat: no-repeat; }   /* a imagem dela já é redonda e transparente, sem aro (May, 05/11/2026) */
 .msg .quem { font-size: 14px; font-weight: 700; margin-bottom: 4px; padding-right: 26px; color: var(--quem); display: flex; align-items: center; gap: 6px; }
 .quem .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--quem); color: var(--quem-fg); font-size: 17px;   /* era 26px, pequeno demais no celular (May, 05/11/2026) */
   font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background-size: cover; background-position: center; }
@@ -418,20 +428,20 @@ body.web.lado .anexos { grid-column: 2; grid-row: 4; }
 <div class="app">
   <header>
     <div class="topo">
-      <button class="voltar" id="voltar" type="button" aria-label="Voltar pra lista de conversas" hidden>←</button>
+      <button class="voltar" id="voltar" type="button" aria-label="Voltar pra lista de conversas" hidden data-i="back"></button>
       <div class="logo" id="logo" aria-hidden="true"></div>
       <div class="who">
         <div class="titulo-linha"><span class="conv-av" id="convAv" hidden></span><h1 id="titulo">Recados</h1></div>
         <span class="status off" id="statusbar"><span class="dot"></span><span class="sync" aria-hidden="true"></span><span id="status">verificando o agente…</span></span>
         <button type="button" class="online-badge" id="onlineBadge" hidden aria-haspopup="true" aria-expanded="false"></button>
       </div>
-      <button class="icon-btn" id="mais" type="button" aria-label="Mais opções" aria-haspopup="menu" aria-expanded="false" hidden>⋮</button>
+      <button class="icon-btn" id="mais" type="button" aria-label="Mais opções" aria-haspopup="menu" aria-expanded="false" hidden data-i="more"></button>
     </div>
     <div class="online-pop" id="onlinePop" hidden></div>
     <div class="menu" id="menu" hidden>
-      <button type="button" id="ir-geral"><span class="mi">💬</span>Geral</button>
-      <button type="button" id="ir-trab"><span class="mi">💼</span>Trabalho</button>
-      <button type="button" id="abre-menu"><span class="mi">☰</span>Menu</button>
+      <button type="button" id="ir-geral"><span class="mi" data-i="msg"></span>Geral</button>
+      <button type="button" id="ir-trab"><span class="mi" data-i="work"></span>Trabalho</button>
+      <button type="button" id="abre-menu"><span class="mi" data-i="menu"></span>Menu</button>
     </div>
   </header>
 
@@ -440,8 +450,8 @@ body.web.lado .anexos { grid-column: 2; grid-row: 4; }
   <main id="feed"></main>
 
   <div class="note" id="note" role="alert" hidden></div>
-  <div class="citando" id="citando" hidden><div><b id="cit-nome"></b><span id="cit-txt"></span></div><button type="button" id="cit-x" aria-label="Cancelar resposta">✕</button></div>
-  <button type="button" class="desce" id="desce" aria-label="Ir pras mensagens novas" hidden>↓<span class="qtd" id="desce-qtd" hidden></span></button>
+  <div class="citando" id="citando" hidden><div><b id="cit-nome"></b><span id="cit-txt"></span></div><button type="button" id="cit-x" aria-label="Cancelar resposta" data-i="close"></button></div>
+  <button type="button" class="desce" id="desce" aria-label="Ir pras mensagens novas" hidden><span data-i="down"></span><span class="qtd" id="desce-qtd" hidden></span></button>
   <div class="anexos" id="anexos" hidden></div>
   <div class="mencoes" id="mencoes" hidden></div>
   <form id="composer" autocomplete="off" hidden>
@@ -450,8 +460,8 @@ body.web.lado .anexos { grid-column: 2; grid-row: 4; }
     </button>
     <input type="file" id="arquivo" accept="image/*" multiple hidden>
     <textarea id="texto" rows="1" placeholder="Escreve sua ideia…" aria-label="Recado" enterkeyhint="send"></textarea>
-    <div class="gravando" id="gravando" hidden><span class="rec"></span><span id="rec-tempo">0:00</span><span class="dica">solta pra enviar · ◀ arrasta pra cancelar</span></div>
-    <button type="button" id="rec-x" class="clip" aria-label="Cancelar áudio" hidden>✕</button>
+    <div class="gravando" id="gravando" hidden><span class="rec"></span><span id="rec-tempo">0:00</span><span class="dica">solta pra enviar · arrasta pro lado pra cancelar</span></div>
+    <button type="button" id="rec-x" class="clip" aria-label="Cancelar áudio" hidden data-i="close"></button>
     <button type="button" id="mic" aria-label="Gravar áudio">
       <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-2.1A7 7 0 0 0 19 12h-2Z"/></svg>
     </button>
@@ -462,16 +472,16 @@ body.web.lado .anexos { grid-column: 2; grid-row: 4; }
 </div>
 
 <div class="painel" id="painel" hidden>
-  <div class="p-topo"><button type="button" id="p-voltar" aria-label="Voltar">←</button><h2 id="p-tit">Menu</h2><button type="button" id="p-anotar" aria-label="Escrever sobre esta tela">📝</button><button type="button" id="p-mais" aria-label="Mais opções" aria-haspopup="menu">⋮</button></div>
+  <div class="p-topo"><button type="button" id="p-voltar" aria-label="Voltar" data-i="back"></button><h2 id="p-tit">Menu</h2><button type="button" id="p-anotar" aria-label="Escrever sobre esta tela" data-i="note"></button><button type="button" id="p-mais" aria-label="Mais opções" aria-haspopup="menu" data-i="more"></button></div>
   <div class="p-corpo" id="p-corpo"></div>
   <div class="p-extra" id="p-extra">
-    <button type="button" id="notificar">🔔 Ativar notificações</button>
-    <button type="button" id="sair">🔑 Trocar chave</button>
+    <button type="button" id="notificar" data-i="bell" data-t="Ativar notificações"></button>
+    <button type="button" id="sair" data-i="key" data-t="Trocar chave"></button>
   </div>
 </div>
 
 <div class="overlay" id="overlay" hidden role="status" aria-live="assertive">
-  <div class="overlay-card"><span class="spin big"></span><span class="ok-mark">✓</span><strong id="overlay-txt">Enviando…</strong></div>
+  <div class="overlay-card"><span class="spin big"></span><span class="ok-mark" data-i="check"></span><strong id="overlay-txt">Enviando…</strong></div>
 </div>
 
 <template id="setup-tpl">
@@ -484,6 +494,71 @@ body.web.lado .anexos { grid-column: 2; grid-row: 4; }
 </template>
 
 <script>
+// ---- Icones da interface (May, 05/11/2026: "interface so com SVG, emoji so na mensagem"). Traco, 24x24, herdam a cor do texto.
+const ICONES_SVG = {
+  msg: '<path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.3A8 8 0 1 1 21 12z"/>',
+  work: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 13h18"/>',
+  menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
+  note: '<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/>',
+  key: '<circle cx="8" cy="15" r="4"/><path d="M10.8 12.2 20 3M16 7l3 3M14 9l2 2"/>',
+  inbox: '<path d="M22 12h-6l-2 3h-4l-2-3H2M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/>',
+  mic: '<rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+  cam: '<path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/>',
+  warn: '<path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17.5v.01"/>',
+  bag: '<path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/>',
+  suitcase: '<rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V5h8v3M8 20v1M16 20v1"/>',
+  chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  sofa: '<path d="M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3M3 13a2 2 0 0 1 4 0v2h10v-2a2 2 0 0 1 4 0v5H3zM5 18v2M19 18v2"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  check2: '<path d="M1.5 12.5 6 17l9.5-9.5M10 16l1 1 10.5-10.5"/>',
+  star: '<path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/>',
+  ruler: '<rect x="3" y="8" width="18" height="8" rx="1"/><path d="M7 8v3M11 8v2M15 8v3M19 8v2"/>',
+  close: '<path d="M6 6l12 12M18 6 6 18"/>',
+  back: '<path d="M19 12H5M11 5l-7 7 7 7"/>',
+  down: '<path d="M12 5v14M5 12l7 7 7-7"/>',
+  more: '<circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/>',
+  reply: '<path d="M9 14 4 9l5-5M4 9h10a6 6 0 0 1 6 6v3"/>',
+  download: '<path d="M12 4v11M7 11l5 5 5-5M4 20h16"/>',
+  chev: '<path d="M9 5l7 7-7 7"/>',
+  fork: '<path d="M7 3v8M4 3v5a3 3 0 0 0 6 0V3M7 11v10M17 21V3c-3 1-4 4-4 8h4"/>',
+  dumbbell: '<path d="M6 8v8M3 10v4M18 8v8M21 10v4M6 12h12"/>',
+  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  image: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="M21 16l-5-5-9 9"/>',
+  headphones: '<path d="M4 15v-3a8 8 0 0 1 16 0v3M4 15a2 2 0 0 1 2-2h1v6H6a2 2 0 0 1-2-2zM20 15a2 2 0 0 0-2-2h-1v6h1a2 2 0 0 0 2-2z"/>',
+  home: '<path d="M3 11 12 3l9 8M5 10v10h14V10M10 20v-6h4v6"/>',
+  clipboard: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/>',
+  phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
+  tv: '<rect x="3" y="7" width="18" height="12" rx="2"/><path d="M8 3l4 4 4-4"/>',
+  car: '<path d="M5 16v-4l2-5h10l2 5v4M3 16h18v3H3zM7 19v2M17 19v2"/><circle cx="7.5" cy="13" r=".8"/><circle cx="16.5" cy="13" r=".8"/>',
+  cart: '<path d="M3 4h2l2.5 11h10L20 7H6.5"/><circle cx="9" cy="19" r="1.2"/><circle cx="17" cy="19" r="1.2"/>',
+  peach: '<path d="M12 7c-5-2-8 2-8 6 0 4 3 7 8 7s8-3 8-7c0-4-3-8-8-6z"/><path d="M12 7c0-2 1-3 3-4"/>',
+  run: '<circle cx="15" cy="5" r="2"/><path d="M4 17l4-1 3-4 3 2 2 5M11 12l-1-4 4-1 3 3h3"/>',
+  leg: '<path d="M9 3c0 5 1 8 1 11l-3 6h6l1-6c0-3 2-6 2-11"/>',
+  question: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7M12 17v.01"/>',
+  backpack: '<path d="M8 7a4 4 0 0 1 8 0M6 7h12a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zM9 14h6v4H9z"/>',
+  heart: '<path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11z"/>',
+  pin: '<path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/>',
+  stetho: '<path d="M6 3v6a4 4 0 0 0 8 0V3M4 3h4M12 3h4M10 13v2a5 5 0 0 0 10 0v-2"/><circle cx="20" cy="11" r="2"/>',
+  brain: '<path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 4 3 3 0 0 0 2 4 3 3 0 0 0 3 4zM15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 4 3 3 0 0 1-2 4 3 3 0 0 1-3 4z"/>',
+  sparkle: '<path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>',
+  bus: '<rect x="4" y="4" width="16" height="14" rx="2"/><path d="M4 12h16M7 18v2M17 18v2M8 15h.01M16 15h.01"/>',
+  hospital: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M12 8v8M8 12h8"/>',
+  pen: '<path d="M3 21l1-4L17 4a2.1 2.1 0 0 1 3 3L7 20z"/><path d="M14 7l3 3"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5"/>',
+  money: '<circle cx="12" cy="12" r="9"/><path d="M14.5 9.5C14 8.5 13.2 8 12 8c-1.5 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1 2-2.5 2c-1.2 0-2-.5-2.5-1.500M12 6v2M12 16v2"/>',
+  doc: '<path d="M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6"/>',
+  moon: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.500z"/>',
+  generico: '<rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="12" cy="12" r="1.5"/>'
+};
+// emoji que vem dos JSON do menu -> chave do icone (emoji desconhecido = generico; o emoji nunca aparece na tela)
+const EMOJI_ICONE = { '🍽': 'fork', '🏋': 'dumbbell', '💪': 'dumbbell', '📅': 'calendar', '🖼': 'image', '🛍': 'bag', '🧳': 'suitcase', '🩺': 'stetho', '🎧': 'headphones', '🏠': 'home', '📋': 'clipboard', '📞': 'phone', '📺': 'tv', '🚗': 'car', '🛒': 'cart', '🍑': 'peach', '🏃': 'run', '🦵': 'leg', '❓': 'question', '🎒': 'backpack', '💜': 'heart', '📍': 'pin', '📊': 'chart', '🛋': 'sofa', '🧠': 'brain', '✨': 'sparkle', '🚌': 'bus', '🏥': 'hospital', '🖋': 'pen', '🏖': 'sun', '💸': 'money', '📄': 'doc', '📌': 'pin', '📝': 'note', '💬': 'msg', '💼': 'work', '🔔': 'bell', '🔑': 'key', '📥': 'inbox', '🎤': 'mic', '📷': 'cam', '⚠': 'warn', '⭐': 'star', '📏': 'ruler', '✅': 'check' };
+function icone(k) {   // chave (ou emoji do JSON do menu) -> SVG
+  const ch = ICONES_SVG[k] ? k : (EMOJI_ICONE[[...String(k || '')][0]] || 'generico');
+  const cheio = ch === 'more';
+  return '<svg class="i" viewBox="0 0 24 24" aria-hidden="true" fill="' + (cheio ? 'currentColor' : 'none') + '" stroke="' + (cheio ? 'none' : 'currentColor') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ICONES_SVG[ch] + '</svg>';
+}
+document.querySelectorAll('[data-i]').forEach(e => { e.innerHTML = icone(e.dataset.i) + (e.dataset.t ? ' ' + e.dataset.t : ''); });
 const REPO = 'mayarainstinct-stack/Inst';
 // Conversas = arquivos: "Geral" é a CAIXA-DE-ENTRADA.md; as outras ficam em caixas/<nome>.md (mesmo formato).
 const GERAL = { arq: 'CAIXA-DE-ENTRADA.md', nome: 'Geral', participantes: ['may', 'lyra', 'orfeu', 'nyx', 'vega', 'hermes', 'sigma'] };   // Casa (PCs) juntada na Geral numa coisa só (pedido dela, 02/11/2026); participantes = quem escreve casa/online/online-<chave>.json
@@ -634,7 +709,7 @@ const GRUPO = {
   sigma: { nome: 'Sigma', cor: '#9333EA', texto: '#FFFFFF', foto: 'recados-fotos/avatar-sigma-96.png' }   // Revisor-Chefe (05/11/2026); sem ele aqui o "↳ Sigma" grudava na mensagem de cima
 };
 // A May também aparece com robozinho no Geral, como "agente humana", nas duas cores dela (May, 05/11/2026)
-const EU = { nome: 'May', cor: '#E31B23', cor2: '#22C55E', texto: '#FFFFFF', foto: 'recados-fotos/avatar-may-96.png' };
+const EU = { nome: 'May', cor: '#E31B23', cor2: '#22C55E', texto: '#FFFFFF', foto: 'recados-fotos/avatar-may-192.png' };
 // Nomes aceitos em "  ↳ Nome: ..." — sempre as chaves do GRUPO, pra nunca mais esquecer de
 // sincronizar isso com GRUPO na mão quando adicionar alguém (bug: Hermes/DarkSigma adicionados
 // no GRUPO mas não aqui, mensagem deles sumia sem avisar).
@@ -764,7 +839,7 @@ function render(items, manterPosicao) {
       const lab = document.createElement('span'); lab.textContent = 'Pronto pra copiar';
       const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'copiar-btn'; btn.textContent = 'Copiar';
       btn.addEventListener('click', async () => {
-        try { await navigator.clipboard.writeText(it.text); btn.textContent = 'Copiado ✓'; }
+        try { await navigator.clipboard.writeText(it.text); btn.innerHTML = icone('check') + ' Copiado'; }
         catch (e) { const r = document.createRange(); r.selectNodeContents(el.querySelector('.txt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = 'Selecionado'; }
         setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
       });
@@ -780,10 +855,10 @@ function render(items, manterPosicao) {
         const im = document.createElement('img'); im.className = 'foto mini'; im.alt = 'Foto do álbum';
         im.addEventListener('click', e => { e.stopPropagation(); if (im.src) abreZoom(im.src, fp); });
         fotoUrl(fp).then(u => { im.src = u; return fetch(u).then(r => r.blob()).then(bl => { prontos[fp] = new File([bl], fp.split('/').pop(), { type: bl.type || tipoDe(fp) }); }); })
-          .catch(e => { const x = document.createElement('div'); x.className = 'foto-x mini'; x.textContent = '📷 apagada'; im.replaceWith(x); });
+          .catch(e => { const x = document.createElement('div'); x.className = 'foto-x mini'; x.innerHTML = icone('cam') + ' apagada'; im.replaceWith(x); });
         grade.append(im);
       });
-      const bt = document.createElement('button'); bt.type = 'button'; bt.className = 'baixar-tudo'; bt.textContent = '⬇️ Baixar tudo (' + it.fotos.length + ')';
+      const bt = document.createElement('button'); bt.type = 'button'; bt.className = 'baixar-tudo'; bt.innerHTML = icone('download') + ' Baixar tudo (' + it.fotos.length + ')';
       bt.addEventListener('click', async e => {
         e.stopPropagation();
         const arqs = it.fotos.map(fp => prontos[fp]).filter(Boolean);
@@ -799,7 +874,7 @@ function render(items, manterPosicao) {
       img.addEventListener('click', e => { e.stopPropagation(); if (img.src) abreZoom(img.src, it.foto); });
       img.onload = () => { if (feed.scrollHeight - feed.scrollTop - feed.clientHeight < 400) feed.scrollTop = feed.scrollHeight; };
       fotoUrl(it.foto).then(u => { img.src = u; }).catch(e => {   // foto de análise sai do repo em 24h: mostra aviso, não caixa quebrada
-        const x = document.createElement('div'); x.className = 'foto-x'; x.textContent = e.status === 404 ? '📷 Foto apagada' : '📷 Não carregou a foto';
+        const x = document.createElement('div'); x.className = 'foto-x'; x.innerHTML = icone('cam') + (e.status === 404 ? ' Foto apagada' : ' Não carregou a foto');
         img.replaceWith(x);
       });
       el.append(img);
@@ -828,8 +903,8 @@ function render(items, manterPosicao) {
       if (it.from === 'may') {
         // Igual ao WhatsApp: ✓ cinza = salvo no GitHub · ✓✓ colorido = a Lyra leu
         const tk = document.createElement('span'); tk.className = 'tick' + (it.lida ? ' lida' : '');
-        tk.textContent = it.lida ? '✓✓' : '✓'; tk.title = it.lida ? 'Lida pela Lyra' : 'Enviada'; tk.dataset.ts = tsDe(it);
-        if (!it.lida && vigiaViu > tsDe(it) + 90000) { tk.classList.add('lida'); tk.textContent = '✓✓'; tk.title = 'Lida pela Lyra'; }
+        tk.innerHTML = icone(it.lida ? 'check2' : 'check'); tk.title = it.lida ? 'Lida pela Lyra' : 'Enviada'; tk.dataset.ts = tsDe(it);
+        if (!it.lida && vigiaViu > tsDe(it) + 90000) { tk.classList.add('lida'); tk.innerHTML = icone('check2'); tk.title = 'Lida pela Lyra'; }
         m.append(tk);
       }
       el.append(m);
@@ -878,14 +953,14 @@ let vigiaViu = 0;
 const tsDe = it => { const m = String(it.day || '').match(/^(\d\d)\/(\d\d)\/(\d{4})$/); return m ? Date.parse(m[3] + '-' + m[2] + '-' + m[1] + 'T' + (it.time || '00:00')) : 0; };
 function marcaLidas() {
   feed.querySelectorAll('.msg.may .tick:not(.lida)').forEach(tk => {
-    const t = +tk.dataset.ts; if (t && vigiaViu > t + 90000) { tk.classList.add('lida'); tk.textContent = '✓✓'; tk.title = 'Lida pela Lyra'; }
+    const t = +tk.dataset.ts; if (t && vigiaViu > t + 90000) { tk.classList.add('lida'); tk.innerHTML = icone('check2'); tk.title = 'Lida pela Lyra'; }
   });
 }
 // Balão "enviando" com relogiozinho, igual WhatsApp (no lugar da tela inteira "Enviando…")
 const RELOGIO = '<svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
-function bolhaPendente(txt) {
+function bolhaPendente(txt, ic) {
   const el = document.createElement('div'); el.className = 'msg may pendente' + (FILE === GERAL.arq ? ' eu' : '');   // no Geral já nasce branquinho, igual fica depois de enviado
-  if (txt) { const t = document.createElement('div'); t.className = 'txt'; t.textContent = txt; el.append(t); }
+  if (txt) { const t = document.createElement('div'); t.className = 'txt'; if (ic) t.innerHTML = icone(ic) + ' '; t.append(document.createTextNode(txt)); el.append(t); }
   const m = document.createElement('div'); m.className = 'meta';
   const h = document.createElement('span'); h.textContent = stamp(new Date()).slice(11, 16); m.append(h);
   const tk = document.createElement('span'); tk.className = 'tick relogio'; tk.title = 'Enviando'; tk.innerHTML = RELOGIO; m.append(tk);
@@ -953,6 +1028,7 @@ function desenhaOnlinePop() {
     const gp = p.chave === 'may' ? EU : GRUPO[p.chave], cor = p.chave === 'may' ? 'transparent' : (gp ? gp.cor : 'var(--accent)'), texto = gp ? gp.texto : '#fff';
     const row = document.createElement('div'); row.className = 'pessoa';
     const av = document.createElement('div'); av.className = 'av'; av.style.backgroundColor = cor; av.style.color = texto;
+    if (p.chave === 'may') av.style.backgroundColor = 'transparent';   // a foto dela já é redonda e transparente
     av.textContent = nomeDe(p).charAt(0).toUpperCase();
     const fotoP = p.foto || (gp && gp.foto);   // prioriza a foto do heartbeat; sem ela, usa a foto fixa do GRUPO
     if (fotoP) fotoUrl(fotoP).then(u => {
@@ -1089,7 +1165,7 @@ function desenhaBandeja() {
   anexos.forEach((a, i) => {
     const d = document.createElement('div'); d.className = 'anexo';
     const im = document.createElement('img'); im.src = a.url; im.alt = 'Foto ' + (i + 1);
-    const x = document.createElement('button'); x.type = 'button'; x.textContent = '✕'; x.setAttribute('aria-label', 'Tirar esta foto');
+    const x = document.createElement('button'); x.type = 'button'; x.innerHTML = icone('close'); x.setAttribute('aria-label', 'Tirar esta foto');
     x.onclick = () => { URL.revokeObjectURL(a.url); anexos.splice(i, 1); desenhaBandeja(); };
     d.append(im, x); bandeja.append(d);
   });
@@ -1132,7 +1208,7 @@ micBtn.addEventListener('pointermove', e => {
 const soltaMic = () => {
   if (!segurando) return; segurando = false; gravandoEl.style.opacity = '1';
   if (!gravador) { pararAoIniciar = true; return; }
-  if (Date.now() - recInicio < 600) { cancelado = true; showNote('Segura o microfone enquanto fala 🎤'); }
+  if (Date.now() - recInicio < 600) { cancelado = true; showNote('Segura o microfone enquanto fala'); }
   gravador.stop();
 };
 micBtn.addEventListener('pointerup', soltaMic);
@@ -1152,14 +1228,14 @@ async function comecaGravar() {
     gravador.onstop = () => { stream.getTracks().forEach(t => t.stop()); const g = gravador; gravador = null; mostraGravando(false); if (!cancelado) enviaAudio(new Blob(pedacos, { type: g.mimeType || tipo || 'audio/mp4' })); };
     gravador.start(); mostraGravando(true);
     if (navigator.vibrate) navigator.vibrate(20);
-    if (pararAoIniciar) { cancelado = true; gravador.stop(); showNote('Segura o microfone enquanto fala 🎤'); }
+    if (pararAoIniciar) { cancelado = true; gravador.stop(); showNote('Segura o microfone enquanto fala'); }
   } catch (e) { gravador = null; showNote('Sem acesso ao microfone. Libera em Ajustes → Safari → Microfone.', true); }
 }
 recX.onclick = () => { if (gravador) { cancelado = true; gravador.stop(); } };
 async function enviaAudio(blob) {
   if (blob.size < 1500) { showNote('Áudio curto demais.', true); return; }
   sending = true; syncBtn();
-  const pend = bolhaPendente('🎤 Áudio');
+  const pend = bolhaPendente('Áudio', 'mic');
   try {
     const ext = /webm/.test(blob.type) ? 'webm' : 'm4a';
     const d = new Date();
@@ -1200,7 +1276,7 @@ function corDe(nome) {
 function responder(it) {
   if (!it) { respondendo = null; citando.hidden = true; return; }
   const nome = it.from === 'may' ? 'Você' : (GRUPO[it.quem] ? GRUPO[it.quem].nome : 'Lyra');
-  const trecho = (it.text || (it.foto ? '📷 Foto' : '')).replace(/[⟪⟫:\n]/g, ' ').slice(0, 80);
+  const trecho = (it.text || (it.foto ? 'Foto' : '')).replace(/[⟪⟫:\n]/g, ' ').slice(0, 80);
   respondendo = { nome, trecho };
   citando.style.setProperty('--quem', corDe(nome));
   document.getElementById('cit-nome').textContent = nome;
@@ -1250,7 +1326,7 @@ function gestoResponder(el, it) {
     if (dx > 6) {
       clearTimeout(timer);
       const d = Math.min(dx, 80); el.style.transform = 'translateX(' + d + 'px)';
-      if (!seta) { seta = document.createElement('span'); seta.className = 'seta-resp'; seta.textContent = '↩'; el.append(seta); }
+      if (!seta) { seta = document.createElement('span'); seta.className = 'seta-resp'; seta.innerHTML = icone('reply'); el.append(seta); }
       seta.style.opacity = Math.min(1, d / 55);
     }
   }, { passive: true });
@@ -1329,7 +1405,7 @@ form.addEventListener('submit', async e => {
   sending = true; syncBtn(); showNote('');
   // Igual WhatsApp: o balão aparece na hora com o relogiozinho; vira ✓ quando o GitHub confirma.
   const sendIcon = sendBtn.innerHTML;
-  const pend = bolhaPendente(fotos.length ? '📷 ' + (fotos.length > 1 ? fotos.length + ' fotos' : 'Foto') + (text ? ' ' + text : '') : text);
+  const pend = bolhaPendente(fotos.length ? (fotos.length > 1 ? fotos.length + ' fotos' : 'Foto') + (text ? ' ' + text : '') : text, fotos.length ? 'cam' : '');
   box.value = ''; box.style.height = 'auto';
   let falhou = false;
   for (let tentativa = 0; tentativa < 4; tentativa++) {
@@ -1366,7 +1442,7 @@ form.addEventListener('submit', async e => {
       break;
     } catch (err) {
       if (err.status === 409 && tentativa < 3) { await new Promise(r => setTimeout(r, 600)); continue; }
-      falhou = true; pend.classList.add('falhou'); const tk = pend.querySelector('.tick'); tk.classList.remove('relogio'); tk.textContent = '⚠️ não foi'; tk.title = 'Não foi enviada';
+      falhou = true; pend.classList.add('falhou'); const tk = pend.querySelector('.tick'); tk.classList.remove('relogio'); tk.innerHTML = icone('warn') + ' não foi'; tk.title = 'Não foi enviada';
       // só devolve o texto que falhou pra caixa se ela não começou a digitar outra coisa nesse meio tempo
       if (!box.value.trim()) { box.value = text; store.set(rascKey(), text); }
       showNote(err.status === 401 ? 'A chave não vale mais. Toca em ⋮ → Trocar chave.' : 'Não salvou. Confere a internet e tenta de novo.', true);
@@ -1412,7 +1488,7 @@ document.addEventListener('focusout', () => setTimeout(ajustaAltura, 300));
 const swPronto = ('serviceWorker' in navigator) ? navigator.serviceWorker.register('sw.js').catch(() => null) : Promise.resolve(null);
 function chave(b64) { const p = '='.repeat((4 - b64.length % 4) % 4); const r = atob((b64 + p).replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(r, c => c.charCodeAt(0)); }
 const btnNotif = document.getElementById('notificar');
-function marcaNotif() { if (window.Notification && Notification.permission === 'granted') btnNotif.textContent = '🔔 Notificações ligadas'; }
+function marcaNotif() { if (window.Notification && Notification.permission === 'granted') btnNotif.innerHTML = icone('bell') + ' Notificações ligadas'; }
 marcaNotif();
 btnNotif.onclick = async () => {
   menu.hidden = true;
@@ -1432,7 +1508,7 @@ btnNotif.onclick = async () => {
     if (atual.ok) corpo.sha = (await atual.json()).sha;
     const r = await fetch(url, { method: 'PUT', headers: h, body: JSON.stringify(corpo) });
     if (!r.ok) throw new Error('put ' + r.status);
-    marcaNotif(); showNote('Notificações ligadas ✓');
+    marcaNotif(); showNote('Notificações ligadas');
   } catch (e) { showNote('Não consegui ligar as notificações. Tenta de novo pelo ícone da tela de início.', true); }
 };
 
@@ -1468,7 +1544,7 @@ async function lerArquivo(arq) {
 }
 function previaDe(it) {
   const quem = it.from === 'may' ? 'Você: ' : (GRUPO[it.quem] ? GRUPO[it.quem].nome + ': ' : '');
-  const t = it.audio ? '🎤 Áudio' : (it.foto ? '📷 ' + (it.text || 'Foto') : it.text);
+  const t = it.audio ? '\u0001mic\u0001Áudio' : (it.foto ? '\u0001cam\u0001' + (it.text || 'Foto') : it.text);
   return quem + String(t || '').replace(/\s+/g, ' ').trim();
 }
 function carregaLista(estrito) {
@@ -1520,7 +1596,9 @@ function desenhaLista() {
     const hora = document.createElement('span'); hora.className = 'hora'; hora.textContent = c.day ? (c.day === hoje ? c.time : c.day.slice(0, 5)) : '';
     l1.append(nome, hora);
     const l2 = document.createElement('div'); l2.className = 'linha';
-    const pv = document.createElement('span'); pv.className = 'previa'; pv.textContent = c.previa;
+    const pv = document.createElement('span'); pv.className = 'previa';
+    const pm = String(c.previa).match(/^(.*?)\u0001(\w+)\u0001([\s\S]*)$/);   // 'Você: ' + icone + texto
+    if (pm) { pv.append(document.createTextNode(pm[1])); const si = document.createElement('span'); si.innerHTML = icone(pm[2]); pv.append(si.firstChild, document.createTextNode(' ' + pm[3])); } else pv.textContent = c.previa;
     l2.append(pv);
     if (c.nao) { const b = document.createElement('span'); b.className = 'badge'; b.textContent = c.nao > 99 ? '99+' : c.nao; l2.append(b); }
     corpo.append(l1, l2); el.append(av, corpo);
@@ -1583,8 +1661,8 @@ let pilha = [], catalogo = null;
 const reais = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
 function botao(ic, txt, sub, fn) {
   const b = document.createElement('button'); b.type = 'button'; b.className = 'p-botao';
-  b.innerHTML = '<span class="ic"></span><span class="tx"><span class="t"></span><small></small></span><span class="chev" aria-hidden="true">›</span>';
-  b.querySelector('.ic').textContent = ic; b.querySelector('.t').textContent = txt; b.querySelector('small').textContent = sub || '';
+  b.innerHTML = '<span class="ic"></span><span class="tx"><span class="t"></span><small></small></span><span class="chev" aria-hidden="true">' + icone('chev') + '</span>';
+  b.querySelector('.ic').innerHTML = icone(ic); b.querySelector('.t').textContent = txt; b.querySelector('small').textContent = sub || '';
   b.onclick = fn; return b;
 }
 function tela(titulo, montar) { if (pilha.length) pilha[pilha.length - 1][2] = pCorpo.scrollTop; pilha.push([titulo, montar, 0]); desenhaTela(); }
@@ -1595,7 +1673,7 @@ function desenhaTela() {
   const r = montar(t); if (rolou) Promise.resolve(r).then(() => { if (t.isConnected) pCorpo.scrollTop = rolou; });   // voltando: devolve a rolagem de onde ela estava
 }
 function fechaPainel() { painel.hidden = true; pilha = []; }
-document.getElementById('p-anotar').onclick = () => abreFicha({ titulo: '📝 ' + pTit.textContent, contexto: pTit.textContent });
+document.getElementById('p-anotar').onclick = () => abreFicha({ titulo: 'Anotar · ' + pTit.textContent, contexto: pTit.textContent });
 document.getElementById('p-voltar').onclick = () => { pilha.pop(); if (pilha.length) desenhaTela(); else fechaPainel(); };
 abreMenu.onclick = () => {
   menu.hidden = true; painel.hidden = false; pilha = [];
@@ -1604,7 +1682,7 @@ abreMenu.onclick = () => {
     const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = 'Atalhos'; c.append(t);
     // Os botões do Menu vêm de menu/menu.json (a Lyra acrescenta páginas sem mexer no app); sem ele, só o Catálogo.
     const lista = document.createElement('div'); lista.className = 'p-lista'; c.append(lista);
-    lerArquivo('menu/menu.json').then(t => JSON.parse(t).itens).catch(() => [{ tipo: 'catalogo', icone: '🛍️', nome: 'Catálogo', sub: 'piscina, piso, borda, churrasqueira…' }])
+    lerArquivo('menu/menu.json').then(t => JSON.parse(t).itens).catch(() => [{ tipo: 'catalogo', icone: 'bag', nome: 'Catálogo', sub: 'piscina, piso, borda, churrasqueira…' }])
       .then(itens => itens.forEach(m => lista.append(botao(m.icone, m.nome, m.sub, () => abreItemMenu(m)))));
   });
 };
@@ -1646,23 +1724,24 @@ function abreViagens(m) {
     p.remove();
     if (m.arq === 'menu/treino.json') { d.viagens.forEach(v => { v._arq = m.arq; }); return montaTreino(c, d); }   // Treino (May, 29/10): os treinos já aparecem direto, sem passar pela lista de viagens
     const lista = document.createElement('div'); lista.className = 'p-lista'; c.append(lista);
-    d.viagens.forEach(v => { v._arq = m.arq; lista.append(botao(v.icone || '🧳', v.nome, v.sub, () => abreViagem(v))); });
+    d.viagens.forEach(v => { v._arq = m.arq; lista.append(botao(v.icone || 'suitcase', v.nome, v.sub, () => abreViagem(v))); });
   });
 }
 function montaTreino(c, d) {
   zeraSemanaTreino(d.viagens);
-  const b = botao('📊', 'Estatística', 'semana, cargas, comparação com a base', () => abreEstatistica(d.historico || [])); b.classList.add('treino-est'); c.append(b);
+  const b = botao('chart', 'Estatística', 'semana, cargas, comparação com a base', () => abreEstatistica(d.historico || [])); b.classList.add('treino-est'); c.append(b);
   const folga = () => store.get('treino-folga') === diaLocal() || (d.folgas || []).includes(diaLocal());
-  const bf = botao('🛋️', folga() ? 'Hoje é folga' : 'Hoje não vou', folga() ? 'o treino não abre sozinho hoje · tocar desfaz' : 'o treino não abre sozinho hoje', () => {
+  const bf = botao(folga() ? 'moon' : 'sofa', folga() ? 'Hoje é folga' : 'Hoje não vou', folga() ? 'o treino não abre sozinho hoje · tocar desfaz' : 'o treino não abre sozinho hoje', () => {
     if (store.get('treino-folga') === diaLocal()) { store.set('treino-folga', ''); showNote('Folga desfeita: o treino volta a abrir no horário'); }
     else { store.set('treino-folga', diaLocal()); showNote('Beleza, hoje o treino não abre sozinho'); }
     c.replaceChildren(); montaTreino(c, d);
-  }); c.append(bf);
+  });
   d.viagens.forEach(v => {
     if (v.resumo) { const r = document.createElement('div'); r.className = 'p-texto'; r.textContent = v.resumo; c.append(r); }
     const lista = document.createElement('div'); lista.className = 'p-lista'; c.append(lista);
     v.listas.forEach(l => lista.append(botao(l.icone, l.nome, marcados(v, l).size + ' de ' + totalItens(l) + ' feitos · ' + (l.sub || ''), () => abreChecklist(v, l))));
   });
+  c.append(bf);   // "Hoje não vou" fica lá embaixo, depois dos treinos (May, 05/11/2026)
 }
 // Estatística do Treino: só o que está em "historico" do menu/treino.json (cada treino feito: dia AAAA-MM-DD, grupo, exercícios com kg quando anotado). Sem peso corporal.
 function abreEstatistica(h) {
@@ -1733,7 +1812,7 @@ function abreChecklist(v, l) {
   tela(l.nome, c => {
     const feitos = marcados(v, l), total = totalItens(l);
     const prog = document.createElement('p'); prog.className = 'p-nota';
-    const conta = () => { prog.textContent = feitos.size + ' de ' + total + ' feitos' + (feitos.size === total ? ' ✅' : ''); };
+    const conta = () => { prog.innerHTML = ''; prog.append(document.createTextNode(feitos.size + ' de ' + total + ' feitos')); if (feitos.size === total) { const ok = document.createElement('span'); ok.innerHTML = ' ' + icone('check'); ok.style.color = 'var(--accent)'; prog.append(ok); } };
     conta(); c.append(prog);
     l.grupos.forEach(g => {
       const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = g.nome; c.append(t);
@@ -1776,7 +1855,7 @@ function abreAlbum(g, m) {
   tela(g.nome, c => {
     const prontos = {};   // arq -> File já baixado (o share do iOS precisa sair logo do toque)
     const caixa = document.createElement('div'); caixa.className = 'album';
-    const bt = document.createElement('button'); bt.type = 'button'; bt.className = 'baixar-tudo'; bt.textContent = '⬇️ Baixar tudo (' + g.imagens.length + ')';
+    const bt = document.createElement('button'); bt.type = 'button'; bt.className = 'baixar-tudo'; bt.innerHTML = icone('download') + ' Baixar tudo (' + g.imagens.length + ')';
     bt.onclick = async () => {
       const arqs = g.imagens.map(im => prontos[im.arq]).filter(Boolean);
       if (!arqs.length) { showNote('As imagens ainda estão carregando.', true); return; }
@@ -1822,10 +1901,10 @@ function abreTexto(m) {
 }
 // ---- Agenda em cartões: o mesmo .md da Agenda (## seção · "- **data:** texto" · sub-item "  - …" · "📷 caminho" vira foto)
 const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
-const ICONES = [[/consulta|médic|dr\.|dra\./i, '🩺'], [/psiquiatr|psicólog/i, '🧠'], [/laser/i, '✨'], [/ônibus|rodovi|saritur|chega/i, '🚌'],
-  [/ligar|telefon|📞/i, '📞'], [/postinho|sus|exame/i, '🏥'], [/tattoo|bronze/i, '🖋️'], [/férias|adriano/i, '🏖️'], [/reembolso|r\$|pix/i, '💸'],
-  [/guia|imprimir|laudo/i, '📄'], [/revisar|separar|mala/i, '🎒'], [/cirurgia/i, '💜']];
-const iconeDe = t => (ICONES.find(([r]) => r.test(t)) || [0, '📌'])[1];
+const ICONES = [[/consulta|médic|dr\.|dra\./i, 'stetho'], [/psiquiatr|psicólog/i, 'brain'], [/laser/i, 'sparkle'], [/ônibus|rodovi|saritur|chega/i, 'bus'],
+  [/ligar|telefon|📞/i, 'phone'], [/postinho|sus|exame/i, 'hospital'], [/tattoo|bronze/i, 'pen'], [/férias|adriano/i, 'sun'], [/reembolso|r\$|pix/i, 'money'],
+  [/guia|imprimir|laudo/i, 'doc'], [/revisar|separar|mala/i, 'backpack'], [/cirurgia/i, 'heart']];
+const iconeDe = t => (ICONES.find(([r]) => r.test(t)) || [0, 'pin'])[1];
 function dataDe(rot) {   // "04/11", "~29/10", "13/02/2027", "05/11 (qui) 10h" → Date (ano atual se não vier)
   const m = rot.match(/(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?/); if (!m) return null;
   const hoje = new Date(); return new Date(+(m[3] || hoje.getFullYear()), +m[2] - 1, +m[1]);
@@ -1856,10 +1935,10 @@ function abreAgenda(m) {
       const el = document.createElement('div'); el.className = 'ag';
       const dt = document.createElement('div'); dt.className = 'dt';
       if (d) { dt.innerHTML = '<b></b><small></small>'; dt.querySelector('b').textContent = d.getDate(); dt.querySelector('small').textContent = MESES[d.getMonth()]; }
-      else { dt.classList.add('ic'); dt.textContent = iconeDe(txt); }
+      else { dt.classList.add('ic'); dt.innerHTML = icone(iconeDe(txt)); }
       const cx = document.createElement('div'); cx.className = 'cx';
       const tp = document.createElement('div'); tp.className = 'tp';
-      if (d) tp.append(document.createTextNode(iconeDe(txt) + ' ' + rot.replace(/^~?\s*\d{1,2}\/\d{1,2}(\/\d{4})?\s*/, '').replace(/^de\s/, '').trim()));
+      if (d) tp.append(document.createTextNode(rot.replace(/^~?\s*\d{1,2}\/\d{1,2}(\/\d{4})?\s*/, '').replace(/^de\s/, '').trim()));
       else if (rot) tp.append(document.createTextNode(rot));
       if (d && !/^até/i.test(rot)) {
         const dias = Math.round((d - hoje) / 864e5);
@@ -1870,12 +1949,12 @@ function abreAgenda(m) {
       const corpoEl = document.createElement('div'); neg(corpoEl, corpo); cx.append(corpoEl);
       if (foto) { const im = document.createElement('img'); im.alt = ''; cx.append(im); fotoUrl(foto).then(u => { im.src = u; im.onclick = () => abreZoom(u); }).catch(() => im.remove()); }
       el.append(dt, cx); c.append(el); ult = el;
-      el.onclick = () => abreFicha({ titulo: (rot ? rot + ' · ' : '') + iconeDe(txt), foto, corpo: el.cloneNode(true), contexto: 'Agenda (' + (rot || corpo.slice(0, 40)) + ')' });
+      el.onclick = () => abreFicha({ titulo: rot || 'Agenda', foto, corpo: el.cloneNode(true), contexto: 'Agenda (' + (rot || corpo.slice(0, 40)) + ')' });
     });
   });
 }
 async function mandaPraLyra(txt, btn) {   // manda direto pra caixa da Geral, sem sair da tela
-  const antes = btn.textContent; btn.disabled = true; btn.textContent = 'Enviando…';
+  const antes = btn.innerHTML; btn.disabled = true; btn.textContent = 'Enviando…';
   const api = apiDe(GERAL.arq);
   for (let tentativa = 0; tentativa < 4; tentativa++) {
     try {
@@ -1886,18 +1965,18 @@ async function mandaPraLyra(txt, btn) {   // manda direto pra caixa da Geral, se
       md = md.replace(/\s*$/, '') + '\n- [' + stamp(new Date()) + '] ' + txt.replace(/\r?\n/g, '\\n') + '\n';
       const p = await fetch(api, { method: 'PUT', headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' }, body: JSON.stringify({ message: 'recado do iPhone', content: b64encode(md), sha: f.sha }) });
       if (!p.ok) { const e = new Error('http ' + p.status); e.status = p.status; throw e; }
-      btn.textContent = '✓ Mandado pra Lyra'; return true;
+      btn.innerHTML = icone('check') + ' Mandado pra Lyra'; return true;
     } catch (err) {
       if (err.status === 409 && tentativa < 3) { await new Promise(r => setTimeout(r, 600)); continue; }
-      btn.textContent = err.status === 401 ? '⚠️ Chave vencida (⋮ → Trocar chave)' : '⚠️ Não foi, toca de novo';
-      btn.disabled = false; setTimeout(() => { if (!btn.disabled) btn.textContent = antes; }, 4000); return false;
+      btn.innerHTML = icone('warn') + (err.status === 401 ? ' Chave vencida (menu → Trocar chave)' : ' Não foi, toca de novo');
+      btn.disabled = false; setTimeout(() => { if (!btn.disabled) btn.innerHTML = antes; }, 4000); return false;
     }
   }
 }
 // Caixinha "📝 Anotar" (May, 22/10: "todo lugar tem q dar pra mim escrever"): manda pra Geral com o contexto na frente
 function notaBox(contexto) {
   const nb = document.createElement('div'); nb.className = 'nota-box';
-  nb.innerHTML = '<label>📝 Escrever sobre isso</label><textarea rows="3" maxlength="600" placeholder="Escreve aqui, vai pra Lyra"></textarea><button type="button" class="manda" disabled>Mandar pra Lyra</button>';
+  nb.innerHTML = '<label>' + icone('note') + ' Escrever sobre isso</label><textarea rows="3" maxlength="600" placeholder="Escreve aqui, vai pra Lyra"></textarea><button type="button" class="manda" disabled>Mandar pra Lyra</button>';
   const ta = nb.querySelector('textarea'), mb = nb.querySelector('.manda');
   ta.oninput = () => { mb.disabled = !ta.value.trim(); if (!mb.disabled) mb.textContent = 'Mandar pra Lyra'; };
   mb.onclick = async () => { const t = ta.value.trim(); if (t && await mandaPraLyra('📝 ' + contexto + ': ' + t, mb)) ta.value = ''; };
@@ -1909,7 +1988,7 @@ function abreFicha({ titulo, foto, corpo, contexto, fotos }) {
   const cx = document.createElement('div'); cx.className = 'f-caixa';
   const topo = document.createElement('div'); topo.className = 'f-topo';
   const h = document.createElement('h3'); h.textContent = titulo || '';
-  const x = document.createElement('button'); x.type = 'button'; x.textContent = '✕'; x.setAttribute('aria-label', 'Fechar');
+  const x = document.createElement('button'); x.type = 'button'; x.innerHTML = icone('close'); x.setAttribute('aria-label', 'Fechar');
   topo.append(h, x); cx.append(topo);
   if (foto) { const im = document.createElement('img'); im.alt = titulo || ''; cx.append(im); fotoUrl(foto).then(u => { im.src = u; im.onclick = () => abreZoom(u, foto, fotos); }).catch(() => im.remove()); }
   if (corpo) { const c = document.createElement('div'); c.className = 'f-corpo'; c.append(corpo); cx.append(c); }
@@ -1964,7 +2043,7 @@ function precoLinha(it) {   // preço em destaque + frete ao lado
   pl.append(pr, fr); return pl;
 }
 function fotoDe(it, cat, zoom) {   // faixa com o ícone da categoria (sem foto, ou enquanto carrega); a foto entra por cima
-  const ph = document.createElement('div'); ph.className = 'ph' + (it.foto ? '' : ' sem'); ph.textContent = cat.icone || '🛍️';
+  const ph = document.createElement('div'); ph.className = 'ph' + (it.foto ? '' : ' sem'); ph.innerHTML = icone(cat.icone || 'bag');
   if (it.foto) {
     const img = document.createElement('img'); img.alt = it.nome; img.loading = 'lazy'; ph.append(img);
     fotoUrl(it.foto).then(u => { img.onload = () => img.classList.add('ok'); img.src = u; if (zoom) img.onclick = () => abreZoom(u); }).catch(() => img.remove());
@@ -1976,7 +2055,7 @@ function abreCategoria(cat) {
     if (cat.nota) { const n = document.createElement('p'); n.className = 'p-nota'; n.textContent = cat.nota + (cat.data ? ' (preços de ' + cat.data + ')' : ''); c.append(n); }
     cat.itens.forEach(it => {
       const el = document.createElement('div'); el.className = 'item' + (it.escolhido ? ' escolhido' : ''); el.setAttribute('role', 'button'); el.tabIndex = 0;
-      const h = document.createElement('h3'); h.textContent = (it.escolhido ? '⭐ ' : '') + it.nome;
+      const h = document.createElement('h3'); if (it.escolhido) h.innerHTML = icone('star'); h.append(document.createTextNode(it.nome));
       const b = document.createElement('div'); b.className = 'i-corpo'; b.append(h);
       el.append(b, fotoDe(it, cat, false), precoLinha(it));
       el.onclick = () => abreItem(cat, it);
@@ -1988,9 +2067,9 @@ function abreCategoria(cat) {
 function abreItem(cat, it) {   // detalhe: foto grande (toque amplia), dados, links, "Gostei" e anotação pra Lyra
   tela(cat.nome, c => {
     const d = document.createElement('div'); d.className = 'detalhe';
-    const h = document.createElement('h3'); h.textContent = (it.escolhido ? '⭐ ' : '') + it.nome;
+    const h = document.createElement('h3'); if (it.escolhido) h.innerHTML = icone('star'); h.append(document.createTextNode(it.nome));
     d.append(fotoDe(it, cat, true), h, precoLinha(it));
-    if (it.medidas) { const m = document.createElement('div'); m.className = 'med'; m.textContent = '📏 ' + it.medidas; d.append(m); }
+    if (it.medidas) { const m = document.createElement('div'); m.className = 'med'; m.innerHTML = icone('ruler') + ' '; m.append(document.createTextNode(it.medidas)); d.append(m); }
     if (it.detalhe) { const t = document.createElement('div'); t.className = 'det'; t.textContent = it.detalhe; d.append(t); }
     if ((it.links || []).length) {
       const ls = document.createElement('div'); ls.className = 'links';
@@ -1999,7 +2078,7 @@ function abreItem(cat, it) {   // detalhe: foto grande (toque amplia), dados, li
     }
     // Manda direto pra caixa da Geral e fica no item (ela pediu pra não ser levada pra tela de mensagens).
     const manda = mandaPraLyra;
-    const g = document.createElement('button'); g.type = 'button'; g.className = 'gostei'; g.textContent = '⭐ Gostei';
+    const g = document.createElement('button'); g.type = 'button'; g.className = 'gostei'; g.innerHTML = icone('star') + ' Gostei';
     g.onclick = () => manda('⭐ Gostei (catálogo, ' + cat.nome + '): ' + it.nome, g);
     d.append(g);
     const nb = document.createElement('div'); nb.className = 'nota-box';
@@ -2023,7 +2102,7 @@ function fotosDaConversa() { return lastItems.flatMap(x => x.fotos || []); }
 function abreZoom(src, path, listaFotos) {   // listaFotos: as fotos do álbum (sem ela, as da conversa)
   const z = document.createElement('div'); z.className = 'zoom';
   const im = document.createElement('img'); im.src = src; im.alt = 'Foto';
-  const x = document.createElement('button'); x.type = 'button'; x.className = 'zx'; x.textContent = '✕'; x.setAttribute('aria-label', 'Fechar');
+  const x = document.createElement('button'); x.type = 'button'; x.className = 'zx'; x.innerHTML = icone('close'); x.setAttribute('aria-label', 'Fechar');
   const cont = document.createElement('div'); cont.className = 'zcont'; cont.hidden = true;
   const salvar = document.createElement('button'); salvar.type = 'button'; salvar.className = 'zsalvar'; salvar.textContent = 'Salvar';
   z.append(im, cont, salvar, x); document.body.append(z);
@@ -2062,7 +2141,7 @@ function abreZoom(src, path, listaFotos) {   // listaFotos: as fotos do álbum (
 novaBtn.onclick = () => {
   const pop = document.createElement('div'); pop.className = 'pop';
   pop.innerHTML = `<form class="caixa" autocomplete="off"><h2>Nova conversa</h2>
-    <div class="foto-grupo"><div class="prev" id="np-prev">📷</div><button type="button" id="np-foto">Escolher foto</button><input type="file" id="np-arq" accept="image/*" hidden></div>
+    <div class="foto-grupo"><div class="prev" id="np-prev">${icone('cam')}</div><button type="button" id="np-foto">Escolher foto</button><input type="file" id="np-arq" accept="image/*" hidden></div>
     <input type="text" id="np-nome" maxlength="40" placeholder="Nome (ex.: Casa, Obra)" required>
     <div class="acoes"><button type="button" class="sec" id="np-x">Cancelar</button><button type="submit" id="np-ok">Criar</button></div></form>`;
   document.body.append(pop);
