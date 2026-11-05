@@ -740,7 +740,7 @@ let inicio = 0;
 
 // Cores = as que cada projeto usa no VS Code (borda/realce do .vscode/settings.json); Lyra = rosa dela.
 const GRUPO = {
-  lyra: { nome: 'Lyra', cargo: 'Secretária Executiva', cor: '#E1306C', texto: '#FFFFFF', foto: 'recados-fotos/20261031-005747-avatar-lyra.png' },
+  lyra: { nome: 'Lyra', cargo: 'Secretária', cor: '#E1306C', texto: '#FFFFFF', foto: 'recados-fotos/20261031-005747-avatar-lyra.png' },
   // Trabalho (May, 03/11/2026): "um L pra Lyra, um K pro KDS, um R pro RM, um P pro promotor, um C pro checklist, um A pro acompanhamento"
   rm: { nome: 'RM · Recebimento', cor: '#22C55E', texto: '#052E16' },
   'simp-mobile': { nome: 'Checklist', cor: '#2DD4BF', texto: '#042F2E' },
@@ -748,20 +748,20 @@ const GRUPO = {
   acompanhamentos: { nome: 'Acompanhamentos', cor: '#940088', texto: '#FFFFFF' },
   promotor: { nome: 'Promotor', cor: '#F59E0B', texto: '#2D1A02' },
   kds: { nome: 'KDS', cor: '#EAB308', texto: '#2A2002' },
-  orfeu: { nome: 'Orfeu (PC1)', cargo: 'Diretor de Infra e Estúdio do PC1', cor: '#E31B23', texto: '#2D0A0A', foto: 'recados-fotos/20261031-005747-avatar-orfeu.png' },
-  nyx: { nome: 'Nyx (PC2)', cargo: 'Gerente de Jogos e Emulação da Casa', cor: '#6FCF00', texto: '#0E2A00', foto: 'recados-fotos/20261031-005747-avatar-nyx.png' },
-  vega: { nome: 'Vega (PC3)', cargo: 'Chefe de Operações e Suporte do PC3', cor: '#1D4ED8', texto: '#06173A', foto: 'recados-fotos/20261031-005747-avatar-vega.png' },
-  pc4: { nome: 'PC4', cargo: 'Diretor de Entrega e Transmissão', cor: '#FFCB05', texto: '#2A2002', foto: 'recados-fotos/20261031-005747-avatar-hermes.png' },
+  orfeu: { nome: 'Orfeu (PC1)', cargo: 'Técnico e Produtor', cor: '#E31B23', texto: '#2D0A0A', foto: 'recados-fotos/20261031-005747-avatar-orfeu.png' },
+  nyx: { nome: 'Nyx (PC2)', cargo: 'Especialista em Jogos', cor: '#6FCF00', texto: '#0E2A00', foto: 'recados-fotos/20261031-005747-avatar-nyx.png' },
+  vega: { nome: 'Vega (PC3)', cargo: 'Suporte', cor: '#1D4ED8', texto: '#06173A', foto: 'recados-fotos/20261031-005747-avatar-vega.png' },
+  pc4: { nome: 'PC4', cargo: 'Mensageiro', cor: '#FFCB05', texto: '#2A2002', foto: 'recados-fotos/20261031-005747-avatar-hermes.png' },
   // aliases: mensagens antigas (antes de escolherem nome) ficaram assinadas "PC1/PC2/PC3"
-  pc1: { nome: 'Orfeu (PC1)', cargo: 'Diretor de Infra e Estúdio do PC1', cor: '#E31B23', texto: '#2D0A0A' },
-  pc2: { nome: 'Nyx (PC2)', cargo: 'Gerente de Jogos e Emulação da Casa', cor: '#6FCF00', texto: '#0E2A00' },
-  pc3: { nome: 'Vega (PC3)', cargo: 'Chefe de Operações e Suporte do PC3', cor: '#1D4ED8', texto: '#06173A' },
-  hermes: { nome: 'Hermes (PC4)', cargo: 'Diretor de Entrega e Transmissão', cor: '#FFCB05', texto: '#2A2002', foto: 'recados-fotos/20261031-005747-avatar-hermes.png' },   // alias de pc4, mesma cor
+  pc1: { nome: 'Orfeu (PC1)', cargo: 'Técnico e Produtor', cor: '#E31B23', texto: '#2D0A0A' },
+  pc2: { nome: 'Nyx (PC2)', cargo: 'Especialista em Jogos', cor: '#6FCF00', texto: '#0E2A00' },
+  pc3: { nome: 'Vega (PC3)', cargo: 'Suporte', cor: '#1D4ED8', texto: '#06173A' },
+  hermes: { nome: 'Hermes (PC4)', cargo: 'Mensageiro', cor: '#FFCB05', texto: '#2A2002', foto: 'recados-fotos/20261031-005747-avatar-hermes.png' },   // alias de pc4, mesma cor
   darksigma: { nome: 'DarkSigma', cor: '#9333EA', texto: '#FFFFFF', foto: 'recados-fotos/20261031-010359-1.jpg' },   // hipotetico, roxo igual o Sigma do conselho
-  sigma: { nome: 'Sigma', cargo: 'Revisor-Chefe', cor: '#9333EA', texto: '#FFFFFF', foto: 'recados-fotos/avatar-sigma-96.png' }   // Revisor-Chefe (05/11/2026); sem ele aqui o "↳ Sigma" grudava na mensagem de cima
+  sigma: { nome: 'Sigma', cargo: 'Revisor', cor: '#9333EA', texto: '#FFFFFF', foto: 'recados-fotos/avatar-sigma-96.png' }   // Revisor-Chefe (05/11/2026); sem ele aqui o "↳ Sigma" grudava na mensagem de cima
 };
 // A May também aparece com robozinho no Geral, como "agente humana", nas duas cores dela (May, 05/11/2026)
-const EU = { nome: 'May', cargo: 'Diretora-Geral', cor: '#E31B23', cor2: '#22C55E', texto: '#FFFFFF', foto: 'recados-fotos/avatar-may-192.png' };
+const EU = { nome: 'May', cargo: 'Chefe', cor: '#E31B23', cor2: '#22C55E', texto: '#FFFFFF', foto: 'recados-fotos/avatar-may-192.png' };
 // Ficha (crachá de jogo) de cada um, ao tocar no nome ou na foto (May, 05/11/2026): abas Perfil, Atributos, Máquina
 const FICHA = {
   may: { classe: 'Chefe da Casa', pc: 'Humana', maquina: 'Celular dela e todos os PCs da casa', faz: 'Dev fullstack, design, produção musical, estúdio de design e o fangame Pokémon ACT.', olhar: 'A dona de tudo: decide, pede e aprova.', atr: [['Dev', 10], ['Design', 9], ['Música', 9], ['Paciência com robô', 7]], hab: ['Flutter', 'Java', 'SQL', 'FL Studio', 'Guitarra', 'Design gráfico'] },
