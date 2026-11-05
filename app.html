@@ -228,6 +228,15 @@ textarea:focus-visible { outline: none; }
 .msg.may.eu.pendente { opacity: 1; background: linear-gradient(#FFFFFF, #FFFFFF) padding-box, linear-gradient(90deg, #E31B23, #FACC15, #22C55E, #FACC15, #E31B23) 0 0 / 300% 100% border-box; animation: enviando 1.6s linear infinite; }   /* degradê correndo na borda = ainda enviando (May, 05/11/2026) */
 @keyframes enviando { to { background-position: 0 0, 150% 0; } }
 @media (prefers-reduced-motion: reduce) { .msg.may.eu.pendente { animation: none; opacity: .85; } }
+@media (prefers-color-scheme: dark) {   /* no modo escuro o balão dela fica escuro, só a borda reggae colorida (May, 05/11/2026: "a minha versão é dark mode") */
+  .msg.may.eu { background: linear-gradient(#141C19, #141C19) padding-box, linear-gradient(135deg, #E31B23, #FACC15, #22C55E) border-box; color: var(--fg); }
+  .msg.may.eu.pendente { background: linear-gradient(#141C19, #141C19) padding-box, linear-gradient(90deg, #E31B23, #FACC15, #22C55E, #FACC15, #E31B23) 0 0 / 300% 100% border-box; }
+  .msg.may.eu .meta { color: var(--muted); }
+  .msg.may.eu .cita { background: rgba(255,255,255,.06); }
+  .msg.may.eu .cita span { color: var(--muted); }
+  .msg.may .quem.eu .letra:nth-child(2) { color: #FACC15; }
+  .msg.may .quem.eu .letra:nth-child(3) { color: #22C55E; }
+}
 .msg.falhou { opacity: 1; outline: 1.5px solid #DC2626; }
 .msg.falhou .tick { color: #DC2626; letter-spacing: 0; }
 .msg.may .tick.lida { color: #9FE0FF; }
