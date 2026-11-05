@@ -1,4 +1,4 @@
-// v6 (balao da May nas 2 cores, May e Sigma na lista de online); v5 (foto com fundo transparente); v4 (Trabalho so a letra, fundo na cor de quem fala, folga do treino); v3 (hora nas respostas; foto no push). Service worker dos Recados: só serve pra notificação push (iPhone com a página na tela de início, iOS 16.4+).
+// v7 (balao da May branco); v6 (balao da May nas 2 cores, May e Sigma na lista de online); v5 (foto com fundo transparente); v4 (Trabalho so a letra, fundo na cor de quem fala, folga do treino); v3 (hora nas respostas; foto no push). Service worker dos Recados: só serve pra notificação push (iPhone com a página na tela de início, iOS 16.4+).
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
 
