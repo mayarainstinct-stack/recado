@@ -77,7 +77,7 @@ header { position: relative; z-index: 2; color: var(--head-fg); font-family: -ap
 .online-pop .info { min-width: 0; display: grid; gap: 2px; }
 .online-pop .nome { font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .online-pop .visto { font-size: 12.5px; color: var(--muted); }
-.online-pop .visto.ag { color: var(--accent); font-weight: 600; }
+.online-pop .visto.on { color: var(--accent); font-weight: 600; }   /* era .ag, que é a classe do cartão da agenda: virava caixinha e deixava a linha mais alta */
 .menu.no-painel { position: fixed; z-index: 57; }   /* aberto de dentro do Menu: fica por cima do painel */
 .menu { position: absolute; right: max(12px, env(safe-area-inset-right, 0px)); top: calc(62px + env(safe-area-inset-top, 0px));
   min-width: 232px; background: var(--paper); color: var(--fg); border: 1px solid var(--line); border-radius: 16px; padding: 6px; z-index: 5;
@@ -962,7 +962,7 @@ function desenhaOnlinePop() {
     const info = document.createElement('div'); info.className = 'info';
     const nome = document.createElement('div'); nome.className = 'nome'; nome.textContent = nomeDe(p);
     const v = fmtVisto(p.ultimaAtualizacao);
-    const visto = document.createElement('div'); visto.className = 'visto' + (v.online ? ' ag' : '');
+    const visto = document.createElement('div'); visto.className = 'visto' + (v.online ? ' on' : '');
     visto.textContent = v.online ? (v.texto === 'agora' ? 'online agora' : 'visto ' + v.texto) : v.texto;
     info.append(nome, visto); row.append(av, info); onlinePop.append(row);
   });
