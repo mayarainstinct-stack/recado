@@ -133,7 +133,7 @@ textarea:focus-visible { outline: none; }
 .msg.grupo { background: color-mix(in srgb, var(--quem) 16%, var(--cinza)); color: var(--fg); }   /* fundo na cor de quem fala (May, 03/11/2026) */
 .msg.grupo .quem { color: var(--quem); }
 /* Balão da May: branco, mais clean (May, 05/11/2026: "deixa meu balão branco"); as 2 cores dela ficam só no nome e no aro do avatar */
-.msg.may.eu { background: #FFFFFF; color: #1A1A1A; box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+.msg.may.eu { border: 2px solid transparent; background: linear-gradient(#FFFFFF, #FFFFFF) padding-box, linear-gradient(135deg, #E31B23, #22C55E) border-box; color: #1A1A1A; box-shadow: 0 1px 2px rgba(0,0,0,.12); }   /* borda vermelha e verde (May, 05/11/2026) */
 .msg.may.eu .meta { color: #6B7280; }
 .msg.may.eu .tick.lida { color: #1E8A40; }
 .msg.may.eu .cita { background: #F3F4F6; }
