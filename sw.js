@@ -1,4 +1,4 @@
-// v12 (só o comentário com acento de volta; o arquivo já era UTF-8). v11 (ícone da May um pouco maior); v10 (avatar da May recortado; interface só com ícones SVG, sem emoji; Hoje não vou no fim do Treino; online sem caixinha); v9 (avatares maiores no chat); v8 (borda vermelha e verde no balão da May); v7 (balão da May branco); v6 (balão da May nas 2 cores, May e Sigma na lista de online); v5 (foto com fundo transparente); v4 (Trabalho só a letra, fundo na cor de quem fala, folga do treino); v3 (hora nas respostas; foto no push). Service worker dos Recados: só serve pra notificação push (iPhone com a página na tela de início, iOS 16.4+). Sem cache do app.html de propósito.
+// v13 (tocar na notificação navega a janela pra ./#responder=... em vez de postMessage: o hash sobrevive ao reload). v12..v3 no histórico do git. Service worker dos Recados: só serve pra notificação push (iPhone com a página na tela de início, iOS 16.4+). Sem cache do app.html de propósito.
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
 
@@ -24,9 +24,17 @@ self.addEventListener('push', e => {
 self.addEventListener('notificationclick', e => {
   e.notification.close();
   // Tocou na notificação: abre (ou traz pra frente) a conversa certa (Geral ou Trabalho) já no modo de responder.
+  // O pedido vai no endereço (#responder=...), não em postMessage: se a página recarregar no meio, o hash continua lá.
   const conv = (e.notification.data && e.notification.data.conv) || '', foto = (e.notification.data && e.notification.data.foto) || '';
-  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cs => {
-    for (const c of cs) { if ('focus' in c) { c.postMessage({ responder: conv, foto }); return c.focus(); } }
-    return self.clients.openWindow('./#responder=' + encodeURIComponent(conv) + (foto ? '&foto=' + encodeURIComponent(foto) : ''));
+  const url = './#responder=' + encodeURIComponent(conv) + (foto ? '&foto=' + encodeURIComponent(foto) : '');
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(async cs => {
+    for (const c of cs) {
+      if (!('focus' in c)) continue;
+      try { await c.focus(); } catch (err) {}
+      // navigate só vale pra janela controlada por este sw; sem ele (ou se falhar) fica o postMessage de antes
+      if ('navigate' in c) { try { if (await c.navigate(url)) return; } catch (err) {} }
+      c.postMessage({ responder: conv, foto }); return;
+    }
+    return self.clients.openWindow(url);
   }));
 });

@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.2">
+<meta name="app-versao" content="2026-11-05.3">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -233,6 +233,8 @@ textarea:focus-visible { outline: none; }
 .msg.may.eu.pendente { opacity: 1; background: linear-gradient(#FFFFFF, #FFFFFF) padding-box, linear-gradient(90deg, #E31B23, #FACC15, #22C55E, #FACC15, #E31B23) 0 0 / 300% 100% border-box; animation: enviando 1.6s linear infinite; }   /* degradê correndo na borda = ainda enviando (May, 05/11/2026) */
 @keyframes enviando { to { background-position: 0 0, 150% 0; } }
 .msg.may.eu.pendente.falhou { animation: none; }   /* não foi: para de girar */
+.msg.pendente.falhou { cursor: pointer; }
+.msg.pendente:not(.falhou) .copiar-msg { display: none; }   /* opções só no balão que não foi */
 @media (prefers-reduced-motion: reduce) { .msg.may.eu.pendente { animation: none; opacity: .85; } }
 @media (prefers-color-scheme: dark) {   /* no modo escuro o balão dela fica escuro, só a borda reggae colorida (May, 05/11/2026: "a minha versão é dark mode") */
   .msg.may.eu { background: linear-gradient(#141C19, #141C19) padding-box, linear-gradient(135deg, #E31B23, #FACC15, #22C55E) border-box; color: var(--fg); }
@@ -578,6 +580,7 @@ const ICONES_SVG = {
   down: '<path d="M12 5v14M5 12l7 7 7-7"/>',
   more: '<circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/>',
   reply: '<path d="M9 14 4 9l5-5M4 9h10a6 6 0 0 1 6 6v3"/>',
+  retry: '<path d="M4 12a8 8 0 1 0 2.3-5.7M4 4v4h4"/>',
   download: '<path d="M12 4v11M7 11l5 5 5-5M4 20h16"/>',
   chev: '<path d="M9 5l7 7-7 7"/>',
   fork: '<path d="M7 3v8M4 3v5a3 3 0 0 0 6 0V3M7 11v10M17 21V3c-3 1-4 4-4 8h4"/>',
@@ -897,6 +900,7 @@ async function excluirMensagem(it) {
       const alvo = achados[0], linhas = md.split(/\r?\n/);
       [alvo._linha, ...alvo._extras].sort((a, b) => b - a).forEach(idx => linhas.splice(idx, 1));   // de trás pra frente, pra não desalinhar os outros índices
       await gh('PUT', { message: 'exclui mensagem', content: b64encode(linhas.join(eol)), sha: f.sha });
+      descartaLeituras(); gravado = null;   // GET em voo de antes do PUT ainda traria a mensagem apagada
       overlay.hidden = true; forcar = true; load().catch(() => {}); showNote('Mensagem excluída.');
       return;
     } catch (err) {
@@ -945,7 +949,7 @@ function render(items, manterPosicao) {
   if (!items.length) {
     const e = document.createElement('div'); e.className = 'empty';
     e.innerHTML = '<strong>Caixa vazia</strong><span>Tudo que você mandou já foi anotado. Escreve a próxima ideia aqui embaixo.</span>';
-    feed.append(e); return;
+    feed.append(e); recolocaPendentes(); return;
   }
   if (inicio > 0) { const mais = document.createElement('div'); mais.className = 'day'; mais.textContent = '↑ role pra ver as antigas'; feed.append(mais); }
   let last = '';
@@ -1079,6 +1083,7 @@ function render(items, manterPosicao) {
     if (ops) el.append(ops);   // antes ia num setTimeout e crescia o balão depois da rolagem já restaurada
     feed.append(el);   // resposta nova aparece na hora: sem o "digitando…" de mentira de 900 ms (05/11/2026)
   });
+  recolocaPendentes();
   if (firstNew === items.length && !manterPosicao && !feed.dataset.jaAbriu) { feed.dataset.jaAbriu = '1'; feed.classList.add('chegando'); setTimeout(() => feed.classList.remove('chegando'), 1200); }
   if (!pertoDoFim && shown > 0 && items.length > shown) { novasLaEmCima += items.length - shown; desceQtd.textContent = novasLaEmCima; desceQtd.hidden = false; }
   shown = items.length;
@@ -1124,16 +1129,136 @@ function marcaLidas() {
 }
 // Balão "enviando" com relogiozinho, igual WhatsApp (no lugar da tela inteira "Enviando…")
 const RELOGIO = '<svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
-function bolhaPendente(txt, ic) {
-  const el = document.createElement('div'); el.className = 'msg may pendente' + (FILE === GERAL.arq ? ' eu' : '');   // no Geral já nasce branquinho, igual fica depois de enviado
+// ---- Envio (05/11/2026): cada mensagem vira um pendente { id, arq, text, re, fotos, linhas } até o GitHub confirmar.
+// Não foi: fica guardado no aparelho (texto, citação e só os CAMINHOS das fotos que já subiram, nunca base64) e o balão
+// vira "não foi, toque para reenviar", inclusive depois de recarregar. O render recoloca os balões no fim (antes o replaceChildren arrancava).
+const pendentes = {};   // id -> { p, el }
+const PEND_KEY = 'pendentes';
+function lerPendentes() { try { const l = JSON.parse(store.get(PEND_KEY) || '[]'); return Array.isArray(l) ? l : []; } catch (e) { return []; } }
+const paraGuardar = p => ({ id: p.id, arq: p.arq, text: p.text, re: p.re, fotos: p.fotos.filter(x => x.nome).map(x => x.nome), perdidas: (p.perdidas || 0) + p.fotos.filter(x => !x.nome).length, linhas: p.linhas || null, em: p.em });
+function guardaPendente(p) { store.set(PEND_KEY, JSON.stringify([...lerPendentes().filter(x => x.id !== p.id), paraGuardar(p)])); }
+function tiraPendente(id) { const l = lerPendentes().filter(x => x.id !== id); store.set(PEND_KEY, l.length ? JSON.stringify(l) : ''); }
+// A linha já está na caixa? (o PUT pode ter gravado e a resposta se perdido: troca de Wi-Fi pra 4G, túnel). "ultimas" = só no fim do arquivo.
+function jaGravado(md, linhas, ultimas) {
+  if (!linhas || !linhas.length) return false;
+  const l = md.split(/\r?\n/).map(x => x.replace(/\s\{lida\}\s*$/, '').trimEnd()), fim = ultimas ? l.slice(-ultimas) : l;
+  return linhas.every(x => fim.includes(x));
+}
+function rotuloPend(p) {
+  if (/^🎤 /.test(p.text)) return ['Áudio', 'mic'];
+  const n = p.fotos.length;
+  return n ? [(n > 1 ? n + ' fotos' : 'Foto') + (p.text ? ' ' + p.text : ''), 'cam'] : [p.text, ''];
+}
+function bolhaPendente(p) {
+  const el = document.createElement('div'); el.className = 'msg may pendente' + (p.arq === GERAL.arq ? ' eu' : '');   // no Geral já nasce branquinho, igual fica depois de enviado
+  const [txt, ic] = rotuloPend(p);
   if (txt) { const t = document.createElement('div'); t.className = 'txt'; if (ic) t.innerHTML = icone(ic) + ' '; t.append(document.createTextNode(txt)); el.append(t); }
+  const cpy = document.createElement('button'); cpy.type = 'button'; cpy.className = 'copiar-msg'; cpy.title = 'Opções'; cpy.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  cpy.addEventListener('click', e => { e.stopPropagation(); abreMenuPend(cpy, p); });
+  el.append(cpy);
   const m = document.createElement('div'); m.className = 'meta';
-  const h = document.createElement('span'); h.textContent = stamp(new Date()).slice(11, 16); m.append(h);
+  const h = document.createElement('span'); h.textContent = horaDe(p.em); m.append(h);
   const tk = document.createElement('span'); tk.className = 'tick relogio'; tk.title = 'Enviando'; tk.innerHTML = RELOGIO; m.append(tk);
   el.append(m);
-  const vazio = feed.querySelector('.empty'); if (vazio) vazio.remove();
-  feed.append(el); irProFim(); return el;
+  el.addEventListener('click', () => { if (el.classList.contains('falhou')) reenviar(p.id); });
+  return el;
 }
+const infoPend = (el, t) => { const s = el.querySelector('.meta span'); if (s) s.textContent = t; };
+function marcaPend(el, p, falhou) {
+  el.classList.toggle('falhou', falhou);
+  const tk = el.querySelector('.tick');
+  if (falhou) { tk.classList.remove('relogio'); tk.innerHTML = icone('warn') + ' não foi, toque para reenviar'; tk.title = 'Não foi enviada'; }
+  else { tk.classList.add('relogio'); tk.innerHTML = RELOGIO; tk.title = 'Enviando'; }
+  infoPend(el, falhou && p.perdidas ? (p.perdidas > 1 ? p.perdidas + ' fotos não subiram' : '1 foto não subiu') : horaDe(p.em));
+}
+function novoPendente(text, fotos, arq) {
+  const p = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), arq, text, re: respondendo ? { nome: respondendo.nome, trecho: respondendo.trecho } : null, fotos, linhas: null, em: Date.now() };
+  const x = pendentes[p.id] = { p, el: bolhaPendente(p) };
+  if (FILE === arq) { const vazio = feed.querySelector('.empty'); if (vazio) vazio.remove(); feed.append(x.el); irProFim(); }
+  return x;
+}
+function recolocaPendentes() {
+  const ps = Object.values(pendentes).filter(x => x.p.arq === FILE); if (!ps.length) return;
+  const vazio = feed.querySelector('.empty'); if (vazio) vazio.remove();
+  feed.append(...ps.map(x => x.el));
+}
+function largaPendente(id) { const x = pendentes[id]; if (!x) return; delete pendentes[id]; tiraPendente(id); x.el.remove(); }
+function reenviar(id) { const x = pendentes[id]; if (x && !sending) enviar(x.p, x.el); }
+function abreMenuPend(btn, p) {
+  msgMenuPop.replaceChildren();
+  const op = (svg, txt, fn) => { const b = document.createElement('button'); b.type = 'button'; b.innerHTML = svg + '<span>' + txt + '</span>'; b.addEventListener('click', e => { e.stopPropagation(); fn(b); }); msgMenuPop.append(b); };
+  op(icone('retry'), 'Reenviar', () => { fechaMenuMsg(); reenviar(p.id); });
+  if (p.text && !/^🎤 /.test(p.text)) op(SVG_COPIAR, 'Copiar', () => { fechaMenuMsg(); copiaTexto(p.text); });
+  // segundo toque confirma, igual ao Excluir
+  op(SVG_EXCLUIR, 'Descartar', b => { if (b.dataset.conf) { fechaMenuMsg(); largaPendente(p.id); return; } b.dataset.conf = '1'; b.classList.add('confirma'); b.innerHTML = SVG_EXCLUIR + '<span>Toca de novo pra descartar</span>'; });
+  const r = btn.getBoundingClientRect();
+  msgMenuPop.style.top = (r.bottom + 4) + 'px'; msgMenuPop.style.right = (window.innerWidth - r.right) + 'px'; msgMenuPop.hidden = false;
+}
+// Leituras e escrita: um GET que saiu antes do PUT traz a caixa sem a mensagem nova e, ao chegar, redesenhava sem ela ("some 4 s").
+let leituraGen = 0, ultimaLeitura = null, gravado = null;   // ultimaLeitura = { arq, f } do último GET bom; gravado = linhas recém-escritas
+function descartaLeituras() { leituraGen++; carregando = null; }
+function adotaEscrita(arq, md, sha, linhas) {
+  descartaLeituras();
+  if (linhas) gravado = { arq, linhas, ate: Date.now() + 20000 };   // a API ainda devolve a versão velha por alguns segundos
+  ultimaLeitura = sha ? { arq, f: { sha, encoding: 'base64', content: b64encode(md), size: new TextEncoder().encode(md).length } } : null;
+  const items = parseSeguro(md);
+  if (caixaCache[arq]) caixaCache[arq] = { arq, sha: arq === GERAL.arq ? '' : sha, md, items };
+  return items;
+}
+function desenhaEscrita(arq, items) { if (FILE !== arq) return; if (items.length < shown) shown = items.length; lastItems = items; render(items); }
+async function enviar(p, el) {
+  sending = true; syncBtn(); showNote(''); marcaPend(el, p, false);
+  const url = apiDe(p.arq), cita = p.re ? ' ⟪re: ' + p.re.nome + ': ' + p.re.trecho + '⟫' : '', txt = p.text.replace(/\r?\n/g, '\\n');
+  let ok = null, erro = null;   // ok = itens da caixa depois de gravar
+  try {
+    for (let tentativa = 0; tentativa < 5; tentativa++) {
+      let pus = false;
+      try {
+        // 1) fotos (uma linha "📷 caminho" por foto; o texto vai junto da primeira); a que já subiu não sobe de novo
+        for (let k = 0; k < p.fotos.length; k++) {
+          const ft = p.fotos[k]; if (ft.nome || !ft.b64) continue;
+          infoPend(el, p.fotos.length > 1 ? 'foto ' + (k + 1) + '/' + p.fotos.length : 'subindo foto');
+          const d = new Date();
+          const nome = 'recados-fotos/' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + '-' + (k + 1) + '.' + (ft.ext || 'jpg');
+          await apiOk('https://api.github.com/repos/' + REPO + '/contents/' + nome, { method: 'PUT', body: JSON.stringify({ message: 'foto do iPhone', content: ft.b64 }) });
+          ft.nome = nome; delete ft.b64;
+        }
+        p.fotos = p.fotos.filter(x => x.nome);
+        infoPend(el, horaDe(p.em));
+        // 2) a linha: 1a tentativa usa o último GET (sem baixar a caixa de novo); 409 = alguém gravou no meio, aí relê
+        const f = tentativa === 0 && ultimaLeitura && ultimaLeitura.arq === p.arq ? ultimaLeitura.f : await (await apiOk(url)).json();
+        let md = conteudoSeguro(f);
+        if (jaGravado(md, p.linhas)) { ok = adotaEscrita(p.arq, md, f.sha, null); break; }   // reenvio de uma que tinha ido sim
+        const s = stamp(new Date()), nomes = p.fotos.map(x => x.nome);
+        p.linhas = nomes.length ? nomes.map((n, k) => '- [' + s + '] 📷 ' + n + (k === 0 && txt ? ' ' + txt : '') + (k === 0 ? cita : '')) : ['- [' + s + '] ' + txt + cita];
+        md = md.replace(/\n- \s*$/, '\n');
+        md = md.replace(/\s*$/, '') + '\n' + p.linhas.join('\n') + '\n';
+        descartaLeituras(); pus = true;
+        const r = await (await apiOk(url, { method: 'PUT', body: JSON.stringify({ message: 'recado do iPhone', content: b64encode(md), sha: f.sha }) })).json();
+        ok = adotaEscrita(p.arq, md, r.content && r.content.sha, p.linhas);   // sha novo do próprio PUT: sem outro GET
+        break;
+      } catch (err) {
+        if (err.status === 409 && tentativa < 4) { ultimaLeitura = null; await new Promise(r => setTimeout(r, 600)); continue; }
+        // sem resposta ou GitHub 5xx depois do PUT: confere se gravou antes de dizer que não foi (evita mensagem em dobro)
+        if (pus && !err.inseguro && (!err.status || err.status >= 500)) {
+          try { const f2 = await (await apiOk(url)).json(), md2 = conteudoSeguro(f2); if (jaGravado(md2, p.linhas, 15)) { ok = adotaEscrita(p.arq, md2, f2.sha, p.linhas); break; } } catch (e2) {}
+        }
+        erro = err; break;
+      }
+    }
+  } finally {
+    if (ok) { delete pendentes[p.id]; tiraPendente(p.id); el.remove(); desenhaEscrita(p.arq, ok); }
+    else { guardaPendente(p); marcaPend(el, p, true); if (FILE === p.arq && !el.isConnected) recolocaPendentes(); showNote(msgErro(erro || {}, 'salvar'), true); }
+    sending = false; syncBtn(); irProFim();
+  }
+  return !!ok;
+}
+// os que não foram em outra abertura do app voltam como balão "não foi"
+lerPendentes().forEach(r => {
+  if (!r || !r.id || !r.arq || pendentes[r.id]) return;
+  const p = { id: r.id, arq: r.arq, text: r.text || '', re: r.re || null, fotos: (r.fotos || []).map(nome => ({ nome })), perdidas: r.perdidas || 0, linhas: r.linhas || null, em: r.em || Date.now() };
+  const el = bolhaPendente(p); marcaPend(el, p, true); pendentes[p.id] = { p, el };
+});
 // Status fora do load() (05/11/2026): antes ia junto de cada busca de 4 s. online.txt a cada 45 s; na Geral (grupo) quem diz é o heartbeat de cada um (60 s).
 let ultimoOnline = 0;
 function checaStatus(forcar) {
@@ -1259,12 +1384,15 @@ let ultimaChecagem = 0, carregando = null;
 let forcar = false;   // recém-aberta: desenha mesmo que esteja vazia
 function load() { const p = carregando || (carregando = carregar().finally(() => { if (carregando === p) carregando = null; })); return p; }
 async function carregar() {
-  const arq = FILE; if (!arq) return null;
+  const arq = FILE, gen = leituraGen; if (!arq) return null;
   syncEl.classList.add('on');
   try {
     const f = await gh('GET').finally(() => syncEl.classList.remove('on'));
-    if (FILE !== arq) return f;   // trocou de conversa enquanto baixava
-    let items; try { items = parse(b64decode(f.content)); } catch (e2) { items = lastItems; }   // md malformado não trava a conversa já carregada
+    if (FILE !== arq || gen !== leituraGen) return f;   // trocou de conversa, ou saiu antes de um PUT nosso (traria a caixa sem a mensagem)
+    let md = ''; try { md = b64decode(f.content); } catch (e2) {}
+    if (gravado && gravado.arq === arq && Date.now() < gravado.ate && md && !jaGravado(md, gravado.linhas)) return f;   // API ainda com a versão de antes do PUT
+    if (md) ultimaLeitura = { arq, f };
+    let items; try { if (!md) throw 0; items = parse(md); } catch (e2) { items = lastItems; }   // md malformado não trava a conversa já carregada
     const same = items.length === lastItems.length && items.every((it, i) => it.text === lastItems[i].text && it.from === lastItems[i].from && it.lida === lastItems[i].lida && it.foto === lastItems[i].foto && it.copiar === lastItems[i].copiar && it.transcricao === lastItems[i].transcricao);
     if (!same || forcar) { forcar = false; if (items.length < shown) shown = items.length; lastItems = items; render(items); }
     showNote(''); return f;
@@ -1420,21 +1548,21 @@ async function comecaGravar() {
 recX.onclick = () => { if (gravador) { cancelado = true; gravador.stop(); } };
 async function enviaAudio(blob) {
   if (blob.size < 1500) { showNote('Áudio curto demais.', true); return; }
+  if (sending || !FILE) return;
   sending = true; syncBtn();
-  const pend = bolhaPendente('Áudio', 'mic');
+  const { p, el } = novoPendente('🎤 ', [], FILE); responder(null);
+  let nome;
   try {
     const ext = /webm/.test(blob.type) ? 'webm' : 'm4a';
     const d = new Date();
-    const nome = 'recados-audios/' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + '.' + ext;
+    nome = 'recados-audios/' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + '.' + ext;
     const b64 = await new Promise((ok, erro) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1]); fr.onerror = erro; fr.readAsDataURL(blob); });
     await apiOk('https://api.github.com/repos/' + REPO + '/contents/' + nome, { method: 'PUT', body: JSON.stringify({ message: 'áudio do iPhone', content: b64 }) });
-    // o upload do áudio demora (4G); se ela já tinha começado a escrever a próxima mensagem enquanto
-    // subia, guarda esse rascunho e devolve pra caixa depois -- senão o áudio apagava o que ela tava digitando
-    const rascunho = box.value;
-    box.value = '🎤 ' + nome; sending = false; pend.remove();
-    form.requestSubmit();
-    if (rascunho.trim()) { box.value = rascunho; box.style.height = 'auto'; box.style.height = Math.min(box.scrollHeight, 140) + 'px'; store.set(rascKey(), rascunho); syncBtn(); }
-  } catch (e) { sending = false; syncBtn(); pend.remove(); showNote(msgErro(e, 'mandar o áudio'), true); }
+  } catch (e) { sending = false; syncBtn(); largaPendente(p.id); showNote(msgErro(e, 'mandar o áudio'), true); return; }
+  // o áudio já subiu: a linha vai pelo mesmo envio das mensagens (sem passar pela caixa de texto, que pode ter rascunho);
+  // se a linha não for, o balão fica "não foi" com o caminho guardado e dá pra reenviar (antes o áudio ficava órfão no repo)
+  p.text = '🎤 ' + nome; sending = false;
+  await enviar(p, el);
 }
 syncBtn();
 
@@ -1478,10 +1606,6 @@ function responderUltima() {
   if (it) responder(it); else box.focus();
   irProFim();
 }
-let querResponder = location.hash.startsWith('#responder');
-const hashPush = new URLSearchParams(location.hash.slice(1));
-const convNotif = hashPush.get('responder') || '';
-const fotoNotif = hashPush.get('foto') || '';   // #responder=caixas/trabalho.md
 function convPorArq(arq) { return arq === TRAB.arq ? TRAB : (conversas.find(x => x.arq === arq) || GERAL); }
 function abreRespondendo(arq, foto) {
   const c = convPorArq(arq || GERAL.arq), fim = () => { if (foto) { fotoUrl(foto).then(u => abreZoom(u, foto)).catch(() => showNote('Essa foto já saiu do repositório.', true)); irProFim(); } else responderUltima(); };
@@ -1493,6 +1617,18 @@ function buscaRapido() { rapidoAte = Date.now() + 30000; if (rapidoT) return; ra
 if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data === 'novo') buscaRapido(); });
 // Veio de push: guarda a conversa por 1 min, pra o reload da volta não trocar pela do relógio.
 let pushEm = 0;
+// Tocou na notificação (05/11/2026): o sw abre ou navega pra "./#responder=<conv>&foto=<caminho>". O hash sobrevive ao reload
+// (o postMessage se perdia se a página recarregava antes); com a página já aberta, só o hash muda e chega pelo hashchange.
+function trataHashPush() {
+  if (!location.hash.startsWith('#responder')) return false;
+  const h = new URLSearchParams(location.hash.slice(1)), conv = h.get('responder') || GERAL.arq;
+  history.replaceState(null, '', location.pathname + location.search);
+  pushEm = Date.now(); store.set('push-conv', conv + '|' + pushEm);
+  abreRespondendo(conv, h.get('foto') || '');
+  return true;
+}
+window.addEventListener('hashchange', () => { if (token && !chaveVencida) trataHashPush(); });
+// sw antigo (ou iPhone sem client.navigate) ainda manda postMessage
 if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { const d = e.data || {}; if (d === 'responder' || d.responder !== undefined) { pushEm = Date.now(); store.set('push-conv', (d.responder || GERAL.arq) + '|' + pushEm); abreRespondendo(d.responder, d.foto); } });
 // Proteção do toque duplo (May, 05/11/2026: "usa o toque duplo: mantém, com proteção de rolagem"): só conta toque curto,
 // parado, fora de botão/link/foto e sem rolagem durante nem logo antes (o toque que freia a rolagem não vale).
@@ -1601,57 +1737,12 @@ form.addEventListener('submit', async e => {
   if (gravador) { gravador.stop(); return; }
   const text = box.value.trim(); if ((!text && !anexos.length) || sending) return;
   const fotos = anexos.slice();
-  sending = true; syncBtn(); showNote('');
-  // Igual WhatsApp: o balão aparece na hora com o relogiozinho; vira ✓ quando o GitHub confirma.
-  const sendIcon = sendBtn.innerHTML;
-  const pend = bolhaPendente(fotos.length ? (fotos.length > 1 ? fotos.length + ' fotos' : 'Foto') + (text ? ' ' + text : '') : text, fotos.length ? 'cam' : '');
-  box.value = ''; box.style.height = 'auto';
-  let falhou = false;
-  try {   // finally: aconteça o que for, "sending" volta a false (antes podia ficar true e travar o app)
-    for (let tentativa = 0; tentativa < 4; tentativa++) {
-      try {
-        // 1) fotos da bandeja (uma linha "📷 caminho" por foto; o texto vai junto da primeira)
-        const nomes = [];
-        for (let k = 0; k < fotos.length; k++) {
-          if (fotos[k].nome) { nomes.push(fotos[k].nome); continue; }   // já subiu numa tentativa anterior
-          overlayTxt.textContent = 'Enviando foto ' + (k + 1) + ' de ' + fotos.length + '…';
-          const d = new Date();
-          const nome = 'recados-fotos/' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + '-' + (k + 1) + '.' + (fotos[k].ext || 'jpg');
-          await apiOk('https://api.github.com/repos/' + REPO + '/contents/' + nome, { method: 'PUT', body: JSON.stringify({ message: 'foto do iPhone', content: fotos[k].b64 }) });
-          fotos[k].nome = nome; nomes.push(nome);
-        }
-        overlayTxt.textContent = 'Enviando…';
-        const f = await gh('GET');
-        let md = conteudoSeguro(f);
-        const cita = respondendo ? ' ⟪re: ' + respondendo.nome + ': ' + respondendo.trecho + '⟫' : '';
-        const txt = text.replace(/\r?\n/g, '\\n');
-        const linhas = nomes.length
-          ? nomes.map((n, k) => '- [' + stamp(new Date()) + '] 📷 ' + n + (k === 0 && txt ? ' ' + txt : '') + (k === 0 ? cita : ''))
-          : ['- [' + stamp(new Date()) + '] ' + txt + cita];
-        md = md.replace(/\n- \s*$/, '\n');
-        md = md.replace(/\s*$/, '') + '\n' + linhas.join('\n') + '\n';
-        await gh('PUT', { message: 'recado do iPhone', content: b64encode(md), sha: f.sha });
-        // não força box.value='' aqui: se ela já começou a digitar a PRÓXIMA mensagem enquanto
-        // esperava o envio (às vezes demora, com retry de 409), isso apagava o que ela tava escrevendo
-        store.set(rascKey(), box.value); responder(null);
-        // tira da bandeja só as fotos DESTA mensagem -- se ela colocou outra foto nova enquanto esta
-        // ainda subia (upload lento no 4G), aquela foto nova não pode desaparecer
-        fotos.forEach(x => URL.revokeObjectURL(x.url)); anexos = anexos.filter(a => !fotos.includes(a)); desenhaBandeja();
-        await load().catch(() => {});
-        break;
-      } catch (err) {
-        if (err.status === 409 && tentativa < 3) { await new Promise(r => setTimeout(r, 600)); continue; }
-        falhou = true; pend.classList.add('falhou'); const tk = pend.querySelector('.tick'); tk.classList.remove('relogio'); tk.innerHTML = icone('warn') + ' não foi'; tk.title = 'Não foi enviada';
-        // só devolve o texto que falhou pra caixa se ela não começou a digitar outra coisa nesse meio tempo
-        if (!box.value.trim()) { box.value = text; store.set(rascKey(), text); }
-        showNote(msgErro(err, 'salvar'), true);
-        break;
-      }
-    }
-  } finally {
-    sendBtn.innerHTML = sendIcon; if (!falhou && pend.isConnected) pend.remove();
-    sending = false; syncBtn(); irProFim();
-  }
+  // Igual WhatsApp: o balão aparece na hora com o relogiozinho; vira ✓ quando o GitHub confirma, "não foi" se falhar.
+  // A mensagem (texto, citação e fotos) vai com o pendente: a caixa e a bandeja já ficam livres pra próxima.
+  const { p, el } = novoPendente(text, fotos, FILE);
+  box.value = ''; box.style.height = 'auto'; store.set(rascKey(), ''); responder(null);
+  fotos.forEach(x => URL.revokeObjectURL(x.url)); anexos = anexos.filter(a => !fotos.includes(a)); desenhaBandeja();
+  await enviar(p, el);
 });
 
 const mais = document.getElementById('mais');
@@ -1828,7 +1919,7 @@ function abrir(c) {
   novasLaEmCima = 0; desceQtd.hidden = true; desce.hidden = true;
   respondendo = null; citando.hidden = true; mostraFazendo(''); showNote('');
   delete feed.dataset.jaAbriu;
-  lista.hidden = !largo(); novaBtn.hidden = !largo(); feed.hidden = false; feed.replaceChildren(); form.hidden = false;
+  lista.hidden = !largo(); novaBtn.hidden = !largo(); feed.hidden = false; feed.replaceChildren(); recolocaPendentes(); form.hidden = false;
   if (largo()) desenhaLista();
   voltar.hidden = !MODO_WEB || largo(); logoEl.hidden = !voltar.hidden ? true : false; tituloEl.textContent = c.nome;
   box.value = store.get(rascKey()); box.style.height = 'auto'; syncBtn();
@@ -2405,10 +2496,8 @@ async function abreTreinoSeHora() {
 function start() {
   chaveVencida = false; aplicaLargura();
   mais.hidden = false;
-  if (querResponder) {   // veio da notificação: abre a conversa dela já respondendo
-    querResponder = false; history.replaceState(null, '', location.pathname + location.search);
-    abreRespondendo(convNotif, fotoNotif);
-  } else if (MODO_WEB) mostraLista();
+  if (trataHashPush()) { /* veio da notificação: abre a conversa dela já respondendo */ }
+  else if (MODO_WEB) mostraLista();
   else abrir(ultimaConv()).catch(() => {});   // celular: Trabalho no horário de trabalho, senão Geral
   if (!MODO_WEB) abreTreinoSeHora();   // na hora da academia, abre (e reabre) direto no treino de hoje
   // Conversa aberta: busca a cada 4 s (com 304 quase de graça); lista de conversas: a cada 15 s; status: 45-60 s (só com a página na tela).
@@ -2430,7 +2519,8 @@ async function versaoNova() {
 function nadaPendente() {
   const ativo = document.activeElement;
   return !sending && !gravador && !anexos.length && !respondendo && !(ativo && ativo.matches('textarea, input')) && painel.hidden
-    && !document.querySelector('.msg.pendente, .pop, .zoom') && ![...document.querySelectorAll('audio')].some(a => !a.paused);
+    && !document.querySelector('.msg.pendente:not(.falhou), .pop, .zoom') && ![...document.querySelectorAll('audio')].some(a => !a.paused)
+    && !Object.values(pendentes).some(x => x.p.fotos.some(f => f.b64));   // "não foi" sobrevive ao reload; foto que não subiu (base64 só na memória), não
 }
 let saiuEm = 0;
 function voltouPraPagina(longe) {
