@@ -132,6 +132,8 @@ textarea:focus-visible { outline: none; }
 /* Balão cinza com a borda lateral na cor hex de quem fala; o nome em cima também na cor (pedido dela) */
 .msg.grupo { background: color-mix(in srgb, var(--quem) 16%, var(--cinza)); color: var(--fg); }   /* fundo na cor de quem fala (May, 03/11/2026) */
 .msg.grupo .quem { color: var(--quem); }
+.msg.may .quem.eu span:last-child { background: linear-gradient(90deg, var(--quem), var(--quem2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.msg.may .quem.eu .avatar { box-shadow: 0 0 0 2px var(--quem), 0 0 0 4px var(--quem2); }
 .msg .quem { font-size: 12.5px; font-weight: 700; margin-bottom: 2px; color: var(--quem); display: flex; align-items: center; gap: 6px; }
 .quem .avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--quem); color: var(--quem-fg); font-size: 13px;
   font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background-size: cover; background-position: center; }
@@ -615,8 +617,11 @@ const GRUPO = {
   pc2: { nome: 'Nyx (PC2)', cor: '#6FCF00', texto: '#0E2A00' },
   pc3: { nome: 'Vega (PC3)', cor: '#1D4ED8', texto: '#06173A' },
   hermes: { nome: 'Hermes (PC4)', cor: '#FFCB05', texto: '#2A2002', foto: 'recados-fotos/20261031-005747-avatar-hermes.png' },   // alias de pc4, mesma cor
-  darksigma: { nome: 'DarkSigma', cor: '#9333EA', texto: '#FFFFFF', foto: 'recados-fotos/20261031-010359-1.jpg' }   // hipotetico, roxo igual o Sigma do conselho
+  darksigma: { nome: 'DarkSigma', cor: '#9333EA', texto: '#FFFFFF', foto: 'recados-fotos/20261031-010359-1.jpg' },   // hipotetico, roxo igual o Sigma do conselho
+  sigma: { nome: 'Sigma', cor: '#9333EA', texto: '#FFFFFF', foto: 'recados-fotos/avatar-sigma-96.png' }   // Revisor-Chefe (05/11/2026); sem ele aqui o "↳ Sigma" grudava na mensagem de cima
 };
+// A May também aparece com robozinho no Geral, como "agente humana", nas duas cores dela (May, 05/11/2026)
+const EU = { nome: 'May', cor: '#E31B23', cor2: '#22C55E', texto: '#FFFFFF', foto: 'recados-fotos/avatar-may-96.png' };
 // Nomes aceitos em "  ↳ Nome: ..." — sempre as chaves do GRUPO, pra nunca mais esquecer de
 // sincronizar isso com GRUPO na mão quando adicionar alguém (bug: Hermes/DarkSigma adicionados
 // no GRUPO mas não aqui, mensagem deles sumia sem avisar).
@@ -701,19 +706,21 @@ function render(items, manterPosicao) {
     if (i < inicio) return;
     if (it.day && it.day !== last) { const s = document.createElement('div'); s.className = 'day'; s.textContent = it.day; feed.append(s); last = it.day; }
     const el = document.createElement('div'); el.className = 'msg ' + it.from + (it.copiar ? ' copiavel' : '') + (i >= firstNew ? ' novo' : '');
-    if (it.quem && GRUPO[it.quem]) {
+    const g = it.quem && GRUPO[it.quem] ? GRUPO[it.quem] : (it.from === 'may' && FILE === GERAL.arq ? EU : null);
+    if (g) {
       // Nome colorido em cima do balão, igual grupo de WhatsApp; o balão ganha um toque da cor de quem fala
-      el.style.setProperty('--quem', GRUPO[it.quem].cor); el.style.setProperty('--quem-fg', GRUPO[it.quem].texto); el.classList.add('grupo');
-      const nome = document.createElement('div'); nome.className = 'quem';
-      const av = document.createElement('span'); av.className = 'avatar'; av.textContent = GRUPO[it.quem].nome.charAt(0).toUpperCase();
-      if (GRUPO[it.quem].foto && FILE !== TRAB.arq) {   // Trabalho = so a letra; foto so nas outras (May, 03/11/2026: "aqui tem q ser so o L, no geral pode por foto")
-        const fp = GRUPO[it.quem].foto;
+      el.style.setProperty('--quem', g.cor); el.style.setProperty('--quem-fg', g.texto); if (g !== EU) el.classList.add('grupo');
+      if (g.cor2) el.style.setProperty('--quem2', g.cor2);
+      const nome = document.createElement('div'); nome.className = 'quem' + (g === EU ? ' eu' : '');
+      const av = document.createElement('span'); av.className = 'avatar'; av.textContent = g.nome.charAt(0).toUpperCase();
+      if (g.foto && FILE !== TRAB.arq) {   // Trabalho = so a letra; foto so nas outras (May, 03/11/2026: "aqui tem q ser so o L, no geral pode por foto")
+        const fp = g.foto;
         fotoUrl(fp).then(u => {
           av.style.backgroundImage = 'url(' + u + ')'; av.textContent = '';
           av.style.cursor = 'pointer'; av.addEventListener('click', e => { e.stopPropagation(); abreZoom(u, fp); });
         }).catch(() => {});   // falhou: fica a letra, sem clique
       }
-      const nomeTxt = document.createElement('span'); nomeTxt.textContent = GRUPO[it.quem].nome;
+      const nomeTxt = document.createElement('span'); nomeTxt.textContent = g.nome;
       nome.append(av, nomeTxt); el.append(nome);
     }
     if (it.re) {
