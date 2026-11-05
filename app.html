@@ -8,6 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
+<meta name="app-versao" content="2026-11-05.1">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -132,7 +133,7 @@ textarea:focus-visible { outline: none; }
   font-size: 22px; font-weight: 700; place-items: center; }
 .overlay.ok .spin { display: none; }
 .overlay.ok .ok-mark { display: grid; animation: entra .3s cubic-bezier(.2,.9,.3,1.3) both; }
-#feed { flex: 1; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 4px;
+#feed { flex: 1; overflow-y: auto; overscroll-behavior: contain; overflow-anchor: none; display: flex; flex-direction: column; gap: 4px;
   padding: 10px max(10px, env(safe-area-inset-right, 0px)) 10px max(10px, env(safe-area-inset-left, 0px)); }
 .day { align-self: center; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted);
   background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; margin-block: 8px; }
@@ -223,6 +224,7 @@ textarea:focus-visible { outline: none; }
 .msg-menu-pop button svg { flex: none; }
 .msg-menu-pop button:active { background: var(--bg); }
 @media (hover: hover) { .msg-menu-pop button:hover { background: var(--bg); } }
+.msg-menu-pop button.confirma { color: #DC2626; font-weight: 600; }
 .tick { font-weight: 700; letter-spacing: -2px; color: var(--muted); }
 .tick.lida { color: var(--accent); }
 .tick.relogio { display: inline-flex; vertical-align: -2px; letter-spacing: 0; }
@@ -701,11 +703,11 @@ function parse(md) {
         if (cit) text = text.slice(0, cit.index);
         const au = text.match(/^🎤 (\S+)\s*$/);           // "🎤 recados-audios/arquivo.m4a"
         const f = text.match(/^📷 (\S+)\s*([\s\S]*)$/);   // "📷 recados-fotos/arquivo.jpg legenda"
-        out.push({ from: 'may', day: m[1], time: m[2], lida, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], audio: au ? au[1] : '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: au ? '' : (f ? f[2] : text), _linha: i });
+        out.push({ from: 'may', day: m[1], time: m[2], lida, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], audio: au ? au[1] : '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: au ? '' : (f ? f[2] : text), _linha: i, _raw: line, _extras: [] });
         continue;
       }
       const tr = line.match(/^\s+↳ transcrição: (.*)$/);
-      if (tr) { const alvo = [...out].reverse().find(x => x.from === 'may' && x.audio); if (alvo) { alvo.transcricao = tr[1]; alvo._linhaTr = i; } continue; }
+      if (tr) { const alvo = [...out].reverse().find(x => x.from === 'may' && x.audio); if (alvo) { alvo.transcricao = tr[1]; alvo._linhaTr = i; alvo._extras.push(i); } continue; }
       // Respostas no estilo grupo: "  ↳ Lyra: …" ou "  ↳ simp-mobile: …" (cada um com a sua cor)
       // "[op: A|B|C]" = balão de múltipla escolha (ela toca e a resposta vai citando a pergunta)
       m = line.match(new RegExp('^\\s+(?:↳|->) (' + RE_QUEM_NOMES + ')(?: \\[(?:(\\d\\d/\\d\\d/\\d{4}) )?(\\d\\d:\\d\\d)\\])?( \\[copiar\\])?(?: \\[op: ([^\\]]+)\\])?: (.*)$', 'i'));
@@ -719,13 +721,14 @@ function parse(md) {
         const cit = txt.match(/\s*⟪re: ([^:⟫]+): ([^⟫]*)⟫\s*$/);
         if (cit) txt = txt.slice(0, cit.index);
         const f = txt.match(/^📷 (\S+)\s*([\s\S]*)$/);   // foto: "📷 recados-fotos/x.jpg legenda"
-        out.push({ from: 'lyra', quem: m[1].toLowerCase(), copiar: !!m[2], opcoes: m[4] ? m[4].split('|').map(x => x.trim()).filter(Boolean) : null, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], day: m[5] || (out.length ? out[out.length - 1].day : ''), time: m[6] || '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: f ? f[2] : txt, _linha: i });
+        out.push({ from: 'lyra', quem: ALIAS_QUEM[m[1].toLowerCase()] || m[1].toLowerCase(), copiar: !!m[2], opcoes: m[4] ? m[4].split('|').map(x => x.trim()).filter(Boolean) : null, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], day: m[5] || (out.length ? out[out.length - 1].day : ''), time: m[6] || '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, text: f ? f[2] : txt, _linha: i, _raw: line, _extras: [] });
       } else if (line.trim() && out.length) {
         // Linha solta dentro de "## Recados" que não bate em nenhum padrão conhecido: provavelmente
         // quebra de linha REAL (em vez de "\n" escapado) dentro da mesma mensagem. Em vez de sumir com
         // o resto do texto, encosta como continuação da última linha lida -- não perde o conteúdo.
+        // Nome fora do GRUPO ("  ↳ Fulano: ...") cai aqui também: vira continuação, nunca falante novo (regra da May, 05/11/2026).
         const ult = out[out.length - 1];
-        ult.text = (ult.text ? ult.text + '\n' : '') + line.trim();
+        ult.text = (ult.text ? ult.text + '\n' : '') + line.trim(); ult._extras.push(i);   // _extras: o Excluir leva junto
       }
     } catch (e) { /* linha ruim: ignora e segue pras próximas, não derruba a conversa toda */ }
   }
@@ -761,7 +764,6 @@ const GRUPO = {
   pc2: { nome: 'Nyx (PC2)', cargo: 'Jogos e Emulação', cor: '#6FCF00', texto: '#0E2A00' },
   pc3: { nome: 'Vega (PC3)', cargo: 'Suporte e Operação', cor: '#1D4ED8', texto: '#06173A' },
   hermes: { nome: 'Hermes (PC4)', cargo: 'Entregas e Transmissão', cor: '#FFCB05', texto: '#2A2002', foto: 'recados-fotos/20261031-005747-avatar-hermes.png' },   // alias de pc4, mesma cor
-  darksigma: { nome: 'DarkSigma', cor: '#9333EA', texto: '#FFFFFF', foto: 'recados-fotos/20261031-010359-1.jpg' },   // hipotetico, roxo igual o Sigma do conselho
   sigma: { nome: 'Sigma', cargo: 'Revisão e Qualidade', cor: '#9333EA', texto: '#FFFFFF', foto: 'recados-fotos/avatar-sigma-96.png' }   // Revisor-Chefe (05/11/2026); sem ele aqui o "↳ Sigma" grudava na mensagem de cima
 };
 // A May também aparece com robozinho no Geral, como "agente humana", nas duas cores dela (May, 05/11/2026)
@@ -769,6 +771,8 @@ const EU = { nome: 'May', cargo: 'Dev, Design e Música', cor: '#E31B23', cor2: 
 // Ficha (crachá de jogo) de cada um, ao tocar no nome ou na foto (May, 05/11/2026): abas Perfil, Atributos, Máquina
 let FICHA = null;   // dados da ficha (máquina, IP, o que faz) ficam no Inst privado, casa/fichas.json: este repo é público (05/11/2026)
 
+// "↳ DarkSigma: ..." (nome antigo) = Sigma; não é falante separado (May, 05/11/2026: no app só May, Lyra, Orfeu, Nyx, Vega, Hermes e Sigma)
+const ALIAS_QUEM = { darksigma: 'sigma' };
 const ALIAS_FICHA = { pc1: 'orfeu', pc2: 'nyx', pc3: 'vega', pc4: 'hermes', darksigma: 'sigma' };
 const ICO_FICHA = {
   perfil: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>',
@@ -810,10 +814,10 @@ async function abreCracha(chave) {
   cx.append(fecha, topo, corpo, barra); pop.append(cx); document.body.append(pop); vai('perfil');
   pop.onclick = e => { if (e.target === pop) pop.remove(); };
 }
-// Nomes aceitos em "  ↳ Nome: ..." — sempre as chaves do GRUPO, pra nunca mais esquecer de
+// Nomes aceitos em "  ↳ Nome: ..." — sempre as chaves do GRUPO (+ ALIAS_QUEM), pra nunca mais esquecer de
 // sincronizar isso com GRUPO na mão quando adicionar alguém (bug: Hermes/DarkSigma adicionados
 // no GRUPO mas não aqui, mensagem deles sumia sem avisar).
-const RE_QUEM_NOMES = Object.keys(GRUPO).map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+const RE_QUEM_NOMES = [...Object.keys(GRUPO), ...Object.keys(ALIAS_QUEM)].map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
 // Copia o texto puro da mensagem pro clipboard; cai pra execCommand em navegador mobile antigo que não tem Clipboard API.
 async function copiaTexto(texto) {
   let ok = true;
@@ -831,25 +835,34 @@ async function copiaTexto(texto) {
 const msgMenuPop = document.createElement('div'); msgMenuPop.className = 'msg-menu-pop'; msgMenuPop.hidden = true;
 document.body.append(msgMenuPop);
 function fechaMenuMsg() { msgMenuPop.hidden = true; }
-// Excluir: remove a(s) linha(s) de verdade do arquivo no GitHub (índice gravado pelo parse() em
-// it._linha/_linhaTr). Fica fora do alcance pra fragmento colado (parse() não sabe a linha exata)
-// -- aí não aparece a opção, em vez de excluir a linha errada.
+// Guarda de escrita (05/11/2026): só grava a caixa se a leitura veio inteira. Arquivo > 1 MB vem da API com
+// encoding "none" e content vazio; um PUT em cima disso apagava a caixa toda. Vale pros 3 caminhos que gravam.
+const MAX_CAIXA = 950000;
+const AVISO_INSEGURO = 'Não gravei nada: a caixa veio vazia ou grande demais (precisa arquivar). Nenhuma mensagem foi apagada.';
+function conteudoSeguro(f) {
+  const md = f && f.encoding === 'base64' && f.content && f.size > 0 && f.size <= MAX_CAIXA ? b64decode(f.content) : '';
+  if (!md.trim()) { const e = new Error('leitura insegura'); e.inseguro = true; throw e; }
+  return md;
+}
+// Excluir: acha a linha pelo TEXTO (it._raw), não só pela posição -- se alguém gravou no meio, o índice velho
+// apontava pra mensagem de outra pessoa. Não achou = não apaga nada. Leva junto as continuações e a transcrição.
 async function excluirMensagem(it) {
   fechaMenuMsg();
   overlay.hidden = false; overlayTxt.textContent = 'Excluindo…';
   for (let tentativa = 0; tentativa < 4; tentativa++) {
     try {
       const f = await gh('GET');
-      const linhas = b64decode(f.content).split(/\r?\n/);
-      if (linhas[it._linha] === undefined) throw new Error('linha não existe mais');
-      const remover = it._linhaTr !== undefined ? [it._linha, it._linhaTr] : [it._linha];
-      remover.sort((a, b) => b - a).forEach(idx => linhas.splice(idx, 1));   // de trás pra frente, pra não desalinhar o outro índice
-      await gh('PUT', { message: 'exclui mensagem', content: b64encode(linhas.join('\n')), sha: f.sha });
+      const md = conteudoSeguro(f), eol = md.includes('\r\n') ? '\r\n' : '\n';   // arquivo salvo no Windows continua \r\n
+      const achados = parse(md).filter(x => x._raw === it._raw).sort((a, b) => Math.abs(a._linha - it._linha) - Math.abs(b._linha - it._linha));
+      if (!achados.length) { overlay.hidden = true; showNote('Essa mensagem mudou ou já saiu da caixa. Não excluí nada.', true); forcar = true; load().catch(() => {}); return; }
+      const alvo = achados[0], linhas = md.split(/\r?\n/);
+      [alvo._linha, ...alvo._extras].sort((a, b) => b - a).forEach(idx => linhas.splice(idx, 1));   // de trás pra frente, pra não desalinhar os outros índices
+      await gh('PUT', { message: 'exclui mensagem', content: b64encode(linhas.join(eol)), sha: f.sha });
       overlay.hidden = true; forcar = true; load().catch(() => {}); showNote('Mensagem excluída.');
       return;
     } catch (err) {
       if (err.status === 409 && tentativa < 3) { await new Promise(r => setTimeout(r, 600)); continue; }
-      overlay.hidden = true; showNote('Não consegui excluir. Confere a internet e tenta de novo.', true); return;
+      overlay.hidden = true; showNote(err.inseguro ? AVISO_INSEGURO : 'Não consegui excluir. Confere a internet e tenta de novo.', true); return;
     }
   }
 }
@@ -863,7 +876,8 @@ function abreMenuMsg(btn, it) {
   msgMenuPop.append(op);
   if (it._linha !== undefined) {
     const ex = document.createElement('button'); ex.type = 'button'; ex.innerHTML = SVG_EXCLUIR + '<span>Excluir</span>';
-    ex.addEventListener('click', e => { e.stopPropagation(); excluirMensagem(it); });
+    // segundo toque confirma: um toque sem querer no menu não apaga mensagem
+    ex.addEventListener('click', e => { e.stopPropagation(); if (ex.dataset.conf) { excluirMensagem(it); return; } ex.dataset.conf = '1'; ex.classList.add('confirma'); ex.innerHTML = SVG_EXCLUIR + '<span>Toca de novo pra excluir</span>'; });
     msgMenuPop.append(ex);
   }
   const r = btn.getBoundingClientRect();
@@ -875,13 +889,19 @@ document.addEventListener('click', e => { if (!msgMenuPop.hidden && !msgMenuPop.
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !msgMenuPop.hidden) fechaMenuMsg(); });
 feed?.addEventListener('scroll', fechaMenuMsg, { passive: true });
 let renderizando = false;
+const fotoAlt = {};   // altura de cada foto já carregada (caminho -> px)
 function render(items, manterPosicao) {
   renderizando = true; setTimeout(() => { renderizando = false; }, 100);
   const firstNew = shown < 0 ? items.length : shown;
   const naoVistas = Math.max(0, items.length - vistosAntes);
   inicio = Math.max(0, items.length - Math.max(janela, naoVistas));
-  const alturaAntes = feed.scrollHeight, topoAntes = feed.scrollTop;
-  const pertoDoFim = alturaAntes - topoAntes - feed.clientHeight < 120;
+  const alturaAntes = feed.scrollHeight, topoAntes = feed.scrollTop, primeira = shown < 0;
+  const distFim = alturaAntes - topoAntes - feed.clientHeight, pertoDoFim = distFim < 120;
+  // Âncora (05/11/2026, "rolagem pula"): o primeiro balão visível e onde ele estava; o replaceChildren zera a altura,
+  // então depois de redesenhar ele volta pro mesmo lugar. Sem ele (saiu da janela), mantém a distância até o fim.
+  const topoFeed = feed.getBoundingClientRect().top;
+  const ancora = [...feed.querySelectorAll('.msg[data-i]')].find(e => e.getBoundingClientRect().bottom > topoFeed);
+  const ancI = ancora ? ancora.dataset.i : null, ancY = ancora ? ancora.getBoundingClientRect().top - topoFeed : 0;
   feed.replaceChildren();
   if (!items.length) {
     const e = document.createElement('div'); e.className = 'empty';
@@ -893,7 +913,8 @@ function render(items, manterPosicao) {
   items.forEach((it, i) => {
     if (i < inicio) return;
     if (it.day && it.day !== last) { const s = document.createElement('div'); s.className = 'day'; s.textContent = it.day; feed.append(s); last = it.day; }
-    const el = document.createElement('div'); el.className = 'msg ' + it.from + (it.copiar ? ' copiavel' : '') + (i >= firstNew ? ' novo' : '');
+    const el = document.createElement('div'); el.className = 'msg ' + it.from + (it.copiar ? ' copiavel' : '') + (i >= firstNew ? ' novo' : ''); el.dataset.i = i;
+    let ops = null;
     const g = it.quem && GRUPO[it.quem] ? GRUPO[it.quem] : (it.from === 'may' && FILE === GERAL.arq ? EU : null);
     if (g) {
       // Nome colorido em cima do balão, igual grupo de WhatsApp; o balão ganha um toque da cor de quem fala
@@ -925,7 +946,7 @@ function render(items, manterPosicao) {
     if (it.opcoes) {
       // Botões de múltipla escolha embaixo do texto; já respondida = botão escolhido fica marcado
       const resp = items.slice(i + 1).find(x => x.from === 'may' && x.re && it.text.replace(/[⟪⟫:\n]/g, ' ').slice(0, 40).startsWith(x.re.trecho.slice(0, 40)));
-      const ops = document.createElement('div'); ops.className = 'opcoes';
+      ops = document.createElement('div'); ops.className = 'opcoes';
       it.opcoes.forEach(op => {
         const b = document.createElement('button'); b.type = 'button'; b.className = 'opcao'; b.textContent = op;
         if (resp && resp.text.trim().toUpperCase().startsWith(op.split(')')[0].trim().toUpperCase())) b.classList.add('escolhida');
@@ -933,7 +954,6 @@ function render(items, manterPosicao) {
         b.addEventListener('click', () => { if (sending) return; responder(it); box.value = op; syncBtn(); form.requestSubmit(); });
         ops.append(b);
       });
-      setTimeout(() => el.append(ops), 0);
     }
     if (it.copiar) {
       // Balão de texto pronto pra copiar (prompt, lista…): botão no topo
@@ -947,7 +967,6 @@ function render(items, manterPosicao) {
       });
       bar.append(lab, btn); el.append(bar);
     }
-    if (i >= firstNew && it.from === 'lyra') el.style.animationDelay = '.9s';
     if (it.fotos && it.fotos.length > 1) {
       // Álbum: "📷 a.png,b.png,c.png legenda" = uma mensagem com grade de miniaturas + Baixar tudo
       const alb = document.createElement('div'); alb.className = 'album';
@@ -974,8 +993,15 @@ function render(items, manterPosicao) {
     } else if (it.foto) {
       const img = document.createElement('img'); img.className = 'foto'; img.alt = 'Foto enviada';
       img.addEventListener('click', e => { e.stopPropagation(); if (img.src) abreZoom(img.src, it.foto); });
-      img.onload = () => { if (feed.scrollHeight - feed.scrollTop - feed.clientHeight < 400) feed.scrollTop = feed.scrollHeight; };
-      fotoUrl(it.foto).then(u => { img.src = u; }).catch(e => {   // foto de análise sai do repo em 24h: mostra aviso, não caixa quebrada
+      if (fotoAlt[it.foto]) img.style.minHeight = fotoAlt[it.foto] + 'px';   // já carregou antes: reserva o espaço, o redesenho não pula
+      img.onload = () => {
+        if (!img.isConnected) return;   // redesenho já trocou este balão
+        img.style.minHeight = ''; const h = img.offsetHeight - (img._h0 || 0); fotoAlt[it.foto] = img.offsetHeight;
+        // só desce se ela estava no fim; foto acima do que ela lê cresceu = compensa, pra tela não andar sozinha (iPhone não tem scroll anchoring)
+        if (grudado) feed.scrollTop = feed.scrollHeight;
+        else if (h && img.getBoundingClientRect().bottom <= feed.getBoundingClientRect().top + h) feed.scrollTop += h;
+      };
+      fotoUrl(it.foto).then(u => { img._h0 = img.offsetHeight; img.src = u; }).catch(e => {   // foto de análise sai do repo em 24h: mostra aviso, não caixa quebrada
         const x = document.createElement('div'); x.className = 'foto-x'; x.innerHTML = icone('cam') + (e.status === 404 ? ' Foto apagada' : ' Não carregou a foto');
         img.replaceWith(x);
       });
@@ -1011,19 +1037,18 @@ function render(items, manterPosicao) {
       }
       el.append(m);
     }
-    if (i >= firstNew && it.from === 'lyra') {
-      // "digitando…" rápido antes da resposta aparecer
-      const dots = document.createElement('div'); dots.className = 'digitando'; dots.innerHTML = '<i></i><i></i><i></i>';
-      feed.append(dots); el.hidden = true;
-      setTimeout(() => { dots.remove(); el.hidden = false; el.style.animationDelay = '0s'; feed.scrollTop = feed.scrollHeight; }, 900);
-    }
-    feed.append(el);
+    if (ops) el.append(ops);   // antes ia num setTimeout e crescia o balão depois da rolagem já restaurada
+    feed.append(el);   // resposta nova aparece na hora: sem o "digitando…" de mentira de 900 ms (05/11/2026)
   });
   if (firstNew === items.length && !manterPosicao && !feed.dataset.jaAbriu) { feed.dataset.jaAbriu = '1'; feed.classList.add('chegando'); setTimeout(() => feed.classList.remove('chegando'), 1200); }
   if (!pertoDoFim && shown > 0 && items.length > shown) { novasLaEmCima += items.length - shown; desceQtd.textContent = novasLaEmCima; desceQtd.hidden = false; }
   shown = items.length;
-  if (manterPosicao) feed.scrollTop = feed.scrollHeight - alturaAntes + topoAntes;
-  else if (pertoDoFim || firstNew === items.length) feed.scrollTop = feed.scrollHeight;
+  // só desce sozinho na primeira carga ou se ela já estava no fim; senão o balão que ela lia fica no mesmo lugar
+  if (primeira || (pertoDoFim && !manterPosicao)) feed.scrollTop = feed.scrollHeight;
+  else {
+    const a = ancI !== null && feed.querySelector('.msg[data-i="' + ancI + '"]');
+    feed.scrollTop = a ? feed.scrollTop + a.getBoundingClientRect().top - topoFeed - ancY : feed.scrollHeight - feed.clientHeight - distFim;
+  }
   if (document.visibilityState === 'visible' && FILE) {
     store.set(vistoKey(FILE), String(items.length));
     const c = conversas.find(x => x.arq === FILE);   // no PC a lista fica do lado: tira a bolinha na hora, sem esperar a próxima busca
@@ -1366,7 +1391,7 @@ feed.addEventListener('scroll', () => {
     setTimeout(() => { carregandoAntigas = false; }, 300);
   }
 });
-// ---- Responder igual WhatsApp: arrastar o balão pra direita, segurar 0,5 s, ou dois cliques no computador
+// ---- Responder igual WhatsApp: arrastar o balão pra direita, segurar 0,6 s, dois toques, ou dois cliques no computador
 let respondendo = null;
 const citando = document.getElementById('citando');
 function corDe(nome) {
@@ -1383,7 +1408,13 @@ function responder(it) {
   citando.style.setProperty('--quem', corDe(nome));
   document.getElementById('cit-nome').textContent = nome;
   document.getElementById('cit-txt').textContent = trecho;
-  citando.hidden = false; box.focus();
+  mantemFim(() => { citando.hidden = false; });
+  if (document.activeElement !== box) box.focus();   // já focada = não dispara focusin (e as 4 rodadas de ajustaAltura) de novo
+}
+// muda a altura do feed (faixa "respondendo", teclado) sem a conversa andar: guarda a distância até o fim e devolve
+function mantemFim(fn) {
+  const d = feed.scrollHeight - feed.scrollTop - feed.clientHeight; fn();
+  if (!feed.hidden) feed.scrollTop = feed.scrollHeight - feed.clientHeight - d;
 }
 document.getElementById('cit-x').onclick = () => responder(null);
 // Veio da notificação: já abre respondendo a última mensagem que não é dela.
@@ -1401,29 +1432,39 @@ function abreRespondendo(arq, foto) {
   const c = convPorArq(arq || GERAL.arq), fim = () => { if (foto) { fotoUrl(foto).then(u => abreZoom(u, foto)).catch(() => showNote('Essa foto já saiu do repositório.', true)); irProFim(); } else responderUltima(); };
   return (FILE === c.arq ? load() : abrir(c)).then(fim).catch(fim);
 }
-let rapidoAte = 0;
-function buscaRapido() { rapidoAte = Date.now() + 30000; const t = setInterval(() => { if (Date.now() > rapidoAte || !token) return clearInterval(t); if (FILE && !sending) load().catch(() => {}); }, 1500); }
+let rapidoAte = 0, rapidoT = null;
+// um timer só: chamar de novo só estica o prazo (antes cada push/volta criava outro setInterval em paralelo)
+function buscaRapido() { rapidoAte = Date.now() + 30000; if (rapidoT) return; rapidoT = setInterval(() => { if (Date.now() > rapidoAte || !token) { clearInterval(rapidoT); rapidoT = null; return; } if (FILE && !sending) load().catch(() => {}); }, 1500); }
 if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data === 'novo') buscaRapido(); });
 // Veio de push: guarda a conversa por 1 min, pra o reload da volta não trocar pela do relógio.
 let pushEm = 0;
 if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { const d = e.data || {}; if (d === 'responder' || d.responder !== undefined) { pushEm = Date.now(); store.set('push-conv', (d.responder || GERAL.arq) + '|' + pushEm); abreRespondendo(d.responder, d.foto); } });
+// Proteção do toque duplo (May, 05/11/2026: "usa o toque duplo: mantém, com proteção de rolagem"): só conta toque curto,
+// parado, fora de botão/link/foto e sem rolagem durante nem logo antes (o toque que freia a rolagem não vale).
+let toqueAnt = null, ultimoToque = 0;
 function gestoResponder(el, it) {
-  let x0 = null, y0 = 0, dx = 0, timer = null, seta = null;
-  const fim = () => {
+  let x0 = null, y0 = 0, dx = 0, t0 = 0, timer = null, seta = null, segurou = false, mexeu = false, alvoOk = true;
+  const fim = e => {
     clearTimeout(timer);
     if (dx > 55) responder(it);
+    const agora = Date.now(), limpo = e.type === 'touchend' && alvoOk && !segurou && !mexeu && agora - t0 < 300 && ultimaRolagem < t0 - 250;
+    if (limpo && toqueAnt && toqueAnt.el === el && agora - toqueAnt.t < 350) { toqueAnt = null; responder(it); }
+    else toqueAnt = limpo ? { el, t: agora } : null;
     el.style.transition = 'transform .2s'; el.style.transform = '';
     if (seta) seta.style.opacity = 0;
-    x0 = null; dx = 0;
+    x0 = null; dx = 0; segurou = false;
   };
   el.addEventListener('touchstart', e => {
-    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; el.style.transition = '';
-    timer = setTimeout(() => { if (Math.abs(dx) < 8 && !getSelection().toString()) { if (navigator.vibrate) navigator.vibrate(15); responder(it); } }, 500);
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; t0 = ultimoToque = Date.now(); mexeu = false; segurou = false; el.style.transition = '';
+    alvoOk = e.touches.length === 1 && !e.target.closest('a, button, img, audio, .quem, .opcoes');
+    // segurar = 0,6 s com o dedo parado e sem rolagem desde que encostou
+    timer = setTimeout(() => { if (!mexeu && ultimaRolagem < t0 - 250 && !getSelection().toString()) { segurou = true; if (navigator.vibrate) navigator.vibrate(15); responder(it); } }, 600);
   }, { passive: true });
   el.addEventListener('touchmove', e => {
     if (x0 === null) return;
     dx = e.touches[0].clientX - x0;
     const dy = Math.abs(e.touches[0].clientY - y0);
+    if (Math.abs(dx) > 8 || dy > 8) { mexeu = true; clearTimeout(timer); }
     if (dy > 12 && dx < 12) { clearTimeout(timer); x0 = null; dx = 0; return; }
     if (dx > 6) {
       clearTimeout(timer);
@@ -1433,13 +1474,14 @@ function gestoResponder(el, it) {
     }
   }, { passive: true });
   el.addEventListener('touchend', fim); el.addEventListener('touchcancel', fim);
-  el.addEventListener('dblclick', () => responder(it));
+  el.addEventListener('dblclick', e => { if (Date.now() - ultimoToque > 1000 && !e.target.closest('a, button, img, audio')) responder(it); });   // mouse; no toque quem decide é o fim()
 }
 // ---- Botão ↓ com a contagem do que chegou enquanto ela lê lá em cima
 const desce = document.getElementById('desce'), desceQtd = document.getElementById('desce-qtd');
-let novasLaEmCima = 0;
+let novasLaEmCima = 0, grudado = true, ultimaRolagem = 0;   // grudado = estava no fim antes da última mudança de altura
 feed.addEventListener('scroll', () => {
-  const longe = feed.scrollHeight - feed.scrollTop - feed.clientHeight > 300;
+  const dist = feed.scrollHeight - feed.scrollTop - feed.clientHeight, longe = dist > 300;
+  grudado = dist < 120; ultimaRolagem = Date.now();
   desce.hidden = !longe;
   if (!longe) { novasLaEmCima = 0; desceQtd.hidden = true; }
 });
@@ -1525,7 +1567,7 @@ form.addEventListener('submit', async e => {
       }
       overlayTxt.textContent = 'Enviando…';
       const f = await gh('GET');
-      let md = b64decode(f.content);
+      let md = conteudoSeguro(f);
       const cita = respondendo ? ' ⟪re: ' + respondendo.nome + ': ' + respondendo.trecho + '⟫' : '';
       const txt = text.replace(/\r?\n/g, '\\n');
       const linhas = nomes.length
@@ -1547,7 +1589,7 @@ form.addEventListener('submit', async e => {
       falhou = true; pend.classList.add('falhou'); const tk = pend.querySelector('.tick'); tk.classList.remove('relogio'); tk.innerHTML = icone('warn') + ' não foi'; tk.title = 'Não foi enviada';
       // só devolve o texto que falhou pra caixa se ela não começou a digitar outra coisa nesse meio tempo
       if (!box.value.trim()) { box.value = text; store.set(rascKey(), text); }
-      showNote(err.status === 401 ? 'A chave não vale mais. Toca em ⋮ → Trocar chave.' : 'Não salvou. Confere a internet e tenta de novo.', true);
+      showNote(err.inseguro ? AVISO_INSEGURO : err.status === 401 ? 'A chave não vale mais. Toca em ⋮ → Trocar chave.' : 'Não salvou. Confere a internet e tenta de novo.', true);
       break;
     }
   }
@@ -1576,16 +1618,15 @@ function ajustaAltura() {
   // Com o teclado aberto: encolhe pra área visível, pra caixa de escrever ficar logo acima do teclado.
   const vv = window.visualViewport;
   const digitando = document.activeElement && document.activeElement.matches('textarea, input');
-  if (digitando && vv) {   // teclado aberto (ou abrindo): a página ocupa só a parte visível, acima do teclado
-    appEl.style.top = Math.round(vv.offsetTop) + 'px'; appEl.style.bottom = 'auto'; appEl.style.height = Math.round(vv.height) + 'px';
-    return;
-  }
-  appEl.style.top = '0px'; appEl.style.bottom = '0px'; appEl.style.height = '';
-  if (window.scrollY) window.scrollTo(0, 0);
+  const [top, bottom, height] = digitando && vv ? [Math.round(vv.offsetTop) + 'px', 'auto', Math.round(vv.height) + 'px'] : ['0px', '0px', ''];   // teclado aberto (ou abrindo): só a parte visível, acima do teclado
+  // só mexe (e só segura a rolagem) se a altura mudou de verdade: escrever o mesmo valor no meio da rolagem do iPhone freava ela
+  if (appEl.style.top !== top || appEl.style.bottom !== bottom || appEl.style.height !== height) mantemFim(() => { appEl.style.top = top; appEl.style.bottom = bottom; appEl.style.height = height; });
+  if (!digitando && window.scrollY) window.scrollTo(0, 0);
 }
 ajustaAltura(); window.addEventListener('resize', ajustaAltura);
 if (window.visualViewport) { window.visualViewport.addEventListener('resize', ajustaAltura); window.visualViewport.addEventListener('scroll', ajustaAltura); }
-document.addEventListener('focusin', () => { [50, 250, 500, 900].forEach(t => setTimeout(ajustaAltura, t)); });   // o teclado do iPhone sobe aos poucos
+let altT = [];
+document.addEventListener('focusin', () => { altT.forEach(clearTimeout); altT = [50, 250, 500, 900].map(t => setTimeout(ajustaAltura, t)); });   // o teclado do iPhone sobe aos poucos; foco repetido não empilha rodadas
 document.addEventListener('focusout', () => setTimeout(ajustaAltura, 300));
 const swPronto = ('serviceWorker' in navigator) ? navigator.serviceWorker.register('sw.js').catch(() => null) : Promise.resolve(null);
 function chave(b64) { const p = '='.repeat((4 - b64.length % 4) % 4); const r = atob((b64 + p).replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(r, c => c.charCodeAt(0)); }
@@ -2063,14 +2104,14 @@ async function mandaPraLyra(txt, btn) {   // manda direto pra caixa da Geral, se
       const r = await fetch(api + '?t=' + Date.now(), { cache: 'no-store', headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' } });
       if (!r.ok) { const e = new Error('http ' + r.status); e.status = r.status; throw e; }
       const f = await r.json();
-      let md = b64decode(f.content).replace(/\n- \s*$/, '\n');
+      let md = conteudoSeguro(f).replace(/\n- \s*$/, '\n');
       md = md.replace(/\s*$/, '') + '\n- [' + stamp(new Date()) + '] ' + txt.replace(/\r?\n/g, '\\n') + '\n';
       const p = await fetch(api, { method: 'PUT', headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' }, body: JSON.stringify({ message: 'recado do iPhone', content: b64encode(md), sha: f.sha }) });
       if (!p.ok) { const e = new Error('http ' + p.status); e.status = p.status; throw e; }
       btn.innerHTML = icone('check') + ' Mandado pra Lyra'; return true;
     } catch (err) {
       if (err.status === 409 && tentativa < 3) { await new Promise(r => setTimeout(r, 600)); continue; }
-      btn.innerHTML = icone('warn') + (err.status === 401 ? ' Chave vencida (menu → Trocar chave)' : ' Não foi, toca de novo');
+      btn.innerHTML = icone('warn') + (err.inseguro ? ' Caixa vazia ou cheia demais, não gravei' : err.status === 401 ? ' Chave vencida (menu → Trocar chave)' : ' Não foi, toca de novo');
       btn.disabled = false; setTimeout(() => { if (!btn.disabled) btn.innerHTML = antes; }, 4000); return false;
     }
   }
@@ -2324,14 +2365,28 @@ function start() {
     if ((!FILE || largo()) && Date.now() - ultimaLista > 14000) carregaLista().catch(() => {});
   }, 4000);
 }
-// Toda vez que ela volta pra página depois de um tempo fora, recarrega inteira (pega layout novo) e desce pro fim.
+// Volta pra página: busca o que chegou (sem recarregar: o reload perdia fotos na bandeja, áudio, citação e nota).
+// Recarrega só se o app.html publicado é de outra versão e não tem nada pela metade (05/11/2026).
+const VERSAO = (document.querySelector('meta[name="app-versao"]') || {}).content || '';
+async function versaoNova() {
+  try { const r = await fetch('app.html', { cache: 'no-cache' }); if (!r.ok) return false; const m = (await r.text()).match(/<meta name="app-versao" content="([^"]+)"/); return !!(m && VERSAO && m[1] !== VERSAO); } catch (e) { return false; }
+}
+function nadaPendente() {
+  const ativo = document.activeElement;
+  return !sending && !gravador && !anexos.length && !respondendo && !(ativo && ativo.matches('textarea, input')) && painel.hidden
+    && !document.querySelector('.msg.pendente, .pop, .zoom') && ![...document.querySelectorAll('audio')].some(a => !a.paused);
+}
 let saiuEm = 0;
+function voltouPraPagina(longe) {
+  if (!token) return;
+  (FILE ? load() : carregaLista()).catch(() => {}); buscaRapido();
+  if (longe && Date.now() - pushEm > 5000) versaoNova().then(nova => { if (nova && nadaPendente()) location.reload(); });
+}
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') { saiuEm = Date.now(); return; }
-  if (saiuEm && Date.now() - saiuEm > 30000 && !sending && Date.now() - pushEm > 5000) { location.reload(); return; }
-  if (token) { (FILE ? load() : carregaLista()).catch(() => {}); buscaRapido(); }
+  voltouPraPagina(saiuEm && Date.now() - saiuEm > 30000);
 });
-window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
+window.addEventListener('pageshow', e => { if (e.persisted) voltouPraPagina(true); });
 sair.onclick = () => { store.set('gh-token', ''); token = ''; askToken(); };
 
 token = store.get('gh-token');
