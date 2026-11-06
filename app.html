@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.47">
+<meta name="app-versao" content="2026-11-06.48">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -343,11 +343,11 @@ button:disabled { opacity: .45; cursor: default; }
   border-radius: 999px; padding: 0 20px; box-shadow: 0 6px 18px rgba(0,0,0,.22); z-index: 3; }
 /* Versão web (abrir com ?web=true): igual WhatsApp Web, lista de conversas à esquerda e a conversa aberta à direita */
 @media all {   /* "lado" = a área visível tem 700px ou mais (medido no JS, não na tela do monitor) */
-  body.web.lado .app { max-width: 1400px; display: grid; grid-template-columns: 360px 1fr; grid-template-rows: auto 1fr auto auto auto; }
+  body.web.lado .app { max-width: 1400px; display: grid; grid-template-columns: 360px 1fr; grid-template-rows: auto auto 1fr auto auto auto; }
   body.web.lado header { grid-column: 1 / -1; border-radius: 0 0 18px 18px; }
   body.web.lado #lista { grid-column: 1; grid-row: 2 / -1; border-right: 1px solid var(--line); overflow-y: auto; display: block !important; padding-bottom: 80px; }
-  body.web.lado #feed, body.web.lado #note, body.web.lado #citando, body.web.lado #composer { grid-column: 2; }
-  body.web.lado #feed { grid-row: 2; } body.web.lado #note { grid-row: 3; } body.web.lado #citando { grid-row: 4; } body.web.lado #composer { grid-row: 5; }
+  body.web.lado #fixa, body.web.lado #feed, body.web.lado #note, body.web.lado #citando, body.web.lado #composer { grid-column: 2; }
+  body.web.lado #fixa { grid-row: 2; } body.web.lado #feed { grid-row: 3; } body.web.lado #note { grid-row: 4; } body.web.lado #citando { grid-row: 5; } body.web.lado #composer { grid-row: 6; }
   body.web.lado #nova { left: max(16px, calc(50vw - 684px)); right: auto; width: 328px; display: block !important; }
   body.web.lado #voltar { display: none !important; }
   body.web.lado .conv.ativa { background: color-mix(in srgb, var(--accent) 14%, transparent); }
@@ -525,7 +525,7 @@ img.esq { min-height: 140px; }
   box-shadow: 0 14px 40px rgba(0,0,0,.3); animation: entra .2s ease-out both; }
 .pop h2 { margin: 0; font-size: 18px; }
 .msg.grupo.sigma { border: 3px solid transparent; background: linear-gradient(color-mix(in srgb, #9333EA 16%, var(--cinza)), color-mix(in srgb, #9333EA 16%, var(--cinza))) padding-box, linear-gradient(135deg, #9333EA, #9CA3AF, #0A0A0A) border-box; }   /* Sigma em 3 cores, roxo, cinza e preto (05/11/2026) */
-.fixa { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 10px; margin: 2px 0 6px; padding: 10px 12px; border-radius: 14px; background: color-mix(in srgb, var(--quem) 22%, var(--paper)); border: 2px solid var(--quem); box-shadow: 0 4px 14px rgba(0,0,0,.25); }   /* mensagem fixa até ela dar Ok (May, 06/11/2026) */
+#fixa { flex: none; padding: 6px 10px 0; } .fixa { display: flex; align-items: center; gap: 10px; margin: 0; padding: 10px 12px; border-radius: 14px; background: color-mix(in srgb, var(--quem) 22%, var(--paper)); border: 2px solid var(--quem); box-shadow: 0 4px 14px rgba(0,0,0,.25); }   /* mensagem fixa até ela dar Ok (May, 06/11/2026) */
 .fixa-tx { flex: 1; min-width: 0; font-size: 14px; line-height: 1.35; } .fixa-tx b { display: block; color: color-mix(in srgb, var(--quem) 55%, var(--fg)); font-size: 12.5px; } .fixa-tx span { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .fixa-ok { flex: none; width: auto; min-width: 64px; height: 40px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--quem); color: #fff; font-weight: 700; font-size: 15px; cursor: pointer; }
 .msg.grupo.tres { border: 3px solid transparent; background: linear-gradient(color-mix(in srgb, var(--c1) 18%, var(--cinza)), color-mix(in srgb, var(--c1) 18%, var(--cinza))) padding-box, linear-gradient(135deg, var(--c1), var(--c2) 50%, var(--c3)) border-box; }
@@ -689,7 +689,7 @@ img.esq { min-height: 140px; }
 .anexo { position: relative; flex: none; width: 72px; height: 72px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
 .anexo img { width: 100%; height: 100%; object-fit: cover; }
 .anexo button { position: absolute; top: 3px; right: 3px; width: 24px; height: 24px; border-radius: 50%; background: rgba(0,0,0,.6); color: #fff; font-size: 12px; }
-body.web.lado .anexos { grid-column: 2; grid-row: 4; }
+body.web.lado .anexos { grid-column: 2; grid-row: 5; }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
@@ -718,6 +718,7 @@ body.web.lado .anexos { grid-column: 2; grid-row: 4; }
 
   <main id="lista" hidden></main>
   <button type="button" id="nova" hidden>+ Nova conversa</button>
+  <div id="fixa" hidden></div>
   <main id="feed"></main>
 
   <div class="note" id="note" role="alert" hidden></div>
@@ -2273,7 +2274,9 @@ function corDe(nome) {
 }
 // mensagem fixa (May, 06/11/2026 15:34): recado de robô com 📌 fica preso no topo até ela tocar Ok; o Ok vira resposta "✅ ok" citando ele
 const trechoDe = it => (it.text || (it.foto ? 'Foto' : '')).replace(/[⟪⟫:\n]/g, ' ').slice(0, 80);
+const fixaEl = document.getElementById('fixa');
 function mostraFixa(items) {
+  fixaEl.replaceChildren(); fixaEl.hidden = true;
   if (FILE !== GERAL.arq) return;
   const oks = items.filter(x => x.from === 'may' && x.re && /^\s*✅/.test(x.text || '')).map(x => x.re.trecho.trim());
   const it = items.find(x => x.from !== 'may' && /📌/.test(x.text || '') && !oks.includes(trechoDe(x).trim()));
@@ -2282,8 +2285,8 @@ function mostraFixa(items) {
   const d = document.createElement('div'); d.className = 'fixa'; d.style.setProperty('--quem', g.cor || 'var(--accent)');
   const tx = document.createElement('div'); tx.className = 'fixa-tx'; const b = document.createElement('b'); b.textContent = nome; const sp = document.createElement('span'); sp.textContent = (it.text || '').replace(/📌\s*/g, ''); tx.append(b, sp);
   const ok = document.createElement('button'); ok.type = 'button'; ok.className = 'fixa-ok'; ok.textContent = 'Ok';
-  ok.onclick = () => { ok.disabled = true; ok.textContent = 'Enviando…'; const antes = respondendo; respondendo = { nome: g.nome || nome, trecho: trechoDe(it) }; const x = novoPendente('✅ ok', [], FILE); respondendo = antes; enviar(x.p, x.el); d.remove(); };
-  d.append(tx, ok); feed.append(d);
+  ok.onclick = () => { ok.disabled = true; ok.textContent = 'Enviando…'; const antes = respondendo; respondendo = { nome: g.nome || nome, trecho: trechoDe(it) }; const x = novoPendente('✅ ok', [], FILE); respondendo = antes; enviar(x.p, x.el); fixaEl.hidden = true; };
+  d.append(tx, ok); fixaEl.append(d); fixaEl.hidden = false;   // fora do feed: empurra a conversa pra baixo em vez de cobrir (Sigma, 06/11/2026)
 }
 function responder(it) {
   if (!it) { respondendo = null; citando.hidden = true; return; }
@@ -2618,7 +2621,7 @@ function desenhaLista() {
 function mostraLista() {
   FILE = null; API = null; nomeConv = ''; fotoConv = ''; logoEl.style.backgroundImage = ''; convAv.style.backgroundImage = ''; convAv.hidden = true;
   voltar.hidden = true; logoEl.hidden = false; tituloEl.textContent = 'Recados';
-  feed.hidden = true; form.hidden = true; citando.hidden = true; desce.hidden = true; lista.hidden = false; novaBtn.hidden = false;
+  feed.hidden = true; fixaEl.hidden = true; form.hidden = true; citando.hidden = true; desce.hidden = true; lista.hidden = false; novaBtn.hidden = false;
   mostraFazendo(''); showNote(''); menu.hidden = true; onlineBadge.hidden = true; onlinePop.hidden = true; semanaEl.hidden = true;
   if (conversas.length) desenhaLista();
   carregaLista().catch(() => {});
