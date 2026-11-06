@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.32">
+<meta name="app-versao" content="2026-11-06.33">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -3400,6 +3400,10 @@ sair.onclick = () => { store.set('gh-token', ''); token = ''; askToken(); };
 
 token = store.get('gh-token');
 token ? start() : askToken();
+if (location.hash === '#menu') {   // voltou da tela Jogos (ou de outra página do Menu): cai direto no Menu, não na conversa (May, 06/11/2026 11:29)
+  history.replaceState(null, '', location.pathname + location.search);
+  const t0 = Date.now(), espera = setInterval(() => { if (FILE || Date.now() - t0 > 15000) { clearInterval(espera); if (FILE) document.getElementById('abre-menu').click(); } }, 100);
+}
 </script>
 </body>
 </html>
