@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.1">
+<meta name="app-versao" content="2026-11-06.2">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -446,10 +446,11 @@ button:disabled { opacity: .45; cursor: default; }
 .detalhe .manda:disabled { opacity: .45; }
 .p-lista { display: flex; flex-direction: column; gap: 10px; }
 .p-grade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.p-azulejo { width: auto; height: auto; min-height: 98px; padding: 12px 6px 10px; border-radius: 18px; background: var(--paper); color: var(--fg); border: 1px solid var(--line); display: grid; justify-items: center; align-content: center; gap: 8px; font: inherit; box-shadow: inset 0 2px 0 rgba(255,255,255,.06), 0 2px 6px rgba(0,0,0,.08); }
-.p-azulejo .ic { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+.p-azulejo { width: auto; height: auto; min-height: 100px; padding: 12px 6px 11px; border-radius: 22px; border: 0; display: grid; justify-items: center; align-content: center; gap: 8px; font: inherit; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.4);
+  background: linear-gradient(color-mix(in srgb, var(--accent) 88%, white), color-mix(in srgb, var(--accent) 62%, black)); box-shadow: inset 0 2px 0 rgba(255,255,255,.35), inset 0 -4px 0 rgba(0,0,0,.25), 0 6px 14px rgba(0,0,0,.18); }   /* no padrão das pílulas do app: degradê cheio, letra branca, chanfro (May, 06/11/2026) */
+.p-azulejo .ic { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: rgba(0,0,0,.18); color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,.25); }
 .p-azulejo .ic svg.i { width: 26px; height: 26px; }
-.p-azulejo .t { font-size: 13px; font-weight: 700; line-height: 1.15; text-align: center; overflow-wrap: anywhere; }
+.p-azulejo .t { font-size: 13px; font-weight: 800; line-height: 1.15; text-align: center; overflow-wrap: anywhere; }
 .p-azulejo:active { transform: scale(.95); }
 .p-texto { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; }
 .p-texto h2 { font-size: 18px; margin: 4px 0 8px; } .p-texto h3 { font-size: 16px; margin: 14px 0 6px; color: var(--accent); }
@@ -2685,7 +2686,7 @@ function abreInfoConversa() {
 abreMenu.onclick = () => {
   menu.hidden = true; painel.hidden = false; pilha = [];
   tela('Menu', c => {
-    const h = document.createElement('div'); h.className = 'p-hero'; h.innerHTML = '<div class="logo" aria-hidden="true"></div><div><b>Recados</b><span>Atalhos da Lyra pra você</span></div>'; c.append(h);
+    const h = document.createElement('div'); h.className = 'p-hero'; h.innerHTML = '<div class="logo" aria-hidden="true" style="background-image:url(' + FOTO_GERAL + ');background-color:#0E0F12"></div><div><b>Recados</b><span>Atalhos da Lyra pra você</span></div>'; c.append(h);
     const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = 'Atalhos'; c.append(t);
     // Os botões do Menu vêm de menu/menu.json (a Lyra acrescenta páginas sem mexer no app); sem ele, só o Catálogo.
     // grade de ícones em 3 colunas, o mais usado em cima (May, 06/11/2026: "lista muito grande")
