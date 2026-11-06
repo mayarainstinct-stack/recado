@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.51">
+<meta name="app-versao" content="2026-11-06.52">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -2279,9 +2279,10 @@ function corDe(nome) {
 // mensagem fixa (May, 06/11/2026 15:34): recado de robô com 📌 fica preso no topo até ela tocar Ok; o Ok vira resposta "✅ ok" citando ele
 const trechoDe = it => (it.text || (it.foto ? 'Foto' : '')).replace(/[⟪⟫:\n]/g, ' ').slice(0, 80);
 const fixaEl = document.getElementById('fixa');
+let fixaOk = []; try { fixaOk = JSON.parse(localStorage.getItem('fixa-ok') || '[]'); } catch (e) {}   // ok dado aqui: não volta enquanto a API ainda devolve a caixa velha (May, 06/11/2026 16:19)
 function achaFixa(items) {
   if (FILE !== GERAL.arq) return -1;
-  const oks = items.filter(x => x.from === 'may' && x.re).map(x => x.re.trecho.trim());   // responder já conta como ok (May, 06/11/2026 16:17)
+  const oks = items.filter(x => x.from === 'may' && x.re).map(x => x.re.trecho.trim()).concat(fixaOk, Object.values(pendentes).map(x => x.p.re && x.p.re.trecho.trim()).filter(Boolean));   // responder já conta como ok (May, 06/11/2026 16:17)
   return items.findLastIndex(x => x.from !== 'may' && /^\s*📌/.test(x.text || '') && !oks.includes(trechoDe(x).trim()));
 }
 function mostraFixa(items, fixaI) {   // o próprio balão sobe pro topo (mesmo jeito, dá pra responder pelo menu dele) e ganha o Ok embaixo (May, 06/11/2026 16:04 e 16:06)
@@ -2293,7 +2294,7 @@ function mostraFixa(items, fixaI) {   // o próprio balão sobe pro topo (mesmo 
   const rot = document.createElement('span'); rot.textContent = 'Fixada até você dar Ok';
   const resp = document.createElement('button'); resp.type = 'button'; resp.className = 'fixa-resp'; resp.textContent = 'Responder'; resp.onclick = () => { responder(it); document.getElementById('texto').focus(); };
   const ok = document.createElement('button'); ok.type = 'button'; ok.className = 'fixa-ok'; ok.textContent = 'Ok';
-  ok.onclick = () => { ok.disabled = true; ok.textContent = 'Enviando…'; const antes = respondendo; respondendo = { nome: g.nome || nome, trecho: trechoDe(it) }; const x = novoPendente('✅ ok', [], FILE); respondendo = antes; enviar(x.p, x.el); fixaEl.hidden = true; };
+  ok.onclick = () => { fixaOk = fixaOk.concat(trechoDe(it).trim()).slice(-30); try { localStorage.setItem('fixa-ok', JSON.stringify(fixaOk)); } catch (e) {} ok.disabled = true; ok.textContent = 'Enviando…'; const antes = respondendo; respondendo = { nome: g.nome || nome, trecho: trechoDe(it) }; const x = novoPendente('✅ ok', [], FILE); respondendo = antes; enviar(x.p, x.el); fixaEl.hidden = true; };
   barra.append(rot, resp, ok); d.append(el, barra); fixaEl.append(d); fixaEl.hidden = false;   // fora do feed: empurra a conversa pra baixo em vez de cobrir (Sigma, 06/11/2026)
 }
 function responder(it) {
