@@ -1,5 +1,17 @@
-// v13 (tocar na notificação navega a janela pra ./#responder=... em vez de postMessage: o hash sobrevive ao reload). v12..v3 no histórico do git. Service worker dos Recados: só serve pra notificação push (iPhone com a página na tela de início, iOS 16.4+). Sem cache do app.html de propósito.
+// v14 (cache das imagens estáticas: avatares, ícones, fontes e marca ficam no celular depois da 1ª vez, até 300 arquivos; app.html e dados continuam sem cache). v13 (tocar na notificação navega a janela pra ./#responder=... em vez de postMessage: o hash sobrevive ao reload). v12..v3 no histórico do git. Service worker dos Recados: só serve pra notificação push (iPhone com a página na tela de início, iOS 16.4+). Sem cache do app.html de propósito.
 self.addEventListener('install', () => self.skipWaiting());
+const CACHE_ESTATICO = 'recados-estatico-v1', MAX_ESTATICO = 300;
+self.addEventListener('fetch', e => {
+  const u = new URL(e.request.url);
+  if (e.request.method !== 'GET' || u.origin !== self.location.origin || !/\/(avatares|fontes|marca)\/|\.(png|jpe?g|webp|gif|svg|ttf|woff2?)$/i.test(u.pathname)) return;   // só imagem e fonte do próprio site
+  e.respondWith(caches.open(CACHE_ESTATICO).then(async c => {
+    const salvo = await c.match(e.request);
+    if (salvo) return salvo;   // cache-first: a 2ª vez abre na hora, até sem internet
+    const r = await fetch(e.request);
+    if (r.ok) { c.put(e.request, r.clone()); c.keys().then(ks => { if (ks.length > MAX_ESTATICO) ks.slice(0, ks.length - MAX_ESTATICO).forEach(k => c.delete(k)); }); }
+    return r;
+  }).catch(() => fetch(e.request)));
+});
 self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
 
 self.addEventListener('push', e => {

@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.4">
+<meta name="app-versao" content="2026-11-06.5">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -446,6 +446,20 @@ button:disabled { opacity: .45; cursor: default; }
 .detalhe .manda:disabled { opacity: .45; }
 .p-lista { display: flex; flex-direction: column; gap: 10px; }
 .p-grade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+/* Telas do Menu no padrão do app (May, 06/11/2026: "revisão no layout das outras partes pra ficar no mesmo padrão"):
+   cartão escuro em degradê na cor do assunto (--c no painel), borda fina, chanfro de luz em cima e sombra embaixo, letra clara */
+.painel { --c: var(--accent); }
+.painel .p-botao, .painel .ag, .painel .cartao, .painel .item, .painel .viag, .painel .lista-item {
+  background: linear-gradient(color-mix(in srgb, var(--c) 30%, var(--paper)), color-mix(in srgb, var(--c) 14%, var(--paper))); border: 1px solid color-mix(in srgb, var(--c) 40%, transparent); border-radius: 20px;
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.14), inset 0 -3px 0 rgba(0,0,0,.12), 0 4px 12px rgba(0,0,0,.10); }
+@media (prefers-color-scheme: dark) { .painel .p-botao, .painel .ag, .painel .cartao, .painel .item, .painel .viag, .painel .lista-item {
+  background: linear-gradient(color-mix(in srgb, var(--c) 40%, black), color-mix(in srgb, var(--c) 18%, black)); color: #F8FAFC; } .painel .p-botao small, .painel .ag .cx ul { color: rgba(248,250,252,.72); } }
+.painel .p-botao .ic, .painel .ag .dt { background: color-mix(in srgb, var(--c) 22%, transparent); color: color-mix(in srgb, var(--c) 75%, var(--fg)); border-radius: 14px; }
+.painel .ag .dt b { color: color-mix(in srgb, var(--c) 80%, var(--fg)); }
+.painel .ag .cx .tag { background: var(--c); color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,.35); }
+.painel .cartao h3, .painel .p-sec { color: color-mix(in srgb, var(--c) 72%, var(--fg)); }
+.painel .item .ph { background: color-mix(in srgb, var(--c) 18%, transparent); color: color-mix(in srgb, var(--c) 70%, var(--fg)); }
+.painel .p-topo { background: linear-gradient(color-mix(in srgb, var(--c) 72%, black), color-mix(in srgb, var(--c) 52%, black)); }
 .p-azulejo { --c: var(--accent); width: auto; height: auto; min-height: 104px; padding: 12px 6px 11px; border-radius: 22px; border: 1px solid color-mix(in srgb, var(--c) 55%, transparent); display: grid; justify-items: center; align-content: center; gap: 8px; font: inherit; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.5);
   background: linear-gradient(color-mix(in srgb, var(--c) 45%, black), color-mix(in srgb, var(--c) 22%, black)); box-shadow: inset 0 2px 0 rgba(255,255,255,.18), inset 0 -4px 0 rgba(0,0,0,.35), 0 6px 14px rgba(0,0,0,.25); }   /* padrão do app: escuro em degradê na cor do assunto, chanfro, letra branca (May/Sigma, 06/11/2026) */
 .p-azulejo .ic { width: 50px; height: 50px; display: grid; place-items: center; color: color-mix(in srgb, var(--c) 70%, white); filter: drop-shadow(0 0 8px color-mix(in srgb, var(--c) 60%, transparent)); }
@@ -1996,11 +2010,21 @@ const AVATAR_PAGES = {
   'recados-fotos/20261031-005747-avatar-hermes.png': 'avatares/hermes-96.png', 'recados-fotos/20261105-124153-1.png': 'avatares/sigma-96.png',
   'recados-fotos/avatar-may-192.png': 'avatares/may-96.png'
 };
+const CACHE_FOTOS = 'recados-fotos-v1';   // fotos e áudios do repo privado guardados no próprio celular (Cache Storage do navegador, só dela)
+function fotoDoCache(path) {
+  if (!('caches' in window)) return Promise.resolve(null);
+  return caches.open(CACHE_FOTOS).then(c => c.match('/_foto/' + encodeURI(path))).then(r => r ? r.arrayBuffer() : null).catch(() => null);
+}
+function guardaFoto(path, buf) {
+  if (!('caches' in window) || buf.byteLength > 8e6) return;   // vídeo grande não entra
+  caches.open(CACHE_FOTOS).then(c => c.put('/_foto/' + encodeURI(path), new Response(buf, { headers: { 'content-type': tipoDe(path) } }))).catch(() => {});
+}
 function fotoUrl(path, original) {   // original: pula a miniatura (ficha e zoom)
   const pg = !original && AVATAR_PAGES[path];
   if (pg) return fotos[pg] || (fotos[pg] = new Promise((ok, erro) => { const im = new Image(); im.onload = () => ok(pg); im.onerror = erro; im.src = pg; }).catch(() => fotoUrl(path, true)));
-  if (!fotos[path]) fotos[path] = api(apiDe(path), { ...RAW, cache: 'default', tempo: 60000 })   // foto não muda: cache normal; apiDe codifica cada pedaço do caminho
+  if (!fotos[path]) fotos[path] = fotoDoCache(path).then(buf => buf || api(apiDe(path), { ...RAW, cache: 'default', tempo: 60000 })   // foto não muda: guarda no aparelho e abre na hora da 2ª vez em diante
     .then(r => { if (!r.ok) { const e = new Error('foto ' + r.status); e.status = r.status; throw e; } return r.arrayBuffer(); })
+    .then(b => { guardaFoto(path, b); return b; }))
     .then(buf => URL.createObjectURL(new Blob([buf], { type: tipoDe(path) })))
     .catch(e => { if (e.status !== 404) delete fotos[path]; throw e; });   // 404 = foto já apagada: não busca de novo
   return fotos[path];
@@ -2688,7 +2712,7 @@ function abreInfoConversa() {
 }
 [tituloEl.parentElement, logoEl, convAv].forEach(e => e.addEventListener('click', () => { if (FILE) abreInfoConversa(); }));
 abreMenu.onclick = () => {
-  menu.hidden = true; painel.hidden = false; pilha = [];
+  menu.hidden = true; painel.hidden = false; pilha = []; painel.style.removeProperty('--c');
   tela('Menu', c => {
     const h = document.createElement('div'); h.className = 'p-hero'; h.innerHTML = '<div class="logo" aria-hidden="true" style="background-image:url(' + FOTO_GERAL + ');background-color:#0E0F12"></div><div><b>Recados</b><span>Atalhos da casa</span></div>'; c.append(h);
     const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = 'Atalhos'; c.append(t);
@@ -2719,6 +2743,7 @@ function abreDiagnostico() {
   });
 }
 function abreItemMenu(m) {
+  painel.style.setProperty('--c', (COR_ASSUNTO.find(([re]) => re.test(m.nome)) || [])[1] || 'var(--accent)');   // a tela fica na cor do assunto, igual o azulejo dela
   if (m.tipo === 'pagina') { location.href = m.arq; return; }   // página própria do app (ex.: jogos.html), volta pelo botão dela
   if (m.tipo === 'catalogo') return abreCatalogo();
   if (m.tipo === 'imagens') return abreImagens(m);
