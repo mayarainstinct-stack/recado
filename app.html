@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.9">
+<meta name="app-versao" content="2026-11-06.10">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -1190,7 +1190,7 @@ async function abreCracha(chave) {
   if (f.hab) pHab.append(bloco('Habilidades', selos(f.hab, 'estrela')));
   if (f.olhar) pJeito.append(bloco('Como eu vejo as coisas', el('div', 'ct-olhar', f.olhar)));
   if (f.jeito && f.jeito.length) { const dl = el('dl', 'ct-dados ct-jeito'); f.jeito.forEach(([t, v]) => { const w = el('div'); w.innerHTML = ICO_FICHA.jeito; w.append(el('dt', '', t), el('dd', '', v)); dl.append(w); }); pJeito.append(bloco('Personalidade', dl)); }   // aba Jeito cheia (May, 06/11/2026)
-  if (f.cons) { const sc = selos(f.cons, 'pessoa'); sc.dataset.tipo = 'cons'; pJeito.append(bloco('Conselheiros que incorpora', sc)); }
+  if (false && f.cons) { const sc = selos(f.cons, 'pessoa'); sc.dataset.tipo = 'cons'; pJeito.append(bloco('Conselheiros que incorpora', sc)); }
   const pMaq = el('dl', 'ct-dados');
   [['onde', k === 'may' ? 'Onde vive' : 'Onde roda', f.onde || f.pc], ['maq', k === 'may' ? 'Ela' : 'PC', f.onde ? f.pc : ''], ['ip', 'IP', hb.ip || (['may', 'lyra', 'sigma'].includes(k) ? '' : 'ainda não mandou')], ...(f.hw ? f.hw.map(x => [...x, 'peca']) : [['maq', 'Máquina', f.maquina]])]
     .forEach(([i, t, d, c]) => { if (!d) return; const w = el('div', c); w.innerHTML = ICO_FICHA[i] || ICO_FICHA.maq; w.append(el('dt', '', t), el('dd', '', d)); pMaq.append(w); });
@@ -1531,8 +1531,8 @@ function render(items, manterPosicao) {
       q.style.setProperty('--quem', corDe(it.re.nome));
       const qn = document.createElement('b'), qg = grupoDeNome(it.re.nome);
       if (qg && qg.foto) { const qa = document.createElement('i'); qa.className = 'cita-av' + (qg === EU ? ' eu' : ''); qa.style.backgroundColor = qg === EU ? 'transparent' : qg.cor; fotoUrl(qg.foto).then(u => { qa.style.backgroundImage = 'url(' + u + ')'; }).catch(() => {}); qn.append(qa); }   // o robozinho de quem foi respondido (May, 05/11/2026)
-      qn.append(it.re.nome);
-      const qt = document.createElement('span'); qt.textContent = it.re.trecho;
+      qn.append(String(it.re.nome).replace(/\s*\(PC\d\)\s*$/i, ''));   // sem o PC no nome (May, 05/11/2026)
+      const qt = document.createElement('span'); qt.textContent = String(it.re.trecho).replace(/\*\*|`/g, '');   // sem o markdown cru
       q.append(qn, qt); el.append(q);
     }
     gestoResponder(el, it);
@@ -2792,6 +2792,10 @@ function zeraSemanaTreino(viagens) {
 }
 // Dia treinado = marcou item no checklist do dia (guardado só neste aparelho; o histórico com cargas continua sendo o menu/treino.json).
 const diasMarcados = () => { try { return JSON.parse(store.get('treino-dias') || '{}'); } catch (e) { return {}; } };
+function semHojeFalso(txt) {   // "Perna · hoje (29/10)" num dia que não é 29/10 vira "Perna · 29/10": data velha não pode ter cara de atual
+  const d = new Date(), hj = String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0');
+  return String(txt || '').replace(/\s*[-·]?\s*hoje\s*\((\d{1,2})\/(\d{1,2})\)/gi, (m0, dd, mm) => (dd.padStart(2, '0') + '/' + mm.padStart(2, '0') === hj ? m0 : ' (' + dd + '/' + mm + ')'));
+}
 function abreViagens(m) {
   tela(m.nome, async c => {
     const p = document.createElement('p'); p.className = 'p-nota'; p.textContent = 'Carregando…'; c.append(p);
@@ -2814,7 +2818,7 @@ function montaTreino(c, d) {
   d.viagens.forEach(v => {
     if (v.resumo) { const r = document.createElement('div'); r.className = 'p-texto'; r.textContent = v.resumo; c.append(r); }
     const lista = document.createElement('div'); lista.className = 'p-lista'; c.append(lista);
-    v.listas.forEach(l => lista.append(botao(l.icone, l.nome, marcados(v, l).size + ' de ' + totalItens(l) + ' feitos · ' + (l.sub || ''), () => abreChecklist(v, l))));
+    v.listas.forEach(l => lista.append(botao(l.icone, semHojeFalso(l.nome), marcados(v, l).size + ' de ' + totalItens(l) + ' feitos · ' + semHojeFalso(l.sub || ''), () => abreChecklist(v, l))));
   });
   c.append(bf);   // "Hoje não vou" fica lá embaixo, depois dos treinos (May, 05/11/2026)
 }
@@ -2880,7 +2884,7 @@ function abreViagem(v) {
   tela(v.nome, c => {
     if (v.resumo) { const r = document.createElement('div'); r.className = 'p-texto'; r.textContent = v.resumo; c.append(r); }
     const lista = document.createElement('div'); lista.className = 'p-lista'; c.append(lista);
-    v.listas.forEach(l => lista.append(botao(l.icone, l.nome, marcados(v, l).size + ' de ' + totalItens(l) + ' feitos · ' + (l.sub || ''), () => abreChecklist(v, l))));
+    v.listas.forEach(l => lista.append(botao(l.icone, semHojeFalso(l.nome), marcados(v, l).size + ' de ' + totalItens(l) + ' feitos · ' + semHojeFalso(l.sub || ''), () => abreChecklist(v, l))));
   });
 }
 function abreChecklist(v, l) {
@@ -2995,6 +2999,7 @@ function abreAgenda(m) {
     });
     const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
     let ult = null;
+    const passados = [];   // vão pro fim, numa seção "Anteriores" (Sigma, 06/11/2026: data velha com cara de atual é mentira na tela)
     md.split(/\r?\n/).forEach(l => {
       if (/^# /.test(l) || /^\s*<!--/.test(l) || !l.trim()) return;
       if (/^##+ /.test(l)) { const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = l.replace(/^#+ /, ''); c.append(t); ult = null; return; }
@@ -3023,9 +3028,11 @@ function abreAgenda(m) {
       if (tp.textContent.trim()) cx.append(tp);
       const corpoEl = document.createElement('div'); neg(corpoEl, corpo); cx.append(corpoEl);
       if (foto) { const im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; im.decoding = 'async'; cx.append(im); fotoUrl(foto).then(u => { im.src = u; im.onclick = () => abreZoom(u); }).catch(() => im.remove()); }
-      el.append(dt, cx); c.append(el); ult = el;
+      el.append(dt, cx); if (el.classList.contains('passou')) passados.push(el); else c.append(el); ult = el;
       el.onclick = () => abreFicha({ titulo: rot || 'Agenda', foto, corpo: el.cloneNode(true), contexto: 'Agenda (' + (rot || corpo.slice(0, 40)) + ')' });
     });
+    c.querySelectorAll('.p-sec').forEach(sec => { const prox = sec.nextElementSibling; if (!prox || prox.classList.contains('p-sec')) sec.remove(); });
+    if (passados.length) { const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = 'Anteriores'; c.append(t); passados.reverse().forEach(e => c.append(e)); }
   });
 }
 async function mandaPraLyra(txt, btn) {   // manda direto pra caixa da Geral, sem sair da tela
