@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.31">
+<meta name="app-versao" content="2026-11-06.32">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -271,6 +271,7 @@ textarea:focus-visible { outline: none; }
 @keyframes mandaCorre { to { background-position: 150% 0; } }
 .aviso-curto { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 9999; display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: #1F2C34; color: #E9EDEF; font-size: 14.5px; font-weight: 600; box-shadow: 0 6px 20px rgba(0,0,0,.45); animation: entra .2s ease-out; }
 .aviso-curto svg.i { color: #4ADE80; }
+.video-cheio { display: block; width: 100%; max-height: 70vh; border-radius: 14px; background: #000; margin: 4px 0 10px; }
 .msg.may.eu.pendente.falhou { animation: none; }   /* não foi: para de girar */
 .msg.pendente.falhou { cursor: pointer; }
 .msg.pendente:not(.falhou) .copiar-msg { display: none; }   /* opções só no balão que não foi */
@@ -788,6 +789,7 @@ const ICONES_SVG = {
   clipboard: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/>',
   phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
   tv: '<rect x="3" y="7" width="18" height="12" rx="2"/><path d="M8 3l4 4 4-4"/>',
+  video: '<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.5v5l4.5-2.5z"/>',
   car: '<path d="M5 16v-4l2-5h10l2 5v4M3 16h18v3H3zM7 19v2M17 19v2"/><circle cx="7.5" cy="13" r=".8"/><circle cx="16.5" cy="13" r=".8"/>',
   cart: '<path d="M3 4h2l2.5 11h10L20 7H6.5"/><circle cx="9" cy="19" r="1.2"/><circle cx="17" cy="19" r="1.2"/>',
   peach: '<path d="M12 7c-5-2-8 2-8 6 0 4 3 7 8 7s8-3 8-7c0-4-3-8-8-6z"/><path d="M12 7c0-2 1-3 3-4"/>',
@@ -2037,6 +2039,7 @@ async function carregar() {
 // ---- Fotos: ficam no repo privado em recados-fotos/; a página baixa com a chave e mostra.
 const fotos = {};
 function tipoDe(path) {
+  if (/\.mp4$/i.test(path)) return 'video/mp4';
   if (/\.m4a$/i.test(path)) return 'audio/mp4';
   if (/\.webm$/i.test(path)) return 'audio/webm';
   if (/\.png$/i.test(path)) return 'image/png';
@@ -2789,6 +2792,7 @@ function abreItemMenu(m) {
   if (m.tipo === 'pagina') { location.href = m.arq; return; }   // página própria do app (ex.: jogos.html), volta pelo botão dela
   if (m.tipo === 'catalogo') return abreCatalogo();
   if (m.tipo === 'imagens') return abreImagens(m);
+  if (m.tipo === 'videos') return abreVideos(m);
   if (m.tipo === 'texto' && m.cartoes) return abreCartoes(m);
   if (m.tipo === 'texto') return abreTexto(m);
   if (m.tipo === 'agenda') return abreAgenda(m);
@@ -2953,6 +2957,32 @@ function abreImagens(m) {
       const n = document.createElement('div'); n.className = 'det'; n.textContent = g.imagens.length + (g.imagens.length > 1 ? ' imagens' : ' imagem'); b.append(n);
       el.append(b); el.onclick = () => abreAlbum(g, m); c.append(el);
     });
+  });
+}
+// Vídeos (Sigma/May, 06/11/2026): lista com capa e duração; o player é o do próprio iPhone, com som, sem tocar sozinho
+function abreVideos(m) {
+  tela(m.nome, async c => {
+    const p = document.createElement('p'); p.className = 'p-nota'; p.textContent = 'Carregando…'; c.append(p);
+    let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    const vs = d.videos || [];
+    p.textContent = vs.length ? 'Toca num vídeo pra assistir.' : 'Nenhum vídeo ainda.';
+    vs.forEach(v => {
+      const el = document.createElement('div'); el.className = 'item';
+      el.append(fotoDe({ nome: v.titulo, foto: v.capa }, { icone: 'video' }, false));
+      const b = document.createElement('div'); b.className = 'i-corpo';
+      const h = document.createElement('h3'); h.textContent = v.titulo; b.append(h);
+      const n = document.createElement('div'); n.className = 'det'; n.textContent = [v.duracao, v.nota].filter(Boolean).join(' · '); b.append(n);
+      el.append(b); el.onclick = () => abreVideo(v); c.append(el);
+    });
+  });
+}
+function abreVideo(v) {
+  tela(v.titulo, c => {
+    const vd = document.createElement('video'); vd.controls = true; vd.playsInline = true; vd.setAttribute('playsinline', ''); vd.preload = 'metadata';
+    vd.className = 'video-cheio'; c.append(vd);
+    const st = document.createElement('p'); st.className = 'p-nota'; st.textContent = 'Carregando o vídeo…'; c.append(st);
+    if (v.capa) fotoUrl(v.capa).then(u => { vd.poster = u; }).catch(() => {});
+    fotoUrl(v.arq, true).then(u => { vd.src = u; st.textContent = v.nota || ''; if (!v.nota) st.remove(); }).catch(e => { st.textContent = e && e.status === 404 ? 'Esse vídeo ainda não subiu.' : 'Não consegui abrir o vídeo. Confere a internet.'; });
   });
 }
 function abreAlbum(g, m) {
