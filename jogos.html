@@ -174,6 +174,11 @@ nav button#tab-concluidos.on{background:linear-gradient(#F5D237,#B8860B);color:#
 .tile .pc{top:44px;z-index:4}
 .tile.sel,.tile:active{transform:scale(1.04);box-shadow:0 0 0 2px var(--cor),0 0 22px color-mix(in srgb,var(--cor) 70%,transparent)}
 .tile.sel{border:0}
+/* NEON: linha na cor cheia com brilho em volta, sem reflexo; METAL fica com as faixas (Sigma 02:57) */
+#ficha.tri.neon .bloco,#ficha.tri.neon .painel .bloco{border:var(--linha) solid var(--cd);background:linear-gradient(color-mix(in srgb,var(--cs) 34%,#0b0b0b),color-mix(in srgb,var(--cs) 14%,#0b0b0b));box-shadow:0 0 10px color-mix(in srgb,var(--cd) 50%,transparent),inset 0 0 6px color-mix(in srgb,var(--cd) 25%,transparent)}
+#ficha.tri.neon .poke,#ficha.tri.neon .it,#ficha.tri.neon .sv,#ficha.tri.neon .pend,#ficha.tri.neon .serie-it{border:var(--linha) solid var(--cd);background:linear-gradient(color-mix(in srgb,var(--cs) 42%,#080808),color-mix(in srgb,var(--cs) 20%,#080808));box-shadow:0 0 8px color-mix(in srgb,var(--cd) 45%,transparent)}
+#ficha.tri.neon .abas-f button.on,#ficha.tri.neon .chip:not(.vidro){box-shadow:0 0 12px color-mix(in srgb,var(--cd) 60%,transparent)}
+#ficha.tri.neon .anel circle:last-child{filter:drop-shadow(0 0 5px var(--cd))}
 #aviso.erro{background:#3A0E12;border-color:#FF5A5A}
 #e-env.indo{opacity:.75}
 .giro{display:inline-block;width:16px;height:16px;margin-right:8px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:gira .7s linear infinite;vertical-align:-3px}
@@ -206,7 +211,7 @@ nav button#tab-concluidos.on{background:linear-gradient(#F5D237,#B8860B);color:#
 #troca.on{animation:none}
 @keyframes troca{0%{opacity:1}100%{opacity:0}}
 .capa,.mini,.moldura{isolation:isolate}
-.capa img.borra,.linha .mini img.borra,.placa .moldura img.borra{position:absolute;inset:-8%;width:116%;height:116%;object-fit:cover;filter:blur(16px) brightness(.85) saturate(1.4);z-index:0}
+.capa img.borra,.linha .mini img.borra,.placa .moldura img.borra{position:absolute;inset:-8%;width:116%;height:116%;object-fit:cover;filter:blur(20px) brightness(.7) saturate(1.3);z-index:0}
 .capa img.inteira,.linha .mini img.inteira,.placa .moldura img.inteira{position:relative;width:100%;height:100%;object-fit:contain;z-index:1}
 .pager{display:flex;align-items:flex-start;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;transition:height .25s ease}
 .pager::-webkit-scrollbar{display:none}
@@ -514,7 +519,8 @@ function cor(c){const m=corMay(c);if(m&&(m.principal||m.cor))return m.principal|
 // metálico (DS cromado, PS3 preto com reflexo): vocab.consoles[].degrade = faixas de reflexo, .texto = cor da letra em cima (Orfeu 02:18)
 const metal=c=>{const v=Array.isArray((window.JOGOS||{}).consoles)?window.JOGOS.consoles:[],id=consId(c),k=v.find(x=>x.nome==c)||v.find(x=>x.id==id);if(!k||!Array.isArray(k.degrade)||k.degrade.length<2)return null;const n=k.degrade.length;return{g:"linear-gradient(180deg,"+k.degrade.map((x,i)=>x+" "+Math.round(i*100/(n-1))+"%").join(",")+")",t:k.texto||(lum(k.degrade[0])>.6?"#15181C":"#fff")}}
 const cromado=c=>!!metal(c)
-const BRILHO={switch:.4}
+const BRILHO={switch:.4},METAL_IDS=["ds","ps3","pc","switch2","megadrive"]
+const acabamento=c=>{const v=Array.isArray((window.JOGOS||{}).consoles)?window.JOGOS.consoles:[],id=consId(c),k=v.find(x=>x.nome==c)||v.find(x=>x.id==id);if(k&&(k.acabamento=="neon"||k.acabamento=="metal"))return k.acabamento;return METAL_IDS.includes((k&&k.id)||id)?"metal":"neon"}
 const brilho=c=>{const v=Array.isArray((window.JOGOS||{}).consoles)?window.JOGOS.consoles:[],id=consId(c),k=v.find(x=>x.nome==c)||v.find(x=>x.id==id);const n=k&&[k.metalico,k.metal,k.brilho].find(x=>typeof x=="number");return n!=null?n:BRILHO[(k&&k.id)||id]??1}
 const emulado=(c,j)=>!!(j&&j.console_emulado)||/emulador/i.test(c||""),consBase=c=>String(c||"").replace(/\s*\(emulador[^)]*\)/i,"").replace(/^Switch 2$/,"Nintendo Switch 2").replace(/^Switch$/,"Nintendo Switch").replace(/^Wii U$/,"Nintendo Wii U")
 function curto(c){if(!c)return"CONSOLE ?";c=consBase(c);return c.replace("Nintendo Switch 2","Switch 2").replace("Nintendo Wii U","Wii U").replace("Nintendo Switch","Switch").replace("Nintendo 3DS","3DS").replace("PlayStation ","PS").replace("Super Nintendo","SNES").replace("Nintendo 64","N64")}
@@ -579,7 +585,7 @@ function dval(h){if(!h.dia)return 0;const[d,m,a]=h.dia.split("/").map(Number);re
 let fichaAtual=null,histTodos=false,abaFicha="resumo",fichaDir=0
 function abrir(id){fichaAtual=POR[id];histTodos=false;abaFicha="resumo";desenhaFicha();const f=document.getElementById("ficha");f.classList.add("on");document.getElementById("f-corpo").scrollTop=0;if(location.hash!="#jogo="+id)history.replaceState(null,"","#jogo="+id)}
 function desenhaFicha(){
-const j=fichaAtual,u=capaUrl(j),pl=paleta(j.console),c=pl.cor;const fE=document.getElementById("ficha");document.getElementById("f-selo").innerHTML=icone(j.console).replace(/width="16" height="16"/,'width="22" height="22"');fE.style.setProperty("--cor",c);fE.style.setProperty("--cor2",pl.base);fE.classList.toggle("neutro",pl.base!=c);fE.classList.toggle("ouro",!!pl.ouro);const t3=pl.ouro?null:tres(j.console);fE.classList.toggle("tri",!!t3);fE.classList.toggle("cromo",cromado(j.console));fE.style.setProperty("--brilho",brilho(j.console));{const m=metal(j.console);if(m){fE.style.setProperty("--metal",m.g);fE.style.setProperty("--metal-t",m.t)}}if(t3){fE.style.setProperty("--cp",t3.principal);fE.style.setProperty("--cs",t3.secundaria);fE.style.setProperty("--cd",t3.detalhe);fE.style.setProperty("--cor",t3.detalhe);fE.classList.remove("s-claro");fE.classList.toggle("d-claro",lum(t3.detalhe)>.62);fE.classList.remove("neutro")}fE.classList.toggle("claro",claraCor(c));document.getElementById("envio").style.setProperty("--cor",pl.base!=c?pl.base:c)
+const j=fichaAtual,u=capaUrl(j),pl=paleta(j.console),c=pl.cor;const fE=document.getElementById("ficha");document.getElementById("f-selo").innerHTML=icone(j.console).replace(/width="16" height="16"/,'width="22" height="22"');fE.style.setProperty("--cor",c);fE.style.setProperty("--cor2",pl.base);fE.classList.toggle("neutro",pl.base!=c);fE.classList.toggle("ouro",!!pl.ouro);const t3=pl.ouro?null:tres(j.console);fE.classList.toggle("tri",!!t3);fE.classList.toggle("cromo",cromado(j.console));fE.style.setProperty("--brilho",brilho(j.console));fE.classList.toggle("neon",acabamento(j.console)=="neon");{const m=metal(j.console);if(m){fE.style.setProperty("--metal",m.g);fE.style.setProperty("--metal-t",m.t)}}if(t3){fE.style.setProperty("--cp",t3.principal);fE.style.setProperty("--cs",t3.secundaria);fE.style.setProperty("--cd",t3.detalhe);fE.style.setProperty("--cor",t3.detalhe);fE.classList.remove("s-claro");fE.classList.toggle("d-claro",lum(t3.detalhe)>.62);fE.classList.remove("neutro")}fE.classList.toggle("claro",claraCor(c));document.getElementById("envio").style.setProperty("--cor",pl.base!=c?pl.base:c)
 const ff=document.getElementById("f-fundo");ff.style.backgroundImage=`linear-gradient(160deg,${c},#101a3c)`;if(u)(ehPriv(u)?priv(u):Promise.resolve(u)).then(x=>{if(fichaAtual===j)ff.style.backgroundImage=`url("${x}")`}).catch(()=>{})
 // História = só os fatos (relatos, saves, quando zerou); as falas dela ficam na aba Eu (May 01:34, Sigma e Orfeu)
 const ev=[];(j.save||[]).filter(x=>x.data&&x.progresso).forEach(x=>ev.push({dia:x.data,texto:"Save"+(x.pc?" no "+x.pc:"")+": "+x.progresso,quem:"save"}));if(j.parede&&j.parede.data)ev.push({dia:j.parede.data,texto:"Zerou: plaquinha nº "+String(j.parede.numero).padStart(2,"0")+" na Parede da Vitória",quem:"parede"});(j.relatos||[]).forEach(r=>{const f=(r.texto.match(/^📷\s*(\S+)/)||[])[1];ev.push({dia:r.dia,hora:r.hora,texto:r.texto.replace(/^📷\s*\S+\s*/,"").replace(/\*\*/g,""),quem:r.quem,foto:f?corte(f.split(",")[0]):null})})
