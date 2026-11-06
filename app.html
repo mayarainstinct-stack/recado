@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.55">
+<meta name="app-versao" content="2026-11-06.56">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -528,8 +528,8 @@ img.esq { min-height: 140px; }
 #fixa { flex: none; background: var(--bg); padding: 6px 10px 4px; max-height: 45vh; overflow-y: auto; border-bottom: 1px solid var(--line); }   /* mensagem fixa até ela dar Ok (May, 06/11/2026) */
 .fixa { display: flex; flex-direction: column; gap: 6px; } .fixa > .msg { align-self: flex-start; max-width: 100%; margin: 0; }
 .fixa-barra { display: flex; align-items: center; gap: 8px; } .fixa-barra { flex-wrap: wrap; } .fixa-barra span { flex: 1 1 100%; font-size: 12.5px; color: var(--muted); }
-.fixa-resp, .fixa-ok { flex: none; width: auto; height: 36px; padding: 0 14px; border-radius: 999px; font-weight: 700; font-size: 14px; cursor: pointer; }
-.fixa-resp { border: 1px solid var(--line); background: transparent; color: var(--fg); } .fixa-ok { min-width: 64px; border: 0; background: var(--quem); color: #fff; }
+.fixa-resp, .fixa-ok, .fixa-nao { flex: none; width: auto; height: 36px; padding: 0 14px; border-radius: 999px; font-weight: 700; font-size: 14px; cursor: pointer; }
+.fixa-resp { border: 1px solid var(--line); background: transparent; color: var(--fg); } .fixa-nao { border: 0; background: #DC2626; color: #fff; min-width: 56px; } .fixa-ok { min-width: 64px; border: 0; background: var(--quem); color: #fff; }
 .msg.grupo.tres { border: 3px solid transparent; background: linear-gradient(135deg, color-mix(in srgb, var(--c1) 55%, var(--cinza)), color-mix(in srgb, var(--c2) 30%, var(--cinza)) 55%, color-mix(in srgb, var(--c3) 28%, var(--cinza))) padding-box, linear-gradient(135deg, var(--c1), var(--c2) 50%, var(--c3)) border-box; }   /* degradê atrás do texto também (May, 06/11/2026 16:18) */
 .msg.tres .quem .rotulo > span:first-child { color: var(--c2); align-self: flex-start; }
 @supports ((-webkit-background-clip: text) or (background-clip: text)) { .msg.tres .quem .rotulo > span:first-child { background: linear-gradient(90deg, var(--c2), var(--c3)); -webkit-background-clip: text; background-clip: text; color: transparent; } }
@@ -2336,11 +2336,11 @@ function listaFixas(items) {   // índices das fixadas, a mais recente primeiro
   const st = estadoFixa(items);
   return items.map((x, i) => [i, st[chaveDe(x)]]).filter(([i, v]) => v).sort((a, b) => b[1] - a[1]).map(x => x[0]);
 }
-async function mandaFixa(it, on, comOk) {   // Fixar / Desafixar gravam só no fixas.json; o Ok também manda "✅ ok" citando (é a aprovação dela)
+async function mandaFixa(it, on, comOk) {   // comOk = texto da resposta ("✅ sim" / "❌ não"), ou nada   // Fixar / Desafixar gravam só no fixas.json; o Ok também manda "✅ ok" citando (é a aprovação dela)
   const k = chaveDe(it);
   marcaFixa(k, on); render(lastItems, true);
   let foi = await gravaFixa(k, on);
-  if (foi && comOk) { const antes = respondendo; respondendo = { nome: nomeCita(it), trecho: trechoDe(it) }; const x = novoPendente('✅ ok', [], FILE); respondendo = antes; foi = await enviar(x.p, x.el); }
+  if (foi && comOk) { const antes = respondendo; respondendo = { nome: nomeCita(it), trecho: trechoDe(it) }; const x = novoPendente(comOk === true ? '✅ ok' : comOk, [], FILE); respondendo = antes; foi = await enviar(x.p, x.el); }
   if (!foi) { marcaFixa(k, null); render(lastItems, true); showNote(on ? 'Não deu pra fixar: toca de novo quando a internet voltar.' : 'Não foi: a mensagem continua fixada até dar certo.', true); }
 }
 let fixaVer = 0;   // qual da fila ela está vendo (0 = a mais recente)
@@ -2356,13 +2356,13 @@ function mostraFixa(items, fila) {   // cópia do balão no topo (o original fic
   el.addEventListener('click', () => orig.scrollIntoView({ block: 'center', behavior: 'smooth' }));
   const d = document.createElement('div'); d.className = 'fixa'; d.style.setProperty('--quem', g.cor || 'var(--accent)');
   const barra = document.createElement('div'); barra.className = 'fixa-barra';
-  const rot = document.createElement('span'); rot.textContent = fila.length > 1 ? 'Fixada ' + (fixaVer + 1) + ' de ' + fila.length : 'Fixada até você dar Ok';
+  const rot = document.createElement('span'); rot.textContent = fila.length > 1 ? 'Fixada ' + (fixaVer + 1) + ' de ' + fila.length : 'Fixada até você responder';
   if (fila.length > 1) { const prox = document.createElement('button'); prox.type = 'button'; prox.className = 'fixa-resp'; prox.textContent = 'Próxima'; prox.onclick = () => { fixaVer = (fixaVer + 1) % fila.length; render(lastItems, true); }; barra.append(rot, prox); } else barra.append(rot);
   const resp = document.createElement('button'); resp.type = 'button'; resp.className = 'fixa-resp'; resp.textContent = 'Responder'; resp.onclick = () => { responder(it); document.getElementById('texto').focus(); };
-  const ok = document.createElement('button'); ok.type = 'button'; ok.className = 'fixa-ok'; ok.textContent = 'Ok';
-  ok.onclick = () => { ok.disabled = true; ok.textContent = 'Enviando…'; mandaFixa(it, false, true); };
-  const des = document.createElement('button'); des.type = 'button'; des.className = 'fixa-resp'; des.textContent = 'Desafixar'; des.onclick = () => { des.disabled = true; mandaFixa(it, false, false); };
-  barra.append(des, resp, ok); d.append(el, barra); fixaEl.append(d); fixaEl.hidden = false;   // fora do feed: empurra a conversa pra baixo em vez de cobrir (Sigma, 06/11/2026)
+  const bt = (txt, cls, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.textContent = txt; b.onclick = () => { barra.querySelectorAll('button').forEach(x => { x.disabled = true; }); b.textContent = 'Enviando…'; fn(); }; return b; };   // Sim, Não, Desafixar e Responder (May, 06/11/2026 17:31)
+  const sim = bt('Sim', 'fixa-ok', () => mandaFixa(it, false, '✅ sim')), nao = bt('Não', 'fixa-nao', () => mandaFixa(it, false, '❌ não'));
+  const des = bt('Desafixar', 'fixa-resp', () => mandaFixa(it, false, false));
+  barra.append(des, resp, nao, sim); d.append(el, barra); fixaEl.append(d); fixaEl.hidden = false;   // fora do feed: empurra a conversa pra baixo em vez de cobrir (Sigma, 06/11/2026)
 }
 function responder(it) {
   if (!it) { respondendo = null; citando.hidden = true; return; }
