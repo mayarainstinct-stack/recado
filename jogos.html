@@ -164,6 +164,16 @@ nav button#tab-concluidos.on{background:linear-gradient(#F5D237,#B8860B);color:#
 .abas-f{flex-wrap:wrap;overflow:visible}.abas-f button{flex:1 1 auto;padding:0 10px;font-size:11px}.abas-f::after{display:none}
 .fab{transition:width .2s,padding .2s}.fab.mini{width:56px;padding:0;justify-content:center}.fab.mini span{display:none}
 :root{--linha:2px}
+/* lista igual ao launcher (May 02:55, descrição do Sigma 02:56): capa de borda a borda, título por cima, faixa cheia, barra fina, sem moldura */
+.tile{border:0;border-radius:16px;background:#0b0b12;box-shadow:0 8px 18px rgba(0,0,0,.45);transition:transform .15s ease,box-shadow .15s ease}
+.tile .tarja{height:36px;background:var(--cor);font-size:12px;font-weight:800;letter-spacing:1px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.25)}
+.tile .capa{aspect-ratio:3/4}
+.tile .info{position:absolute;left:0;right:0;bottom:4px;padding:34px 11px 9px;background:linear-gradient(transparent,rgba(0,0,0,.88) 70%);z-index:3;pointer-events:none}
+.tile .info .tt{text-shadow:0 2px 4px rgba(0,0,0,.8)}.tile .info .pp{display:none}
+.tile .barra{position:absolute;left:0;right:0;bottom:0;height:4px;border-radius:0;z-index:4}
+.tile .pc{top:44px;z-index:4}
+.tile.sel,.tile:active{transform:scale(1.04);box-shadow:0 0 0 2px var(--cor),0 0 22px color-mix(in srgb,var(--cor) 70%,transparent)}
+.tile.sel{border:0}
 #aviso.erro{background:#3A0E12;border-color:#FF5A5A}
 #e-env.indo{opacity:.75}
 .giro{display:inline-block;width:16px;height:16px;margin-right:8px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:gira .7s linear infinite;vertical-align:-3px}
@@ -196,7 +206,7 @@ nav button#tab-concluidos.on{background:linear-gradient(#F5D237,#B8860B);color:#
 #troca.on{animation:none}
 @keyframes troca{0%{opacity:1}100%{opacity:0}}
 .capa,.mini,.moldura{isolation:isolate}
-.capa img.borra,.linha .mini img.borra,.placa .moldura img.borra{position:absolute;inset:-8%;width:116%;height:116%;object-fit:cover;filter:blur(14px) brightness(.55) saturate(1.2);z-index:0}
+.capa img.borra,.linha .mini img.borra,.placa .moldura img.borra{position:absolute;inset:-8%;width:116%;height:116%;object-fit:cover;filter:blur(16px) brightness(.85) saturate(1.4);z-index:0}
 .capa img.inteira,.linha .mini img.inteira,.placa .moldura img.inteira{position:relative;width:100%;height:100%;object-fit:contain;z-index:1}
 .pager{display:flex;align-items:flex-start;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;transition:height .25s ease}
 .pager::-webkit-scrollbar{display:none}
@@ -534,7 +544,7 @@ chaveL=ch;montaLista()}
 function montaLista(){setTimeout(()=>hidrata(document.getElementById("lista")),0);
 const L=document.getElementById("lista");fundoDa(aba);document.getElementById("tab-jogando").classList.toggle("on",aba=="jogando");document.getElementById("tab-concluidos").classList.toggle("on",aba=="concluidos")
 if(aba=="jogando"){
-const tileH=(j,sel)=>`<button class="tile${sel?" sel":""}${consId(j.console)=="pc"?" pc":""}${cromado(j.console)?" cromo":""}${lum(cor(j.console))>.62?" t-claro":""}" style="--cor:${cor(j.console)};--brilho:${brilho(j.console)}${metal(j.console)?`;--metal:${metal(j.console).g};--metal-t:${metal(j.console).t}`:""}" data-id="${j.id}"><div class="tarja">${icone(j.console)}${esc(curto(j.console))}${emulado(j.console,j)?`<span class="emu">EMU</span>`:""}</div><div class="capa">${capaHtml(j)}</div>${barra(j)}${j.pct!=null?`<div class="pc">${pctTxt(j)}</div>`:""}<div class="info"><div class="tt">${esc(j.titulo)}</div><div class="pp">${esc(j.parei||"onde parou ainda não anotado")}</div></div></button>`
+const tileH=(j,sel)=>`<button class="tile${sel?" sel":""}${consId(j.console)=="pc"?" pc":""}${cromado(j.console)?" cromo":""}${lum(cor(j.console))>.62?" t-claro":""}" style="--cor:${cor(j.console)};--brilho:${brilho(j.console)}${metal(j.console)?`;--metal:${metal(j.console).g};--metal-t:${metal(j.console).t}`:""}" data-id="${j.id}"><div class="tarja">${icone(j.console)}${esc(consBase(j.console).replace(/^PS(\d)$/,"PlayStation $1"))}${emulado(j.console,j)?`<span class="emu">EMU</span>`:""}</div><div class="capa">${capaHtml(j)}</div>${barra(j)}${j.pct!=null?`<div class="pc">${pctTxt(j)}</div>`:""}<div class="info"><div class="tt">${esc(j.titulo)}</div><div class="pp">${esc(j.parei||"onde parou ainda não anotado")}</div></div></button>`
 const ORDN={pct:"percentual",recente:"última vez jogado",nome:"nome",console:"console"},ORDS=Object.keys(ORDN)
 let ord="pct";try{ord=localStorage.getItem("jogos-ordem")||"pct"}catch(e){}
 if(!ORDN[ord])ord="pct"
