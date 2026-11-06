@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.42">
+<meta name="app-versao" content="2026-11-05.43">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -609,7 +609,8 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-ramo .ct-tit { margin: 0; text-align: center; }
 .ct-nos { position: relative; flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 14px; padding: 4px 0 8px; }   /* cada galho rola sozinho (May, 05/11/2026) */
 .ct-nos::-webkit-scrollbar { display: none; }
-.ct-nos::before { content: ""; position: absolute; top: 18px; bottom: 18px; left: 50%; width: 3px; transform: translateX(-50%); border-radius: 2px; background: linear-gradient(to top, var(--claro), rgba(255,255,255,.12)); }
+.ct-nos .ct-in1:not(:first-child)::before { content: ""; position: absolute; top: -14px; height: 14px; left: 50%; width: 3px; transform: translateX(-50%); border-radius: 2px; background: var(--claro); }   /* a árvore desce de cima pra baixo; o espaço que sobra fica embaixo (May, 05/11/2026) */
+.ct-nos .ct-in1:nth-child(2)::before { background: rgba(255,255,255,.25); }
 .ct-nos .ct-in1 { position: relative; z-index: 1; font-size: 10px; max-width: 100%; }
 .ct-nos .ct-in1 svg { width: 40px; height: 40px; }
 .ct-painel .ct-ins-fila { row-gap: 12px; padding: 10px 4px; border-radius: 14px; background: rgba(0,0,0,.3); }
