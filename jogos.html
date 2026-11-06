@@ -296,6 +296,23 @@ nav button{height:58px;border-radius:22px;font-size:14px}
 #ficha.claro .chip:not(.vidro),#ficha.claro .fab{color:#111;text-shadow:none}
 #ficha.claro .chip:not(.vidro) svg,#ficha.claro .fab svg{stroke:#111;color:#111}
 #ficha.claro .abas-f button.on{background:linear-gradient(#f2f2f2,#cfcfd2);color:#111;text-shadow:none}
+#ficha.branco{--fundo:#F4F1EA;--painel:#fff;--texto:#151515;--texto2:#2b2b2b;--texto3:#6e685c;--vidro:rgba(0,0,0,.05);--borda:rgba(21,21,21,.16);--verde:#C9A24B;color:#151515}
+#ficha.branco *{text-shadow:none!important}
+#ficha.branco header .voltar{background:#fff;border-color:rgba(21,21,21,.18)}#ficha.branco header .voltar svg{stroke:#151515}
+#ficha.branco header h1{color:#151515!important}
+#ficha.branco .fundo-capa{opacity:.18;filter:blur(26px) saturate(.4)}
+#ficha.branco .dados h2,#ficha.branco h2,#ficha.branco .kv dd,#ficha.branco b:not(.selo-j2 b),#ficha.branco .it b,#ficha.branco .poke div{color:#151515}
+#ficha.branco .bloco,#ficha.branco .painel .bloco{background:linear-gradient(#fff,#FAF8F3);border:1px solid #C9A24B;box-shadow:inset 0 -3px 0 rgba(201,162,75,.18),0 4px 12px rgba(21,21,21,.08)}
+#ficha.branco .bloco h3{color:#151515}#ficha.branco .bloco h3 svg{stroke:#C9A24B;color:#C9A24B}
+#ficha.branco .poke,#ficha.branco .it,#ficha.branco .sv,#ficha.branco .fps div,#ficha.branco .cartao,#ficha.branco .selo,#ficha.branco .tags span,#ficha.branco .pend{background:#fff;border:1px solid rgba(201,162,75,.6);box-shadow:none;color:#151515}
+#ficha.branco .chip:not(.vidro){background:#151515;color:#fff;box-shadow:inset 0 0 0 1px #C9A24B}#ficha.branco .chip:not(.vidro) svg{color:#C9A24B;stroke:#C9A24B}
+#ficha.branco .chip.vidro{background:#fff;color:#151515;border-color:rgba(21,21,21,.2)}
+#ficha.branco .abas-f button{background:#fff;color:#151515;border:1px solid rgba(21,21,21,.18);box-shadow:none}
+#ficha.branco .abas-f button.on{background:#151515;color:#fff;border-color:#C9A24B;box-shadow:inset 0 -2px 0 #C9A24B}
+#ficha.branco .fab{background:#151515;color:#fff;box-shadow:inset 0 0 0 2px #C9A24B,0 8px 22px rgba(21,21,21,.3)}#ficha.branco .fab svg{stroke:#C9A24B}
+#ficha.branco .capa{border-color:#151515!important;box-shadow:0 0 0 2px #C9A24B}
+#ficha.branco .anel circle:first-child{stroke:rgba(21,21,21,.1)}
+#ficha.branco .pop-fonte,#ficha.branco .sobre a{color:#6e685c}
 #ficha::after{content:"";position:fixed;left:0;right:0;bottom:0;height:104px;background:linear-gradient(transparent,var(--fundo) 72%);pointer-events:none;z-index:5}
 #pop .folha{background:linear-gradient(165deg,color-mix(in srgb,var(--cor,#3C3C5A) 80%,#0a0a0a) 0%,color-mix(in srgb,var(--cor,#3C3C5A) 52%,#0a0a0a) 45%,color-mix(in srgb,var(--cor,#3C3C5A) 30%,#0a0a0a) 100%)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -395,8 +412,9 @@ const ri=await gh("categorias/games/prints-cortados/indice.json",{headers:{Accep
 window.CORTE=ri&&ri.ok?await ri.json().catch(()=>({})):{}
 const rv=await gh("categorias/games/tela/inventario.json",{headers:{Accept:"application/vnd.github.raw"}}).catch(()=>null)
 window.INV=rv&&rv.ok?await rv.json().catch(()=>({})):{}
-const rx=await gh("categorias/games/tela/extras.json",{headers:{Accept:"application/vnd.github.raw"}}).catch(()=>null)
+const [rx,rp]=await Promise.all(["extras","sobre-pt"].map(n=>gh(`categorias/games/tela/${n}.json`,{headers:{Accept:"application/vnd.github.raw"}}).catch(()=>null)))
 window.EXT=rx&&rx.ok?await rx.json().catch(()=>({})):{}
+window.SOBREPT=rp&&rp.ok?await rp.json().catch(()=>({})):{}
 const raw=p=>gh(p,{headers:{Accept:"application/vnd.github.raw"}}).then(r=>r.ok?r.text():"").catch(()=>"")
 try{const cj=JSON.parse(await raw("marca/consoles/consoles.json"));const nomes=[...new Set([cj.padrao.icone,...cj.consoles.map(c=>c.icone)])];const svgs=await Promise.all(nomes.map(n=>raw("marca/consoles/"+n)));const SVG={};nomes.forEach((n,i)=>{SVG[n]=svgs[i].replace(/width="48" height="48"/,'width="16" height="16"').replace(/color="#ffffff"/,'color="#fff"')});window.CONS={padrao:cj.padrao,por:Object.fromEntries(cj.consoles.map(c=>[c.id,c])),svg:SVG}}catch(e){window.CONS=null}
 }
@@ -415,9 +433,9 @@ const COR_MAY={"3ds":{cor:"#FF0000"},"switch":{cor:"#FE2376"},"switch2":{cor:"#E
 function corMay(c){const v=(window.JOGOS||{}).consoles;const id=consId(c);if(Array.isArray(v)){const k=v.find(x=>x.id==id||x.nome==c);if(k)return k}return COR_MAY[id]||(/3DS/.test(c||"")?COR_MAY["3ds"]:/Switch 2/.test(c||"")?COR_MAY.switch2:/Switch/.test(c||"")?COR_MAY.switch:null)}
 // só o Switch 2 usa o cor2 (cinza do corpo) de fundo; no Switch o cor2 é o Joy-Con verde e a ficha fica toda vermelha (May 00:43)
 function cor2(c){const m=corMay(c);return consId(c)=="switch2"&&m&&m.cor2||cor(c)}
-// só na ficha: PC no tema preto e branco do PC dela (May 01:00), Switch 2 cinza com vermelho
-const PALETA_FICHA={pc:{cor:"#F2F2F2",base:"#2B2B2E"}}
-function paleta(c){const p=PALETA_FICHA[consId(c)];if(p)return p;return{cor:cor(c),base:cor2(c)}}
+// só na ficha: PC branco-gelo com detalhe preto e dourado, igual o Pro Controller do Zelda TotK (May 01:17; cores do Sigma); Switch 2 cinza com vermelho
+const PALETA_FICHA={pc:{cor:"#C9A24B",base:"#151515",branco:true}}
+function paleta(c){const v=(window.JOGOS||{}).consoles,id=consId(c),k=Array.isArray(v)&&v.find(x=>x.id==id);if(k&&k.claro)return{cor:k.cor2||"#C9A24B",base:"#151515",branco:true};const p=PALETA_FICHA[id];if(p)return p;return{cor:cor(c),base:cor2(c)}}
 const claraCor=h=>{const m=/^#?([0-9a-f]{6})$/i.exec(h||"");if(!m)return false;const n=parseInt(m[1],16);return(.299*(n>>16)+.587*(n>>8&255)+.114*(n&255))>170}
 function cor(c){const m=corMay(c);if(m&&m.cor)return m.cor;const k=consDe(c);if(k)return k.cor;c=c||"";if(/Switch|3DS|Wii|Nintendo Switch/.test(c))return"#E1233C";if(/Super Nintendo/.test(c))return"#5E409D";if(/64/.test(c))return"#2EAF6E";if(/PS|PlayStation/.test(c))return"#286EDC";if(/Xbox/.test(c))return"#107C10";if(/PC/.test(c))return"#FF8C1E";return"#3C3C5A"}
 function curto(c){if(!c)return"CONSOLE ?";return c.replace("Switch 2 (emulador no PC)","Switch 2 · emu").replace("Switch (emulador no PC)","Switch · emu").replace("Wii U (emulador no PC)","Wii U · emu").replace("Nintendo Switch","Switch").replace("Nintendo 3DS","3DS").replace("PlayStation ","PS").replace("Super Nintendo","SNES").replace("Nintendo 64","N64")}
@@ -472,7 +490,7 @@ function dval(h){if(!h.dia)return 0;const[d,m,a]=h.dia.split("/").map(Number);re
 let fichaAtual=null,histTodos=false,abaFicha="resumo",fichaDir=0
 function abrir(id){fichaAtual=POR[id];histTodos=false;abaFicha="resumo";desenhaFicha();const f=document.getElementById("ficha");f.classList.add("on");document.getElementById("f-corpo").scrollTop=0;if(location.hash!="#jogo="+id)history.replaceState(null,"","#jogo="+id)}
 function desenhaFicha(){
-const j=fichaAtual,u=capaUrl(j),pl=paleta(j.console),c=pl.cor;const fE=document.getElementById("ficha");fE.style.setProperty("--cor",c);fE.style.setProperty("--cor2",pl.base);fE.classList.toggle("neutro",pl.base!=c);fE.classList.toggle("claro",claraCor(c));document.getElementById("envio").style.setProperty("--cor",pl.base!=c?pl.base:c)
+const j=fichaAtual,u=capaUrl(j),pl=paleta(j.console),c=pl.cor;const fE=document.getElementById("ficha");fE.style.setProperty("--cor",c);fE.style.setProperty("--cor2",pl.base);fE.classList.toggle("neutro",pl.base!=c&&!pl.branco);fE.classList.toggle("branco",!!pl.branco);fE.classList.toggle("claro",claraCor(c));document.getElementById("envio").style.setProperty("--cor",pl.base!=c?pl.base:c)
 const ff=document.getElementById("f-fundo");ff.style.backgroundImage=`linear-gradient(160deg,${c},#101a3c)`;if(u)(ehPriv(u)?priv(u):Promise.resolve(u)).then(x=>{if(fichaAtual===j)ff.style.backgroundImage=`url("${x}")`}).catch(()=>{})
 const ev=[];(j.historico||[]).forEach(h=>ev.push({dia:h.dia,hora:h.hora,onde:h.onde,texto:h.fala,quem:"May"}));(j.relatos||[]).forEach(r=>{const f=(r.texto.match(/^📷\s*(\S+)/)||[])[1];ev.push({dia:r.dia,hora:r.hora,texto:r.texto.replace(/^📷\s*\S+\s*/,"").replace(/\*\*/g,""),quem:r.quem,foto:f?corte(f.split(",")[0]):null})})
 ev.sort((a,b)=>dval(b)-dval(a))
@@ -553,7 +571,7 @@ function popPoke(j,p){const base=kvh([["Nível no seu save",p.nivel],["Onde",p.o
 if(/^\(/.test(p.nome))return{t:"Pokémon do time",h:`<div class="pop-q">${esc(p.nome)}</div><p class="pop-p">O nome desse ainda não foi anotado do save.</p>`+base}
 return{t:p.nome,h:`<div class="pop-poke"><p class="pop-p">Buscando na Pokédex…</p></div>`+base,depois:c=>{(POKE[p.nome]||(POKE[p.nome]=pokeInfo(p.nome))).then(i=>{const el=c.querySelector(".pop-poke");if(!el)return;if(!i){el.innerHTML=`<p class="pop-p">Não achei esse na Pokédex.</p>`;return}el.innerHTML=`${i.img?`<img class="pop-img poke-img" data-z src="${escA(i.img)}" alt="">`:""}${kvh([["Nº na Pokédex",String(i.num).padStart(4,"0")],["Tipo",i.tipos.map(t=>TIPO[t]||t).join(" / ")],["Altura",String(i.alt).replace(".",",")+" m"],["Peso",String(i.peso).replace(".",",")+" kg"]])}${i.txt?`<p class="pop-p">${esc(i.txt)}</p>`:""}<div class="pop-fonte">Fonte: PokéAPI${i.fonte_txt=="Wikipédia"?" e Wikipédia":""}</div>`})}}}
 function abrePop(o){const b=document.getElementById("pop");b.style.setProperty("--cor",fichaAtual?paleta(fichaAtual.console).base:"#3C3C5A");b.querySelector("h4").textContent=o.t;const c=b.querySelector(".pc");c.innerHTML=o.h;hidrata(c);c.onclick=e=>{const im=e.target.closest("img[data-z]");if(im&&im.src)abreZoom([im.src],0)};b.classList.add("on");b.querySelector(".folha").scrollTop=0;if(o.depois)o.depois(c)}
-function sobreJogo(j){const s=((window.EXT||{}).sobre||{})[j.id];const b=document.getElementById("f-sobre");if(!s||!b||s.lingua=="en")return;b.querySelector("p").textContent=s.texto;const a=b.querySelector("a");a.href=s.url||"#";a.textContent=`Fonte: Wikipédia${s.lingua=="en"?" (em inglês)":""}`;b.hidden=false}
+function sobreJogo(j){const s=((window.EXT||{}).sobre||{})[j.id];const b=document.getElementById("f-sobre");const pt=s&&s.lingua=="en"?(window.SOBREPT||{})[j.id]:s&&s.texto;if(!pt||!b)return;b.querySelector("p").textContent=pt;const a=b.querySelector("a");a.href=s.url||"#";a.textContent=`Fonte: Wikipédia${s.lingua=="en"?" em inglês (traduzido)":""}`;b.hidden=false}
 function rotuloStatus(s){return{jogando:"Jogando agora",quer_terminar:"Parou, mas quer terminar",parado:"Começou e parou",zerado:"Zerado · parede da vitória",largado:"Largado",nao_comecou:"Ainda não começou",espiou:"Só espiou",bloqueado:"Bloqueado por acesso",nao_funciona:"Não funciona mais",casual:"Casual, sem %",assistiu:"Do Gabriel, ela assistiu",colecao:"Coleção por nostalgia",memoria:"Memória antiga",de_olho:"De olho"}[s]||"Sem status"}
 function deslizar(el,vai){let x0=null,y0=0;el.addEventListener("touchstart",e=>{if(e.touches.length!=1||e.target.closest(".prateleira,.abas-f,.pager,#pop,#zoom,#envio,textarea")){x0=null;return}x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});el.addEventListener("touchend",e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.6)vai(dx<0?1:-1)},{passive:true})}
 const fechaFicha=()=>{document.getElementById("ficha").classList.remove("on");history.replaceState(null,"","#"+aba)}

@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.17">
+<meta name="app-versao" content="2026-11-06.18">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -522,7 +522,7 @@ img.esq { min-height: 140px; }
 .barra { display: grid; grid-template-columns: 1fr auto; gap: 4px 8px; margin-top: 12px; font-size: 14px; font-weight: 600; }
 .cracha-pop { background: rgba(0,0,0,.62); padding: 12px 16px; }
 .ct { width: min(100%, 372px); display: grid; gap: 10px; animation: entra .2s ease-out both; --escuro: color-mix(in srgb, var(--quem) 7%, #030303); --borda: linear-gradient(145deg, color-mix(in srgb, var(--quem) 65%, #fff), var(--quem) 35%, color-mix(in srgb, var(--quem) 60%, #000)); --claro: color-mix(in srgb, var(--quem) 78%, #fff); }
-.ct.eu { --borda: linear-gradient(150deg, #E31B23, #FACC15 50%, #22C55E); --claro: #4ADE80; }   /* os escritos do cartão dela em verde, não vermelho (May, 06/11/2026) */
+.ct.eu { --borda: linear-gradient(150deg, #E31B23, #FACC15 50%, #22C55E); --claro: #FACC15; }   /* os escritos do cartão dela no amarelo, a cor do meio das 3 (o verde sumia no fundo verde) (May, 06/11/2026) */
 .ct.sigma { --borda: linear-gradient(150deg, #9333EA, #9CA3AF 55%, #0A0A0A); --claro: #C084FC; }
 .ct-x { justify-self: end; width: 36px; height: 36px; min-height: 0; border-radius: 50%; border: none; background: rgba(255,255,255,.16); color: #fff; display: grid; place-items: center; padding: 0; }
 .ct svg { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
@@ -640,10 +640,11 @@ img.esq { min-height: 140px; }
 .ct-ramo-cab small { font-size: 9.5px; color: rgba(255,255,255,.7); }
 .ct-ramo { min-height: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 2px 10px; border-radius: 14px; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.1); }
 .ct-ramo .ct-tit { margin: 0; text-align: center; }
-.ct-nos { position: relative; flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 14px; padding: 4px 0 8px; }   /* cada galho rola sozinho (May, 05/11/2026) */
+.ct-nos { touch-action: pan-y; position: relative; flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 14px; padding: 4px 0 8px; }   /* cada galho rola sozinho (May, 05/11/2026) */
 .ct-nos::-webkit-scrollbar { display: none; }
 .ct-nos .ct-in1:not(:first-child)::before { content: ""; position: absolute; top: -14px; height: 14px; left: 50%; width: 3px; transform: translateX(-50%); border-radius: 2px; background: var(--claro); }   /* a árvore desce de cima pra baixo; o espaço que sobra fica embaixo (May, 05/11/2026) */
-.ct-nos .ct-in1:nth-child(2)::before { background: rgba(255,255,255,.25); }
+.ct-nos .ct-in1.ct-prox::before { background: rgba(255,255,255,.25); }
+.ct-nos .ct-prox { opacity: .6; transform: scale(.72); }
 .ct-nos .ct-in1 { position: relative; z-index: 1; font-size: 10px; max-width: 100%; }
 .ct-nos .ct-in1 svg { width: 40px; height: 40px; }
 .ct-painel .ct-ins-fila { row-gap: 12px; padding: 10px 4px; border-radius: 14px; background: rgba(0,0,0,.3); }
@@ -1195,7 +1196,9 @@ async function abreCracha(chave) {
   atr.forEach(([n, val], ix) => { if (atr.length === 10 && (ix === 0 || ix === 5)) pAtr.append(el('div', 'ct-tit', ix ? 'Especiais: o que faz de melhor' : 'Comuns: iguais pra todo mundo')); const b = el('div', 'ct-bar'); b.setAttribute('role', 'meter'); b.setAttribute('aria-label', n); b.setAttribute('aria-valuemin', 0); b.setAttribute('aria-valuemax', 10); b.setAttribute('aria-valuenow', val); b.append(el('span', '', n), el('em', '', val + '/10')); const s = el('div', 'ct-seg'); for (let i = 0; i < 10; i++) { const q = el('i', i < val ? 'on' : ''); q.style.setProperty('--i', i); s.append(q); } b.append(s); pAtr.append(b); });
   if (f.forte || f.fraco) { const ff = el('div', 'ct-ff'); [['forte', 'Forte', 'sobe'], ['fraco', 'Fraco', 'desce']].forEach(([c, r, i]) => { if (!f[c]) return; const d = el('div', c), t = ic(i, 'ct-tit', r); d.append(t, f[c]); ff.append(d); }); pJeito.append(bloco('Forte × fraco', ff)); }
   const pHab = el('div');
-  if (f.hab) pHab.append(bloco('Habilidades', selos(f.hab, 'estrela')));
+  if (f.hab) { const lista = el('dl', 'ct-dados ct-poderes'), curto = t => String(t || '').split(/(?<=\.)\s/)[0];
+    f.hab.forEach(n => { const w = el('div'); w.innerHTML = ICO_FICHA.estrela; w.append(el('dt', '', n), el('dd', '', curto((f.explica || {})[n]) || 'Uma das habilidades de ' + nome + '.')); lista.append(w); });
+    pHab.append(bloco('Habilidades', lista)); }
   if (f.olhar) pJeito.append(bloco('Como eu vejo as coisas', el('div', 'ct-olhar', f.olhar)));
   if (f.jeito && f.jeito.length) { const dl = el('dl', 'ct-dados ct-jeito'); f.jeito.forEach(([t, v]) => { const w = el('div'); w.innerHTML = ICO_FICHA.jeito; w.append(el('dt', '', t), el('dd', '', v)); dl.append(w); }); pJeito.append(bloco('Personalidade', dl)); }   // aba Jeito cheia (May, 06/11/2026)
   if (false && f.cons) { const sc = selos(f.cons, 'pessoa'); sc.dataset.tipo = 'cons'; pJeito.append(bloco('Conselheiros que incorpora', sc)); }
@@ -1211,7 +1214,7 @@ async function abreCracha(chave) {
     const ramo = el('div', 'ct-ramo'), cab = el('div', 'ct-ramo-cab'), nos = el('div', 'ct-nos');
     if (icn && ICO_INSIGNIA[icn]) cab.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' + ICO_INSIGNIA[icn] + '</svg>';
     cab.append(el('b', '', rotulo), el('small', '', deles.length + (deles.length === 1 ? ' insígnia' : ' insígnias')));
-    nos.append(insignia(null)); deles.slice().reverse().forEach(it => nos.append(insignia(it)));   // topo = a mais nova ou a mais forte; a trancada é a próxima
+    deles.slice().reverse().forEach(it => nos.append(insignia(it))); const prox = insignia(null); prox.classList.add('ct-prox'); nos.append(prox);   // topo = a mais nova ou a mais forte; a próxima, pequena, no fim (Sigma, 06/11/2026)
     ramo.append(cab, nos); arv.append(ramo);
   });
   pConq.append(arv);
