@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.36">
+<meta name="app-versao" content="2026-11-05.37">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -2555,6 +2555,12 @@ function anexosDaConversa(itens) {
   });
   return tipos;
 }
+// Trocar de aba arrastando pro lado, em todo o app (May, 05/11/2026): gesto horizontal claro (>60px e mais lado que cima)
+function arrastaAbas(el, atual, vai, n) {
+  let x0 = null, y0 = 0;
+  el.addEventListener('touchstart', e => { const t = e.touches[0]; x0 = t.clientX; y0 = t.clientY; }, { passive: true });
+  el.addEventListener('touchend', e => { if (x0 === null) return; const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0; x0 = null; if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return; const i = atual() + (dx < 0 ? 1 : -1); if (i >= 0 && i < n) vai(i); }, { passive: true });
+}
 function abreInfoConversa() {
   if (!FILE) return;
   const conv = convPorArq(FILE), geral = FILE === GERAL.arq, nome = nomeConv || conv.nome || 'Conversa', arqAberto = FILE;
@@ -2608,6 +2614,7 @@ function abreInfoConversa() {
     };
     ABAS.forEach(([k, t]) => { const b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab'); b.append(t); const n = document.createElement('small'); n.textContent = anexos[k].length; b.append(n); b.onclick = () => desenha(k); tabs.append(b); });
     c.append(tabs, area); desenha(anexos.midia.length ? 'midia' : anexos.doc.length ? 'doc' : anexos.link.length ? 'link' : 'audio');
+    arrastaAbas(area, () => ABAS.findIndex((_, i) => tabs.children[i].classList.contains('ativa')), i => desenha(ABAS[i][0]), ABAS.length);   // arrastar pro lado troca de aba, igual nos cartões (May, 05/11/2026)
     sec(gente.length + ' participantes');
     const lg = document.createElement('div'); lg.className = 'ig-gente'; c.append(lg);
     gente.forEach(k => {
