@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.12">
+<meta name="app-versao" content="2026-11-06.13">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -1932,7 +1932,7 @@ function desenhaOnlinePop() {
     const gp = p.chave === 'may' ? EU : GRUPO[p.chave], cor = p.chave === 'may' ? 'transparent' : (gp ? gp.cor : 'var(--accent)'), texto = gp ? gp.texto : '#fff';
     const row = document.createElement('div'); row.className = 'pessoa';
     const av = document.createElement('div'); av.className = 'av'; av.style.backgroundColor = cor; av.style.color = texto;
-    if (p.chave === 'may') { av.style.backgroundColor = 'transparent'; av.style.backgroundSize = '104%'; }   // a foto dela já é redonda e transparente
+    if (p.chave === 'may') { av.style.backgroundColor = 'transparent'; av.style.backgroundSize = 'contain'; av.style.borderRadius = '0'; av.style.width = av.style.height = '56px'; av.style.margin = '-6px'; }   // a imagem dela agora tem o coque pra fora do aro: maior pra o aro ficar do tamanho dos outros (May, 06/11/2026)
     av.textContent = nomeDe(p).charAt(0).toUpperCase();
     const fotoP = p.foto || (gp && gp.foto);   // prioriza a foto do heartbeat; sem ela, usa a foto fixa do GRUPO
     if (fotoP) fotoUrl(fotoP).then(u => {
