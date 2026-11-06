@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.28">
+<meta name="app-versao" content="2026-11-06.29">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -267,6 +267,10 @@ textarea:focus-visible { outline: none; }
 .msg.pendente { opacity: .85; }
 .msg.may.eu.pendente { opacity: 1; background: linear-gradient(#FFFFFF, #FFFFFF) padding-box, linear-gradient(90deg, #E31B23, #FACC15, #22C55E, #FACC15, #E31B23) 0 0 / 300% 100% border-box; animation: enviando 1.6s linear infinite; }   /* degradê correndo na borda = ainda enviando (May, 05/11/2026) */
 @keyframes enviando { to { background-position: 0 0, 150% 0; } }
+.manda.enviando { background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 50%, #FFFFFF), var(--accent)) 0 0 / 300% 100%; animation: mandaCorre 1.1s linear infinite; pointer-events: none; opacity: 1; }   /* envio de comentário: um jeito só no app todo (May, 06/11/2026 02:34) */
+@keyframes mandaCorre { to { background-position: 150% 0; } }
+.aviso-curto { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 9999; display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: #1F2C34; color: #E9EDEF; font-size: 14.5px; font-weight: 600; box-shadow: 0 6px 20px rgba(0,0,0,.45); animation: entra .2s ease-out; }
+.aviso-curto svg.i { color: #4ADE80; }
 .msg.may.eu.pendente.falhou { animation: none; }   /* não foi: para de girar */
 .msg.pendente.falhou { cursor: pointer; }
 .msg.pendente:not(.falhou) .copiar-msg { display: none; }   /* opções só no balão que não foi */
@@ -3052,8 +3056,15 @@ function abreAgenda(m) {
     if (passados.length) { const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = 'Anteriores'; c.append(t); passados.reverse().forEach(e => c.append(e)); }
   });
 }
+function avisoCurto(txt, ico = 'check') {
+  document.querySelectorAll('.aviso-curto').forEach(a => a.remove());
+  const a = document.createElement('div'); a.className = 'aviso-curto'; a.setAttribute('role', 'status'); a.innerHTML = icone(ico); a.append(document.createTextNode(txt));
+  document.body.append(a); setTimeout(() => a.remove(), 2200);
+}
+// enviarComentario: o único jeito de mandar comentário pra Lyra no app (Menu, catálogo, ficha). Botão vira loading e trava; deu certo = fecha o popup (se tiver) e avisa; falhou = fica aberto, com o texto, e o botão diz o porquê
+async function enviarComentario(txt, btn, fecha) { const ok = await mandaPraLyra(txt, btn); if (ok) { if (fecha) fecha(); avisoCurto('Mandado pra Lyra'); } return ok; }
 async function mandaPraLyra(txt, btn) {   // manda direto pra caixa da Geral, sem sair da tela
-  const antes = btn.innerHTML; btn.disabled = true; btn.textContent = 'Enviando…';
+  const antes = btn.innerHTML; btn.disabled = true; btn.classList.add('enviando'); btn.textContent = 'Enviando…';
   const url = apiDe(GERAL.arq);
   for (let tentativa = 0; tentativa < 4; tentativa++) {
     try {
@@ -3061,21 +3072,21 @@ async function mandaPraLyra(txt, btn) {   // manda direto pra caixa da Geral, se
       let md = conteudoSeguro(f).replace(/\n- \s*$/, '\n');
       md = md.replace(/\s*$/, '') + '\n- [' + stamp(new Date()) + '] ' + txt.replace(/\r?\n/g, '\\n') + '\n';
       await apiOk(url, { method: 'PUT', body: JSON.stringify({ message: 'recado do iPhone', content: b64encode(md), sha: f.sha }) });
-      btn.innerHTML = icone('check') + ' Mandado pra Lyra'; return true;
+      btn.classList.remove('enviando'); btn.innerHTML = icone('check') + ' Mandado pra Lyra'; return true;
     } catch (err) {
       if (err.status === 409 && tentativa < 3) { await new Promise(r => setTimeout(r, 600)); continue; }
       btn.innerHTML = icone('warn') + (err.inseguro ? ' Caixa vazia ou cheia demais, não gravei' : err.status === 401 ? ' Chave vencida (menu → Trocar chave)' : err.limite ? ' Limite do GitHub, tenta às ' + horaDe(limiteAte) : (err.rede || navigator.onLine === false) ? ' Sem internet, toca de novo' : ' Não foi, toca de novo');
-      btn.disabled = false; setTimeout(() => { if (!btn.disabled) btn.innerHTML = antes; }, 4000); return false;
+      btn.classList.remove('enviando'); btn.disabled = false; setTimeout(() => { if (!btn.disabled) btn.innerHTML = antes; }, 4000); return false;
     }
   }
 }
 // Caixinha "📝 Anotar" (May, 22/10: "todo lugar tem q dar pra mim escrever"): manda pra Geral com o contexto na frente
-function notaBox(contexto) {
+function notaBox(contexto, fecha) {
   const nb = document.createElement('div'); nb.className = 'nota-box';
   nb.innerHTML = '<label>' + icone('note') + ' Escrever sobre isso</label><textarea rows="3" maxlength="600" placeholder="Escreve aqui, vai pra Lyra"></textarea><button type="button" class="manda" disabled>Mandar pra Lyra</button>';
   const ta = nb.querySelector('textarea'), mb = nb.querySelector('.manda');
   ta.oninput = () => { mb.disabled = !ta.value.trim(); if (!mb.disabled) mb.textContent = 'Mandar pra Lyra'; };
-  mb.onclick = async () => { const t = ta.value.trim(); if (t && await mandaPraLyra('📝 ' + contexto + ': ' + t, mb)) ta.value = ''; };
+  mb.onclick = async () => { const t = ta.value.trim(); if (t && await enviarComentario('📝 ' + contexto + ': ' + t, mb, fecha)) ta.value = ''; };
   return nb;
 }
 // Ficha: popup por cima de tudo, com o detalhe (foto grande, texto) e a caixinha de anotação embaixo
@@ -3088,7 +3099,7 @@ function abreFicha({ titulo, foto, corpo, contexto, fotos }) {
   topo.append(h, x); cx.append(topo);
   if (foto) { const im = document.createElement('img'); im.alt = titulo || ''; im.decoding = 'async'; cx.append(im); fotoUrl(foto).then(u => { im.src = u; im.onclick = () => abreZoom(u, foto, fotos); }).catch(() => im.remove()); }
   if (corpo) { const c = document.createElement('div'); c.className = 'f-corpo'; c.append(corpo); cx.append(c); }
-  cx.append(notaBox(contexto || titulo || 'Anotação'));
+  cx.append(notaBox(contexto || titulo || 'Anotação', () => fecha()));
   f.append(cx); document.body.append(f);
   const fecha = () => { f.remove(); document.removeEventListener('keydown', esc, true); };
   const esc = e => { if (e.key === 'Escape' && !document.querySelector('.zoom')) { e.stopPropagation(); fecha(); } };
@@ -3172,11 +3183,11 @@ function abreItem(cat, it) {   // detalhe: foto grande (toque amplia), dados, li
     const links = (it.links || []).filter(l => Array.isArray(l) && linkSeguro(l[1]));   // vindo de JSON: só http(s), nada de "javascript:"
     if (links.length) {
       const ls = document.createElement('div'); ls.className = 'links';
-      links.forEach(([nome, url]) => { const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = nome + ' ↗'; ls.append(a); });
+      links.forEach(([nome, url]) => { const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = nome + ' '; a.insertAdjacentHTML('beforeend', icone('link')); ls.append(a); });
       d.append(ls);
     }
     // Manda direto pra caixa da Geral e fica no item (ela pediu pra não ser levada pra tela de mensagens).
-    const manda = mandaPraLyra;
+    const manda = (t, b) => enviarComentario(t, b);
     const g = document.createElement('button'); g.type = 'button'; g.className = 'gostei'; g.innerHTML = icone('star') + ' Gostei';
     g.onclick = () => manda('⭐ Gostei (catálogo, ' + cat.nome + '): ' + it.nome, g);
     d.append(g);
