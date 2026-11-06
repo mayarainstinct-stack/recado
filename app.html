@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.39">
+<meta name="app-versao" content="2026-11-05.41">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -551,8 +551,10 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-painel > .ct-dados { display: grid; align-content: space-evenly; }
 .ct { position: relative; }
 .ct-exp { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; padding: 18px; background: rgba(0,0,0,.55); border-radius: 22px; animation: entra .16s ease-out both; }
-.ct-exp-c { width: 100%; max-width: 330px; padding: 16px 16px 12px; border-radius: 16px; background: color-mix(in srgb, var(--quem) 22%, #0B0B0E); border: 2px solid var(--claro); box-shadow: 0 12px 36px rgba(0,0,0,.6); color: #fff; display: grid; gap: 8px; }
-.ct-exp-c b { font-size: 18px; } .ct-exp-c p { margin: 0; font-size: 14.5px; line-height: 1.45; font-weight: 600; } .ct-exp-c small { font-size: 11px; color: rgba(255,255,255,.6); justify-self: end; }
+.ct-exp-c { width: 100%; max-width: 330px; padding: 18px 18px 14px; border-radius: 26px; background: linear-gradient(var(--quem), color-mix(in srgb, var(--quem) 62%, black)); color: #fff; display: grid; gap: 8px; box-shadow: inset 0 2px 0 rgba(255,255,255,.35), inset 0 -4px 0 rgba(0,0,0,.28), 0 14px 36px rgba(0,0,0,.6); text-shadow: 0 1px 2px rgba(0,0,0,.45); }   /* igual a pílula do nome: degradê cheio, letra branca, cantos redondos com chanfro (May, 05/11/2026) */
+.ct.eu .ct-exp-c { background: linear-gradient(135deg, #E31B23, #B45309 50%, #15803D); }
+.ct.sigma .ct-exp-c { background: linear-gradient(135deg, #9333EA, #4B5563 60%, #111); }
+.ct-exp-c b { font-size: 18px; } .ct-exp-c p { margin: 0; font-size: 14.5px; line-height: 1.45; font-weight: 600; } .ct-exp-c small { font-size: 11px; color: rgba(255,255,255,.75); justify-self: end; }
 .ct-bar, .ct-selos > span, .ct-in1:not(.vazia), .ct-dados > div, .ct-ff > div, .ct-tempo li, .ct-nivel, .ct-placar > div { cursor: pointer; }
 .ct.eu .ct-av, .msg.may .quem.eu .avatar, .ig-gente .av.eu { border-radius: 0; background-size: contain; background-repeat: no-repeat; background-position: center; }   /* o coque dela sai do círculo: não corta (May, 05/11/2026) */
 .ct-painel .ct-tit { margin: 14px 0 6px; }
@@ -2580,10 +2582,14 @@ function fechaPuxando(el, fechar, rolavel) {
   el.addEventListener('touchend', e => { if (y0 === null) return; const t = e.changedTouches[0], dy = t.clientY - y0, dx = t.clientX - x0; y0 = null; if (dy > 90 && Math.abs(dx) < Math.abs(dy) * .7 && topo) fechar(); }, { passive: true });
 }
 // Trocar de aba arrastando pro lado, em todo o app (May, 05/11/2026): gesto horizontal claro (>60px e mais lado que cima)
+function entraDoLado(el, dir) {   // a aba nova entra deslizando do lado do gesto (May, 05/11/2026: "tudo tem q ter animação")
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || !el.animate) return;
+  el.animate([{ transform: 'translateX(' + (dir * 46) + 'px)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 240, easing: 'cubic-bezier(.2,.8,.2,1)' });
+}
 function arrastaAbas(el, atual, vai, n) {
   let x0 = null, y0 = 0;
   el.addEventListener('touchstart', e => { const t = e.touches[0]; x0 = t.clientX; y0 = t.clientY; }, { passive: true });
-  el.addEventListener('touchend', e => { if (x0 === null) return; const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0; x0 = null; if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return; const i = atual() + (dx < 0 ? 1 : -1); if (i >= 0 && i < n) vai(i); }, { passive: true });
+  el.addEventListener('touchend', e => { if (x0 === null) return; const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0; x0 = null; if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return; const i = atual() + (dx < 0 ? 1 : -1); if (i >= 0 && i < n) { vai(i); entraDoLado(el, dx < 0 ? 1 : -1); } }, { passive: true });
 }
 function abreInfoConversa() {
   if (!FILE) return;
@@ -2636,7 +2642,7 @@ function abreInfoConversa() {
         }));
       });
     };
-    ABAS.forEach(([k, t]) => { const b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab'); b.append(t); const n = document.createElement('small'); n.textContent = anexos[k].length; b.append(n); b.onclick = () => desenha(k); tabs.append(b); });
+    ABAS.forEach(([k, t]) => { const b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab'); b.append(t); const n = document.createElement('small'); n.textContent = anexos[k].length; b.append(n); b.onclick = () => { const de = ABAS.findIndex((_, i) => tabs.children[i].classList.contains('ativa')), para = ABAS.findIndex(x => x[0] === k); desenha(k); if (de !== para) entraDoLado(area, para > de ? 1 : -1); }; tabs.append(b); });
     c.append(tabs, area); desenha(anexos.midia.length ? 'midia' : anexos.doc.length ? 'doc' : anexos.link.length ? 'link' : 'audio');
     arrastaAbas(area, () => ABAS.findIndex((_, i) => tabs.children[i].classList.contains('ativa')), i => desenha(ABAS[i][0]), ABAS.length);   // arrastar pro lado troca de aba, igual nos cartões (May, 05/11/2026)
     sec(gente.length + ' participantes');
