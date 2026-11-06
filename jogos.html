@@ -396,7 +396,7 @@ const esc=s=>String(s??"").replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00
 function consId(c){c=c||"";if(/Switch 2/.test(c))return"switch2";if(/Switch/.test(c))return"switch";if(/3DS/.test(c))return"3ds";if(/Nintendo 64|\bN64\b/.test(c))return"n64";if(/hack/i.test(c)&&/SNES|Super Nintendo/.test(c))return"snes-hacks";if(/Super Nintendo|SNES/.test(c))return"snes";if(/^PS\d|PlayStation/.test(c))return"playstation";if(/^PC\b/.test(c))return"pc";return""}
 function consDe(c){const C=window.CONS;if(!C)return null;return C.por[consId(c)]||C.padrao}
 // cor dos consoles tirada das fotos das coisas da May (Orfeu, vocab.consoles do jogos.json, 06/11/2026); se o tela-jogos.json trouxer "consoles", vale o dele
-const COR_MAY={"3ds":{cor:"#E60012"},"switch":{cor:"#FE2376"},"switch2":{cor:"#E8303C",cor2:"#5A5F66"}}
+const COR_MAY={"3ds":{cor:"#FF0000"},"switch":{cor:"#FE2376"},"switch2":{cor:"#E60012",cor2:"#3A3A3F"}}
 function corMay(c){const v=(window.JOGOS||{}).consoles;const id=consId(c);if(Array.isArray(v)){const k=v.find(x=>x.id==id||x.nome==c);if(k)return k}return COR_MAY[id]||(/3DS/.test(c||"")?COR_MAY["3ds"]:/Switch 2/.test(c||"")?COR_MAY.switch2:/Switch/.test(c||"")?COR_MAY.switch:null)}
 // só o Switch 2 usa o cor2 (cinza do corpo) de fundo; no Switch o cor2 é o Joy-Con verde e a ficha fica toda vermelha (May 00:43)
 function cor2(c){const m=corMay(c);return consId(c)=="switch2"&&m&&m.cor2||cor(c)}
