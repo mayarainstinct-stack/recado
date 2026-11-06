@@ -201,6 +201,7 @@ nav button#tab-concluidos.on{background:linear-gradient(#F5D237,#B8860B);color:#
 #ficha.tri.transl.d-claro .bloco,#ficha.tri.transl.d-claro .poke,#ficha.tri.transl.d-claro .it,#ficha.tri.transl.d-claro .sv,#ficha.tri.transl.d-claro .pend{--texto2:var(--t2,#2a2200);--texto3:var(--t2,#3d3300)}#ficha.tri.transl.d-claro .bloco .kv dt,#ficha.tri.transl.d-claro .parei-sub,#ficha.tri.transl.d-claro .pop-fonte,#ficha.tri.transl.d-claro .bloco small,#ficha.tri.transl.d-claro .sobre a,#ficha.tri.transl.d-claro .tenho span{color:var(--t2,#2a2200)!important}
 #ficha.tri.transl.d-claro .serie-it b{color:var(--t1,#1a1300)}#ficha.tri.transl.d-claro .serie-it small{color:rgba(26,19,0,.7)}
 .pend.grave{border-color:#FF6B5A!important;box-shadow:0 0 0 1px rgba(255,107,90,.35)}.pend.grave svg{width:15px;height:15px;stroke:#FF6B5A;vertical-align:-2px;margin-right:4px}
+.secao-bts{display:flex;gap:6px}.ordem.on{background:color-mix(in srgb,#00FF8C 30%,#0a0a0a);border-color:#00FF8C;color:#fff}
 #aviso.erro{background:#3A0E12;border-color:#FF5A5A}
 #e-env.indo{opacity:.75}
 .giro{display:inline-block;width:16px;height:16px;margin-right:8px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:gira .7s linear infinite;vertical-align:-3px}
@@ -568,7 +569,8 @@ const anima=(el,d)=>{if(!el||!d)return;el.classList.remove("entra-d","entra-e");
 // troca Jogando/Zerados sem remontar (May 02:40: "tá travando muito"): cada aba montada fica guardada com as imagens já decodificadas
 const PAINEIS={};let chaveL=null
 function render(){const L=document.getElementById("lista");let o="pct";try{o=localStorage.getItem("jogos-ordem")||"pct"}catch(e){}
-const ch=aba+"|"+(aba=="jogando"?o+"|"+jogExp:"")
+let sj="0";try{sj=localStorage.getItem("jogos-so-joguei")||"0"}catch(e){}
+const ch=aba+"|"+(aba=="jogando"?o+"|"+jogExp+"|"+sj:"")
 if(chaveL&&chaveL!=ch)PAINEIS[chaveL]={n:[...L.childNodes],sub:document.getElementById("sub").textContent}
 if(PAINEIS[ch]&&chaveL!=ch){chaveL=ch;L.replaceChildren(...PAINEIS[ch].n);document.getElementById("sub").textContent=PAINEIS[ch].sub;fundoDa(aba);document.getElementById("tab-jogando").classList.toggle("on",aba=="jogando");document.getElementById("tab-concluidos").classList.toggle("on",aba=="concluidos");anima(L,dirAnim);dirAnim=0;return}
 chaveL=ch;montaLista()}
@@ -588,13 +590,17 @@ const srt=l=>l.slice().sort(ord=="recente"?(a,b)=>ultimoDia(b)-ultimoDia(a):ord=
 const andamento=J.filter(j=>(j.pct!=null&&j.pct>0&&j.pct<100)||j.status=="jogando"||j.status=="quer_terminar")
 let jog=srt(andamento)
 if(!jogExp){const pr=jog.filter(j=>j.principal);jog=pr.length?pr:jog.slice(0,6)}
-const linhas={};J.forEach(j=>{const k=chaveCons(j.console);(linhas[k]=linhas[k]||[]).push(j)})
+// 638 jogos inflam a coleção (Sigma 08:03): o topo separa os que têm história dos que só estão na biblioteca, e o filtro esconde os nunca começados
+let soJ=false;try{soJ=localStorage.getItem("jogos-so-joguei")=="1"}catch(e){}
+const temSB=J.some(j=>"so_biblioteca" in j),soBib=j=>temSB?!!j.so_biblioteca:j.status=="nao_comecou",nBib=J.filter(soBib).length
+const linhas={};J.filter(j=>!soJ||!(soBib(j)||/nao_comecou|espiou/.test(j.status))).forEach(j=>{const k=chaveCons(j.console);(linhas[k]=linhas[k]||[]).push(j)})
 const ks=Object.keys(linhas).sort((a,b)=>posCons(a)-posCons(b)||nomeCons(a).localeCompare(nomeCons(b)))
-document.getElementById("sub").textContent=`${J.length} jogos · ${andamento.length} jogando`
+document.getElementById("sub").textContent=`${J.length-nBib} jogados · ${nBib} só na biblioteca · ${andamento.length} jogando`
 const FILA_MAX=20,NUNCA=/nao_comecou|espiou/,filaOrdenada=k=>linhas[k].slice().sort((a,b)=>(NUNCA.test(a.status)?1:0)-(NUNCA.test(b.status)?1:0)||porTitulo(a,b))
-L.innerHTML=`<div class="secao"><h2>Jogando</h2><button class="ordem" id="ordem">ordem: ${ORDN[ord]}</button></div><div class="prateleira">${jog.map((j,i)=>tileH(j,i==0)).join("")}<button class="tile mais-tile" id="ver-mais"><div class="capa">${LOGO_J2}</div><div class="info"><div class="tt">${jogExp?"Ver menos":"Ver mais"}</div><div class="pp">${jogExp?"volta aos principais":"tudo que estou jogando"}</div></div></button></div>`+ks.map(k=>`<div class="secao"><h2 style="color:${paleta(linhas[k][0].console).cor}">${esc(nomeCons(k))}</h2><span>${linhas[k].length} jogos</span></div><div class="prateleira" data-fila="${esc(k)}">${filaOrdenada(k).slice(0,FILA_MAX).map(j=>tileH(j,false)).join("")}${linhas[k].length>FILA_MAX?`<button class="tile mais-tile mais-fila" data-fila="${esc(k)}"><div class="capa">${LOGO_J2}</div><div class="info"><div class="tt">Ver mais ${linhas[k].length-FILA_MAX}</div><div class="pp">o resto desse console</div></div></button>`:""}</div>`).join("")
+L.innerHTML=`<div class="secao"><h2>Jogando</h2><span class="secao-bts"><button class="ordem${soJ?" on":""}" id="so-joguei">só os que joguei</button><button class="ordem" id="ordem">ordem: ${ORDN[ord]}</button></span></div><div class="prateleira">${jog.map((j,i)=>tileH(j,i==0)).join("")}<button class="tile mais-tile" id="ver-mais"><div class="capa">${LOGO_J2}</div><div class="info"><div class="tt">${jogExp?"Ver menos":"Ver mais"}</div><div class="pp">${jogExp?"volta aos principais":"tudo que estou jogando"}</div></div></button></div>`+ks.map(k=>`<div class="secao"><h2 style="color:${paleta(linhas[k][0].console).cor}">${esc(nomeCons(k))}</h2><span>${linhas[k].length} jogos</span></div><div class="prateleira" data-fila="${esc(k)}">${filaOrdenada(k).slice(0,FILA_MAX).map(j=>tileH(j,false)).join("")}${linhas[k].length>FILA_MAX?`<button class="tile mais-tile mais-fila" data-fila="${esc(k)}"><div class="capa">${LOGO_J2}</div><div class="info"><div class="tt">Ver mais ${linhas[k].length-FILA_MAX}</div><div class="pp">o resto desse console</div></div></button>`:""}</div>`).join("")
 // fileira longa abre aos poucos (Orfeu 08:00: 158 jogos novos de PC): 20 primeiros, o resto no toque; jogos já jogados antes dos que ela nunca começou
 L.querySelectorAll(".mais-fila").forEach(b=>b.onclick=()=>{const k=b.dataset.fila,pr=b.parentElement;b.remove();pr.insertAdjacentHTML("beforeend",filaOrdenada(k).slice(FILA_MAX).map(j=>tileH(j,false)).join(""));pr.querySelectorAll("[data-id]").forEach(x=>x.onclick=()=>abrir(x.dataset.id));hidrata(pr)})
+document.getElementById("so-joguei").onclick=()=>{try{localStorage.setItem("jogos-so-joguei",soJ?"0":"1")}catch(e){}render()}
 document.getElementById("ordem").onclick=()=>{ord=ORDS[(ORDS.indexOf(ord)+1)%ORDS.length];try{localStorage.setItem("jogos-ordem",ord)}catch(e){}render()}
 document.getElementById("ver-mais").onclick=()=>{jogExp=!jogExp;render()}
 }else{
