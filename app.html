@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.25">
+<meta name="app-versao" content="2026-11-05.26">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -531,7 +531,17 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-vcab { display: grid; grid-template-columns: 40px 1fr auto; gap: 10px; align-items: center; padding: 12px 14px 8px; border-bottom: 1px solid rgba(255,255,255,.12); }
 .ct-vcab .ct-av { width: 40px; height: 40px; font-size: 18px; filter: drop-shadow(0 2px 6px rgba(0,0,0,.5)); }
 .ct-vcab b { display: block; font-size: 17px; line-height: 1.1; } .ct-vcab .ct-tit { margin-top: 2px; }
-.ct-painel { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 4px 14px 12px; }
+.ct-painel { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 4px 14px 12px; display: flex; flex-direction: column; }
+.ct-painel > * { flex: 1 0 auto; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }   /* cada aba enche o cartão até quase o fim (May, 05/11/2026) */
+.ct-painel > * > div:not(.ct-nivel):not(.ct-placar):not(.ct-bar):not(.ct-tit):not(.ct-olhar) { flex: 1 0 auto; display: flex; flex-direction: column; }
+.ct-painel .ct-ins-fila, .ct-painel .ct-selos, .ct-painel .ct-tempo, .ct-painel .ct-ff { flex: 1 0 auto; align-content: space-evenly; }
+.ct-painel > .ct-dados { display: grid; align-content: space-evenly; }
+.ct { position: relative; }
+.ct-exp { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; padding: 18px; background: rgba(0,0,0,.55); border-radius: 22px; animation: entra .16s ease-out both; }
+.ct-exp-c { width: 100%; max-width: 330px; padding: 16px 16px 12px; border-radius: 16px; background: color-mix(in srgb, var(--quem) 22%, #0B0B0E); border: 2px solid var(--claro); box-shadow: 0 12px 36px rgba(0,0,0,.6); color: #fff; display: grid; gap: 8px; }
+.ct-exp-c b { font-size: 18px; } .ct-exp-c p { margin: 0; font-size: 14.5px; line-height: 1.45; font-weight: 600; } .ct-exp-c small { font-size: 11px; color: rgba(255,255,255,.6); justify-self: end; }
+.ct-bar, .ct-selos > span, .ct-in1:not(.vazia), .ct-dados > div, .ct-ff > div, .ct-tempo li, .ct-nivel, .ct-placar > div { cursor: pointer; }
+.ct.eu .ct-av, .msg.may .quem.eu .avatar, .ig-gente .av.eu { border-radius: 0; background-size: contain; background-repeat: no-repeat; background-position: center; }   /* o coque dela sai do círculo: não corta (May, 05/11/2026) */
 .ct-painel .ct-tit { margin: 14px 0 6px; }
 .ct-painel > .ct-p-atr { min-height: 100%; display: flex; flex-direction: column; justify-content: space-evenly; padding-bottom: 8px; }   /* as barras ocupam a altura do cartão (May, 05/11/2026) */
 .ct-nivel { display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: 4px 10px; padding: 12px 14px; margin-top: 10px; border-radius: 14px; background: rgba(0,0,0,.34); border: 1px solid rgba(255,255,255,.12); }
@@ -982,6 +992,12 @@ const ICO_FICHA = {
   atr: svgF('<path d="M5 20V10M12 20V4M19 20v-7"/>'),
   maq: svgF('<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>'),
   conq: svgF('<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8"/>'),
+  cerebro: svgF('<path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 6 1V5a2 2 0 0 0-3-1zM15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-6 1"/>'),
+  olho: svgF('<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'),
+  ouvido: svgF('<path d="M6 9a6 6 0 0 1 12 0c0 3-2 4-3 5.5S14 18 12 20a3 3 0 0 1-4-2"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.5-1.5 2-1.5 3.5"/>'),
+  mao: svgF('<path d="M8 13V5a1.5 1.5 0 0 1 3 0v6M11 11V4a1.5 1.5 0 0 1 3 0v7M14 11V6a1.5 1.5 0 0 1 3 0v8a6 6 0 0 1-6 6h-.5A5.5 5.5 0 0 1 5 16.5L4 13a1.5 1.5 0 0 1 3-.8L8 14"/>'),
+  caderno: svgF('<path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2zM5 18a2 2 0 0 1 2-2h12M9 8h6"/>'),
+  raio: svgF('<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>'),
   console: svgF('<path d="M6 11h4M8 9v4M15 12h.01M18 10h.01"/><path d="M17.3 5H6.7a4 4 0 0 0-3.96 3.43L2 14.5A3 3 0 0 0 7 16.9L9 15h6l2 1.9a3 3 0 0 0 5-2.4l-.74-6.07A4 4 0 0 0 17.3 5z"/>'),
   jeito: svgF('<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>'),
   tempo: svgF('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
@@ -1006,6 +1022,61 @@ const ICO_FICHA = {
   so: svgF('<path d="M3 5.5l7.5-1v7H3zM12.5 4.2L21 3v8.5h-8.5zM3 13h7.5v6.5l-7.5-1zM12.5 13H21v8l-8.5-1.2z"/>')
 };
 const INSIGNIA = '<svg viewBox="0 0 40 40" aria-hidden="true"><path class="a" d="M20 2l15 8.5v19L20 38 5 29.5v-19z"/><path class="b" d="M20 7l11 6.3v13.4L20 33 9 26.7V13.3z"/><path class="c" d="M20 12.5l2.3 4.7 5.2.8-3.8 3.7.9 5.2-4.6-2.4-4.6 2.4.9-5.2-3.8-3.7 5.2-.8z"/></svg>';
+// cada insígnia com o ícone e a moldura dela (fichas.json: icone, moldura); sem eles, o hexágono com estrela de antes
+const ICO_INSIGNIA = {
+  nota: '<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>',
+  guitarra: '<path d="M14 10l6-6"/><path d="M18.5 2.5l3 3"/><path d="M11.5 9.5c-1.6-1.2-4-1-5.3.4-.8.8-.9 1.9-.6 2.8-1.4.2-2.6 1.3-2.6 2.9 0 2.5 2.7 5.4 5.3 5.4 1.6 0 2.7-1.2 2.9-2.6.9.3 2 .2 2.8-.6 1.4-1.3 1.6-3.7.4-5.3"/><circle cx="9.5" cy="14.5" r="1.3"/>',
+  fone: '<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="7" rx="1.5"/><rect x="17" y="14" width="4" height="7" rx="1.5"/>',
+  microfone: '<rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0"/><path d="M12 17.5V21.5"/><path d="M8.5 21.5h7"/>',
+  onda: '<path d="M3 12h2"/><path d="M7 8v8"/><path d="M11 4v16"/><path d="M15 7v10"/><path d="M19 10v4"/><path d="M21 12h0"/>',
+  codigo: '<path d="M8 6l-6 6 6 6"/><path d="M16 6l6 6-6 6"/><path d="M13.5 4l-3 16"/>',
+  git: '<circle cx="6" cy="5" r="2.2"/><circle cx="6" cy="19" r="2.2"/><circle cx="18" cy="8" r="2.2"/><path d="M6 7.2v9.6"/><path d="M18 10.2c0 4-6 3.8-11 7"/>',
+  servidor: '<rect x="3" y="3" width="18" height="7" rx="1.5"/><rect x="3" y="14" width="18" height="7" rx="1.5"/><path d="M7 6.5h.01"/><path d="M7 17.5h.01"/><path d="M11 6.5h6"/><path d="M11 17.5h6"/>',
+  wifi: '<path d="M2 8.8a15 15 0 0 1 20 0"/><path d="M5.2 12.4a10 10 0 0 1 13.6 0"/><path d="M8.5 15.9a5 5 0 0 1 7 0"/><circle cx="12" cy="19.3" r="1"/>',
+  escudo: '<path d="M12 2.5l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+  raio: '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+  controle: '<path d="M7 7h10a5 5 0 0 1 4.8 6.4l-1.2 4a2.6 2.6 0 0 1-4.4 1L14 16h-4l-2.2 2.4a2.6 2.6 0 0 1-4.4-1l-1.2-4A5 5 0 0 1 7 7z"/><path d="M7.5 10.5v3"/><path d="M6 12h3"/><circle cx="16" cy="11" r=".6"/><circle cx="17.8" cy="13" r=".6"/>',
+  trofeu: '<path d="M7 3h10v6a5 5 0 0 1-10 0z"/><path d="M7 5H4v2a3 3 0 0 0 3 3"/><path d="M17 5h3v2a3 3 0 0 1-3 3"/><path d="M12 14v4"/><path d="M8 21h8"/><path d="M9.5 18h5v3h-5z"/>',
+  disquete: '<path d="M4 3h13l3 3v15H4z"/><path d="M7 3v6h9V3"/><rect x="7" y="13" width="10" height="8"/><path d="M13 5v2"/>',
+  lupa: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.3 15.3L21 21"/><path d="M8 10.5l2 2 3.5-4"/>',
+  bug: '<rect x="7.5" y="7" width="9" height="13" rx="4.5"/><path d="M9.5 7a2.5 2.5 0 0 1 5 0"/><path d="M12 11v9"/><path d="M7.5 11H4"/><path d="M16.5 11H20"/><path d="M7.5 15.5H4"/><path d="M16.5 15.5H20"/><path d="M8 19l-3 2"/><path d="M16 19l3 2"/><path d="M9.5 4.5L8 3"/><path d="M14.5 4.5L16 3"/>',
+  chave: '<path d="M14.5 6.5a4.5 4.5 0 0 0 5.9 5.4l-8.4 8.4a2.1 2.1 0 0 1-3-3l8.4-8.4a4.5 4.5 0 0 1 5.4-5.9l-3 3 .5 2.5 2.5.5z"/>',
+  pincel: '<path d="M20.5 3.5l-9 9"/><path d="M14 4l6 6"/><path d="M11.5 12.5c-2.2-.6-4.5.8-4.9 3.2-.3 1.8-1.4 3.2-3.1 3.8 3.9 1.5 8.5.2 9.4-2.8.4-1.5 0-3-1.4-4.2z"/>',
+  paleta: '<path d="M12 3a9 9 0 1 0 0 18c1.3 0 2-.9 2-2 0-1.4-1.2-1.8-1.2-3 0-1.1.9-2 2-2H18a3 3 0 0 0 3-3c0-4.4-4-8-9-8z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10" cy="7" r="1.2"/><circle cx="15" cy="7.5" r="1.2"/>',
+  camera: '<path d="M4 7h3.5l2-3h5l2 3H20a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="4"/>',
+  carta: '<rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6l8.5 7 8.5-7"/>',
+  sino: '<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21h4"/><path d="M12 3v2"/>',
+  coracao: '<path d="M12 20.5s-8.5-5-8.5-11A4.8 4.8 0 0 1 12 6.8a4.8 4.8 0 0 1 8.5 2.7c0 6-8.5 11-8.5 11z"/>',
+  estrela: '<path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3-4.6-4.4 6.3-.9z"/>',
+  foguete: '<path d="M12 2.5c3.5 2.5 5 6.5 4.2 11.5H7.8C7 9 8.5 5 12 2.5z"/><circle cx="12" cy="9" r="1.6"/><path d="M7.8 14l-3 3 .5 2.5 3.5-2"/><path d="M16.2 14l3 3-.5 2.5-3.5-2"/><path d="M10.5 17.5l1.5 4 1.5-4"/>',
+  casa: '<path d="M3 11l9-7.5 9 7.5"/><path d="M5.5 9v11.5h13V9"/><path d="M10 20.5v-6h4v6"/>',
+  telhado: '<path d="M2 13L12 4l10 9"/><path d="M5 10.3V20"/><path d="M19 10.3V20"/><path d="M5 20h14"/><path d="M8.5 7.6l7 6.3"/><path d="M15.5 7.6l-7 6.3"/>',
+  livro: '<path d="M12 6.5C10 5 7 4.5 3 5v13c4-.5 7 0 9 1.5 2-1.5 5-2 9-1.5V5c-4-.5-7 0-9 1.5z"/><path d="M12 6.5v13"/>',
+  documento: '<path d="M6 2.5h8l4.5 4.5v14.5H6z"/><path d="M14 2.5V7h4.5"/><path d="M9 12h6"/><path d="M9 15.5h6"/><path d="M9 8.5h2"/>',
+  relogio: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+  olho: '<path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  balao: '<path d="M4 4.5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-9l-5 4v-4H4a1 1 0 0 1-1-1v-10a1 1 0 0 1 1-1z"/><path d="M8 9.5h8"/><path d="M8 12.5h5"/>',
+  cubo: '<path d="M12 2.5l8.5 4.8v9.4L12 21.5l-8.5-4.8V7.3z"/><path d="M3.5 7.3L12 12l8.5-4.7"/><path d="M12 12v9.5"/>',
+  camadas: '<path d="M12 3l9 4.5-9 4.5-9-4.5z"/><path d="M3 12l9 4.5 9-4.5"/><path d="M3 16.5L12 21l9-4.5"/>',
+  gota: '<path d="M12 2.5S5.5 10 5.5 14.5a6.5 6.5 0 0 0 13 0C18.5 10 12 2.5 12 2.5z"/><path d="M9 15a3 3 0 0 0 3 3"/>',
+  agua: '<path d="M2 7c2.5-2 4.5-2 7 0s4.5 2 7 0 4.5-2 6 0"/><path d="M2 12c2.5-2 4.5-2 7 0s4.5 2 7 0 4.5-2 6 0"/><path d="M2 17c2.5-2 4.5-2 7 0s4.5 2 7 0 4.5-2 6 0"/>',
+  filme: '<rect x="3" y="9" width="18" height="12" rx="1"/><path d="M3 9l1.5-5.5 17 4"/><path d="M8.2 4.5l2.4 4.3"/><path d="M14 5.9l2.4 4.3"/><path d="M3 13h18"/>',
+  carro: '<path d="M3 16v-3.5L5.2 8a2 2 0 0 1 1.8-1h10a2 2 0 0 1 1.8 1l2.2 4.5V16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M3.5 12.5h17"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>',
+  moto: '<circle cx="5.5" cy="16.5" r="3.5"/><circle cx="18.5" cy="16.5" r="3.5"/><path d="M5.5 16.5l4-6h5l4 6"/><path d="M14.5 10.5l-1.5-4h3"/><path d="M9.5 10.5l2.5 6h2"/>',
+  martelo: '<path d="M14 6.5l-9.8 9.8a2 2 0 0 0 2.8 2.8l9.8-9.8"/><path d="M11.5 4l2-2 4 1 4.5 4.5-2.5 2.5-2-2-2 2-4.5-4.5z"/>',
+  engrenagem: '<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3"/><path d="M12 18.5v3"/><path d="M2.5 12h3"/><path d="M18.5 12h3"/><path d="M5.3 5.3l2.1 2.1"/><path d="M16.6 16.6l2.1 2.1"/><path d="M5.3 18.7l2.1-2.1"/><path d="M16.6 7.4l2.1-2.1"/><circle cx="12" cy="12" r="6.5"/>',
+  vassoura: '<path d="M19 3l-7 7"/><path d="M12 10l-5.5 1.5L3 21l9.5-3.5L14 12z"/><path d="M6 15l3 3"/>',
+  pulso: '<path d="M2 12h4l2.5-6 4 12 3-9 2 3H22"/>',
+  n002: '<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M5.5 9.5h2.5v5H5.5z"/><path d="M10.75 9.5h2.5v5h-2.5z"/><path d="M16 9.5h2.5v2.5H16v2.5h2.5"/>'
+};
+const MOLDURA_PATH = {
+  hexagono: 'M20 2.5L35.2 11.25V28.75L20 37.5L4.8 28.75V11.25Z',
+  escudo: 'M20 2.5L34.5 7.5V19C34.5 28 28.5 34.5 20 37.5C11.5 34.5 5.5 28 5.5 19V7.5Z',
+  circulo: 'M20 2.5A17.5 17.5 0 1 1 19.99 2.5Z',
+  estrela: 'M20 1.5L24.6 8.9L33.1 6.9L31.1 15.4L38.5 20L31.1 24.6L33.1 33.1L24.6 31.1L20 38.5L15.4 31.1L6.9 33.1L8.9 24.6L1.5 20L8.9 15.4L6.9 6.9L15.4 8.9Z',
+  losango: 'M20 1.5L38.5 20L20 38.5L1.5 20Z'
+};
+const svgInsignia = it => it && ICO_INSIGNIA[it.icone] ? '<svg viewBox="0 0 40 40" aria-hidden="true"><path class="a" d="' + (MOLDURA_PATH[it.moldura] || MOLDURA_PATH.hexagono) + '"/><g transform="translate(10.5 10.5) scale(.79)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">' + ICO_INSIGNIA[it.icone] + '</g></svg>' : INSIGNIA;
 async function abreCracha(chave) {
   if (!FICHA) { try { FICHA = JSON.parse(await lerArquivo('casa/fichas.json')); } catch (e) { showNote('Não consegui abrir a ficha. Confere a internet.', true); return; } }
   const k = ALIAS_FICHA[chave] || chave, g = k === 'may' ? EU : GRUPO[k], f = FICHA[k];
@@ -1022,7 +1093,7 @@ async function abreCracha(chave) {
     if (g.foto) fotoUrl(g.foto, true).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.textContent = ''; av.classList.add('foto'); if (grande) { av.setAttribute('role', 'button'); av.setAttribute('aria-label', 'Ver a foto de ' + nome); av.onclick = e => { e.stopPropagation(); abreZoom(u, g.foto); }; } }).catch(() => {});   // foto da ficha abre a foto grande (original: a miniatura de 96 px fica borrada)
     return av;
   };
-  const insignia = (it) => { const d = el('div', 'ct-in1' + (it ? '' : ' vazia')); d.innerHTML = INSIGNIA; d.append(el('span', '', it ? it.nome : 'Próxima')); if (it && it.data) d.append(el('small', '', it.data.slice(0, 5))); return d; };
+  const insignia = (it) => { const d = el('div', 'ct-in1' + (it ? '' : ' vazia')); d.innerHTML = svgInsignia(it); d.append(el('span', '', it ? it.nome : 'Próxima')); if (it && it.data) d.append(el('small', '', it.data.slice(0, 5))); return d; };
   const dica = (txt) => { const d = el('div', 'ct-vira'); d.innerHTML = ICO_FICHA.lado; d.append(txt); return d; };
   const fr = el('div', 'ct-face ct-frente'), fi = el('div', 'ct-in'); fr.append(fi);
   const cab = el('div', 'ct-cab'); cab.append(el('span', '', g === EU ? 'Dona da casa' : 'Agente da casa'), el('span', 'ct-id', num));
@@ -1043,16 +1114,16 @@ async function abreCracha(chave) {
   const bloco = (tit, ...filhos) => { const d = el('div'); if (tit) d.append(el('div', 'ct-tit', tit)); d.append(...filhos); return d; };
   const selos = (lista, icone) => { const w = el('div', 'ct-selos'); lista.forEach(n => w.append(ic(icone, null, n))); return w; };
   const pAtr = el('div', 'ct-p-atr'), pJeito = el('div');
-  { const nv = atr.reduce((a, x) => a + x[1], 0), mx = atr.length * 10, cx = el('div', 'ct-nivel'); cx.append(el('b', '', 'Nv. ' + nv), el('span', '', 'soma dos atributos, de ' + mx)); const br = el('i'); br.style.setProperty('--p', (mx ? nv / mx * 100 : 0).toFixed(1) + '%'); cx.append(br); if (atr.length) pAtr.append(cx); }
+  { const nv = atr.reduce((a, x) => a + x[1], 0), mx = atr.length * 10, cx = el('div', 'ct-nivel'); cx.append(el('b', '', 'Nv. ' + nv), el('span', '', 'de ' + mx + ', a soma dos ' + atr.length + ' atributos')); const br = el('i'); br.style.setProperty('--p', (mx ? nv / mx * 100 : 0).toFixed(1) + '%'); cx.append(br); if (atr.length) pAtr.append(cx); }
   if (f.placar) { const pl = el('div', 'ct-placar'); [['revisoes', 'Revisões'], ['defeitos', 'Defeitos achados'], ['consertados', 'Consertados']].forEach(([c, r]) => { const d = el('div'); d.append(el('b', '', f.placar[c]), r); pl.append(d); }); pAtr.append(pl); }
-  atr.forEach(([n, val]) => { const b = el('div', 'ct-bar'); b.setAttribute('role', 'meter'); b.setAttribute('aria-label', n); b.setAttribute('aria-valuemin', 0); b.setAttribute('aria-valuemax', 10); b.setAttribute('aria-valuenow', val); b.append(el('span', '', n), el('em', '', val + '/10')); const s = el('div', 'ct-seg'); for (let i = 0; i < 10; i++) s.append(el('i', i < val ? 'on' : '')); b.append(s); pAtr.append(b); });
+  atr.forEach(([n, val], ix) => { if (atr.length === 10 && (ix === 0 || ix === 5)) pAtr.append(el('div', 'ct-tit', ix ? 'Especiais: o que faz de melhor' : 'Comuns: iguais pra todo mundo')); const b = el('div', 'ct-bar'); b.setAttribute('role', 'meter'); b.setAttribute('aria-label', n); b.setAttribute('aria-valuemin', 0); b.setAttribute('aria-valuemax', 10); b.setAttribute('aria-valuenow', val); b.append(el('span', '', n), el('em', '', val + '/10')); const s = el('div', 'ct-seg'); for (let i = 0; i < 10; i++) s.append(el('i', i < val ? 'on' : '')); b.append(s); pAtr.append(b); });
   if (f.forte || f.fraco) { const ff = el('div', 'ct-ff'); [['forte', 'Forte', 'sobe'], ['fraco', 'Fraco', 'desce']].forEach(([c, r, i]) => { if (!f[c]) return; const d = el('div', c), t = ic(i, 'ct-tit', r); d.append(t, f[c]); ff.append(d); }); pJeito.append(bloco('Forte × fraco', ff)); }
   const pHab = el('div');
   if (f.hab) pHab.append(bloco('Habilidades', selos(f.hab, 'estrela')));
   if (f.olhar) pJeito.append(bloco('Como eu vejo as coisas', el('div', 'ct-olhar', f.olhar)));
-  if (f.cons) pJeito.append(bloco('Conselheiros que incorpora', selos(f.cons, 'pessoa')));
+  if (f.cons) { const sc = selos(f.cons, 'pessoa'); sc.dataset.tipo = 'cons'; pJeito.append(bloco('Conselheiros que incorpora', sc)); }
   const pMaq = el('dl', 'ct-dados');
-  [['onde', 'Onde roda', f.onde || f.pc], ['maq', 'PC', f.onde ? f.pc : ''], ['ip', 'IP', hb.ip || (['may', 'lyra', 'sigma'].includes(k) ? '' : 'ainda não mandou')], ...(f.hw ? f.hw.map(x => [...x, 'peca']) : [['maq', 'Máquina', f.maquina]])]
+  [['onde', k === 'may' ? 'Onde vive' : 'Onde roda', f.onde || f.pc], ['maq', k === 'may' ? 'Ela' : 'PC', f.onde ? f.pc : ''], ['ip', 'IP', hb.ip || (['may', 'lyra', 'sigma'].includes(k) ? '' : 'ainda não mandou')], ...(f.hw ? f.hw.map(x => [...x, 'peca']) : [['maq', 'Máquina', f.maquina]])]
     .forEach(([i, t, d, c]) => { if (!d) return; const w = el('div', c); w.innerHTML = ICO_FICHA[i] || ICO_FICHA.maq; w.append(el('dt', '', t), el('dd', '', d)); pMaq.append(w); });
   const pecas = pMaq.querySelectorAll('.peca'); if (pecas.length % 2) pecas[pecas.length - 1].classList.add('larga');   // peça sobrando ocupa a linha toda
   const pConq = el('div'), todas = el('div', 'ct-ins-fila'); ins.slice().reverse().forEach(it => todas.append(insignia(it))); if (!ins.length) todas.append(insignia(null));
@@ -1064,7 +1135,7 @@ async function abreCracha(chave) {
   if (todasEnt.length) { const ol = el('ol', 'ct-tempo'); todasEnt.forEach(it => { const li = el('li'); li.append(el('small', '', it.data || ''), it.nome); ol.append(li); }); pTempo.append(bloco('Entregas', ol)); }
   // um cartão por aba, lado a lado: arrasta pro lado (ou toca na aba) em vez de virar (May, 05/11/2026: "tinha q ser slider")
   const paineis = { atr: pAtr, jeito: pJeito, hab: pHab, maq: pMaq, conq: pConq, tempo: pTempo };   // 7 cartões por pessoa ou robô (May, 05/11/2026)
-  const abas = [['perfil', 'Perfil'], ['atr', 'Atributos'], ['jeito', 'Jeito'], ['hab', 'Poderes'], ['maq', 'Máquina'], ['conq', 'Insígnias'], ['tempo', 'Tempo']].filter(([id]) => id === 'perfil' || paineis[id].childElementCount);
+  const abas = [['perfil', 'Perfil'], ['atr', 'Atributos'], ['jeito', 'Jeito'], ['hab', 'Poderes'], ['maq', f.abaMaq || 'Máquina'], ['conq', 'Insígnias'], ['tempo', 'Tempo']].filter(([id]) => id === 'perfil' || paineis[id].childElementCount);
   const nav = el('nav', 'ct-abas'); nav.setAttribute('aria-label', 'Abas da ficha'); nav.style.setProperty('--n', abas.length);
   const faces = abas.map(([id, rot]) => {
     if (id === 'perfil') return fr;
@@ -1103,8 +1174,27 @@ async function abreCracha(chave) {
   trilho.addEventListener('pointerup', solta); trilho.addEventListener('pointercancel', solta);
   trilho.addEventListener('click', e => { if (acabouDeArrastar) { e.stopPropagation(); e.preventDefault(); } }, true);   // soltar o dedo depois de girar não aperta botão
   abas.forEach(([id, rot]) => { const b = el('button'); b.type = 'button'; b.dataset.a = id; b.innerHTML = ICO_FICHA[id]; b.append(el('span', '', rot)); b.onclick = () => vai(id); nav.append(b); });
-  const fecha = el('button', 'ct-x'); fecha.type = 'button'; fecha.title = 'Fechar'; fecha.setAttribute('aria-label', 'Fechar'); fecha.innerHTML = ICO_FICHA.fechar; fecha.onclick = () => pop.remove();
-  ct.append(fecha, trilho, nav); pop.append(ct); document.body.append(pop); vai('perfil');
+  // deslizar pra cima ou pra baixo fecha (May, 05/11/2026): só quando o conteúdo já está no começo (pra baixo) ou no fim (pra cima), senão é rolagem
+  let ty0 = null, tx0 = 0, rol = null;
+  trilho.addEventListener('touchstart', e => { const t = e.touches[0]; ty0 = t.clientY; tx0 = t.clientX; const sc = e.target.closest('.ct-painel, .ct-frente .ct-in'); rol = sc ? { topo: sc.scrollTop <= 0, fim: sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 2 } : { topo: true, fim: true }; }, { passive: true });
+  trilho.addEventListener('touchend', e => { if (ty0 === null || girando) return; const t = e.changedTouches[0], dy = t.clientY - ty0, dx = t.clientX - tx0; ty0 = null; if (Math.abs(dy) > 90 && Math.abs(dx) < 70 && ((dy > 0 && rol.topo) || (dy < 0 && rol.fim))) fechaCt(dy > 0 ? 1 : -1); }, { passive: true });
+  const fechaCt = dir => { if (semMov) { pop.remove(); return; } ct.style.transition = 'transform .22s ease-in, opacity .22s ease-in'; ct.style.transform = 'translateY(' + (dir * 60) + 'vh)'; ct.style.opacity = '0'; setTimeout(() => pop.remove(), 220); };
+  const COMUNS_EXP = { 'Foco': 'Fica no que importa até terminar, sem se perder no meio.', 'Rapidez': 'Entrega sem enrolar.', 'Capricho': 'Faz bem feito, nos detalhes, e confere antes de dizer que acabou.', 'Comunicação': 'Avisa o que fez, explica direito e responde quando chamam.', 'Iniciativa': 'Resolve sem esperar alguém pedir.' };
+  const explica = (tit, txt) => { ct.querySelector('.ct-exp')?.remove(); const w = el('div', 'ct-exp'), c = el('div', 'ct-exp-c'); w.setAttribute('role', 'dialog'); w.setAttribute('aria-label', tit); c.append(el('b', '', tit), el('p', '', txt), el('small', '', 'toque pra fechar')); w.append(c); w.onclick = e => { e.stopPropagation(); w.remove(); }; ct.append(w); };
+  const ex = f.explica || {};
+  trilho.addEventListener('click', e => {
+    if (acabouDeArrastar || e.target.closest('button, a, [role=button]')) return;
+    const bar = e.target.closest('.ct-bar'), selo = e.target.closest('.ct-selos > span'), ins = e.target.closest('.ct-in1'), dado = e.target.closest('.ct-dados > div'), ff = e.target.closest('.ct-ff > div'), li = e.target.closest('.ct-tempo li'), niv = e.target.closest('.ct-nivel'), pl = e.target.closest('.ct-placar > div');
+    if (bar) { const n = bar.getAttribute('aria-label'), v = bar.getAttribute('aria-valuenow'), comum = COMUNS_EXP[n]; return explica(n + ' · ' + v + '/10', (ex[n] || comum || 'Um dos 5 especiais de ' + nome + ': o que ' + (g === EU ? 'ela' : 'ele') + ' faz de melhor.') + (comum ? ' É um dos 5 comuns, igual pra todo mundo.' : '') + ' A nota o Orfeu vai ajustando com o tempo.'); }
+    if (selo) { const n = selo.textContent.trim(); return explica(n, ex[n] || (selo.closest('.ct-selos').dataset.tipo === 'cons' ? n + ' é um dos conselheiros que ' + nome + ' incorpora: uma voz que ajuda a decidir.' : 'Uma das habilidades de ' + nome + '.')); }
+    if (ins && !ins.classList.contains('vazia')) { const n = ins.querySelector('span').textContent, it = (f.insignias || []).find(x => x.nome === n) || {}; return explica(n, (it.explica || ex[n] || 'Insígnia de ' + nome + ': uma conquista de verdade.') + (it.data ? ' Ganhou em ' + it.data + '.' : '')); }
+    if (dado) return explica(dado.querySelector('dt').textContent, dado.querySelector('dd').textContent);
+    if (ff) return explica(ff.classList.contains('forte') ? 'Ponto forte' : 'Ponto fraco', ff.lastChild.textContent);
+    if (li) return explica('Entrega', li.textContent.replace(/^(\d\d\/\d\d\/\d{4})/, '$1 · '));
+    if (niv) return explica('Nível', 'A soma dos ' + atr.length + ' atributos, cada um de 0 a 10' + (atr.length === 10 ? ': vai de 0 a 100.' : '.') + ' Sobe e desce conforme o Orfeu reavalia.');
+    if (pl) return explica(pl.lastChild.textContent, 'Placar do Sigma, contado no sigma-revisoes.md.');
+  });
+  ct.append(trilho, nav); pop.append(ct); document.body.append(pop); vai('perfil');
   pop.onclick = e => { if (e.target === pop) pop.remove(); };
 }
 // Nomes aceitos em "  ↳ Nome: ..." — sempre as chaves do GRUPO (+ ALIAS_QUEM), pra nunca mais esquecer de
@@ -2477,7 +2567,7 @@ function abreInfoConversa() {
     const lg = document.createElement('div'); lg.className = 'ig-gente'; c.append(lg);
     gente.forEach(k => {
       const g = k === 'may' ? EU : GRUPO[k], b = document.createElement('button'); b.type = 'button';
-      const av = document.createElement('span'); av.className = 'av'; av.style.backgroundColor = g.cor; av.textContent = g.nome.charAt(0);
+      const av = document.createElement('span'); av.className = 'av' + (k === 'may' ? ' eu' : ''); av.style.backgroundColor = k === 'may' ? 'transparent' : g.cor; av.textContent = g.nome.charAt(0);
       if (g.foto) fotoUrl(g.foto).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.textContent = ''; }).catch(() => {});
       const tx = document.createElement('span'); tx.className = 'tx'; const nb = document.createElement('b'); nb.textContent = k === 'may' ? 'Você' : g.nome.replace(/\s*\(.*\)$/, ''); const cg = document.createElement('small'); cg.textContent = g.cargo || ''; tx.append(nb, cg);
       const hb = (onlineGrupoLista || []).find(x => x.chave === k), v = hb && hb.ultimaAtualizacao ? fmtVisto(hb.ultimaAtualizacao) : null;
