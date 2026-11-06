@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.34">
+<meta name="app-versao" content="2026-11-05.35">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -180,7 +180,9 @@ textarea:focus-visible { outline: none; }
 .msg { position: relative; touch-action: pan-y; }
 .msg .cita { display: grid; gap: 1px; margin: 2px 0 6px; padding: 6px 10px; border-radius: 8px; border-left: 4px solid var(--quem);
   background: rgba(0,0,0,.06); font-size: 13px; line-height: 1.3; }
-.msg .cita b { color: var(--quem); font-size: 12.5px; }
+.msg .cita b { color: var(--quem); font-size: 12.5px; display: flex; align-items: center; gap: 6px; }
+.cita-av { flex: none; width: 20px; height: 20px; border-radius: 50%; background: center / cover no-repeat; }
+.cita-av.eu { border-radius: 0; background-size: contain; }
 .msg .cita span { color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 /* no balão verde dela a citação some (rosa e cinza sobre verde): fundo mais escuro e texto claro */
 .msg.may .cita { background: rgba(0,0,0,.18); }
@@ -1460,7 +1462,9 @@ function render(items, manterPosicao) {
     if (it.re) {
       const q = document.createElement('div'); q.className = 'cita';
       q.style.setProperty('--quem', corDe(it.re.nome));
-      const qn = document.createElement('b'); qn.textContent = it.re.nome;
+      const qn = document.createElement('b'), qg = grupoDeNome(it.re.nome);
+      if (qg && qg.foto) { const qa = document.createElement('i'); qa.className = 'cita-av' + (qg === EU ? ' eu' : ''); qa.style.backgroundColor = qg === EU ? 'transparent' : qg.cor; fotoUrl(qg.foto).then(u => { qa.style.backgroundImage = 'url(' + u + ')'; }).catch(() => {}); qn.append(qa); }   // o robozinho de quem foi respondido (May, 05/11/2026)
+      qn.append(it.re.nome);
       const qt = document.createElement('span'); qt.textContent = it.re.trecho;
       q.append(qn, qt); el.append(q);
     }
@@ -1816,7 +1820,7 @@ let onlineGrupoLista = [], ultimaOnlineGrupo = 0, onlineGrupoCarregando = null;
 // Limite semanal do Claude (May, 05/11/2026): o painel de cada robô manda o % no batimento (status.sh -> semana)
 const semanaEl = document.getElementById('semana');
 function mostraSemana(lista) {
-  const c = (lista || []).filter(p => typeof p.semana === 'number').sort((a, b) => String(b.ultimaAtualizacao || '').localeCompare(String(a.ultimaAtualizacao || '')))[0];
+  const c = (lista || []).filter(p => typeof p.semana === 'number').sort((a, b) => b.semana - a.semana)[0];   // o maior: o uso da semana só sobe, e um painel parado mostrava número velho (Sigma, 05/11/2026)
   if (!c) { semanaEl.hidden = true; return; }
   const v = Math.max(0, Math.min(100, Math.round(c.semana)));
   const R = 17.5, C = 2 * Math.PI * R;
@@ -2126,6 +2130,12 @@ feed.addEventListener('scroll', () => {
 // ---- Responder igual WhatsApp: arrastar o balão pra direita, segurar 0,6 s, dois toques, ou dois cliques no computador
 let respondendo = null;
 const citando = document.getElementById('citando');
+function grupoDeNome(nome) {
+  const n = String(nome).toLowerCase().replace(/\s*\(.*\)$/, '');
+  if (n === 'você' || n === 'may') return EU;
+  const k = Object.keys(GRUPO).find(k => k === n || GRUPO[k].nome.toLowerCase().replace(/\s*\(.*\)$/, '') === n) || ALIAS_QUEM[n];
+  return k ? GRUPO[k] : null;
+}
 function corDe(nome) {
   const n = String(nome).toLowerCase();
   if (n === 'você') return 'var(--accent)';
