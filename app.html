@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.41">
+<meta name="app-versao" content="2026-11-05.42">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -113,7 +113,7 @@ svg.i { width: 1em; height: 1em; flex: none; vertical-align: -.15em; }
 @keyframes gira { to { transform: rotate(360deg); } }
 .spin { width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid currentColor; border-top-color: transparent; animation: gira .7s linear infinite; }
 .clip { background: none; color: var(--muted); width: 40px; }
-.msg .foto { display: block; width: 100%; max-width: 260px; min-height: 120px; max-height: 340px; border-radius: 10px; margin-bottom: 4px;
+.msg .foto { display: block; width: 100%; max-width: 100%; min-height: 120px; max-height: 340px; border-radius: 10px; margin-bottom: 4px;
   background: color-mix(in srgb, var(--accent) 10%, var(--bg)); object-fit: cover; }
 /* Animações leves (só CSS): topo desliza, conversa sobe em cascata, botões respondem ao toque. */
 header { animation: desce .45s cubic-bezier(.2,.8,.2,1) both; }
@@ -500,7 +500,8 @@ button:disabled { opacity: .45; cursor: default; }
 .ct svg { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .ct-x svg { width: 16px; height: 16px; stroke-width: 2.6; }
 .ct-trilho { display: grid; height: min(calc((100vw - 32px) * 1.8), 700px, calc(100dvh - 146px)); border-radius: 22px; box-shadow: 0 0 28px color-mix(in srgb, var(--quem) 38%, transparent), 0 18px 44px rgba(0,0,0,.5); touch-action: pan-y; -webkit-user-select: none; user-select: none; will-change: transform; }   /* um cartão só, que gira com o dedo e troca os dados no meio (May, 05/11/2026) */
-.ct-frente .ct-in > * { flex: none; }
+.ct-frente .ct-in { justify-content: space-between; }
+.ct-frente .ct-in > * { flex: none; }   /* sem buraco no meio: os blocos se espalham até embaixo (Sigma, 05/11/2026) */
 .ct-trilho > .ct-face { grid-area: 1 / 1; min-width: 0; }
 .ct-face { grid-area: 1 / 1; min-height: 0; padding: 6px; border-radius: 22px; background: var(--borda); -webkit-backface-visibility: hidden; backface-visibility: hidden; box-shadow: 0 0 28px color-mix(in srgb, var(--quem) 38%, transparent), 0 18px 44px rgba(0,0,0,.5); color: #fff; font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,.6), 0 0 12px rgba(0,0,0,.3); }
 .ct-in { height: 100%; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; box-shadow: inset 0 0 0 1px rgba(255,255,255,.14);
@@ -527,7 +528,7 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-maq span { flex: 1 1 auto; justify-content: center; display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px; border-radius: 8px; background: rgba(0,0,0,.32); border: 1px solid rgba(255,255,255,.12); }
 .ct-maq svg { width: 13px; height: 13px; }
 .ct-tit { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.75); }
-.ct-ins { margin: auto 14px 0; padding: 9px 8px 10px; border-radius: 14px; background: rgba(0,0,0,.34); border: 1px solid rgba(255,255,255,.1); display: grid; gap: 8px; }
+.ct-ins { margin: 10px 14px 0; padding: 9px 8px 10px; border-radius: 14px; background: rgba(0,0,0,.34); border: 1px solid rgba(255,255,255,.1); display: grid; gap: 8px; }
 .ct-ins-fila { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 .ct-in1 { display: grid; justify-items: center; align-content: start; gap: 5px; text-align: center; font-size: 11.5px; line-height: 1.2; overflow-wrap: anywhere; }
 .ct-in1 svg { width: 44px; height: 44px; stroke: none; filter: drop-shadow(0 2px 4px rgba(0,0,0,.5)); }
@@ -550,10 +551,10 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-painel .ct-ins-fila, .ct-painel .ct-selos, .ct-painel .ct-tempo, .ct-painel .ct-ff { flex: 1 0 auto; align-content: space-evenly; }
 .ct-painel > .ct-dados { display: grid; align-content: space-evenly; }
 .ct { position: relative; }
-.ct-exp { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; padding: 18px; background: rgba(0,0,0,.55); border-radius: 22px; animation: entra .16s ease-out both; }
-.ct-exp-c { width: 100%; max-width: 330px; padding: 18px 18px 14px; border-radius: 26px; background: linear-gradient(var(--quem), color-mix(in srgb, var(--quem) 62%, black)); color: #fff; display: grid; gap: 8px; box-shadow: inset 0 2px 0 rgba(255,255,255,.35), inset 0 -4px 0 rgba(0,0,0,.28), 0 14px 36px rgba(0,0,0,.6); text-shadow: 0 1px 2px rgba(0,0,0,.45); }   /* igual a pílula do nome: degradê cheio, letra branca, cantos redondos com chanfro (May, 05/11/2026) */
-.ct.eu .ct-exp-c { background: linear-gradient(135deg, #E31B23, #B45309 50%, #15803D); }
-.ct.sigma .ct-exp-c { background: linear-gradient(135deg, #9333EA, #4B5563 60%, #111); }
+.ct-exp { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; padding: 18px; background: rgba(0,0,0,.8); border-radius: 22px; animation: entra .16s ease-out both; }
+.ct-exp-c { width: 100%; max-width: 330px; padding: 18px 18px 14px; border-radius: 26px; background: linear-gradient(color-mix(in srgb, var(--quem) 45%, black), color-mix(in srgb, var(--quem) 25%, black)); color: #fff; display: grid; gap: 8px; box-shadow: inset 0 2px 0 rgba(255,255,255,.35), inset 0 -4px 0 rgba(0,0,0,.28), 0 14px 36px rgba(0,0,0,.6); text-shadow: 0 1px 2px rgba(0,0,0,.45); }   /* igual a pílula do nome: degradê cheio, letra branca, cantos redondos com chanfro (May, 05/11/2026) */
+.ct.eu .ct-exp-c { background: linear-gradient(135deg, #7F1015, #5C2E05 50%, #0B4A22); }
+.ct.sigma .ct-exp-c { background: linear-gradient(135deg, #581C87, #2A2D33 60%, #0A0A0A); }
 .ct-exp-c b { font-size: 18px; } .ct-exp-c p { margin: 0; font-size: 14.5px; line-height: 1.45; font-weight: 600; } .ct-exp-c small { font-size: 11px; color: rgba(255,255,255,.75); justify-self: end; }
 .ct-bar, .ct-selos > span, .ct-in1:not(.vazia), .ct-dados > div, .ct-ff > div, .ct-tempo li, .ct-nivel, .ct-placar > div { cursor: pointer; }
 .ct.eu .ct-av, .msg.may .quem.eu .avatar, .ig-gente .av.eu { border-radius: 0; background-size: contain; background-repeat: no-repeat; background-position: center; }   /* o coque dela sai do círculo: não corta (May, 05/11/2026) */
@@ -569,7 +570,7 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-seg i { height: 12px; border-radius: 3px; background: rgba(255,255,255,.13); }
 .ct-seg i.on { background: var(--claro); box-shadow: 0 0 6px color-mix(in srgb, var(--quem) 70%, transparent); }
 .ct.eu .ct-seg i.on:nth-child(-n+3) { background: #F43F46; } .ct.eu .ct-seg i.on:nth-child(n+4):nth-child(-n+7) { background: #FACC15; } .ct.eu .ct-seg i.on:nth-child(n+8) { background: #4ADE80; }
-.ct.sigma .ct-seg i.on:nth-child(n+6) { background: #9CA3AF; }
+.ct.sigma .ct-seg i.on:nth-child(n+6) { background: #D8B4FE; }
 .ct-ff { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .ct-ff > div { padding: 12px; border-radius: 12px; background: rgba(0,0,0,.32); border: 1px solid rgba(255,255,255,.1); font-size: 13.5px; line-height: 1.35; }
 .ct-ff .ct-tit { display: flex; align-items: center; gap: 4px; margin: 0 0 4px; }
@@ -598,10 +599,16 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-tempo li::after { content: ""; position: absolute; left: 7px; top: 16px; bottom: 0; width: 2px; background: rgba(255,255,255,.2); }
 .ct-tempo li:last-child::after { display: none; }
 .ct-tempo small { display: block; font-size: 10.5px; color: rgba(255,255,255,.7); letter-spacing: .04em; }
-.ct-arvore { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; flex: 1 0 auto; padding-top: 10px; }
-.ct-ramo { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 2px 10px; border-radius: 14px; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.1); }
+.ct-arvore { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; flex: 1 1 0; min-height: 0; padding-top: 10px; }
+.ct-painel > .ct-p-arv { flex: 1 1 0; min-height: 0; }
+.ct-ramo-cab { display: grid; justify-items: center; gap: 2px; text-align: center; padding: 0 2px; }
+.ct-ramo-cab svg { width: 20px; height: 20px; fill: none; stroke: var(--claro); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ct-ramo-cab b { font-size: 11.5px; line-height: 1.15; }
+.ct-ramo-cab small { font-size: 9.5px; color: rgba(255,255,255,.7); }
+.ct-ramo { min-height: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 2px 10px; border-radius: 14px; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.1); }
 .ct-ramo .ct-tit { margin: 0; text-align: center; }
-.ct-nos { position: relative; flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; gap: 10px; }
+.ct-nos { position: relative; flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 14px; padding: 4px 0 8px; }   /* cada galho rola sozinho (May, 05/11/2026) */
+.ct-nos::-webkit-scrollbar { display: none; }
 .ct-nos::before { content: ""; position: absolute; top: 18px; bottom: 18px; left: 50%; width: 3px; transform: translateX(-50%); border-radius: 2px; background: linear-gradient(to top, var(--claro), rgba(255,255,255,.12)); }
 .ct-nos .ct-in1 { position: relative; z-index: 1; font-size: 10px; max-width: 100%; }
 .ct-nos .ct-in1 svg { width: 40px; height: 40px; }
@@ -1126,11 +1133,11 @@ async function abreCracha(chave) {
   const pills = el('div', 'ct-pills'), st = el('span', 'ct-pill' + (on ? ' on' : '')); st.append(el('i'), k === 'may' ? 'online agora' : k === 'sigma' && !hb.ultimaAtualizacao ? 'itinerante' : (v.online ? (v.texto === 'agora' ? 'online agora' : 'visto ' + v.texto) : v.texto));
   pills.append(st, el('span', 'ct-pill', 'Nv. ' + atr.reduce((a, x) => a + x[1], 0))); lado.append(pills);   // "nível" = soma dos atributos, só pra brincar
   quem.append(avatar(true), lado);
-  const maq = el('div', 'ct-maq'); maq.append(ic('maq', null, f.pcCurto || f.pc)); if (hb.ip) maq.append(ic('ip', null, hb.ip));
+  const maq = el('div', 'ct-maq'), pcTxt = f.pcCurto || f.pc || ''; if (pcTxt && !String(f.classe || '').toLowerCase().includes(pcTxt.toLowerCase()) && !(k === 'sigma' && /itinerante/i.test(pcTxt))) maq.append(ic('maq', null, pcTxt)); if (hb.ip) maq.append(ic('ip', null, hb.ip));
   const insBox = el('div', 'ct-ins'), fila = el('div', 'ct-ins-fila'); [0, 1, 2].forEach(i => fila.append(insignia(ins[ins.length - 1 - i])));
   insBox.append(el('div', 'ct-tit', 'Insígnias'), fila);
   const pe = el('div', 'ct-pe');
-  if (k !== 'may') { const chama = el('button', 'ct-chama', 'Mandar recado pra ' + nome); chama.type = 'button'; chama.onclick = e => { e.stopPropagation(); const t = document.getElementById('texto'); if (t) { const n = '@' + nome + ' '; if (!t.value.startsWith(n)) t.value = n + t.value; t.dispatchEvent(new Event('input')); pop.remove(); t.focus(); } }; pe.append(chama); }
+  if (k !== 'may') { const chama = el('button', 'ct-chama', 'Mandar recado ' + (['orfeu', 'vega', 'hermes', 'sigma'].includes(k) ? 'pro ' : 'pra ') + nome); chama.type = 'button'; chama.onclick = e => { e.stopPropagation(); const t = document.getElementById('texto'); if (t) { const n = '@' + nome + ' '; if (!t.value.startsWith(n)) t.value = n + t.value; t.dispatchEvent(new Event('input')); pop.remove(); t.focus(); } }; pe.append(chama); }
   pe.append(dica('Arrasta pro lado pra virar o cartão'));
   fi.append(cab, quem, el('div', 'ct-faz', f.faz), maq); if (k === 'may' && f.olhar) fi.append(el('div', 'ct-olhar', f.olhar));   // ela não tem o botão de recado: o olhar ocupa o lugar
   fi.append(insBox, pe);
@@ -1150,11 +1157,15 @@ async function abreCracha(chave) {
     .forEach(([i, t, d, c]) => { if (!d) return; const w = el('div', c); w.innerHTML = ICO_FICHA[i] || ICO_FICHA.maq; w.append(el('dt', '', t), el('dd', '', d)); pMaq.append(w); });
   const pecas = pMaq.querySelectorAll('.peca'); if (pecas.length % 2) pecas[pecas.length - 1].classList.add('larga');   // peça sobrando ocupa a linha toda
   // insígnias como árvore de habilidade, 3 galhos (May, 05/11/2026): a moldura diz o galho
-  const pConq = el('div'), arv = el('div', 'ct-arvore');
-  [['Base', ['hexagono', 'escudo']], ['Criação', ['circulo']], ['Marcos', ['estrela', 'losango']]].forEach(([rotulo, mols]) => {
-    const ramo = el('div', 'ct-ramo'), nos = el('div', 'ct-nos'), deles = ins.filter(it => mols.includes(it.moldura || 'hexagono'));
-    nos.append(insignia(null)); deles.slice().reverse().forEach(it => nos.append(insignia(it)));
-    ramo.append(el('div', 'ct-tit', rotulo + ' · ' + deles.length), nos); arv.append(ramo);
+  const pConq = el('div', 'ct-p-arv'), arv = el('div', 'ct-arvore');
+  const galhos = f.arvores && f.arvores.length ? f.arvores.map(a => [a.nome, a.icone, ins.filter(it => (a.insignias || []).includes(it.nome)).sort((x, y) => a.insignias.indexOf(x.nome) - a.insignias.indexOf(y.nome))])
+    : [['Base', 'servidor', ['hexagono', 'escudo']], ['Criação', 'pincel', ['circulo']], ['Marcos', 'trofeu', ['estrela', 'losango']]].map(([n, i, mols]) => [n, i, ins.filter(it => mols.includes(it.moldura || 'hexagono'))]);
+  galhos.forEach(([rotulo, icn, deles]) => {
+    const ramo = el('div', 'ct-ramo'), cab = el('div', 'ct-ramo-cab'), nos = el('div', 'ct-nos');
+    if (icn && ICO_INSIGNIA[icn]) cab.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' + ICO_INSIGNIA[icn] + '</svg>';
+    cab.append(el('b', '', rotulo), el('small', '', deles.length + (deles.length === 1 ? ' insígnia' : ' insígnias')));
+    nos.append(insignia(null)); deles.slice().reverse().forEach(it => nos.append(insignia(it)));   // topo = a mais nova ou a mais forte; a trancada é a próxima
+    ramo.append(cab, nos); arv.append(ramo);
   });
   pConq.append(arv);
   const pTempo = el('div'), agora = el('dl', 'ct-dados');
@@ -1178,7 +1189,7 @@ async function abreCracha(chave) {
   // sem rolagem (May, 05/11/2026): se o conteúdo passa da altura do cartão, diminui tudo junto (zoom) até caber
   const cabe = fc => {
     const caixa = fc.querySelector('.ct-painel') || fc.querySelector('.ct-in'), alvos = caixa.classList.contains('ct-painel') ? [caixa.firstElementChild] : [...caixa.children];
-    alvos.forEach(a => { if (a) a.style.zoom = ''; });
+    alvos.forEach(a => { if (a) a.style.zoom = ''; }); if (caixa.querySelector('.ct-arvore')) return;
     for (let n = 0; n < 3 && caixa.scrollHeight > caixa.clientHeight + 1; n++) { const z = Math.max(.55, (parseFloat(alvos[0] && alvos[0].style.zoom) || 1) * caixa.clientHeight / caixa.scrollHeight); alvos.forEach(a => { if (a) a.style.zoom = z.toFixed(3); }); }
   };
   let atual = -1, girando = false;
@@ -1211,7 +1222,7 @@ async function abreCracha(chave) {
   abas.forEach(([id, rot]) => { const b = el('button'); b.type = 'button'; b.dataset.a = id; b.innerHTML = ICO_FICHA[id]; b.append(el('span', '', rot)); b.onclick = () => vai(id); nav.append(b); });
   // deslizar pra cima ou pra baixo fecha (May, 05/11/2026): só quando o conteúdo já está no começo (pra baixo) ou no fim (pra cima), senão é rolagem
   let ty0 = null, tx0 = 0, rol = null;
-  trilho.addEventListener('touchstart', e => { const t = e.touches[0]; ty0 = t.clientY; tx0 = t.clientX; const sc = e.target.closest('.ct-painel, .ct-frente .ct-in'); rol = sc ? { topo: sc.scrollTop <= 0, fim: sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 2 } : { topo: true, fim: true }; }, { passive: true });
+  trilho.addEventListener('touchstart', e => { const t = e.touches[0]; ty0 = t.clientY; tx0 = t.clientX; const sc = e.target.closest('.ct-nos, .ct-painel, .ct-frente .ct-in'); rol = sc ? { topo: sc.scrollTop <= 0, fim: sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 2 } : { topo: true, fim: true }; }, { passive: true });
   trilho.addEventListener('touchend', e => { if (ty0 === null || girando) return; const t = e.changedTouches[0], dy = t.clientY - ty0, dx = t.clientX - tx0; ty0 = null; if (Math.abs(dy) > 90 && Math.abs(dx) < 70 && ((dy > 0 && rol.topo) || (dy < 0 && rol.fim))) fechaCt(dy > 0 ? 1 : -1); }, { passive: true });
   const fechaCt = dir => { if (semMov) { pop.remove(); return; } ct.style.transition = 'transform .22s ease-in, opacity .22s ease-in'; ct.style.transform = 'translateY(' + (dir * 60) + 'vh)'; ct.style.opacity = '0'; setTimeout(() => pop.remove(), 220); };
   const COMUNS_EXP = { 'Foco': 'Fica no que importa até terminar, sem se perder no meio.', 'Rapidez': 'Entrega sem enrolar.', 'Capricho': 'Faz bem feito, nos detalhes, e confere antes de dizer que acabou.', 'Comunicação': 'Avisa o que fez, explica direito e responde quando chamam.', 'Iniciativa': 'Resolve sem esperar alguém pedir.' };
@@ -2156,8 +2167,8 @@ function grupoDeNome(nome) {
 function corDe(nome) {
   const n = String(nome).toLowerCase();
   if (n === 'você') return 'var(--accent)';
-  const k = Object.keys(GRUPO).find(k => k === n || GRUPO[k].nome.toLowerCase() === n);
-  return k ? GRUPO[k].cor : 'var(--accent)';
+  const g = grupoDeNome(nome);   // tira o "(PC2)" igual o robozinho; antes a cor caía no vermelho (Sigma, 05/11/2026)
+  return g ? g.cor : 'var(--accent)';
 }
 function responder(it) {
   if (!it) { respondendo = null; citando.hidden = true; return; }
