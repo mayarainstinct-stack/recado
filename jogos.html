@@ -206,6 +206,8 @@ nav button#tab-concluidos.on{background:linear-gradient(#F5D237,#B8860B);color:#
 .ini.j2 .j2img{width:62%;max-width:180px;height:auto;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5))}
 .selo-j2{background:none;border:0;box-shadow:none;padding:0}.selo-j2 .j2img{height:34px;width:auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
 #abertura .espera .j2img{height:56px}
+.topo .dados{min-width:0;flex:1 1 auto}.pills{overflow:hidden}.topo .dados h2{overflow-wrap:anywhere}
+.plats{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}.plat{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:999px;background:color-mix(in srgb,var(--pc) 30%,rgba(0,0,0,.35));border:1px solid color-mix(in srgb,var(--pc) 70%,transparent);color:#fff}
 #aviso.erro{background:#3A0E12;border-color:#FF5A5A}
 #e-env.indo{opacity:.75}
 .giro{display:inline-block;width:16px;height:16px;margin-right:8px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:gira .7s linear infinite;vertical-align:-3px}
@@ -564,6 +566,8 @@ function icone(c){const idv=(corMay(c)||{}).id;if(idv&&ICO_CONS[idv])return ICO_
 const CORTE=window.CORTE||{},USO={};J.forEach(j=>(j.prints||[]).forEach(p=>{USO[p.arquivo]=(USO[p.arquivo]||0)+1}))
 const corte=a=>a in CORTE?CORTE[a]:a
 function semCapa(im){const c=im.parentElement;if(!c)return;c.querySelectorAll("img.borra,img.inteira").forEach(x=>x.remove());const l=c.querySelector(".ini.j2");if(l)l.style.zIndex=""}
+// outras plataformas do mesmo jogo (Orfeu 08:35, campo plataformas): pílulas menores embaixo da principal
+function outrasPlat(j){const v=Array.isArray((window.JOGOS||{}).consoles)?window.JOGOS.consoles:[],prin=consK(j.console).id,ps=(j.plataformas||[]).filter(p=>p&&p.console&&p.console!=prin);if(!ps.length)return"";return`<div class="plats">${ps.map(p=>{const k=v.find(x=>x.id==p.console)||{},nm=k.curto||k.nome||p.console;return`<span class="plat" style="--pc:${k.principal||k.cor||"#666"}">${esc(nm)}${p.como?` · ${esc(p.como)}`:""}</span>`}).join("")}</div>`}
 function capaUrl(j){if(j.capa)return j.capa;const p=j.parede&&j.parede.imagens&&j.parede.imagens[0];if(p)return RAIZ_DOCS+p.arquivo;const pr=(j.prints||[]).filter(x=>USO[x.arquivo]==1).map(x=>corte(x.arquivo)).find(Boolean);return pr||null}
 // selo J2 montado com as peças do logo que o Hermes recortou (J e 2), não letra digitada (May 08:11)
 const LOGO_J2='<div class="ini j2"><img class="j2img" data-p="categorias/games/tela/j2-selo.webp" alt="J2"></div>'
@@ -635,7 +639,7 @@ const ev=[];(j.save||[]).filter(x=>x.data&&x.progresso).forEach(x=>ev.push({dia:
 ev.sort((a,b)=>dval(b)-dval(a))
 const vis=histTodos?ev:ev.slice(0,6)
 const des=j.desbloqueados||{},saves=j.save||[],fps=j.fps||[]
-let h=`<div class="topo" style="--cor:${c}"><div class="capa" style="--cor:${c}">${capaHtml(j)}</div><div class="dados"><h2>${esc(j.titulo)}</h2><div class="pills"><span class="chip">${icone(j.console)}${esc(curto(j.console))}</span>${j.console_confirmar?`<span class="chip vidro">a confirmar</span>`:""}${emulado(j.console,j)||j.emulador?`<span class="chip vidro">Emulador${j.emulador?" · "+esc(j.emulador.split(" · ")[0]):""}</span>`:""}</div><div class="anel-linha">${anel(j)}<div style="font-size:12px;color:var(--texto2);line-height:1.4">${esc(rotuloStatus(j.status))}</div></div></div></div>`
+let h=`<div class="topo" style="--cor:${c}"><div class="capa" style="--cor:${c}">${capaHtml(j)}</div><div class="dados"><h2>${esc(j.titulo)}</h2><div class="pills"><span class="chip">${icone(j.console)}${esc(curto(j.console))}</span>${j.console_confirmar?`<span class="chip vidro">a confirmar</span>`:""}${emulado(j.console,j)||j.emulador?`<span class="chip vidro">Emulador${j.emulador?" · "+esc(j.emulador.split(" · ")[0]):""}</span>`:""}</div>${outrasPlat(j)}<div class="anel-linha">${anel(j)}<div style="font-size:12px;color:var(--texto2);line-height:1.4">${esc(rotuloStatus(j.status))}</div></div></div></div>`
 const A={resumo:"",eu:"",poke:"",inv:"",hist:"",save:"",prints:""};POP=[]
 const norm=t=>String(t||"").toLowerCase().replace(/[^a-z0-9à-ú ]/g,"").replace(/\s+/g," ").trim(),todas=(j.historico||[]).slice().sort((a,b)=>dval(b)-dval(a))
 const minhas=todas.filter((e,i)=>{const n=norm(e.fala);return n&&!todas.some((o,k)=>k!=i&&o.dia==e.dia&&norm(o.fala)!=n&&norm(o.fala).includes(n))&&todas.findIndex(o=>o.dia==e.dia&&norm(o.fala)==n)==i})
