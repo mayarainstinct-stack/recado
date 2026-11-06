@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.30">
+<meta name="app-versao" content="2026-11-06.31">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -1759,6 +1759,10 @@ function marcaPend(el, p, falhou) {
   infoPend(el, falhou && p.perdidas ? (p.perdidas > 1 ? p.perdidas + ' fotos não subiram' : '1 foto não subiu') : horaDe(p.em));
 }
 function novoPendente(text, fotos, arq, extra) {
+  if (respondendo && respondendo.nome !== 'Você' && !(fotos && fotos.length) && !/^🎤 /.test(text || '')) {   // respondeu a mensagem de alguém: já marca o @ de quem mandou, pro vigia dele pegar (May via Lyra, 06/11/2026 08:43)
+    const alvo = String(respondendo.nome).replace(/\s*\(PC\d\)\s*$/i, '').split(/\s+/)[0];
+    if (alvo && !new RegExp('@' + alvo + '(?![\\wÀ-ÿ])', 'i').test(text || '')) text = '@' + alvo + ' ' + (text || '');
+  }
   const p = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), arq, text, re: respondendo ? { nome: respondendo.nome, trecho: respondendo.trecho } : null, fotos, audio: null, linhas: null, em: Date.now(), ...extra };
   const x = pendentes[p.id] = { p, el: bolhaPendente(p) };
   guardaPendente(p);   // já no aparelho: o iOS pode matar o app no meio do envio (antes só guardava depois de falhar)
