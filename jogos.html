@@ -163,6 +163,10 @@ nav button#tab-concluidos.on{background:linear-gradient(#F5D237,#B8860B);color:#
 .anel{width:88px;height:88px}.anel svg{width:88px;height:88px}.anel b{font-size:19px}.anel b em{font-size:9px}
 .abas-f{flex-wrap:wrap;overflow:visible}.abas-f button{flex:1 1 auto;padding:0 10px;font-size:11px}.abas-f::after{display:none}
 .fab{transition:width .2s,padding .2s}.fab.mini{width:56px;padding:0;justify-content:center}.fab.mini span{display:none}
+:root{--linha:2px}
+/* linha da lista igual à da ficha (May 02:52: "vira padrão até da parte de antes da ficha") */
+.tile:not(.sel){border:var(--linha) solid transparent;background:linear-gradient(var(--fundo2),var(--fundo2)) padding-box,linear-gradient(180deg,color-mix(in srgb,var(--cor) 25%,#fff) 0%,color-mix(in srgb,var(--cor) 70%,#000) 33%,color-mix(in srgb,var(--cor) 30%,#fff) 66%,color-mix(in srgb,var(--cor) 60%,#000) 100%) border-box}
+.tile.cromo:not(.sel){background:linear-gradient(var(--fundo2),var(--fundo2)) padding-box,var(--metal) border-box}
 #aviso.erro{background:#3A0E12;border-color:#FF5A5A}
 #e-env.indo{opacity:.75}
 .giro{display:inline-block;width:16px;height:16px;margin-right:8px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:gira .7s linear infinite;vertical-align:-3px}
