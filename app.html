@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.45">
+<meta name="app-versao" content="2026-11-06.46">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -525,6 +525,9 @@ img.esq { min-height: 140px; }
   box-shadow: 0 14px 40px rgba(0,0,0,.3); animation: entra .2s ease-out both; }
 .pop h2 { margin: 0; font-size: 18px; }
 .msg.grupo.sigma { border: 3px solid transparent; background: linear-gradient(color-mix(in srgb, #9333EA 16%, var(--cinza)), color-mix(in srgb, #9333EA 16%, var(--cinza))) padding-box, linear-gradient(135deg, #9333EA, #9CA3AF, #0A0A0A) border-box; }   /* Sigma em 3 cores, roxo, cinza e preto (05/11/2026) */
+.msg.grupo.tres { border: 3px solid transparent; background: linear-gradient(color-mix(in srgb, var(--c1) 18%, var(--cinza)), color-mix(in srgb, var(--c1) 18%, var(--cinza))) padding-box, linear-gradient(135deg, var(--c1), var(--c2) 50%, var(--c3)) border-box; }
+.msg.tres .quem .rotulo > span:first-child { color: var(--c2); align-self: flex-start; }
+@supports ((-webkit-background-clip: text) or (background-clip: text)) { .msg.tres .quem .rotulo > span:first-child { background: linear-gradient(90deg, var(--c2), var(--c3)); -webkit-background-clip: text; background-clip: text; color: transparent; } }
 .msg.sigma .quem .rotulo > span:first-child { color: #A855F7; align-self: flex-start; }   /* cor sólida de reserva; o degradê só onde o recorte funciona */
 @supports ((-webkit-background-clip: text) or (background-clip: text)) { .msg.sigma .quem .rotulo > span:first-child { background: linear-gradient(90deg, #A855F7, #9CA3AF); -webkit-background-clip: text; background-clip: text; color: transparent; } }
 .barra { display: grid; grid-template-columns: 1fr auto; gap: 4px 8px; margin-top: 12px; font-size: 14px; font-weight: 600; }
@@ -1542,7 +1545,7 @@ function render(items, manterPosicao) {
     const g = it.quem && GRUPO[it.quem] ? GRUPO[it.quem] : (it.from === 'may' && FILE === GERAL.arq ? EU : (it.quem && FILE === TRAB.arq ? TRAB_NEUTRO : null));
     if (g) {
       // Nome colorido em cima do balão, igual grupo de WhatsApp; o balão ganha um toque da cor de quem fala
-      el.style.setProperty('--quem', g.cor); el.style.setProperty('--quem-fg', g.texto); el.classList.add(g === EU ? 'eu' : 'grupo'); if (it.quem === 'sigma') el.classList.add('sigma');
+      el.style.setProperty('--quem', g.cor); el.style.setProperty('--quem-fg', g.texto); el.classList.add(g === EU ? 'eu' : 'grupo'); if (it.quem === 'sigma') el.classList.add('sigma'); if (g !== EU && Array.isArray(g.cores) && g.cores.length === 3) { el.classList.add('tres'); g.cores.forEach((c, i) => el.style.setProperty('--c' + (i + 1), c)); }   // balão em 3 cores, igual o da May e o do Sigma (May, 06/11/2026 15:32)
       if (g.cor2) el.style.setProperty('--quem2', g.cor2);
       const nome = document.createElement('div'); nome.className = 'quem' + (g === EU ? ' eu' : '');
       const av = document.createElement('span'); av.className = 'avatar'; av.textContent = g.nome.charAt(0).toUpperCase();
@@ -1961,6 +1964,7 @@ function fazendoGrupo() {
 }
 function nomeDe(p) { return p.nome || (p.chave === 'may' ? EU.nome : null) || (GRUPO[p.chave] ? GRUPO[p.chave].nome.replace(/\s*\(.*\)$/, '') : p.chave); }
 function listaOnlineOrdem() {   // quem é da casa, por número do cartão, Sigma no fim (May, 06/11/2026 14:22)
+  if (!GENTE_CASA.length) garanteGrupoTrab().then(() => { if (GENTE_CASA.length && !onlinePop.hidden) desenhaOnlinePop(); });
   if (!FICHA) lerArquivo('casa/fichas.json').then(t => { if (!FICHA) FICHA = JSON.parse(t); if (!onlinePop.hidden) desenhaOnlinePop(); }).catch(() => {});
   const l = [...onlineGrupoLista]; GENTE_CASA.forEach(k => { if (GRUPO[k] && !l.some(p => p.chave === k)) l.push({ chave: k, gente: true }); });
   const num = p => p.chave === 'sigma' ? 1e9 : +((FICHA && FICHA[p.chave] && FICHA[p.chave].id) || 999);
@@ -2708,7 +2712,7 @@ function abreInfoConversa() {
   if (!FILE) return;
   const conv = convPorArq(FILE), geral = FILE === GERAL.arq, nome = nomeConv || conv.nome || 'Conversa', arqAberto = FILE;
   const falaram = [...new Set(lastItems.filter(x => x.quem).map(x => x.quem))];
-  const gente = ['may', ...(conv.participantes || falaram).filter(k => k !== 'may' && GRUPO[k])].filter((k, i, a) => a.indexOf(k) === i);
+  const gente = ['may', ...(conv.participantes || falaram).filter(k => k !== 'may' && GRUPO[k]), ...(geral ? GENTE_CASA.filter(k => GRUPO[k]) : [])].filter((k, i, a) => a.indexOf(k) === i);   // o Gabriel também é da Geral (May, 06/11/2026 15:31)
   const anexos = anexosDaConversa(lastItems);
   menu.hidden = true; painel.hidden = false; pilha = [];
   tela(geral ? 'Dados do grupo' : 'Dados da conversa', c => {
