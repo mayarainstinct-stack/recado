@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.35">
+<meta name="app-versao" content="2026-11-05.36">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -159,7 +159,7 @@ textarea:focus-visible { outline: none; }
 .msg.may.eu .meta { color: #6B7280; }
 .msg.may.eu .tick.lida { color: #1E8A40; }
 .msg.may.eu .cita { background: #F3F4F6; }
-.msg.may.eu .cita b { color: #B91C22; }
+.msg.may.eu .cita b { color: var(--quem); }   /* nome de quem foi respondido na cor do robô, não no vermelho dela (May, 05/11/2026) */
 .msg.may.eu .cita span { color: #4B5563; }
 .msg.may .quem.eu .letra:nth-child(1) { color: #E31B23; }
 .msg.may .quem.eu .letra:nth-child(2) { color: #CA8A04; }
@@ -186,7 +186,7 @@ textarea:focus-visible { outline: none; }
 .msg .cita span { color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 /* no balão verde dela a citação some (rosa e cinza sobre verde): fundo mais escuro e texto claro */
 .msg.may .cita { background: rgba(0,0,0,.18); }
-.msg.may .cita b { color: var(--mine-fg); }
+.msg.may .cita b { color: var(--quem); }
 .msg.may .cita span { color: color-mix(in srgb, var(--mine-fg) 85%, transparent); }
 .msg .seta-resp { position: absolute; top: 50%; left: -34px; transform: translateY(-50%); width: 26px; height: 26px; border-radius: 50%;
   display: grid; place-items: center; background: var(--paper); color: var(--accent); font-size: 14px; opacity: 0; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
