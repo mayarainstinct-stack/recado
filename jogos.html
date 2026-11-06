@@ -338,7 +338,9 @@ nav button{height:58px;border-radius:22px;font-size:14px}
 .linha{border-color:color-mix(in srgb,var(--cor) 45%,transparent);background:linear-gradient(color-mix(in srgb,var(--cor) 26%,#0b0618),color-mix(in srgb,var(--cor) 10%,#0b0618));box-shadow:inset 0 2px 0 rgba(255,255,255,.12),inset 0 -3px 0 rgba(0,0,0,.35)}
 .tile{box-shadow:inset 0 2px 0 rgba(255,255,255,.14),inset 0 -4px 0 rgba(0,0,0,.35),0 6px 14px rgba(0,0,0,.3);border-color:color-mix(in srgb,var(--cor) 50%,transparent)}
 .abas-f button.on,nav button.on{background:linear-gradient(color-mix(in srgb,#00FF8C 34%,#07040f),color-mix(in srgb,#00FF8C 14%,#07040f));box-shadow:inset 0 2px 0 rgba(255,255,255,.18),inset 0 -3px 0 rgba(0,0,0,.35);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
-.capa img.inteira,.capa img.borra,.prints img,.ev img,.mini img,.moldura img{clip-path:inset(0 0 100% 0);transition:clip-path .4s cubic-bezier(.2,.8,.2,1)}
+/* o corte da revelação só entra quando a imagem já tem arquivo (src): sem src ela precisa ter área, senão o IntersectionObserver acha que tá fora da tela e nunca carrega (bug do Killer Instinct, 06/11 08:20) */
+.capa img.inteira,.capa img.borra,.prints img,.ev img,.mini img,.moldura img{transition:clip-path .4s cubic-bezier(.2,.8,.2,1)}
+.capa img.inteira[src]:not(.ok),.capa img.borra[src]:not(.ok),.prints img[src]:not(.ok),.ev img[src]:not(.ok),.mini img[src]:not(.ok),.moldura img[src]:not(.ok){clip-path:inset(0 0 100% 0)}
 .capa img.inteira.ok,.capa img.borra.ok,.prints img.ok,.ev img.ok,.mini img.ok,.moldura img.ok{clip-path:inset(0)}
 .capa img.borra.ok{clip-path:inset(0)}
 @keyframes brilhoEsq{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
@@ -561,10 +563,11 @@ const ICO_CONS={"gba": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 
 function icone(c){const idv=(corMay(c)||{}).id;if(idv&&ICO_CONS[idv])return ICO_CONS[idv];const k=consDe(c);if(k&&window.CONS.svg[k.icone])return window.CONS.svg[k.icone];c=c||"";if(/Switch|3DS|Wii|Nintendo|SNES|Super Nintendo|64/.test(c))return ICO.switch;if(/PS|PlayStation/.test(c))return ICO.ps;if(/PC/.test(c))return ICO.pc;return ICO.outro}
 const CORTE=window.CORTE||{},USO={};J.forEach(j=>(j.prints||[]).forEach(p=>{USO[p.arquivo]=(USO[p.arquivo]||0)+1}))
 const corte=a=>a in CORTE?CORTE[a]:a
+function semCapa(im){const c=im.parentElement;if(!c)return;c.querySelectorAll("img.borra,img.inteira").forEach(x=>x.remove());const l=c.querySelector(".ini.j2");if(l)l.style.zIndex=""}
 function capaUrl(j){if(j.capa)return j.capa;const p=j.parede&&j.parede.imagens&&j.parede.imagens[0];if(p)return RAIZ_DOCS+p.arquivo;const pr=(j.prints||[]).filter(x=>USO[x.arquivo]==1).map(x=>corte(x.arquivo)).find(Boolean);return pr||null}
 // selo J2 montado com as peças do logo que o Hermes recortou (J e 2), não letra digitada (May 08:11)
 const LOGO_J2='<div class="ini j2"><img class="j2img" data-p="categorias/games/tela/j2-selo.webp" alt="J2"></div>'
-function capaHtml(j,cls){const u=capaUrl(j);return u?`<img class="borra" loading="lazy" ${srcAttr(u)} alt="" onerror="this.remove()"><img class="inteira" loading="lazy" ${srcAttr(u)} alt="" onerror="this.remove()">${LOGO_J2.replace('class="ini j2"','class="ini j2" style="z-index:-1"')}`:LOGO_J2}
+function capaHtml(j,cls){const u=capaUrl(j);return u?`<img class="borra" loading="lazy" ${srcAttr(u)} alt="" onerror="this.remove()"><img class="inteira" loading="lazy" ${srcAttr(u)} alt="" onerror="semCapa(this)">${LOGO_J2.replace('class="ini j2"','class="ini j2" style="z-index:-1"')}`:LOGO_J2}
 function pctN(j){if(j.status=="zerado")return 100;return j.pct==null?null:j.estimado?Math.round(j.pct/10)*10:j.pct}
 function pctTxt(j){const n=pctN(j);return n==null?"":n+"%"}
 function barra(j){return j.pct==null?'<div class="barra"></div>':`<div class="barra"><i class="${j.estimado?"est":""}" style="width:${Math.max(0,Math.min(100,j.pct))}%"></i></div>`}
