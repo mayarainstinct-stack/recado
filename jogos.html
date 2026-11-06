@@ -174,12 +174,12 @@ nav button#tab-concluidos.on{background:linear-gradient(#F5D237,#B8860B);color:#
 @keyframes ab-espera{from{opacity:.45}to{opacity:1}}
 #abertura .j2-canvas{position:absolute;left:4%;width:92%;top:28%;height:44%;display:block}
 #abertura.v6 .logo{display:none}
-#abertura.sai{animation:ab-sai .3s ease-in forwards}
-@keyframes ab-entra{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+#abertura.sai{animation:ab-sai .34s cubic-bezier(.6,0,.9,.4) forwards}
+@keyframes ab-entra{from{transform:scale(.6)}to{transform:scale(1)}}
 @keyframes ab-brilha{from{transform:scale(.85) rotate(-8deg)}to{transform:scale(1.1) rotate(8deg)}}
-@keyframes ab-sai{to{opacity:0;transform:scale(1.08)}}
+@keyframes ab-sai{to{transform:translateY(-100%)}}
 #troca{position:fixed;inset:0;z-index:19;background:#000;pointer-events:none;opacity:0}
-#troca.on{animation:troca .3s ease-out}
+#troca.on{animation:none}
 @keyframes troca{0%{opacity:1}100%{opacity:0}}
 .capa,.mini,.moldura{isolation:isolate}
 .capa img.borra,.linha .mini img.borra,.placa .moldura img.borra{position:absolute;inset:-8%;width:116%;height:116%;object-fit:cover;filter:blur(14px) brightness(.55) saturate(1.2);z-index:0}
@@ -261,9 +261,9 @@ nav button{height:58px;border-radius:22px;font-size:14px}
 .topo h2{font-size:24px;letter-spacing:.2px;text-shadow:0 2px 0 rgba(0,0,0,.4)}
 .painel .bloco{margin:0 14px 14px}
 .painel .bloco h3{font-size:12px}
-@keyframes entraD{from{transform:translateX(48px);opacity:0}to{transform:none;opacity:1}}
-@keyframes entraE{from{transform:translateX(-48px);opacity:0}to{transform:none;opacity:1}}
-@keyframes sobeP{0%{transform:translateY(70px);opacity:0}70%{transform:translateY(-6px);opacity:1}100%{transform:none}}
+@keyframes entraD{from{transform:translateX(48px)}to{transform:none}}
+@keyframes entraE{from{transform:translateX(-48px)}to{transform:none}}
+@keyframes sobeP{0%{transform:translateY(70px)}70%{transform:translateY(-6px)}100%{transform:none}}
 @keyframes fichaE{from{transform:translateX(100%)}to{transform:none}}
 .entra-d{animation:entraD .3s cubic-bezier(.2,.8,.2,1) both}
 .entra-e{animation:entraE .3s cubic-bezier(.2,.8,.2,1) both}
@@ -282,9 +282,9 @@ nav button{height:58px;border-radius:22px;font-size:14px}
 .linha{border-color:color-mix(in srgb,var(--cor) 45%,transparent);background:linear-gradient(color-mix(in srgb,var(--cor) 26%,#0b0618),color-mix(in srgb,var(--cor) 10%,#0b0618));box-shadow:inset 0 2px 0 rgba(255,255,255,.12),inset 0 -3px 0 rgba(0,0,0,.35)}
 .tile{box-shadow:inset 0 2px 0 rgba(255,255,255,.14),inset 0 -4px 0 rgba(0,0,0,.35),0 6px 14px rgba(0,0,0,.3);border-color:color-mix(in srgb,var(--cor) 50%,transparent)}
 .abas-f button.on,nav button.on{background:linear-gradient(color-mix(in srgb,#00FF8C 34%,#07040f),color-mix(in srgb,#00FF8C 14%,#07040f));box-shadow:inset 0 2px 0 rgba(255,255,255,.18),inset 0 -3px 0 rgba(0,0,0,.35);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
-.capa img.inteira,.capa img.borra,.prints img,.ev img,.mini img,.moldura img{opacity:0;transition:opacity .35s ease}
-.capa img.inteira.ok,.capa img.borra.ok,.prints img.ok,.ev img.ok,.mini img.ok,.moldura img.ok{opacity:1}
-.capa img.borra.ok{opacity:1}
+.capa img.inteira,.capa img.borra,.prints img,.ev img,.mini img,.moldura img{clip-path:inset(0 0 100% 0);transition:clip-path .4s cubic-bezier(.2,.8,.2,1)}
+.capa img.inteira.ok,.capa img.borra.ok,.prints img.ok,.ev img.ok,.mini img.ok,.moldura img.ok{clip-path:inset(0)}
+.capa img.borra.ok{clip-path:inset(0)}
 @keyframes brilhoEsq{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
 .capa:has(img.inteira:not([src]))::after,.mini:has(img.inteira:not([src]))::after,.moldura:has(img.inteira:not([src]))::after,.prints img:not([src]),.ev img:not([src]){content:"";position:absolute;inset:0;z-index:2;background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.14) 50%,transparent 80%);animation:brilhoEsq 1.1s ease-in-out infinite}
 .prints img:not([src]),.ev img:not([src]){position:relative;min-height:90px;background-color:rgba(255,255,255,.06)}
