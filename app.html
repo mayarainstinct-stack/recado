@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.26">
+<meta name="app-versao" content="2026-11-05.27">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -63,6 +63,9 @@ header { position: relative; z-index: 2; color: var(--head-fg); font-family: -ap
 .status .sync { width: 10px; height: 10px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; display: none; }
 .status.on .dot { display: none; }
 .status.on .sync { display: block; animation: gira .8s linear infinite; }
+.semana { flex: none; width: auto; height: 34px; min-height: 0; padding: 0 10px; border-radius: 999px; background: rgba(255,255,255,.16); color: var(--head-fg); font-size: 12.5px; font-weight: 800; display: inline-flex; align-items: center; gap: 6px; }
+.semana i { width: 26px; height: 6px; border-radius: 3px; background: linear-gradient(90deg, currentColor var(--p), rgba(255,255,255,.25) var(--p)); }
+.semana.alto { color: #FDE68A; } .semana.cheio { color: #FCA5A5; }
 .icon-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.16); color: var(--head-fg);
   font-size: 22px; line-height: 1; display: grid; place-items: center; }
 /* Badge "N agentes online agora" (só em conversa de grupo, ex. Casa (PCs)): toca pra abrir a lista com foto + visto por último */
@@ -617,6 +620,7 @@ body.web.lado .anexos { grid-column: 2; grid-row: 4; }
         <span class="status off" id="statusbar"><span class="dot"></span><span class="sync" aria-hidden="true"></span><span id="status">verificando o agente…</span></span>
         <button type="button" class="online-badge" id="onlineBadge" hidden aria-haspopup="true" aria-expanded="false"></button>
       </div>
+      <button type="button" class="semana" id="semana" hidden aria-label="Limite semanal do Claude"></button>
       <button class="icon-btn" id="mais" type="button" aria-label="Mais opções" aria-haspopup="menu" aria-expanded="false" hidden data-i="more"></button>
     </div>
     <div class="online-pop" id="onlinePop" hidden></div>
@@ -1797,6 +1801,19 @@ async function checaOnline() {
 // agente ainda não apareceu, sem erro na tela. Threshold de "online" ~15 min; depois disso mostra "offline · visto há…".
 const onlineBadge = document.getElementById('onlineBadge'), onlinePop = document.getElementById('onlinePop');
 let onlineGrupoLista = [], ultimaOnlineGrupo = 0, onlineGrupoCarregando = null;
+// Limite semanal do Claude (May, 05/11/2026): o painel de cada robô manda o % no batimento (status.sh -> semana)
+const semanaEl = document.getElementById('semana');
+function mostraSemana(lista) {
+  const c = (lista || []).filter(p => typeof p.semana === 'number').sort((a, b) => String(b.ultimaAtualizacao || '').localeCompare(String(a.ultimaAtualizacao || '')))[0];
+  if (!c) { semanaEl.hidden = true; return; }
+  const v = Math.max(0, Math.min(100, Math.round(c.semana))), volta = c.semanaReset ? new Date(c.semanaReset * 1000) : null;
+  semanaEl.replaceChildren(document.createTextNode('semana ' + v + '%')); const b = document.createElement('i'); b.style.setProperty('--p', v + '%'); semanaEl.append(b);
+  semanaEl.classList.toggle('alto', v >= 70 && v < 90); semanaEl.classList.toggle('cheio', v >= 90); semanaEl.hidden = false;
+  semanaEl.onclick = () => showNote('Limite semanal do Claude: ' + v + '% usado' + (volta ? ', zera ' + volta.toLocaleDateString('pt-BR', { weekday: 'long' }) + ' às ' + volta.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '') + ' (medido pelo ' + ((GRUPO[c.chave] || {}).nome || c.chave).replace(/\s*\(.*\)$/, '') + ').');
+}
+async function semanaTrabalho() {   // no Trabalho a conta é a da Lyra
+  try { const r = await api('https://api.github.com/repos/' + REPO + '/contents/casa/online/online-lyra.json?ref=online', RAW); if (!r.ok) throw 0; if (FILE === TRAB.arq) mostraSemana([{ chave: 'lyra', ...JSON.parse(await r.text()) }]); } catch (e) { if (FILE === TRAB.arq) semanaEl.hidden = true; }
+}
 function fmtVisto(iso) {
   const t = Date.parse(iso || '');
   if (!isFinite(t)) return { texto: 'nunca visto', online: false };
@@ -1842,7 +1859,7 @@ function desenhaOnlinePop() {
 }
 async function atualizaOnlineGrupo(forcar) {
   const conv = FILE ? convPorArq(FILE) : null;
-  if (!conv || !conv.participantes) { onlineBadge.hidden = true; onlinePop.hidden = true; syncEl.hidden = false; return; }
+  if (!conv || !conv.participantes) { onlineBadge.hidden = true; onlinePop.hidden = true; syncEl.hidden = false; if (FILE === TRAB.arq) semanaTrabalho(); else semanaEl.hidden = true; return; }
   onlineBadge.hidden = false;
   mostraFazendo(fazendoGrupo());
   syncEl.hidden = true;   // em grupo (ex. Casa) o selo "N agentes online agora" substitui o selo global único, não mostra os dois
@@ -1861,6 +1878,7 @@ async function atualizaOnlineGrupo(forcar) {
     const falha = lista.filter(p => p.chave !== 'may').every(p => p.falhou) && (lista.find(p => p.falhou) || {}).falhou;
     if (falha) { onlineBadge.textContent = statusFalha(falha); return; }
     onlineGrupoLista = lista;   // sempre os participantes todos (mesmo quem nunca apareceu), pra lista nunca ficar vazia
+    mostraSemana(lista.filter(p => p.chave !== 'lyra'));   // a casa toda usa a mesma conta; a Lyra é a do serviço
     mostraFazendo(fazendoGrupo());
     const n = onlineGrupoLista.filter(p => fmtVisto(p.ultimaAtualizacao).online).length;
     onlineBadge.textContent = n + (n === 1 ? ' agente online agora' : ' agentes online agora');
@@ -2429,7 +2447,7 @@ function mostraLista() {
   FILE = null; API = null; nomeConv = ''; fotoConv = ''; logoEl.style.backgroundImage = ''; convAv.style.backgroundImage = ''; convAv.hidden = true;
   voltar.hidden = true; logoEl.hidden = false; tituloEl.textContent = 'Recados';
   feed.hidden = true; form.hidden = true; citando.hidden = true; desce.hidden = true; lista.hidden = false; novaBtn.hidden = false;
-  mostraFazendo(''); showNote(''); menu.hidden = true; onlineBadge.hidden = true; onlinePop.hidden = true;
+  mostraFazendo(''); showNote(''); menu.hidden = true; onlineBadge.hidden = true; onlinePop.hidden = true; semanaEl.hidden = true;
   if (conversas.length) desenhaLista();
   carregaLista().catch(() => {});
   if (largo()) abrir(ultimaConv()).catch(() => {});   // no PC já abre do lado a última que ela viu
