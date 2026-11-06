@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.67">
+<meta name="app-versao" content="2026-11-06.68">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -1846,7 +1846,11 @@ function recolocaPendentes() {
   feed.append(...ps.map(x => x.el));
 }
 function largaPendente(id) { const x = pendentes[id]; if (!x) return; delete pendentes[id]; tiraPendente(id); x.el.remove(); }
-function reenviar(id) { const x = pendentes[id]; if (x && !sending) enviar(x.p, x.el); }
+async function reenviar(id) {   // tocou numa que não foi: reenvia TODAS as que não foram, na ordem em que ela escreveu (May, 06/11/2026 20:4x)
+  if (sending || !pendentes[id]) return;
+  const fila = Object.values(pendentes).filter(x => x.p.id === id || x.el.classList.contains('falhou')).sort((a, b) => a.p.em - b.p.em);
+  for (const x of fila) { if (!pendentes[x.p.id]) continue; const ok = await enviar(x.p, x.el); if (!ok) break; }   // parou numa: as outras ficam marcadas pra tentar de novo
+}
 function abreMenuPend(btn, p) {
   msgMenuPop.replaceChildren();
   const op = (svg, txt, fn) => { const b = document.createElement('button'); b.type = 'button'; b.innerHTML = svg + '<span>' + txt + '</span>'; b.addEventListener('click', e => { e.stopPropagation(); fn(b); }); msgMenuPop.append(b); };
