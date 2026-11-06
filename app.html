@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.24">
+<meta name="app-versao" content="2026-11-06.25">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -171,8 +171,8 @@ textarea:focus-visible { outline: none; }
 .quem .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--quem); color: var(--quem-fg); font-size: 17px;   /* era 26px, pequeno demais no celular (May, 05/11/2026) */
   font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background-size: cover; background-position: center; }
 .marca { font-weight: 700; }
-.marca-cor.marca-may { background: linear-gradient(rgba(0,0,0,.14), rgba(0,0,0,.14)), linear-gradient(90deg, #C8161D, #B7860B 50%, #15803D); font-weight: 700; text-shadow: 0 0 3px rgba(0,0,0,.9), 0 1px 1px rgba(0,0,0,.8); }   /* sem contorno, fundo um pouco mais claro (May, 06/11/2026 01:40) */   /* tons escurecidos: o amarelo e o verde claros apagavam a letra branca (May, 06/11/2026 01:36) */
-.marca-cor.marca-todos { background: linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.2)), linear-gradient(90deg, #E31B23, #4A9A00, #1D4ED8, #C99A00, #E0219F, #9333EA); font-weight: 700; text-shadow: 0 0 3px rgba(0,0,0,.9), 0 1px 1px rgba(0,0,0,.8); }   /* sem contorno, fundo um pouco mais claro (May, 06/11/2026 01:40) */   /* @todos com as cores da casa toda */   /* a pílula dela com as 3 cores (May, 06/11/2026) */
+.marca-cor.marca-may { background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,0) 42%, rgba(0,0,0,.38)), linear-gradient(90deg, #C8161D, #B7860B 50%, #15803D); font-weight: 700; text-shadow: 0 0 3px rgba(0,0,0,.9), 0 1px 1px rgba(0,0,0,.8); }   /* cor no degradê deitado, brilho no degradê em pé: claro em cima, escuro embaixo onde fica a letra (May, 06/11/2026 01:43) */   /* tons escurecidos: o amarelo e o verde claros apagavam a letra branca (May, 06/11/2026 01:36) */
+.marca-cor.marca-todos { background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,0) 42%, rgba(0,0,0,.38)), linear-gradient(90deg, #E31B23, #4A9A00, #1D4ED8, #C99A00, #E0219F, #9333EA); font-weight: 700; text-shadow: 0 0 3px rgba(0,0,0,.9), 0 1px 1px rgba(0,0,0,.8); }   /* cor no degradê deitado, brilho no degradê em pé: claro em cima, escuro embaixo onde fica a letra (May, 06/11/2026 01:43) */   /* @todos com as cores da casa toda */   /* a pílula dela com as 3 cores (May, 06/11/2026) */
 .marca-cor { background: linear-gradient(var(--quem), color-mix(in srgb, var(--quem) 70%, black)); color: #FFFFFF; border-radius: 999px;
   padding: 1px 9px; margin: 0 1px; font-size: 13px; display: inline-block; line-height: 1.6; vertical-align: text-bottom; }
 .mencoes { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); }
