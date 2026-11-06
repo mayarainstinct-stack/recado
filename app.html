@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.46">
+<meta name="app-versao" content="2026-11-06.47">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -525,6 +525,9 @@ img.esq { min-height: 140px; }
   box-shadow: 0 14px 40px rgba(0,0,0,.3); animation: entra .2s ease-out both; }
 .pop h2 { margin: 0; font-size: 18px; }
 .msg.grupo.sigma { border: 3px solid transparent; background: linear-gradient(color-mix(in srgb, #9333EA 16%, var(--cinza)), color-mix(in srgb, #9333EA 16%, var(--cinza))) padding-box, linear-gradient(135deg, #9333EA, #9CA3AF, #0A0A0A) border-box; }   /* Sigma em 3 cores, roxo, cinza e preto (05/11/2026) */
+.fixa { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 10px; margin: 2px 0 6px; padding: 10px 12px; border-radius: 14px; background: color-mix(in srgb, var(--quem) 22%, var(--paper)); border: 2px solid var(--quem); box-shadow: 0 4px 14px rgba(0,0,0,.25); }   /* mensagem fixa até ela dar Ok (May, 06/11/2026) */
+.fixa-tx { flex: 1; min-width: 0; font-size: 14px; line-height: 1.35; } .fixa-tx b { display: block; color: color-mix(in srgb, var(--quem) 55%, var(--fg)); font-size: 12.5px; } .fixa-tx span { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.fixa-ok { flex: none; width: auto; min-width: 64px; height: 40px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--quem); color: #fff; font-weight: 700; font-size: 15px; cursor: pointer; }
 .msg.grupo.tres { border: 3px solid transparent; background: linear-gradient(color-mix(in srgb, var(--c1) 18%, var(--cinza)), color-mix(in srgb, var(--c1) 18%, var(--cinza))) padding-box, linear-gradient(135deg, var(--c1), var(--c2) 50%, var(--c3)) border-box; }
 .msg.tres .quem .rotulo > span:first-child { color: var(--c2); align-self: flex-start; }
 @supports ((-webkit-background-clip: text) or (background-clip: text)) { .msg.tres .quem .rotulo > span:first-child { background: linear-gradient(90deg, var(--c2), var(--c3)); -webkit-background-clip: text; background-clip: text; color: transparent; } }
@@ -1530,6 +1533,7 @@ function render(items, manterPosicao) {
   const ancora = [...feed.querySelectorAll('.msg[data-i]')].find(e => e.getBoundingClientRect().bottom > topoFeed);
   const ancI = ancora ? ancora.dataset.i : null, ancY = ancora ? ancora.getBoundingClientRect().top - topoFeed : 0;
   feed.replaceChildren();
+  mostraFixa(items);
   if (!items.length) {
     const e = document.createElement('div'); e.className = 'empty';
     e.innerHTML = '<strong>Caixa vazia</strong><span>Tudo que você mandou já foi anotado. Escreve a próxima ideia aqui embaixo.</span>';
@@ -2267,10 +2271,24 @@ function corDe(nome) {
   const g = grupoDeNome(nome);   // tira o "(PC2)" igual o robozinho; antes a cor caía no vermelho (Sigma, 05/11/2026)
   return g ? g.cor : 'var(--accent)';
 }
+// mensagem fixa (May, 06/11/2026 15:34): recado de robô com 📌 fica preso no topo até ela tocar Ok; o Ok vira resposta "✅ ok" citando ele
+const trechoDe = it => (it.text || (it.foto ? 'Foto' : '')).replace(/[⟪⟫:\n]/g, ' ').slice(0, 80);
+function mostraFixa(items) {
+  if (FILE !== GERAL.arq) return;
+  const oks = items.filter(x => x.from === 'may' && x.re && /^\s*✅/.test(x.text || '')).map(x => x.re.trecho.trim());
+  const it = items.find(x => x.from !== 'may' && /📌/.test(x.text || '') && !oks.includes(trechoDe(x).trim()));
+  if (!it) return;
+  const g = GRUPO[it.quem] || {}, nome = (g.nome || it.quem || '').replace(/\s*\(.*\)$/, '');
+  const d = document.createElement('div'); d.className = 'fixa'; d.style.setProperty('--quem', g.cor || 'var(--accent)');
+  const tx = document.createElement('div'); tx.className = 'fixa-tx'; const b = document.createElement('b'); b.textContent = nome; const sp = document.createElement('span'); sp.textContent = (it.text || '').replace(/📌\s*/g, ''); tx.append(b, sp);
+  const ok = document.createElement('button'); ok.type = 'button'; ok.className = 'fixa-ok'; ok.textContent = 'Ok';
+  ok.onclick = () => { ok.disabled = true; ok.textContent = 'Enviando…'; const antes = respondendo; respondendo = { nome: g.nome || nome, trecho: trechoDe(it) }; const x = novoPendente('✅ ok', [], FILE); respondendo = antes; enviar(x.p, x.el); d.remove(); };
+  d.append(tx, ok); feed.append(d);
+}
 function responder(it) {
   if (!it) { respondendo = null; citando.hidden = true; return; }
   const nome = it.from === 'may' ? 'Você' : (GRUPO[it.quem] ? GRUPO[it.quem].nome : 'Lyra');
-  const trecho = (it.text || (it.foto ? 'Foto' : '')).replace(/[⟪⟫:\n]/g, ' ').slice(0, 80);
+  const trecho = trechoDe(it);
   respondendo = { nome, trecho };
   citando.style.setProperty('--quem', corDe(nome));
   document.getElementById('cit-nome').textContent = nome;
