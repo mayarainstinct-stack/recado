@@ -433,24 +433,21 @@
    "capa": "https://upload.wikimedia.org/wikipedia/en/e/e0/Horizon_Chase_cover.png"
   },
   "Super Mario Bros. Wonder": {
-   "pct": 50,
+   "pct": 10,
    "estimado": true,
    "console": "Switch (emulador no PC)",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/a/a3/Mariowonder.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Meio do mapa, em frente a uma planta gigante, depois do mundo do deserto."
   },
   "Donkey Kong Country: Tropical Freeze": {
-   "pct": 10,
-   "estimado": true,
+   "pct": 1,
+   "estimado": false,
    "console": "Switch (emulador no PC)",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/f/fb/DKC5_box_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Bem no começo, umas 4 ou 5 fases."
   },
   "Donkey Kong Country Returns": {
-   "pct": 10,
-   "estimado": true,
+   "pct": 0,
+   "estimado": false,
    "console": "Switch (emulador no PC)",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/1/1f/Donkeykongcountryreturns.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Bem no começo, umas duas fases."
   },
   "25 to Life": {
@@ -834,8 +831,8 @@
    "capa": "https://upload.wikimedia.org/wikipedia/en/a/ae/DonkeyKong64CoverArt.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
   },
   "Zelda: Link's Awakening": {
-   "pct": 0,
-   "estimado": false,
+   "pct": 3,
+   "estimado": true,
    "console": "Switch (emulador no PC)",
    "capa": "https://upload.wikimedia.org/wikipedia/en/7/74/The_Legend_of_Zelda_Link%27s_Awakening_%282019_video_game%29.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Só abriu."
@@ -858,17 +855,16 @@
    "pct": 15,
    "estimado": true,
    "console": "Switch (emulador no PC)",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/5/5e/Super_Mario_3D_World_box_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Até pegar a Plessie, depois da primeira batalha com o Bowser."
   },
   "Pokémon Let's Go Eevee": {
-   "pct": 5,
-   "estimado": true,
+   "pct": 0,
+   "estimado": false,
    "console": "Switch (emulador no PC)",
    "parei": "Jogou a demo inteira no Switch."
   },
   "Pokémon Mystery Dungeon DX": {
-   "pct": 10,
+   "pct": 5,
    "estimado": true,
    "console": "Switch (emulador no PC)",
    "capa": "https://upload.wikimedia.org/wikipedia/en/9/9e/Pok%C3%A9mon_Mystery_Dungeon_Rescue_Team_DX.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
@@ -881,24 +877,21 @@
    "parei": "Só abriu."
   },
   "Kirby Star Allies": {
-   "pct": 15,
-   "estimado": true,
+   "pct": 1,
+   "estimado": false,
    "console": "Switch (emulador no PC)",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/6/65/Kirby_Star_Allies.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Umas 5 fases."
   },
   "Paper Mario: The Thousand-Year Door": {
    "pct": 0,
    "estimado": false,
    "console": "Switch (emulador no PC)",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/1/18/Paper_Mario_The_Thousand-Year_Door_%28artwork%29.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Só abriu o remake."
   },
   "New Pokémon Snap": {
-   "pct": 5,
+   "pct": 2,
    "estimado": true,
    "console": "Switch (emulador no PC)",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/f/f1/Newpokemonsnap.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Umas duas trilhas."
   },
   "The Plucky Squire": {
@@ -942,8 +935,8 @@
    "parei": "Duas ou três entregas, no episódio 1."
   },
   "Bayonetta Origins": {
-   "pct": 20,
-   "estimado": true,
+   "pct": 3,
+   "estimado": false,
    "console": "Switch (emulador no PC)",
    "parei": "Com o Cheshire, passou da floresta e de um chefão."
   },
@@ -951,14 +944,12 @@
    "pct": 10,
    "estimado": true,
    "console": "Switch (emulador no PC)",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/3/3c/Blasphemous_2_cover_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Algumas partes; mapa muito grande."
   },
   "Cult of the Lamb": {
-   "pct": 5,
-   "estimado": true,
+   "pct": 0,
+   "estimado": false,
    "console": "Switch (emulador no PC)",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/d/d4/Cult_of_the_Lamb_Key_Art.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Jogou a demo inteira no Switch."
   },
   "Saints Row": {
@@ -977,7 +968,9 @@
   "Little Nightmares 3": {
    "console": "PC",
    "principal": true,
-   "parei": "Esmagou a monstra de seis braços na prensa e passou para o espelho seguinte."
+   "parei": "Esmagou a monstra de seis braços na prensa e passou para o espelho seguinte.",
+   "pct": 48.6,
+   "estimado": false
   },
   "Metroid Dread": {
    "pct": 100,
@@ -1153,8 +1146,7 @@
   "Pokémon Ruby": {
    "pct": 100,
    "estimado": false,
-   "parei": "Zerado.",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/b/be/PokemonRubySapphireBox.jpg"
+   "parei": "Zerado."
   },
   "Pokémon X": {
    "pct": 100,
@@ -1170,7 +1162,6 @@
    "pct": 35,
    "estimado": false,
    "console": "Switch (emulador no PC)",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/2/2d/Pokemon_Legends_Z-A_Key_Art_Logo.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "No rank F do Z-A Royale, depois de vencer o Vinnie."
   },
   "Asphalt Legends": {
@@ -1190,7 +1181,6 @@
    "pct": 5,
    "estimado": true,
    "console": "Switch (emulador no PC)",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/6/68/The_Long_Dark_Key_Art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Saiu do vale e passou pelas cavernas."
   },
   "Brütal Legend": {
@@ -1274,33 +1264,42 @@
    "capa": "https://upload.wikimedia.org/wikipedia/en/4/4c/Pok%C3%A9mon_Champions_key_art_logo.jpg"
   },
   "Sonic X Shadow Generations": {
-   "console": "Switch (emulador no PC)"
+   "console": "Switch (emulador no PC)",
+   "pct": 0,
+   "estimado": false
   },
   "Hyrule Warriors: Definitive Edition": {
    "console": "Switch (emulador no PC)",
-   "parei": "Algumas missões."
+   "parei": "Algumas missões.",
+   "pct": 0,
+   "estimado": false
   },
   "Hyrule Warriors: Age of Calamity": {
    "console": "Switch (emulador no PC)",
    "capa": "https://upload.wikimedia.org/wikipedia/en/e/e1/Hyrule_Warriors_Age_Of_Calamity.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-   "parei": "Algumas missões."
+   "parei": "Algumas missões.",
+   "pct": 0,
+   "estimado": false
   },
   "Luigi's Mansion 3": {
    "console": "Switch (emulador no PC)",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/3/38/Luigi%27s_Mansion_3.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-   "parei": "Trava muito no emulador."
+   "parei": "Trava muito no emulador.",
+   "pct": 1,
+   "estimado": true
   },
   "Mario Party Jamboree": {
    "console": "Switch (emulador no PC)",
-   "parei": "Partidas em multiplayer."
+   "parei": "Partidas em multiplayer.",
+   "pct": 1,
+   "estimado": true
   },
   "Super Mario Party": {
-   "console": "Switch (emulador no PC)",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/6/6c/Super_Mario_Party.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+   "console": "Switch (emulador no PC)"
   },
   "Super Smash Bros. Ultimate": {
    "console": "Switch (emulador no PC)",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/5/50/Super_Smash_Bros._Ultimate.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+   "pct": 2,
+   "estimado": true
   },
   "Pokkén Tournament DX": {
    "console": "Switch (emulador no PC)",
