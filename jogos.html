@@ -156,6 +156,9 @@ nav button.on{background:rgba(0,255,140,.12);color:var(--verde);box-shadow:inset
 #abertura.j2 .logo{display:flex;align-items:flex-end;gap:2px}
 #abertura.j2 .estrelas{position:absolute;left:0;right:0;top:-46px}
 #abertura .pular{position:absolute;bottom:max(24px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.45);text-transform:uppercase}
+#abertura.v6{background:transparent}
+#abertura .j2-canvas{position:absolute;left:4%;width:92%;top:28%;height:44%;display:block}
+#abertura.v6 .logo{display:none}
 #abertura.sai{animation:ab-sai .3s ease-in forwards}
 @keyframes ab-entra{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
 @keyframes ab-brilha{from{transform:scale(.85) rotate(-8deg)}to{transform:scale(1.1) rotate(8deg)}}
@@ -321,6 +324,13 @@ document.getElementById("z-ant").onclick=e=>{e.stopPropagation();zVai(-1)}
 document.getElementById("z-seg").onclick=e=>{e.stopPropagation();zVai(1)}
 document.addEventListener("keydown",e=>{if(!document.getElementById("zoom").classList.contains("on"))return;if(e.key=="Escape")zFecha();else if(e.key=="ArrowLeft")zVai(-1);else if(e.key=="ArrowRight")zVai(1)})
 ;(()=>{const z=document.getElementById("zoom");let x0=null,y0=0;z.addEventListener("touchstart",e=>{if(e.touches.length==1){x0=e.touches[0].clientX;y0=e.touches[0].clientY}else x0=null},{passive:true});z.addEventListener("touchend",e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.4)zVai(dx<0?1:-1);else if(Math.abs(dy)>70&&Math.abs(dy)>Math.abs(dx))zFecha()})})()
+// Abertura J2 do Hermes (v6, aprovada pela May em 05/11/2026 23:57): motor e peças lidos do Inst privado (marca/mays-play/abertura-j2/v2),
+// nada copiado pro repo público. As peças viram blob antes e o motor recebe a imagem pronta pelo J2SRC.
+const J2_DIR="marca/mays-play/abertura-j2/v2/"
+function carregaJ2(){const raw=p=>gh(p,{headers:{Accept:"application/vnd.github.raw"}}).then(r=>{if(!r.ok)throw r.status;return r.text()})
+return Promise.all([raw(J2_DIR+"dados.js"),raw(J2_DIR+"j2.js"),gh(J2_DIR+"pecas").then(r=>r.json())]).then(async([dados,motor,lista])=>{const mapa={};await Promise.all(lista.filter(x=>/\.webp$/.test(x.name)).map(x=>priv(x.path).then(u=>{mapa[x.name.replace(/\.webp$/,"")]=u}).catch(()=>{})));window.J2SRC=n=>mapa[n]
+new Function(dados)();new Function(motor.replace("im.src = base + 'pecas/' + n + '.webp'","im.src = (global.J2SRC && global.J2SRC(n)) || (base + 'pecas/' + n + '.webp')"))();return window.AberturaJ2||null}).catch(()=>null)}
+window.J2PROMESSA=TOKEN&&!new URLSearchParams(location.search).has("semabertura")?carregaJ2():Promise.resolve(null)
 async function carrega(){
 if(!TOKEN){location.replace("app.html");return}
 const r=await gh("categorias/games/tela-jogos.json",{headers:{Accept:"application/vnd.github.raw"}})
@@ -488,7 +498,9 @@ document.getElementById("e-env").onclick=async()=>{const t=document.getElementBy
 const linha=`- [${p(n.getDate())}/${p(n.getMonth()+1)}/${n.getFullYear()} ${p(n.getHours())}:${p(n.getMinutes())}] @Nyx @Orfeu sobre o jogo ${fichaAtual.titulo}: ${t.replace(/\r?\n/g,"\\n")}`
 let ok=false;for(let k=0;k<4&&!ok;k++){try{const f=await(await gh("CAIXA-DE-ENTRADA.md")).json();const md=decodeURIComponent(escape(atob(f.content.replace(/\n/g,""))));if(!md.includes("## Recados")||md.length<200)break;const novo=md.replace(/\s*$/,"")+"\n"+linha+"\n";const r=await gh("CAIXA-DE-ENTRADA.md",{method:"PUT",body:JSON.stringify({message:"recado do iPhone (jogos)",content:btoa(unescape(encodeURIComponent(novo))),sha:f.sha})});if(r.ok)ok=true;else if(r.status!==409)break;else await new Promise(z=>setTimeout(z,600))}catch(e){break}}
 b.disabled=false;if(ok){document.getElementById("e-txt").value="";document.getElementById("envio").classList.remove("on");a.textContent="Mandado pra Geral. A Nyx e o Orfeu põem na história do jogo."}else a.textContent="Não consegui mandar. Confere a internet e tenta de novo.";a.style.display="block";setTimeout(()=>a.style.display="none",3200)}
-function aberturaJogos(pronto,parar){const el=document.getElementById("abertura"),rm=matchMedia("(prefers-reduced-motion: reduce)").matches;if(rm){pronto();return}el.classList.add("on");let fim=false;const sai=()=>{if(fim)return;fim=true;el.classList.add("sai");setTimeout(()=>{el.classList.remove("on","sai","j2");const t=document.getElementById("troca");t.classList.remove("on");void t.offsetWidth;t.classList.add("on");pronto()},300)};el.onclick=sai;el.onkeydown=e=>{if(e.key=="Enter"||e.key==" "||e.key=="Escape")sai()};if(parar=="logo")return;setTimeout(()=>el.classList.add("j2"),1100);if(parar=="j2")return;setTimeout(sai,2000)}
+function aberturaJogos(pronto,parar){const el=document.getElementById("abertura"),rm=matchMedia("(prefers-reduced-motion: reduce)").matches;if(rm){pronto();return}el.classList.add("on");let fim=false,ab=null;const sai=()=>{if(fim)return;fim=true;el.classList.add("sai");setTimeout(()=>{el.classList.remove("on","sai","j2","v6");const t=document.getElementById("troca");t.classList.remove("on");void t.offsetWidth;t.classList.add("on");pronto()},300)};el.onclick=()=>ab?ab.pular():sai();el.onkeydown=e=>{if(e.key=="Enter"||e.key==" "||e.key=="Escape")ab?ab.pular():sai()}
+const velha=()=>{if(parar=="logo")return;setTimeout(()=>el.classList.add("j2"),1100);if(parar=="j2")return;setTimeout(sai,2000)}
+Promise.race([window.J2PROMESSA,new Promise(r=>setTimeout(()=>r(null),1500))]).then(A=>{if(fim)return;if(!A){velha();return}const cv=document.createElement("canvas");cv.className="j2-canvas";el.append(cv);el.classList.add("v6");ab=A.criar(cv,{duracao:6});ab.tocar(sai)})}
 function iniciar(){const hs=location.hash.slice(1);if(hs.startsWith("jogo=")){aba=POR[hs.slice(5)]&&POR[hs.slice(5)].status=="zerado"?"concluidos":"jogando";render();abrir(hs.slice(5));return}if(hs=="concluidos")aba="concluidos";render()}
 document.getElementById("voltar-app").onclick=()=>{location.href="app.html"}
 const q=new URLSearchParams(location.search)
