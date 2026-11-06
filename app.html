@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.18">
+<meta name="app-versao" content="2026-11-06.19">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -854,6 +854,7 @@ function linkar(el, txt, dentro) {
       // nome sempre no padrão (maiúscula certa), não importa como foi digitado -- evita "@orfeu" e "@Orfeu" com visual diferente
       s.textContent = eu ? '@' + EU.nome : chave ? '@' + GRUPO[chave].nome.replace(/\s*\(.*\)$/, '') : m[0];
       if (chave || eu) { s.style.setProperty('--quem', eu ? EU.cor : GRUPO[chave].cor); s.classList.add('marca-cor'); }
+      else if (nome.toLowerCase() === 'todos') { s.textContent = '@todos'; s.style.setProperty('--quem', '#64748B'); s.classList.add('marca-cor'); }   // @todos também vira pílula (May, 06/11/2026)
       el.append(s); i = m.index + m[0].length;
       continue;
     }
