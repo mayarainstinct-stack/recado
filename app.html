@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.19">
+<meta name="app-versao" content="2026-11-05.20">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -490,7 +490,8 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-x svg { width: 16px; height: 16px; stroke-width: 2.6; }
 .ct-trilho { display: flex; height: min(calc((100vw - 32px) * 1.4), 520px, calc(100dvh - 156px)); overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; border-radius: 22px; box-shadow: 0 0 28px color-mix(in srgb, var(--quem) 38%, transparent), 0 18px 44px rgba(0,0,0,.5); }   /* o brilho sai do trilho: dentro da rolagem ele era cortado */
 .ct-trilho::-webkit-scrollbar { display: none; }
-.ct-trilho > .ct-face { flex: 0 0 100%; scroll-snap-align: center; scroll-snap-stop: always; }
+.ct-trilho { perspective: 900px; }
+.ct-trilho > .ct-face { flex: 0 0 100%; scroll-snap-align: center; scroll-snap-stop: always; transform-origin: center; will-change: transform; }
 .ct-face { grid-area: 1 / 1; min-height: 0; padding: 6px; border-radius: 22px; background: var(--borda); -webkit-backface-visibility: hidden; backface-visibility: hidden; box-shadow: 0 0 28px color-mix(in srgb, var(--quem) 38%, transparent), 0 18px 44px rgba(0,0,0,.5); color: #fff; font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,.6), 0 0 12px rgba(0,0,0,.3); }
 .ct-in { height: 100%; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; box-shadow: inset 0 0 0 1px rgba(255,255,255,.14);
   background: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1.5px) 0 0 / 9px 9px, repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0 1px, transparent 1px 7px), linear-gradient(158deg, var(--quem) 0%, color-mix(in srgb, var(--quem) 45%, var(--escuro)) 22%, var(--escuro) 60%); }
@@ -570,7 +571,7 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-tempo small { display: block; font-size: 10.5px; color: rgba(255,255,255,.7); letter-spacing: .04em; }
 .ct-painel .ct-ins-fila { row-gap: 12px; padding: 10px 4px; border-radius: 14px; background: rgba(0,0,0,.3); }
 .ct-abas { display: grid; grid-template-columns: repeat(var(--n, 4), 1fr); gap: 4px; padding: 4px; border-radius: 16px; background: #0B0B0E; border: 1px solid rgba(255,255,255,.1); }
-.ct-abas button { width: auto; height: auto; min-width: 0; min-height: 54px; border-radius: 12px; border: none; background: none; color: rgba(255,255,255,.62); display: grid; justify-items: center; align-content: center; gap: 3px; padding: 6px 2px; font-size: 11px; font-weight: 800; }
+.ct-abas button { width: auto; height: auto; min-width: 0; min-height: 54px; border-radius: 12px; border: none; background: none; color: rgba(255,255,255,.62); display: grid; justify-items: center; align-content: center; gap: 3px; padding: 6px 1px; font-size: calc(11px - (var(--n, 4) - 4) * .6px); font-weight: 800; letter-spacing: -.01em; overflow: hidden; }   /* 7 abas cabem no celular */
 .ct-abas button svg { width: 22px; height: 22px; }
 .ct-abas button.ativa { color: #fff; background: color-mix(in srgb, var(--quem) 30%, transparent); box-shadow: inset 0 -3px 0 var(--claro); }
 .ct.eu .ct-abas button.ativa { background: linear-gradient(135deg, rgba(227,27,35,.3), rgba(250,204,21,.18), rgba(34,197,94,.24)); box-shadow: inset 0 -3px 0 #FACC15; }
@@ -976,6 +977,8 @@ const ICO_FICHA = {
   atr: svgF('<path d="M5 20V10M12 20V4M19 20v-7"/>'),
   maq: svgF('<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>'),
   conq: svgF('<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8"/>'),
+  jeito: svgF('<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>'),
+  tempo: svgF('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
   lado: svgF('<path d="M8 7l-5 5 5 5M16 7l5 5-5 5M3 12h18"/>'),
   hab: svgF('<path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/>'),
   fechar: svgF('<path d="M6 6l12 12M18 6L6 18"/>'),
@@ -1005,7 +1008,7 @@ async function abreCracha(chave) {
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
   const ic = (id, cls, txt) => { const e = el('span', cls); e.innerHTML = ICO_FICHA[id]; if (txt != null) e.append(txt); return e; };
   const nome = g.nome.replace(/\s*\(PC\d\)$/i, ''), cargo = f.cargo || (g.cargo || (g === EU ? 'Agente humana' : '')).replace(/\s+do PC\d$/i, '');
-  const num = 'Nº ' + (f.id || '---'), atr = f.atr || [], ins = f.insignias || [], ent = (f.entregas || []).slice(0, 3);
+  const num = 'Nº ' + (f.id || '---'), atr = f.atr || [], ins = f.insignias || [];
   const pop = el('div', 'pop cracha-pop'); pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'Ficha de ' + nome);
   const ct = el('div', 'ct' + (g === EU ? ' eu' : '') + (k === 'sigma' ? ' sigma' : '')); ct.style.setProperty('--quem', g.cor); ct.style.setProperty('--quem-fg', g.texto || '#fff');
   const avatar = (grande) => {
@@ -1033,24 +1036,28 @@ async function abreCracha(chave) {
   fi.append(insBox, pe);
   const bloco = (tit, ...filhos) => { const d = el('div'); if (tit) d.append(el('div', 'ct-tit', tit)); d.append(...filhos); return d; };
   const selos = (lista, icone) => { const w = el('div', 'ct-selos'); lista.forEach(n => w.append(ic(icone, null, n))); return w; };
-  const pAtr = el('div');
+  const pAtr = el('div'), pJeito = el('div');
   if (f.placar) { const pl = el('div', 'ct-placar'); [['revisoes', 'Revisões'], ['defeitos', 'Defeitos achados'], ['consertados', 'Consertados']].forEach(([c, r]) => { const d = el('div'); d.append(el('b', '', f.placar[c]), r); pl.append(d); }); pAtr.append(pl); }
   atr.forEach(([n, val]) => { const b = el('div', 'ct-bar'); b.setAttribute('role', 'meter'); b.setAttribute('aria-label', n); b.setAttribute('aria-valuemin', 0); b.setAttribute('aria-valuemax', 10); b.setAttribute('aria-valuenow', val); b.append(el('span', '', n), el('em', '', val + '/10')); const s = el('div', 'ct-seg'); for (let i = 0; i < 10; i++) s.append(el('i', i < val ? 'on' : '')); b.append(s); pAtr.append(b); });
-  if (f.forte || f.fraco) { const ff = el('div', 'ct-ff'); [['forte', 'Forte', 'sobe'], ['fraco', 'Fraco', 'desce']].forEach(([c, r, i]) => { if (!f[c]) return; const d = el('div', c), t = ic(i, 'ct-tit', r); d.append(t, f[c]); ff.append(d); }); pAtr.append(bloco('Forte × fraco', ff)); }
+  if (f.forte || f.fraco) { const ff = el('div', 'ct-ff'); [['forte', 'Forte', 'sobe'], ['fraco', 'Fraco', 'desce']].forEach(([c, r, i]) => { if (!f[c]) return; const d = el('div', c), t = ic(i, 'ct-tit', r); d.append(t, f[c]); ff.append(d); }); pJeito.append(bloco('Forte × fraco', ff)); }
   const pHab = el('div');
   if (f.hab) pHab.append(bloco('Habilidades', selos(f.hab, 'estrela')));
-  if (f.cons) pHab.append(bloco('Conselheiros que incorpora', selos(f.cons, 'pessoa')));
-  if (f.olhar) pHab.append(el('div', 'ct-olhar', f.olhar));
+  if (f.olhar) pJeito.append(bloco('Como eu vejo as coisas', el('div', 'ct-olhar', f.olhar)));
+  if (f.cons) pJeito.append(bloco('Conselheiros que incorpora', selos(f.cons, 'pessoa')));
   const pMaq = el('dl', 'ct-dados');
-  [['onde', 'Onde roda', f.onde || f.pc], ['maq', 'PC', f.onde ? f.pc : ''], ['ip', 'IP', hb.ip || (['may', 'lyra', 'sigma'].includes(k) ? '' : 'ainda não mandou')], ...(f.hw ? f.hw.map(x => [...x, 'peca']) : [['maq', 'Máquina', f.maquina]]), ['relogio', 'Último sinal', k === 'may' ? '' : v.texto], ['agora', 'Fazendo agora', hb.fazendo || '']]
+  [['onde', 'Onde roda', f.onde || f.pc], ['maq', 'PC', f.onde ? f.pc : ''], ['ip', 'IP', hb.ip || (['may', 'lyra', 'sigma'].includes(k) ? '' : 'ainda não mandou')], ...(f.hw ? f.hw.map(x => [...x, 'peca']) : [['maq', 'Máquina', f.maquina]])]
     .forEach(([i, t, d, c]) => { if (!d) return; const w = el('div', c); w.innerHTML = ICO_FICHA[i] || ICO_FICHA.maq; w.append(el('dt', '', t), el('dd', '', d)); pMaq.append(w); });
   const pecas = pMaq.querySelectorAll('.peca'); if (pecas.length % 2) pecas[pecas.length - 1].classList.add('larga');   // peça sobrando ocupa a linha toda
   const pConq = el('div'), todas = el('div', 'ct-ins-fila'); ins.slice().reverse().forEach(it => todas.append(insignia(it))); if (!ins.length) todas.append(insignia(null));
   pConq.append(bloco('Insígnias', todas));
-  if (ent.length) { const ol = el('ol', 'ct-tempo'); ent.forEach(it => { const li = el('li'); li.append(el('small', '', it.data || ''), it.nome); ol.append(li); }); pConq.append(bloco('Últimas entregas', ol)); }
+  const pTempo = el('div'), agora = el('dl', 'ct-dados');
+  [['agora', 'Fazendo agora', hb.fazendo || ''], ['relogio', 'Último sinal', k === 'may' ? '' : v.texto]].forEach(([i, t, d]) => { if (!d) return; const w = el('div'); w.innerHTML = ICO_FICHA[i]; w.append(el('dt', '', t), el('dd', '', d)); agora.append(w); });
+  if (agora.childElementCount) pTempo.append(agora);
+  const todasEnt = f.entregas || [];
+  if (todasEnt.length) { const ol = el('ol', 'ct-tempo'); todasEnt.forEach(it => { const li = el('li'); li.append(el('small', '', it.data || ''), it.nome); ol.append(li); }); pTempo.append(bloco('Entregas', ol)); }
   // um cartão por aba, lado a lado: arrasta pro lado (ou toca na aba) em vez de virar (May, 05/11/2026: "tinha q ser slider")
-  const paineis = { atr: pAtr, hab: pHab, maq: pMaq, conq: pConq };
-  const abas = [['perfil', 'Perfil'], ['atr', 'Atributos'], ['hab', 'Habilidades'], ['maq', 'Máquina'], ['conq', 'Conquistas']].filter(([id]) => id === 'perfil' || paineis[id].childElementCount);
+  const paineis = { atr: pAtr, jeito: pJeito, hab: pHab, maq: pMaq, conq: pConq, tempo: pTempo };   // 7 cartões por pessoa ou robô (May, 05/11/2026)
+  const abas = [['perfil', 'Perfil'], ['atr', 'Atributos'], ['jeito', 'Jeito'], ['hab', 'Poderes'], ['maq', 'Máquina'], ['conq', 'Insígnias'], ['tempo', 'Tempo']].filter(([id]) => id === 'perfil' || paineis[id].childElementCount);
   const nav = el('nav', 'ct-abas'); nav.setAttribute('aria-label', 'Abas da ficha'); nav.style.setProperty('--n', abas.length);
   const faces = abas.map(([id, rot]) => {
     if (id === 'perfil') return fr;
@@ -1066,7 +1073,10 @@ async function abreCracha(chave) {
     nav.querySelectorAll('button').forEach((b, j) => { b.classList.toggle('ativa', j === i); b.setAttribute('aria-current', j === i ? 'true' : 'false'); });
   };
   const vai = (id, suave) => { const i = Math.max(0, abas.findIndex(x => x[0] === id)); trilho.scrollTo({ left: i * trilho.clientWidth, behavior: suave && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'auto' }); marca(i); };
-  trilho.addEventListener('scroll', () => { if (trilho.clientWidth) marca(Math.round(trilho.scrollLeft / trilho.clientWidth)); }, { passive: true });
+  // enquanto arrasta, cada cartão gira no próprio eixo como o flip de antes (May, 05/11/2026: "tem q ser mais legal tipo flip")
+  const semMov = matchMedia('(prefers-reduced-motion: reduce)').matches; let quadro = 0;
+  const gira = () => { quadro = 0; const w = trilho.clientWidth; if (!w) return; faces.forEach((fc, j) => { const o = Math.max(-1, Math.min(1, j - trilho.scrollLeft / w)); fc.style.transform = o ? 'rotateY(' + (o * -70).toFixed(2) + 'deg) scale(' + (1 - Math.abs(o) * .12).toFixed(3) + ')' : ''; fc.style.opacity = (1 - Math.abs(o) * .2).toFixed(3); }); };
+  trilho.addEventListener('scroll', () => { if (!trilho.clientWidth) return; marca(Math.round(trilho.scrollLeft / trilho.clientWidth)); if (!semMov && !quadro) quadro = requestAnimationFrame(gira); }, { passive: true });
   abas.forEach(([id, rot]) => { const b = el('button'); b.type = 'button'; b.dataset.a = id; b.innerHTML = ICO_FICHA[id]; b.append(el('span', '', rot)); b.onclick = () => vai(id, true); nav.append(b); });
   const fecha = el('button', 'ct-x'); fecha.type = 'button'; fecha.title = 'Fechar'; fecha.setAttribute('aria-label', 'Fechar'); fecha.innerHTML = ICO_FICHA.fechar; fecha.onclick = () => pop.remove();
   ct.append(fecha, trilho, nav); pop.append(ct); document.body.append(pop); vai('perfil');
