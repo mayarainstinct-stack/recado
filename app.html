@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.29">
+<meta name="app-versao" content="2026-11-05.30">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -63,7 +63,9 @@ header { position: relative; z-index: 2; color: var(--head-fg); font-family: -ap
 .status .sync { width: 10px; height: 10px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; display: none; }
 .status.on .dot { display: none; }
 .status.on .sync { display: block; animation: gira .8s linear infinite; }
-.semana { flex: none; font-size: 14px; font-weight: 800; color: #FACC15; padding: 0 4px; }   /* só o % dos 7 dias, em amarelo (May, 05/11/2026) */
+.semana { flex: none; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.16); display: grid; place-items: center; font-size: 12.5px; font-weight: 800; color: #FACC15; letter-spacing: -.02em; }   /* o % dos 7 dias no círculo, em amarelo (May, 05/11/2026) */
+.semana[hidden] { display: none; }
+#mais { background: none; }   /* os 3 pontinhos sem o círculo: o círculo é do % (May: tava invertido) */
 .icon-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.16); color: var(--head-fg);
   font-size: 22px; line-height: 1; display: grid; place-items: center; }
 /* Badge "N agentes online agora" (só em conversa de grupo, ex. Casa (PCs)): toca pra abrir a lista com foto + visto por último */
