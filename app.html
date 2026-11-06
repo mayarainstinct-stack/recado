@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.40">
+<meta name="app-versao" content="2026-11-06.41">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -1053,7 +1053,7 @@ function garanteGrupoTrab() {
     const g = { ...JSON.parse(t || '{}'), ...JSON.parse(tc || '{}') };
     Object.keys(g).forEach(k => { if (!GRUPO[k] && g[k] && g[k].nome && g[k].cor) GRUPO[k] = g[k]; });   // nunca troca quem já é da casa
     montaReQuem(); grupoTrabOk = true;
-    delete caixaCache[TRAB.arq]; delete caixaCache[GERAL.arq]; if (FILE === TRAB.arq || FILE === GERAL.arq) forcar = true;   // a Geral também redesenha c/ quem veio do grupo-casa   // prévia e tela que já saíram com o rótulo neutro
+    delete caixaCache[TRAB.arq]; delete caixaCache[GERAL.arq]; shaLido = ''; if (FILE === TRAB.arq || FILE === GERAL.arq) { forcar = true; setTimeout(() => load().catch(() => {}), 0); }   // redesenha já: a 1ª leitura (do cache) saiu sem quem veio do grupo   // a Geral também redesenha c/ quem veio do grupo-casa   // prévia e tela que já saíram com o rótulo neutro
   }).catch(() => {}).finally(() => { grupoTrabP = null; });
 }
 const EU = { nome: 'May', cargo: 'Dev, Designer e Musicista', cor: '#E31B23', cor2: '#22C55E', texto: '#FFFFFF', foto: 'recados-fotos/avatar-may-192.png' };
