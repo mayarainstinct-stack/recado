@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.8">
+<meta name="app-versao" content="2026-11-06.9">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -570,8 +570,8 @@ img.esq { min-height: 140px; }
 .ct.sigma .ct-chama { background: linear-gradient(135deg, #9333EA, #4B5563); }
 .ct-vira { width: 100%; height: auto; min-height: 30px; background: none; border: none; color: rgba(255,255,255,.75); display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-shadow: inherit; padding: 2px; }
 .ct-vira svg { width: 15px; height: 15px; }
-.ct-vcab { display: grid; grid-template-columns: 40px 1fr auto; gap: 10px; align-items: center; padding: 12px 14px 8px; border-bottom: 1px solid rgba(255,255,255,.12); }
-.ct-vcab .ct-av { width: 40px; height: 40px; font-size: 18px; filter: drop-shadow(0 2px 6px rgba(0,0,0,.5)); }
+.ct-vcab { display: grid; grid-template-columns: 58px 1fr auto; gap: 10px; align-items: center; padding: 12px 14px 8px; border-bottom: 1px solid rgba(255,255,255,.12); }
+.ct-vcab .ct-av { width: 58px; height: 58px; font-size: 22px; border-radius: 0; background-size: contain; cursor: zoom-in; filter: drop-shadow(0 2px 6px rgba(0,0,0,.5)); }
 .ct-vcab b { display: block; font-size: 17px; line-height: 1.1; } .ct-vcab .ct-tit { margin-top: 2px; }
 .ct-painel { flex: 1; min-height: 0; overflow: hidden; padding: 4px 14px 12px; display: flex; flex-direction: column; }   /* sem rolagem no cartão: o que não cabe é apertado (cabe()) */
 .ct-painel > * { flex: 1 0 auto; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }   /* cada aba enche o cartão até quase o fim (May, 05/11/2026) */
@@ -1147,6 +1147,15 @@ async function abreCracha(chave) {
   const num = 'Nº ' + (f.id || '---'), atr = f.atr || [], ins = f.insignias || [];
   const pop = el('div', 'pop cracha-pop'); pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'Ficha de ' + nome);
   const ct = el('div', 'ct' + (g === EU ? ' eu' : '') + (k === 'sigma' ? ' sigma' : '')); ct.style.setProperty('--quem', g.cor); ct.style.setProperty('--quem-fg', g.texto || '#fff');
+  // cada aba mostra uma emoção do robô (as 7 abas = a imagem padrão + as 6 emoções), maior e tocável pra ver grande (May, 06/11/2026)
+  const EMO_ABA = { atr: 'pensando', jeito: 'calmo', hab: 'alerta', maq: 'erro', conq: 'feliz', tempo: 'dormindo' };
+  const emocaoDa = id => {
+    const emo = EMO_ABA[id]; if (!emo || k === 'may') return avatar(true);
+    const av = el('div', 'ct-av ct-emo carregando'), arq = 'house-bridge/assets/emocoes/' + k + '-' + emo + '.png';
+    av.setAttribute('role', 'button'); av.setAttribute('aria-label', nome + ' ' + emo);
+    fotoUrl(arq, true).then(u => new Promise((ok, erro) => { const im = new Image(); im.onload = () => ok(u); im.onerror = erro; im.src = u; })).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.classList.remove('carregando'); av.classList.add('foto'); av.onclick = e => { e.stopPropagation(); abreZoom(u, arq, []); }; }).catch(() => { av.replaceWith(avatar(true)); });
+    return av;
+  };
   const avatar = (grande) => {
     const av = el('div', 'ct-av' + (g.foto ? ' carregando' : ''), g.foto ? '' : nome.charAt(0));
     if (g.foto) fotoUrl(g.foto, true).then(u => new Promise((ok, erro) => { const im = new Image(); im.onload = () => ok(u); im.onerror = erro; im.src = u; })).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.classList.remove('carregando'); av.classList.add('foto'); if (grande) { av.setAttribute('role', 'button'); av.setAttribute('aria-label', 'Ver a foto de ' + nome); av.onclick = e => { e.stopPropagation(); abreZoom(u, g.foto); }; } }).catch(() => { av.classList.remove('carregando'); av.textContent = nome.charAt(0); });   // foto da ficha abre a foto grande (original: a miniatura de 96 px fica borrada)
@@ -1210,7 +1219,7 @@ async function abreCracha(chave) {
   const faces = abas.map(([id, rot]) => {
     if (id === 'perfil') return fr;
     const fc = el('div', 'ct-face ct-verso'), vi = el('div', 'ct-in'), vcab = el('div', 'ct-vcab'), vnome = el('div'), pn = el('div', 'ct-painel');
-    vnome.append(el('b', '', nome), el('div', 'ct-tit', rot)); vcab.append(avatar(false), vnome, el('span', 'ct-id', num));
+    vnome.append(el('b', '', nome), el('div', 'ct-tit', rot)); vcab.append(emocaoDa(id), vnome, el('span', 'ct-id', num));
     pn.append(paineis[id]); vi.append(vcab, pn); fc.append(vi); return fc;
   });
   // um cartão só: arrastar gira ele no eixo e, passado o meio do giro, ele volta com os dados da aba seguinte, igual o flip (May, 05/11/2026)
