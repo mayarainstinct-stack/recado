@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.10">
+<meta name="app-versao" content="2026-11-06.11">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -1150,7 +1150,7 @@ async function abreCracha(chave) {
   // cada aba mostra uma emoção do robô (as 7 abas = a imagem padrão + as 6 emoções), maior e tocável pra ver grande (May, 06/11/2026)
   const EMO_ABA = { atr: 'pensando', jeito: 'calmo', hab: 'alerta', maq: 'erro', conq: 'feliz', tempo: 'dormindo' };
   const emocaoDa = id => {
-    const emo = EMO_ABA[id]; if (!emo || k === 'may') return avatar(true);
+    const emo = EMO_ABA[id]; if (!emo) return avatar(true);   // a May agora tem as dela também (06/11/2026)
     const av = el('div', 'ct-av ct-emo carregando'), arq = 'house-bridge/assets/emocoes/' + k + '-' + emo + '.png';
     av.setAttribute('role', 'button'); av.setAttribute('aria-label', nome + ' ' + emo);
     fotoUrl(arq, true).then(u => new Promise((ok, erro) => { const im = new Image(); im.onload = () => ok(u); im.onerror = erro; im.src = u; })).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.classList.remove('carregando'); av.classList.add('foto'); av.onclick = e => { e.stopPropagation(); abreZoom(u, arq, []); }; }).catch(() => { av.replaceWith(avatar(true)); });
