@@ -1163,12 +1163,6 @@
    "console": "Nintendo Switch",
    "parei": "Cerca de 3 horas explorando uma nave escura, sem saber o que fazer."
   },
-  "20XX": {
-   "pct": 10,
-   "estimado": true,
-   "console": "Switch (emulador no PC)",
-   "parei": "Na parte dos portais para escolher a fase."
-  },
   "The Long Dark": {
    "pct": 5,
    "estimado": true,
@@ -1767,6 +1761,12 @@
   },
   "Falling Skies: The Game": {
    "console": "Xbox 360"
+  },
+  "30XX": {
+   "pct": 10,
+   "estimado": true,
+   "console": "Switch (emulador no PC)",
+   "parei": "Na parte dos portais para escolher a fase. (no save: HQ com 10 cristais de memória, 26 min)"
   }
  }
 }
