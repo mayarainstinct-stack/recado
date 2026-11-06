@@ -221,6 +221,8 @@ if(!TOKEN){location.replace("app.html");return}
 const r=await gh("categorias/games/tela-jogos.json",{headers:{Accept:"application/vnd.github.raw"}})
 if(!r.ok)throw new Error("dados "+r.status)
 window.JOGOS=await r.json()
+const ri=await gh("categorias/games/prints-cortados/indice.json",{headers:{Accept:"application/vnd.github.raw"}}).catch(()=>null)
+window.CORTE=ri&&ri.ok?await ri.json().catch(()=>({})):{}
 priv("categorias/games/mock-tela-jogos/fundo.jpg").then(u=>document.getElementById("app").style.setProperty("--fundo-img",`url("${u}")`)).catch(()=>{})
 }
 carrega().then(comeca).catch(e=>{document.body.innerHTML='<p style="padding:24px;font:600 16px system-ui;color:#fff">Não consegui abrir os jogos. Confere a internet e tenta de novo.</p><p style="padding:0 24px"><a href="app.html" style="color:#8CE6C8;font:600 15px system-ui">Voltar pros recados</a></p>'})
@@ -232,9 +234,11 @@ function cor(c){c=c||"";if(/Switch|3DS|Wii|Nintendo Switch/.test(c))return"#E123
 function curto(c){if(!c)return"CONSOLE ?";return c.replace("Switch 2 (emulador no PC)","Switch 2 · emu").replace("Switch (emulador no PC)","Switch · emu").replace("Wii U (emulador no PC)","Wii U · emu").replace("Nintendo Switch","Switch").replace("Nintendo 3DS","3DS").replace("PlayStation ","PS").replace("Super Nintendo","SNES").replace("Nintendo 64","N64")}
 const ICO={switch:'<svg width="16" height="14" viewBox="0 0 24 20" fill="#fff"><rect x="1" y="1" width="9" height="18" rx="4"/><rect x="14" y="1" width="9" height="18" rx="4"/><circle cx="5.5" cy="6" r="1.6" fill="#0003"/><circle cx="18.5" cy="13" r="1.6" fill="#0003"/></svg>',ps:'<svg width="18" height="14" viewBox="0 0 30 20"><text x="0" y="16" font-family="Segoe UI,Inter" font-weight="700" font-style="italic" font-size="17" fill="#fff">PS</text></svg>',pc:'<svg width="16" height="14" viewBox="0 0 24 20" fill="none" stroke="#fff" stroke-width="2.4"><rect x="2" y="1.5" width="20" height="12" rx="2"/><path d="M8 18.5h8M12 14v4"/></svg>',outro:'<svg width="16" height="14" viewBox="0 0 24 20" fill="none" stroke="#fff" stroke-width="2.2"><rect x="2" y="4" width="20" height="12" rx="6"/><path d="M7 8v4M5 10h4"/></svg>'}
 function icone(c){c=c||"";if(/Switch|3DS|Wii|Nintendo|SNES|Super Nintendo|64/.test(c))return ICO.switch;if(/PS|PlayStation/.test(c))return ICO.ps;if(/PC/.test(c))return ICO.pc;return ICO.outro}
-function capaUrl(j){if(j.capa)return j.capa;const p=j.parede&&j.parede.imagens&&j.parede.imagens[0];if(p)return RAIZ_DOCS+p.arquivo;return null}
-function iniciais(t){return t.replace(/[^A-Za-zÀ-ÿ0-9 ]/g,"").split(" ").filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase()}
-function capaHtml(j,cls){const u=capaUrl(j);return u?`<img loading="lazy" ${srcAttr(u)} alt="" onerror="this.remove()"><div class="ini" style="z-index:-1">${esc(iniciais(j.titulo))}</div>`:`<div class="ini">${esc(iniciais(j.titulo))}</div>`}
+const CORTE=window.CORTE||{},USO={};J.forEach(j=>(j.prints||[]).forEach(p=>{USO[p.arquivo]=(USO[p.arquivo]||0)+1}))
+const corte=a=>a in CORTE?CORTE[a]:a
+function capaUrl(j){if(j.capa)return j.capa;const p=j.parede&&j.parede.imagens&&j.parede.imagens[0];if(p)return RAIZ_DOCS+p.arquivo;const pr=(j.prints||[]).filter(x=>USO[x.arquivo]==1).map(x=>corte(x.arquivo)).find(Boolean);return pr||null}
+const LOGO_J2='<div class="ini j2"><span><b>J</b><i>2</i></span></div>'
+function capaHtml(j,cls){const u=capaUrl(j);return u?`<img loading="lazy" ${srcAttr(u)} alt="" onerror="this.remove()">${LOGO_J2.replace('class="ini j2"','class="ini j2" style="z-index:-1"')}`:LOGO_J2}
 function pctTxt(j){return j.pct==null?"":(j.estimado?"~":"")+j.pct+"%"}
 function barra(j){return j.pct==null?'<div class="barra"></div>':`<div class="barra"><i class="${j.estimado?"est":""}" style="width:${Math.max(0,Math.min(100,j.pct))}%"></i></div>`}
 function ultimoDia(j){let best=0;(j.historico||[]).concat(j.relatos||[]).forEach(h=>{if(!h.dia)return;const[d,m,a]=h.dia.split("/").map(Number);const v=a*10000+m*100+d;if(v>best)best=v});return best}
@@ -263,7 +267,7 @@ function abrir(id){fichaAtual=POR[id];histTodos=false;desenhaFicha();const f=doc
 function desenhaFicha(){
 const j=fichaAtual,u=capaUrl(j),c=cor(j.console)
 const ff=document.getElementById("f-fundo");ff.style.backgroundImage=`linear-gradient(160deg,${c},#101a3c)`;if(u)(ehPriv(u)?priv(u):Promise.resolve(u)).then(x=>{if(fichaAtual===j)ff.style.backgroundImage=`url("${x}")`}).catch(()=>{})
-const ev=[];(j.historico||[]).forEach(h=>ev.push({dia:h.dia,hora:h.hora,onde:h.onde,texto:h.fala,quem:"May"}));(j.relatos||[]).forEach(r=>ev.push({dia:r.dia,hora:r.hora,texto:r.texto.replace(/^📷\s*\S+\s*/,"").replace(/\*\*/g,""),quem:r.quem,foto:(r.texto.match(/^📷\s*(\S+)/)||[])[1]}))
+const ev=[];(j.historico||[]).forEach(h=>ev.push({dia:h.dia,hora:h.hora,onde:h.onde,texto:h.fala,quem:"May"}));(j.relatos||[]).forEach(r=>{const f=(r.texto.match(/^📷\s*(\S+)/)||[])[1];ev.push({dia:r.dia,hora:r.hora,texto:r.texto.replace(/^📷\s*\S+\s*/,"").replace(/\*\*/g,""),quem:r.quem,foto:f?corte(f.split(",")[0]):null})})
 ev.sort((a,b)=>dval(b)-dval(a))
 const vis=histTodos?ev:ev.slice(0,6)
 const des=j.desbloqueados||{},saves=j.save||[],fps=j.fps||[]
@@ -272,11 +276,12 @@ h+=`<div class="bloco"><h3>${IC.pin}Onde parei</h3><div class="parei">${esc(j.pa
 if((j.o_que_me_marcou||[]).length)h+=`<div class="bloco" style="border-color:rgba(245,210,55,.45)"><h3 style="color:var(--ouro)">${IC.estrela}O que me marcou</h3><div class="marcou">${j.o_que_me_marcou.map(m=>`<div class="cartao"><q>${esc(m.fala)}</q><div class="dia">${esc(m.dia||"")}${m.nota?" · "+esc(m.nota):""}</div></div>`).join("")}</div></div>`
 if((j.conquistas||[]).length)h+=`<div class="bloco"><h3>${IC.selo}Conquistas e feitos</h3><div class="selos">${j.conquistas.map(s=>`<div class="selo">${SELO_IC.zerado}${esc(s.selo)}${s.dia?`<span>${esc(s.dia)}</span>`:""}</div>`).join("")}</div>${j.parede&&j.parede.lembranca?`<div class="parei-sub" style="margin-top:12px">Plaquinha nº ${String(j.parede.numero).padStart(2,"0")} da parede: ${esc(j.parede.lembranca)}</div>`:""}</div>`
 if((des.pokemons||[]).length||(des.itens||[]).length||(des.outros||[]).length)h+=`<div class="bloco"><h3>${IC.bau}Coleção</h3>${(des.pokemons||[]).length?`<div class="colecao">${des.pokemons.map(p=>`<div class="poke"><i></i><div>${esc(p.nome)}<small>${p.nivel?"nv "+p.nivel:""}${p.onde?" · "+esc(p.onde):""}</small></div></div>`).join("")}</div>`:""}<div class="tags">${(des.itens||[]).map(x=>`<span>${esc(x)}</span>`).join("")}${(des.outros||[]).map(x=>`<span>${esc(x)}</span>`).join("")}</div></div>`
-h+=`<div class="bloco"><h3>${IC.tempo}História</h3>${ev.length?`<div class="tempo">${vis.map(e=>`<div class="ev"><div class="m"><b>${esc(e.dia||"sem data")}${e.hora?" "+esc(e.hora):""}</b>${e.quem!="May"?`<span class="nyx">${esc(e.quem)} mediu</span>`:""}${e.onde?`<span>${esc(e.onde)}</span>`:""}</div><div class="q ${e.quem=="May"?"ela":"rel"}">${esc(e.texto)}</div>${e.foto?`<img loading="lazy" data-p="${esc(e.foto.split(",")[0])}" alt="">`:""}</div>`).join("")}</div>${ev.length>6&&!histTodos?`<button class="mais" id="h-mais">ver as ${ev.length} entradas</button>`:""}`:`<div class="parei-sub">Nada ainda. Manda algo pelo botão aqui embaixo.</div>`}</div>`
+h+=`<div class="bloco"><h3>${IC.tempo}História</h3>${ev.length?`<div class="tempo">${vis.map(e=>`<div class="ev"><div class="m"><b>${esc(e.dia||"sem data")}${e.hora?" "+esc(e.hora):""}</b>${e.quem!="May"?`<span class="nyx">${esc(e.quem)} mediu</span>`:""}${e.onde?`<span>${esc(e.onde)}</span>`:""}</div><div class="q ${e.quem=="May"?"ela":"rel"}">${esc(e.texto)}</div>${e.foto?`<img loading="lazy" data-z data-p="${esc(e.foto)}" alt="">`:""}</div>`).join("")}</div>${ev.length>6&&!histTodos?`<button class="mais" id="h-mais">ver as ${ev.length} entradas</button>`:""}`:`<div class="parei-sub">Nada ainda. Manda algo pelo botão aqui embaixo.</div>`}</div>`
 if(saves.length||fps.length)h+=`<div class="bloco"><h3>${IC.save}Save e FPS</h3>${fps.length?`<div class="fps">${fps.slice(0,4).map(f=>`<div><b>${esc(f.media)}</b><span>${esc(f.emulador||"")}${f.dia?" · "+esc(f.dia):""}</span></div>`).join("")}</div>`:""}<div style="margin-top:${fps.length?12:0}px">${saves.map(s=>`<div class="sv"><div class="h">${esc(s.emulador||"nativo")}<span>${esc([s.data,s.tempo_jogado].filter(Boolean).join(" · "))}</span></div>${s.progresso?`<p>${esc(s.progresso)}</p>`:""}</div>`).join("")}</div></div>`
-const pr=(j.prints||[]).filter(p=>p.existe!==false)
-if(pr.length)h+=`<div class="bloco"><h3>${IC.img}Prints</h3><div class="prints">${pr.map(p=>`<img loading="lazy" data-p="${esc(p.arquivo)}" alt="">`).join("")}</div></div>`
-document.getElementById("f-corpo").innerHTML=h;hidrata(document.getElementById("f-corpo"))
+const pr=[...new Set((j.prints||[]).filter(p=>p.existe!==false).map(p=>corte(p.arquivo)).filter(Boolean))]
+if(pr.length)h+=`<div class="bloco"><h3>${IC.img}Prints</h3><div class="prints">${pr.map(p=>`<img loading="lazy" data-z data-p="${esc(p)}" alt="">`).join("")}</div></div>`
+const fc=document.getElementById("f-corpo");fc.innerHTML=h;fc.querySelectorAll(".topo .capa img").forEach(im=>im.setAttribute("data-z",""));hidrata(fc)
+fc.onclick=e=>{const im=e.target.closest("img[data-z]");if(!im||!im.src)return;const todas=[...fc.querySelectorAll("img[data-z]")].filter(x=>x.src);abreZoom(todas.map(x=>x.src),todas.indexOf(im))}
 const m=document.getElementById("h-mais");if(m)m.onclick=()=>{histTodos=true;desenhaFicha()}
 document.getElementById("e-tt").textContent="Mandar algo sobre "+j.titulo
 }
