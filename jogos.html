@@ -202,6 +202,10 @@ nav button#tab-concluidos.on{background:linear-gradient(#F5D237,#B8860B);color:#
 #ficha.tri.transl.d-claro .serie-it b{color:var(--t1,#1a1300)}#ficha.tri.transl.d-claro .serie-it small{color:rgba(26,19,0,.7)}
 .pend.grave{border-color:#FF6B5A!important;box-shadow:0 0 0 1px rgba(255,107,90,.35)}.pend.grave svg{width:15px;height:15px;stroke:#FF6B5A;vertical-align:-2px;margin-right:4px}
 .secao-bts{display:flex;gap:6px}.ordem.on{background:color-mix(in srgb,#00FF8C 30%,#0a0a0a);border-color:#00FF8C;color:#fff}
+.ini.j2{background:radial-gradient(circle at 50% 42%,color-mix(in srgb,var(--cor,#3C3C5A) 55%,transparent),transparent 72%),linear-gradient(color-mix(in srgb,var(--cor,#3C3C5A) 35%,#0a0a0a),#0a0a0a)}
+.ini.j2 .j2img{width:62%;max-width:180px;height:auto;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5))}
+.selo-j2{background:none;border:0;box-shadow:none;padding:0}.selo-j2 .j2img{height:34px;width:auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+#abertura .espera .j2img{height:56px}
 #aviso.erro{background:#3A0E12;border-color:#FF5A5A}
 #e-env.indo{opacity:.75}
 .giro{display:inline-block;width:16px;height:16px;margin-right:8px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:gira .7s linear infinite;vertical-align:-3px}
@@ -423,14 +427,14 @@ nav button{height:58px;border-radius:22px;font-size:14px}
 <span class="jog">J<span class="r">OGANDO</span></span>
 <span class="a2"><span class="r">A</span>2</span>
 </div>
-<div class="espera selo-j2" aria-hidden="true"><span><b>J</b><i>2</i></span></div>
+<div class="espera selo-j2" aria-hidden="true"><img class="j2img" data-p="categorias/games/tela/j2-selo.webp" alt="J2"></div>
 <div class="pular">toque pra pular</div>
 </div>
 <div id="app">
 <header>
 <button class="voltar" id="voltar-app" aria-label="Voltar pros recados"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
 <h1>Jogos<small id="sub"></small></h1>
-<div class="selo-j2" aria-label="Jogando A2"><span><b>J</b><i>2</i></span></div>
+<div class="selo-j2" aria-label="Jogando A2"><img class="j2img" data-p="categorias/games/tela/j2-selo.webp" alt="J2"></div>
 </header>
 <main id="lista"></main>
 <nav>
@@ -517,6 +521,7 @@ try{const cj=JSON.parse(await raw("marca/consoles/consoles.json"));const nomes=[
 const FUNDOS={jogando:"categorias/games/mock-tela-jogos/fundo.jpg",concluidos:"categorias/games/tela/parede-fundo.jpg"}
 function fundoDa(a){const p=FUNDOS[a]||FUNDOS.jogando,app=document.getElementById("app");app.classList.toggle("dourado",a=="concluidos");priv(p).then(u=>{if(FUNDOS[a]==p)app.style.setProperty("--fundo-img",`url("${u}")`)}).catch(()=>{})}
 if(TOKEN&&!new URLSearchParams(location.search).has("semabertura"))document.getElementById("abertura").classList.add("on")
+if(TOKEN)priv("categorias/games/tela/j2-selo.webp").then(u=>document.querySelectorAll("#app header .j2img,#abertura .j2img").forEach(i=>{i.src=u;i.removeAttribute("data-p")})).catch(()=>{})
 carrega().then(comeca).catch(e=>{document.getElementById("abertura").classList.remove("on");document.body.innerHTML='<p style="padding:24px;font:600 16px system-ui;color:#fff">Não consegui abrir os jogos. Confere a internet e tenta de novo.</p><p style="padding:0 24px"><a href="app.html" style="color:#8CE6C8;font:600 15px system-ui">Voltar pros recados</a></p>'})
 function comeca(){
 const D=window.JOGOS,J=D.jogos,POR={};J.forEach(j=>POR[j.id]=j)
@@ -557,7 +562,8 @@ function icone(c){const idv=(corMay(c)||{}).id;if(idv&&ICO_CONS[idv])return ICO_
 const CORTE=window.CORTE||{},USO={};J.forEach(j=>(j.prints||[]).forEach(p=>{USO[p.arquivo]=(USO[p.arquivo]||0)+1}))
 const corte=a=>a in CORTE?CORTE[a]:a
 function capaUrl(j){if(j.capa)return j.capa;const p=j.parede&&j.parede.imagens&&j.parede.imagens[0];if(p)return RAIZ_DOCS+p.arquivo;const pr=(j.prints||[]).filter(x=>USO[x.arquivo]==1).map(x=>corte(x.arquivo)).find(Boolean);return pr||null}
-const LOGO_J2='<div class="ini j2"><span><b>J</b><i>2</i></span></div>'
+// selo J2 montado com as peças do logo que o Hermes recortou (J e 2), não letra digitada (May 08:11)
+const LOGO_J2='<div class="ini j2"><img class="j2img" data-p="categorias/games/tela/j2-selo.webp" alt="J2"></div>'
 function capaHtml(j,cls){const u=capaUrl(j);return u?`<img class="borra" loading="lazy" ${srcAttr(u)} alt="" onerror="this.remove()"><img class="inteira" loading="lazy" ${srcAttr(u)} alt="" onerror="this.remove()">${LOGO_J2.replace('class="ini j2"','class="ini j2" style="z-index:-1"')}`:LOGO_J2}
 function pctN(j){if(j.status=="zerado")return 100;return j.pct==null?null:j.estimado?Math.round(j.pct/10)*10:j.pct}
 function pctTxt(j){const n=pctN(j);return n==null?"":n+"%"}
