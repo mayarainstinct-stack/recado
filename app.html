@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.59">
+<meta name="app-versao" content="2026-11-06.62">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -530,6 +530,17 @@ img.esq { min-height: 140px; }
 .fixa { display: flex; flex-direction: column; gap: 6px; } .fixa > .msg { align-self: flex-start; max-width: 100%; margin: 0; }
 .fixa-barra { display: flex; align-items: center; gap: 8px; } .fixa-barra { flex-wrap: wrap; } .fixa-barra span { flex: 1 1 100%; font-size: 12.5px; color: var(--muted); }
 .treino-naovou { margin: 0 0 12px; }
+.fixa-pop { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 16px; background: rgba(0,0,0,.55); }
+.fixa-pop-card { width: min(460px, 100%); background: var(--paper); border: 2px solid var(--quem); border-radius: 18px; padding: 14px; box-shadow: 0 18px 50px rgba(0,0,0,.45); animation: pop-sobe .26s cubic-bezier(.2,.8,.2,1.15); }
+.fixa-pop.saindo .fixa-pop-card { animation: pop-desce .18s cubic-bezier(.5,0,.8,.4) forwards; }
+@keyframes pop-sobe { from { transform: translateY(60px) scale(.94); } to { transform: none; } }
+@keyframes pop-desce { to { transform: translateY(80px) scale(.94); } }
+.fixa-pop-tit { font-weight: 800; font-size: 15px; margin: 0 0 10px; color: color-mix(in srgb, var(--quem) 60%, var(--fg)); }
+.fixa-pop .fixa > .msg { max-width: 100%; }
+.fixa-ops { display: flex; flex-direction: column; gap: 6px; }
+.fixa-op { width: 100%; height: auto; min-height: 42px; display: flex; align-items: center; gap: 10px; text-align: left; padding: 8px 12px; border-radius: 12px; border: 1.5px solid var(--quem); background: color-mix(in srgb, var(--quem) 14%, var(--paper)); color: var(--fg); font-size: 14px; cursor: pointer; transition: transform .12s; }
+.fixa-op b { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--quem); color: #fff; font-size: 13px; }
+.fixa-op:active { transform: scale(.97); }
 .fixa-resp, .fixa-ok, .fixa-nao { flex: none; width: auto; height: 36px; padding: 0 14px; border-radius: 999px; font-weight: 700; font-size: 14px; cursor: pointer; }
 .fixa-resp { border: 1px solid var(--line); background: transparent; color: var(--fg); } .fixa-nao { border: 0; background: #DC2626; color: #fff; min-width: 56px; } .fixa-ok { min-width: 64px; border: 0; background: var(--quem); color: #fff; }
 .msg.grupo.tres { border: 3px solid transparent; background: linear-gradient(135deg, color-mix(in srgb, var(--c1) 55%, var(--cinza)), color-mix(in srgb, var(--c2) 30%, var(--cinza)) 55%, color-mix(in srgb, var(--c3) 28%, var(--cinza))) padding-box, linear-gradient(135deg, var(--c1), var(--c2) 50%, var(--c3)) border-box; }   /* degradê atrás do texto também (May, 06/11/2026 16:18) */
@@ -2295,7 +2306,7 @@ const fixaEl = document.getElementById('fixa');
 // fixar (May, 06/11/2026, com os 5 do Sigma de 16:33): recado de robô que começa com 📌 (vale 24 h) ou mensagem que ela fixou pelo menu.
 // Fixar e Desafixar não escrevem na conversa: o estado fica em casa/fixas.json. Ok manda "✅ ok" (é aprovação); qualquer resposta dela
 // citando a fixada solta; robô cancela a dele com "📌 cancelada" citando. Chave = autor + trecho + dia e hora, então duas que começam igual não se confundem.
-const RE_PIN = /^(?:\s*@[\wÀ-ÿ]+)*\s*📌/, RE_PIN_CANCELA = /^(?:\s*@[\wÀ-ÿ]+)*\s*📌\s*cancelad/i, ARQ_FIXAS = 'casa/fixas.json';
+const RE_PIN = /^(?:\s*@[\wÀ-ÿ]+)*\s*(?:📌|❓)/, RE_PERG = /^(?:\s*@[\wÀ-ÿ]+)*\s*❓/, RE_PIN_CANCELA = /^(?:\s*@[\wÀ-ÿ]+)*\s*📌\s*cancelad/i, ARQ_FIXAS = 'casa/fixas.json';
 const nomeCita = it => it.from === 'may' ? 'Você' : (GRUPO[it.quem] ? GRUPO[it.quem].nome : 'Lyra');
 const baseFixa = (nome, trecho) => String(nome).replace(/\s*\(.*\)$/, '').toLowerCase() + '|' + String(trecho).trim();
 const chaveDe = it => baseFixa(nomeCita(it), trechoDe(it)) + '|' + (it.day || '') + ' ' + (it.time || '');
@@ -2349,7 +2360,12 @@ async function mandaFixa(it, on, comOk) {   // comOk = texto da resposta ("✅ s
   if (foi && comOk) { const antes = respondendo; respondendo = { nome: nomeCita(it), trecho: trechoDe(it) }; const x = novoPendente(comOk === true ? '✅ ok' : comOk, [], FILE); respondendo = antes; foi = await enviar(x.p, x.el); }
   if (!foi) { marcaFixa(k, null); render(lastItems, true); showNote(on ? 'Não deu pra fixar: toca de novo quando a internet voltar.' : 'Não foi: a mensagem continua fixada até dar certo.', true); }
 }
-let fixaVer = 0;   // qual da fila ela está vendo (0 = a mais recente)
+let fixaVer = 0; const fixaPopVista = new Set();   // pergunta que já saltou como popup nesta abertura do app   // qual da fila ela está vendo (0 = a mais recente)
+function alternativasDe(txt) {   // "a) uma coisa b) outra" -> [['a','uma coisa'], ['b','outra']]; só letras a-d (número costuma ser lista de perguntas)
+  const t = String(txt || ''), achou = [...t.matchAll(/(?:^|[\s(:;])([a-dA-D])\)\s+/g)];
+  if (achou.length < 2 || achou[0][1].toLowerCase() !== 'a') return [];
+  return achou.map((m, i) => [m[1].toLowerCase(), t.slice(m.index + m[0].length, i + 1 < achou.length ? achou[i + 1].index : undefined).replace(/[;,.]\s*$/, '').trim()]).filter(([, x]) => x).slice(0, 4);
+}
 function mostraFixa(items, fila) {   // cópia do balão no topo (o original fica no lugar dele), com "1 de N" quando tem mais de uma
   if (!fila.length) return;
   if (fixaVer >= fila.length) fixaVer = 0;
@@ -2362,13 +2378,35 @@ function mostraFixa(items, fila) {   // cópia do balão no topo (o original fic
   el.addEventListener('click', () => orig.scrollIntoView({ block: 'center', behavior: 'smooth' }));
   const d = document.createElement('div'); d.className = 'fixa'; d.style.setProperty('--quem', g.cor || 'var(--accent)');
   const barra = document.createElement('div'); barra.className = 'fixa-barra';
-  const rot = document.createElement('span'); rot.textContent = fila.length > 1 ? 'Fixada ' + (fixaVer + 1) + ' de ' + fila.length : 'Fixada até você responder';
+  const rot = document.createElement('span'); rot.textContent = (fila.length > 1 ? (RE_PERG.test(it.text || '') ? 'Pergunta ' : 'Fixada ') + (fixaVer + 1) + ' de ' + fila.length : RE_PERG.test(it.text || '') ? 'Pergunta esperando você' : 'Fixada até você dar Ok');
   if (fila.length > 1) { const prox = document.createElement('button'); prox.type = 'button'; prox.className = 'fixa-resp'; prox.textContent = 'Próxima'; prox.onclick = () => { fixaVer = (fixaVer + 1) % fila.length; render(lastItems, true); }; barra.append(rot, prox); } else barra.append(rot);
   const resp = document.createElement('button'); resp.type = 'button'; resp.className = 'fixa-resp'; resp.textContent = 'Responder'; resp.onclick = () => { responder(it); document.getElementById('texto').focus(); };
   const bt = (txt, cls, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.textContent = txt; b.onclick = () => { barra.querySelectorAll('button').forEach(x => { x.disabled = true; }); b.textContent = 'Enviando…'; fn(); }; return b; };   // Sim, Não, Desafixar e Responder (May, 06/11/2026 17:31)
   const sim = bt('Sim', 'fixa-ok', () => mandaFixa(it, false, '✅ sim')), nao = bt('Não', 'fixa-nao', () => mandaFixa(it, false, '❌ não'));
+  // pergunta com alternativas a) b) c) d) (ou [op: A|B]): os botões são as alternativas, no máximo 4, nunca um Sim genérico (May 19:07, Sigma 19:07)
+  const alts = (it.opcoes && it.opcoes.length ? it.opcoes.map((t, i) => ['abcd'[i], t]) : alternativasDe(it.text)).slice(0, 4);
+  const ops = document.createElement('div'); ops.className = 'fixa-ops';
+  alts.forEach(([l, t]) => { const b = bt('', 'fixa-op', () => mandaFixa(it, false, '✅ ' + l + ') ' + t)); b.innerHTML = '<b></b><span></span>'; b.querySelector('b').textContent = l + ')'; b.querySelector('span').textContent = t; ops.append(b); });
   const des = bt('Desafixar', 'fixa-resp', () => mandaFixa(it, false, false));
-  barra.append(des, resp, nao, sim); d.append(el, barra); fixaEl.append(d); fixaEl.hidden = false;   // fora do feed: empurra a conversa pra baixo em vez de cobrir (Sigma, 06/11/2026)
+  const pergunta = RE_PERG.test(it.text || ''), ok = bt('Ok', 'fixa-ok', () => mandaFixa(it, false, true));
+  if (!pergunta) { barra.append(des, resp, ok); d.append(el, barra); fixaEl.append(d); fixaEl.hidden = false; return; }   // 📌 fixado: fica no topo até o Ok
+  if (alts.length >= 2) { barra.append(des, resp); d.append(el, ops, barra); } else { barra.append(des, resp, nao, sim); d.append(el, barra); }
+  // pergunta nova salta como popup no meio da tela, igual um aviso (May, 06/11/2026 19:06); "Depois" guarda na faixa do topo
+  const k = chaveDe(it);
+  if (!fixaPopVista.has(k) && !document.querySelector('.fixa-pop')) {
+    const ov = document.createElement('div'); ov.className = 'fixa-pop'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+    const tit = document.createElement('div'); tit.className = 'fixa-pop-tit'; tit.textContent = (g.nome || 'Robô').replace(/\s*\(.*\)$/, '') + ' precisa da sua resposta';
+    const dep = document.createElement('button'); dep.type = 'button'; dep.className = 'fixa-resp'; dep.textContent = 'Depois';
+    const fecha = () => { fixaPopVista.add(k); ov.classList.add('saindo'); setTimeout(() => { ov.remove(); render(lastItems, true); }, 180); };
+    dep.onclick = fecha; resp.addEventListener('click', () => { fixaPopVista.add(k); ov.remove(); });
+    [sim, nao, des, ...ops.children].forEach(b => b.addEventListener('click', () => { fixaPopVista.add(k); setTimeout(() => ov.remove(), 150); }));
+    barra.prepend(dep); rot.remove();
+    const card = document.createElement('div'); card.className = 'fixa-pop-card'; card.style.setProperty('--quem', g.cor || 'var(--accent)'); card.append(tit, d);
+    ov.append(card); ov.addEventListener('click', e => { if (e.target === ov) fecha(); });
+    document.body.append(ov);
+    return;
+  }
+  fixaEl.append(d); fixaEl.hidden = false;   // fora do feed: empurra a conversa pra baixo em vez de cobrir (Sigma, 06/11/2026)
 }
 function responder(it) {
   if (!it) { respondendo = null; citando.hidden = true; return; }
