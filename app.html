@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.58">
+<meta name="app-versao" content="2026-11-06.59">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -529,6 +529,7 @@ img.esq { min-height: 140px; }
 #fixa { flex: none; background: var(--bg); padding: 6px 10px 4px; max-height: 45vh; overflow-y: auto; border-bottom: 1px solid var(--line); }   /* mensagem fixa até ela dar Ok (May, 06/11/2026) */
 .fixa { display: flex; flex-direction: column; gap: 6px; } .fixa > .msg { align-self: flex-start; max-width: 100%; margin: 0; }
 .fixa-barra { display: flex; align-items: center; gap: 8px; } .fixa-barra { flex-wrap: wrap; } .fixa-barra span { flex: 1 1 100%; font-size: 12.5px; color: var(--muted); }
+.treino-naovou { margin: 0 0 12px; }
 .fixa-resp, .fixa-ok, .fixa-nao { flex: none; width: auto; height: 36px; padding: 0 14px; border-radius: 999px; font-weight: 700; font-size: 14px; cursor: pointer; }
 .fixa-resp { border: 1px solid var(--line); background: transparent; color: var(--fg); } .fixa-nao { border: 0; background: #DC2626; color: #fff; min-width: 56px; } .fixa-ok { min-width: 64px; border: 0; background: var(--quem); color: #fff; }
 .msg.grupo.tres { border: 3px solid transparent; background: linear-gradient(135deg, color-mix(in srgb, var(--c1) 55%, var(--cinza)), color-mix(in srgb, var(--c2) 30%, var(--cinza)) 55%, color-mix(in srgb, var(--c3) 28%, var(--cinza))) padding-box, linear-gradient(135deg, var(--c1), var(--c2) 50%, var(--c3)) border-box; }   /* degradê atrás do texto também (May, 06/11/2026 16:18) */
@@ -2946,7 +2947,7 @@ function zeraSemanaTreino(viagens) {
 const diasMarcados = () => { try { return JSON.parse(store.get('treino-dias') || '{}'); } catch (e) { return {}; } };
 function semHojeFalso(txt) {   // "Perna · hoje (29/10)" num dia que não é 29/10 vira "Perna · 29/10": data velha não pode ter cara de atual
   const d = new Date(), hj = String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0');
-  return String(txt || '').replace(/\s*[-·]?\s*hoje\s*\((\d{1,2})\/(\d{1,2})\)/gi, (m0, dd, mm) => (dd.padStart(2, '0') + '/' + mm.padStart(2, '0') === hj ? m0 : ' (' + dd + '/' + mm + ')'));
+  return String(txt || '').replace(/\s*[-·]?\s*hoje\s*\((\d{1,2})\/(\d{1,2})\)/gi, (m0, dd, mm) => (dd.padStart(2, '0') + '/' + mm.padStart(2, '0') === hj ? m0 : ''));   // data velha some do título (Sigma, 06/11/2026 18:03)
 }
 function abreViagens(m) {
   tela(m.nome, async c => {
@@ -3045,6 +3046,16 @@ function abreChecklist(v, l) {
     const prog = document.createElement('p'); prog.className = 'p-nota';
     const conta = () => { prog.innerHTML = ''; prog.append(document.createTextNode(feitos.size + ' de ' + total + ' feitos')); if (feitos.size === total) { const ok = document.createElement('span'); ok.innerHTML = ' ' + icone('check'); ok.style.color = 'var(--accent)'; prog.append(ok); } };
     conta(); c.append(prog);
+    if (v._arq === 'menu/treino.json') {   // "Hoje não vou" em cima, a 1ª coisa: é na hora que abre que ela decide se vai (May 17:51, Sigma 18:03)
+      const nv = document.createElement('button'); nv.type = 'button'; nv.className = 'gostei check-limpa treino-naovou';
+      const rot = () => { nv.textContent = store.get('treino-folga') === diaLocal() ? 'Hoje é folga · tocar desfaz' : 'Hoje não vou'; };
+      rot();
+      nv.onclick = () => {
+        if (store.get('treino-folga') === diaLocal()) { store.set('treino-folga', ''); showNote('Folga desfeita: o treino volta a abrir no horário'); rot(); return; }
+        store.set('treino-folga', diaLocal()); store.set('treino-ativo', ''); fechaPainel(); showNote('Beleza, hoje é folga: o treino não abre sozinho');   // fecha e volta pra conversa
+      };
+      c.append(nv);
+    }
     l.grupos.forEach(g => {
       const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = g.nome; c.append(t);
       const box = document.createElement('div'); box.className = 'check-lista'; c.append(box);
@@ -3053,7 +3064,7 @@ function abreChecklist(v, l) {
       g.itens.forEach(([id, texto], i) => {
         const lb = document.createElement('label'); lb.className = 'check'; lb._i = i;
         const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = feitos.has(id);
-        const sp = document.createElement('span'); sp.textContent = texto;
+        const sp = document.createElement('span'); sp.textContent = String(texto).replace(/\s*✅\s*/g, ' ').trim();   // o ✅ do registro antigo não aparece como feito: quem diz feito é a caixa
         cb.onchange = () => { cb.checked ? feitos.add(id) : feitos.delete(id); guardaMarcados(v, l, feitos); conta(); ordena(); };
         lb.append(cb, sp); box.append(lb);
       });
@@ -3062,17 +3073,6 @@ function abreChecklist(v, l) {
     const limpa = document.createElement('button'); limpa.type = 'button'; limpa.className = 'gostei check-limpa'; limpa.textContent = 'Desmarcar tudo';
     limpa.onclick = () => { if (!feitos.size || !confirm('Desmarcar tudo desta lista?')) return; feitos.clear(); guardaMarcados(v, l, feitos); c.querySelectorAll('.check input').forEach(x => { x.checked = false; }); conta(); };
     c.append(limpa);
-    if (v._arq === 'menu/treino.json') {   // "Hoje não vou" também dentro do treino (May, 06/11/2026 17:51)
-      const nv = document.createElement('button'); nv.type = 'button'; nv.className = 'gostei check-limpa';
-      const rot = () => { nv.textContent = store.get('treino-folga') === diaLocal() ? 'Hoje é folga · tocar desfaz' : 'Hoje não vou'; };
-      rot();
-      nv.onclick = () => {
-        if (store.get('treino-folga') === diaLocal()) { store.set('treino-folga', ''); showNote('Folga desfeita: o treino volta a abrir no horário'); }
-        else { store.set('treino-folga', diaLocal()); showNote('Beleza, hoje o treino não abre sozinho'); }
-        rot();
-      };
-      c.append(nv);
-    }
   });
 }
 // ---- Imagens (plantas, referências…): menu/imagens.json = { grupos: [{ nome, capa?, imagens: [{ titulo, arq, nota }] }] }
