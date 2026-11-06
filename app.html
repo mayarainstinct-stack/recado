@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.54">
+<meta name="app-versao" content="2026-11-06.55">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -527,7 +527,7 @@ img.esq { min-height: 140px; }
 .msg.grupo.sigma { border: 3px solid transparent; background: linear-gradient(color-mix(in srgb, #9333EA 16%, var(--cinza)), color-mix(in srgb, #9333EA 16%, var(--cinza))) padding-box, linear-gradient(135deg, #9333EA, #9CA3AF, #0A0A0A) border-box; }   /* Sigma em 3 cores, roxo, cinza e preto (05/11/2026) */
 #fixa { flex: none; background: var(--bg); padding: 6px 10px 4px; max-height: 45vh; overflow-y: auto; border-bottom: 1px solid var(--line); }   /* mensagem fixa até ela dar Ok (May, 06/11/2026) */
 .fixa { display: flex; flex-direction: column; gap: 6px; } .fixa > .msg { align-self: flex-start; max-width: 100%; margin: 0; }
-.fixa-barra { display: flex; align-items: center; gap: 8px; } .fixa-barra span { flex: 1; font-size: 12.5px; color: var(--muted); }
+.fixa-barra { display: flex; align-items: center; gap: 8px; } .fixa-barra { flex-wrap: wrap; } .fixa-barra span { flex: 1 1 100%; font-size: 12.5px; color: var(--muted); }
 .fixa-resp, .fixa-ok { flex: none; width: auto; height: 36px; padding: 0 14px; border-radius: 999px; font-weight: 700; font-size: 14px; cursor: pointer; }
 .fixa-resp { border: 1px solid var(--line); background: transparent; color: var(--fg); } .fixa-ok { min-width: 64px; border: 0; background: var(--quem); color: #fff; }
 .msg.grupo.tres { border: 3px solid transparent; background: linear-gradient(135deg, color-mix(in srgb, var(--c1) 55%, var(--cinza)), color-mix(in srgb, var(--c2) 30%, var(--cinza)) 55%, color-mix(in srgb, var(--c3) 28%, var(--cinza))) padding-box, linear-gradient(135deg, var(--c1), var(--c2) 50%, var(--c3)) border-box; }   /* degradê atrás do texto também (May, 06/11/2026 16:18) */
@@ -1396,10 +1396,10 @@ function abreMenuMsg(btn, it) {
   const op = document.createElement('button'); op.type = 'button'; op.innerHTML = SVG_COPIAR + '<span>Copiar</span>';
   op.addEventListener('click', e => { e.stopPropagation(); fechaMenuMsg(); copiaTexto(it.text); });
   msgMenuPop.append(op);
-  if (FILE === GERAL.arq && !(it.from === 'may' && it.re && RE_PIN.test(it.text || ''))) {   // Fixar pelo menu da setinha (May via Lyra, 06/11/2026 16:31)
-    const fixada = !!estadoFixa(lastItems)[chaveFixa(nomeCita(it), trechoDe(it))];
+  if (FILE === GERAL.arq) {   // Fixar pelo menu da setinha (May via Lyra, 06/11/2026 16:31)
+    const fixada = !!estadoFixa(lastItems)[chaveDe(it)];
     const fx = document.createElement('button'); fx.type = 'button'; fx.innerHTML = SVG_FIXAR + '<span>' + (fixada ? 'Desafixar' : 'Fixar') + '</span>';
-    fx.addEventListener('click', e => { e.stopPropagation(); fechaMenuMsg(); mandaFixa(it, !fixada); });
+    fx.addEventListener('click', e => { e.stopPropagation(); fechaMenuMsg(); mandaFixa(it, !fixada, false); });
     msgMenuPop.append(fx);
   }
   if (it._linha !== undefined) {
@@ -2286,36 +2286,62 @@ function corDe(nome) {
 // mensagem fixa (May, 06/11/2026 15:34): recado de robô com 📌 fica preso no topo até ela tocar Ok; o Ok vira resposta "✅ ok" citando ele
 const trechoDe = it => (it.text || (it.foto ? 'Foto' : '')).replace(/[⟪⟫:\n]/g, ' ').slice(0, 80);
 const fixaEl = document.getElementById('fixa');
-// fixar: recado de robô que começa com 📌 (vale 24 h), ou qualquer mensagem que ela fixou pelo menu (resposta "📌 fixei" citando ela);
-// resposta dela citando a fixada (Ok, Desafixar, texto) ou "📌 cancelada" do robô soltam. A chave é autor + trecho, então duas fixas
-// que começam igual não se confundem. O que ela fez aqui só vale depois que o envio deu certo (Sigma, 06/11/2026 16:33)
-const RE_PIN = /^(?:\s*@[\wÀ-ÿ]+)*\s*📌/, RE_PIN_CANCELA = /^(?:\s*@[\wÀ-ÿ]+)*\s*📌\s*cancelad/i;
+// fixar (May, 06/11/2026, com os 5 do Sigma de 16:33): recado de robô que começa com 📌 (vale 24 h) ou mensagem que ela fixou pelo menu.
+// Fixar e Desafixar não escrevem na conversa: o estado fica em casa/fixas.json. Ok manda "✅ ok" (é aprovação); qualquer resposta dela
+// citando a fixada solta; robô cancela a dele com "📌 cancelada" citando. Chave = autor + trecho + dia e hora, então duas que começam igual não se confundem.
+const RE_PIN = /^(?:\s*@[\wÀ-ÿ]+)*\s*📌/, RE_PIN_CANCELA = /^(?:\s*@[\wÀ-ÿ]+)*\s*📌\s*cancelad/i, ARQ_FIXAS = 'casa/fixas.json';
 const nomeCita = it => it.from === 'may' ? 'Você' : (GRUPO[it.quem] ? GRUPO[it.quem].nome : 'Lyra');
-const chaveFixa = (nome, trecho) => String(nome).replace(/\s*\(.*\)$/, '').toLowerCase() + '|' + String(trecho).trim();
-let fixaLocal = []; try { fixaLocal = JSON.parse(localStorage.getItem('fixa-local') || '[]'); } catch (e) {}
+const baseFixa = (nome, trecho) => String(nome).replace(/\s*\(.*\)$/, '').toLowerCase() + '|' + String(trecho).trim();
+const chaveDe = it => baseFixa(nomeCita(it), trechoDe(it)) + '|' + (it.day || '') + ' ' + (it.time || '');
+let FIXAS = {}, fixasLidas = false, fixaLocal = [];
+try { fixaLocal = JSON.parse(localStorage.getItem('fixa-local') || '[]'); } catch (e) {}
+function carregaFixas() {
+  if (fixasLidas || !token) return; fixasLidas = true;
+  lerArquivo(ARQ_FIXAS).then(t => { FIXAS = JSON.parse(t || '{}'); if (FILE === GERAL.arq) render(lastItems, true); }).catch(() => { fixasLidas = false; });
+}
+async function gravaFixa(k, on) {   // lê o mais novo e grava por cima com o sha dele; 409 = alguém gravou junto, tenta de novo
+  for (let t = 0; t < 4; t++) {
+    try {
+      const r = await api(apiDe(ARQ_FIXAS)); let atual = {}, sha;
+      if (r.ok) { const j = await r.json(); sha = j.sha; atual = JSON.parse(b64decode(j.content) || '{}'); } else if (r.status !== 404) throw erroDe(r.status);
+      Object.keys(atual).forEach(c => { if (Date.now() - Date.parse(atual[c].em) > 30 * 864e5) delete atual[c]; });   // 30 dias e some
+      atual[k] = { on, em: new Date().toISOString(), por: 'may' };
+      const corpo = { message: (on ? 'fixa ' : 'desafixa ') + 'mensagem na Geral', content: b64encode(JSON.stringify(atual, null, 1)) }; if (sha) corpo.sha = sha;
+      const w = await api(apiDe(ARQ_FIXAS), { method: 'PUT', body: JSON.stringify(corpo) });
+      if (w.ok) { FIXAS = atual; return true; }
+      if (w.status !== 409 && w.status !== 422) return false;
+    } catch (e) { if (t === 3) return false; }
+    await new Promise(r => setTimeout(r, 600));
+  }
+  return false;
+}
 function marcaFixa(k, on) { fixaLocal = fixaLocal.filter(x => Date.now() - x.em < 120000 && x.k !== k); if (on !== null) fixaLocal.push({ k, on, em: Date.now() }); try { localStorage.setItem('fixa-local', JSON.stringify(fixaLocal)); } catch (e) {} }
 const quandoDe = it => { const m = String(it.day || '').match(/(\d\d)\/(\d\d)\/(\d{4})/), h = String(it.time || '00:00').split(':'); return m ? new Date(+m[3], m[2] - 1, +m[1], +h[0], +h[1]).getTime() : 0; };
-function estadoFixa(items) {
-  const st = {}; let n = 0;   // valor = ordem em que foi fixada (a mais recente vem primeiro); false = solta
+function estadoFixa(items) {   // chave -> momento em que foi fixada (a mais recente vem primeiro); ausente/0 = solta
+  const ev = [];   // { k (chave inteira) ou b (base: vale pra todas desse autor+trecho), on, t }
   items.forEach(x => {
-    if (x.re && (x.from === 'may' || RE_PIN_CANCELA.test(x.text || ''))) { st[chaveFixa(x.re.nome, x.re.trecho)] = x.from === 'may' && RE_PIN.test(x.text || '') && !RE_PIN_CANCELA.test(x.text || '') && ++n; return; }
-    if (x.from !== 'may' && RE_PIN.test(x.text || '') && Date.now() - quandoDe(x) < 864e5) st[chaveFixa(nomeCita(x), trechoDe(x))] = ++n;
+    if (x.re && (x.from === 'may' || RE_PIN_CANCELA.test(x.text || ''))) { ev.push({ b: baseFixa(x.re.nome, x.re.trecho), on: false, t: quandoDe(x) }); return; }
+    if (x.from !== 'may' && RE_PIN.test(x.text || '') && Date.now() - quandoDe(x) < 864e5) ev.push({ k: chaveDe(x), on: true, t: quandoDe(x) });
   });
-  fixaLocal.filter(x => Date.now() - x.em < 120000).forEach(x => { st[x.k] = x.on && ++n; });
+  Object.keys(FIXAS).forEach(k => ev.push({ k, on: !!FIXAS[k].on, t: Date.parse(FIXAS[k].em) || 0 }));
+  fixaLocal.filter(x => Date.now() - x.em < 120000).forEach(x => ev.push({ k: x.k, on: x.on, t: x.em }));
+  ev.sort((a, b) => a.t - b.t);
+  const st = {};
+  ev.forEach(e => { if (e.k) st[e.k] = e.on ? e.t : 0; else Object.keys(st).forEach(k => { if (k.startsWith(e.b + '|')) st[k] = 0; }); });
   return st;
 }
 function listaFixas(items) {   // índices das fixadas, a mais recente primeiro
   if (FILE !== GERAL.arq) return [];
+  carregaFixas();
   const st = estadoFixa(items);
-  return items.map((x, i) => [i, st[chaveFixa(nomeCita(x), trechoDe(x))]]).filter(([i, v]) => v && !(items[i].re && RE_PIN.test(items[i].text || ''))).sort((a, b) => b[1] - a[1]).map(x => x[0]);
+  return items.map((x, i) => [i, st[chaveDe(x)]]).filter(([i, v]) => v).sort((a, b) => b[1] - a[1]).map(x => x[0]);
 }
-async function mandaFixa(it, on) {   // Fixar / Desafixar / Ok viram resposta dela citando a mensagem; só conta depois de chegar
-  const k = chaveFixa(nomeCita(it), trechoDe(it));
+async function mandaFixa(it, on, comOk) {   // Fixar / Desafixar gravam só no fixas.json; o Ok também manda "✅ ok" citando (é a aprovação dela)
+  const k = chaveDe(it);
   marcaFixa(k, on); render(lastItems, true);
-  const antes = respondendo; respondendo = { nome: nomeCita(it), trecho: trechoDe(it) };
-  const x = novoPendente(on ? '📌 fixei' : '✅ ok', [], FILE); respondendo = antes;
-  const foi = await enviar(x.p, x.el);
-  if (!foi) { marcaFixa(k, null); render(lastItems, true); showNote(on ? 'Não deu pra fixar: toca de novo quando a internet voltar.' : 'O Ok não foi: a mensagem continua fixada até chegar.', true); }
+  let foi = await gravaFixa(k, on);
+  if (foi && comOk) { const antes = respondendo; respondendo = { nome: nomeCita(it), trecho: trechoDe(it) }; const x = novoPendente('✅ ok', [], FILE); respondendo = antes; foi = await enviar(x.p, x.el); }
+  if (!foi) { marcaFixa(k, null); render(lastItems, true); showNote(on ? 'Não deu pra fixar: toca de novo quando a internet voltar.' : 'Não foi: a mensagem continua fixada até dar certo.', true); }
 }
 let fixaVer = 0;   // qual da fila ela está vendo (0 = a mais recente)
 function mostraFixa(items, fila) {   // cópia do balão no topo (o original fica no lugar dele), com "1 de N" quando tem mais de uma
@@ -2334,8 +2360,9 @@ function mostraFixa(items, fila) {   // cópia do balão no topo (o original fic
   if (fila.length > 1) { const prox = document.createElement('button'); prox.type = 'button'; prox.className = 'fixa-resp'; prox.textContent = 'Próxima'; prox.onclick = () => { fixaVer = (fixaVer + 1) % fila.length; render(lastItems, true); }; barra.append(rot, prox); } else barra.append(rot);
   const resp = document.createElement('button'); resp.type = 'button'; resp.className = 'fixa-resp'; resp.textContent = 'Responder'; resp.onclick = () => { responder(it); document.getElementById('texto').focus(); };
   const ok = document.createElement('button'); ok.type = 'button'; ok.className = 'fixa-ok'; ok.textContent = 'Ok';
-  ok.onclick = () => { ok.disabled = true; ok.textContent = 'Enviando…'; mandaFixa(it, false); };
-  barra.append(resp, ok); d.append(el, barra); fixaEl.append(d); fixaEl.hidden = false;   // fora do feed: empurra a conversa pra baixo em vez de cobrir (Sigma, 06/11/2026)
+  ok.onclick = () => { ok.disabled = true; ok.textContent = 'Enviando…'; mandaFixa(it, false, true); };
+  const des = document.createElement('button'); des.type = 'button'; des.className = 'fixa-resp'; des.textContent = 'Desafixar'; des.onclick = () => { des.disabled = true; mandaFixa(it, false, false); };
+  barra.append(des, resp, ok); d.append(el, barra); fixaEl.append(d); fixaEl.hidden = false;   // fora do feed: empurra a conversa pra baixo em vez de cobrir (Sigma, 06/11/2026)
 }
 function responder(it) {
   if (!it) { respondendo = null; citando.hidden = true; return; }
