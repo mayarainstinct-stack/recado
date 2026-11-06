@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.6">
+<meta name="app-versao" content="2026-11-06.7">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -1180,6 +1180,7 @@ async function abreCracha(chave) {
   const pHab = el('div');
   if (f.hab) pHab.append(bloco('Habilidades', selos(f.hab, 'estrela')));
   if (f.olhar) pJeito.append(bloco('Como eu vejo as coisas', el('div', 'ct-olhar', f.olhar)));
+  if (f.jeito && f.jeito.length) { const dl = el('dl', 'ct-dados ct-jeito'); f.jeito.forEach(([t, v]) => { const w = el('div'); w.innerHTML = ICO_FICHA.jeito; w.append(el('dt', '', t), el('dd', '', v)); dl.append(w); }); pJeito.append(bloco('Personalidade', dl)); }   // aba Jeito cheia (May, 06/11/2026)
   if (f.cons) { const sc = selos(f.cons, 'pessoa'); sc.dataset.tipo = 'cons'; pJeito.append(bloco('Conselheiros que incorpora', sc)); }
   const pMaq = el('dl', 'ct-dados');
   [['onde', k === 'may' ? 'Onde vive' : 'Onde roda', f.onde || f.pc], ['maq', k === 'may' ? 'Ela' : 'PC', f.onde ? f.pc : ''], ['ip', 'IP', hb.ip || (['may', 'lyra', 'sigma'].includes(k) ? '' : 'ainda não mandou')], ...(f.hw ? f.hw.map(x => [...x, 'peca']) : [['maq', 'Máquina', f.maquina]])]
