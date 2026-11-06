@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.24">
+<meta name="app-versao" content="2026-11-05.25">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -488,7 +488,7 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-x { justify-self: end; width: 36px; height: 36px; min-height: 0; border-radius: 50%; border: none; background: rgba(255,255,255,.16); color: #fff; display: grid; place-items: center; padding: 0; }
 .ct svg { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .ct-x svg { width: 16px; height: 16px; stroke-width: 2.6; }
-.ct-trilho { display: grid; height: min(calc((100vw - 32px) * 1.4), 520px, calc(100dvh - 156px)); border-radius: 22px; box-shadow: 0 0 28px color-mix(in srgb, var(--quem) 38%, transparent), 0 18px 44px rgba(0,0,0,.5); touch-action: pan-y; -webkit-user-select: none; user-select: none; will-change: transform; }   /* um cartão só, que gira com o dedo e troca os dados no meio (May, 05/11/2026) */
+.ct-trilho { display: grid; height: min(calc((100vw - 32px) * 1.8), 700px, calc(100dvh - 146px)); border-radius: 22px; box-shadow: 0 0 28px color-mix(in srgb, var(--quem) 38%, transparent), 0 18px 44px rgba(0,0,0,.5); touch-action: pan-y; -webkit-user-select: none; user-select: none; will-change: transform; }   /* um cartão só, que gira com o dedo e troca os dados no meio (May, 05/11/2026) */
 .ct-frente .ct-in { overflow-y: auto; overscroll-behavior: contain; }   /* tela baixa (iPhone com a barra do Safari): a frente rola em vez de cortar (May, 05/11/2026) */
 .ct-trilho > .ct-face { grid-area: 1 / 1; min-width: 0; }
 .ct-face { grid-area: 1 / 1; min-height: 0; padding: 6px; border-radius: 22px; background: var(--borda); -webkit-backface-visibility: hidden; backface-visibility: hidden; box-shadow: 0 0 28px color-mix(in srgb, var(--quem) 38%, transparent), 0 18px 44px rgba(0,0,0,.5); color: #fff; font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,.6), 0 0 12px rgba(0,0,0,.3); }
@@ -498,8 +498,8 @@ button:disabled { opacity: .45; cursor: default; }
 .ct.sigma .ct-in { background: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1.5px) 0 0 / 9px 9px, repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0 1px, transparent 1px 7px), linear-gradient(158deg, #9333EA 0%, #4B2A6B 22%, #2A2D33 46%, #060507 78%); }
 .ct-cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 14px 0; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; }
 .ct-id { font-size: 15px; letter-spacing: .05em; padding: 3px 10px; border-radius: 8px; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.2); }
-.ct-quem { display: grid; grid-template-columns: 118px 1fr; gap: 14px; align-items: center; padding: 14px 14px 4px; }
-.ct-av { width: 118px; height: 118px; border-radius: 50%; background: color-mix(in srgb, var(--quem) 55%, #000) center / cover no-repeat; display: grid; place-items: center; font-size: 46px; filter: drop-shadow(0 6px 14px rgba(0,0,0,.45)) drop-shadow(0 0 16px color-mix(in srgb, var(--quem) 50%, transparent)); }
+.ct-quem { display: grid; grid-template-columns: 132px 1fr; gap: 14px; align-items: center; padding: 14px 14px 4px; }
+.ct-av { width: 132px; height: 132px; border-radius: 50%; background: color-mix(in srgb, var(--quem) 55%, #000) center / cover no-repeat; display: grid; place-items: center; font-size: 46px; filter: drop-shadow(0 6px 14px rgba(0,0,0,.45)) drop-shadow(0 0 16px color-mix(in srgb, var(--quem) 50%, transparent)); }
 .ct-av.foto { background-color: transparent; cursor: zoom-in; }
 .ct-nome { font-size: 28px; line-height: 1.05; overflow-wrap: anywhere; }
 .ct-cargo { font-size: 14px; line-height: 1.25; margin-top: 5px; }
@@ -508,7 +508,7 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-pill { flex: 1 1 auto; justify-content: center; display: inline-flex; align-items: center; gap: 5px; font-size: 11px; padding: 3px 8px; border-radius: 999px; background: rgba(0,0,0,.32); border: 1px solid rgba(255,255,255,.14); }
 .ct-pill i { width: 7px; height: 7px; border-radius: 50%; background: #9CA3AF; }
 .ct-pill.on i { background: #4ADE80; box-shadow: 0 0 8px #4ADE80; }
-.ct-faz { margin: 6px 14px 0; font-size: 13px; line-height: 1.4; text-align: justify; hyphens: auto; }   /* sem sobra vazia à direita (May, 05/11/2026) */
+.ct-faz { margin: 10px 14px 0; font-size: 14px; line-height: 1.4; text-align: justify; hyphens: auto; }   /* sem sobra vazia à direita (May, 05/11/2026) */
 .ct-frente .ct-olhar { margin: 10px 14px 0; }
 .ct-maq { margin: 10px 14px 0; display: flex; gap: 6px; flex-wrap: wrap; font-size: 11.5px; }
 .ct-maq span { flex: 1 1 auto; justify-content: center; display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px; border-radius: 8px; background: rgba(0,0,0,.32); border: 1px solid rgba(255,255,255,.12); }
@@ -516,8 +516,8 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-tit { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.75); }
 .ct-ins { margin: auto 14px 0; padding: 9px 8px 10px; border-radius: 14px; background: rgba(0,0,0,.34); border: 1px solid rgba(255,255,255,.1); display: grid; gap: 8px; }
 .ct-ins-fila { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-.ct-in1 { display: grid; justify-items: center; align-content: start; gap: 4px; text-align: center; font-size: 10.5px; line-height: 1.2; overflow-wrap: anywhere; }
-.ct-in1 svg { width: 38px; height: 38px; stroke: none; filter: drop-shadow(0 2px 4px rgba(0,0,0,.5)); }
+.ct-in1 { display: grid; justify-items: center; align-content: start; gap: 5px; text-align: center; font-size: 11.5px; line-height: 1.2; overflow-wrap: anywhere; }
+.ct-in1 svg { width: 44px; height: 44px; stroke: none; filter: drop-shadow(0 2px 4px rgba(0,0,0,.5)); }
 .ct-in1 .a { fill: var(--quem); stroke: rgba(255,255,255,.85); stroke-width: 1.6; } .ct-in1 .b { fill: rgba(0,0,0,.32); } .ct-in1 .c { fill: #fff; }
 .ct.eu .ct-in1:not(.vazia):nth-child(3n+1) .a { fill: #E31B23; } .ct.eu .ct-in1:not(.vazia):nth-child(3n+2) .a { fill: #EAB308; } .ct.eu .ct-in1:not(.vazia):nth-child(3n) .a { fill: #16A34A; }
 .ct.sigma .ct-in1:not(.vazia):nth-child(even) .a { fill: #6B7280; }
@@ -533,21 +533,26 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-vcab b { display: block; font-size: 17px; line-height: 1.1; } .ct-vcab .ct-tit { margin-top: 2px; }
 .ct-painel { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 4px 14px 12px; }
 .ct-painel .ct-tit { margin: 14px 0 6px; }
-.ct-bar { display: grid; grid-template-columns: 1fr auto; gap: 3px 8px; margin-top: 7px; font-size: 13px; }
+.ct-painel > .ct-p-atr { min-height: 100%; display: flex; flex-direction: column; justify-content: space-evenly; padding-bottom: 8px; }   /* as barras ocupam a altura do cartão (May, 05/11/2026) */
+.ct-nivel { display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: 4px 10px; padding: 12px 14px; margin-top: 10px; border-radius: 14px; background: rgba(0,0,0,.34); border: 1px solid rgba(255,255,255,.12); }
+.ct-nivel b { font-size: 30px; line-height: 1; color: var(--claro); }
+.ct-nivel span { font-size: 12px; color: rgba(255,255,255,.75); }
+.ct-nivel i { grid-column: 1 / -1; height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--claro) var(--p), rgba(255,255,255,.13) var(--p)); }
+.ct-bar { display: grid; grid-template-columns: 1fr auto; gap: 5px 8px; margin-top: 14px; font-size: 14.5px; }
 .ct-bar em { font-style: normal; color: var(--claro); }
 .ct-seg { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; }
-.ct-seg i { height: 9px; border-radius: 3px; background: rgba(255,255,255,.13); }
+.ct-seg i { height: 12px; border-radius: 3px; background: rgba(255,255,255,.13); }
 .ct-seg i.on { background: var(--claro); box-shadow: 0 0 6px color-mix(in srgb, var(--quem) 70%, transparent); }
 .ct.eu .ct-seg i.on:nth-child(-n+3) { background: #F43F46; } .ct.eu .ct-seg i.on:nth-child(n+4):nth-child(-n+7) { background: #FACC15; } .ct.eu .ct-seg i.on:nth-child(n+8) { background: #4ADE80; }
 .ct.sigma .ct-seg i.on:nth-child(n+6) { background: #9CA3AF; }
 .ct-ff { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.ct-ff > div { padding: 9px 10px; border-radius: 12px; background: rgba(0,0,0,.32); border: 1px solid rgba(255,255,255,.1); font-size: 12.5px; line-height: 1.35; }
+.ct-ff > div { padding: 12px; border-radius: 12px; background: rgba(0,0,0,.32); border: 1px solid rgba(255,255,255,.1); font-size: 13.5px; line-height: 1.35; }
 .ct-ff .ct-tit { display: flex; align-items: center; gap: 4px; margin: 0 0 4px; }
 .ct-ff svg { width: 13px; height: 13px; stroke-width: 2.8; }
 .ct-ff .forte svg { color: #4ADE80; } .ct-ff .fraco svg { color: #F87171; }
-.ct-olhar { margin-top: 12px; font-size: 12.5px; line-height: 1.4; padding-left: 10px; border-left: 3px solid var(--claro); }
+.ct-olhar { margin-top: 12px; font-size: 14px; line-height: 1.4; padding-left: 10px; border-left: 3px solid var(--claro); }
 .ct-selos { display: flex; flex-wrap: wrap; gap: 6px; }
-.ct-selos span { flex: 1 1 auto; justify-content: center; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 5px 9px; border-radius: 8px; background: rgba(0,0,0,.32); border: 1px solid color-mix(in srgb, var(--claro) 55%, transparent); }
+.ct-selos span { flex: 1 1 auto; justify-content: center; display: inline-flex; align-items: center; gap: 5px; font-size: 13px; padding: 8px 10px; border-radius: 8px; background: rgba(0,0,0,.32); border: 1px solid color-mix(in srgb, var(--claro) 55%, transparent); }
 .ct-selos svg { width: 12px; height: 12px; }
 .ct-placar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 10px; }
 .ct-placar div { display: grid; justify-items: center; padding: 8px 4px; border-radius: 12px; background: rgba(0,0,0,.34); border: 1px solid rgba(255,255,255,.12); font-size: 10.5px; text-align: center; }
@@ -561,9 +566,9 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-dados div { display: grid; grid-template-columns: 22px 1fr; gap: 2px 8px; padding: 9px 10px; border-radius: 12px; background: rgba(0,0,0,.3); }
 .ct-dados svg { width: 18px; height: 18px; grid-row: span 2; color: var(--claro); }
 .ct-dados dt { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.72); }
-.ct-dados dd { margin: 0; font-size: 13.5px; line-height: 1.35; overflow-wrap: anywhere; }
+.ct-dados dd { margin: 0; font-size: 14.5px; line-height: 1.35; overflow-wrap: anywhere; }
 .ct-tempo { list-style: none; margin: 0; padding: 0; display: grid; }
-.ct-tempo li { position: relative; padding: 0 0 12px 22px; font-size: 13px; line-height: 1.35; }
+.ct-tempo li { position: relative; padding: 0 0 16px 22px; font-size: 14px; line-height: 1.35; }
 .ct-tempo li::before { content: ""; position: absolute; left: 3px; top: 4px; width: 9px; height: 9px; border-radius: 50%; background: var(--claro); box-shadow: 0 0 8px var(--quem); }
 .ct-tempo li::after { content: ""; position: absolute; left: 7px; top: 16px; bottom: 0; width: 2px; background: rgba(255,255,255,.2); }
 .ct-tempo li:last-child::after { display: none; }
@@ -1037,7 +1042,8 @@ async function abreCracha(chave) {
   fi.append(insBox, pe);
   const bloco = (tit, ...filhos) => { const d = el('div'); if (tit) d.append(el('div', 'ct-tit', tit)); d.append(...filhos); return d; };
   const selos = (lista, icone) => { const w = el('div', 'ct-selos'); lista.forEach(n => w.append(ic(icone, null, n))); return w; };
-  const pAtr = el('div'), pJeito = el('div');
+  const pAtr = el('div', 'ct-p-atr'), pJeito = el('div');
+  { const nv = atr.reduce((a, x) => a + x[1], 0), mx = atr.length * 10, cx = el('div', 'ct-nivel'); cx.append(el('b', '', 'Nv. ' + nv), el('span', '', 'soma dos atributos, de ' + mx)); const br = el('i'); br.style.setProperty('--p', (mx ? nv / mx * 100 : 0).toFixed(1) + '%'); cx.append(br); if (atr.length) pAtr.append(cx); }
   if (f.placar) { const pl = el('div', 'ct-placar'); [['revisoes', 'Revisões'], ['defeitos', 'Defeitos achados'], ['consertados', 'Consertados']].forEach(([c, r]) => { const d = el('div'); d.append(el('b', '', f.placar[c]), r); pl.append(d); }); pAtr.append(pl); }
   atr.forEach(([n, val]) => { const b = el('div', 'ct-bar'); b.setAttribute('role', 'meter'); b.setAttribute('aria-label', n); b.setAttribute('aria-valuemin', 0); b.setAttribute('aria-valuemax', 10); b.setAttribute('aria-valuenow', val); b.append(el('span', '', n), el('em', '', val + '/10')); const s = el('div', 'ct-seg'); for (let i = 0; i < 10; i++) s.append(el('i', i < val ? 'on' : '')); b.append(s); pAtr.append(b); });
   if (f.forte || f.fraco) { const ff = el('div', 'ct-ff'); [['forte', 'Forte', 'sobe'], ['fraco', 'Fraco', 'desce']].forEach(([c, r, i]) => { if (!f[c]) return; const d = el('div', c), t = ic(i, 'ct-tit', r); d.append(t, f[c]); ff.append(d); }); pJeito.append(bloco('Forte × fraco', ff)); }
