@@ -199,6 +199,7 @@ nav button#tab-concluidos.on{background:linear-gradient(#F5D237,#B8860B);color:#
 #ficha.tri.d-claro .abas-f{background:transparent;box-shadow:none}
 #ficha.tri.transl.d-claro .bloco,#ficha.tri.transl.d-claro .poke,#ficha.tri.transl.d-claro .it,#ficha.tri.transl.d-claro .sv,#ficha.tri.transl.d-claro .pend{--texto2:var(--t2,#2a2200);--texto3:var(--t2,#3d3300)}#ficha.tri.transl.d-claro .bloco .kv dt,#ficha.tri.transl.d-claro .parei-sub,#ficha.tri.transl.d-claro .pop-fonte,#ficha.tri.transl.d-claro .bloco small,#ficha.tri.transl.d-claro .sobre a,#ficha.tri.transl.d-claro .tenho span{color:var(--t2,#2a2200)!important}
 #ficha.tri.transl.d-claro .serie-it b{color:var(--t1,#1a1300)}#ficha.tri.transl.d-claro .serie-it small{color:rgba(26,19,0,.7)}
+.pend.grave{border-color:#FF6B5A!important;box-shadow:0 0 0 1px rgba(255,107,90,.35)}.pend.grave svg{width:15px;height:15px;stroke:#FF6B5A;vertical-align:-2px;margin-right:4px}
 #aviso.erro{background:#3A0E12;border-color:#FF5A5A}
 #e-env.indo{opacity:.75}
 .giro{display:inline-block;width:16px;height:16px;margin-right:8px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:gira .7s linear infinite;vertical-align:-3px}
@@ -644,7 +645,7 @@ const grupos={};ondeT.forEach(o=>{const m=MIDIA[o.midia]||o.midia||"Cópia",l=ar
 const pilT=Object.entries(grupos).map(([m,g])=>`<div class="tenho"><b>${esc(m)}${g.n>1?` · ${g.n} cópias`:""}</b>${g.txt.size?`<span>${esc([...g.txt].join(" · "))}</span>`:""}</div>`)
 if(pilT.length)A.resumo+=`<div class="bloco"><h3>${IC.bau}Onde eu tenho</h3><div class="tenhos">${pilT.join("")}</div></div>`
 const fpsM=(j.fps||[]).filter(f=>f&&f.media),probs=(j.problemas||[]).filter(x=>x&&x.texto)
-if(fpsM.length||probs.length)A.resumo+=`<div class="bloco"><h3>${IC.fps}Como roda</h3>${fpsM.length?`<dl class="kv">${fpsM.slice(0,3).map(f=>`<div class="kvl"><dt>${esc(f.emulador||"FPS")}</dt><dd>${esc(f.media)} FPS${f.onde?` <small>· ${esc(f.onde)}</small>`:""}</dd></div>`).join("")}</dl>`:""}${probs.map(x=>`<div class="pend">${x.resolvido?"<b>Resolvido:</b> ":"<b>Ainda acontece:</b> "}${esc(x.texto)}${x.dia?` <small>(${esc(x.dia)})</small>`:""}</div>`).join("")}</div>`
+if(fpsM.length||probs.length)A.resumo+=`<div class="bloco"><h3>${IC.fps}Como roda</h3>${fpsM.length?`<dl class="kv">${fpsM.slice(0,3).map(f=>`<div class="kvl"><dt>${esc(f.emulador||"FPS")}</dt><dd>${esc(f.media)} FPS${f.onde?` <small>· ${esc(f.onde)}</small>`:""}</dd></div>`).join("")}</dl>`:""}${probs.map(x=>`<div class="pend${x.resolvido?"":" grave"}">${x.resolvido?"<b>Resolvido:</b> ":IC.alerta+"<b>Ainda acontece:</b> "}${esc(x.texto)}${x.dia?` <small>(${esc(x.dia)})</small>`:""}</div>`).join("")}</div>`
 const serie=j.franquia?J.filter(o=>o.id!=j.id&&o.franquia==j.franquia):[]
 if(serie.length)A.resumo+=`<div class="bloco"><h3>${IC.estrela}Da mesma série · ${esc(j.franquia)}</h3><div class="serie">${serie.slice(0,12).map(o=>`<button class="serie-it" data-ir="${esc(o.id)}"><b>${esc(o.titulo)}</b><small>${esc(curto(o.console))}${o.status=="zerado"?" · zerado":o.status=="jogando"?" · jogando":""}</small></button>`).join("")}</div></div>`
 const fx=(((window.EXT||{}).sobre||{})[j.id]||{}).ficha||{},jn=v=>Array.isArray(v)?v.join(", "):v
