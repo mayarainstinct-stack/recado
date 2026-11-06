@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.62">
+<meta name="app-versao" content="2026-11-06.63">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -530,13 +530,26 @@ img.esq { min-height: 140px; }
 .fixa { display: flex; flex-direction: column; gap: 6px; } .fixa > .msg { align-self: flex-start; max-width: 100%; margin: 0; }
 .fixa-barra { display: flex; align-items: center; gap: 8px; } .fixa-barra { flex-wrap: wrap; } .fixa-barra span { flex: 1 1 100%; font-size: 12.5px; color: var(--muted); }
 .treino-naovou { margin: 0 0 12px; }
-.fixa-pop { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 16px; background: rgba(0,0,0,.55); }
-.fixa-pop-card { width: min(460px, 100%); background: var(--paper); border: 2px solid var(--quem); border-radius: 18px; padding: 14px; box-shadow: 0 18px 50px rgba(0,0,0,.45); animation: pop-sobe .26s cubic-bezier(.2,.8,.2,1.15); }
-.fixa-pop.saindo .fixa-pop-card { animation: pop-desce .18s cubic-bezier(.5,0,.8,.4) forwards; }
+.fixa-pop { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 16px; background: rgba(0,0,0,.5); }
+.pp-card { --quem: var(--accent); width: min(440px, 100%); background: var(--paper); border-radius: 22px; padding: 18px 16px 12px; border-top: 5px solid var(--quem); box-shadow: 0 24px 60px rgba(0,0,0,.45); animation: pop-sobe .26s cubic-bezier(.2,.8,.2,1.15); }
+.fixa-pop.saindo .pp-card { animation: pop-desce .18s cubic-bezier(.5,0,.8,.4) forwards; }
 @keyframes pop-sobe { from { transform: translateY(60px) scale(.94); } to { transform: none; } }
 @keyframes pop-desce { to { transform: translateY(80px) scale(.94); } }
-.fixa-pop-tit { font-weight: 800; font-size: 15px; margin: 0 0 10px; color: color-mix(in srgb, var(--quem) 60%, var(--fg)); }
-.fixa-pop .fixa > .msg { max-width: 100%; }
+.pp-cab { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.pp-av { width: 40px; height: 40px; border-radius: 50%; flex: none; background: var(--quem) center / cover; display: grid; place-items: center; color: #fff; font-weight: 800; box-shadow: 0 0 0 2px var(--quem); }
+.pp-quem { display: flex; flex-direction: column; } .pp-quem b { font-size: 15px; color: color-mix(in srgb, var(--quem) 65%, var(--fg)); } .pp-quem small { font-size: 12px; color: var(--muted); }
+.pp-perg { font-size: 17px; line-height: 1.4; font-weight: 600; margin: 0 2px 14px; overflow-wrap: anywhere; }
+.pp-ops { display: flex; flex-direction: column; gap: 8px; }
+.pp-op { width: 100%; height: auto; min-height: 48px; display: flex; align-items: center; gap: 12px; text-align: left; padding: 10px 14px; border-radius: 14px; border: 1.5px solid color-mix(in srgb, var(--quem) 45%, var(--line)); background: color-mix(in srgb, var(--quem) 8%, var(--paper)); color: var(--fg); font-size: 15px; cursor: pointer; transition: transform .12s, background .12s; }
+.pp-op b { flex: none; width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; background: var(--quem); color: #fff; font-size: 13px; }
+.pp-op:active { transform: scale(.97); background: color-mix(in srgb, var(--quem) 20%, var(--paper)); }
+.pp-simnao { flex-direction: row; } .pp-simnao .pp-op { justify-content: center; font-weight: 800; font-size: 16px; }
+.pp-sim { background: var(--quem); color: #fff; border-color: var(--quem); } .pp-nao { background: transparent; }
+.pp-outra { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+.pp-outra input { flex: 1; min-width: 0; height: 44px; border-radius: 22px; border: 1.5px solid var(--line); background: var(--bg); color: var(--fg); padding: 0 14px; font-size: 15px; }
+.pp-outra input:focus { outline: none; border-color: var(--quem); }
+.pp-outra button { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--quem); color: #fff; display: grid; place-items: center; cursor: pointer; }
+.pp-depois { display: block; width: 100%; height: auto; margin-top: 8px; padding: 8px; border: 0; background: none; color: var(--muted); font-size: 13.5px; cursor: pointer; }
 .fixa-ops { display: flex; flex-direction: column; gap: 6px; }
 .fixa-op { width: 100%; height: auto; min-height: 42px; display: flex; align-items: center; gap: 10px; text-align: left; padding: 8px 12px; border-radius: 12px; border: 1.5px solid var(--quem); background: color-mix(in srgb, var(--quem) 14%, var(--paper)); color: var(--fg); font-size: 14px; cursor: pointer; transition: transform .12s; }
 .fixa-op b { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--quem); color: #fff; font-size: 13px; }
@@ -2366,6 +2379,33 @@ function alternativasDe(txt) {   // "a) uma coisa b) outra" -> [['a','uma coisa'
   if (achou.length < 2 || achou[0][1].toLowerCase() !== 'a') return [];
   return achou.map((m, i) => [m[1].toLowerCase(), t.slice(m.index + m[0].length, i + 1 < achou.length ? achou[i + 1].index : undefined).replace(/[;,.]\s*$/, '').trim()]).filter(([, x]) => x).slice(0, 4);
 }
+function abrePergunta(it, g, alts, k) {   // caixa de pergunta: quem pergunta, a pergunta, até 4 alternativas (ou Sim e Não) e uma caixa pra escrever outra resposta
+  const ov = document.createElement('div'); ov.className = 'fixa-pop'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+  const card = document.createElement('div'); card.className = 'pp-card'; card.style.setProperty('--quem', g.cor || 'var(--accent)');
+  const cab = document.createElement('div'); cab.className = 'pp-cab';
+  const av = document.createElement('span'); av.className = 'pp-av'; av.textContent = (g.nome || '?').charAt(0);
+  if (g.foto) fotoUrl(g.foto).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.textContent = ''; }).catch(() => {});
+  const quem = document.createElement('div'); quem.className = 'pp-quem';
+  const nm = document.createElement('b'); nm.textContent = (g.nome || 'Robô').replace(/\s*\(.*\)$/, '') + ' pergunta';
+  const hr = document.createElement('small'); hr.textContent = (it.day ? it.day.slice(0, 5) + ' ' : '') + (it.time || '');
+  quem.append(nm, hr); cab.append(av, quem);
+  let q = String(it.text || '').replace(/^(?:\s*@[\wÀ-ÿ]+)*\s*❓\s*/, '').replace(/@May\b\s*/i, '');
+  if (alts.length >= 2) { const m = q.match(/(?:^|[\s(:;])a\)\s/i); if (m) q = q.slice(0, m.index).trim(); }
+  const perg = document.createElement('div'); perg.className = 'pp-perg'; perg.textContent = q;
+  const fecha = (marca) => { if (marca) fixaPopVista.add(k); ov.classList.add('saindo'); setTimeout(() => { ov.remove(); if (FILE === GERAL.arq) render(lastItems, true); }, 180); };
+  const manda = (txt) => { fixaPopVista.add(k); mandaFixa(it, false, txt); fecha(true); };
+  const ops = document.createElement('div'); ops.className = 'pp-ops';
+  if (alts.length >= 2) alts.forEach(([l, t]) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'pp-op'; b.innerHTML = '<b></b><span></span>'; b.querySelector('b').textContent = l.toUpperCase(); b.querySelector('span').textContent = t; b.onclick = () => manda('✅ ' + l + ') ' + t); ops.append(b); });
+  else { ops.classList.add('pp-simnao'); [['Não', '❌ não', 'pp-nao'], ['Sim', '✅ sim', 'pp-sim']].forEach(([t, v, c]) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'pp-op ' + c; b.textContent = t; b.onclick = () => manda(v); ops.append(b); }); }
+  const outra = document.createElement('form'); outra.className = 'pp-outra';
+  const inp = document.createElement('input'); inp.type = 'text'; inp.placeholder = 'Outra resposta (Enter manda)'; inp.enterKeyHint = 'send';
+  const env = document.createElement('button'); env.type = 'submit'; env.setAttribute('aria-label', 'Mandar'); env.innerHTML = icone('reply');
+  outra.append(inp, env); outra.onsubmit = (e) => { e.preventDefault(); const t = inp.value.trim(); if (t) manda(t); };
+  const dep = document.createElement('button'); dep.type = 'button'; dep.className = 'pp-depois'; dep.textContent = 'Responder depois'; dep.onclick = () => fecha(true);
+  card.append(cab, perg, ops, outra, dep); ov.append(card);
+  ov.addEventListener('click', e => { if (e.target === ov) fecha(true); });
+  document.body.append(ov);
+}
 function mostraFixa(items, fila) {   // cópia do balão no topo (o original fica no lugar dele), com "1 de N" quando tem mais de uma
   if (!fila.length) return;
   if (fixaVer >= fila.length) fixaVer = 0;
@@ -2391,21 +2431,9 @@ function mostraFixa(items, fila) {   // cópia do balão no topo (o original fic
   const pergunta = RE_PERG.test(it.text || ''), ok = bt('Ok', 'fixa-ok', () => mandaFixa(it, false, true));
   if (!pergunta) { barra.append(des, resp, ok); d.append(el, barra); fixaEl.append(d); fixaEl.hidden = false; return; }   // 📌 fixado: fica no topo até o Ok
   if (alts.length >= 2) { barra.append(des, resp); d.append(el, ops, barra); } else { barra.append(des, resp, nao, sim); d.append(el, barra); }
-  // pergunta nova salta como popup no meio da tela, igual um aviso (May, 06/11/2026 19:06); "Depois" guarda na faixa do topo
+  // pergunta (❓) salta como popup por cima de qualquer tela do app, sem fechar o que ela está fazendo (May, 06/11/2026 19:06 e 19:18)
   const k = chaveDe(it);
-  if (!fixaPopVista.has(k) && !document.querySelector('.fixa-pop')) {
-    const ov = document.createElement('div'); ov.className = 'fixa-pop'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
-    const tit = document.createElement('div'); tit.className = 'fixa-pop-tit'; tit.textContent = (g.nome || 'Robô').replace(/\s*\(.*\)$/, '') + ' precisa da sua resposta';
-    const dep = document.createElement('button'); dep.type = 'button'; dep.className = 'fixa-resp'; dep.textContent = 'Depois';
-    const fecha = () => { fixaPopVista.add(k); ov.classList.add('saindo'); setTimeout(() => { ov.remove(); render(lastItems, true); }, 180); };
-    dep.onclick = fecha; resp.addEventListener('click', () => { fixaPopVista.add(k); ov.remove(); });
-    [sim, nao, des, ...ops.children].forEach(b => b.addEventListener('click', () => { fixaPopVista.add(k); setTimeout(() => ov.remove(), 150); }));
-    barra.prepend(dep); rot.remove();
-    const card = document.createElement('div'); card.className = 'fixa-pop-card'; card.style.setProperty('--quem', g.cor || 'var(--accent)'); card.append(tit, d);
-    ov.append(card); ov.addEventListener('click', e => { if (e.target === ov) fecha(); });
-    document.body.append(ov);
-    return;
-  }
+  if (pergunta && !fixaPopVista.has(k) && !document.querySelector('.fixa-pop')) { abrePergunta(it, g, alts, k); fixaEl.append(d); fixaEl.hidden = false; return; }
   fixaEl.append(d); fixaEl.hidden = false;   // fora do feed: empurra a conversa pra baixo em vez de cobrir (Sigma, 06/11/2026)
 }
 function responder(it) {
