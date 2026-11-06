@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.63">
+<meta name="app-versao" content="2026-11-06.64">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -1973,7 +1973,9 @@ let onlineGrupoLista = [], ultimaOnlineGrupo = 0, onlineGrupoCarregando = null;
 // Limite semanal do Claude (May, 05/11/2026): o painel de cada robô manda o % no batimento (status.sh -> semana)
 const semanaEl = document.getElementById('semana');
 function mostraSemana(lista) {
-  const c = (lista || []).filter(p => typeof p.semana === 'number').sort((a, b) => b.semana - a.semana)[0];   // o maior: o uso da semana só sobe, e um painel parado mostrava número velho (Sigma, 05/11/2026)
+  // número de antes da semana zerar não vale (o Vega parado desde 11:54 deixava 93% no anel depois do zerar das 15h, May 06/11/2026 19:21)
+  const agora = Date.now() / 1000, fresco = p => p.semanaReset ? p.semanaReset > agora : Date.now() - Date.parse(p.ultimaAtualizacao || 0) < 6 * 3600e3;
+  const c = (lista || []).filter(p => typeof p.semana === 'number' && fresco(p)).sort((a, b) => b.semana - a.semana)[0];   // o maior: o uso da semana só sobe, e um painel parado mostrava número velho (Sigma, 05/11/2026)
   if (!c) { semanaEl.hidden = true; return; }
   const v = Math.max(0, Math.min(100, Math.round(c.semana)));
   const R = 17.5, C = 2 * Math.PI * R;
@@ -1985,7 +1987,10 @@ function mostraSemana(lista) {
   ['ok', 'alto', 'estouro'].forEach(x => semanaEl.classList.toggle(x, x === cor));
   semanaEl.title = 'Limite de 7 dias: ' + v + '% usado, planejado até hoje (dia ' + dia + ' de 7) ' + Math.round(plano) + '%'; semanaEl.hidden = false;
 }
-async function semanaTrabalho() {   // no Trabalho a conta é a da Lyra
+async function semanaTrabalho() {   // Geral e Trabalho mostram o MESMO anel: é uma conta só (May, 06/11/2026 19:21)
+  const ks = GERAL.participantes.filter(k => k !== 'may');
+  const lista = await Promise.all(ks.map(k => api('https://api.github.com/repos/' + REPO + '/contents/casa/online/online-' + k + '.json?ref=online', RAW).then(r => r.ok ? r.text() : null).then(t => t ? { chave: k, ...JSON.parse(t) } : null).catch(() => null)));
+  if (FILE === TRAB.arq) { const ok = lista.filter(Boolean); if (ok.length) { mostraSemana(ok); return; } }
   try { const r = await api('https://api.github.com/repos/' + REPO + '/contents/casa/online/online-lyra.json?ref=online', RAW); if (!r.ok) throw 0; if (FILE === TRAB.arq) mostraSemana([{ chave: 'lyra', ...JSON.parse(await r.text()) }]); } catch (e) { if (FILE === TRAB.arq) semanaEl.hidden = true; }
 }
 function fmtVisto(iso) {
@@ -2059,7 +2064,7 @@ async function atualizaOnlineGrupo(forcar) {
     const falha = lista.filter(p => p.chave !== 'may').every(p => p.falhou) && (lista.find(p => p.falhou) || {}).falhou;
     if (falha) { onlineBadge.textContent = statusFalha(falha); return; }
     onlineGrupoLista = lista;   // sempre os participantes todos (mesmo quem nunca apareceu), pra lista nunca ficar vazia
-    mostraSemana(lista.filter(p => p.chave !== 'lyra'));   // a casa toda usa a mesma conta; a Lyra é a do serviço
+    mostraSemana(lista);   // uma conta só pra casa e serviço: a Lyra entra também (May, 06/11/2026 19:21)
     mostraFazendo(fazendoGrupo());
     const n = onlineGrupoLista.filter(p => p.chave !== 'may' && fmtVisto(p.ultimaAtualizacao).online).length;   // bots: ela não conta
     onlineBadge.textContent = n + (n === 1 ? ' bot online' : ' bots online');   // "bots online", sem o lugar dela (May, 06/11/2026 13:53)
