@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.48">
+<meta name="app-versao" content="2026-11-06.49">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -525,9 +525,11 @@ img.esq { min-height: 140px; }
   box-shadow: 0 14px 40px rgba(0,0,0,.3); animation: entra .2s ease-out both; }
 .pop h2 { margin: 0; font-size: 18px; }
 .msg.grupo.sigma { border: 3px solid transparent; background: linear-gradient(color-mix(in srgb, #9333EA 16%, var(--cinza)), color-mix(in srgb, #9333EA 16%, var(--cinza))) padding-box, linear-gradient(135deg, #9333EA, #9CA3AF, #0A0A0A) border-box; }   /* Sigma em 3 cores, roxo, cinza e preto (05/11/2026) */
-#fixa { flex: none; padding: 6px 10px 0; } .fixa { display: flex; align-items: center; gap: 10px; margin: 0; padding: 10px 12px; border-radius: 14px; background: color-mix(in srgb, var(--quem) 22%, var(--paper)); border: 2px solid var(--quem); box-shadow: 0 4px 14px rgba(0,0,0,.25); }   /* mensagem fixa até ela dar Ok (May, 06/11/2026) */
-.fixa-tx { flex: 1; min-width: 0; font-size: 14px; line-height: 1.35; } .fixa-tx b { display: block; color: color-mix(in srgb, var(--quem) 55%, var(--fg)); font-size: 12.5px; } .fixa-tx span { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-.fixa-ok { flex: none; width: auto; min-width: 64px; height: 40px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--quem); color: #fff; font-weight: 700; font-size: 15px; cursor: pointer; }
+#fixa { flex: none; background: var(--bg); padding: 6px 10px 4px; max-height: 45vh; overflow-y: auto; border-bottom: 1px solid var(--line); }   /* mensagem fixa até ela dar Ok (May, 06/11/2026) */
+.fixa { display: flex; flex-direction: column; gap: 6px; } .fixa > .msg { align-self: flex-start; max-width: 100%; margin: 0; }
+.fixa-barra { display: flex; align-items: center; gap: 8px; } .fixa-barra span { flex: 1; font-size: 12.5px; color: var(--muted); }
+.fixa-resp, .fixa-ok { flex: none; width: auto; height: 36px; padding: 0 14px; border-radius: 999px; font-weight: 700; font-size: 14px; cursor: pointer; }
+.fixa-resp { border: 1px solid var(--line); background: transparent; color: var(--fg); } .fixa-ok { min-width: 64px; border: 0; background: var(--quem); color: #fff; }
 .msg.grupo.tres { border: 3px solid transparent; background: linear-gradient(color-mix(in srgb, var(--c1) 18%, var(--cinza)), color-mix(in srgb, var(--c1) 18%, var(--cinza))) padding-box, linear-gradient(135deg, var(--c1), var(--c2) 50%, var(--c3)) border-box; }
 .msg.tres .quem .rotulo > span:first-child { color: var(--c2); align-self: flex-start; }
 @supports ((-webkit-background-clip: text) or (background-clip: text)) { .msg.tres .quem .rotulo > span:first-child { background: linear-gradient(90deg, var(--c2), var(--c3)); -webkit-background-clip: text; background-clip: text; color: transparent; } }
@@ -1533,8 +1535,8 @@ function render(items, manterPosicao) {
   const topoFeed = feed.getBoundingClientRect().top;
   const ancora = [...feed.querySelectorAll('.msg[data-i]')].find(e => e.getBoundingClientRect().bottom > topoFeed);
   const ancI = ancora ? ancora.dataset.i : null, ancY = ancora ? ancora.getBoundingClientRect().top - topoFeed : 0;
-  feed.replaceChildren();
-  mostraFixa(items);
+  feed.replaceChildren(); fixaEl.replaceChildren(); fixaEl.hidden = true;
+  const fixaI = achaFixa(items);
   if (!items.length) {
     const e = document.createElement('div'); e.className = 'empty';
     e.innerHTML = '<strong>Caixa vazia</strong><span>Tudo que você mandou já foi anotado. Escreve a próxima ideia aqui embaixo.</span>';
@@ -1543,7 +1545,7 @@ function render(items, manterPosicao) {
   if (inicio > 0) { const mais = document.createElement('div'); mais.className = 'day'; mais.textContent = '↑ role pra ver as antigas'; feed.append(mais); }
   let ultDia = 0;   // separador de dia só avança: agente com relógio em UTC não faz "05/11 → 04/11 → 05/11"
   items.forEach((it, i) => {
-    if (i < inicio) return;
+    if (i < inicio && i !== fixaI) return;
     if (diaNum(it.day) > ultDia) { const s = document.createElement('div'); s.className = 'day'; s.textContent = it.day; feed.append(s); ultDia = diaNum(it.day); }
     const el = document.createElement('div'); el.className = 'msg ' + it.from + (it.copiar ? ' copiavel' : '') + (i >= firstNew ? ' novo' : ''); el.dataset.i = i;
     let ops = null;
@@ -1674,6 +1676,7 @@ function render(items, manterPosicao) {
     if (ops) el.append(ops);   // antes ia num setTimeout e crescia o balão depois da rolagem já restaurada
     feed.append(el);   // resposta nova aparece na hora: sem o "digitando…" de mentira de 900 ms (05/11/2026)
   });
+  mostraFixa(items, fixaI);
   recolocaPendentes();
   if (firstNew === items.length && !manterPosicao && !feed.dataset.jaAbriu) { feed.dataset.jaAbriu = '1'; feed.classList.add('chegando'); setTimeout(() => feed.classList.remove('chegando'), 1200); }
   if (!pertoDoFim && shown > 0 && items.length > shown) { novasLaEmCima += items.length - shown; desceQtd.textContent = novasLaEmCima; desceQtd.hidden = false; }
@@ -2275,18 +2278,22 @@ function corDe(nome) {
 // mensagem fixa (May, 06/11/2026 15:34): recado de robô com 📌 fica preso no topo até ela tocar Ok; o Ok vira resposta "✅ ok" citando ele
 const trechoDe = it => (it.text || (it.foto ? 'Foto' : '')).replace(/[⟪⟫:\n]/g, ' ').slice(0, 80);
 const fixaEl = document.getElementById('fixa');
-function mostraFixa(items) {
-  fixaEl.replaceChildren(); fixaEl.hidden = true;
-  if (FILE !== GERAL.arq) return;
+function achaFixa(items) {
+  if (FILE !== GERAL.arq) return -1;
   const oks = items.filter(x => x.from === 'may' && x.re && /^\s*✅/.test(x.text || '')).map(x => x.re.trecho.trim());
-  const it = items.find(x => x.from !== 'may' && /📌/.test(x.text || '') && !oks.includes(trechoDe(x).trim()));
-  if (!it) return;
-  const g = GRUPO[it.quem] || {}, nome = (g.nome || it.quem || '').replace(/\s*\(.*\)$/, '');
+  return items.findIndex(x => x.from !== 'may' && /📌/.test(x.text || '') && !oks.includes(trechoDe(x).trim()));
+}
+function mostraFixa(items, fixaI) {   // o próprio balão sobe pro topo (mesmo jeito, dá pra responder pelo menu dele) e ganha o Ok embaixo (May, 06/11/2026 16:04 e 16:06)
+  const el = fixaI >= 0 && feed.querySelector('.msg[data-i="' + fixaI + '"]');
+  if (!el) return;
+  const it = items[fixaI], g = GRUPO[it.quem] || {}, nome = (g.nome || it.quem || '').replace(/\s*\(.*\)$/, '');
   const d = document.createElement('div'); d.className = 'fixa'; d.style.setProperty('--quem', g.cor || 'var(--accent)');
-  const tx = document.createElement('div'); tx.className = 'fixa-tx'; const b = document.createElement('b'); b.textContent = nome; const sp = document.createElement('span'); sp.textContent = (it.text || '').replace(/📌\s*/g, ''); tx.append(b, sp);
+  const barra = document.createElement('div'); barra.className = 'fixa-barra';
+  const rot = document.createElement('span'); rot.textContent = 'Fixada até você dar Ok';
+  const resp = document.createElement('button'); resp.type = 'button'; resp.className = 'fixa-resp'; resp.textContent = 'Responder'; resp.onclick = () => { responder(it); document.getElementById('texto').focus(); };
   const ok = document.createElement('button'); ok.type = 'button'; ok.className = 'fixa-ok'; ok.textContent = 'Ok';
   ok.onclick = () => { ok.disabled = true; ok.textContent = 'Enviando…'; const antes = respondendo; respondendo = { nome: g.nome || nome, trecho: trechoDe(it) }; const x = novoPendente('✅ ok', [], FILE); respondendo = antes; enviar(x.p, x.el); fixaEl.hidden = true; };
-  d.append(tx, ok); fixaEl.append(d); fixaEl.hidden = false;   // fora do feed: empurra a conversa pra baixo em vez de cobrir (Sigma, 06/11/2026)
+  barra.append(rot, resp, ok); d.append(el, barra); fixaEl.append(d); fixaEl.hidden = false;   // fora do feed: empurra a conversa pra baixo em vez de cobrir (Sigma, 06/11/2026)
 }
 function responder(it) {
   if (!it) { respondendo = null; citando.hidden = true; return; }
