@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.19">
+<meta name="app-versao" content="2026-11-06.20">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -171,6 +171,7 @@ textarea:focus-visible { outline: none; }
 .quem .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--quem); color: var(--quem-fg); font-size: 17px;   /* era 26px, pequeno demais no celular (May, 05/11/2026) */
   font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background-size: cover; background-position: center; }
 .marca { font-weight: 700; }
+.marca-cor.marca-may { background: linear-gradient(90deg, #E31B23, #EAB308 50%, #16A34A); }   /* a pílula dela com as 3 cores (May, 06/11/2026) */
 .marca-cor { background: linear-gradient(var(--quem), color-mix(in srgb, var(--quem) 70%, black)); color: #FFFFFF; border-radius: 999px;
   padding: 1px 9px; margin: 0 1px; font-size: 13px; display: inline-block; line-height: 1.6; vertical-align: text-bottom; }
 .mencoes { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); }
@@ -853,7 +854,7 @@ function linkar(el, txt, dentro) {
       const s = document.createElement('span'); s.className = 'marca';
       // nome sempre no padrão (maiúscula certa), não importa como foi digitado -- evita "@orfeu" e "@Orfeu" com visual diferente
       s.textContent = eu ? '@' + EU.nome : chave ? '@' + GRUPO[chave].nome.replace(/\s*\(.*\)$/, '') : m[0];
-      if (chave || eu) { s.style.setProperty('--quem', eu ? EU.cor : GRUPO[chave].cor); s.classList.add('marca-cor'); }
+      if (chave || eu) { s.style.setProperty('--quem', eu ? EU.cor : GRUPO[chave].cor); s.classList.add('marca-cor'); if (eu) s.classList.add('marca-may'); }
       else if (nome.toLowerCase() === 'todos') { s.textContent = '@todos'; s.style.setProperty('--quem', '#64748B'); s.classList.add('marca-cor'); }   // @todos também vira pílula (May, 06/11/2026)
       el.append(s); i = m.index + m[0].length;
       continue;
