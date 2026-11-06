@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.33">
+<meta name="app-versao" content="2026-11-06.34">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -329,7 +329,7 @@ button:disabled { opacity: .45; cursor: default; }
 .conv:active { background: var(--bg); }
 .conv .av { width: 46px; height: 46px; border-radius: 50%; flex: none; display: grid; place-items: center; font-weight: 700; font-size: 19px;
   background: color-mix(in srgb, var(--accent) 18%, var(--paper)); color: var(--accent); }
-.conv .av.logo-r { background: #0E0F12 url("avatares/grupo-geral-96.png") center / cover; }   /* Geral = os robôs, não o R (May, 05/11/2026) */
+.conv .av.logo-r { background: #0E0F12 url("avatares/grupo-7-96.png") center / cover; }   /* Geral = os robôs, não o R (May, 05/11/2026) */
 .conv .corpo { flex: 1; min-width: 0; display: grid; gap: 2px; }
 .conv { overflow: hidden; }
 .conv .linha { display: flex; align-items: baseline; gap: 8px; min-width: 0; overflow: hidden; }
@@ -824,7 +824,7 @@ document.querySelectorAll('[data-i]').forEach(e => { e.innerHTML = icone(e.datas
 const REPO = 'mayarainstinct-stack/Inst';
 // Conversas = arquivos: "Geral" é a CAIXA-DE-ENTRADA.md; as outras ficam em caixas/<nome>.md (mesmo formato).
 const GERAL = { arq: 'CAIXA-DE-ENTRADA.md', nome: 'Geral', participantes: ['may', 'lyra', 'orfeu', 'nyx', 'vega', 'hermes', 'sigma'] };   // Casa (PCs) juntada na Geral numa coisa só (pedido dela, 02/11/2026); participantes = quem escreve casa/online/online-<chave>.json
-const FOTO_GERAL = 'avatares/grupo-geral-192.png';   // os robôs juntos, estático no Pages (May, 05/11/2026)
+const FOTO_GERAL = 'avatares/grupo-7-192.png';   // os robôs juntos, estático no Pages (May, 05/11/2026)
 const TRAB = { arq: 'caixas/trabalho.md', nome: 'Trabalho' };   // trabalho separado da Geral (May, 21/10/2026); no celular troca pelo ⋮
 const apiDe = arq => 'https://api.github.com/repos/' + REPO + '/contents/' + arq.split('/').map(encodeURIComponent).join('/');
 let FILE = null;      // arquivo da conversa aberta (null = está na lista)
@@ -2698,7 +2698,7 @@ function abreInfoConversa() {
     pExtra.hidden = true;   // notificações e chave ficam só no Menu (Sigma, 06/11/2026)
     const hero = document.createElement('div'); hero.className = 'ig-hero';
     const ft = document.createElement('div'); ft.className = 'ig-foto';
-    if (geral) { ft.style.backgroundImage = 'url(avatares/grupo-geral-512.png)'; ft.setAttribute('role', 'button'); ft.setAttribute('aria-label', 'Ver a foto do grupo'); ft.onclick = () => abreZoom('avatares/grupo-geral-512.png', '', []); }
+    if (geral) { ft.style.backgroundImage = 'url(avatares/grupo-7-512.png)'; ft.setAttribute('role', 'button'); ft.setAttribute('aria-label', 'Ver a foto do grupo'); ft.onclick = () => abreZoom('avatares/grupo-7-512.png', '', []); }
     else if (fotoConv) fotoUrl(fotoConv).then(u => { ft.style.backgroundImage = 'url(' + u + ')'; }).catch(() => {});
     else ft.textContent = nome.charAt(0).toUpperCase();
     const h = document.createElement('h3'); h.textContent = nome;
