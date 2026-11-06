@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.37">
+<meta name="app-versao" content="2026-11-06.38">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -1049,8 +1049,8 @@ function garanteGrupoTrab() {
   if (grupoTrabP) return grupoTrabP;
   if (Date.now() - grupoTrabEm < 60000) return Promise.resolve();
   grupoTrabEm = Date.now();
-  return grupoTrabP = lerArquivo('casa/grupo-trabalho.json').then(t => {
-    const g = JSON.parse(t);
+  return grupoTrabP = Promise.all(['casa/grupo-trabalho.json', 'casa/grupo-casa.json'].map(a => lerArquivo(a).catch(() => '{}'))).then(([t, tc]) => {   // grupo-casa: gente da casa que fala (ex.: o robô do Gabriel), nome só no repo privado
+    const g = { ...JSON.parse(t || '{}'), ...JSON.parse(tc || '{}') };
     Object.keys(g).forEach(k => { if (!GRUPO[k] && g[k] && g[k].nome && g[k].cor) GRUPO[k] = g[k]; });   // nunca troca quem já é da casa
     montaReQuem(); grupoTrabOk = true;
     delete caixaCache[TRAB.arq]; if (FILE === TRAB.arq) forcar = true;   // prévia e tela que já saíram com o rótulo neutro
@@ -2019,7 +2019,7 @@ async function carregar() {
   const arq = FILE, gen = leituraGen; if (!arq) return null;
   syncEl.classList.add('on');
   try {
-    if (arq === TRAB.arq) await garanteGrupoTrab();   // antes do primeiro parse/desenho do Trabalho
+    if (arq === TRAB.arq || arq === GERAL.arq) await garanteGrupoTrab();   // antes do primeiro parse/desenho do Trabalho
     const f = await gh('GET').finally(() => syncEl.classList.remove('on'));
     if (FILE !== arq || gen !== leituraGen) return f;   // trocou de conversa, ou saiu antes de um PUT nosso (traria a caixa sem a mensagem)
     // mesmo sha da última leitura já aplicada na tela: nada mudou, pula decode + parse + comparação (o 304 só poupa a rede, o corpo vem igual)
