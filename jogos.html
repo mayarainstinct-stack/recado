@@ -514,7 +514,14 @@ function ultimoDia(j){let best=0;(j.historico||[]).concat(j.relatos||[]).forEach
 let aba="jogando",jogExp=false
 let dirAnim=0
 const anima=(el,d)=>{if(!el||!d)return;el.classList.remove("entra-d","entra-e");void el.offsetWidth;el.classList.add(d>0?"entra-d":"entra-e")}
-function render(){setTimeout(()=>hidrata(document.getElementById("lista")),0);
+// troca Jogando/Zerados sem remontar (May 02:40: "tá travando muito"): cada aba montada fica guardada com as imagens já decodificadas
+const PAINEIS={};let chaveL=null
+function render(){const L=document.getElementById("lista");let o="pct";try{o=localStorage.getItem("jogos-ordem")||"pct"}catch(e){}
+const ch=aba+"|"+(aba=="jogando"?o+"|"+jogExp:"")
+if(chaveL&&chaveL!=ch)PAINEIS[chaveL]={n:[...L.childNodes],sub:document.getElementById("sub").textContent}
+if(PAINEIS[ch]&&chaveL!=ch){chaveL=ch;L.replaceChildren(...PAINEIS[ch].n);document.getElementById("sub").textContent=PAINEIS[ch].sub;fundoDa(aba);document.getElementById("tab-jogando").classList.toggle("on",aba=="jogando");document.getElementById("tab-concluidos").classList.toggle("on",aba=="concluidos");anima(L,dirAnim);dirAnim=0;return}
+chaveL=ch;montaLista()}
+function montaLista(){setTimeout(()=>hidrata(document.getElementById("lista")),0);
 const L=document.getElementById("lista");fundoDa(aba);document.getElementById("tab-jogando").classList.toggle("on",aba=="jogando");document.getElementById("tab-concluidos").classList.toggle("on",aba=="concluidos")
 if(aba=="jogando"){
 const tileH=(j,sel)=>`<button class="tile${sel?" sel":""}${consId(j.console)=="pc"?" pc":""}${cromado(j.console)?" cromo":""}${lum(cor(j.console))>.62?" t-claro":""}" style="--cor:${cor(j.console)}${metal(j.console)?`;--metal:${metal(j.console).g};--metal-t:${metal(j.console).t}`:""}" data-id="${j.id}"><div class="tarja">${icone(j.console)}${esc(curto(j.console))}${emulado(j.console,j)?`<span class="emu">EMU</span>`:""}</div><div class="capa">${capaHtml(j)}</div>${barra(j)}${j.pct!=null?`<div class="pc">${pctTxt(j)}</div>`:""}<div class="info"><div class="tt">${esc(j.titulo)}</div><div class="pp">${esc(j.parei||"onde parou ainda não anotado")}</div></div></button>`
