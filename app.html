@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.56">
+<meta name="app-versao" content="2026-11-06.57">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -172,6 +172,7 @@ textarea:focus-visible { outline: none; }
   font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background-size: cover; background-position: center; }
 .marca { font-weight: 700; }
 .marca-cor.marca-may { background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.12) 48%, rgba(0,0,0,.12) 52%, rgba(0,0,0,.42)), linear-gradient(90deg, #F0242C, #F5B400 50%, #1FB04A); font-weight: 700; text-shadow: 0 0 3px rgba(0,0,0,.9), 0 1px 1px rgba(0,0,0,.8); }   /* cor no degradê deitado, brilho no degradê em pé: claro em cima, escuro embaixo onde fica a letra (May, 06/11/2026 01:43) */   /* tons escurecidos: o amarelo e o verde claros apagavam a letra branca (May, 06/11/2026 01:36) */
+.marca-cor.marca-tres { background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.12) 48%, rgba(0,0,0,.12) 52%, rgba(0,0,0,.42)), linear-gradient(90deg, var(--c1), var(--c2) 50%, var(--c3)); }
 .marca-cor.marca-todos { background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.12) 48%, rgba(0,0,0,.12) 52%, rgba(0,0,0,.42)), linear-gradient(90deg, #FF2D2D, #5BC21A, #2F6BFF, #FFC400, #FF3EC8, #A247FF); font-weight: 700; text-shadow: 0 0 3px rgba(0,0,0,.9), 0 1px 1px rgba(0,0,0,.8); }   /* cor no degradê deitado, brilho no degradê em pé: claro em cima, escuro embaixo onde fica a letra (May, 06/11/2026 01:43) */   /* @todos com as cores da casa toda */   /* a pílula dela com as 3 cores (May, 06/11/2026) */
 .marca-cor { text-shadow: 0 0 3px rgba(0,0,0,.9), 0 1px 1px rgba(0,0,0,.8); background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.12) 48%, rgba(0,0,0,.12) 52%, rgba(0,0,0,.42)), var(--quem);   /* pílula de vidro em todo mundo (May, 06/11/2026 01:53) */
   color: #FFFFFF; border-radius: 999px;
@@ -867,6 +868,10 @@ const RE_MARCA = /(@[A-Za-zÀ-ÿ][\wÀ-ÿ-]*)/g;
 // Markdown mínimo dos agentes (05/11/2026): `código` e **negrito** (sem innerHTML; dentro do negrito ainda vale link e @)
 const RE_RICO = new RegExp('(`[^`\\n]+`)|(\\*\\*[^*\\n]+\\*\\*)|' + RE_LINK.source + '|' + RE_MARCA.source, 'gi');
 const NOMES_MAY = ['may', 'mayara', 'mah'];   // @May: só a cor dela na menção, ela não vira falante de agente
+function pilulaTres(el, k) {   // quem tem 3 cores (o Gabriel) ganha a pílula em degradê, igual a da May (May, 06/11/2026 17:30)
+  const g = k && GRUPO[k]; if (!g || !Array.isArray(g.cores) || g.cores.length !== 3) return;
+  el.classList.add('marca-cor', 'marca-tres'); g.cores.forEach((c, i) => el.style.setProperty('--c' + (i + 1), c));
+}
 function linkar(el, txt, dentro) {
   txt = txt || ''; let i = 0;
   for (const m of txt.matchAll(RE_RICO)) {
@@ -879,7 +884,7 @@ function linkar(el, txt, dentro) {
       const s = document.createElement('span'); s.className = 'marca';
       // nome sempre no padrão (maiúscula certa), não importa como foi digitado -- evita "@orfeu" e "@Orfeu" com visual diferente
       s.textContent = eu ? '@' + EU.nome : chave ? '@' + GRUPO[chave].nome.replace(/\s*\(.*\)$/, '') : m[0];
-      if (chave || eu) { s.style.setProperty('--quem', eu ? EU.cor : GRUPO[chave].cor); s.classList.add('marca-cor'); if (eu) s.classList.add('marca-may'); }
+      if (chave || eu) { s.style.setProperty('--quem', eu ? EU.cor : GRUPO[chave].cor); s.classList.add('marca-cor'); if (eu) s.classList.add('marca-may'); pilulaTres(s, chave); }
       else if (nome.toLowerCase() === 'todos') { s.textContent = '@todos'; s.classList.add('marca-cor', 'marca-todos'); }   // @todos também vira pílula (May, 06/11/2026)
       el.append(s); i = m.index + m[0].length;
       continue;
@@ -2482,7 +2487,7 @@ let mencaoSel = -1;   // índice destacado na lista de sugestões; -1 = nenhuma 
 // sugestão só de quem está na conversa (05/11/2026): os participantes da Geral; nas outras, quem já falou nela (vazia = os da Geral)
 function nomesGrupo() {
   const conv = !FILE || FILE === GERAL.arq ? GERAL : convPorArq(FILE), falaram = lastItems.filter(x => x.quem).map(x => x.quem);
-  const chaves = conv.participantes || (falaram.length ? falaram : GERAL.participantes);
+  const chaves = [...(conv.participantes || (falaram.length ? falaram : GERAL.participantes)), ...(conv === GERAL ? GENTE_CASA : [])];   // o Gabriel também entra na sugestão da Geral (May, 06/11/2026 17:30)
   const nomes = [...new Set(chaves.filter(k => GRUPO[k]).map(k => GRUPO[k].nome.replace(/\s*\(.*\)$/, '')))];
   return nomes.length > 1 ? ['todos', ...nomes] : nomes;   // @todos chama todo mundo do grupo (May, 06/11/2026)
 }
@@ -2507,7 +2512,7 @@ function checaMencao() {
   mencoesEl.replaceChildren(...nomes.map(n => {
     const b = document.createElement('button'); b.type = 'button'; b.textContent = '@' + n;
     b.style.setProperty('--quem', n === 'todos' ? 'var(--accent)' : corDe(n));
-    if (n === 'todos') b.classList.add('marca-cor', 'marca-todos'); else if (n.toLowerCase() === 'may') b.classList.add('marca-cor', 'marca-may');   // a sugestão com a mesma pílula da mensagem (May, 06/11/2026 01:49)
+    if (n === 'todos') b.classList.add('marca-cor', 'marca-todos'); else if (n.toLowerCase() === 'may') b.classList.add('marca-cor', 'marca-may'); else pilulaTres(b, Object.keys(GRUPO).find(k => GRUPO[k].nome.replace(/\s*\(.*\)$/, '') === n));   // a sugestão com a mesma pílula da mensagem (May, 06/11/2026 01:49)
     b.onclick = () => escolheMencao(n, m, antes, pos);
     return b;
   }));
