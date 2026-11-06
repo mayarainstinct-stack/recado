@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.5">
+<meta name="app-versao" content="2026-11-06.6">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -460,6 +460,13 @@ button:disabled { opacity: .45; cursor: default; }
 .painel .cartao h3, .painel .p-sec { color: color-mix(in srgb, var(--c) 72%, var(--fg)); }
 .painel .item .ph { background: color-mix(in srgb, var(--c) 18%, transparent); color: color-mix(in srgb, var(--c) 70%, var(--fg)); }
 .painel .p-topo { background: linear-gradient(color-mix(in srgb, var(--c) 72%, black), color-mix(in srgb, var(--c) 52%, black)); }
+/* Esqueleto (skeleton): enquanto a imagem não chega, um bloco cinza com brilho correndo no lugar dela, sem buraco nem susto (May, 06/11/2026) */
+.esq { background: linear-gradient(100deg, color-mix(in srgb, var(--fg) 8%, transparent) 30%, color-mix(in srgb, var(--fg) 16%, transparent) 50%, color-mix(in srgb, var(--fg) 8%, transparent) 70%) 0 0 / 300% 100% !important; animation: esq 1.3s ease-in-out infinite; color: transparent !important; }
+@keyframes esq { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+@media (prefers-reduced-motion: reduce) { .esq { animation: none; } }
+img.esq { min-height: 140px; }
+.ct-av.carregando { border-radius: 50%; }
+.ct-av.carregando, .ig-gente .av.esq, .quem .avatar.esq { background: linear-gradient(100deg, rgba(255,255,255,.08) 30%, rgba(255,255,255,.18) 50%, rgba(255,255,255,.08) 70%) 0 0 / 300% 100%; animation: esq 1.3s ease-in-out infinite; }
 .p-azulejo { --c: var(--accent); width: auto; height: auto; min-height: 104px; padding: 12px 6px 11px; border-radius: 22px; border: 1px solid color-mix(in srgb, var(--c) 55%, transparent); display: grid; justify-items: center; align-content: center; gap: 8px; font: inherit; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.5);
   background: linear-gradient(color-mix(in srgb, var(--c) 45%, black), color-mix(in srgb, var(--c) 22%, black)); box-shadow: inset 0 2px 0 rgba(255,255,255,.18), inset 0 -4px 0 rgba(0,0,0,.35), 0 6px 14px rgba(0,0,0,.25); }   /* padrão do app: escuro em degradê na cor do assunto, chanfro, letra branca (May/Sigma, 06/11/2026) */
 .p-azulejo .ic { width: 50px; height: 50px; display: grid; place-items: center; color: color-mix(in srgb, var(--c) 70%, white); filter: drop-shadow(0 0 8px color-mix(in srgb, var(--c) 60%, transparent)); }
@@ -1549,7 +1556,7 @@ function render(items, manterPosicao) {
       const grade = document.createElement('div'); grade.className = 'grade';
       const prontos = {};   // caminho -> File já pronto (o share do iOS precisa sair logo do toque)
       it.fotos.forEach(fp => {
-        const im = document.createElement('img'); im.className = 'foto mini'; im.alt = 'Foto do álbum'; im.loading = 'lazy'; im.decoding = 'async';
+        const im = document.createElement('img'); im.className = 'foto mini esq'; im.alt = 'Foto do álbum'; im.loading = 'lazy'; im.decoding = 'async'; im.addEventListener('load', () => im.classList.remove('esq'), { once: true });
         im.addEventListener('click', e => { e.stopPropagation(); if (im.src) abreZoom(im.src, fp); });
         fotoUrl(fp).then(u => { im.src = u; return fetch(u).then(r => r.blob()).then(bl => { prontos[fp] = new File([bl], fp.split('/').pop(), { type: bl.type || tipoDe(fp) }); }); })
           .catch(e => { const x = document.createElement('div'); x.className = 'foto-x mini'; x.innerHTML = icone('cam') + ' apagada'; im.replaceWith(x); });
@@ -1567,7 +1574,7 @@ function render(items, manterPosicao) {
       });
       alb.append(grade, bt); el.append(alb);
     } else if (it.foto) {
-      const img = document.createElement('img'); img.className = 'foto'; img.alt = 'Foto enviada'; img.loading = 'lazy'; img.decoding = 'async';
+      const img = document.createElement('img'); img.className = 'foto esq'; img.alt = 'Foto enviada'; img.loading = 'lazy'; img.decoding = 'async'; img.addEventListener('load', () => img.classList.remove('esq'), { once: true });
       img.addEventListener('click', e => { e.stopPropagation(); if (img.src) abreZoom(img.src, it.foto); });
       if (fotoAlt[it.foto]) img.style.minHeight = fotoAlt[it.foto] + 'px';   // já carregou antes: reserva o espaço, o redesenho não pula
       img.onload = () => {
@@ -3102,8 +3109,8 @@ function precoLinha(it) {   // preço em destaque + frete ao lado
 function fotoDe(it, cat, zoom) {   // faixa com o ícone da categoria (sem foto, ou enquanto carrega); a foto entra por cima
   const ph = document.createElement('div'); ph.className = 'ph' + (it.foto ? '' : ' sem'); ph.innerHTML = icone(cat.icone || 'bag');
   if (it.foto) {
-    const img = document.createElement('img'); img.alt = it.nome; img.loading = 'lazy'; img.decoding = 'async'; ph.append(img);
-    fotoUrl(it.foto).then(u => { img.onload = () => img.classList.add('ok'); img.src = u; if (zoom) img.onclick = () => abreZoom(u); }).catch(() => img.remove());
+    const img = document.createElement('img'); img.alt = it.nome; img.loading = 'lazy'; img.decoding = 'async'; ph.append(img); ph.classList.add('esq');
+    fotoUrl(it.foto).then(u => { img.onload = () => { img.classList.add('ok'); ph.classList.remove('esq'); }; img.src = u; if (zoom) img.onclick = () => abreZoom(u); }).catch(() => { img.remove(); ph.classList.remove('esq'); });
   }
   return ph;
 }
