@@ -85,6 +85,7 @@ nav button.on{background:rgba(0,255,140,.12);color:var(--verde);box-shadow:inset
 .anel{position:relative;width:74px;height:74px;flex:none}
 .anel svg{transform:rotate(-90deg)}
 .anel b{position:absolute;inset:0;display:grid;place-items:center;font-size:16px}
+.anel b{display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05}.anel b em{font-style:normal;font-size:8px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--texto3);margin-top:2px}
 .anel small{position:absolute;left:0;right:0;bottom:-15px;text-align:center;font-size:9px;color:var(--texto3);letter-spacing:.8px;text-transform:uppercase}
 .bloco{margin:0 16px 14px;padding:14px;border-radius:16px;background:var(--painel);border:1px solid rgba(0,255,140,.28)}
 .bloco h3{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--verde2);margin-bottom:10px}
@@ -174,6 +175,8 @@ nav button.on{background:rgba(0,255,140,.12);color:var(--verde);box-shadow:inset
 .painel{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always}
 .abas-f{position:sticky;top:0;z-index:3;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 14px;padding:8px 16px;background:linear-gradient(180deg,var(--fundo) 70%,transparent)}
 .abas-f::-webkit-scrollbar{display:none}
+.abas-f{-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent);mask-image:linear-gradient(90deg,#000 82%,transparent);padding-right:40px}
+.painel{padding-bottom:96px}
 .abas-f button{flex:none;height:36px;padding:0 14px;border-radius:12px;font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--texto3);background:var(--vidro);border:1px solid var(--borda)}
 .abas-f button.on{color:var(--verde);background:rgba(0,255,140,.12);border-color:rgba(0,255,140,.55)}
 .toca{cursor:pointer}
@@ -255,6 +258,18 @@ nav button{height:58px;border-radius:22px;font-size:14px}
 #zoom img.troca-e{animation:entraE .25s ease-out}
 .tile,.linha,.placa,.toca,.abas-f button,nav button{transition:transform .12s ease}
 .tile:active,.linha:active,.placa:active,.toca:active,.abas-f button:active,nav button:active{transform:scale(.96)}
+/* padrão do app (Menu/Geral, May e Sigma, 06/11/2026): escuro em degradê na cor do assunto, chanfro, letra branca */
+#ficha{--cor:#3C3C5A}
+.bloco,.painel .bloco{border-radius:24px;border:1px solid color-mix(in srgb,var(--cor) 50%,transparent);background:linear-gradient(color-mix(in srgb,var(--cor) 30%,#0b0618),color-mix(in srgb,var(--cor) 12%,#0b0618));box-shadow:inset 0 2px 0 rgba(255,255,255,.14),inset 0 -4px 0 rgba(0,0,0,.35),0 6px 14px rgba(0,0,0,.25)}
+.bloco h3{color:color-mix(in srgb,var(--cor) 55%,#fff)}
+.poke,.it,.sv,.fps div,.cartao,.selo,.tags span,.pend{border-radius:18px;border:1px solid color-mix(in srgb,var(--cor) 45%,transparent);background:linear-gradient(color-mix(in srgb,var(--cor) 38%,#07040f),color-mix(in srgb,var(--cor) 18%,#07040f));box-shadow:inset 0 2px 0 rgba(255,255,255,.14),inset 0 -3px 0 rgba(0,0,0,.35);text-shadow:0 1px 2px rgba(0,0,0,.45)}
+.sv{padding:10px 12px;margin-bottom:8px}.sv:first-of-type{padding-top:10px}
+.linha{border-color:color-mix(in srgb,var(--cor) 45%,transparent);background:linear-gradient(color-mix(in srgb,var(--cor) 26%,#0b0618),color-mix(in srgb,var(--cor) 10%,#0b0618));box-shadow:inset 0 2px 0 rgba(255,255,255,.12),inset 0 -3px 0 rgba(0,0,0,.35)}
+.tile{box-shadow:inset 0 2px 0 rgba(255,255,255,.14),inset 0 -4px 0 rgba(0,0,0,.35),0 6px 14px rgba(0,0,0,.3);border-color:color-mix(in srgb,var(--cor) 50%,transparent)}
+.abas-f button.on,nav button.on{background:linear-gradient(color-mix(in srgb,#00FF8C 34%,#07040f),color-mix(in srgb,#00FF8C 14%,#07040f));box-shadow:inset 0 2px 0 rgba(255,255,255,.18),inset 0 -3px 0 rgba(0,0,0,.35);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+@keyframes brilhoEsq{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+.capa:has(img.inteira:not([src]))::after,.mini:has(img.inteira:not([src]))::after,.moldura:has(img.inteira:not([src]))::after,.prints img:not([src]),.ev img:not([src]){content:"";position:absolute;inset:0;z-index:2;background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.14) 50%,transparent 80%);animation:brilhoEsq 1.1s ease-in-out infinite}
+.prints img:not([src]),.ev img:not([src]){position:relative;min-height:90px;background-color:rgba(255,255,255,.06)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -310,8 +325,12 @@ const REPO="mayarainstinct-stack/Inst",TOKEN=(()=>{try{return localStorage.getIt
 const apiDe=p=>"https://api.github.com/repos/"+REPO+"/contents/"+p.split("/").map(encodeURIComponent).join("/")
 const gh=(p,op={})=>fetch(apiDe(p),{cache:"no-cache",...op,headers:{Authorization:"Bearer "+TOKEN,Accept:"application/vnd.github+json",...(op.headers||{})}})
 const blobs={}
-function priv(p){return blobs[p]||(blobs[p]=gh(p,{headers:{Accept:"application/vnd.github.raw"},cache:"default"}).then(r=>{if(!r.ok)throw r.status;return r.blob()}).then(b=>URL.createObjectURL(b)))}
-function hidrata(raiz){(raiz||document).querySelectorAll("img[data-p]").forEach(im=>{const p=im.dataset.p;im.removeAttribute("data-p");priv(p).then(u=>{im.src=u}).catch(()=>im.remove())})}
+const CACHE_IMG="jogos-img-v1",chaveCache=p=>"https://cache.jogos.local/"+p
+const baixa=p=>gh(p,{headers:{Accept:"application/vnd.github.raw"},cache:"default"}).then(r=>{if(!r.ok)throw r.status;return r.blob()})
+function priv(p){return blobs[p]||(blobs[p]=(async()=>{const img=/\.(jpe?g|png|webp|gif)$/i.test(p);let c=null;if(img&&window.caches){try{c=await caches.open(CACHE_IMG);const m=await c.match(chaveCache(p));if(m)return URL.createObjectURL(await m.blob())}catch(e){c=null}}const b=await baixa(p);if(c)c.put(chaveCache(p),new Response(b,{headers:{"Content-Type":b.type||"image/jpeg"}})).catch(()=>{});return URL.createObjectURL(b)})())}
+const poe=im=>{const p=im.dataset.p;if(!p)return;im.removeAttribute("data-p");priv(p).then(u=>{im.src=u}).catch(()=>im.remove())}
+const perto="IntersectionObserver" in window?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){perto.unobserve(e.target);poe(e.target)}}),{rootMargin:"400px 600px"}):null
+function hidrata(raiz){(raiz||document).querySelectorAll("img[data-p]").forEach(im=>perto&&!im.closest("#zoom,#pop,.topo")?perto.observe(im):poe(im))}
 const ehPriv=u=>u&&!/^(https?:|data:|blob:)/.test(u)
 const escA=x=>String(x).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")
 function srcAttr(u){return ehPriv(u)?`data-p="${escA(u)}"`:`src="${escA(u)}"`}
@@ -408,14 +427,14 @@ L.querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>abrir(b.dataset.id))
 anima(L,dirAnim);dirAnim=0
 }
 function linha(j){return`<button class="linha" style="--cor:${cor(j.console)}" data-id="${j.id}"><div class="mini">${capaHtml(j)}</div><div class="tx"><div class="tt">${esc(j.titulo)}</div><div class="sub">${esc(curto(j.console))}${j.parei?" · "+esc(j.parei):""}</div>${barra(j)}</div><div class="pc">${pctTxt(j)}</div></button>`}
-function anel(j){const p=j.pct??0,r=31,c=2*Math.PI*r,col=j.pct==null?"#555":j.estimado?"#FFC846":"#5ADC78";return`<div class="anel"><svg width="74" height="74"><circle cx="37" cy="37" r="${r}" stroke="rgba(255,255,255,.12)" stroke-width="7" fill="none"/><circle cx="37" cy="37" r="${r}" stroke="${col}" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="${c*p/100} ${c}"/></svg><b>${j.pct==null?"?":pctTxt(j)}</b><small>${j.pct==null?"sem %":j.estimado?"estimado":"do jogo"}</small></div>`}
+function anel(j){const p=j.pct??0,r=31,c=2*Math.PI*r,col=j.pct==null?"#555":j.estimado?"#FFC846":"#5ADC78";return`<div class="anel"><svg width="74" height="74"><circle cx="37" cy="37" r="${r}" stroke="rgba(255,255,255,.12)" stroke-width="7" fill="none"/><circle cx="37" cy="37" r="${r}" stroke="${col}" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="${c*p/100} ${c}"/></svg><b>${j.pct==null?"?":pctTxt(j)}<em>${j.pct==null?"sem %":j.estimado?"estimado":"do jogo"}</em></b></div>`}
 const IC={pin:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',tempo:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',estrela:'<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 21l1.6-7L2 9.2l7.1-.6z"/></svg>',selo:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="9" r="6"/><path d="M8.5 14L7 22l5-3 5 3-1.5-8"/></svg>',save:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v5h7V3M8 21v-6h8v6"/></svg>',fps:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 17a8 8 0 1 1 16 0"/><path d="M12 17l4-5"/></svg>',bau:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="9" width="18" height="11" rx="1"/><path d="M3 9a9 5 0 0 1 18 0M11 12h2v3h-2z"/></svg>',img:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 8"/></svg>',alerta:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18h.01"/></svg>'}
 const SELO_IC={"zerado":'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F5D237" stroke-width="2.4" stroke-linecap="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/></svg>'}
 function dval(h){if(!h.dia)return 0;const[d,m,a]=h.dia.split("/").map(Number);return a*10000+m*100+d+(h.hora?Number(h.hora.replace(":",""))/10000:0)}
 let fichaAtual=null,histTodos=false,abaFicha="resumo",fichaDir=0
 function abrir(id){fichaAtual=POR[id];histTodos=false;abaFicha="resumo";desenhaFicha();const f=document.getElementById("ficha");f.classList.add("on");document.getElementById("f-corpo").scrollTop=0;if(location.hash!="#jogo="+id)history.replaceState(null,"","#jogo="+id)}
 function desenhaFicha(){
-const j=fichaAtual,u=capaUrl(j),c=cor(j.console)
+const j=fichaAtual,u=capaUrl(j),c=cor(j.console);document.getElementById("ficha").style.setProperty("--cor",c)
 const ff=document.getElementById("f-fundo");ff.style.backgroundImage=`linear-gradient(160deg,${c},#101a3c)`;if(u)(ehPriv(u)?priv(u):Promise.resolve(u)).then(x=>{if(fichaAtual===j)ff.style.backgroundImage=`url("${x}")`}).catch(()=>{})
 const ev=[];(j.historico||[]).forEach(h=>ev.push({dia:h.dia,hora:h.hora,onde:h.onde,texto:h.fala,quem:"May"}));(j.relatos||[]).forEach(r=>{const f=(r.texto.match(/^📷\s*(\S+)/)||[])[1];ev.push({dia:r.dia,hora:r.hora,texto:r.texto.replace(/^📷\s*\S+\s*/,"").replace(/\*\*/g,""),quem:r.quem,foto:f?corte(f.split(",")[0]):null})})
 ev.sort((a,b)=>dval(b)-dval(a))
@@ -423,13 +442,14 @@ const vis=histTodos?ev:ev.slice(0,6)
 const des=j.desbloqueados||{},saves=j.save||[],fps=j.fps||[]
 let h=`<div class="topo" style="--cor:${c}"><div class="capa" style="--cor:${c}">${capaHtml(j)}</div><div class="dados"><h2>${esc(j.titulo)}</h2><span class="chip">${icone(j.console)}${esc(curto(j.console))}</span>${j.emulador?`<span class="chip vidro">${esc(j.emulador.split(" · ")[0])}</span>`:""}<div style="margin-top:14px;display:flex;align-items:center;gap:12px">${anel(j)}<div style="font-size:12px;color:var(--texto2);line-height:1.4">${esc(rotuloStatus(j.status))}</div></div></div></div>`
 const A={resumo:"",eu:"",poke:"",inv:"",hist:"",save:"",prints:""};POP=[]
-const minhas=(j.historico||[]).slice().sort((a,b)=>dval(b)-dval(a))
+const norm=t=>String(t||"").toLowerCase().replace(/[^a-z0-9à-ú ]/g,"").replace(/\s+/g," ").trim(),todas=(j.historico||[]).slice().sort((a,b)=>dval(b)-dval(a))
+const minhas=todas.filter((e,i)=>{const n=norm(e.fala);return n&&!todas.some((o,k)=>k!=i&&o.dia==e.dia&&norm(o.fala)!=n&&norm(o.fala).includes(n))&&todas.findIndex(o=>o.dia==e.dia&&norm(o.fala)==n)==i})
 if(minhas.length)A.eu+=`<div class="bloco"><h3>${IC.tempo}O que eu falei</h3><div class="tempo">${minhas.map(e=>`<div class="ev toca" ${pk(()=>popEv(j,{dia:e.dia,hora:e.hora,onde:e.onde,texto:e.fala,quem:"May"}))}><div class="m"><b>${esc(e.dia||"sem data")}${e.hora?" "+esc(e.hora):""}</b>${e.onde?`<span>${esc(e.onde)}</span>`:""}</div><div class="q ela">${esc(e.fala)}</div></div>`).join("")}</div></div>`
 A.resumo+=`<div class="bloco toca" ${pk(()=>popParei(j))}><h3>${IC.pin}Onde parei</h3><div class="parei">${esc(j.parei||"Ainda não anotado")}</div>${saves[0]&&saves[0].progresso?`<div class="parei-sub">No save (${esc(saves[0].data||"")}): ${esc(saves[0].progresso)}</div>`:""}${(j.pendencias||[]).filter(p=>/divergente/.test(p)).map(p=>`<div class="pend">${esc(p)}</div>`).join("")}</div>`
 if((j.o_que_me_marcou||[]).length)A.eu+=`<div class="bloco" style="border-color:rgba(245,210,55,.45)"><h3 style="color:var(--ouro)">${IC.estrela}O que me marcou</h3><div class="marcou">${j.o_que_me_marcou.map(m=>`<div class="cartao toca" ${pk(()=>popMarcou(j,m))}><q>${esc(m.fala)}</q><div class="dia">${esc(m.dia||"")}${m.nota?" · "+esc(m.nota):""}</div></div>`).join("")}</div></div>`
 if((j.conquistas||[]).length)A.eu+=`<div class="bloco"><h3>${IC.selo}Conquistas e feitos</h3><div class="selos">${j.conquistas.map(s=>`<div class="selo toca" ${pk(()=>popSelo(j,s))}>${SELO_IC.zerado}${esc(s.selo)}${s.dia?`<span>${esc(s.dia)}</span>`:""}</div>`).join("")}</div>${j.parede&&j.parede.lembranca?`<div class="parei-sub" style="margin-top:12px">Plaquinha nº ${String(j.parede.numero).padStart(2,"0")} da parede: ${esc(j.parede.lembranca)}</div>`:""}</div>`
-const time=(des.pokemons||[]).filter(p=>!p.onde||/time/i.test(p.onde))
-if(time.length)A.poke+=`<div class="bloco"><h3>${IC.bau}Time principal</h3><div class="colecao">${time.map(p=>`<div class="poke toca" data-poke="${esc(p.nome)}" ${pk(()=>popPoke(j,p))}><i></i><div>${esc(p.nome)}<small>${p.nivel?"nível "+p.nivel:"nível ?"}<span class="tipo"></span></small></div></div>`).join("")}</div></div>`
+const time=(des.pokemons||[]).filter(p=>!p.onde||/time/i.test(p.onde)),incerto=n=>/^\s*\?|talvez|\(pelo|n[aã]o sei/i.test(n||""),nomeP=n=>incerto(n)?"Não identificado":n
+if(time.length)A.poke+=`<div class="bloco"><h3>${IC.bau}Time principal</h3><div class="colecao">${time.map(p=>`<div class="poke toca" data-poke="${esc(incerto(p.nome)?"":p.nome)}" ${pk(()=>popPoke(j,p))}><i></i><div>${esc(nomeP(p.nome))}<small>${p.nivel?"nível "+p.nivel:"nível ?"}<span class="tipo"></span></small></div></div>`).join("")}</div></div>`
 const itens=[...(des.itens||[]),...(des.outros||[])]
 if(itens.length)A.inv+=`<div class="bloco"><h3>${IC.bau}O que eu tenho de importante</h3><div class="inv">${itens.map(x=>{const d=invDe(j,x);return`<div class="it toca" ${pk(()=>popItem(j,x))}><b>${esc(d.nome)}</b><p>${esc(d.descricao)}</p>${d.detalhes.length?kvh(d.detalhes):""}</div>`}).join("")}</div></div>`
 A.hist+=`<div class="bloco"><h3>${IC.tempo}História</h3>${ev.length?`<div class="tempo">${vis.map(e=>`<div class="ev toca" ${pk(()=>popEv(j,e))}><div class="m"><b>${esc(e.dia||"sem data")}${e.hora?" "+esc(e.hora):""}</b>${e.quem!="May"?`<span class="nyx">${esc(e.quem)} mediu</span>`:""}${e.onde?`<span>${esc(e.onde)}</span>`:""}</div><div class="q ${e.quem=="May"?"ela":"rel"}">${esc(e.texto)}</div>${e.foto?`<img loading="lazy" data-z data-p="${esc(e.foto)}" alt="">`:""}</div>`).join("")}</div>${ev.length>6&&!histTodos?`<button class="mais" id="h-mais">ver as ${ev.length} entradas</button>`:""}`:`<div class="parei-sub">Nada ainda. Manda algo pelo botão aqui embaixo.</div>`}</div>`
