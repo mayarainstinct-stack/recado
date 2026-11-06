@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.16">
+<meta name="app-versao" content="2026-11-06.17">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -647,13 +647,14 @@ img.esq { min-height: 140px; }
 .ct-nos .ct-in1 { position: relative; z-index: 1; font-size: 10px; max-width: 100%; }
 .ct-nos .ct-in1 svg { width: 40px; height: 40px; }
 .ct-painel .ct-ins-fila { row-gap: 12px; padding: 10px 4px; border-radius: 14px; background: rgba(0,0,0,.3); }
-.ct-abas { display: flex; gap: 4px; padding: 4px; border-radius: 16px; background: #0B0B0E; border: 1px solid rgba(255,255,255,.1); }
+.ct-abas { position: relative; display: flex; gap: 4px; padding: 4px; border-radius: 16px; background: #0B0B0E; border: 1px solid rgba(255,255,255,.1); }
 .ct-abas button { width: auto; height: auto; min-width: 0; min-height: 54px; border-radius: 12px; border: none; background: none; color: rgba(255,255,255,.62); display: grid; justify-items: center; align-content: center; gap: 3px; padding: 6px 1px; font-size: calc(11px - (var(--n, 4) - 4) * .6px); font-weight: 800; letter-spacing: -.01em; overflow: hidden; }   /* 7 abas cabem no celular */
 .ct-abas button svg { width: 22px; height: 22px; }
-.ct-abas button { flex: 1 1 0; transition: flex-grow .22s ease, background-color .2s ease; }
-.ct-abas button.ativa { flex-grow: 1.8; }   /* o selecionado ganha mais largura, não fica espremido (May, 06/11/2026) */
-.ct-abas button.ativa { color: #fff; background: color-mix(in srgb, var(--quem) 30%, transparent); box-shadow: inset 0 -3px 0 var(--claro); }
-.ct.eu .ct-abas button.ativa { background: linear-gradient(135deg, rgba(227,27,35,.3), rgba(250,204,21,.18), rgba(34,197,94,.24)); box-shadow: inset 0 -3px 0 #FACC15; }
+.ct-abas button { position: relative; z-index: 1; flex: 1 1 0; background: none !important; box-shadow: none !important; transition: color .2s ease; }
+.ct-abas button.ativa { flex-grow: 1.7; color: #fff; }   /* o selecionado é mais largo; a largura troca na hora, só o destaque desliza (May, 06/11/2026) */
+.ct-destaque { position: absolute; top: 4px; bottom: 4px; left: 0; width: 0; border-radius: 12px; z-index: 0; pointer-events: none; background: color-mix(in srgb, var(--quem) 30%, transparent); box-shadow: inset 0 -3px 0 var(--claro); transition: transform .24s cubic-bezier(.3,.7,.2,1), width .24s cubic-bezier(.3,.7,.2,1); }
+.ct.eu .ct-destaque { background: linear-gradient(135deg, rgba(227,27,35,.3), rgba(250,204,21,.18), rgba(34,197,94,.24)); box-shadow: inset 0 -3px 0 #FACC15; }
+@media (prefers-reduced-motion: reduce) { .ct-destaque { transition: none; } }
 @media (prefers-reduced-motion: reduce) { .ct-trilho { scroll-behavior: auto; } }
 .pop input[type=text] { font: inherit; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
 .pop .foto-grupo { display: flex; align-items: center; gap: 12px; }
@@ -1238,10 +1239,11 @@ async function abreCracha(chave) {
     alvos.forEach(a => { if (a) a.style.zoom = ''; }); if (caixa.querySelector('.ct-arvore')) return;
     for (let n = 0; n < 3 && caixa.scrollHeight > caixa.clientHeight + 1; n++) { const z = Math.max(.55, (parseFloat(alvos[0] && alvos[0].style.zoom) || 1) * caixa.clientHeight / caixa.scrollHeight); alvos.forEach(a => { if (a) a.style.zoom = z.toFixed(3); }); }
   };
-  let atual = -1, girando = false;
+  let atual = -1, girando = false; const destaque = el('span', 'ct-destaque'); nav.prepend(destaque);
   const mostra = i => {
     atual = i; faces.forEach((fc, j) => { fc.hidden = j !== i; }); cabe(faces[i]);
     nav.querySelectorAll('button').forEach((b, j) => { b.classList.toggle('ativa', j === i); b.setAttribute('aria-current', j === i ? 'true' : 'false'); });
+    requestAnimationFrame(() => { const b = nav.querySelectorAll('button')[i]; if (b && destaque) { destaque.style.transform = 'translateX(' + b.offsetLeft + 'px)'; destaque.style.width = b.offsetWidth + 'px'; } });   // o destaque desliza até a aba nova, o texto e o ícone ficam parados
   };
   const poe = (g, t) => { trilho.style.transition = t ? 'transform ' + t + 's cubic-bezier(.3,.7,.2,1)' : 'none'; trilho.style.transform = g ? 'perspective(1100px) rotateY(' + g.toFixed(2) + 'deg)' : ''; };
   async function vira(i, dir, de) {   // dir 1 = próxima aba (gira pra esquerda)
