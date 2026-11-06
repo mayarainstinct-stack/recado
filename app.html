@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.21">
+<meta name="app-versao" content="2026-11-05.22">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -491,6 +491,7 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-trilho { display: flex; height: min(calc((100vw - 32px) * 1.4), 520px, calc(100dvh - 156px)); overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; border-radius: 22px; box-shadow: 0 0 28px color-mix(in srgb, var(--quem) 38%, transparent), 0 18px 44px rgba(0,0,0,.5); }   /* o brilho sai do trilho: dentro da rolagem ele era cortado */
 .ct-trilho::-webkit-scrollbar { display: none; }
 .ct-trilho { perspective: 900px; }
+.ct-frente .ct-in { overflow-y: auto; overscroll-behavior: contain; }   /* tela baixa (iPhone com a barra do Safari): a frente rola em vez de cortar (May, 05/11/2026) */
 .ct-trilho > .ct-face { flex: 0 0 100%; scroll-snap-align: center; scroll-snap-stop: always; transform-origin: center; will-change: transform; }
 .ct-face { grid-area: 1 / 1; min-height: 0; padding: 6px; border-radius: 22px; background: var(--borda); -webkit-backface-visibility: hidden; backface-visibility: hidden; box-shadow: 0 0 28px color-mix(in srgb, var(--quem) 38%, transparent), 0 18px 44px rgba(0,0,0,.5); color: #fff; font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,.6), 0 0 12px rgba(0,0,0,.3); }
 .ct-in { height: 100%; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; box-shadow: inset 0 0 0 1px rgba(255,255,255,.14);
@@ -1076,7 +1077,7 @@ async function abreCracha(chave) {
   const vai = (id, suave) => { const i = Math.max(0, abas.findIndex(x => x[0] === id)); trilho.scrollTo({ left: i * trilho.clientWidth, behavior: suave && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'auto' }); marca(i); };
   // enquanto arrasta, cada cartão gira no próprio eixo como o flip de antes (May, 05/11/2026: "tem q ser mais legal tipo flip")
   const semMov = matchMedia('(prefers-reduced-motion: reduce)').matches; let quadro = 0;
-  const gira = () => { quadro = 0; const w = trilho.clientWidth; if (!w) return; faces.forEach((fc, j) => { const o = Math.max(-1, Math.min(1, j - trilho.scrollLeft / w)); fc.style.transform = o ? 'rotateY(' + (o * -70).toFixed(2) + 'deg) scale(' + (1 - Math.abs(o) * .12).toFixed(3) + ')' : ''; fc.style.opacity = (1 - Math.abs(o) * .2).toFixed(3); }); };
+  const gira = () => { quadro = 0; const w = trilho.clientWidth; if (!w) return; faces.forEach((fc, j) => { const o = Math.max(-1, Math.min(1, j - trilho.scrollLeft / w)); fc.style.transform = o ? 'rotateY(' + (o * -55).toFixed(2) + 'deg) scale(' + (1 - Math.abs(o) * .18).toFixed(3) + ')' : ''; fc.style.opacity = (1 - Math.abs(o) * .2).toFixed(3); }); };
   trilho.addEventListener('scroll', () => { if (!trilho.clientWidth) return; marca(Math.round(trilho.scrollLeft / trilho.clientWidth)); if (!semMov && !quadro) quadro = requestAnimationFrame(gira); }, { passive: true });
   abas.forEach(([id, rot]) => { const b = el('button'); b.type = 'button'; b.dataset.a = id; b.innerHTML = ICO_FICHA[id]; b.append(el('span', '', rot)); b.onclick = () => vai(id, true); nav.append(b); });
   const fecha = el('button', 'ct-x'); fecha.type = 'button'; fecha.title = 'Fechar'; fecha.setAttribute('aria-label', 'Fechar'); fecha.innerHTML = ICO_FICHA.fechar; fecha.onclick = () => pop.remove();
