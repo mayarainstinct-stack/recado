@@ -409,13 +409,13 @@
   "Zelda: Majora's Mask": {
    "pct": 30,
    "estimado": true,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo 64",
    "parei": "Jogou bastante, com hack de todos os itens desde o começo."
   },
   "Zelda: Ocarina of Time": {
    "pct": 8,
    "estimado": true,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Chegou à Rainha Gohma, a chefe da primeira dungeon."
   },
   "Horizon Chase Turbo": {
@@ -428,19 +428,19 @@
   "Super Mario Bros. Wonder": {
    "pct": 10,
    "estimado": true,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Meio do mapa, em frente a uma planta gigante, depois do mundo do deserto."
   },
   "Donkey Kong Country: Tropical Freeze": {
    "pct": 1,
    "estimado": false,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Bem no começo, umas 4 ou 5 fases."
   },
   "Donkey Kong Country Returns": {
    "pct": 0,
    "estimado": false,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Bem no começo, umas duas fases."
   },
   "25 to Life": {
@@ -514,7 +514,8 @@
    "pct": 83,
    "estimado": true,
    "capa": "https://upload.wikimedia.org/wikipedia/en/3/39/Crash_Bandicoot_4_Box_Art.jpeg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-   "parei": "Mundo oriental com vitórias-régias gigantes, depois do mundo da cidade à noite."
+   "parei": "Mundo oriental com vitórias-régias gigantes, depois do mundo da cidade à noite.",
+   "console": "PlayStation 4"
   },
   "Star Wars Jedi: Fallen Order": {
    "pct": 50,
@@ -815,76 +816,76 @@
   "Zelda: Link's Awakening": {
    "pct": 3,
    "estimado": true,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "capa": "https://upload.wikimedia.org/wikipedia/en/7/74/The_Legend_of_Zelda_Link%27s_Awakening_%282019_video_game%29.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Só abriu."
   },
   "Yoshi's Crafted World": {
    "pct": 0,
    "estimado": false,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Só abriu."
   },
   "Dragon Ball FighterZ": {
    "pct": 0,
    "estimado": false,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "capa": "https://upload.wikimedia.org/wikipedia/en/a/ad/DBFZ_cover_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Só as batalhas avulsas."
   },
   "Super Mario 3D World Bowser's Fury": {
    "pct": 15,
    "estimado": true,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Até pegar a Plessie, depois da primeira batalha com o Bowser."
   },
   "Pokémon Let's Go Eevee": {
    "pct": 0,
    "estimado": false,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Jogou a demo inteira no Switch."
   },
   "Pokémon Mystery Dungeon DX": {
    "pct": 5,
    "estimado": true,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "capa": "https://upload.wikimedia.org/wikipedia/en/9/9e/Pok%C3%A9mon_Mystery_Dungeon_Rescue_Team_DX.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Na cidade, perto do lago, após o primeiro chefão (Skarmory)."
   },
   "Pokémon Brilliant Diamond": {
    "pct": 0,
    "estimado": false,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Só abriu."
   },
   "Kirby Star Allies": {
    "pct": 1,
    "estimado": false,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Umas 5 fases."
   },
   "Paper Mario: The Thousand-Year Door": {
    "pct": 0,
    "estimado": false,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Só abriu o remake."
   },
   "New Pokémon Snap": {
    "pct": 2,
    "estimado": true,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Umas duas trilhas."
   },
   "The Plucky Squire": {
    "pct": 30,
    "estimado": true,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Passou da saída do livro para o quarto em 3D."
   },
   "Gravity Circuit": {
    "pct": 5,
    "estimado": false,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Umas 2 ou 3 fases."
   },
   "Gravity Rush 2": {
@@ -916,19 +917,19 @@
   "Bayonetta Origins": {
    "pct": 3,
    "estimado": false,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Com o Cheshire, passou da floresta e de um chefão."
   },
   "Blasphemous 2": {
    "pct": 10,
    "estimado": true,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Algumas partes; mapa muito grande."
   },
   "Cult of the Lamb": {
    "pct": 0,
    "estimado": false,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Jogou a demo inteira no Switch."
   },
   "Saints Row": {
@@ -1010,7 +1011,7 @@
   "Zelda: Breath of the Wild": {
    "pct": 100,
    "estimado": false,
-   "console": "Wii U (emulador no PC)",
+   "console": "Wii U",
    "capa": "https://upload.wikimedia.org/wikipedia/en/c/c6/The_Legend_of_Zelda_Breath_of_the_Wild.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Zerado."
   },
@@ -1023,7 +1024,7 @@
   "Mighty Morphin Power Rangers: Rita's Rewind": {
    "pct": 100,
    "estimado": false,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "capa": "https://upload.wikimedia.org/wikipedia/en/2/2c/Rita%27s_Rewind_Game_Cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Zerado para liberar o Ranger Verde."
   },
@@ -1135,7 +1136,7 @@
   "Pokémon Legends: Z-A": {
    "pct": 35,
    "estimado": false,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "No rank F do Z-A Royale, depois de vencer o Vinnie."
   },
   "Asphalt Legends": {
@@ -1154,7 +1155,7 @@
   "The Long Dark": {
    "pct": 5,
    "estimado": true,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Saiu do vale e passou pelas cavernas."
   },
   "Brütal Legend": {
@@ -1232,75 +1233,75 @@
    "capa": "https://upload.wikimedia.org/wikipedia/en/4/4c/Pok%C3%A9mon_Champions_key_art_logo.jpg"
   },
   "Sonic X Shadow Generations": {
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "pct": 0,
    "estimado": false
   },
   "Hyrule Warriors: Definitive Edition": {
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Algumas missões.",
    "pct": 0,
    "estimado": false
   },
   "Hyrule Warriors: Age of Calamity": {
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Algumas missões.",
    "pct": 0,
    "estimado": false
   },
   "Luigi's Mansion 3": {
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Trava muito no emulador.",
    "pct": 1,
    "estimado": true
   },
   "Mario Party Jamboree": {
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Partidas em multiplayer.",
    "pct": 1,
    "estimado": true
   },
   "Super Mario Party": {
-   "console": "Switch (emulador no PC)"
+   "console": "Nintendo Switch"
   },
   "Super Smash Bros. Ultimate": {
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "pct": 2,
    "estimado": true
   },
   "Pokkén Tournament DX": {
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Só abriu.",
    "capa": "https://upload.wikimedia.org/wikipedia/pt/6/64/Pokk%C3%A9n_Tournament.jpg"
   },
   "Mario Strikers": {
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "capa": "https://upload.wikimedia.org/wikipedia/en/4/4e/Mario_strikers_battle_league.jpeg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Só abriu."
   },
   "Mario & Luigi: Brothership": {
-   "console": "Switch (emulador no PC)"
+   "console": "Nintendo Switch"
   },
   "Super Mario Maker 2": {
    "pct": 0,
    "estimado": false,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Só abriu."
   },
   "New Super Mario Bros. U Deluxe": {
    "pct": 0,
    "estimado": false,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Só abriu."
   },
   "Kirby and the Forgotten Land": {
    "pct": 5,
    "estimado": true,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Só a demo no Switch."
   },
   "Jumanji: The Video Game": {
-   "console": "Switch (emulador no PC)"
+   "console": "Nintendo Switch"
   },
   "Cuphead": {
    "console": "PC",
@@ -1775,7 +1776,7 @@
   "30XX": {
    "pct": 10,
    "estimado": true,
-   "console": "Switch (emulador no PC)",
+   "console": "Nintendo Switch",
    "parei": "Na parte dos portais para escolher a fase. (no save: HQ com 10 cristais de memória, 26 min)"
   }
  }
