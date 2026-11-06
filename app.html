@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.38">
+<meta name="app-versao" content="2026-11-05.39">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -511,7 +511,9 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-id { font-size: 15px; letter-spacing: .05em; padding: 3px 10px; border-radius: 8px; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.2); }
 .ct-quem { display: grid; grid-template-columns: 132px 1fr; gap: 14px; align-items: center; padding: 14px 14px 4px; }
 .ct-av { width: 132px; height: 132px; border-radius: 50%; background: color-mix(in srgb, var(--quem) 55%, #000) center / cover no-repeat; display: grid; place-items: center; font-size: 46px; filter: drop-shadow(0 6px 14px rgba(0,0,0,.45)) drop-shadow(0 0 16px color-mix(in srgb, var(--quem) 50%, transparent)); }
-.ct-av.foto { background-color: transparent; cursor: zoom-in; }
+.ct-av.foto { background-color: transparent; cursor: zoom-in; animation: aparece .25s ease-out both; }
+.ct-av.carregando { background: none; filter: none; }   /* sem quadrado vinho nem sombra antes da foto chegar (May, 05/11/2026) */
+@keyframes aparece { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
 .ct-nome { font-size: 28px; line-height: 1.05; overflow-wrap: anywhere; }
 .ct-cargo { font-size: 14px; line-height: 1.25; margin-top: 5px; }
 .ct-classe { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; margin-top: 6px; color: rgba(255,255,255,.8); }
@@ -544,7 +546,7 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-vcab b { display: block; font-size: 17px; line-height: 1.1; } .ct-vcab .ct-tit { margin-top: 2px; }
 .ct-painel { flex: 1; min-height: 0; overflow: hidden; padding: 4px 14px 12px; display: flex; flex-direction: column; }   /* sem rolagem no cartão: o que não cabe é apertado (cabe()) */
 .ct-painel > * { flex: 1 0 auto; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }   /* cada aba enche o cartão até quase o fim (May, 05/11/2026) */
-.ct-painel > * > div:not(.ct-nivel):not(.ct-placar):not(.ct-bar):not(.ct-tit):not(.ct-olhar) { flex: 1 0 auto; display: flex; flex-direction: column; }
+.ct-painel > * > div:not(.ct-nivel):not(.ct-placar):not(.ct-bar):not(.ct-tit):not(.ct-olhar):not(.ct-arvore) { flex: 1 0 auto; display: flex; flex-direction: column; }
 .ct-painel .ct-ins-fila, .ct-painel .ct-selos, .ct-painel .ct-tempo, .ct-painel .ct-ff { flex: 1 0 auto; align-content: space-evenly; }
 .ct-painel > .ct-dados { display: grid; align-content: space-evenly; }
 .ct { position: relative; }
@@ -594,6 +596,13 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-tempo li::after { content: ""; position: absolute; left: 7px; top: 16px; bottom: 0; width: 2px; background: rgba(255,255,255,.2); }
 .ct-tempo li:last-child::after { display: none; }
 .ct-tempo small { display: block; font-size: 10.5px; color: rgba(255,255,255,.7); letter-spacing: .04em; }
+.ct-arvore { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; flex: 1 0 auto; padding-top: 10px; }
+.ct-ramo { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 2px 10px; border-radius: 14px; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.1); }
+.ct-ramo .ct-tit { margin: 0; text-align: center; }
+.ct-nos { position: relative; flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; gap: 10px; }
+.ct-nos::before { content: ""; position: absolute; top: 18px; bottom: 18px; left: 50%; width: 3px; transform: translateX(-50%); border-radius: 2px; background: linear-gradient(to top, var(--claro), rgba(255,255,255,.12)); }
+.ct-nos .ct-in1 { position: relative; z-index: 1; font-size: 10px; max-width: 100%; }
+.ct-nos .ct-in1 svg { width: 40px; height: 40px; }
 .ct-painel .ct-ins-fila { row-gap: 12px; padding: 10px 4px; border-radius: 14px; background: rgba(0,0,0,.3); }
 .ct-abas { display: grid; grid-template-columns: repeat(var(--n, 4), 1fr); gap: 4px; padding: 4px; border-radius: 16px; background: #0B0B0E; border: 1px solid rgba(255,255,255,.1); }
 .ct-abas button { width: auto; height: auto; min-width: 0; min-height: 54px; border-radius: 12px; border: none; background: none; color: rgba(255,255,255,.62); display: grid; justify-items: center; align-content: center; gap: 3px; padding: 6px 1px; font-size: calc(11px - (var(--n, 4) - 4) * .6px); font-weight: 800; letter-spacing: -.01em; overflow: hidden; }   /* 7 abas cabem no celular */
@@ -1101,8 +1110,8 @@ async function abreCracha(chave) {
   const pop = el('div', 'pop cracha-pop'); pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'Ficha de ' + nome);
   const ct = el('div', 'ct' + (g === EU ? ' eu' : '') + (k === 'sigma' ? ' sigma' : '')); ct.style.setProperty('--quem', g.cor); ct.style.setProperty('--quem-fg', g.texto || '#fff');
   const avatar = (grande) => {
-    const av = el('div', 'ct-av', nome.charAt(0));
-    if (g.foto) fotoUrl(g.foto, true).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.textContent = ''; av.classList.add('foto'); if (grande) { av.setAttribute('role', 'button'); av.setAttribute('aria-label', 'Ver a foto de ' + nome); av.onclick = e => { e.stopPropagation(); abreZoom(u, g.foto); }; } }).catch(() => {});   // foto da ficha abre a foto grande (original: a miniatura de 96 px fica borrada)
+    const av = el('div', 'ct-av' + (g.foto ? ' carregando' : ''), g.foto ? '' : nome.charAt(0));
+    if (g.foto) fotoUrl(g.foto, true).then(u => new Promise((ok, erro) => { const im = new Image(); im.onload = () => ok(u); im.onerror = erro; im.src = u; })).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.classList.remove('carregando'); av.classList.add('foto'); if (grande) { av.setAttribute('role', 'button'); av.setAttribute('aria-label', 'Ver a foto de ' + nome); av.onclick = e => { e.stopPropagation(); abreZoom(u, g.foto); }; } }).catch(() => { av.classList.remove('carregando'); av.textContent = nome.charAt(0); });   // foto da ficha abre a foto grande (original: a miniatura de 96 px fica borrada)
     return av;
   };
   const insignia = (it) => { const d = el('div', 'ct-in1' + (it ? '' : ' vazia')); d.innerHTML = svgInsignia(it); d.append(el('span', '', it ? it.nome : 'Próxima')); if (it && it.data) d.append(el('small', '', it.data.slice(0, 5))); return d; };
@@ -1138,8 +1147,14 @@ async function abreCracha(chave) {
   [['onde', k === 'may' ? 'Onde vive' : 'Onde roda', f.onde || f.pc], ['maq', k === 'may' ? 'Ela' : 'PC', f.onde ? f.pc : ''], ['ip', 'IP', hb.ip || (['may', 'lyra', 'sigma'].includes(k) ? '' : 'ainda não mandou')], ...(f.hw ? f.hw.map(x => [...x, 'peca']) : [['maq', 'Máquina', f.maquina]])]
     .forEach(([i, t, d, c]) => { if (!d) return; const w = el('div', c); w.innerHTML = ICO_FICHA[i] || ICO_FICHA.maq; w.append(el('dt', '', t), el('dd', '', d)); pMaq.append(w); });
   const pecas = pMaq.querySelectorAll('.peca'); if (pecas.length % 2) pecas[pecas.length - 1].classList.add('larga');   // peça sobrando ocupa a linha toda
-  const pConq = el('div'), todas = el('div', 'ct-ins-fila'); ins.slice().reverse().forEach(it => todas.append(insignia(it))); if (!ins.length) todas.append(insignia(null));
-  pConq.append(bloco('Insígnias', todas));
+  // insígnias como árvore de habilidade, 3 galhos (May, 05/11/2026): a moldura diz o galho
+  const pConq = el('div'), arv = el('div', 'ct-arvore');
+  [['Base', ['hexagono', 'escudo']], ['Criação', ['circulo']], ['Marcos', ['estrela', 'losango']]].forEach(([rotulo, mols]) => {
+    const ramo = el('div', 'ct-ramo'), nos = el('div', 'ct-nos'), deles = ins.filter(it => mols.includes(it.moldura || 'hexagono'));
+    nos.append(insignia(null)); deles.slice().reverse().forEach(it => nos.append(insignia(it)));
+    ramo.append(el('div', 'ct-tit', rotulo + ' · ' + deles.length), nos); arv.append(ramo);
+  });
+  pConq.append(arv);
   const pTempo = el('div'), agora = el('dl', 'ct-dados');
   [['agora', 'Fazendo agora', hb.fazendo || ''], ['relogio', 'Último sinal', k === 'may' ? '' : v.texto]].forEach(([i, t, d]) => { if (!d) return; const w = el('div'); w.innerHTML = ICO_FICHA[i]; w.append(el('dt', '', t), el('dd', '', d)); agora.append(w); });
   if (agora.childElementCount) pTempo.append(agora);
