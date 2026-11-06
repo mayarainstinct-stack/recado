@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.29">
+<meta name="app-versao" content="2026-11-06.30">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -3041,6 +3041,7 @@ function abreAgenda(m) {
       const tp = document.createElement('div'); tp.className = 'tp';
       if (d) tp.append(document.createTextNode(rot.replace(/^~?\s*\d{1,2}\/\d{1,2}(\/\d{4})?\s*/, '').replace(/^de\s/, '').trim()));
       else if (rot) tp.append(document.createTextNode(rot));
+      if (d && /^até/i.test(rot) && d < hoje) el.classList.add('passou');   // "Até 03/11" que já venceu também desce pra Anteriores (Sigma, 06/11/2026)
       if (d && !/^até/i.test(rot)) {
         const dias = Math.round((d - hoje) / 864e5);
         if (dias < 0) el.classList.add('passou');
