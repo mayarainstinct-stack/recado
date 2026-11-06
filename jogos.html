@@ -157,7 +157,11 @@ nav button.on{background:rgba(0,255,140,.12);color:var(--verde);box-shadow:inset
 #abertura.j2 .logo{display:flex;align-items:flex-end;gap:2px}
 #abertura.j2 .estrelas{position:absolute;left:0;right:0;top:-46px}
 #abertura .pular{position:absolute;bottom:max(24px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.45);text-transform:uppercase}
-#abertura.v6{background:var(--fundo)}
+#abertura,#abertura.v6{background:var(--fundo)}
+#abertura .logo{display:none}
+#abertura .espera{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(1.6);animation:ab-espera 1s ease-in-out infinite alternate}
+#abertura.v6 .espera{display:none}
+@keyframes ab-espera{from{opacity:.45}to{opacity:1}}
 #abertura .j2-canvas{position:absolute;left:4%;width:92%;top:28%;height:44%;display:block}
 #abertura.v6 .logo{display:none}
 #abertura.sai{animation:ab-sai .3s ease-in forwards}
@@ -175,7 +179,8 @@ nav button.on{background:rgba(0,255,140,.12);color:var(--verde);box-shadow:inset
 .painel{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always}
 .abas-f{position:sticky;top:0;z-index:3;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 14px;padding:8px 16px;background:linear-gradient(180deg,var(--fundo) 70%,transparent)}
 .abas-f::-webkit-scrollbar{display:none}
-.abas-f{-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent);mask-image:linear-gradient(90deg,#000 82%,transparent);padding-right:40px}
+.abas-f{padding-right:16px;background:var(--fundo);box-shadow:0 8px 12px -6px var(--fundo)}
+.abas-f::after{content:"";position:sticky;right:-16px;flex:none;width:44px;margin-left:-44px;background:linear-gradient(90deg,transparent,var(--fundo) 80%);pointer-events:none}
 .painel{padding-bottom:96px}
 .abas-f button{flex:none;height:36px;padding:0 14px;border-radius:12px;font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--texto3);background:var(--vidro);border:1px solid var(--borda)}
 .abas-f button.on{color:var(--verde);background:rgba(0,255,140,.12);border-color:rgba(0,255,140,.55)}
@@ -284,6 +289,15 @@ nav button{height:58px;border-radius:22px;font-size:14px}
 #envio .acoes .env{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
 #ficha .fab{background:linear-gradient(color-mix(in srgb,var(--cor) 85%,#fff 15%),var(--cor));color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5);box-shadow:0 8px 26px color-mix(in srgb,var(--cor) 45%,transparent),0 2px 0 rgba(0,0,0,.4)}
 #ficha .fab svg{stroke:#fff}
+#ficha.neutro{--fundo:color-mix(in srgb,var(--cor2) 55%,#050505);--painel:color-mix(in srgb,var(--cor2) 70%,#070707);--texto2:#e6e6e6;--texto3:#a8a8ad;--vidro:rgba(255,255,255,.07)}
+#ficha.neutro .bloco,#ficha.neutro .painel .bloco{background:linear-gradient(color-mix(in srgb,var(--cor2) 85%,#0a0a0a),color-mix(in srgb,var(--cor2) 55%,#0a0a0a))}
+#ficha.neutro .poke,#ficha.neutro .it,#ficha.neutro .sv,#ficha.neutro .fps div,#ficha.neutro .cartao,#ficha.neutro .selo,#ficha.neutro .tags span,#ficha.neutro .pend{background:linear-gradient(color-mix(in srgb,var(--cor2) 95%,#fff 5%),color-mix(in srgb,var(--cor2) 65%,#060606))}
+#ficha.neutro .fundo-capa{opacity:.3;filter:blur(26px) saturate(0)}
+#ficha.claro .chip:not(.vidro),#ficha.claro .fab{color:#111;text-shadow:none}
+#ficha.claro .chip:not(.vidro) svg,#ficha.claro .fab svg{stroke:#111;color:#111}
+#ficha.claro .abas-f button.on{background:linear-gradient(#f2f2f2,#cfcfd2);color:#111;text-shadow:none}
+#ficha::after{content:"";position:fixed;left:0;right:0;bottom:0;height:104px;background:linear-gradient(transparent,var(--fundo) 72%);pointer-events:none;z-index:5}
+#pop .folha{background:linear-gradient(165deg,color-mix(in srgb,var(--cor,#3C3C5A) 80%,#0a0a0a) 0%,color-mix(in srgb,var(--cor,#3C3C5A) 52%,#0a0a0a) 45%,color-mix(in srgb,var(--cor,#3C3C5A) 30%,#0a0a0a) 100%)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -295,6 +309,7 @@ nav button{height:58px;border-radius:22px;font-size:14px}
 <span class="jog">J<span class="r">OGANDO</span></span>
 <span class="a2"><span class="r">A</span>2</span>
 </div>
+<div class="espera selo-j2" aria-hidden="true"><span><b>J</b><i>2</i></span></div>
 <div class="pular">toque pra pular</div>
 </div>
 <div id="app">
@@ -369,7 +384,7 @@ document.addEventListener("keydown",e=>{if(!document.getElementById("zoom").clas
 const J2_DIR="marca/mays-play/abertura-j2/v2/"
 function carregaJ2(){const raw=p=>gh(p,{headers:{Accept:"application/vnd.github.raw"}}).then(r=>{if(!r.ok)throw r.status;return r.text()})
 return Promise.all([raw(J2_DIR+"dados.js"),raw(J2_DIR+"j2.js"),gh(J2_DIR+"pecas").then(r=>r.json())]).then(async([dados,motor,lista])=>{const mapa={};await Promise.all(lista.filter(x=>/\.webp$/.test(x.name)).map(x=>priv(x.path).then(u=>{mapa[x.name.replace(/\.webp$/,"")]=u}).catch(()=>{})));window.J2SRC=n=>mapa[n]
-new Function(dados)();new Function(motor.replace("im.src = base + 'pecas/' + n + '.webp'","im.src = (global.J2SRC && global.J2SRC(n)) || (base + 'pecas/' + n + '.webp')").replace("ctx.fillStyle = '#0E1420'; ctx.fillRect(0, 0, W, H);","ctx.clearRect(0, 0, W, H);").replace("ctx.fillStyle = g; ctx.fillRect(tl.x, tl.y, tl.w, tl.h);",""))();return window.AberturaJ2||null}).catch(()=>null)}
+new Function(dados)();new Function(motor)();return window.AberturaJ2||null}).catch(()=>null)}
 window.J2PROMESSA=TOKEN&&!new URLSearchParams(location.search).has("semabertura")?carregaJ2():Promise.resolve(null)
 async function carrega(){
 if(!TOKEN){location.replace("app.html");return}
@@ -400,6 +415,10 @@ const COR_MAY={"3ds":{cor:"#FF0000"},"switch":{cor:"#FE2376"},"switch2":{cor:"#E
 function corMay(c){const v=(window.JOGOS||{}).consoles;const id=consId(c);if(Array.isArray(v)){const k=v.find(x=>x.id==id||x.nome==c);if(k)return k}return COR_MAY[id]||(/3DS/.test(c||"")?COR_MAY["3ds"]:/Switch 2/.test(c||"")?COR_MAY.switch2:/Switch/.test(c||"")?COR_MAY.switch:null)}
 // só o Switch 2 usa o cor2 (cinza do corpo) de fundo; no Switch o cor2 é o Joy-Con verde e a ficha fica toda vermelha (May 00:43)
 function cor2(c){const m=corMay(c);return consId(c)=="switch2"&&m&&m.cor2||cor(c)}
+// só na ficha: PC no tema preto e branco do PC dela (May 01:00), Switch 2 cinza com vermelho
+const PALETA_FICHA={pc:{cor:"#F2F2F2",base:"#2B2B2E"}}
+function paleta(c){const p=PALETA_FICHA[consId(c)];if(p)return p;return{cor:cor(c),base:cor2(c)}}
+const claraCor=h=>{const m=/^#?([0-9a-f]{6})$/i.exec(h||"");if(!m)return false;const n=parseInt(m[1],16);return(.299*(n>>16)+.587*(n>>8&255)+.114*(n&255))>170}
 function cor(c){const m=corMay(c);if(m&&m.cor)return m.cor;const k=consDe(c);if(k)return k.cor;c=c||"";if(/Switch|3DS|Wii|Nintendo Switch/.test(c))return"#E1233C";if(/Super Nintendo/.test(c))return"#5E409D";if(/64/.test(c))return"#2EAF6E";if(/PS|PlayStation/.test(c))return"#286EDC";if(/Xbox/.test(c))return"#107C10";if(/PC/.test(c))return"#FF8C1E";return"#3C3C5A"}
 function curto(c){if(!c)return"CONSOLE ?";return c.replace("Switch 2 (emulador no PC)","Switch 2 · emu").replace("Switch (emulador no PC)","Switch · emu").replace("Wii U (emulador no PC)","Wii U · emu").replace("Nintendo Switch","Switch").replace("Nintendo 3DS","3DS").replace("PlayStation ","PS").replace("Super Nintendo","SNES").replace("Nintendo 64","N64")}
 const ICO={switch:'<svg width="16" height="14" viewBox="0 0 24 20" fill="#fff"><rect x="1" y="1" width="9" height="18" rx="4"/><rect x="14" y="1" width="9" height="18" rx="4"/><circle cx="5.5" cy="6" r="1.6" fill="#0003"/><circle cx="18.5" cy="13" r="1.6" fill="#0003"/></svg>',ps:'<svg width="18" height="14" viewBox="0 0 30 20"><text x="0" y="16" font-family="Segoe UI,Inter" font-weight="700" font-style="italic" font-size="17" fill="#fff">PS</text></svg>',pc:'<svg width="16" height="14" viewBox="0 0 24 20" fill="none" stroke="#fff" stroke-width="2.4"><rect x="2" y="1.5" width="20" height="12" rx="2"/><path d="M8 18.5h8M12 14v4"/></svg>',outro:'<svg width="16" height="14" viewBox="0 0 24 20" fill="none" stroke="#fff" stroke-width="2.2"><rect x="2" y="4" width="20" height="12" rx="6"/><path d="M7 8v4M5 10h4"/></svg>'}
@@ -453,7 +472,7 @@ function dval(h){if(!h.dia)return 0;const[d,m,a]=h.dia.split("/").map(Number);re
 let fichaAtual=null,histTodos=false,abaFicha="resumo",fichaDir=0
 function abrir(id){fichaAtual=POR[id];histTodos=false;abaFicha="resumo";desenhaFicha();const f=document.getElementById("ficha");f.classList.add("on");document.getElementById("f-corpo").scrollTop=0;if(location.hash!="#jogo="+id)history.replaceState(null,"","#jogo="+id)}
 function desenhaFicha(){
-const j=fichaAtual,u=capaUrl(j),c=cor(j.console);document.getElementById("ficha").style.setProperty("--cor",c);document.getElementById("ficha").style.setProperty("--cor2",cor2(j.console));document.getElementById("envio").style.setProperty("--cor",c)
+const j=fichaAtual,u=capaUrl(j),pl=paleta(j.console),c=pl.cor;const fE=document.getElementById("ficha");fE.style.setProperty("--cor",c);fE.style.setProperty("--cor2",pl.base);fE.classList.toggle("neutro",pl.base!=c);fE.classList.toggle("claro",claraCor(c));document.getElementById("envio").style.setProperty("--cor",pl.base!=c?pl.base:c)
 const ff=document.getElementById("f-fundo");ff.style.backgroundImage=`linear-gradient(160deg,${c},#101a3c)`;if(u)(ehPriv(u)?priv(u):Promise.resolve(u)).then(x=>{if(fichaAtual===j)ff.style.backgroundImage=`url("${x}")`}).catch(()=>{})
 const ev=[];(j.historico||[]).forEach(h=>ev.push({dia:h.dia,hora:h.hora,onde:h.onde,texto:h.fala,quem:"May"}));(j.relatos||[]).forEach(r=>{const f=(r.texto.match(/^📷\s*(\S+)/)||[])[1];ev.push({dia:r.dia,hora:r.hora,texto:r.texto.replace(/^📷\s*\S+\s*/,"").replace(/\*\*/g,""),quem:r.quem,foto:f?corte(f.split(",")[0]):null})})
 ev.sort((a,b)=>dval(b)-dval(a))
@@ -476,7 +495,10 @@ const tempo=saves.map(s=>s.tempo_jogado).find(Boolean),ult=ultimoDia(j),ultTxt=u
 const det=[["Console",j.console],["Emulador",j.emulador],["Save no",[...new Set(saves.map(s=>s.pc).filter(Boolean))].join(", ")],["Tempo jogado",tempo],["Versão",saves.map(s=>s.versao).find(Boolean)],["Última notícia",ultTxt],["Progresso",j.pct==null?"sem %":(j.estimado?"estimado ":"")+j.pct+"%"],["Situação",rotuloStatus(j.status)],["Parede",j.parede?`plaquinha nº ${String(j.parede.numero).padStart(2,"0")}${j.parede.data?" · "+j.parede.data:""}`:""]].filter(x=>x[1])
 A.resumo+=`<div class="bloco"><h3>${IC.pin}Detalhes</h3><dl class="kv">${det.map(([k,v])=>`<div class="kvl toca" ${pk(()=>popDet(j,k,v))}><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl></div>`
 const fx=(((window.EXT||{}).sobre||{})[j.id]||{}).ficha||{},jn=v=>Array.isArray(v)?v.join(", "):v
-const ft=[["Lançamento",fx.ano],["Desenvolvedora",jn(fx.desenvolvedora)],["Publicadora",jn(fx.publicadora)],["Série",jn(fx.serie)],["Gênero",jn(fx.genero)],["Plataformas",jn(fx.plataformas)],["Modos",jn(fx.modos)]].filter(x=>x[1])
+const GEN={"post-apocalyptic video game":"Pós-apocalíptico","turn-based Japanese role-playing game":"JRPG por turnos","Japanese role-playing video game":"JRPG","2D platform game":"Plataforma 2D","3D platform game":"Plataforma 3D","kart racing game":"Corrida de kart","Christmas video game":"Natal","photography game":"Fotografia","farming simulation game":"Simulação de fazenda","halloween video game":"Halloween","time travel video game":"Viagem no tempo","cyberpunk video game":"Cyberpunk","3D fighting game":"Luta 3D","massively multiplayer online role-playing game":"MMORPG","collect-a-thon platformer":"Plataforma de coleta","augmented reality video game":"Realidade aumentada","retro-style video game":"Estilo retrô","space opera video game":"Ópera espacial","mascot racer":"Corrida de mascotes","hunting action":"Ação de caça","multiplayer online battle arena":"MOBA","cinematic platformer":"Plataforma cinematográfica","horde shooter":"Tiro contra hordas","dungeon":"Masmorra","RPG eletrônico":"RPG","RPG eletrônico de ação":"RPG de ação"}
+const FORA=/LGBT|crossover|série de comédia|televisão/i,MOD={"jogo eletrônico para um jogador":"Um jogador","jogo eletrônico multijogador":"Multijogador","modo cooperativo":"Cooperativo","player versus player":"PvP","two player":"Dois jogadores","jogo online":"Online","hotseat":"Revezando no mesmo aparelho"}
+const limpa=(v,mapa,max)=>{const vis=new Set();return(Array.isArray(v)?v:v?[v]:[]).map(x=>String(x).trim()).filter(x=>x&&!FORA.test(x)&&!(mapa==MOD&&!MOD[x])).map(x=>mapa[x]||x.replace(/^jogo eletr[ôó]nico (de |com )?/i,"")).map(x=>x.charAt(0).toUpperCase()+x.slice(1)).filter(x=>{const k=x.toLowerCase().replace(/[^a-zà-ú0-9]/g,"");if(vis.has(k))return false;vis.add(k);return true}).slice(0,max).join(", ")}
+const ft=[["Lançamento",fx.ano],["Desenvolvedora",jn(fx.desenvolvedora)],["Publicadora",jn(fx.publicadora)],["Série",jn(fx.serie)],["Gênero",limpa(fx.genero,GEN,3)],["Plataformas",jn(fx.plataformas)],["Modos",limpa(fx.modos,MOD,3)]].filter(x=>x[1])
 if(ft.length)A.resumo+=`<div class="bloco"><h3>${IC.selo}Ficha técnica</h3>${kvh(ft)}<div class="pop-fonte">Fonte: Wikidata</div></div>`
 A.resumo+=`<div class="bloco sobre" id="f-sobre" hidden><h3>${IC.estrela}Sobre o jogo</h3><p></p><a target="_blank" rel="noopener"></a></div>`
 if(saves.length||fps.length)A.save+=`<div class="bloco"><h3>${IC.save}Save e FPS</h3>${fps.length?`<div class="fps">${fps.slice(0,6).map(f=>`<div class="toca" ${pk(()=>popFps(j,f))}><b>${esc(f.media)}</b><span>${esc(f.emulador||"")}${f.dia?" · "+esc(f.dia):""}</span>${f.onde||f.obs?`<span>${esc([f.onde,f.obs].filter(Boolean).join(" · "))}</span>`:""}</div>`).join("")}</div>`:""}<div style="margin-top:${fps.length?12:0}px">${saves.map(s=>`<div class="sv toca" ${pk(()=>popSave(j,s))}><div class="h">${esc(s.emulador||"nativo")}<span>${esc([s.pc,s.data,s.tempo_jogado,s.versao].filter(Boolean).join(" · "))}</span></div>${s.progresso?`<p>${esc(s.progresso)}</p>`:""}${s.obs?`<p style="color:var(--texto3)">${esc(s.obs)}</p>`:""}</div>`).join("")}</div></div>`
@@ -530,8 +552,8 @@ const TIPO={normal:"Normal",fire:"Fogo",water:"Água",grass:"Planta",electric:"E
 function popPoke(j,p){const base=kvh([["Nível no seu save",p.nivel],["Onde",p.onde=="time"?"no time":p.onde],["Jogo",j.titulo]])
 if(/^\(/.test(p.nome))return{t:"Pokémon do time",h:`<div class="pop-q">${esc(p.nome)}</div><p class="pop-p">O nome desse ainda não foi anotado do save.</p>`+base}
 return{t:p.nome,h:`<div class="pop-poke"><p class="pop-p">Buscando na Pokédex…</p></div>`+base,depois:c=>{(POKE[p.nome]||(POKE[p.nome]=pokeInfo(p.nome))).then(i=>{const el=c.querySelector(".pop-poke");if(!el)return;if(!i){el.innerHTML=`<p class="pop-p">Não achei esse na Pokédex.</p>`;return}el.innerHTML=`${i.img?`<img class="pop-img poke-img" data-z src="${escA(i.img)}" alt="">`:""}${kvh([["Nº na Pokédex",String(i.num).padStart(4,"0")],["Tipo",i.tipos.map(t=>TIPO[t]||t).join(" / ")],["Altura",String(i.alt).replace(".",",")+" m"],["Peso",String(i.peso).replace(".",",")+" kg"]])}${i.txt?`<p class="pop-p">${esc(i.txt)}</p>`:""}<div class="pop-fonte">Fonte: PokéAPI${i.fonte_txt=="Wikipédia"?" e Wikipédia":""}</div>`})}}}
-function abrePop(o){const b=document.getElementById("pop");b.style.setProperty("--cor",fichaAtual?cor(fichaAtual.console):"#3C3C5A");b.querySelector("h4").textContent=o.t;const c=b.querySelector(".pc");c.innerHTML=o.h;hidrata(c);c.onclick=e=>{const im=e.target.closest("img[data-z]");if(im&&im.src)abreZoom([im.src],0)};b.classList.add("on");b.querySelector(".folha").scrollTop=0;if(o.depois)o.depois(c)}
-function sobreJogo(j){const s=((window.EXT||{}).sobre||{})[j.id];const b=document.getElementById("f-sobre");if(!s||!b)return;b.querySelector("p").textContent=s.texto;const a=b.querySelector("a");a.href=s.url||"#";a.textContent=`Fonte: Wikipédia${s.lingua=="en"?" (em inglês)":""}`;b.hidden=false}
+function abrePop(o){const b=document.getElementById("pop");b.style.setProperty("--cor",fichaAtual?paleta(fichaAtual.console).base:"#3C3C5A");b.querySelector("h4").textContent=o.t;const c=b.querySelector(".pc");c.innerHTML=o.h;hidrata(c);c.onclick=e=>{const im=e.target.closest("img[data-z]");if(im&&im.src)abreZoom([im.src],0)};b.classList.add("on");b.querySelector(".folha").scrollTop=0;if(o.depois)o.depois(c)}
+function sobreJogo(j){const s=((window.EXT||{}).sobre||{})[j.id];const b=document.getElementById("f-sobre");if(!s||!b||s.lingua=="en")return;b.querySelector("p").textContent=s.texto;const a=b.querySelector("a");a.href=s.url||"#";a.textContent=`Fonte: Wikipédia${s.lingua=="en"?" (em inglês)":""}`;b.hidden=false}
 function rotuloStatus(s){return{jogando:"Jogando agora",quer_terminar:"Parou, mas quer terminar",parado:"Começou e parou",zerado:"Zerado · parede da vitória",largado:"Largado",nao_comecou:"Ainda não começou",espiou:"Só espiou",bloqueado:"Bloqueado por acesso",nao_funciona:"Não funciona mais",casual:"Casual, sem %",assistiu:"Do Gabriel, ela assistiu",colecao:"Coleção por nostalgia",memoria:"Memória antiga",de_olho:"De olho"}[s]||"Sem status"}
 function deslizar(el,vai){let x0=null,y0=0;el.addEventListener("touchstart",e=>{if(e.touches.length!=1||e.target.closest(".prateleira,.abas-f,.pager,#pop,#zoom,#envio,textarea")){x0=null;return}x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});el.addEventListener("touchend",e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.6)vai(dx<0?1:-1)},{passive:true})}
 const fechaFicha=()=>{document.getElementById("ficha").classList.remove("on");history.replaceState(null,"","#"+aba)}
@@ -551,8 +573,8 @@ let ok=false;for(let k=0;k<4&&!ok;k++){try{const f=await(await gh("CAIXA-DE-ENTR
 b.disabled=false;if(ok){document.getElementById("e-txt").value="";document.getElementById("envio").classList.remove("on");a.textContent="Mandado pra Geral. A Nyx e o Orfeu põem na história do jogo."}else a.textContent="Não consegui mandar. Confere a internet e tenta de novo.";a.style.display="block";setTimeout(()=>a.style.display="none",3200)}
 function aberturaJogos(pronto,parar){const el=document.getElementById("abertura"),rm=matchMedia("(prefers-reduced-motion: reduce)").matches;if(rm){el.classList.remove("on","j2","v6");pronto();return}el.classList.add("on");let fim=false,ab=null;const sai=()=>{if(fim)return;fim=true;el.classList.add("sai");setTimeout(()=>{el.classList.remove("on","sai","j2","v6");const t=document.getElementById("troca");t.classList.remove("on");void t.offsetWidth;t.classList.add("on");pronto()},300)};el.onclick=()=>ab?ab.pular():sai();el.onkeydown=e=>{if(e.key=="Enter"||e.key==" "||e.key=="Escape")ab?ab.pular():sai()}
 setTimeout(sai,9000)
-const velha=()=>{if(parar=="logo")return;setTimeout(()=>el.classList.add("j2"),1100);if(parar=="j2")return;setTimeout(sai,2000)}
-Promise.race([window.J2PROMESSA,new Promise(r=>setTimeout(()=>r(null),1500))]).then(A=>{if(fim)return;if(!A){velha();return}const cv=document.createElement("canvas");cv.className="j2-canvas";el.append(cv);el.classList.add("v6");ab=A.criar(cv,{duracao:6});ab.tocar(sai)})}
+// J2 do Hermes recebe as peças por op.src (sem mexer no código dele); se não ficar pronto em 3 s, vai direto pra lista e as peças seguem pro cache pra próxima vez (Sigma, 06/11 00:57)
+Promise.race([window.J2PROMESSA,new Promise(r=>setTimeout(()=>r(null),3000))]).then(A=>{if(fim)return;if(!A){sai();return}try{const cv=document.createElement("canvas");cv.className="j2-canvas";el.append(cv);el.classList.add("v6");ab=A.criar(cv,{src:n=>window.J2SRC&&window.J2SRC(n),transparente:true,duracao:4});ab.tocar(sai)}catch(e){sai()}})}
 function iniciar(){const hs=location.hash.slice(1);if(hs.startsWith("jogo=")){aba=POR[hs.slice(5)]&&POR[hs.slice(5)].status=="zerado"?"concluidos":"jogando";render();abrir(hs.slice(5));return}if(hs=="concluidos")aba="concluidos";render()}
 document.getElementById("voltar-app").onclick=()=>{location.href="app.html"}
 const q=new URLSearchParams(location.search)
