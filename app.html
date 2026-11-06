@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.43">
+<meta name="app-versao" content="2026-11-06.1">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -445,6 +445,12 @@ button:disabled { opacity: .45; cursor: default; }
 .detalhe .manda { width: 100%; min-height: 48px; border-radius: 12px; background: var(--accent); color: var(--accent-fg); font-size: 16px; font-weight: 700; }
 .detalhe .manda:disabled { opacity: .45; }
 .p-lista { display: flex; flex-direction: column; gap: 10px; }
+.p-grade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.p-azulejo { width: auto; height: auto; min-height: 98px; padding: 12px 6px 10px; border-radius: 18px; background: var(--paper); color: var(--fg); border: 1px solid var(--line); display: grid; justify-items: center; align-content: center; gap: 8px; font: inherit; box-shadow: inset 0 2px 0 rgba(255,255,255,.06), 0 2px 6px rgba(0,0,0,.08); }
+.p-azulejo .ic { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+.p-azulejo .ic svg.i { width: 26px; height: 26px; }
+.p-azulejo .t { font-size: 13px; font-weight: 700; line-height: 1.15; text-align: center; overflow-wrap: anywhere; }
+.p-azulejo:active { transform: scale(.95); }
 .p-texto { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; }
 .p-texto h2 { font-size: 18px; margin: 4px 0 8px; } .p-texto h3 { font-size: 16px; margin: 14px 0 6px; color: var(--accent); }
 .check-lista { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
@@ -2553,6 +2559,11 @@ const irGeral = document.getElementById('ir-geral'), irTrab = document.getElemen
 const painel = document.getElementById('painel'), pCorpo = document.getElementById('p-corpo'), pTit = document.getElementById('p-tit'), pExtra = document.getElementById('p-extra');
 let pilha = [], catalogo = null;
 const reais = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
+function botaoGrade(ic, txt, sub, fn) {   // azulejo do Menu: ícone em cima, nome curto embaixo
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'p-azulejo'; if (sub) b.title = sub;
+  b.innerHTML = '<span class="ic"></span><span class="t"></span>'; b.querySelector('.ic').innerHTML = icone(ic); b.querySelector('.t').textContent = txt; b.setAttribute('aria-label', txt + (sub ? ': ' + sub : ''));
+  b.onclick = fn; return b;
+}
 function botao(ic, txt, sub, fn) {
   const b = document.createElement('button'); b.type = 'button'; b.className = 'p-botao';
   b.innerHTML = '<span class="ic"></span><span class="tx"><span class="t"></span><small></small></span><span class="chev" aria-hidden="true">' + icone('chev') + '</span>';
@@ -2677,11 +2688,16 @@ abreMenu.onclick = () => {
     const h = document.createElement('div'); h.className = 'p-hero'; h.innerHTML = '<div class="logo" aria-hidden="true"></div><div><b>Recados</b><span>Atalhos da Lyra pra você</span></div>'; c.append(h);
     const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = 'Atalhos'; c.append(t);
     // Os botões do Menu vêm de menu/menu.json (a Lyra acrescenta páginas sem mexer no app); sem ele, só o Catálogo.
-    const lista = document.createElement('div'); lista.className = 'p-lista'; c.append(lista);
+    // grade de ícones em 3 colunas, o mais usado em cima (May, 06/11/2026: "lista muito grande")
+    const lista = document.createElement('div'); lista.className = 'p-grade'; c.append(lista);
+    let uso = {}; try { uso = JSON.parse(store.get('menu-uso') || '{}'); } catch (e) {}
+    const conta = n => { uso[n] = (uso[n] || 0) + 1; try { store.set('menu-uso', JSON.stringify(uso)); } catch (e) {} };
     lerArquivo('menu/menu.json').then(t => JSON.parse(t).itens).catch(() => [{ tipo: 'catalogo', icone: 'bag', nome: 'Catálogo', sub: 'piscina, piso, borda, churrasqueira…' }])
-      .then(itens => itens.forEach(m => lista.append(botao(m.icone, m.nome, m.sub, () => abreItemMenu(m)))));
+      .then(itens => itens.map((m, i) => [m, i]).sort((a, b) => (uso[b[0].nome] || 0) - (uso[a[0].nome] || 0) || a[1] - b[1])
+        .forEach(([m]) => lista.append(botaoGrade(m.icone, m.nome, m.sub, () => { conta(m.nome); abreItemMenu(m); }))));
     const s = document.createElement('div'); s.className = 'p-sec'; s.textContent = 'App'; c.append(s);
-    c.append(botao('question', 'Diagnóstico', 'versão, última leitura, limite do GitHub', abreDiagnostico));
+    const app = document.createElement('div'); app.className = 'p-grade'; c.append(app);
+    app.append(botaoGrade('question', 'Diagnóstico', 'versão, última leitura, limite do GitHub', abreDiagnostico));
   });
 };
 // Diagnóstico (05/11/2026): só leitura, pra "tá lento / não chega" virar dado
