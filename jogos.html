@@ -143,7 +143,13 @@ nav button.on{background:rgba(0,255,140,.12);color:var(--verde);box-shadow:inset
 #envio .acoes{display:flex;gap:8px;margin-top:10px;align-items:center}
 #envio .acoes button.ic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:var(--vidro);border:1px solid var(--borda)}
 #envio .acoes .env{flex:1;height:48px;border-radius:14px;background:var(--verde);color:#062012;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}
-#aviso{position:fixed;z-index:9;left:16px;right:16px;bottom:90px;padding:12px 14px;border-radius:14px;background:#0E2A1C;border:1px solid var(--verde);font-size:13px;display:none}
+#aviso{position:fixed;z-index:14;left:16px;right:16px;bottom:96px;padding:14px 16px;border-radius:16px;background:#0E2A1C;border:1px solid #00FF8C;color:#fff;font-size:14px;font-weight:700;display:none;box-shadow:0 10px 30px rgba(0,0,0,.5);animation:sobeP .3s ease-out}
+#e-pra{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}#e-pra button{padding:7px 11px;border-radius:999px;font-size:12px;font-weight:700;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22)}#e-pra button.on{background:color-mix(in srgb,var(--cor) 55%,#0a0a0a);border-color:color-mix(in srgb,var(--cor) 80%,#fff)}
+.tile.pc{border-color:#B09B71}.tile.pc .tarja{background:linear-gradient(90deg,#4A4E52,#1A1B1D);box-shadow:inset 0 -2px 0 #B09B71;color:#fff}.tile.pc .tarja svg{color:#B09B71;stroke:#B09B71}
+#aviso.erro{background:#3A0E12;border-color:#FF5A5A}
+#e-env.indo{opacity:.75}
+.giro{display:inline-block;width:16px;height:16px;margin-right:8px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:gira .7s linear infinite;vertical-align:-3px}
+@keyframes gira{to{transform:rotate(360deg)}}
 #abertura{position:fixed;inset:0;z-index:20;display:none;place-items:center;background:var(--contorno);overflow:hidden}
 #abertura.on{display:grid}
 #abertura .logo{position:relative;text-align:center;font-weight:700;line-height:.86;animation:ab-entra .55s cubic-bezier(.2,1.4,.4,1) both}
@@ -179,9 +185,9 @@ nav button.on{background:rgba(0,255,140,.12);color:var(--verde);box-shadow:inset
 .painel{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always}
 .abas-f{position:sticky;top:0;z-index:3;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 14px;padding:8px 16px;background:linear-gradient(180deg,var(--fundo) 70%,transparent)}
 .abas-f::-webkit-scrollbar{display:none}
-.abas-f{padding-right:16px;background:var(--fundo);box-shadow:0 8px 12px -6px var(--fundo)}
+.abas-f{padding-right:16px;background:var(--fundo);box-shadow:0 14px 14px -2px var(--fundo)}
 .abas-f::after{content:"";position:sticky;right:-16px;flex:none;width:44px;margin-left:-44px;background:linear-gradient(90deg,transparent,var(--fundo) 80%);pointer-events:none}
-.painel{padding-bottom:96px}
+.painel{padding-bottom:150px}
 .abas-f button{flex:none;height:36px;padding:0 14px;border-radius:12px;font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--texto3);background:var(--vidro);border:1px solid var(--borda)}
 .abas-f button.on{color:var(--verde);background:rgba(0,255,140,.12);border-color:rgba(0,255,140,.55)}
 .toca{cursor:pointer}
@@ -313,17 +319,19 @@ nav button{height:58px;border-radius:22px;font-size:14px}
 #ficha.branco .capa{border-color:#151515!important;box-shadow:0 0 0 2px #C9A24B}
 #ficha.branco .anel circle:first-child{stroke:rgba(21,21,21,.1)}
 #ficha.branco .pop-fonte,#ficha.branco .sobre a{color:#6e685c}
-#ficha.ouro{--fundo:#111112;--painel:#18181A;background:linear-gradient(180deg,#1C1D1F,#111112 45%,#0C0C0D)!important;--texto2:#ECECEC;--texto3:#A9A397}
-#ficha.ouro .bloco,#ficha.ouro .painel .bloco{background:linear-gradient(#232427,#151517);border:1px solid rgba(201,162,75,.75);box-shadow:inset 0 1px 0 rgba(201,162,75,.28),inset 0 -3px 0 rgba(0,0,0,.4),0 6px 14px rgba(0,0,0,.35)}
-#ficha.ouro .bloco h3{color:#fff}#ficha.ouro .bloco h3 svg{stroke:#C9A24B;color:#C9A24B}
-#ficha.ouro .poke,#ficha.ouro .it,#ficha.ouro .sv,#ficha.ouro .fps div,#ficha.ouro .cartao,#ficha.ouro .selo,#ficha.ouro .tags span,#ficha.ouro .pend{background:linear-gradient(#26262A,#18181B);border:1px solid rgba(201,162,75,.5)}
-#ficha.ouro .chip:not(.vidro){background:#fff;color:#111;text-shadow:none;box-shadow:inset 0 0 0 1px #C9A24B}#ficha.ouro .chip:not(.vidro) svg{color:#111;stroke:#111}
-#ficha.ouro .abas-f button.on{background:linear-gradient(#2A2A2E,#151517);color:#fff;border-color:#C9A24B;box-shadow:inset 0 -2px 0 #C9A24B}
-#ficha.ouro .fab{background:linear-gradient(#2A2A2E,#111);color:#fff;box-shadow:inset 0 0 0 2px #C9A24B,0 8px 22px rgba(0,0,0,.5)}#ficha.ouro .fab svg{stroke:#C9A24B}
-#ficha.ouro .capa{border-color:#fff!important;box-shadow:0 14px 34px rgba(0,0,0,.6),0 0 0 3px #C9A24B}
+#ficha.ouro{--fundo:#141516;--painel:#18181A;background:linear-gradient(180deg,#2F3235,#1A1B1D 40%,#0E0E0F)!important;--texto2:#ECECEC;--texto3:#A9A397}
+#ficha.ouro .bloco,#ficha.ouro .painel .bloco{background:linear-gradient(#232427,#151517);border:1px solid rgba(176,155,113,.75);box-shadow:inset 0 1px 0 rgba(176,155,113,.28),inset 0 -3px 0 rgba(0,0,0,.4),0 6px 14px rgba(0,0,0,.35)}
+#ficha.ouro .bloco h3{color:#fff}#ficha.ouro .bloco h3 svg{stroke:#B09B71;color:#B09B71}
+#ficha.ouro .poke,#ficha.ouro .it,#ficha.ouro .sv,#ficha.ouro .fps div,#ficha.ouro .cartao,#ficha.ouro .selo,#ficha.ouro .tags span,#ficha.ouro .pend{background:linear-gradient(#26262A,#18181B);border:1px solid rgba(176,155,113,.5)}
+#ficha.ouro .chip:not(.vidro){background:#fff;color:#111;text-shadow:none;box-shadow:inset 0 0 0 1px #B09B71}#ficha.ouro .chip:not(.vidro) svg{color:#111;stroke:#111}
+#ficha.ouro .abas-f button.on{background:linear-gradient(#2A2A2E,#151517);color:#fff;border-color:#B09B71;box-shadow:inset 0 -2px 0 #B09B71}
+#ficha.ouro .fab{background:linear-gradient(#2A2A2E,#111);color:#fff;box-shadow:inset 0 0 0 2px #B09B71,0 8px 22px rgba(0,0,0,.5)}#ficha.ouro .fab svg{stroke:#B09B71}
+#ficha.ouro .capa{border-color:#fff!important;box-shadow:0 14px 34px rgba(0,0,0,.6),0 0 0 3px #B09B71}
 #ficha.ouro .fundo-capa{opacity:.35;filter:blur(26px) saturate(.3)}
-#ficha.ouro .abas-f{background:#111112;box-shadow:0 8px 12px -6px #111112}
+#ficha.ouro .abas-f{background:#141516;box-shadow:0 14px 14px -2px #141516}
 #ficha.ouro .bloco h3{letter-spacing:1.8px}
+#ficha.ouro .topo{position:relative;overflow:visible}#ficha.ouro .topo::before{content:"";position:absolute;left:-70px;top:-90px;width:300px;height:300px;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 38px,rgba(176,155,113,.14) 39px 41px,transparent 42px 62px);pointer-events:none;z-index:0}
+#ficha.ouro .topo>*{position:relative;z-index:1}
 #ficha::after{content:"";position:fixed;left:0;right:0;bottom:0;height:104px;background:linear-gradient(transparent,var(--fundo) 72%);pointer-events:none;z-index:5}
 #pop .folha{background:linear-gradient(165deg,color-mix(in srgb,var(--cor,#3C3C5A) 80%,#0a0a0a) 0%,color-mix(in srgb,var(--cor,#3C3C5A) 52%,#0a0a0a) 45%,color-mix(in srgb,var(--cor,#3C3C5A) 30%,#0a0a0a) 100%)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -366,7 +374,8 @@ nav button{height:58px;border-radius:22px;font-size:14px}
 <div class="folha">
 <div class="alca"></div>
 <h4 id="e-tt">Mandar algo sobre este jogo</h4>
-<p>Vai pra Geral, pra Nyx e o Orfeu porem datado na história deste jogo.</p>
+<p>Vai pra Geral. Escolhe quem precisa ver:</p>
+<div class="pra" id="e-pra"><button data-q="Vega" class="on">Tela (Vega)</button><button data-q="Orfeu" class="on">História e dados (Orfeu)</button><button data-q="Nyx">Capa e imagens (Nyx)</button></div>
 <textarea id="e-txt" placeholder="vai q lembra de algo..."></textarea>
 <div class="acoes">
 <button class="env" id="e-env"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l16-8-6 16-2.5-6.5z"/></svg>Enviar</button>
@@ -436,15 +445,17 @@ const esc=s=>String(s??"").replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00
 function consId(c){c=c||"";if(/Switch 2/.test(c))return"switch2";if(/Switch/.test(c))return"switch";if(/3DS/.test(c))return"3ds";if(/Nintendo 64|\bN64\b/.test(c))return"n64";if(/hack/i.test(c)&&/SNES|Super Nintendo/.test(c))return"snes-hacks";if(/Super Nintendo|SNES/.test(c))return"snes";if(/^PS\d|PlayStation/.test(c))return"playstation";if(/^PC\b/.test(c))return"pc";return""}
 function consDe(c){const C=window.CONS;if(!C)return null;return C.por[consId(c)]||C.padrao}
 // cor dos consoles tirada das fotos das coisas da May (Orfeu, vocab.consoles do jogos.json, 06/11/2026); se o tela-jogos.json trouxer "consoles", vale o dele
-const COR_MAY={"pc":{cor:"#3E4245"},"3ds":{cor:"#DE1120"},"switch":{cor:"#FE2376"},"switch2":{cor:"#E60012",cor2:"#3A3A3F"}}
-function corMay(c){const v=(window.JOGOS||{}).consoles;const id=consId(c);if(Array.isArray(v)){const k=v.find(x=>x.id==id||x.nome==c);if(k)return k}return COR_MAY[id]||(/3DS/.test(c||"")?COR_MAY["3ds"]:/Switch 2/.test(c||"")?COR_MAY.switch2:/Switch/.test(c||"")?COR_MAY.switch:null)}
+// cópia do vocab.consoles do jogos.json (06/11/2026 01:33); se o tela-jogos.json trouxer "consoles", vale o dele. PC na lista fica grafite (a ficha usa a paleta própria)
+const VOCAB_CONS=[{"id":"snes","nome":"Super Nintendo","cor":"#5E409D"},{"id":"n64","nome":"Nintendo 64","cor":"#2EAF6E"},{"id":"switch","nome":"Nintendo Switch","cor":"#FE2376","cor2":"#03BE22"},{"id":"switch-emu","nome":"Switch (emulador no PC)","cor":"#FE2376","cor2":"#03BE22"},{"id":"switch2-emu","nome":"Switch 2 (emulador no PC)","cor":"#E60012","cor2":"#3A3A3F"},{"id":"3ds","nome":"Nintendo 3DS","cor":"#DE1120"},{"id":"ds","nome":"Nintendo DS","cor":"#DE1120"},{"id":"gba","nome":"Game Boy Advance","cor":"#E1233C"},{"id":"gb","nome":"Game Boy","cor":"#E1233C"},{"id":"wiiu-emu","nome":"Wii U (emulador no PC)","cor":"#E1233C"},{"id":"ps1","nome":"PS1","cor":"#286EDC"},{"id":"ps2","nome":"PlayStation 2","cor":"#286EDC"},{"id":"ps3","nome":"PS3","cor":"#286EDC"},{"id":"ps4","nome":"PlayStation 4","cor":"#286EDC"},{"id":"ps5","nome":"PlayStation 5","cor":"#286EDC"},{"id":"pc","nome":"PC","cor":"#B09B71"},{"id":"x360","nome":"Xbox 360","cor":"#107C10"}]
+const COR_MAY={"pc":{cor:"#3E4245"},"switch2":{cor:"#E60012",cor2:"#3A3A3F"}}
+function corMay(c){const id=consId(c);if(COR_MAY[id])return COR_MAY[id];const v=Array.isArray((window.JOGOS||{}).consoles)?window.JOGOS.consoles:VOCAB_CONS;return v.find(x=>x.nome==c)||v.find(x=>x.id==id)||null}
 // só o Switch 2 usa o cor2 (cinza do corpo) de fundo; no Switch o cor2 é o Joy-Con verde e a ficha fica toda vermelha (May 00:43)
 function cor2(c){const m=corMay(c);return consId(c)=="switch2"&&m&&m.cor2||cor(c)}
 // só na ficha: PC escuro em preto, branco e dourado, do Pro Controller do Zelda TotK, cores medidas pelo Sigma na foto oficial (May 01:22: "preto branco e dourado mas dando impressão de tema dark"); Switch 2 cinza com vermelho
-const PALETA_FICHA={pc:{cor:"#C9A24B",base:"#1A1A1C",ouro:true}}
+const PALETA_FICHA={pc:{cor:"#B09B71",base:"#1A1A1C",ouro:true}}
 function paleta(c){const p=PALETA_FICHA[consId(c)];if(p)return p;return{cor:cor(c),base:cor2(c)}}
 const claraCor=h=>{const m=/^#?([0-9a-f]{6})$/i.exec(h||"");if(!m)return false;const n=parseInt(m[1],16);return(.299*(n>>16)+.587*(n>>8&255)+.114*(n&255))>170}
-function cor(c){const m=corMay(c);if(m&&m.cor)return m.cor;const k=consDe(c);if(k)return k.cor;c=c||"";if(/Switch|3DS|Wii|Nintendo Switch/.test(c))return"#E1233C";if(/Super Nintendo/.test(c))return"#5E409D";if(/64/.test(c))return"#2EAF6E";if(/PS|PlayStation/.test(c))return"#286EDC";if(/Xbox/.test(c))return"#107C10";if(/PC/.test(c))return"#FF8C1E";return"#3C3C5A"}
+function cor(c){const m=corMay(c);if(m&&m.cor)return m.cor;const k=consId(c)?consDe(c):null;if(k)return k.cor;c=c||"";if(/Switch|3DS|Wii|Nintendo Switch/.test(c))return"#E1233C";if(/Super Nintendo/.test(c))return"#5E409D";if(/64/.test(c))return"#2EAF6E";if(/PS|PlayStation/.test(c))return"#286EDC";if(/Xbox/.test(c))return"#107C10";if(/Mega Drive|Genesis/.test(c))return"#1D4ED8";if(/PC/.test(c))return"#3E4245";return"#3C3C5A"}
 function curto(c){if(!c)return"CONSOLE ?";return c.replace("Switch 2 (emulador no PC)","Switch 2 · emu").replace("Switch (emulador no PC)","Switch · emu").replace("Wii U (emulador no PC)","Wii U · emu").replace("Nintendo Switch","Switch").replace("Nintendo 3DS","3DS").replace("PlayStation ","PS").replace("Super Nintendo","SNES").replace("Nintendo 64","N64")}
 const ICO={switch:'<svg width="16" height="14" viewBox="0 0 24 20" fill="#fff"><rect x="1" y="1" width="9" height="18" rx="4"/><rect x="14" y="1" width="9" height="18" rx="4"/><circle cx="5.5" cy="6" r="1.6" fill="#0003"/><circle cx="18.5" cy="13" r="1.6" fill="#0003"/></svg>',ps:'<svg width="18" height="14" viewBox="0 0 30 20"><text x="0" y="16" font-family="Segoe UI,Inter" font-weight="700" font-style="italic" font-size="17" fill="#fff">PS</text></svg>',pc:'<svg width="16" height="14" viewBox="0 0 24 20" fill="none" stroke="#fff" stroke-width="2.4"><rect x="2" y="1.5" width="20" height="12" rx="2"/><path d="M8 18.5h8M12 14v4"/></svg>',outro:'<svg width="16" height="14" viewBox="0 0 24 20" fill="none" stroke="#fff" stroke-width="2.2"><rect x="2" y="4" width="20" height="12" rx="6"/><path d="M7 8v4M5 10h4"/></svg>'}
 function icone(c){const k=consDe(c);if(k&&window.CONS.svg[k.icone])return window.CONS.svg[k.icone];c=c||"";if(/Switch|3DS|Wii|Nintendo|SNES|Super Nintendo|64/.test(c))return ICO.switch;if(/PS|PlayStation/.test(c))return ICO.ps;if(/PC/.test(c))return ICO.pc;return ICO.outro}
@@ -462,7 +473,7 @@ const anima=(el,d)=>{if(!el||!d)return;el.classList.remove("entra-d","entra-e");
 function render(){setTimeout(()=>hidrata(document.getElementById("lista")),0);
 const L=document.getElementById("lista");fundoDa(aba);document.getElementById("tab-jogando").classList.toggle("on",aba=="jogando");document.getElementById("tab-concluidos").classList.toggle("on",aba=="concluidos")
 if(aba=="jogando"){
-const tileH=(j,sel)=>`<button class="tile${sel?" sel":""}" style="--cor:${cor(j.console)}" data-id="${j.id}"><div class="tarja">${icone(j.console)}${esc(curto(j.console))}</div><div class="capa">${capaHtml(j)}</div>${barra(j)}${j.pct!=null?`<div class="pc">${pctTxt(j)}</div>`:""}<div class="info"><div class="tt">${esc(j.titulo)}</div><div class="pp">${esc(j.parei||"onde parou ainda não anotado")}</div></div></button>`
+const tileH=(j,sel)=>`<button class="tile${sel?" sel":""}${consId(j.console)=="pc"?" pc":""}" style="--cor:${cor(j.console)}" data-id="${j.id}"><div class="tarja">${icone(j.console)}${esc(curto(j.console))}</div><div class="capa">${capaHtml(j)}</div>${barra(j)}${j.pct!=null?`<div class="pc">${pctTxt(j)}</div>`:""}<div class="info"><div class="tt">${esc(j.titulo)}</div><div class="pp">${esc(j.parei||"onde parou ainda não anotado")}</div></div></button>`
 const ORDN={pct:"percentual",recente:"última vez jogado",nome:"nome",console:"console"},ORDS=Object.keys(ORDN)
 let ord="pct";try{ord=localStorage.getItem("jogos-ordem")||"pct"}catch(e){}
 if(!ORDN[ord])ord="pct"
@@ -499,7 +510,8 @@ function abrir(id){fichaAtual=POR[id];histTodos=false;abaFicha="resumo";desenhaF
 function desenhaFicha(){
 const j=fichaAtual,u=capaUrl(j),pl=paleta(j.console),c=pl.cor;const fE=document.getElementById("ficha");fE.style.setProperty("--cor",c);fE.style.setProperty("--cor2",pl.base);fE.classList.toggle("neutro",pl.base!=c);fE.classList.toggle("ouro",!!pl.ouro);fE.classList.toggle("claro",claraCor(c));document.getElementById("envio").style.setProperty("--cor",pl.base!=c?pl.base:c)
 const ff=document.getElementById("f-fundo");ff.style.backgroundImage=`linear-gradient(160deg,${c},#101a3c)`;if(u)(ehPriv(u)?priv(u):Promise.resolve(u)).then(x=>{if(fichaAtual===j)ff.style.backgroundImage=`url("${x}")`}).catch(()=>{})
-const ev=[];(j.historico||[]).forEach(h=>ev.push({dia:h.dia,hora:h.hora,onde:h.onde,texto:h.fala,quem:"May"}));(j.relatos||[]).forEach(r=>{const f=(r.texto.match(/^📷\s*(\S+)/)||[])[1];ev.push({dia:r.dia,hora:r.hora,texto:r.texto.replace(/^📷\s*\S+\s*/,"").replace(/\*\*/g,""),quem:r.quem,foto:f?corte(f.split(",")[0]):null})})
+// História = só os fatos (relatos, saves, quando zerou); as falas dela ficam na aba Eu (May 01:34, Sigma e Orfeu)
+const ev=[];(j.save||[]).filter(x=>x.data&&x.progresso).forEach(x=>ev.push({dia:x.data,texto:"Save"+(x.pc?" no "+x.pc:"")+": "+x.progresso,quem:"save"}));if(j.parede&&j.parede.data)ev.push({dia:j.parede.data,texto:"Zerou: plaquinha nº "+String(j.parede.numero).padStart(2,"0")+" na Parede da Vitória",quem:"parede"});(j.relatos||[]).forEach(r=>{const f=(r.texto.match(/^📷\s*(\S+)/)||[])[1];ev.push({dia:r.dia,hora:r.hora,texto:r.texto.replace(/^📷\s*\S+\s*/,"").replace(/\*\*/g,""),quem:r.quem,foto:f?corte(f.split(",")[0]):null})})
 ev.sort((a,b)=>dval(b)-dval(a))
 const vis=histTodos?ev:ev.slice(0,6)
 const des=j.desbloqueados||{},saves=j.save||[],fps=j.fps||[]
@@ -515,15 +527,20 @@ const time=(des.pokemons||[]).filter(p=>!p.onde||/time/i.test(p.onde)),incerto=n
 if(time.length)A.poke+=`<div class="bloco"><h3>${IC.bau}Time principal</h3><div class="colecao">${time.map(p=>`<div class="poke toca" data-poke="${esc(incerto(p.nome)?"":p.nome)}" ${pk(()=>popPoke(j,p))}><i></i><div>${esc(nomeP(p.nome))}<small>${p.nivel?"nível "+p.nivel:"nível ?"}<span class="tipo"></span></small></div></div>`).join("")}</div></div>`
 const itens=[...(des.itens||[]),...(des.outros||[])]
 if(itens.length)A.inv+=`<div class="bloco"><h3>${IC.bau}O que eu tenho de importante</h3><div class="inv">${itens.map(x=>{const d=invDe(j,x);return`<div class="it toca" ${pk(()=>popItem(j,x))}><b>${esc(d.nome)}</b><p>${esc(d.descricao)}</p>${d.detalhes.length?kvh(d.detalhes):""}</div>`}).join("")}</div></div>`
-A.hist+=`<div class="bloco"><h3>${IC.tempo}História</h3>${ev.length?`<div class="tempo">${vis.map(e=>`<div class="ev toca" ${pk(()=>popEv(j,e))}><div class="m"><b>${esc(e.dia||"sem data")}${e.hora?" "+esc(e.hora):""}</b>${e.quem!="May"?`<span class="nyx">${esc(e.quem)} mediu</span>`:""}${e.onde?`<span>${esc(e.onde)}</span>`:""}</div><div class="q ${e.quem=="May"?"ela":"rel"}">${esc(e.texto)}</div>${e.foto?`<img loading="lazy" data-z data-p="${esc(e.foto)}" alt="">`:""}</div>`).join("")}</div>${ev.length>6&&!histTodos?`<button class="mais" id="h-mais">ver as ${ev.length} entradas</button>`:""}`:`<div class="parei-sub">Nada ainda. Manda algo pelo botão aqui embaixo.</div>`}</div>`
+if(ev.length)A.hist+=`<div class="bloco"><h3>${IC.tempo}História</h3>${ev.length?`<div class="tempo">${vis.map(e=>`<div class="ev toca" ${pk(()=>popEv(j,e))}><div class="m"><b>${esc(e.dia||"sem data")}${e.hora?" "+esc(e.hora):""}</b>${e.quem!="May"&&e.quem!="save"&&e.quem!="parede"?`<span class="nyx">${esc(e.quem)} mediu</span>`:""}${e.onde?`<span>${esc(e.onde)}</span>`:""}</div><div class="q ${e.quem=="May"?"ela":"rel"}">${esc(e.texto)}</div>${e.foto?`<img loading="lazy" data-z data-p="${esc(e.foto)}" alt="">`:""}</div>`).join("")}</div>${ev.length>6&&!histTodos?`<button class="mais" id="h-mais">ver as ${ev.length} entradas</button>`:""}`:`<div class="parei-sub">Nada ainda. Manda algo pelo botão aqui embaixo.</div>`}</div>`
 const tempo=saves.map(s=>s.tempo_jogado).find(Boolean),ult=ultimoDia(j),ultTxt=ult?`${String(ult%100).padStart(2,"0")}/${String(Math.floor(ult/100)%100).padStart(2,"0")}/${Math.floor(ult/10000)}`:""
-const det=[["Console",j.console],["Emulador",j.emulador],["Save no",[...new Set(saves.map(s=>s.pc).filter(Boolean))].join(", ")],["Tempo jogado",tempo],["Versão",saves.map(s=>s.versao).find(Boolean)],["Última notícia",ultTxt],["Progresso",j.pct==null?"sem %":(j.estimado?"estimado ":"")+j.pct+"%"],["Situação",rotuloStatus(j.status)],["Parede",j.parede?`plaquinha nº ${String(j.parede.numero).padStart(2,"0")}${j.parede.data?" · "+j.parede.data:""}`:""]].filter(x=>x[1])
+const det=[["Console",j.console],["Emulador",j.emulador],["Save no",[...new Set(saves.map(s=>s.pc).filter(Boolean))].join(", ")],["Tempo jogado",tempo],["Versão",saves.map(s=>s.versao).find(Boolean)],["Jogou por último em",ultTxt],["Progresso",j.pct==null?"sem %":(j.estimado?"estimado ":"")+j.pct+"%"],["Situação",rotuloStatus(j.status)],["Parede",j.parede?`plaquinha nº ${String(j.parede.numero).padStart(2,"0")}${j.parede.data?" · "+j.parede.data:""}`:""]].filter(x=>x[1])
 A.resumo+=`<div class="bloco"><h3>${IC.pin}Detalhes</h3><dl class="kv">${det.map(([k,v])=>`<div class="kvl toca" ${pk(()=>popDet(j,k,v))}><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl></div>`
 const fx=(((window.EXT||{}).sobre||{})[j.id]||{}).ficha||{},jn=v=>Array.isArray(v)?v.join(", "):v
 const GEN={"post-apocalyptic video game":"Pós-apocalíptico","turn-based Japanese role-playing game":"JRPG por turnos","Japanese role-playing video game":"JRPG","2D platform game":"Plataforma 2D","3D platform game":"Plataforma 3D","kart racing game":"Corrida de kart","Christmas video game":"Natal","photography game":"Fotografia","farming simulation game":"Simulação de fazenda","halloween video game":"Halloween","time travel video game":"Viagem no tempo","cyberpunk video game":"Cyberpunk","3D fighting game":"Luta 3D","massively multiplayer online role-playing game":"MMORPG","collect-a-thon platformer":"Plataforma de coleta","augmented reality video game":"Realidade aumentada","retro-style video game":"Estilo retrô","space opera video game":"Ópera espacial","mascot racer":"Corrida de mascotes","hunting action":"Ação de caça","multiplayer online battle arena":"MOBA","cinematic platformer":"Plataforma cinematográfica","horde shooter":"Tiro contra hordas","dungeon":"Masmorra","RPG eletrônico":"RPG","RPG eletrônico de ação":"RPG de ação"}
 const FORA=/LGBT|crossover|série de comédia|televisão/i,MOD={"jogo eletrônico para um jogador":"Um jogador","jogo eletrônico multijogador":"Multijogador","modo cooperativo":"Cooperativo","player versus player":"PvP","two player":"Dois jogadores","jogo online":"Online","hotseat":"Revezando no mesmo aparelho"}
 const limpa=(v,mapa,max)=>{const vis=new Set();return(Array.isArray(v)?v:v?[v]:[]).map(x=>String(x).trim()).filter(x=>x&&!FORA.test(x)&&!(mapa==MOD&&!MOD[x])).map(x=>mapa[x]||x.replace(/^jogo eletr[ôó]nico (de |com )?/i,"")).map(x=>x.charAt(0).toUpperCase()+x.slice(1)).filter(x=>{const k=x.toLowerCase().replace(/[^a-zà-ú0-9]/g,"");if(vis.has(k))return false;vis.add(k);return true}).slice(0,max).join(", ")}
-const ft=[["Lançamento",fx.ano],["Desenvolvedora",jn(fx.desenvolvedora)],["Publicadora",jn(fx.publicadora)],["Série",jn(fx.serie)],["Gênero",limpa(fx.genero,GEN,3)],["Plataformas",jn(fx.plataformas)],["Modos",limpa(fx.modos,MOD,3)]].filter(x=>x[1])
+const so=((window.EXT||{}).sobre||{})[j.id]||{},txtS=((so.lingua=="en"?(window.SOBREPT||{})[j.id]:so.texto)||"")+" "+(so.texto||""),nrm=t=>String(t).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")
+// Ficha técnica que contradiz o Sobre não aparece (Sigma 01:29: Death Stranding com "Guerrilla" e só Windows/macOS)
+const devOk=()=>{const d=[].concat(fx.desenvolvedora||[]);if(!d.length||!txtS.trim())return true;const t=nrm(txtS);if(!/desenvolvid|developed/.test(t))return true;return d.some(x=>t.includes(nrm(x).split(/[ ,]/)[0]))}
+const PLAT={playstation:/playstation|ps[1-5]|psp|vita/,xbox:/xbox/,switch:/switch/,wii:/wii/,n64:/nintendo 64/,snes:/super nintendo|super nes|snes|super famicom/,mega:/mega drive|genesis/,gb:/game boy/,ds:/ds|3ds/,gc:/gamecube/,dc:/dreamcast/,win:/windows/}
+const platOk=()=>{const pl=nrm([].concat(fx.plataformas||[]).join(" "));if(!pl||!txtS.trim())return true;const t=nrm(txtS);return Object.values(PLAT).every(r=>!r.test(t)||r.test(pl))}
+const ft=[["Lançamento",fx.ano],["Desenvolvedora",devOk()?jn(fx.desenvolvedora):""],["Publicadora",jn(fx.publicadora)],["Série",jn(fx.serie)],["Gênero",limpa(fx.genero,GEN,3)],["Plataformas",platOk()?jn(fx.plataformas):""],["Modos",limpa(fx.modos,MOD,3)]].filter(x=>x[1])
 if(ft.length)A.resumo+=`<div class="bloco"><h3>${IC.selo}Ficha técnica</h3>${kvh(ft)}<div class="pop-fonte">Fonte: Wikidata</div></div>`
 A.resumo+=`<div class="bloco sobre" id="f-sobre" hidden><h3>${IC.estrela}Sobre o jogo</h3><p></p><a target="_blank" rel="noopener"></a></div>`
 if(saves.length||fps.length)A.save+=`<div class="bloco"><h3>${IC.save}Save e FPS</h3>${fps.length?`<div class="fps">${fps.slice(0,6).map(f=>`<div class="toca" ${pk(()=>popFps(j,f))}><b>${esc(f.media)}</b><span>${esc(f.emulador||"")}${f.dia?" · "+esc(f.dia):""}</span>${f.onde||f.obs?`<span>${esc([f.onde,f.obs].filter(Boolean).join(" · "))}</span>`:""}</div>`).join("")}</div>`:""}<div style="margin-top:${fps.length?12:0}px">${saves.map(s=>`<div class="sv toca" ${pk(()=>popSave(j,s))}><div class="h">${esc(s.emulador||"nativo")}<span>${esc([s.pc,s.data,s.tempo_jogado,s.versao].filter(Boolean).join(" · "))}</span></div>${s.progresso?`<p>${esc(s.progresso)}</p>`:""}${s.obs?`<p style="color:var(--texto3)">${esc(s.obs)}</p>`:""}</div>`).join("")}</div></div>`
@@ -565,7 +582,7 @@ function popPend(j,p){return{t:"Falta conferir",h:`<div class="pop-q">${esc(p)}<
 function popDet(j,k,v){const sv=j.save||[],fp=j.fps||[];let h=`<div class="pop-q">${esc(v)}</div>`
 if(k=="Console"){const ms=J.filter(o=>o.console==j.console);h+=kvh([["Seus jogos nesse console",ms.length],["Zerados",ms.filter(o=>o.status=="zerado").length],["Em andamento",ms.filter(o=>o.status=="jogando").length]])+sec("Outros desse console",`<p class="pop-p">${esc(ms.filter(o=>o!==j).slice(0,12).map(o=>o.titulo).join(" · "))}</p>`)}
 else if(["Emulador","Versão","Tempo jogado","Save no"].includes(k))h+=sec("Cada save",sv.map(s=>svLinha(s)+(s.caminho?`<p class="pop-p" style="opacity:.75">${esc(s.caminho)}</p>`:"")).join(""))+sec("FPS medido",fp.map(f=>`<p class="pop-p">${esc(f.media)} · ${esc(f.emulador||"")}${f.obs?" · "+esc(f.obs):""}</p>`).join(""))
-else if(k=="Última notícia"){const ev=[...(j.historico||[]).map(x=>({d:dval(x),t:"Você: "+x.fala})),...(j.relatos||[]).map(x=>({d:dval(x),t:x.quem+": "+x.texto.replace(/^📷\s*\S+\s*/,"")}))].sort((a,b)=>b.d-a.d).slice(0,3);h+=sec("As últimas",ev.map(x=>`<p class="pop-p">${esc(x.t)}</p>`).join(""))}
+else if(k=="Jogou por último em"){const ev=[...(j.historico||[]).map(x=>({d:dval(x),t:"Você: "+x.fala})),...(j.relatos||[]).map(x=>({d:dval(x),t:x.quem+": "+x.texto.replace(/^📷\s*\S+\s*/,"")}))].sort((a,b)=>b.d-a.d).slice(0,3);h+=sec("As últimas",ev.map(x=>`<p class="pop-p">${esc(x.t)}</p>`).join(""))}
 else if(k=="Progresso")h+=`<p class="pop-p">${j.pct==null?"Este jogo não tem porcentagem.":j.estimado?"É uma estimativa: o jogo não mostra % e a conta foi feita pelo que tem no save.":"É a porcentagem que o próprio jogo mostra."}</p>`+sec("Em cada save",sv.map(s=>`<p class="pop-p">${esc(s.progresso||"")}</p>`).join(""))
 else if(k=="Situação")h+=`<p class="pop-p">${esc(EXPL[j.status]||"")}</p>`+kvh([["Onde parou",j.parei]])
 else if(k=="Parede")h+=kvh([["Lembrança",j.parede&&j.parede.lembranca]])
@@ -592,10 +609,13 @@ document.getElementById("f-voltar").onclick=fechaFicha
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{dirAnim=Math.sign(ABAS_L.indexOf(b.dataset.aba)-ABAS_L.indexOf(aba));aba=b.dataset.aba;history.replaceState(null,"","#"+aba);render();document.getElementById("lista").scrollTop=0})
 document.getElementById("f-msg").onclick=()=>{document.getElementById("envio").classList.add("on");setTimeout(()=>document.getElementById("e-txt").focus(),50)}
 document.getElementById("envio").onclick=e=>{if(e.target.id=="envio")e.currentTarget.classList.remove("on")}
-document.getElementById("e-env").onclick=async()=>{const t=document.getElementById("e-txt").value.trim();if(!t)return;const b=document.getElementById("e-env"),a=document.getElementById("aviso"),n=new Date(),p=x=>String(x).padStart(2,"0");b.disabled=true
-const linha=`- [${p(n.getDate())}/${p(n.getMonth()+1)}/${n.getFullYear()} ${p(n.getHours())}:${p(n.getMinutes())}] @Nyx @Orfeu sobre o jogo ${fichaAtual.titulo}: ${t.replace(/\r?\n/g,"\\n")}`
+let enviando=false
+document.querySelectorAll("#e-pra button").forEach(x=>x.onclick=e=>{e.stopPropagation();x.classList.toggle("on")})
+document.getElementById("e-env").onclick=async()=>{const t=document.getElementById("e-txt").value.trim();if(!t||enviando)return;enviando=true;const b=document.getElementById("e-env"),a=document.getElementById("aviso"),n=new Date(),p=x=>String(x).padStart(2,"0"),rot=b.innerHTML;b.disabled=true;b.classList.add("indo");b.innerHTML='<span class="giro"></span>Enviando…';document.getElementById("e-txt").readOnly=true
+const pra=[...document.querySelectorAll("#e-pra button.on")].map(x=>"@"+x.dataset.q).join(" ")||"@Vega"
+const linha=`- [${p(n.getDate())}/${p(n.getMonth()+1)}/${n.getFullYear()} ${p(n.getHours())}:${p(n.getMinutes())}] ${pra} sobre o jogo ${fichaAtual.titulo}: ${t.replace(/\r?\n/g,"\\n")}`
 let ok=false;for(let k=0;k<4&&!ok;k++){try{const f=await(await gh("CAIXA-DE-ENTRADA.md")).json();const md=decodeURIComponent(escape(atob(f.content.replace(/\n/g,""))));if(!md.includes("## Recados")||md.length<200)break;const novo=md.replace(/\s*$/,"")+"\n"+linha+"\n";const r=await gh("CAIXA-DE-ENTRADA.md",{method:"PUT",body:JSON.stringify({message:"recado do iPhone (jogos)",content:btoa(unescape(encodeURIComponent(novo))),sha:f.sha})});if(r.ok)ok=true;else if(r.status!==409)break;else await new Promise(z=>setTimeout(z,600))}catch(e){break}}
-b.disabled=false;if(ok){document.getElementById("e-txt").value="";document.getElementById("envio").classList.remove("on");a.textContent="Mandado pra Geral. A Nyx e o Orfeu põem na história do jogo."}else a.textContent="Não consegui mandar. Confere a internet e tenta de novo.";a.style.display="block";setTimeout(()=>a.style.display="none",3200)}
+enviando=false;b.disabled=false;b.classList.remove("indo");b.innerHTML=rot;document.getElementById("e-txt").readOnly=false;a.classList.toggle("erro",!ok);if(ok){document.getElementById("e-txt").value="";document.getElementById("envio").classList.remove("on");a.textContent="✓  Mandado pra Geral."}else a.textContent="Não consegui mandar. Confere a internet e tenta de novo.";a.style.display="block";setTimeout(()=>a.style.display="none",3200)}
 function aberturaJogos(pronto,parar){const el=document.getElementById("abertura"),rm=matchMedia("(prefers-reduced-motion: reduce)").matches;if(rm){el.classList.remove("on","j2","v6");pronto();return}el.classList.add("on");let fim=false,ab=null;const sai=()=>{if(fim)return;fim=true;el.classList.add("sai");setTimeout(()=>{el.classList.remove("on","sai","j2","v6");const t=document.getElementById("troca");t.classList.remove("on");void t.offsetWidth;t.classList.add("on");pronto()},300)};el.onclick=()=>ab?ab.pular():sai();el.onkeydown=e=>{if(e.key=="Enter"||e.key==" "||e.key=="Escape")ab?ab.pular():sai()}
 setTimeout(sai,9000)
 // J2 do Hermes recebe as peças por op.src (sem mexer no código dele); se não ficar pronto em 3 s, vai direto pra lista e as peças seguem pro cache pra próxima vez (Sigma, 06/11 00:57)
