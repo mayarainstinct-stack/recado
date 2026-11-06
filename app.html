@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.3">
+<meta name="app-versao" content="2026-11-06.4">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -2297,7 +2297,8 @@ let mencaoSel = -1;   // índice destacado na lista de sugestões; -1 = nenhuma 
 function nomesGrupo() {
   const conv = !FILE || FILE === GERAL.arq ? GERAL : convPorArq(FILE), falaram = lastItems.filter(x => x.quem).map(x => x.quem);
   const chaves = conv.participantes || (falaram.length ? falaram : GERAL.participantes);
-  return [...new Set(chaves.filter(k => GRUPO[k]).map(k => GRUPO[k].nome.replace(/\s*\(.*\)$/, '')))];
+  const nomes = [...new Set(chaves.filter(k => GRUPO[k]).map(k => GRUPO[k].nome.replace(/\s*\(.*\)$/, '')))];
+  return nomes.length > 1 ? ['todos', ...nomes] : nomes;   // @todos chama todo mundo do grupo (May, 06/11/2026)
 }
 function escolheMencao(n, m, antes, pos) {
   const comeco = antes.slice(0, antes.length - m[0].length) + m[1] + '@' + n + ' ';
@@ -2319,7 +2320,7 @@ function checaMencao() {
   if (!nomes.length) { mencoesEl.hidden = true; mencaoSel = -1; return; }
   mencoesEl.replaceChildren(...nomes.map(n => {
     const b = document.createElement('button'); b.type = 'button'; b.textContent = '@' + n;
-    b.style.setProperty('--quem', corDe(n));
+    b.style.setProperty('--quem', n === 'todos' ? 'var(--accent)' : corDe(n));
     b.onclick = () => escolheMencao(n, m, antes, pos);
     return b;
   }));
