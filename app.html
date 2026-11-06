@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.13">
+<meta name="app-versao" content="2026-11-06.14">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -600,6 +600,9 @@ img.esq { min-height: 140px; }
 /* um degradê só correndo pela barra inteira (cada quadradinho mostra o pedaço dele), pra não parecer quebrado (May, 06/11/2026) */
 .ct.eu .ct-seg i.on, .ct.sigma .ct-seg i.on { background-size: 1000% 100%; background-position: calc(var(--i) * 11.111%) 0; }
 .ct.eu .ct-seg i.on { background-image: linear-gradient(90deg, #F43F46, #FACC15 50%, #4ADE80); }
+.ct.eu .ct-nivel i { background: linear-gradient(90deg, #F43F46, #FACC15 50%, #4ADE80); }
+.ct.sigma .ct-nivel i { background: linear-gradient(90deg, #A855F7, #C4B5FD 55%, #D1D5DB); }
+.ct.eu .ct-nivel i, .ct.sigma .ct-nivel i { -webkit-mask: linear-gradient(90deg, #000 var(--p), rgba(0,0,0,.22) var(--p)); mask: linear-gradient(90deg, #000 var(--p), rgba(0,0,0,.22) var(--p)); }   /* o nível também em degradê, igual as barras */
 .ct.sigma .ct-seg i.on { background-image: linear-gradient(90deg, #A855F7, #C4B5FD 55%, #D1D5DB); }
 .ct-ff { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .ct-ff > div { padding: 12px; border-radius: 12px; background: rgba(0,0,0,.32); border: 1px solid rgba(255,255,255,.1); font-size: 13.5px; line-height: 1.35; }
