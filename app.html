@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.44">
+<meta name="app-versao" content="2026-11-06.45">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -1050,14 +1050,14 @@ const GRUPO = {
 // Falantes do Trabalho (um por projeto, letra + cor) ficam no Inst privado, casa/grupo-trabalho.json: este repo é público (05/11/2026).
 // Lido antes da primeira leitura do Trabalho e somado ao GRUPO; falhou = rótulo neutro "Trabalho" e tenta de novo em 1 min.
 const TRAB_NEUTRO = { nome: 'Trabalho', cor: '#64748B', texto: '#FFFFFF' };
-let grupoTrabOk = false, grupoTrabP = null, grupoTrabEm = 0;
+let grupoTrabOk = false, grupoTrabP = null, grupoTrabEm = 0, GENTE_CASA = [];
 function garanteGrupoTrab() {
   if (grupoTrabOk || !token) return Promise.resolve();
   if (grupoTrabP) return grupoTrabP;
   if (Date.now() - grupoTrabEm < 60000) return Promise.resolve();
   grupoTrabEm = Date.now();
   return grupoTrabP = Promise.all(['casa/grupo-trabalho.json', 'casa/grupo-casa.json'].map(a => lerArquivo(a).catch(() => '{}'))).then(([t, tc]) => {   // grupo-casa: gente da casa que fala (ex.: o robô do Gabriel), nome só no repo privado
-    const g = { ...JSON.parse(t || '{}'), ...JSON.parse(tc || '{}') };
+    const gc = JSON.parse(tc || '{}'), g = { ...JSON.parse(t || '{}'), ...gc }; GENTE_CASA = Object.keys(gc);
     Object.keys(g).forEach(k => { if (!GRUPO[k] && g[k] && g[k].nome && g[k].cor) GRUPO[k] = g[k]; });   // nunca troca quem já é da casa
     montaReQuem(); grupoTrabOk = true;
     delete caixaCache[TRAB.arq]; delete caixaCache[GERAL.arq]; shaLido = ''; if (FILE === TRAB.arq || FILE === GERAL.arq) { forcar = true; setTimeout(() => load().catch(() => {}), 0); }   // redesenha já: a 1ª leitura (do cache) saiu sem quem veio do grupo   // a Geral também redesenha c/ quem veio do grupo-casa   // prévia e tela que já saíram com o rótulo neutro
@@ -1198,7 +1198,7 @@ async function abreCracha(chave) {
   lado.append(el('div', 'ct-nome', nome), el('div', 'ct-cargo', cargo));
   if (f.classe && f.classe !== cargo) lado.append(el('div', 'ct-classe', f.classe));
   const pills = el('div', 'ct-pills'), st = el('span', 'ct-pill' + (on ? ' on' : '')); st.append(el('i'), k === 'may' ? 'online agora' : k === 'sigma' && !hb.ultimaAtualizacao ? 'itinerante' : /^humano/i.test(f.classe || '') && !hb.ultimaAtualizacao ? 'gente de verdade' : (v.online ? (v.texto === 'agora' ? 'online agora' : 'visto ' + v.texto) : v.texto));
-  pills.append(st, el('span', 'ct-pill', 'Nv. ' + atr.reduce((a, x) => a + x[1], 0))); lado.append(pills);   // "nível" = soma dos atributos, só pra brincar
+  pills.append(st); if (atr.length) pills.append(el('span', 'ct-pill', 'Nv. ' + atr.reduce((a, x) => a + x[1], 0))); lado.append(pills);   // "nível" = soma dos atributos, só pra brincar
   quem.append(avatar(true), lado);
   const maq = el('div', 'ct-maq'), pcTxt = f.pcCurto || f.pc || ''; if (pcTxt && !String(f.classe || '').toLowerCase().includes(pcTxt.toLowerCase()) && !(k === 'sigma' && /itinerante/i.test(pcTxt))) maq.append(ic('maq', null, pcTxt)); if (hb.ip) maq.append(ic('ip', null, hb.ip));
   const insBox = el('div', 'ct-ins'), fila = el('div', 'ct-ins-fila'); [0, 1, 2].forEach(i => fila.append(insignia(ins[ins.length - 1 - i])));
@@ -1208,7 +1208,7 @@ async function abreCracha(chave) {
   if (!gente) { const chama = el('button', 'ct-chama', 'Mandar recado ' + (['orfeu', 'vega', 'hermes', 'sigma'].includes(k) ? 'pro ' : 'pra ') + nome); chama.type = 'button'; chama.onclick = e => { e.stopPropagation(); const t = document.getElementById('texto'); if (t) { const n = '@' + nome + ' '; if (!t.value.startsWith(n)) t.value = n + t.value; t.dispatchEvent(new Event('input')); pop.remove(); t.focus(); } }; pe.append(chama); }
   pe.append(dica('Arrasta pro lado pra virar o cartão'));
   fi.append(cab, quem, el('div', 'ct-faz', f.faz), maq); if (gente && f.olhar) fi.append(el('div', 'ct-olhar', f.olhar));   // ela não tem o botão de recado: o olhar ocupa o lugar
-  fi.append(insBox, pe);
+  if (ins.length || !gente) fi.append(insBox); fi.append(pe);
   const bloco = (tit, ...filhos) => { const d = el('div'); if (tit) d.append(el('div', 'ct-tit', tit)); d.append(...filhos); return d; };
   const selos = (lista, icone) => { const w = el('div', 'ct-selos'); lista.forEach(n => w.append(ic(icone, null, n))); return w; };
   const pAtr = el('div', 'ct-p-atr'), pJeito = el('div');
@@ -1224,7 +1224,7 @@ async function abreCracha(chave) {
   if (f.jeito && f.jeito.length) { const dl = el('dl', 'ct-dados ct-jeito'); f.jeito.forEach(([t, v]) => { const w = el('div'); w.innerHTML = ICO_FICHA.jeito; w.append(el('dt', '', t), el('dd', '', v)); dl.append(w); }); pJeito.append(bloco('Personalidade', dl)); }   // aba Jeito cheia (May, 06/11/2026)
   if (false && f.cons) { const sc = selos(f.cons, 'pessoa'); sc.dataset.tipo = 'cons'; pJeito.append(bloco('Conselheiros que incorpora', sc)); }
   const pMaq = el('dl', 'ct-dados');
-  [['onde', k === 'may' ? 'Onde vive' : 'Onde roda', f.onde || f.pc], ['maq', k === 'may' ? 'Ela' : 'PC', f.onde ? f.pc : ''], ['ip', 'IP', hb.ip || (['may', 'lyra', 'sigma'].includes(k) ? '' : 'ainda não mandou')], ...(f.hw ? f.hw.map(x => [...x, 'peca']) : [['maq', 'Máquina', f.maquina]])]
+  [['onde', gente ? 'Onde vive' : 'Onde roda', f.onde || f.pc], ['maq', k === 'may' ? 'Ela' : gente ? 'Ele' : 'PC', f.onde ? f.pc : ''], ['ip', 'IP', hb.ip || (gente || ['lyra', 'sigma'].includes(k) ? '' : 'ainda não mandou')], ...(f.hw ? f.hw.map(x => [...x, 'peca']) : [['maq', 'Máquina', f.maquina]])]
     .forEach(([i, t, d, c]) => { if (!d) return; const w = el('div', c); w.innerHTML = ICO_FICHA[i] || ICO_FICHA.maq; w.append(el('dt', '', t), el('dd', '', d)); pMaq.append(w); });
   const pecas = pMaq.querySelectorAll('.peca'); if (pecas.length % 2) pecas[pecas.length - 1].classList.add('larga');   // peça sobrando ocupa a linha toda
   // insígnias como árvore de habilidade, 3 galhos (May, 05/11/2026): a moldura diz o galho
@@ -1240,13 +1240,13 @@ async function abreCracha(chave) {
   });
   pConq.append(arv);
   const pTempo = el('div'), agora = el('dl', 'ct-dados');
-  [['agora', 'Fazendo agora', hb.fazendo || ''], ['relogio', 'Último sinal', k === 'may' ? '' : v.texto]].forEach(([i, t, d]) => { if (!d) return; const w = el('div'); w.innerHTML = ICO_FICHA[i]; w.append(el('dt', '', t), el('dd', '', d)); agora.append(w); });
+  [['agora', 'Fazendo agora', hb.fazendo || ''], ['relogio', 'Último sinal', k === 'may' || (gente && !hb.ultimaAtualizacao) ? '' : v.texto]].forEach(([i, t, d]) => { if (!d) return; const w = el('div'); w.innerHTML = ICO_FICHA[i]; w.append(el('dt', '', t), el('dd', '', d)); agora.append(w); });
   if (agora.childElementCount) pTempo.append(agora);
   const todasEnt = f.entregas || [];
   if (todasEnt.length) { const ol = el('ol', 'ct-tempo'); todasEnt.forEach(it => { const li = el('li'); li.append(el('small', '', it.data || ''), it.nome); ol.append(li); }); pTempo.append(bloco('Entregas', ol)); }
   // um cartão por aba, lado a lado: arrasta pro lado (ou toca na aba) em vez de virar (May, 05/11/2026: "tinha q ser slider")
   const paineis = { atr: pAtr, jeito: pJeito, hab: pHab, maq: pMaq, conq: pConq, tempo: pTempo };   // 7 cartões por pessoa ou robô (May, 05/11/2026)
-  const abas = [['perfil', 'Perfil'], ['atr', 'Atributos'], ['jeito', 'Jeito'], ['hab', 'Poderes'], ['maq', f.abaMaq || 'Máquina'], ['conq', 'Insígnias'], ['tempo', 'Tempo']].filter(([id]) => id === 'perfil' || paineis[id].childElementCount);
+  const abas = [['perfil', 'Perfil'], ['atr', 'Atributos'], ['jeito', 'Jeito'], ['hab', 'Poderes'], ['maq', f.abaMaq || 'Máquina'], ['conq', 'Insígnias'], ['tempo', 'Tempo']].filter(([id]) => id === 'perfil' || (paineis[id].childElementCount && !(id === 'hab' && !(f.hab || []).length) && !(id === 'conq' && !ins.length && gente)));   // aba sem dado não aparece (Sigma, 06/11/2026)
   const nav = el('nav', 'ct-abas'); nav.setAttribute('aria-label', 'Abas da ficha'); nav.style.setProperty('--n', abas.length);
   const faces = abas.map(([id, rot]) => {
     if (id === 'perfil') return fr;
@@ -1960,10 +1960,16 @@ function fazendoGrupo() {
   });
 }
 function nomeDe(p) { return p.nome || (p.chave === 'may' ? EU.nome : null) || (GRUPO[p.chave] ? GRUPO[p.chave].nome.replace(/\s*\(.*\)$/, '') : p.chave); }
+function listaOnlineOrdem() {   // quem é da casa, por número do cartão, Sigma no fim (May, 06/11/2026 14:22)
+  if (!FICHA) lerArquivo('casa/fichas.json').then(t => { if (!FICHA) FICHA = JSON.parse(t); if (!onlinePop.hidden) desenhaOnlinePop(); }).catch(() => {});
+  const l = [...onlineGrupoLista]; GENTE_CASA.forEach(k => { if (GRUPO[k] && !l.some(p => p.chave === k)) l.push({ chave: k, gente: true }); });
+  const num = p => p.chave === 'sigma' ? 1e9 : +((FICHA && FICHA[p.chave] && FICHA[p.chave].id) || 999);
+  return l.map((p, i) => [p, i]).sort((a, b) => num(a[0]) - num(b[0]) || a[1] - b[1]).map(x => x[0]);
+}
 function desenhaOnlinePop() {
   onlinePop.replaceChildren();
   if (!onlineGrupoLista.length) { const v = document.createElement('div'); v.className = 'vazio'; v.textContent = 'Nenhum agente apareceu ainda.'; onlinePop.append(v); return; }
-  onlineGrupoLista.forEach(p => {
+  listaOnlineOrdem().forEach(p => {
     const gp = p.chave === 'may' ? EU : GRUPO[p.chave], cor = p.chave === 'may' ? 'transparent' : (gp ? gp.cor : 'var(--accent)'), texto = gp ? gp.texto : '#fff';
     const row = document.createElement('div'); row.className = 'pessoa';
     const av = document.createElement('div'); av.className = 'av'; av.style.backgroundColor = cor; av.style.color = texto;
@@ -1977,7 +1983,7 @@ function desenhaOnlinePop() {
     const nome = document.createElement('div'); nome.className = 'nome'; nome.textContent = nomeDe(p);
     const v = fmtVisto(p.ultimaAtualizacao);
     const visto = document.createElement('div'); visto.className = 'visto' + (v.online ? ' on' : '');
-    visto.textContent = v.online ? (v.texto === 'agora' ? 'online agora' : 'visto ' + v.texto) : v.texto;
+    visto.textContent = p.gente && !p.ultimaAtualizacao ? 'gente de verdade' : v.online ? (v.texto === 'agora' ? 'online agora' : 'visto ' + v.texto) : v.texto;
     info.append(nome, visto); row.append(av, info); onlinePop.append(row);
     row.style.cursor = 'pointer'; row.addEventListener('click', e => { e.stopPropagation(); onlinePop.hidden = true; abreCracha(p.chave); });
   });
@@ -2005,7 +2011,7 @@ async function atualizaOnlineGrupo(forcar) {
     onlineGrupoLista = lista;   // sempre os participantes todos (mesmo quem nunca apareceu), pra lista nunca ficar vazia
     mostraSemana(lista.filter(p => p.chave !== 'lyra'));   // a casa toda usa a mesma conta; a Lyra é a do serviço
     mostraFazendo(fazendoGrupo());
-    const n = onlineGrupoLista.filter(p => fmtVisto(p.ultimaAtualizacao).online).length;
+    const n = onlineGrupoLista.filter(p => p.chave !== 'may' && fmtVisto(p.ultimaAtualizacao).online).length;   // bots: ela não conta
     onlineBadge.textContent = n + (n === 1 ? ' bot online' : ' bots online');   // "bots online", sem o lugar dela (May, 06/11/2026 13:53)
     if (!onlinePop.hidden) desenhaOnlinePop();
   }).finally(() => { onlineGrupoCarregando = null; });
