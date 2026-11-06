@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.28">
+<meta name="app-versao" content="2026-11-05.29">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -490,7 +490,7 @@ button:disabled { opacity: .45; cursor: default; }
 .ct svg { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .ct-x svg { width: 16px; height: 16px; stroke-width: 2.6; }
 .ct-trilho { display: grid; height: min(calc((100vw - 32px) * 1.8), 700px, calc(100dvh - 146px)); border-radius: 22px; box-shadow: 0 0 28px color-mix(in srgb, var(--quem) 38%, transparent), 0 18px 44px rgba(0,0,0,.5); touch-action: pan-y; -webkit-user-select: none; user-select: none; will-change: transform; }   /* um cartão só, que gira com o dedo e troca os dados no meio (May, 05/11/2026) */
-.ct-frente .ct-in { overflow-y: auto; overscroll-behavior: contain; }   /* tela baixa (iPhone com a barra do Safari): a frente rola em vez de cortar (May, 05/11/2026) */
+.ct-frente .ct-in > * { flex: none; }
 .ct-trilho > .ct-face { grid-area: 1 / 1; min-width: 0; }
 .ct-face { grid-area: 1 / 1; min-height: 0; padding: 6px; border-radius: 22px; background: var(--borda); -webkit-backface-visibility: hidden; backface-visibility: hidden; box-shadow: 0 0 28px color-mix(in srgb, var(--quem) 38%, transparent), 0 18px 44px rgba(0,0,0,.5); color: #fff; font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,.6), 0 0 12px rgba(0,0,0,.3); }
 .ct-in { height: 100%; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; box-shadow: inset 0 0 0 1px rgba(255,255,255,.14);
@@ -532,7 +532,7 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-vcab { display: grid; grid-template-columns: 40px 1fr auto; gap: 10px; align-items: center; padding: 12px 14px 8px; border-bottom: 1px solid rgba(255,255,255,.12); }
 .ct-vcab .ct-av { width: 40px; height: 40px; font-size: 18px; filter: drop-shadow(0 2px 6px rgba(0,0,0,.5)); }
 .ct-vcab b { display: block; font-size: 17px; line-height: 1.1; } .ct-vcab .ct-tit { margin-top: 2px; }
-.ct-painel { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 4px 14px 12px; display: flex; flex-direction: column; }
+.ct-painel { flex: 1; min-height: 0; overflow: hidden; padding: 4px 14px 12px; display: flex; flex-direction: column; }   /* sem rolagem no cartão: o que não cabe é apertado (cabe()) */
 .ct-painel > * { flex: 1 0 auto; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }   /* cada aba enche o cartão até quase o fim (May, 05/11/2026) */
 .ct-painel > * > div:not(.ct-nivel):not(.ct-placar):not(.ct-bar):not(.ct-tit):not(.ct-olhar) { flex: 1 0 auto; display: flex; flex-direction: column; }
 .ct-painel .ct-ins-fila, .ct-painel .ct-selos, .ct-painel .ct-tempo, .ct-painel .ct-ff { flex: 1 0 auto; align-content: space-evenly; }
@@ -1148,9 +1148,15 @@ async function abreCracha(chave) {
   // um cartão só: arrastar gira ele no eixo e, passado o meio do giro, ele volta com os dados da aba seguinte, igual o flip (May, 05/11/2026)
   const trilho = el('div', 'ct-trilho'); trilho.append(...faces);
   const semMov = matchMedia('(prefers-reduced-motion: reduce)').matches, pausa = ms => new Promise(ok => setTimeout(ok, ms));
+  // sem rolagem (May, 05/11/2026): se o conteúdo passa da altura do cartão, diminui tudo junto (zoom) até caber
+  const cabe = fc => {
+    const caixa = fc.querySelector('.ct-painel') || fc.querySelector('.ct-in'), alvos = caixa.classList.contains('ct-painel') ? [caixa.firstElementChild] : [...caixa.children];
+    alvos.forEach(a => { if (a) a.style.zoom = ''; });
+    for (let n = 0; n < 3 && caixa.scrollHeight > caixa.clientHeight + 1; n++) { const z = Math.max(.55, (parseFloat(alvos[0] && alvos[0].style.zoom) || 1) * caixa.clientHeight / caixa.scrollHeight); alvos.forEach(a => { if (a) a.style.zoom = z.toFixed(3); }); }
+  };
   let atual = -1, girando = false;
   const mostra = i => {
-    atual = i; faces.forEach((fc, j) => { fc.hidden = j !== i; }); const pn = faces[i].querySelector('.ct-painel'); if (pn) pn.scrollTop = 0;
+    atual = i; faces.forEach((fc, j) => { fc.hidden = j !== i; }); cabe(faces[i]);
     nav.querySelectorAll('button').forEach((b, j) => { b.classList.toggle('ativa', j === i); b.setAttribute('aria-current', j === i ? 'true' : 'false'); });
   };
   const poe = (g, t) => { trilho.style.transition = t ? 'transform ' + t + 's cubic-bezier(.3,.7,.2,1)' : 'none'; trilho.style.transform = g ? 'perspective(1100px) rotateY(' + g.toFixed(2) + 'deg)' : ''; };
