@@ -1,5 +1,5 @@
 {
- "atualizado": "30/10/2026",
+ "atualizado": "05/11/2026",
  "jogos": {
   "Batman: Arkham Knight": {
    "pct": 55,
@@ -892,8 +892,8 @@
    "parei": "Passou da saída do livro para o quarto em 3D."
   },
   "Gravity Circuit": {
-   "pct": 25,
-   "estimado": true,
+   "pct": 5,
+   "estimado": false,
    "console": "Switch (emulador no PC)",
    "parei": "Umas 2 ou 3 fases."
   },
@@ -1144,8 +1144,8 @@
    "parei": "Foi longe nas duas versões."
   },
   "Pokémon Legends: Z-A": {
-   "pct": 30,
-   "estimado": true,
+   "pct": 35,
+   "estimado": false,
    "console": "Switch (emulador no PC)",
    "capa": "https://upload.wikimedia.org/wikipedia/en/2/2d/Pokemon_Legends_Z-A_Key_Art_Logo.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "No rank F do Z-A Royale, depois de vencer o Vinnie."
