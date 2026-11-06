@@ -3040,7 +3040,7 @@ function abreViagem(v) {
   });
 }
 function abreChecklist(v, l) {
-  tela(l.nome, c => {
+  tela(semHojeFalso(l.nome), c => {
     const feitos = marcados(v, l), total = totalItens(l);
     const prog = document.createElement('p'); prog.className = 'p-nota';
     const conta = () => { prog.innerHTML = ''; prog.append(document.createTextNode(feitos.size + ' de ' + total + ' feitos')); if (feitos.size === total) { const ok = document.createElement('span'); ok.innerHTML = ' ' + icone('check'); ok.style.color = 'var(--accent)'; prog.append(ok); } };
@@ -3062,6 +3062,17 @@ function abreChecklist(v, l) {
     const limpa = document.createElement('button'); limpa.type = 'button'; limpa.className = 'gostei check-limpa'; limpa.textContent = 'Desmarcar tudo';
     limpa.onclick = () => { if (!feitos.size || !confirm('Desmarcar tudo desta lista?')) return; feitos.clear(); guardaMarcados(v, l, feitos); c.querySelectorAll('.check input').forEach(x => { x.checked = false; }); conta(); };
     c.append(limpa);
+    if (v._arq === 'menu/treino.json') {   // "Hoje não vou" também dentro do treino (May, 06/11/2026 17:51)
+      const nv = document.createElement('button'); nv.type = 'button'; nv.className = 'gostei check-limpa';
+      const rot = () => { nv.textContent = store.get('treino-folga') === diaLocal() ? 'Hoje é folga · tocar desfaz' : 'Hoje não vou'; };
+      rot();
+      nv.onclick = () => {
+        if (store.get('treino-folga') === diaLocal()) { store.set('treino-folga', ''); showNote('Folga desfeita: o treino volta a abrir no horário'); }
+        else { store.set('treino-folga', diaLocal()); showNote('Beleza, hoje o treino não abre sozinho'); }
+        rot();
+      };
+      c.append(nv);
+    }
   });
 }
 // ---- Imagens (plantas, referências…): menu/imagens.json = { grupos: [{ nome, capa?, imagens: [{ titulo, arq, nota }] }] }
