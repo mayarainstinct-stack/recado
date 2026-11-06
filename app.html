@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.50">
+<meta name="app-versao" content="2026-11-06.51">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -530,9 +530,10 @@ img.esq { min-height: 140px; }
 .fixa-barra { display: flex; align-items: center; gap: 8px; } .fixa-barra span { flex: 1; font-size: 12.5px; color: var(--muted); }
 .fixa-resp, .fixa-ok { flex: none; width: auto; height: 36px; padding: 0 14px; border-radius: 999px; font-weight: 700; font-size: 14px; cursor: pointer; }
 .fixa-resp { border: 1px solid var(--line); background: transparent; color: var(--fg); } .fixa-ok { min-width: 64px; border: 0; background: var(--quem); color: #fff; }
-.msg.grupo.tres { border: 3px solid transparent; background: linear-gradient(color-mix(in srgb, var(--c1) 18%, var(--cinza)), color-mix(in srgb, var(--c1) 18%, var(--cinza))) padding-box, linear-gradient(135deg, var(--c1), var(--c2) 50%, var(--c3)) border-box; }
+.msg.grupo.tres { border: 3px solid transparent; background: linear-gradient(135deg, color-mix(in srgb, var(--c1) 55%, var(--cinza)), color-mix(in srgb, var(--c2) 30%, var(--cinza)) 55%, color-mix(in srgb, var(--c3) 28%, var(--cinza))) padding-box, linear-gradient(135deg, var(--c1), var(--c2) 50%, var(--c3)) border-box; }   /* degradê atrás do texto também (May, 06/11/2026 16:18) */
 .msg.tres .quem .rotulo > span:first-child { color: var(--c2); align-self: flex-start; }
 @supports ((-webkit-background-clip: text) or (background-clip: text)) { .msg.tres .quem .rotulo > span:first-child { background: linear-gradient(90deg, var(--c2), var(--c3)); -webkit-background-clip: text; background-clip: text; color: transparent; } }
+@media (prefers-color-scheme: light) { .msg.tres .quem .rotulo > span:first-child { color: var(--c1); background: linear-gradient(90deg, var(--c1), color-mix(in srgb, var(--c1) 60%, #000)) !important; -webkit-background-clip: text !important; background-clip: text !important; } }   /* no claro o azul claro e o amarelo somem: nome no azul escuro */
 .msg.sigma .quem .rotulo > span:first-child { color: #A855F7; align-self: flex-start; }   /* cor sólida de reserva; o degradê só onde o recorte funciona */
 @supports ((-webkit-background-clip: text) or (background-clip: text)) { .msg.sigma .quem .rotulo > span:first-child { background: linear-gradient(90deg, #A855F7, #9CA3AF); -webkit-background-clip: text; background-clip: text; color: transparent; } }
 .barra { display: grid; grid-template-columns: 1fr auto; gap: 4px 8px; margin-top: 12px; font-size: 14px; font-weight: 600; }
@@ -2281,7 +2282,7 @@ const fixaEl = document.getElementById('fixa');
 function achaFixa(items) {
   if (FILE !== GERAL.arq) return -1;
   const oks = items.filter(x => x.from === 'may' && x.re).map(x => x.re.trecho.trim());   // responder já conta como ok (May, 06/11/2026 16:17)
-  return items.findLastIndex(x => x.from !== 'may' && /📌/.test(x.text || '') && !oks.includes(trechoDe(x).trim()));
+  return items.findLastIndex(x => x.from !== 'may' && /^\s*📌/.test(x.text || '') && !oks.includes(trechoDe(x).trim()));
 }
 function mostraFixa(items, fixaI) {   // o próprio balão sobe pro topo (mesmo jeito, dá pra responder pelo menu dele) e ganha o Ok embaixo (May, 06/11/2026 16:04 e 16:06)
   const el = fixaI >= 0 && feed.querySelector('.msg[data-i="' + fixaI + '"]');
