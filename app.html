@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.34">
+<meta name="app-versao" content="2026-11-06.35">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -1996,6 +1996,7 @@ async function atualizaOnlineGrupo(forcar) {
     mostraFazendo(fazendoGrupo());
     const n = onlineGrupoLista.filter(p => fmtVisto(p.ultimaAtualizacao).online).length;
     onlineBadge.textContent = n + (n === 1 ? ' agente online agora' : ' agentes online agora');
+    if (conv.arq === GERAL.arq) lerArquivo('_geral/recados/ONDE-A-MAY-ESTA.md').then(t => { const m = String(t).match(/^(AQUI|FORA):/m); if (m && FILE === conv.arq) onlineBadge.textContent = n + (n === 1 ? ' agente online' : ' agentes online') + ' · May ' + (m[1] === 'AQUI' ? 'na empresa' : 'fora'); }).catch(() => {});   // onde ela está, que a Lyra marca (06/11/2026)
     if (!onlinePop.hidden) desenhaOnlinePop();
   }).finally(() => { onlineGrupoCarregando = null; });
   return onlineGrupoCarregando;
