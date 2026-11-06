@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.32">
+<meta name="app-versao" content="2026-11-05.33">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -1204,10 +1204,10 @@ async function abreCracha(chave) {
     if (bar) { const n = bar.getAttribute('aria-label'), v = bar.getAttribute('aria-valuenow'), comum = COMUNS_EXP[n]; return explica(n + ' · ' + v + '/10', (ex[n] || comum || 'Um dos 5 especiais de ' + nome + ': o que ' + (g === EU ? 'ela' : 'ele') + ' faz de melhor.') + (comum ? ' É um dos 5 comuns, igual pra todo mundo.' : '') + ' A nota o Orfeu vai ajustando com o tempo.'); }
     if (selo) { const n = selo.textContent.trim(); return explica(n, ex[n] || (selo.closest('.ct-selos').dataset.tipo === 'cons' ? n + ' é um dos conselheiros que ' + nome + ' incorpora: uma voz que ajuda a decidir.' : 'Uma das habilidades de ' + nome + '.')); }
     if (ins && !ins.classList.contains('vazia')) { const n = ins.querySelector('span').textContent, it = (f.insignias || []).find(x => x.nome === n) || {}; return explica(n, (it.explica || ex[n] || 'Insígnia de ' + nome + ': uma conquista de verdade.') + (it.data ? ' Ganhou em ' + it.data + '.' : '')); }
-    if (dado) return explica(dado.querySelector('dt').textContent, dado.querySelector('dd').textContent);
-    if (ff) return explica(ff.classList.contains('forte') ? 'Ponto forte' : 'Ponto fraco', ff.lastChild.textContent);
-    if (li) return explica('Entrega', li.textContent.replace(/^(\d\d\/\d\d\/\d{4})/, '$1 · '));
-    if (niv) return explica('Nível', 'A soma dos ' + atr.length + ' atributos, cada um de 0 a 10' + (atr.length === 10 ? ': vai de 0 a 100.' : '.') + ' Sobe e desce conforme o Orfeu reavalia.');
+    if (dado) { const t = dado.querySelector('dt').textContent, v = dado.querySelector('dd').textContent; return explica(t, v + (ex[t] || ex[v] ? '. ' + (ex[t] || ex[v]) : '')); }
+    if (ff) { const c = ff.classList.contains('forte') ? 'forte' : 'fraco'; return explica(c === 'forte' ? 'Ponto forte' : 'Ponto fraco', ff.lastChild.textContent + (ex[c] ? '. ' + ex[c] : '')); }
+    if (li) { const dt = li.querySelector('small').textContent, n = li.lastChild.textContent; return explica(n, (ex[n] || 'Entrega de ' + nome + '.') + (dt ? ' Em ' + dt + '.' : '')); }
+    if (niv) return explica('Nível', (ex['Nível'] ? ex['Nível'] + ' ' : '') + 'É a soma dos ' + atr.length + ' atributos, cada um de 0 a 10' + (atr.length === 10 ? ', então vai de 0 a 100.' : '.') + ' Sobe e desce conforme o Orfeu reavalia.');
     if (pl) return explica(pl.lastChild.textContent, 'Placar do Sigma, contado no sigma-revisoes.md.');
   });
   ct.append(trilho, nav); pop.append(ct); document.body.append(pop); vai('perfil');
