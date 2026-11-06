@@ -313,6 +313,15 @@ nav button{height:58px;border-radius:22px;font-size:14px}
 #ficha.branco .capa{border-color:#151515!important;box-shadow:0 0 0 2px #C9A24B}
 #ficha.branco .anel circle:first-child{stroke:rgba(21,21,21,.1)}
 #ficha.branco .pop-fonte,#ficha.branco .sobre a{color:#6e685c}
+#ficha.ouro{--fundo:#0E0E0F;--painel:#18181A;--texto2:#ECECEC;--texto3:#A9A397}
+#ficha.ouro .bloco,#ficha.ouro .painel .bloco{background:linear-gradient(#1F1F22,#141416);border:1px solid rgba(201,162,75,.75);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),inset 0 -3px 0 rgba(0,0,0,.4),0 6px 14px rgba(0,0,0,.35)}
+#ficha.ouro .bloco h3{color:#fff}#ficha.ouro .bloco h3 svg{stroke:#C9A24B;color:#C9A24B}
+#ficha.ouro .poke,#ficha.ouro .it,#ficha.ouro .sv,#ficha.ouro .fps div,#ficha.ouro .cartao,#ficha.ouro .selo,#ficha.ouro .tags span,#ficha.ouro .pend{background:linear-gradient(#26262A,#18181B);border:1px solid rgba(201,162,75,.5)}
+#ficha.ouro .chip:not(.vidro){background:#fff;color:#111;text-shadow:none;box-shadow:inset 0 0 0 1px #C9A24B}#ficha.ouro .chip:not(.vidro) svg{color:#111;stroke:#111}
+#ficha.ouro .abas-f button.on{background:linear-gradient(#2A2A2E,#151517);color:#fff;border-color:#C9A24B;box-shadow:inset 0 -2px 0 #C9A24B}
+#ficha.ouro .fab{background:linear-gradient(#2A2A2E,#111);color:#fff;box-shadow:inset 0 0 0 2px #C9A24B,0 8px 22px rgba(0,0,0,.5)}#ficha.ouro .fab svg{stroke:#C9A24B}
+#ficha.ouro .capa{border-color:#fff!important;box-shadow:0 14px 34px rgba(0,0,0,.6),0 0 0 3px #C9A24B}
+#ficha.ouro .fundo-capa{opacity:.35;filter:blur(26px) saturate(.3)}
 #ficha::after{content:"";position:fixed;left:0;right:0;bottom:0;height:104px;background:linear-gradient(transparent,var(--fundo) 72%);pointer-events:none;z-index:5}
 #pop .folha{background:linear-gradient(165deg,color-mix(in srgb,var(--cor,#3C3C5A) 80%,#0a0a0a) 0%,color-mix(in srgb,var(--cor,#3C3C5A) 52%,#0a0a0a) 45%,color-mix(in srgb,var(--cor,#3C3C5A) 30%,#0a0a0a) 100%)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -405,17 +414,13 @@ new Function(dados)();new Function(motor)();return window.AberturaJ2||null}).cat
 window.J2PROMESSA=TOKEN&&!new URLSearchParams(location.search).has("semabertura")?carregaJ2():Promise.resolve(null)
 async function carrega(){
 if(!TOKEN){location.replace("app.html");return}
-const r=await gh("categorias/games/tela-jogos.json",{headers:{Accept:"application/vnd.github.raw"}})
+// tudo em paralelo: no 4G cada ida e volta pesa, e antes eram 5 em fila (Vega, 06/11/2026)
+const js=p=>gh(p,{headers:{Accept:"application/vnd.github.raw"}}).then(r=>r.ok?r.json().catch(()=>({})):{}).catch(()=>({}))
+const [r,cort,inv,ext,spt]=await Promise.all([gh("categorias/games/tela-jogos.json",{headers:{Accept:"application/vnd.github.raw"}}),...["categorias/games/prints-cortados/indice.json","categorias/games/tela/inventario.json","categorias/games/tela/extras.json","categorias/games/tela/sobre-pt.json"].map(js),carregaCons()])
 if(!r.ok)throw new Error("dados "+r.status)
-window.JOGOS=await r.json()
-const ri=await gh("categorias/games/prints-cortados/indice.json",{headers:{Accept:"application/vnd.github.raw"}}).catch(()=>null)
-window.CORTE=ri&&ri.ok?await ri.json().catch(()=>({})):{}
-const rv=await gh("categorias/games/tela/inventario.json",{headers:{Accept:"application/vnd.github.raw"}}).catch(()=>null)
-window.INV=rv&&rv.ok?await rv.json().catch(()=>({})):{}
-const [rx,rp]=await Promise.all(["extras","sobre-pt"].map(n=>gh(`categorias/games/tela/${n}.json`,{headers:{Accept:"application/vnd.github.raw"}}).catch(()=>null)))
-window.EXT=rx&&rx.ok?await rx.json().catch(()=>({})):{}
-window.SOBREPT=rp&&rp.ok?await rp.json().catch(()=>({})):{}
-const raw=p=>gh(p,{headers:{Accept:"application/vnd.github.raw"}}).then(r=>r.ok?r.text():"").catch(()=>"")
+window.JOGOS=await r.json();window.CORTE=cort;window.INV=inv;window.EXT=ext;window.SOBREPT=spt
+}
+async function carregaCons(){const raw=p=>gh(p,{headers:{Accept:"application/vnd.github.raw"}}).then(r=>r.ok?r.text():"").catch(()=>"")
 try{const cj=JSON.parse(await raw("marca/consoles/consoles.json"));const nomes=[...new Set([cj.padrao.icone,...cj.consoles.map(c=>c.icone)])];const svgs=await Promise.all(nomes.map(n=>raw("marca/consoles/"+n)));const SVG={};nomes.forEach((n,i)=>{SVG[n]=svgs[i].replace(/width="48" height="48"/,'width="16" height="16"').replace(/color="#ffffff"/,'color="#fff"')});window.CONS={padrao:cj.padrao,por:Object.fromEntries(cj.consoles.map(c=>[c.id,c])),svg:SVG}}catch(e){window.CONS=null}
 }
 const FUNDOS={jogando:"categorias/games/mock-tela-jogos/fundo.jpg",concluidos:"categorias/games/tela/parede-fundo.jpg"}
@@ -433,9 +438,9 @@ const COR_MAY={"3ds":{cor:"#FF0000"},"switch":{cor:"#FE2376"},"switch2":{cor:"#E
 function corMay(c){const v=(window.JOGOS||{}).consoles;const id=consId(c);if(Array.isArray(v)){const k=v.find(x=>x.id==id||x.nome==c);if(k)return k}return COR_MAY[id]||(/3DS/.test(c||"")?COR_MAY["3ds"]:/Switch 2/.test(c||"")?COR_MAY.switch2:/Switch/.test(c||"")?COR_MAY.switch:null)}
 // só o Switch 2 usa o cor2 (cinza do corpo) de fundo; no Switch o cor2 é o Joy-Con verde e a ficha fica toda vermelha (May 00:43)
 function cor2(c){const m=corMay(c);return consId(c)=="switch2"&&m&&m.cor2||cor(c)}
-// só na ficha: PC branco-gelo com detalhe preto e dourado, igual o Pro Controller do Zelda TotK (May 01:17; cores do Sigma); Switch 2 cinza com vermelho
-const PALETA_FICHA={pc:{cor:"#C9A24B",base:"#151515",branco:true}}
-function paleta(c){const v=(window.JOGOS||{}).consoles,id=consId(c),k=Array.isArray(v)&&v.find(x=>x.id==id);if(k&&k.claro)return{cor:k.cor2||"#C9A24B",base:"#151515",branco:true};const p=PALETA_FICHA[id];if(p)return p;return{cor:cor(c),base:cor2(c)}}
+// só na ficha: PC escuro em preto, branco e dourado, do Pro Controller do Zelda TotK (May 01:22: "preto branco e dourado mas dando impressão de tema dark"); Switch 2 cinza com vermelho
+const PALETA_FICHA={pc:{cor:"#C9A24B",base:"#1A1A1C",ouro:true}}
+function paleta(c){const p=PALETA_FICHA[consId(c)];if(p)return p;return{cor:cor(c),base:cor2(c)}}
 const claraCor=h=>{const m=/^#?([0-9a-f]{6})$/i.exec(h||"");if(!m)return false;const n=parseInt(m[1],16);return(.299*(n>>16)+.587*(n>>8&255)+.114*(n&255))>170}
 function cor(c){const m=corMay(c);if(m&&m.cor)return m.cor;const k=consDe(c);if(k)return k.cor;c=c||"";if(/Switch|3DS|Wii|Nintendo Switch/.test(c))return"#E1233C";if(/Super Nintendo/.test(c))return"#5E409D";if(/64/.test(c))return"#2EAF6E";if(/PS|PlayStation/.test(c))return"#286EDC";if(/Xbox/.test(c))return"#107C10";if(/PC/.test(c))return"#FF8C1E";return"#3C3C5A"}
 function curto(c){if(!c)return"CONSOLE ?";return c.replace("Switch 2 (emulador no PC)","Switch 2 · emu").replace("Switch (emulador no PC)","Switch · emu").replace("Wii U (emulador no PC)","Wii U · emu").replace("Nintendo Switch","Switch").replace("Nintendo 3DS","3DS").replace("PlayStation ","PS").replace("Super Nintendo","SNES").replace("Nintendo 64","N64")}
@@ -490,7 +495,7 @@ function dval(h){if(!h.dia)return 0;const[d,m,a]=h.dia.split("/").map(Number);re
 let fichaAtual=null,histTodos=false,abaFicha="resumo",fichaDir=0
 function abrir(id){fichaAtual=POR[id];histTodos=false;abaFicha="resumo";desenhaFicha();const f=document.getElementById("ficha");f.classList.add("on");document.getElementById("f-corpo").scrollTop=0;if(location.hash!="#jogo="+id)history.replaceState(null,"","#jogo="+id)}
 function desenhaFicha(){
-const j=fichaAtual,u=capaUrl(j),pl=paleta(j.console),c=pl.cor;const fE=document.getElementById("ficha");fE.style.setProperty("--cor",c);fE.style.setProperty("--cor2",pl.base);fE.classList.toggle("neutro",pl.base!=c&&!pl.branco);fE.classList.toggle("branco",!!pl.branco);fE.classList.toggle("claro",claraCor(c));document.getElementById("envio").style.setProperty("--cor",pl.base!=c?pl.base:c)
+const j=fichaAtual,u=capaUrl(j),pl=paleta(j.console),c=pl.cor;const fE=document.getElementById("ficha");fE.style.setProperty("--cor",c);fE.style.setProperty("--cor2",pl.base);fE.classList.toggle("neutro",pl.base!=c);fE.classList.toggle("ouro",!!pl.ouro);fE.classList.toggle("claro",claraCor(c));document.getElementById("envio").style.setProperty("--cor",pl.base!=c?pl.base:c)
 const ff=document.getElementById("f-fundo");ff.style.backgroundImage=`linear-gradient(160deg,${c},#101a3c)`;if(u)(ehPriv(u)?priv(u):Promise.resolve(u)).then(x=>{if(fichaAtual===j)ff.style.backgroundImage=`url("${x}")`}).catch(()=>{})
 const ev=[];(j.historico||[]).forEach(h=>ev.push({dia:h.dia,hora:h.hora,onde:h.onde,texto:h.fala,quem:"May"}));(j.relatos||[]).forEach(r=>{const f=(r.texto.match(/^📷\s*(\S+)/)||[])[1];ev.push({dia:r.dia,hora:r.hora,texto:r.texto.replace(/^📷\s*\S+\s*/,"").replace(/\*\*/g,""),quem:r.quem,foto:f?corte(f.split(",")[0]):null})})
 ev.sort((a,b)=>dval(b)-dval(a))
