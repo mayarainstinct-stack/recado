@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.65">
+<meta name="app-versao" content="2026-11-06.66">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -547,6 +547,8 @@ img.esq { min-height: 140px; }
 .pp-outra textarea { flex: 1; min-width: 0; min-height: 44px; max-height: 120px; resize: none; border-radius: 22px; border: 1.5px solid var(--line); background: var(--bg); color: var(--fg); padding: 11px 16px; font: 15px/1.35 inherit; }
 .pp-outra textarea:focus { outline: none; border-color: var(--quem); }
 .pp-outra button { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--quem); color: #fff; display: grid; place-items: center; cursor: pointer; }
+.perg-alts { margin: 6px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 2px; } .perg-alts li::before { content: attr(data-l) ' '; font-weight: 800; }
+.perg-abre { width: auto; height: auto; margin-top: 8px; padding: 6px 14px; border-radius: 999px; border: 0; background: var(--quem, var(--accent)); color: #fff; font-weight: 700; font-size: 13.5px; cursor: pointer; }
 .pp-x { position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; border-radius: 50%; border: 0; background: transparent; color: var(--muted); display: grid; place-items: center; cursor: pointer; }
 .fixa-ops { display: flex; flex-direction: column; gap: 6px; }
 .fixa-op { width: 100%; height: auto; min-height: 42px; display: flex; align-items: center; gap: 10px; text-align: left; padding: 8px 12px; border-radius: 12px; border: 1.5px solid var(--quem); background: color-mix(in srgb, var(--quem) 14%, var(--paper)); color: var(--fg); font-size: 14px; cursor: pointer; transition: transform .12s; }
@@ -1686,8 +1688,14 @@ function render(items, manterPosicao) {
       tr.textContent = it.transcricao ? '“' + it.transcricao + '”' : 'transcrevendo…';
       if (it.transcricao || it.from === 'may') el.append(tr);   // quem transcreve é a Lyra, só o áudio dela; o de agente ficava "transcrevendo…" pra sempre
     }
-    const t = document.createElement('div'); t.className = 'txt'; linkar(t, it.text);
+    const t = document.createElement('div'); t.className = 'txt';
+    const altsB = it.from !== 'may' && RE_PERG.test(it.text || '') ? alternativasDe(it.text) : [];
+    if (altsB.length >= 2) {   // pergunta com alternativas: texto + lista limpa (sem o * da recomendada) (Sigma, 06/11/2026 19:29)
+      const m0 = it.text.match(/(?:^|[\s(:;])a\)\s/i); linkar(t, it.text.slice(0, m0 ? m0.index : undefined).trim());
+      const ul = document.createElement('ol'); ul.className = 'perg-alts'; altsB.forEach(([l, x]) => { const li = document.createElement('li'); li.dataset.l = l + ')'; li.textContent = x.replace(/^\*\s*/, ''); ul.append(li); }); t.append(ul);
+    } else linkar(t, it.text);
     if (it.text) el.append(t);
+    if (FILE === GERAL.arq && altsB !== null && it.from !== 'may' && RE_PERG.test(it.text || '') && fixasI.includes(i)) { const rb = document.createElement('button'); rb.type = 'button'; rb.className = 'perg-abre'; rb.textContent = 'Responder a pergunta'; rb.onclick = (e) => { e.stopPropagation(); fixaPopVista.delete(chaveDe(it)); render(lastItems, true); }; el.append(rb); }
     if (it.text && !it.copiar) {
       // Setinha no canto (igual WhatsApp) em toda mensagem com texto: toca e abre menu com "Copiar".
       // Existe porque no celular o toque-e-segure pra selecionar bugava (ver gestoResponder/feed scroll).
@@ -2382,12 +2390,12 @@ function alternativasDe(txt) {   // "a) uma coisa b) outra" -> [['a','uma coisa'
   if (achou.length < 2 || achou[0][1].toLowerCase() !== 'a') return [];
   return achou.map((m, i) => [m[1].toLowerCase(), t.slice(m.index + m[0].length, i + 1 < achou.length ? achou[i + 1].index : undefined).replace(/[;,.]\s*$/, '').trim()]).filter(([, x]) => x);
 }
-function abrePergunta(it, g, alts, k) {   // padrão aprovado no HOUSE-BRIDGE-PUSH.md: pergunta centrada, 2 a 4 botões redondos dividindo a largura, a recomendada (*) colorida, caixa redonda, sem rodapé
+function abrePergunta(it, g, alts, k, conta) {   // padrão aprovado no HOUSE-BRIDGE-PUSH.md: pergunta centrada, 2 a 4 botões redondos dividindo a largura, a recomendada (*) colorida, caixa redonda, sem rodapé
   const ov = document.createElement('div'); ov.className = 'fixa-pop'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
   const card = document.createElement('div'); card.className = 'pp-card'; card.style.setProperty('--quem', g.cor || 'var(--accent)');
   const av = document.createElement('span'); av.className = 'pp-av'; av.textContent = (g.nome || '?').charAt(0);
   if (g.foto) fotoUrl(g.foto).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.textContent = ''; }).catch(() => {});
-  const nm = document.createElement('div'); nm.className = 'pp-quem'; nm.textContent = (g.nome || 'Robô').replace(/\s*\(.*\)$/, '');
+  const nm = document.createElement('div'); nm.className = 'pp-quem'; nm.textContent = (g.nome || 'Robô').replace(/\s*\(.*\)$/, '') + (conta ? ' · pergunta ' + conta : '');
   let q = String(it.text || '').replace(/^(?:\s*@[\wÀ-ÿ]+)*\s*❓\s*/, '').replace(/@May\b\s*/i, '');
   const m0 = q.match(/(?:^|[\s(:;])a\)\s/i); if (m0) q = q.slice(0, m0.index).trim();
   const perg = document.createElement('div'); perg.className = 'pp-perg'; perg.textContent = q;
@@ -2412,6 +2420,10 @@ function abrePergunta(it, g, alts, k) {   // padrão aprovado no HOUSE-BRIDGE-PU
   document.body.append(ov);
 }
 function mostraFixa(items, fila) {   // cópia do balão no topo (o original fica no lugar dele), com "1 de N" quando tem mais de uma
+  const pergs = fila.filter(i => RE_PERG.test(items[i].text || ''));
+  fila = fila.filter(i => !RE_PERG.test(items[i].text || ''));
+  const abertas = pergs.filter(i => !fixaPopVista.has(chaveDe(items[i])));
+  if (abertas.length && !document.querySelector('.fixa-pop')) { const it = items[abertas[0]], g = (it.from === 'may' ? EU : GRUPO[it.quem]) || {}, todas = it.opcoes && it.opcoes.length ? it.opcoes.map((t, i) => ['abcdefgh'[i] || String(i + 1), t]) : alternativasDe(it.text); abrePergunta(it, g, todas.length > 4 ? [] : todas, chaveDe(it), abertas.length > 1 ? '1 de ' + abertas.length : ''); }
   if (!fila.length) return;
   if (fixaVer >= fila.length) fixaVer = 0;
   const idx = fila[fixaVer], orig = feed.querySelector('.msg[data-i="' + idx + '"]');
@@ -2439,7 +2451,6 @@ function mostraFixa(items, fila) {   // cópia do balão no topo (o original fic
   if (alts.length >= 2) { barra.append(des, resp); d.append(el, ops, barra); } else { barra.append(des, resp, nao, sim); d.append(el, barra); }
   // pergunta (❓) salta como popup por cima de qualquer tela do app, sem fechar o que ela está fazendo (May, 06/11/2026 19:06 e 19:18)
   const k = chaveDe(it);
-  if (pergunta && !fixaPopVista.has(k) && !document.querySelector('.fixa-pop')) { abrePergunta(it, g, alts, k); fixaEl.append(d); fixaEl.hidden = false; return; }
   fixaEl.append(d); fixaEl.hidden = false;   // fora do feed: empurra a conversa pra baixo em vez de cobrir (Sigma, 06/11/2026)
 }
 function responder(it) {
