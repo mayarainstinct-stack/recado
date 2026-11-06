@@ -20,7 +20,6 @@
    "pct": 10,
    "estimado": true,
    "console": "PlayStation 4",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/9/9f/Cyberpunk_2077_box_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Começo do Ato 1, no apartamento, depois de algumas missões."
   },
   "Ghost of Tsushima": {
@@ -55,7 +54,6 @@
    "pct": 10,
    "estimado": true,
    "console": "PlayStation 4",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/a/a7/God_of_War_4_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Logo depois da luta que termina com um tronco de árvore."
   },
   "inFAMOUS: Second Son": {
@@ -293,7 +291,6 @@
    "pct": 10,
    "estimado": true,
    "console": "Xbox 360",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/2/21/Max_Payne_3_Cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Algumas missões."
   },
   "Halo: Reach": {
@@ -315,14 +312,12 @@
    "pct": 25,
    "estimado": true,
    "console": "Xbox 360",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/6/63/Bully_frontcover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Capítulo 1, na missão de levar o Fatty ao banheiro."
   },
   "Alice: Madness Returns": {
    "pct": 25,
    "estimado": true,
    "console": "Xbox 360",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/d/d8/AliceMadnessReturns.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Capítulo 2, no Domínio do Chapeleiro, depois do rato das caldeiras."
   },
   "Devil May Cry 4": {
@@ -336,14 +331,12 @@
    "pct": 40,
    "estimado": true,
    "console": "Nintendo Switch",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/f/fb/The_Legend_of_Zelda_Tears_of_the_Kingdom_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Faltam o herói da água e o do fogo; está na cidade dos Zora."
   },
   "Super Mario Odyssey": {
    "pct": 40,
    "estimado": true,
    "console": "Nintendo Switch",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/8/8d/Super_Mario_Odyssey.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Segunda volta, no Reino da Madeira."
   },
   "Pokémon Legends: Arceus": {
@@ -460,14 +453,12 @@
   "It Takes Two": {
    "pct": 35,
    "estimado": true,
-   "capa": "https://upload.wikimedia.org/wikipedia/en/a/aa/It_Takes_Two_cover_art.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Na parte das abelhas (jogo cooperativo)."
   },
   "A Way Out": {
    "pct": 65,
    "estimado": true,
-   "parei": "Já no México (jogo cooperativo).",
-   "capa": "https://upload.wikimedia.org/wikipedia/pt/e/e2/A_way_out_capa.png"
+   "parei": "Já no México (jogo cooperativo)."
   },
   "Kung Fu Panda 2": {
    "pct": 10,
@@ -517,8 +508,7 @@
   "Evil West": {
    "pct": 60,
    "estimado": true,
-   "parei": "Indo para o terço final, onde fica mais escuro, matando um conde.",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/4/4b/Evil_West_cover_art.jpg"
+   "parei": "Indo para o terço final, onde fica mais escuro, matando um conde."
   },
   "Crash Bandicoot 4": {
    "pct": 83,
@@ -536,7 +526,6 @@
    "pct": 3,
    "estimado": true,
    "console": "Xbox 360",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/1/1f/Alan_Wake_Game_Cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Só a cena inicial na ponte."
   },
   "Shrek the Third": {
@@ -577,14 +566,12 @@
    "pct": 15,
    "estimado": true,
    "console": "PC",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/1/11/Resident_Evil_6_box_artwork.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Até uma parte de igreja."
   },
   "Resident Evil 5": {
    "pct": 85,
    "estimado": true,
    "console": "Xbox 360",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/5/58/Resident_Evil_5_Box_Artwork.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Quase zerou; a primeira volta perdeu o save."
   },
   "The Witcher 3": {
@@ -669,7 +656,6 @@
    "pct": 20,
    "estimado": true,
    "console": "Xbox 360",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/b/b0/Castle_Crashers_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Segunda fase; em outra partida entrou na floresta."
   },
   "Dead or Alive": {
@@ -727,14 +713,12 @@
   "Red Dead Redemption": {
    "pct": 0,
    "estimado": false,
-   "console": "Xbox 360",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/a/a7/Red_Dead_Redemption.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+   "console": "Xbox 360"
   },
   "Street Fighter X Tekken": {
    "pct": 0,
    "estimado": false,
-   "console": "Xbox 360",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/f/fb/SF-X-Tekken_box_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+   "console": "Xbox 360"
   },
   "The Orange Box": {
    "pct": 0,
@@ -780,7 +764,6 @@
    "pct": 0,
    "estimado": false,
    "console": "Xbox 360",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/0/05/Call_of_Duty_Black_Ops_II_box_artwork.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Campanha não iniciada; jogou 2 mapas do modo zumbi."
   },
   "CoD Modern Warfare 3": {
@@ -794,7 +777,6 @@
    "pct": 15,
    "estimado": true,
    "console": "Xbox 360",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/b/ba/Left4Dead2.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Algumas fases."
   },
   "Carros": {
@@ -841,7 +823,6 @@
    "pct": 0,
    "estimado": false,
    "console": "Switch (emulador no PC)",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/3/38/Yoshi%27s_Crafted_World.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Só abriu."
   },
   "Dragon Ball FighterZ": {
@@ -917,14 +898,12 @@
    "pct": 5,
    "estimado": true,
    "console": "PlayStation 4",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/6/69/Overcooked_cover_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Primeiro jogo, só o início."
   },
   "Sonic Frontiers": {
    "pct": 3,
    "estimado": true,
    "console": "PlayStation 4",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/0/0f/SonicFrontiersCoverArt.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Fases deslizando em corrimões."
   },
   "Death Stranding": {
@@ -962,7 +941,6 @@
    "pct": 3,
    "estimado": true,
    "console": "PC",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/1/14/Halo_Infinite.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Só o começo."
   },
   "Little Nightmares 3": {
@@ -1002,21 +980,18 @@
    "pct": 100,
    "estimado": false,
    "console": "PlayStation 4",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/8/84/Little_Nightmares_II_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Zerado."
   },
   "Mortal Kombat X": {
    "pct": 100,
    "estimado": false,
    "console": "PlayStation 4",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/d/d0/Mortal_Kombat_X_Cover_Art.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Zerado."
   },
   "Mortal Kombat 11": {
    "pct": 100,
    "estimado": false,
    "console": "PlayStation 4",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/7/7e/Mortal_Kombat_11_cover_art.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Zerado, com a DLC."
   },
   "Marvel's Spider-Man": {
@@ -1043,7 +1018,6 @@
    "pct": 100,
    "estimado": false,
    "console": "PC",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/b/bf/Power_Rangers_Battle_for_the_Grid.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Zerado."
   },
   "Mighty Morphin Power Rangers: Rita's Rewind": {
@@ -1076,13 +1050,13 @@
   "Mega Man X2": {
    "pct": 100,
    "estimado": false,
-   "console": "PlayStation 2",
+   "console": "Super Nintendo",
    "parei": "Zerado."
   },
   "Mega Man X3": {
    "pct": 100,
    "estimado": false,
-   "console": "PlayStation 2",
+   "console": "Super Nintendo",
    "parei": "Zerado."
   },
   "Injustice 2": {
@@ -1187,21 +1161,18 @@
    "pct": 8,
    "estimado": true,
    "console": "Xbox 360",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/8/83/BrutalLegendCover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Passou algumas partes e parou."
   },
   "Limbo": {
    "pct": 20,
    "estimado": true,
    "console": "Xbox 360",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/c/cc/Limbo_Box_Art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "No acampamento das crianças que armam armadilhas, no fim da floresta."
   },
   "Lost Planet 3": {
    "pct": 5,
    "estimado": true,
    "console": "Xbox 360",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/7/76/Lost_Planet_3.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Só o começo, na parte do gelo."
   },
   "Asura's Wrath": {
@@ -1215,7 +1186,6 @@
    "pct": 20,
    "estimado": true,
    "console": "PlayStation 4",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/0/03/Overcooked_2_cover_art.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Até a fase 6, a do balão no ar."
   },
   "Stray": {
@@ -1225,15 +1195,13 @@
   },
   "Mario Kart 8 Deluxe": {
    "console": "Nintendo Switch",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/b/b5/MarioKart8Boxart.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Já jogou todas as taças; falta só o passe de pistas extras."
   },
   "Zelda: Skyward Sword HD": {
    "pct": 0,
    "estimado": false,
    "console": "Nintendo Switch",
-   "parei": "Ainda não começou.",
-   "capa": "https://upload.wikimedia.org/wikipedia/pt/5/5e/The_Legend_of_Zelda_Skyward_Sword_HD_arte_promocional_Europa.png?utm_source=pt.wikipedia.org&utm_campaign=api&utm_content=original"
+   "parei": "Ainda não começou."
   },
   "Fortnite": {
    "console": "Nintendo Switch"
@@ -1276,7 +1244,6 @@
   },
   "Hyrule Warriors: Age of Calamity": {
    "console": "Switch (emulador no PC)",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/e/e1/Hyrule_Warriors_Age_Of_Calamity.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Algumas missões.",
    "pct": 0,
    "estimado": false
@@ -1312,42 +1279,37 @@
    "parei": "Só abriu."
   },
   "Mario & Luigi: Brothership": {
-   "console": "Switch (emulador no PC)",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/0/0f/Mario_%26_Luigi_-_Brothership_%28cover_art%29.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+   "console": "Switch (emulador no PC)"
   },
   "Super Mario Maker 2": {
    "pct": 0,
    "estimado": false,
    "console": "Switch (emulador no PC)",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/c/c7/Super_Mario_Maker_2.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Só abriu."
   },
   "New Super Mario Bros. U Deluxe": {
    "pct": 0,
    "estimado": false,
    "console": "Switch (emulador no PC)",
-   "parei": "Só abriu.",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/0/03/New_Super_Mario_Bros._U_box_art.png"
+   "parei": "Só abriu."
   },
   "Kirby and the Forgotten Land": {
    "pct": 5,
    "estimado": true,
    "console": "Switch (emulador no PC)",
-   "parei": "Só a demo no Switch.",
-   "capa": "https://upload.wikimedia.org/wikipedia/pt/1/10/Kirby_and_the_Forgotten_Land_capa.jpg?utm_source=pt.wikipedia.org&utm_campaign=api&utm_content=original"
+   "parei": "Só a demo no Switch."
   },
   "Jumanji: The Video Game": {
    "console": "Switch (emulador no PC)"
   },
   "Cuphead": {
    "console": "PC",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/e/eb/Cuphead_%28artwork%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Jogou um pouco."
   },
   "Mega Man Legends": {
    "pct": 5,
    "estimado": true,
-   "console": "Nintendo 64",
+   "console": "PS1",
    "capa": "https://upload.wikimedia.org/wikipedia/en/3/3d/MMLegendsBox.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Na primeira cidade, sem entender o objetivo."
   },
@@ -1455,8 +1417,7 @@
   "Super Smash Bros. for 3DS": {
    "pct": 0,
    "estimado": false,
-   "console": "Nintendo 3DS",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/c/c1/Super_Smash_Bros._for_Nintendo_3DS_and_Wii_U.png"
+   "console": "Nintendo 3DS"
   },
   "Mario & Luigi: Bowser's Inside Story + Bowser Jr.'s Journey": {
    "pct": 0,
@@ -1467,8 +1428,7 @@
   "Super Mario Maker for 3DS": {
    "pct": 0,
    "estimado": false,
-   "console": "Nintendo 3DS",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/d/da/Super_Mario_Maker_Artwork.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+   "console": "Nintendo 3DS"
   },
   "Face Raiders": {
    "pct": 0,
@@ -1496,14 +1456,12 @@
   "New Super Mario Bros. 2": {
    "pct": 0,
    "estimado": false,
-   "console": "Nintendo 3DS",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/3/35/New_Super_Mario_Bros._2_box_artwork.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+   "console": "Nintendo 3DS"
   },
   "Mario Kart 7": {
    "pct": 0,
    "estimado": false,
-   "console": "Nintendo 3DS",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/2/2a/Mario_Kart_7_box_art.jpg"
+   "console": "Nintendo 3DS"
   },
   "Luigi's Mansion: Dark Moon": {
    "pct": 0,
@@ -1564,7 +1522,6 @@
   },
   "God of War Ragnarök": {
    "console": "PlayStation 4",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/e/ee/God_of_War_Ragnar%C3%B6k_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Só o começo, com o barco."
   },
   "Mega Man Legacy Collection 1+2": {
@@ -1576,7 +1533,6 @@
   },
   "Destiny 2": {
    "console": "PC",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/0/05/Destiny_2_%28artwork%29.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Jogou por um tempo."
   },
   "Bioshock": {
@@ -1586,12 +1542,10 @@
   },
   "BioShock 2": {
    "console": "PC",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/8/8c/Bioshock2_cover.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Jogou bastante."
   },
   "BioShock Infinite": {
    "console": "PC",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/a/a3/Official_cover_art_for_Bioshock_Infinite.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Jogou bastante."
   },
   "God of War (PS2)": {
@@ -1673,12 +1627,10 @@
   },
   "Far Cry 3": {
    "console": "Xbox 360",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/c/c6/Far_Cry_3_PAL_box_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
    "parei": "Jogou bastante."
   },
   "Far Cry 4": {
-   "console": "Xbox 360",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/6/63/Far_Cry_4_box_art.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+   "console": "Xbox 360"
   },
   "Mortal Kombat (2011)": {
    "console": "Xbox 360",
@@ -1769,8 +1721,7 @@
    "capa": "https://upload.wikimedia.org/wikipedia/en/8/87/ZooTycoon_2013_Logo%28Transparent_%29.png"
   },
   "Worms Ultimate Mayhem": {
-   "console": "Xbox 360",
-   "capa": "https://upload.wikimedia.org/wikipedia/en/0/06/WormsUMBoxart.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+   "console": "Xbox 360"
   },
   "Worms 3D": {
    "console": "Xbox 360",
