@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-05.18">
+<meta name="app-versao" content="2026-11-05.19">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -488,11 +488,10 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-x { justify-self: end; width: 36px; height: 36px; min-height: 0; border-radius: 50%; border: none; background: rgba(255,255,255,.16); color: #fff; display: grid; place-items: center; padding: 0; }
 .ct svg { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .ct-x svg { width: 16px; height: 16px; stroke-width: 2.6; }
-.ct-cena { perspective: 1400px; }
-.ct-carta { display: grid; height: min(calc((100vw - 32px) * 1.4), 520px, calc(100dvh - 156px)); transform-style: preserve-3d; transition: transform .55s cubic-bezier(.3,.7,.2,1); cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.ct-carta.virada { transform: rotateY(180deg); }
+.ct-trilho { display: flex; height: min(calc((100vw - 32px) * 1.4), 520px, calc(100dvh - 156px)); overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; border-radius: 22px; box-shadow: 0 0 28px color-mix(in srgb, var(--quem) 38%, transparent), 0 18px 44px rgba(0,0,0,.5); }   /* o brilho sai do trilho: dentro da rolagem ele era cortado */
+.ct-trilho::-webkit-scrollbar { display: none; }
+.ct-trilho > .ct-face { flex: 0 0 100%; scroll-snap-align: center; scroll-snap-stop: always; }
 .ct-face { grid-area: 1 / 1; min-height: 0; padding: 6px; border-radius: 22px; background: var(--borda); -webkit-backface-visibility: hidden; backface-visibility: hidden; box-shadow: 0 0 28px color-mix(in srgb, var(--quem) 38%, transparent), 0 18px 44px rgba(0,0,0,.5); color: #fff; font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,.6), 0 0 12px rgba(0,0,0,.3); }
-.ct-verso { transform: rotateY(180deg); }
 .ct-in { height: 100%; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; box-shadow: inset 0 0 0 1px rgba(255,255,255,.14);
   background: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1.5px) 0 0 / 9px 9px, repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0 1px, transparent 1px 7px), linear-gradient(158deg, var(--quem) 0%, color-mix(in srgb, var(--quem) 45%, var(--escuro)) 22%, var(--escuro) 60%); }
 .ct.eu .ct-in { background: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1.5px) 0 0 / 9px 9px, repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0 1px, transparent 1px 7px), radial-gradient(90% 55% at 100% 100%, rgba(227,27,35,.20), transparent 70%), radial-gradient(70% 40% at 100% 0%, rgba(250,204,21,.16), transparent 70%), linear-gradient(158deg, #22C55E 0%, #12733A 24%, #0A3A1E 46%, #061209 74%); }
@@ -570,12 +569,12 @@ button:disabled { opacity: .45; cursor: default; }
 .ct-tempo li:last-child::after { display: none; }
 .ct-tempo small { display: block; font-size: 10.5px; color: rgba(255,255,255,.7); letter-spacing: .04em; }
 .ct-painel .ct-ins-fila { row-gap: 12px; padding: 10px 4px; border-radius: 14px; background: rgba(0,0,0,.3); }
-.ct-abas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 4px; border-radius: 16px; background: #0B0B0E; border: 1px solid rgba(255,255,255,.1); }
+.ct-abas { display: grid; grid-template-columns: repeat(var(--n, 4), 1fr); gap: 4px; padding: 4px; border-radius: 16px; background: #0B0B0E; border: 1px solid rgba(255,255,255,.1); }
 .ct-abas button { width: auto; height: auto; min-width: 0; min-height: 54px; border-radius: 12px; border: none; background: none; color: rgba(255,255,255,.62); display: grid; justify-items: center; align-content: center; gap: 3px; padding: 6px 2px; font-size: 11px; font-weight: 800; }
 .ct-abas button svg { width: 22px; height: 22px; }
 .ct-abas button.ativa { color: #fff; background: color-mix(in srgb, var(--quem) 30%, transparent); box-shadow: inset 0 -3px 0 var(--claro); }
 .ct.eu .ct-abas button.ativa { background: linear-gradient(135deg, rgba(227,27,35,.3), rgba(250,204,21,.18), rgba(34,197,94,.24)); box-shadow: inset 0 -3px 0 #FACC15; }
-@media (prefers-reduced-motion: reduce) { .ct-carta { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .ct-trilho { scroll-behavior: auto; } }
 .pop input[type=text] { font: inherit; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
 .pop .foto-grupo { display: flex; align-items: center; gap: 12px; }
 .pop .foto-grupo .prev { width: 58px; height: 58px; border-radius: 50%; background: var(--bg) center / cover; border: 1px dashed var(--line); display: grid; place-items: center; font-size: 22px; flex: none; }
@@ -977,7 +976,8 @@ const ICO_FICHA = {
   atr: svgF('<path d="M5 20V10M12 20V4M19 20v-7"/>'),
   maq: svgF('<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>'),
   conq: svgF('<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8"/>'),
-  vira: svgF('<path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/>'),
+  lado: svgF('<path d="M8 7l-5 5 5 5M16 7l5 5-5 5M3 12h18"/>'),
+  hab: svgF('<path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/>'),
   fechar: svgF('<path d="M6 6l12 12M18 6L6 18"/>'),
   ip: svgF('<path d="M2 9a15 15 0 0 1 20 0M5.5 12.5a10 10 0 0 1 13 0M9 16a5 5 0 0 1 6 0"/><circle cx="12" cy="19.5" r=".8"/>'),
   sobe: svgF('<path d="M12 19V5M6 11l6-6 6 6"/>'),
@@ -1014,7 +1014,7 @@ async function abreCracha(chave) {
     return av;
   };
   const insignia = (it) => { const d = el('div', 'ct-in1' + (it ? '' : ' vazia')); d.innerHTML = INSIGNIA; d.append(el('span', '', it ? it.nome : 'Próxima')); if (it && it.data) d.append(el('small', '', it.data.slice(0, 5))); return d; };
-  const virar = (txt) => { const b = el('button', 'ct-vira'); b.type = 'button'; b.innerHTML = ICO_FICHA.vira; b.append(txt); b.onclick = e => { e.stopPropagation(); vai(aba === 'perfil' ? ultVerso : 'perfil'); }; return b; };
+  const dica = (txt) => { const d = el('div', 'ct-vira'); d.innerHTML = ICO_FICHA.lado; d.append(txt); return d; };
   const fr = el('div', 'ct-face ct-frente'), fi = el('div', 'ct-in'); fr.append(fi);
   const cab = el('div', 'ct-cab'); cab.append(el('span', '', g === EU ? 'Dona da casa' : 'Agente da casa'), el('span', 'ct-id', num));
   const quem = el('div', 'ct-quem'), lado = el('div');
@@ -1028,21 +1028,19 @@ async function abreCracha(chave) {
   insBox.append(el('div', 'ct-tit', 'Insígnias'), fila);
   const pe = el('div', 'ct-pe');
   if (k !== 'may') { const chama = el('button', 'ct-chama', 'Mandar recado pra ' + nome); chama.type = 'button'; chama.onclick = e => { e.stopPropagation(); const t = document.getElementById('texto'); if (t) { const n = '@' + nome + ' '; if (!t.value.startsWith(n)) t.value = n + t.value; t.dispatchEvent(new Event('input')); pop.remove(); t.focus(); } }; pe.append(chama); }
-  pe.append(virar('Toque no cartão pra virar'));
+  pe.append(dica('Arrasta pro lado pra ver mais'));
   fi.append(cab, quem, el('div', 'ct-faz', f.faz), maq); if (k === 'may' && f.olhar) fi.append(el('div', 'ct-olhar', f.olhar));   // ela não tem o botão de recado: o olhar ocupa o lugar
   fi.append(insBox, pe);
-  const vs = el('div', 'ct-face ct-verso'), vi = el('div', 'ct-in'); vs.append(vi);
-  const vcab = el('div', 'ct-vcab'), vtit = el('div', 'ct-tit'), vnome = el('div'); vnome.append(el('b', '', nome), vtit); vcab.append(avatar(false), vnome, el('span', 'ct-id', num));
-  const painel = el('div', 'ct-painel');
   const bloco = (tit, ...filhos) => { const d = el('div'); if (tit) d.append(el('div', 'ct-tit', tit)); d.append(...filhos); return d; };
   const selos = (lista, icone) => { const w = el('div', 'ct-selos'); lista.forEach(n => w.append(ic(icone, null, n))); return w; };
   const pAtr = el('div');
   if (f.placar) { const pl = el('div', 'ct-placar'); [['revisoes', 'Revisões'], ['defeitos', 'Defeitos achados'], ['consertados', 'Consertados']].forEach(([c, r]) => { const d = el('div'); d.append(el('b', '', f.placar[c]), r); pl.append(d); }); pAtr.append(pl); }
   atr.forEach(([n, val]) => { const b = el('div', 'ct-bar'); b.setAttribute('role', 'meter'); b.setAttribute('aria-label', n); b.setAttribute('aria-valuemin', 0); b.setAttribute('aria-valuemax', 10); b.setAttribute('aria-valuenow', val); b.append(el('span', '', n), el('em', '', val + '/10')); const s = el('div', 'ct-seg'); for (let i = 0; i < 10; i++) s.append(el('i', i < val ? 'on' : '')); b.append(s); pAtr.append(b); });
   if (f.forte || f.fraco) { const ff = el('div', 'ct-ff'); [['forte', 'Forte', 'sobe'], ['fraco', 'Fraco', 'desce']].forEach(([c, r, i]) => { if (!f[c]) return; const d = el('div', c), t = ic(i, 'ct-tit', r); d.append(t, f[c]); ff.append(d); }); pAtr.append(bloco('Forte × fraco', ff)); }
-  if (f.hab) pAtr.append(bloco('Habilidades', selos(f.hab, 'estrela')));
-  if (f.cons) pAtr.append(bloco('Conselheiros que incorpora', selos(f.cons, 'pessoa')));
-  if (f.olhar) pAtr.append(el('div', 'ct-olhar', f.olhar));
+  const pHab = el('div');
+  if (f.hab) pHab.append(bloco('Habilidades', selos(f.hab, 'estrela')));
+  if (f.cons) pHab.append(bloco('Conselheiros que incorpora', selos(f.cons, 'pessoa')));
+  if (f.olhar) pHab.append(el('div', 'ct-olhar', f.olhar));
   const pMaq = el('dl', 'ct-dados');
   [['onde', 'Onde roda', f.onde || f.pc], ['maq', 'PC', f.onde ? f.pc : ''], ['ip', 'IP', hb.ip || (['may', 'lyra', 'sigma'].includes(k) ? '' : 'ainda não mandou')], ...(f.hw ? f.hw.map(x => [...x, 'peca']) : [['maq', 'Máquina', f.maquina]]), ['relogio', 'Último sinal', k === 'may' ? '' : v.texto], ['agora', 'Fazendo agora', hb.fazendo || '']]
     .forEach(([i, t, d, c]) => { if (!d) return; const w = el('div', c); w.innerHTML = ICO_FICHA[i] || ICO_FICHA.maq; w.append(el('dt', '', t), el('dd', '', d)); pMaq.append(w); });
@@ -1050,21 +1048,28 @@ async function abreCracha(chave) {
   const pConq = el('div'), todas = el('div', 'ct-ins-fila'); ins.slice().reverse().forEach(it => todas.append(insignia(it))); if (!ins.length) todas.append(insignia(null));
   pConq.append(bloco('Insígnias', todas));
   if (ent.length) { const ol = el('ol', 'ct-tempo'); ent.forEach(it => { const li = el('li'); li.append(el('small', '', it.data || ''), it.nome); ol.append(li); }); pConq.append(bloco('Últimas entregas', ol)); }
-  const paineis = { atr: pAtr, maq: pMaq, conq: pConq };
-  Object.values(paineis).forEach(p => painel.append(p));
-  vi.append(vcab, painel, el('div', 'ct-pe')); vi.lastChild.append(virar('Toque pra ver a frente'));
-  const cena = el('div', 'ct-cena'), carta = el('div', 'ct-carta'); carta.append(fr, vs); cena.append(carta);
-  const abas = [['perfil', 'Perfil'], ['atr', 'Atributos'], ['maq', 'Máquina'], ['conq', 'Conquistas']], nav = el('nav', 'ct-abas'); nav.setAttribute('aria-label', 'Abas da ficha');
-  let aba = 'perfil', ultVerso = 'atr';
-  function vai(id) {
-    aba = id; if (id !== 'perfil') { ultVerso = id; Object.entries(paineis).forEach(([a, p]) => { p.hidden = a !== id; }); vtit.textContent = abas.find(x => x[0] === id)[1]; painel.scrollTop = 0; }
-    carta.classList.toggle('virada', id !== 'perfil'); fr.inert = id !== 'perfil'; vs.inert = id === 'perfil';
-    nav.querySelectorAll('button').forEach(b => { const a = b.dataset.a === id; b.classList.toggle('ativa', a); b.setAttribute('aria-current', a ? 'true' : 'false'); });
-  }
-  abas.forEach(([id, rot]) => { const b = el('button'); b.type = 'button'; b.dataset.a = id; b.innerHTML = ICO_FICHA[id]; b.append(el('span', '', rot)); b.onclick = () => vai(id); nav.append(b); });
-  carta.onclick = e => { if (e.target.closest('button, a, [role=button]')) return; vai(aba === 'perfil' ? ultVerso : 'perfil'); };
+  // um cartão por aba, lado a lado: arrasta pro lado (ou toca na aba) em vez de virar (May, 05/11/2026: "tinha q ser slider")
+  const paineis = { atr: pAtr, hab: pHab, maq: pMaq, conq: pConq };
+  const abas = [['perfil', 'Perfil'], ['atr', 'Atributos'], ['hab', 'Habilidades'], ['maq', 'Máquina'], ['conq', 'Conquistas']].filter(([id]) => id === 'perfil' || paineis[id].childElementCount);
+  const nav = el('nav', 'ct-abas'); nav.setAttribute('aria-label', 'Abas da ficha'); nav.style.setProperty('--n', abas.length);
+  const faces = abas.map(([id, rot]) => {
+    if (id === 'perfil') return fr;
+    const fc = el('div', 'ct-face ct-verso'), vi = el('div', 'ct-in'), vcab = el('div', 'ct-vcab'), vnome = el('div'), pn = el('div', 'ct-painel');
+    vnome.append(el('b', '', nome), el('div', 'ct-tit', rot)); vcab.append(avatar(false), vnome, el('span', 'ct-id', num));
+    pn.append(paineis[id]); vi.append(vcab, pn); fc.append(vi); return fc;
+  });
+  const trilho = el('div', 'ct-trilho'); trilho.append(...faces);
+  let atual = -1;
+  const marca = i => {
+    if (i === atual) return; atual = i;
+    faces.forEach((fc, j) => { fc.inert = j !== i; });
+    nav.querySelectorAll('button').forEach((b, j) => { b.classList.toggle('ativa', j === i); b.setAttribute('aria-current', j === i ? 'true' : 'false'); });
+  };
+  const vai = (id, suave) => { const i = Math.max(0, abas.findIndex(x => x[0] === id)); trilho.scrollTo({ left: i * trilho.clientWidth, behavior: suave && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'auto' }); marca(i); };
+  trilho.addEventListener('scroll', () => { if (trilho.clientWidth) marca(Math.round(trilho.scrollLeft / trilho.clientWidth)); }, { passive: true });
+  abas.forEach(([id, rot]) => { const b = el('button'); b.type = 'button'; b.dataset.a = id; b.innerHTML = ICO_FICHA[id]; b.append(el('span', '', rot)); b.onclick = () => vai(id, true); nav.append(b); });
   const fecha = el('button', 'ct-x'); fecha.type = 'button'; fecha.title = 'Fechar'; fecha.setAttribute('aria-label', 'Fechar'); fecha.innerHTML = ICO_FICHA.fechar; fecha.onclick = () => pop.remove();
-  ct.append(fecha, cena, nav); pop.append(ct); document.body.append(pop); vai('perfil');
+  ct.append(fecha, trilho, nav); pop.append(ct); document.body.append(pop); vai('perfil');
   pop.onclick = e => { if (e.target === pop) pop.remove(); };
 }
 // Nomes aceitos em "  ↳ Nome: ..." — sempre as chaves do GRUPO (+ ALIAS_QUEM), pra nunca mais esquecer de
