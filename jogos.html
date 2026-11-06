@@ -156,7 +156,7 @@ nav button.on{background:rgba(0,255,140,.12);color:var(--verde);box-shadow:inset
 #abertura.j2 .logo{display:flex;align-items:flex-end;gap:2px}
 #abertura.j2 .estrelas{position:absolute;left:0;right:0;top:-46px}
 #abertura .pular{position:absolute;bottom:max(24px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.45);text-transform:uppercase}
-#abertura.v6{background:transparent}
+#abertura.v6{background:var(--fundo)}
 #abertura .j2-canvas{position:absolute;left:4%;width:92%;top:28%;height:44%;display:block}
 #abertura.v6 .logo{display:none}
 #abertura.sai{animation:ab-sai .3s ease-in forwards}
@@ -329,7 +329,7 @@ document.addEventListener("keydown",e=>{if(!document.getElementById("zoom").clas
 const J2_DIR="marca/mays-play/abertura-j2/v2/"
 function carregaJ2(){const raw=p=>gh(p,{headers:{Accept:"application/vnd.github.raw"}}).then(r=>{if(!r.ok)throw r.status;return r.text()})
 return Promise.all([raw(J2_DIR+"dados.js"),raw(J2_DIR+"j2.js"),gh(J2_DIR+"pecas").then(r=>r.json())]).then(async([dados,motor,lista])=>{const mapa={};await Promise.all(lista.filter(x=>/\.webp$/.test(x.name)).map(x=>priv(x.path).then(u=>{mapa[x.name.replace(/\.webp$/,"")]=u}).catch(()=>{})));window.J2SRC=n=>mapa[n]
-new Function(dados)();new Function(motor.replace("im.src = base + 'pecas/' + n + '.webp'","im.src = (global.J2SRC && global.J2SRC(n)) || (base + 'pecas/' + n + '.webp')"))();return window.AberturaJ2||null}).catch(()=>null)}
+new Function(dados)();new Function(motor.replace("im.src = base + 'pecas/' + n + '.webp'","im.src = (global.J2SRC && global.J2SRC(n)) || (base + 'pecas/' + n + '.webp')").replace("ctx.fillStyle = '#0E1420'; ctx.fillRect(0, 0, W, H);","ctx.clearRect(0, 0, W, H);").replace("ctx.fillStyle = g; ctx.fillRect(tl.x, tl.y, tl.w, tl.h);",""))();return window.AberturaJ2||null}).catch(()=>null)}
 window.J2PROMESSA=TOKEN&&!new URLSearchParams(location.search).has("semabertura")?carregaJ2():Promise.resolve(null)
 async function carrega(){
 if(!TOKEN){location.replace("app.html");return}
@@ -347,6 +347,7 @@ try{const cj=JSON.parse(await raw("marca/consoles/consoles.json"));const nomes=[
 }
 const FUNDOS={jogando:"categorias/games/mock-tela-jogos/fundo.jpg",concluidos:"categorias/games/tela/parede-fundo.jpg"}
 function fundoDa(a){const p=FUNDOS[a]||FUNDOS.jogando,app=document.getElementById("app");app.classList.toggle("dourado",a=="concluidos");priv(p).then(u=>{if(FUNDOS[a]==p)app.style.setProperty("--fundo-img",`url("${u}")`)}).catch(()=>{})}
+if(TOKEN&&!new URLSearchParams(location.search).has("semabertura"))document.getElementById("abertura").classList.add("on")
 carrega().then(comeca).catch(e=>{document.body.innerHTML='<p style="padding:24px;font:600 16px system-ui;color:#fff">Não consegui abrir os jogos. Confere a internet e tenta de novo.</p><p style="padding:0 24px"><a href="app.html" style="color:#8CE6C8;font:600 15px system-ui">Voltar pros recados</a></p>'})
 function comeca(){
 const D=window.JOGOS,J=D.jogos,POR={};J.forEach(j=>POR[j.id]=j)
