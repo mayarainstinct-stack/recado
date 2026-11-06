@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.15">
+<meta name="app-versao" content="2026-11-06.16">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -647,9 +647,11 @@ img.esq { min-height: 140px; }
 .ct-nos .ct-in1 { position: relative; z-index: 1; font-size: 10px; max-width: 100%; }
 .ct-nos .ct-in1 svg { width: 40px; height: 40px; }
 .ct-painel .ct-ins-fila { row-gap: 12px; padding: 10px 4px; border-radius: 14px; background: rgba(0,0,0,.3); }
-.ct-abas { display: grid; grid-template-columns: repeat(var(--n, 4), 1fr); gap: 4px; padding: 4px; border-radius: 16px; background: #0B0B0E; border: 1px solid rgba(255,255,255,.1); }
+.ct-abas { display: flex; gap: 4px; padding: 4px; border-radius: 16px; background: #0B0B0E; border: 1px solid rgba(255,255,255,.1); }
 .ct-abas button { width: auto; height: auto; min-width: 0; min-height: 54px; border-radius: 12px; border: none; background: none; color: rgba(255,255,255,.62); display: grid; justify-items: center; align-content: center; gap: 3px; padding: 6px 1px; font-size: calc(11px - (var(--n, 4) - 4) * .6px); font-weight: 800; letter-spacing: -.01em; overflow: hidden; }   /* 7 abas cabem no celular */
 .ct-abas button svg { width: 22px; height: 22px; }
+.ct-abas button { flex: 1 1 0; transition: flex-grow .22s ease, background-color .2s ease; }
+.ct-abas button.ativa { flex-grow: 1.8; }   /* o selecionado ganha mais largura, não fica espremido (May, 06/11/2026) */
 .ct-abas button.ativa { color: #fff; background: color-mix(in srgb, var(--quem) 30%, transparent); box-shadow: inset 0 -3px 0 var(--claro); }
 .ct.eu .ct-abas button.ativa { background: linear-gradient(135deg, rgba(227,27,35,.3), rgba(250,204,21,.18), rgba(34,197,94,.24)); box-shadow: inset 0 -3px 0 #FACC15; }
 @media (prefers-reduced-motion: reduce) { .ct-trilho { scroll-behavior: auto; } }
