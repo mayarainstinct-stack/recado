@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.41">
+<meta name="app-versao" content="2026-11-06.42">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -662,6 +662,11 @@ img.esq { min-height: 140px; }
 .ct-abas button { position: relative; z-index: 1; flex: 1 1 0; background: none !important; box-shadow: none !important; transition: color .2s ease; }
 .ct-abas button.ativa { flex-grow: 1.7; color: #fff; }   /* o selecionado é mais largo; a largura troca na hora, só o destaque desliza (May, 06/11/2026) */
 .ct-destaque { position: absolute; top: 4px; bottom: 4px; left: 0; width: 0; border-radius: 12px; z-index: 0; pointer-events: none; background: color-mix(in srgb, var(--quem) 30%, transparent); box-shadow: inset 0 -3px 0 var(--claro); transition: transform .24s cubic-bezier(.3,.7,.2,1), width .24s cubic-bezier(.3,.7,.2,1); }
+.ct.tres { --borda: linear-gradient(150deg, var(--c1), var(--c2) 50%, var(--c3)); --claro: var(--c3); }
+.ct.tres .ct-seg i.on { background-size: 1000% 100%; background-position: calc(var(--i) * 11.111%) 0; background-image: linear-gradient(90deg, var(--c1), var(--c2) 50%, var(--c3)); }
+.ct.tres .ct-nivel i { background: linear-gradient(90deg, var(--c1), var(--c2) 50%, var(--c3)); -webkit-mask: linear-gradient(90deg, #000 var(--p), rgba(0,0,0,.22) var(--p)); mask: linear-gradient(90deg, #000 var(--p), rgba(0,0,0,.22) var(--p)); }
+.ct.tres .ct-exp-c { background: linear-gradient(135deg, color-mix(in srgb, var(--c1) 60%, #000), color-mix(in srgb, var(--c2) 40%, #000) 50%, color-mix(in srgb, var(--c3) 35%, #000)); }
+.ct.tres .ct-destaque { background: linear-gradient(135deg, color-mix(in srgb, var(--c1) 30%, transparent), color-mix(in srgb, var(--c2) 18%, transparent), color-mix(in srgb, var(--c3) 24%, transparent)); box-shadow: inset 0 -3px 0 var(--c3); }
 .ct.eu .ct-destaque { background: linear-gradient(135deg, rgba(227,27,35,.3), rgba(250,204,21,.18), rgba(34,197,94,.24)); box-shadow: inset 0 -3px 0 #FACC15; }
 @media (prefers-reduced-motion: reduce) { .ct-destaque { transition: none; } }
 @media (prefers-reduced-motion: reduce) { .ct-trilho { scroll-behavior: auto; } }
@@ -1157,7 +1162,9 @@ const MOLDURA_PATH = {
 const svgInsignia = it => it && ICO_INSIGNIA[it.icone] ? '<svg viewBox="0 0 40 40" aria-hidden="true"><path class="a" d="' + (MOLDURA_PATH[it.moldura] || MOLDURA_PATH.hexagono) + '"/><g transform="translate(10.5 10.5) scale(.79)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">' + ICO_INSIGNIA[it.icone] + '</g></svg>' : INSIGNIA;
 async function abreCracha(chave) {
   if (!FICHA) { try { FICHA = JSON.parse(await lerArquivo('casa/fichas.json')); } catch (e) { showNote('Não consegui abrir a ficha. Confere a internet.', true); return; } }
-  const k = ALIAS_FICHA[chave] || chave, g = k === 'may' ? EU : GRUPO[k], f = FICHA[k];
+  const k = ALIAS_FICHA[chave] || chave;
+  if (k !== 'may' && !GRUPO[k]) await garanteGrupoTrab();   // quem é da casa mas vem do grupo-casa (ex.: o Gabriel)
+  const g = k === 'may' ? EU : GRUPO[k], f = FICHA[k];
   if (!g || !f) return;
   const hb = (onlineGrupoLista || []).find(x => x.chave === k) || {}, v = fmtVisto(hb.ultimaAtualizacao), on = k === 'may' || v.online;
   const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -1166,6 +1173,7 @@ async function abreCracha(chave) {
   const num = 'Nº ' + (f.id || '---'), atr = f.atr || [], ins = f.insignias || [];
   const pop = el('div', 'pop cracha-pop'); pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'Ficha de ' + nome);
   const ct = el('div', 'ct' + (g === EU ? ' eu' : '') + (k === 'sigma' ? ' sigma' : '')); ct.style.setProperty('--quem', g.cor); ct.style.setProperty('--quem-fg', g.texto || '#fff');
+  if (g !== EU && Array.isArray(f.cores) && f.cores.length === 3) { ct.classList.add('tres'); f.cores.forEach((c, i) => ct.style.setProperty('--c' + (i + 1), c)); }   // cartão de 3 cores, igual o da May (ex.: o Gabriel, 06/11/2026)
   // cada aba mostra uma emoção do robô (as 7 abas = a imagem padrão + as 6 emoções), maior e tocável pra ver grande (May, 06/11/2026)
   const EMO_ABA = { atr: 'pensando', jeito: 'calmo', hab: 'alerta', maq: 'erro', conq: 'feliz', tempo: 'dormindo' };
   const emocaoDa = id => {
@@ -1183,11 +1191,11 @@ async function abreCracha(chave) {
   const insignia = (it) => { const d = el('div', 'ct-in1' + (it ? '' : ' vazia')); d.innerHTML = svgInsignia(it); d.append(el('span', '', it ? it.nome : 'Próxima')); if (it && it.data) d.append(el('small', '', it.data.slice(0, 5))); return d; };
   const dica = (txt) => { const d = el('div', 'ct-vira'); d.innerHTML = ICO_FICHA.lado; d.append(txt); return d; };
   const fr = el('div', 'ct-face ct-frente'), fi = el('div', 'ct-in'); fr.append(fi);
-  const cab = el('div', 'ct-cab'); cab.append(el('span', '', g === EU ? 'Dona da casa' : 'Agente da casa'), el('span', 'ct-id', num));
+  const cab = el('div', 'ct-cab'); cab.append(el('span', '', g === EU ? 'Dona da casa' : /^humano/i.test(f.classe || '') ? 'Gente da casa' : 'Agente da casa'), el('span', 'ct-id', num));
   const quem = el('div', 'ct-quem'), lado = el('div');
   lado.append(el('div', 'ct-nome', nome), el('div', 'ct-cargo', cargo));
   if (f.classe && f.classe !== cargo) lado.append(el('div', 'ct-classe', f.classe));
-  const pills = el('div', 'ct-pills'), st = el('span', 'ct-pill' + (on ? ' on' : '')); st.append(el('i'), k === 'may' ? 'online agora' : k === 'sigma' && !hb.ultimaAtualizacao ? 'itinerante' : (v.online ? (v.texto === 'agora' ? 'online agora' : 'visto ' + v.texto) : v.texto));
+  const pills = el('div', 'ct-pills'), st = el('span', 'ct-pill' + (on ? ' on' : '')); st.append(el('i'), k === 'may' ? 'online agora' : k === 'sigma' && !hb.ultimaAtualizacao ? 'itinerante' : /^humano/i.test(f.classe || '') && !hb.ultimaAtualizacao ? 'gente de verdade' : (v.online ? (v.texto === 'agora' ? 'online agora' : 'visto ' + v.texto) : v.texto));
   pills.append(st, el('span', 'ct-pill', 'Nv. ' + atr.reduce((a, x) => a + x[1], 0))); lado.append(pills);   // "nível" = soma dos atributos, só pra brincar
   quem.append(avatar(true), lado);
   const maq = el('div', 'ct-maq'), pcTxt = f.pcCurto || f.pc || ''; if (pcTxt && !String(f.classe || '').toLowerCase().includes(pcTxt.toLowerCase()) && !(k === 'sigma' && /itinerante/i.test(pcTxt))) maq.append(ic('maq', null, pcTxt)); if (hb.ip) maq.append(ic('ip', null, hb.ip));
