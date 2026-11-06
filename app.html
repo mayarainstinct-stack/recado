@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.49">
+<meta name="app-versao" content="2026-11-06.50">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -2280,8 +2280,8 @@ const trechoDe = it => (it.text || (it.foto ? 'Foto' : '')).replace(/[⟪⟫:\n]
 const fixaEl = document.getElementById('fixa');
 function achaFixa(items) {
   if (FILE !== GERAL.arq) return -1;
-  const oks = items.filter(x => x.from === 'may' && x.re && /^\s*✅/.test(x.text || '')).map(x => x.re.trecho.trim());
-  return items.findIndex(x => x.from !== 'may' && /📌/.test(x.text || '') && !oks.includes(trechoDe(x).trim()));
+  const oks = items.filter(x => x.from === 'may' && x.re).map(x => x.re.trecho.trim());   // responder já conta como ok (May, 06/11/2026 16:17)
+  return items.findLastIndex(x => x.from !== 'may' && /📌/.test(x.text || '') && !oks.includes(trechoDe(x).trim()));
 }
 function mostraFixa(items, fixaI) {   // o próprio balão sobe pro topo (mesmo jeito, dá pra responder pelo menu dele) e ganha o Ok embaixo (May, 06/11/2026 16:04 e 16:06)
   const el = fixaI >= 0 && feed.querySelector('.msg[data-i="' + fixaI + '"]');
