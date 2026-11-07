@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.143">
-<meta name="app-novidade" content="Casa: o Gol hatch, o Siena sedã e a Ninja carenada, cada um com a forma de verdade">
+<meta name="app-versao" content="2026-11-07.145">
+<meta name="app-novidade" content="Casa tirada do Inst: cada coisa com a medida e de onde veio, tomadas, Alexa e a garagem com 6,50">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -737,16 +737,17 @@ img.esq { min-height: 140px; }
 .cad-coisa { fill: #67E8F9; font-family: Consolas, monospace; text-anchor: middle; dominant-baseline: hanging; pointer-events: none; }
 .cad-nome.apagado, .cad-area.apagado { opacity: .1; transition: opacity .3s; } .cad-obj { cursor: pointer; } .cad-obj-toque { fill: rgba(0,0,0,.001); stroke: none; } .cad-obj-l { fill: none; stroke: #67E8F9; stroke-width: 1.3px; stroke-linecap: round; stroke-linejoin: round; transition: stroke .25s; }
 .cad-obj.on .cad-obj-l { stroke: #FACC15; stroke-width: 2.2px; filter: drop-shadow(0 0 2px #FACC15); } .cad-obj.on .cad-obj-toque { fill: rgba(250,204,21,.16); }
-.desenhando .cad-obj-l { stroke-dasharray: 1; animation: cad-desenha .9s cubic-bezier(.4,0,.2,1) both; }
+.desenhando .cad-obj-l { stroke-dasharray: 1; animation: cad-desenhar .9s cubic-bezier(.4,0,.2,1) both; }
 .pl-info-topo { display: flex; align-items: center; gap: 10px; } .pl-tt { flex: 1; min-width: 0; } .pl-volta { flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: #16233A; color: #22D3EE; border: 1px solid #1E3A5F; } .pl-volta svg { width: 20px; height: 20px; }
 .pl-abas { display: flex; gap: 4px; padding: 3px; border-radius: 8px; background: #0B1220; border: 1px solid #1E3A5F; flex: none; } .pl-abas button { flex: 1; width: auto; height: auto; padding: 8px 4px; border-radius: 5px; background: none; color: #7DD3FC; font: 700 12px Consolas, monospace; letter-spacing: .04em; text-transform: uppercase; } .pl-abas button.on { background: #22D3EE; color: #0B1220; }
 .pl-corpo { flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-bottom: 12px; }
-.pl-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; } .pl-lista li { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 4px; background: #0B1220; border: 1px solid #1E3A5F; color: #E0F2FE; font: 13px Consolas, monospace; cursor: pointer; } .pl-lista li.on { border-color: #FACC15; box-shadow: inset 3px 0 0 #FACC15; }
-.pl-ic { flex: none; width: 30px; height: 30px; } .pl-ic path { fill: none; stroke: #67E8F9; stroke-width: 1.3px; stroke-linecap: round; stroke-linejoin: round; } .pl-lista li.on .pl-ic path { stroke: #FACC15; }
+.pl-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; } .pl-lista li { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 4px; background: #0B1220; border: 1px solid #1E3A5F; color: #E0F2FE; font: 13px Consolas, monospace; cursor: pointer; } .pl-lista li.fora { opacity: .62; border-style: dashed; } .pl-lista li.projeto { border-style: dashed; } .cad-obj.projeto .cad-obj-l { stroke-dasharray: .06 .05; opacity: .75; }
+.pl-lista li.on { border-color: #FACC15; box-shadow: inset 3px 0 0 #FACC15; }
+.pl-ic { flex: none; width: 30px; height: 30px; } .pl-med-it { display: block; margin-top: 2px; font-size: 11px; color: #7DD3FC; opacity: .8; } .pl-ic path { fill: none; stroke: #67E8F9; stroke-width: 1.3px; stroke-linecap: round; stroke-linejoin: round; } .pl-lista li.on .pl-ic path { stroke: #FACC15; }
 .pl-med { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; } .pl-med li { display: flex; justify-content: space-between; gap: 10px; padding: 8px 10px; border-bottom: 1px dashed #1E3A5F; font: 13px Consolas, monospace; color: #E0F2FE; } .pl-med li b { color: #FACC15; font-weight: 700; text-align: right; }
 .pl-obs { margin: 0 0 10px; font-size: 14px; line-height: 1.4; } .pl-toca { cursor: pointer; }
-.desenhando .cad-parede, .desenhando .cad-cota { stroke-dasharray: 1; animation: cad-desenha .9s cubic-bezier(.4,0,.2,1) both; } .desenhando text { animation: cad-texto .5s .5s both; }
-@keyframes cad-desenha { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } } @keyframes cad-texto { from { opacity: 0; } }
+.desenhando .cad-parede, .desenhando .cad-cota { stroke-dasharray: 1; animation: cad-desenhar .9s cubic-bezier(.4,0,.2,1) both; } .desenhando text { animation: cad-texto .5s .5s both; }
+@keyframes cad-desenhar { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } } @keyframes cad-texto { from { opacity: 0; } }
 .pl-tela .pl-info-topo b { font-family: Consolas, monospace; } .pl-tela .pl-itens li { font-family: Consolas, monospace; font-size: 12.5px; background: #0B1220; color: #E0F2FE; border: 1px solid #22D3EE; border-radius: 2px; }
 .pl-c { cursor: pointer; } .pl-c text { fill: #F5F1E8; font-weight: 800; text-anchor: middle; dominant-baseline: central; pointer-events: none; font-family: inherit; paint-order: stroke; stroke: rgba(0,0,0,.55); stroke-width: .06; }
 .pl-c text.pl-qtd { font-weight: 700; fill: #CFC8BA; }
@@ -2532,7 +2533,7 @@ document.addEventListener('click', e => { if (!onlinePop.hidden && !onlinePop.co
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !onlinePop.hidden) { onlinePop.hidden = true; onlineBadge.setAttribute('aria-expanded', 'false'); } });
 
 let ultimaChecagem = 0, carregando = null;
-let forcar = false;   // recém-aberta: desenha mesmo que esteja vazia
+let forcar = false;   // recém-aberta: desenhar mesmo que esteja vazia
 let shaLido = null;   // "arq|sha" da última leitura que a tela já mostra
 function load() { const p = carregando || (carregando = carregar().finally(() => { if (carregando === p) carregando = null; })); return p; }
 async function carregar() {
@@ -2613,11 +2614,11 @@ function reduzir(file) {   // devolve { b64, mime, ext }
       URL.revokeObjectURL(url);
       const max = 1400;
       let k = Math.min(1, max / Math.max(img.width, img.height));
-      const desenha = kk => {
+      const desenhar = kk => {
         const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(img.width * kk)); c.height = Math.max(1, Math.round(img.height * kk));
         const cx = c.getContext('2d'); cx.drawImage(img, 0, 0, c.width, c.height); return { c, cx };
       };
-      let { c, cx } = desenha(k);
+      let { c, cx } = desenhar(k);
       let temAlfa = false;
       if (/^image\/(png|webp|gif)$/i.test(file.type || '')) {
         try { const d = cx.getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < d.length; i += 4) if (d[i] < 255) { temAlfa = true; break; } } catch (e) {}
@@ -2625,7 +2626,7 @@ function reduzir(file) {   // devolve { b64, mime, ext }
       const fmt = formatoFoto(file.type, temAlfa);
       if (fmt.ext === 'png') {
         let b64 = c.toDataURL('image/png').split(',')[1];
-        while (b64.length * 0.75 > MAX_BYTES_PNG && k > 0.2) { k *= 0.8; ({ c } = desenha(k)); b64 = c.toDataURL('image/png').split(',')[1]; }
+        while (b64.length * 0.75 > MAX_BYTES_PNG && k > 0.2) { k *= 0.8; ({ c } = desenhar(k)); b64 = c.toDataURL('image/png').split(',')[1]; }
         return ok({ b64, mime: fmt.mime, ext: fmt.ext });
       }
       ok({ b64: c.toDataURL('image/jpeg', 0.8).split(',')[1], mime: fmt.mime, ext: fmt.ext });
@@ -3557,7 +3558,7 @@ function abreInfoConversa() {
     const area = document.createElement('div'); area.className = 'p-lista';
     const ABAS = [['midia', 'Mídia'], ['audio', 'Áudios'], ['link', 'Links'], ['doc', 'Docs']];
     const quando = a => [a.quem, a.dia && a.dia.slice(0, 5), a.hora].filter(Boolean).join(' · ');
-    const desenha = qual => {
+    const desenhar = qual => {
       [...tabs.children].forEach((b, i) => { const on = ABAS[i][0] === qual; b.classList.toggle('ativa', on); b.setAttribute('aria-selected', String(on)); });
       area.replaceChildren(); const lista = anexos[qual];
       if (!lista.length) { const v = document.createElement('div'); v.className = 'ig-vazio'; v.textContent = qual === 'midia' ? 'Nenhuma foto nesta conversa ainda.' : qual === 'audio' ? 'Nenhum áudio ainda.' : qual === 'link' ? 'Nenhum link ainda.' : 'Nenhum documento ainda.'; area.append(v); return; }
@@ -3584,9 +3585,9 @@ function abreInfoConversa() {
         }));
       });
     };
-    ABAS.forEach(([k, t]) => { const b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab'); b.append(t); const n = document.createElement('small'); n.textContent = anexos[k].length; b.append(n); b.onclick = () => { const de = ABAS.findIndex((_, i) => tabs.children[i].classList.contains('ativa')), para = ABAS.findIndex(x => x[0] === k); desenha(k); if (de !== para) entraDoLado(area, para > de ? 1 : -1); }; tabs.append(b); });
-    c.append(tabs, area); desenha(anexos.midia.length ? 'midia' : anexos.doc.length ? 'doc' : anexos.link.length ? 'link' : 'audio');
-    arrastaAbas(area, () => ABAS.findIndex((_, i) => tabs.children[i].classList.contains('ativa')), i => desenha(ABAS[i][0]), ABAS.length);   // arrastar pro lado troca de aba, igual nos cartões (May, 05/11/2026)
+    ABAS.forEach(([k, t]) => { const b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab'); b.append(t); const n = document.createElement('small'); n.textContent = anexos[k].length; b.append(n); b.onclick = () => { const de = ABAS.findIndex((_, i) => tabs.children[i].classList.contains('ativa')), para = ABAS.findIndex(x => x[0] === k); desenhar(k); if (de !== para) entraDoLado(area, para > de ? 1 : -1); }; tabs.append(b); });
+    c.append(tabs, area); desenhar(anexos.midia.length ? 'midia' : anexos.doc.length ? 'doc' : anexos.link.length ? 'link' : 'audio');
+    arrastaAbas(area, () => ABAS.findIndex((_, i) => tabs.children[i].classList.contains('ativa')), i => desenhar(ABAS[i][0]), ABAS.length);   // arrastar pro lado troca de aba, igual nos cartões (May, 05/11/2026)
     sec(gente.length + ' participantes');
     const lg = document.createElement('div'); lg.className = 'ig-gente'; c.append(lg);
     gente.forEach(k => {
@@ -4165,18 +4166,18 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
     ];
     const tipoDe = t => TIPOS.find(([re]) => re.test(t)) || [null, .55, .55, ['M0 0H1V1H0Z', 'M0 0L1 1M1 0L0 1']];   // sem desenho próprio: bloco com X, o jeito do AutoCAD
     const arruma = k => {   // as coisas do cômodo em fileiras, encostadas nas paredes; não cabe, encolhe (posição aproximada até ela dizer onde fica)
-      const cs = (k.itens || []).filter(it => !/^piso|^m[áa]rmore|^parede de cimento/i.test(typeof it === 'string' ? it : it.nome)).map((it, n) => { const nome = typeof it === 'string' ? it : it.nome, tp = tipoDe(nome); return { nome, n, k, tp, w: tp[1], h: tp[2], fixo: typeof it === 'object' && it.x != null ? it : null }; });
+      const cs = (k.itens || []).filter(it => !/^piso|^m[áa]rmore|^parede de cimento/i.test(typeof it === 'string' ? it : it.nome)).map((it, n) => { const nome = typeof it === 'string' ? it : it.nome, tp = tipoDe(nome); const ob = typeof it === 'object' ? it : {}; return { nome, n, k, tp, w: ob.w || tp[1], h: ob.h || tp[2], medida: ob.medida || '', onde: ob.onde || '', projeto: !!ob.projeto, desenhar: ob.desenhar !== false && !!(ob.w && ob.h), fixo: ob.x != null ? ob : null }; });   // tudo vem do Inst (May 18:10 e 18:13): só desenhar o que tem medida e fica no chão; o resto só na lista
       const [ax, ay, aw, ah] = k.arrumar || [k.x, k.y, k.w, k.h], m0 = .18, W = aw - m0 * 2, H = ah - m0 * 2;   // cômodo em L: as coisas soltas vão pra parte larga
       for (let esc = 1; esc > .2; esc *= .85) {
         let x = 0, y = 0, alt = 0, ok = true;
-        for (const ci of cs.slice().sort((a, b) => b.w * b.h - a.w * a.h)) {
+        for (const ci of cs.filter(c => c.desenhar && !c.fixo).sort((a, b) => b.w * b.h - a.w * a.h)) {
           let w = ci.w * esc, h = ci.h * esc; if (w > W) { h *= W / w; w = W; } if (h > H) { w *= H / h; h = H; }
           if (x + w > W + 1e-6) { x = 0; y += alt + .12; alt = 0; } if (y + h > H + 1e-6) { ok = false; break; }
           ci.x = ax + m0 + x; ci.y = ay + m0 + y; ci.ww = w; ci.hh = h; x += w + .12; alt = Math.max(alt, h);
         }
         if (ok) break;
       }
-      cs.forEach(ci => { if (ci.fixo) Object.assign(ci, { x: ci.fixo.x, y: ci.fixo.y, ww: ci.fixo.w || ci.ww, hh: ci.fixo.h || ci.hh }); });
+      cs.forEach(ci => { if (ci.fixo && ci.desenhar) Object.assign(ci, { x: ci.fixo.x, y: ci.fixo.y, ww: ci.fixo.w || ci.ww, hh: ci.fixo.h || ci.hh }); });
       return cs;
     };
     d.comodos.forEach(k => {
@@ -4197,15 +4198,15 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
         const th = ns('text', { x: xr - .06, y: k.y + k.h / 2, 'font-size': cf.toFixed(3), class: 'cad-cota-t', transform: 'rotate(-90 ' + (xr - .06) + ' ' + (k.y + k.h / 2) + ')' }); th.textContent = num(k.h); camadas[2].append(th);
       }
       k.coisas = arruma(k);
-      k.coisas.forEach(ci => {
-        const gc = ns('g', { class: 'cad-obj', transform: 'translate(' + ci.x.toFixed(3) + ' ' + ci.y.toFixed(3) + ') scale(' + ci.ww.toFixed(3) + ' ' + ci.hh.toFixed(3) + ')' }); ci.g = gc;
+      k.coisas.filter(ci => ci.desenhar).forEach(ci => {
+        const gc = ns('g', { class: 'cad-obj' + (ci.projeto ? ' projeto' : ''), transform: 'translate(' + ci.x.toFixed(3) + ' ' + ci.y.toFixed(3) + ') scale(' + ci.ww.toFixed(3) + ' ' + ci.hh.toFixed(3) + ')' }); ci.g = gc;
         gc.append(ns('rect', { x: 0, y: 0, width: 1, height: 1, class: 'cad-obj-toque' }));
         ci.tp[3].forEach(p => gc.append(ns('path', { d: p, class: 'cad-obj-l', 'vector-effect': 'non-scaling-stroke', pathLength: 1 })));
         gc.addEventListener('click', e => { e.stopPropagation(); tocaCoisa(ci); }); camadas[1].append(gc);
         const ft = Math.max(.07, Math.min(.13, ci.ww / 6)), et = ns('text', { x: ci.x + ci.ww / 2, y: ci.y + ci.hh + ft * 1.05, 'font-size': ft.toFixed(3), class: 'cad-coisa' }); et.textContent = ci.nome.split(/[ ,]/).slice(0, 2).join(' '); camadas[3].append(et);
       });
     });
-    const liga = n => {   // liga as camadas até n; a nova se desenha (as linhas correm) e o texto aparece (fade liberado só aqui, May 12:49)
+    const liga = n => {   // liga as camadas até n; a nova vai sendo traçada (as linhas correm) e o texto aparece (fade liberado só aqui, May 12:49)
       camadas.forEach((g, k) => { g.style.display = k < n ? '' : 'none'; });
       const nova = camadas[n - 1]; if (!semMov && n > nivel) { nova.classList.remove('desenhando'); void nova.getBBox(); nova.classList.add('desenhando'); }
       nivel = n; camada.textContent = 'CAMADA ' + n + ' · ' + NOMES[n - 1]; niveis.forEach((b, k) => b.classList.toggle('on', k < n));
@@ -4224,12 +4225,12 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
     const marcaLista = () => corpo.querySelectorAll('[data-n]').forEach(li => li.classList.toggle('on', !!selC && +li.dataset.n === selC.n));
     const tocaCoisa = ci => {   // tocou na coisa (na lista ou no desenho): a planta voa até ela e ela acende
       if (sel !== ci.k) toca(ci.k, true);
-      if (selC) selC.g.classList.remove('on'); selC = ci; ci.g.classList.add('on'); if (nivel < 2) liga(2);
-      enquadra(ci.x, ci.y, ci.ww, ci.hh, Math.max(.7, Math.max(ci.ww, ci.hh) * .9)); coord.textContent = 'X ' + num(ci.x) + '  Y ' + num(ci.y); cabecalho({ icone: 'home', sub: ci.k.nome + ' · ' + ci.nome });
+      if (selC && selC.g) selC.g.classList.remove('on'); selC = ci; if (nivel < 2) liga(2);
+      if (ci.g) { ci.g.classList.add('on'); enquadra(ci.x, ci.y, ci.ww, ci.hh, Math.max(.7, Math.max(ci.ww, ci.hh) * .9)); coord.textContent = 'X ' + num(ci.x) + '  Y ' + num(ci.y); } else coord.textContent = (ci.onde || 'sem lugar no chão').toUpperCase().slice(0, 30);   // coisa de parede ou sem medida: fica no cômodo e diz onde está cabecalho({ icone: 'home', sub: ci.k.nome + ' · ' + ci.nome });
       marcaLista(); const li = corpo.querySelector('[data-n="' + ci.n + '"]'); if (li) li.scrollIntoView({ block: 'nearest', behavior: semMov ? 'auto' : 'smooth' });
     };
     const toca = (k, semAba) => {
-      if (sel) { sel.g.classList.remove('on'); sel.rot.forEach(t => t.classList.remove('apagado')); } if (selC) { selC.g.classList.remove('on'); selC = null; } sel = k;
+      if (sel) { sel.g.classList.remove('on'); sel.rot.forEach(t => t.classList.remove('apagado')); } if (selC) { if (selC.g) selC.g.classList.remove('on'); selC = null; } sel = k;
       if (!k) {
         voa(peLargura(-0.6)); nomeEl.textContent = 'Casa inteira'; sub.textContent = 'terreno ' + num(d.largura) + ' × ' + num(d.altura) + ' m · ' + d.comodos.length + ' cômodos'; coord.textContent = '↕ ARRASTA'; inteira.hidden = true; cabecalho({ icone: 'home', sub: 'toca num cômodo' });
         pintaAbas([['Cômodos', cp => { const ul = elD('ul', 'pl-itens'); d.comodos.forEach(kk => { const li = elD('li', 'pl-toca', kk.nome); li.onclick = () => toca(kk); ul.append(li); }); cp.append(ul); }],
@@ -4241,10 +4242,11 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
       nomeEl.textContent = k.nome; sub.textContent = num(k.w) + ' × ' + num(k.h) + ' m · ' + num(areaDe(k)) + ' m²'; coord.textContent = 'X ' + num(k.x) + '  Y ' + num(k.y); cabecalho({ icone: 'home', sub: k.nome });
       const abas = [['Coisas · ' + k.coisas.length, cp => {
         if (!k.coisas.length) { cp.append(elD('p', 'p-nota', k.obs || 'Ainda não tem nada anotado daqui.')); return; }
-        const ul = elD('ul', 'pl-lista'); k.coisas.forEach(ci => { const li = elD('li', 'pl-toca'); li.dataset.n = ci.n; const ic = ns('svg', { viewBox: '-.1 -.1 1.2 1.2', class: 'pl-ic', preserveAspectRatio: 'xMidYMid meet' }); ci.tp[3].forEach(p => ic.append(ns('path', { d: p, 'vector-effect': 'non-scaling-stroke' }))); li.append(ic, elD('span', '', ci.nome)); li.onclick = () => tocaCoisa(ci); ul.append(li); });
-        cp.append(ul, elD('p', 'p-nota', 'Lugar de cada coisa aproximado: me fala onde fica que eu acerto.')); marcaLista();
+        const ul = elD('ul', 'pl-lista'); k.coisas.forEach(ci => { const li = elD('li', 'pl-toca'); li.dataset.n = ci.n; const ic = ns('svg', { viewBox: '-.1 -.1 1.2 1.2', class: 'pl-ic', preserveAspectRatio: 'xMidYMid meet' }); ci.tp[3].forEach(p => ic.append(ns('path', { d: p, 'vector-effect': 'non-scaling-stroke' }))); const tx = elD('span', '', ci.nome); if (ci.medida || ci.onde) tx.append(elD('small', 'pl-med-it', [ci.medida || 'sem medida no Inst', ci.onde].filter(Boolean).join(' · '))); if (!ci.desenhar) li.classList.add('fora'); if (ci.projeto) li.classList.add('projeto'); li.append(ic, tx); li.onclick = () => tocaCoisa(ci); ul.append(li); });
+        cp.append(ul, elD('p', 'p-nota', 'Medida e lugar tirados do Inst (' + (k.fontes || []).map(f => f.replace(/^casa\//, '')).join(', ') + '). O lugar no desenho é aproximado quando o arquivo só diz a parede; apagada = fica na parede ou em cima de outra coisa.')); marcaLista();
       }], ['Medidas', cp => { const ul = elD('ul', 'pl-med'); [['Largura', num(k.w) + ' m'], ['Comprimento', num(k.h) + ' m'], ['Área', num(areaDe(k)) + ' m²'], ['Perímetro', num(2 * (k.w + k.h)) + ' m'], ['Posição', 'X ' + num(k.x) + ' · Y ' + num(k.y)]].forEach(([a, b]) => { const li = elD('li'); li.append(elD('span', '', a), elD('b', '', b)); ul.append(li); }); cp.append(ul); }]];
-      if (k.obs || k.doc) abas.push(['Sobre', cp => { if (k.obs) cp.append(elD('p', 'pl-obs', k.obs)); if (k.doc) { const ab = elD('button', 'pl-bt on', 'Inventário completo'); ab.type = 'button'; ab.onclick = () => abreCartoes({ nome: k.nome, arq: k.doc }); cp.append(ab); } }]);
+      if ((k.tomadas || []).length) abas.splice(1, 0, ['Tomadas · ' + k.tomadas.length, cp => { const ul = elD('ul', 'pl-med'); k.tomadas.forEach(t => { const li = elD('li'); li.append(elD('span', '', t)); ul.append(li); }); cp.append(ul, elD('p', 'p-nota', 'Da May em 21/10 (casa/TOMADAS-DA-CASA-21-10-2026.md).')); }]);   // tomadas de cada cômodo, do levantamento dela
+      if (k.obs || k.doc || k.alexa || k.eletrica) abas.push(['Sobre', cp => { if (k.obs) cp.append(elD('p', 'pl-obs', k.obs)); [['Alexa', k.alexa], ['Elétrica', k.eletrica]].forEach(([t, xs]) => { if (!(xs || []).length) return; cp.append(elD('small', 'ob-folha-rot', t)); const ul = elD('ul', 'pl-med'); xs.forEach(x => { const li = elD('li'); li.append(elD('span', '', x)); ul.append(li); }); cp.append(ul); }); if (k.doc) { const ab = elD('button', 'pl-bt on', 'Inventário completo'); ab.type = 'button'; ab.onclick = () => abreCartoes({ nome: k.nome, arq: k.doc }); cp.append(ab); } }]);
       if (!semAba || abasAt.length < 2 || !/^Coisas/.test(abasAt[0][0]) || nomeEl.dataset.k !== k.nome) pintaAbas(abas, 0); nomeEl.dataset.k = k.nome;
       surge([nomeEl, sub]);
     };
@@ -4660,11 +4662,11 @@ function montaCalendario(cal, c) {   // mês em grade; dia com compromisso tem p
     c.querySelectorAll('.p-sec').forEach(t => { t.hidden = !!sel || /anterior/i.test(t.textContent); });
     if (proxT) { proxT.textContent = 'Compromissos do dia'; proxT.hidden = !sel; } };
   const proxT = elD('div', 'p-sec', 'Próximos'); cal.after(proxT);
-  const desenha = () => {
+  const desenhar = () => {
     cal.replaceChildren();
     const topo = elD('div', 'ag-cal-topo'), ant = elD('button', 'ag-seta'), prox = elD('button', 'ag-seta');
     ant.type = prox.type = 'button'; ant.innerHTML = icone('back'); prox.innerHTML = icone('back'); prox.classList.add('dir'); ant.setAttribute('aria-label', 'Mês anterior'); prox.setAttribute('aria-label', 'Próximo mês');
-    ant.onclick = () => { mes--; if (mes < 0) { mes = 11; ano--; } desenha(); }; prox.onclick = () => { mes++; if (mes > 11) { mes = 0; ano++; } desenha(); };
+    ant.onclick = () => { mes--; if (mes < 0) { mes = 11; ano--; } desenhar(); }; prox.onclick = () => { mes++; if (mes > 11) { mes = 0; ano++; } desenhar(); };
     topo.append(ant, elD('b', '', NOMES[mes] + ' ' + ano), prox); cal.append(topo);
     const g = elD('div', 'ag-grade'); ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].forEach(x => g.append(elD('span', 'ag-sem', x)));
     const primeiro = new Date(ano, mes, 1).getDay(), total = new Date(ano, mes + 1, 0).getDate();
@@ -4673,13 +4675,13 @@ function montaCalendario(cal, c) {   // mês em grade; dia com compromisso tem p
       const chave = ano + '-' + String(mes + 1).padStart(2, '0') + '-' + String(dd).padStart(2, '0'), b = elD('button', 'ag-dia', String(dd)); b.type = 'button';
       if (dias.has(chave)) b.classList.add('tem'); if (chave === sel) b.classList.add('sel');
       if (dd === hoje.getDate() && mes === hoje.getMonth() && ano === hoje.getFullYear()) b.classList.add('hoje');
-      b.onclick = () => { sel = sel === chave ? '' : chave; filtra(); desenha(); };
+      b.onclick = () => { sel = sel === chave ? '' : chave; filtra(); desenhar(); };
       g.append(b);
     }
     cal.append(g);
-    if (sel) { const v = elD('button', 'ag-tudo', 'Ver tudo'); v.type = 'button'; v.onclick = () => { sel = ''; filtra(); desenha(); }; cal.append(v); }
+    if (sel) { const v = elD('button', 'ag-tudo', 'Ver tudo'); v.type = 'button'; v.onclick = () => { sel = ''; filtra(); desenhar(); }; cal.append(v); }
   };
-  desenha(); filtra();
+  desenhar(); filtra();
 }
 function abreAgenda(m) {
   tela(m.nome, async c => {
