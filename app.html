@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.86">
+<meta name="app-versao" content="2026-11-07.87">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -3787,8 +3787,8 @@ async function mandaPraLyra(txt, btn) {   // manda direto pra caixa da Geral, se
 let donosTela = [];
 function destinoNota() {
   const on = k => { const hb = (onlineGrupoLista || []).find(x => x.chave === k); return !!(hb && fmtVisto(hb.ultimaAtualizacao).online); };
-  const robos = Object.keys(GRUPO).filter(k => !/^pc\d$/.test(k) && k !== 'gabriel' && GRUPO[k].foto);
-  return donosTela.find(on) || robos.find(on) || donosTela[0] || 'lyra';
+  const robos = Object.keys(GRUPO).filter(k => !/^pc\d$/.test(k) && !['gabriel', 'vega', 'lyra'].includes(k) && GRUPO[k].foto);   // Vega é do Gabriel e a Lyra do trabalho (May 11:59)
+  return donosTela.find(on) || robos.find(on) || donosTela[0] || 'orfeu';
 }
 const nomeRobo = k => (GRUPO[k] ? GRUPO[k].nome : 'Lyra').replace(/\s*\(.*\)$/, '');
 function notaBox(contexto, fecha) {
@@ -4077,7 +4077,7 @@ sair.onclick = () => { store.set('gh-token', ''); token = ''; askToken(); };
 token = store.get('gh-token');
 token ? start() : askToken();
 if (location.hash === '#diagnostico') {   // veio da Máquinas: abre o Menu e já entra no Diagnóstico
-  donosTela = ['orfeu', 'vega', 'nyx'];
+  donosTela = ['orfeu', 'nyx', 'sigma'];
   history.replaceState(null, '', location.pathname + location.search);
   const t0 = Date.now(), espera = setInterval(() => { if (FILE || Date.now() - t0 > 15000) { clearInterval(espera); if (FILE) { document.getElementById('abre-menu').click(); setTimeout(abreDiagnostico, 200); } } }, 100);
 }
