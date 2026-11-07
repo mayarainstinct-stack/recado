@@ -22,6 +22,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .topo .marca-sis i{width:10px;height:10px;border-radius:3px;background:var(--k1);box-shadow:0 0 10px var(--k1);transform:rotate(45deg)}
 .topo .tot{margin-left:auto;font-size:12px;color:var(--texto3)}
 /* a fileira de máquinas, igual à tela inicial de um console */
+.grade{flex:1;min-height:0;overflow-y:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:6px 16px 24px;align-content:start;animation:entra .32s cubic-bezier(.2,.8,.2,1)}
+.card{position:relative;overflow:hidden;min-height:132px;border-radius:20px;padding:12px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;text-align:left;color:#fff;font:inherit;cursor:pointer;background:linear-gradient(150deg,color-mix(in srgb,var(--c) 85%,#000),color-mix(in srgb,var(--c) 35%,#000));border:1px solid rgba(255,255,255,.18);box-shadow:0 10px 24px color-mix(in srgb,var(--c) 30%,transparent)}
+.card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.45}.card img.rob{inset:auto 8px 8px auto;width:58px;height:58px;opacity:.95;object-fit:contain}
+.card .cur{position:absolute;top:10px;left:12px;font-weight:800;font-size:13px;letter-spacing:.1em}.card b{position:relative;font-size:16px;line-height:1.15;padding-right:44px;text-shadow:0 1px 8px rgba(0,0,0,.6)}.card small{position:relative;font-size:11.5px;opacity:.88}.card:has(img.rob) small,.card:has(img.rob) b{padding-right:60px}
+.volta-col{font:inherit;font-size:13px;font-weight:700;padding:8px 12px;border-radius:999px;background:var(--vidro);border:1px solid var(--borda);color:var(--texto);cursor:pointer}
 .fila{flex:none;display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 20px 16px;scroll-padding-left:20px;scrollbar-width:none}
 .fila::-webkit-scrollbar{display:none}
 .bloco{flex:none;scroll-snap-align:start;width:76px;height:76px;border-radius:18px;position:relative;overflow:hidden;background:linear-gradient(150deg,color-mix(in srgb,var(--c) 85%,#000),color-mix(in srgb,var(--c) 35%,#000));border:2px solid rgba(255,255,255,.12);display:grid;place-items:center;font-weight:700;font-size:13px;letter-spacing:.06em;transition:transform .22s cubic-bezier(.2,.8,.2,1.15),border-color .2s}
@@ -82,7 +87,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 const REPO="mayarainstinct-stack/Inst",TOKEN=(()=>{try{return localStorage.getItem("gh-token")||""}catch(e){return""}})()
 const apiDe=p=>"https://api.github.com/repos/"+REPO+"/contents/"+p.split("/").map(encodeURIComponent).join("/")
 const gh=(p,raw)=>fetch(apiDe(p),{cache:"no-cache",headers:{Authorization:"Bearer "+TOKEN,Accept:raw?"application/vnd.github.raw":"application/vnd.github+json"}})
-const ROBO={orfeu:["Orfeu","#E31B23","avatares/orfeu-96.png"],nyx:["Nyx","#6FCF00","avatares/nyx-96.png"],vega:["Vega","#1D4ED8","avatares/vega-96.png"]}
+const ROBO={orfeu:["Orfeu","#E31B23","avatares/orfeu-96.png"],nyx:["Nyx","#6FCF00","avatares/nyx-96.png"],vega:["Vega","#1D4ED8","avatares/vega-96.png"],hermes:["Hermes","#FFCB05","avatares/hermes-96.png"]}
 const MARCA={ps1:"PlayStation",ps2:"PlayStation",ps4:"PlayStation",ps5:"PlayStation",switch:"Nintendo","3ds":"Nintendo",snes:"Nintendo",n64:"Nintendo",x360:"Xbox"}
 const CURTO={ps1:"PS1",ps2:"PS2",ps4:"PS4",switch:"Switch","3ds":"3DS",snes:"SNES",x360:"360"}
 const GERACAO={snes:"4ª geração",ps1:"5ª geração",ps2:"6ª geração",x360:"7ª geração",ps4:"8ª geração",switch:"8ª geração","3ds":"8ª geração"},SELO={"3ds":"portátil",switch:"híbrido"}
@@ -97,16 +102,26 @@ let D=null,atual=0
 async function inicio(){
   if(!TOKEN){app.innerHTML='<p class="aviso">Abre primeiro o app de recados neste aparelho (ele guarda a chave).</p>';return}
   try{const r=await gh("casa/maquinas.json",true);if(!r.ok)throw 0;D=JSON.parse(await r.text())}catch(e){app.innerHTML='<p class="aviso">Não consegui abrir a coleção. Confere a internet.</p>';return}
-  let i=0;try{i=Math.max(0,D.maquinas.findIndex(m=>m.id===(sessionStorage.getItem("maq-atual")||"")))}catch(e){}
-  monta(i)
+  grade()
+}
+function grade(){
+  document.documentElement.style.setProperty("--k1","#4F46E5");fundo.style.backgroundImage="none";app.replaceChildren()
+  const topo=el("div","topo"),ms2=el("div","marca-sis");ms2.append(el("i"),"Minha coleção");const t=D.total||{}
+  topo.append(ms2,el("span","tot",D.maquinas.length+" máquinas · "+(t.zerados??"–")+" zerados"));app.append(topo)
+  const g=el("div","grade");D.maquinas.forEach((x,j)=>{const b=el("button","card");b.style.setProperty("--c",cor(x));b.setAttribute("aria-label",x.nome)
+    if(x.robo&&ROBO[x.robo]){const im=el("img","rob");im.alt="";im.src=ROBO[x.robo][2];b.append(im)}else if((x.fotos||[])[0]){const im=el("img");im.alt="";b.append(im);foto(x.fotos[0]).then(u=>{im.src=u}).catch(()=>im.remove())}
+    const st=x.stats;b.append(el("span","cur",CURTO[x.console]||(x.robo?"PC":"")),el("b","",x.nome),el("small","",st?(st.zerados||0)+" zerados · "+(st.jogos||0)+" jogos":(x.modelo||x.papel||"")))
+    b.onclick=()=>monta(j);g.append(b)})
+  {const b=el("button","card");b.style.setProperty("--c","#8B5CF6");b.append(el("span","cur","PCs"),el("b","","Diagnóstico"),el("small","","a saúde dos PCs"));b.onclick=()=>{location.href="app.html#diagnostico"};g.append(b)}
+  app.append(g)
 }
 function monta(i){
   atual=i;const ms=D.maquinas,m=ms[i],k=cor(m);try{sessionStorage.setItem("maq-atual",m.id)}catch(e){}
   document.documentElement.style.setProperty("--k1",k)
   fundo.style.backgroundImage="none";foto((m.fotos||[])[0]).then(u=>{if(atual===i)fundo.style.backgroundImage="url("+u+")"}).catch(()=>{})
   app.replaceChildren()
-  const topo=el("div","topo"),ms2=el("div","marca-sis");ms2.append(el("i"),"Minha coleção");const t=D.total||{}
-  topo.append(ms2,el("span","tot",(t.jogados??"–")+" jogados · "+(t.zerados??"–")+" zerados"));app.append(topo)
+  const topo=el("div","topo"),vt=el("button","volta-col","← Coleção");vt.onclick=grade;const t=D.total||{}
+  topo.append(vt,el("span","tot",(t.zerados??"–")+" zerados"));app.append(topo)
   const fila=el("div","fila");ms.forEach((x,j)=>{const b=el("button","bloco"+(j===i?" ativo":""));b.style.setProperty("--c",cor(x));b.setAttribute("aria-label",x.nome)
     if(x.robo&&ROBO[x.robo]){const im=el("img");im.alt="";im.src=ROBO[x.robo][2];b.append(im)}else b.append(el("span","",CURTO[x.console]||x.nome.slice(0,4)))
     b.onclick=()=>{if(j!==atual)monta(j)};fila.append(b)});
