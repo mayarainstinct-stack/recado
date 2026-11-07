@@ -252,6 +252,15 @@ table.tb { width: 100%; border-collapse: collapse; font-size: 13px; } .tb th { f
 .bt.perigo { background: #E31B23; color: #fff; }
 .menu-azul { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 .menu-azul .t { display: flex; flex-direction: column; gap: 8px; align-items: center; font: 900 10px "Arial Black", sans-serif; letter-spacing: .04em; text-align: center; }
+.trilho { position: relative; height: 14px; background: #1a1a1d; box-shadow: inset 0 0 0 1px #2a2a2e; clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px); }
+.trilho > i { position: absolute; left: 0; top: 0; bottom: 0; width: var(--w, 50%); --c2: var(--cor); background: repeating-linear-gradient(-45deg, rgba(255,255,255,.28) 0 6px, rgba(0,0,0,.18) 6px 12px), linear-gradient(90deg, var(--cor), var(--c2)); clip-path: polygon(7px 0, 100% 0, calc(100% - 7px) 100%, 0 100%, 0 7px); filter: drop-shadow(0 0 5px var(--c2)); }
+.trilho.ouro > i { --c2: color-mix(in srgb, var(--cor) calc((1 - var(--p)) * 100%), #E3B341); }
+.trilho.corre > i { animation: corre-listra .6s linear infinite; background-size: 17px 17px, 100% 100%; }
+@keyframes corre-listra { to { background-position: 17px 0, 0 0; } }
+.hbar { display: grid; grid-template-columns: 64px 1fr 52px; align-items: center; gap: 12px; }
+.hbar b { font: 900 11px "Arial Black", sans-serif; letter-spacing: .04em; }
+.hbar span { font: italic 17px Impact, sans-serif; color: var(--cor); text-align: right; }
+.balao-wrap .listras.s1 { top: -7px; } .balao-wrap .listras.s2 { bottom: -7px; }
 .sep { height: 1px; margin: 14px 22px 0; background: linear-gradient(90deg, transparent, #2a2a2e, transparent); }
 .capa { padding: 44px 22px 20px; }
 </style></head>
@@ -259,7 +268,7 @@ table.tb { width: 100%; border-collapse: collapse; font-size: 13px; } .tb th { f
 
 <div class="capa"><div class="amostra" style="height:250px"><div class="moldura-wrap"><div class="moldura"></div><div class="moldura-dentro" style="align-items:center;justify-content:center;gap:16px;text-align:center"><div class="entalhe"></div>
   <div class="prompt-cab" style="padding:0"><span class="chevron" style="font-size:30px">&gt;</span><span class="prompt-titulo" style="font-size:24px">HOUSE BRIDGE</span><span class="listras h"><i></i><i></i><i></i></span></div>
-  <div style="color:var(--muted);font-size:13px">Identidade visual · tudo numa página só<br>v2 · 07/11/2026</div>
+  <div style="color:var(--muted);font-size:13px">Identidade visual · tudo numa página só<br>v3 · 07/11/2026</div>
   <div style="display:flex;gap:10px"><i class="chip" style="background:#E31B23"></i><i class="chip" style="background:#FFCB05"></i><i class="chip" style="background:#9333EA"></i><i class="chip" style="background:#6FCF00"></i><i class="chip" style="background:#1D4ED8"></i><i class="chip" style="background:#FF3EC8"></i></div>
 </div><span class="listras v le"><i></i><i></i><i></i></span><span class="listras v ld"><i></i><i></i><i></i></span><span class="listras h lb"><i></i><i></i><i></i><i></i><i></i></span></div></div>
 <p class="txt" style="margin-top:22px;color:var(--muted);font-size:13px">O que tem a etiqueta <span class="novo">NOVO</span> ainda não existe: é a peça prevista, pra quando precisar.</p></div>
@@ -322,7 +331,10 @@ table.tb { width: 100%; border-collapse: collapse; font-size: 13px; } .tb th { f
   <div class="st"><b>5 H</b><div class="seg"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span class="v">30%</span></div>
   <div class="st"><b>SEMANA</b><div class="seg"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span class="v">14%</span></div>
 </div></div>
-<ul class="reg"><li>Balão: 1ª linha Arial Black preta, 2ª Impact itálico na cor. Cada robô fala do seu jeito.</li><li><b>Toda barra de progresso da casa</b> = segmentos inclinados, aceso na cor, apagado cinza.</li></ul>
+<span class="rot" style="margin-top:8px">Barra da casa · tracejado <span class="novo">NOVO</span></span>
+<div class="hbar"><b>5 H</b><div class="trilho"><i style="--w:30%"></i></div><span>30%</span></div>
+<div class="hbar"><b>SEMANA</b><div class="trilho"><i style="--w:14%"></i></div><span>14%</span></div>
+<ul class="reg"><li>Balão: 1ª linha Arial Black preta, 2ª Impact itálico na cor. Cada robô fala do seu jeito.</li><li><b>Toda barra da casa é o tracejado</b> (May 11:48): uma barra só, do começo ao fim, com as pontas chanfradas e listras inclinadas, na cor, com brilho. O HUD de segmentos de hoje passa pra ele.</li></ul>
 </div>
 <div class="sep"></div>
 
@@ -381,10 +393,17 @@ table.tb { width: 100%; border-collapse: collapse; font-size: 13px; } .tb th { f
 <div class="sep"></div>
 
 <div class="sec"><div class="tit"><span class="n">11</span><h2>Números e gráficos</h2><span class="listras h"><i></i><i></i><i></i></span><span class="novo">NOVO</span></div>
-<div class="barras"><div><i></i><i></i><i></i><i></i><i></i><i></i></div><div style="--cor:#6FCF00"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div style="--cor:#1D4ED8"><i></i><i></i><i></i></div><div style="--cor:#E31B23"><i></i><i></i><i></i><i></i><i></i></div></div>
-<div class="eixo"><span>HERMES</span><span>NYX</span><span>VEGA</span><span>ORFEU</span></div>
+<div class="peca"><span class="rot">Barras · uma linha só, chanfrada e tracejada, na cor do dono</span>
+<div class="hbar" style="--cor:#FFCB05"><b>HERMES</b><div class="trilho"><i style="--w:55%"></i></div><span>55</span></div>
+<div class="hbar" style="--cor:#6FCF00"><b>NYX</b><div class="trilho"><i style="--w:90%"></i></div><span>90</span></div>
+<div class="hbar" style="--cor:#1D4ED8"><b>VEGA</b><div class="trilho"><i style="--w:28%"></i></div><span>28</span></div>
+<div class="hbar" style="--cor:#E31B23"><b>ORFEU</b><div class="trilho"><i style="--w:46%"></i></div><span>46</span></div></div>
+<div class="peca"><span class="rot">Progresso de jogo · cor do console até o dourado da vitória</span>
+<div class="hbar" style="--cor:#14A89A"><b>PS1</b><div class="trilho ouro"><i style="--w:30%;--p:.3"></i></div><span>30%</span></div>
+<div class="hbar" style="--cor:#14A89A"><b>PS1</b><div class="trilho ouro"><i style="--w:80%;--p:.8"></i></div><span>80%</span></div>
+<div class="hbar" style="--cor:#14A89A"><b>PS1</b><div class="trilho ouro"><i style="--w:100%;--p:1"></i></div><span style="color:#E3B341">100%</span></div></div>
 <table class="tb"><tr><th>PC</th><th>SITUAÇÃO</th><th style="text-align:right">LIVRE</th></tr><tr><td>PC1</td><td><span class="estado"><i style="background:#F5B301"></i>de olho</span></td><td class="n" style="--cor:#E31B23">53 GB</td></tr><tr><td>PC2</td><td><span class="estado"><i style="background:#22C55E"></i>bom</span></td><td class="n" style="--cor:#6FCF00">37 GB</td></tr></table>
-<ul class="reg"><li>Barra de gráfico = pilha de segmentos inclinados, <b>cada um na cor do dono</b> (robô, PC, console).</li><li>Número grande em Impact itálico; o valor sempre na ponta.</li><li>Mesma escala em gráficos lado a lado.</li></ul>
+<ul class="reg"><li>Barra de gráfico = <b>uma linha só, do começo ao fim</b>, chanfrada e tracejada, <b>na cor do dono</b> (robô, PC, console). Nada empilhado.</li><li>Progresso de jogo: começa na cor do console e vai dourando até o <b>dourado da parede da vitória</b> em 100%.</li><li>Número grande em Impact itálico; o valor sempre na ponta.</li><li>Mesma escala em gráficos lado a lado.</li></ul>
 </div>
 <div class="sep"></div>
 
@@ -393,18 +412,18 @@ table.tb { width: 100%; border-collapse: collapse; font-size: 13px; } .tb th { f
 <div class="amostra" style="height:160px;margin:4px 8px"><div class="moldura-wrap" style="--c:14px"><div class="moldura"></div><div class="moldura-dentro" style="padding:22px 24px;gap:12px;justify-content:center"><div class="entalhe"></div>
   <div class="prompt-cab" style="padding:0"><span class="chevron">&gt;</span><span class="prompt-titulo" style="font-size:15px">ATUALIZANDO</span><span class="prompt-caminho" style="direction:ltr">v0.2.0</span></div>
   <div style="font-size:12px;color:#b8bbc2">O console liga e desliga como TV</div>
-  <div style="display:flex;align-items:center;gap:12px"><div class="prog" style="flex:1"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div><span style="font:italic 16px Impact,sans-serif;color:var(--cor)">48%</span></div>
+  <div style="display:flex;align-items:center;gap:12px"><div class="trilho corre" style="flex:1"><i style="--w:48%"></i></div><span style="font:italic 16px Impact,sans-serif;color:var(--cor)">48%</span></div>
 </div><span class="listras v le"><i></i><i></i><i></i></span><span class="listras v ld"><i></i><i></i><i></i></span><span class="listras h lb"><i></i><i></i><i></i><i></i></span></div></div>
 <span class="rot" style="margin-top:8px">Aviso curto que entra e sai <span class="novo">NOVO</span></span>
 <div class="cham cor"><div class="toast"><span style="font:italic 22px Impact;color:var(--cor)">›</span>Mandado pra Geral.</div></div>
 <span class="rot" style="margin-top:8px">Pergunta pra May</span>
 <div class="cham cor"><div style="display:flex;flex-direction:column;gap:14px"><span style="font:900 13px 'Arial Black';letter-spacing:.03em">&gt; HERMES PERGUNTA</span><span class="txt">Fica a v16 da abertura?</span><div class="botoes"><button class="bt sec2">NÃO</button><button class="bt">SIM</button></div></div></div>
-<ul class="reg"><li>Popup = moldura da casa em pequeno. <b>Modo mini</b>: quem avisa é o robô, no balão dele.</li><li>Entra subindo, sai descendo. <b>Nunca fade.</b></li><li>Pergunta curta, cabe na tela; fechar ou tocar fora = some até ela abrir o app de novo.</li></ul>
+<ul class="reg"><li>Barra do popup = o tracejado, com as listras correndo enquanto carrega.</li><li>Popup = moldura da casa em pequeno. <b>Modo mini</b>: quem avisa é o robô, no balão dele.</li><li>Entra subindo, sai descendo. <b>Nunca fade.</b></li><li>Pergunta curta, cabe na tela; fechar ou tocar fora = some até ela abrir o app de novo.</li></ul>
 </div>
 <div class="sep"></div>
 
 <div class="sec"><div class="tit"><span class="n">13</span><h2>Esperando, vazio e erro</h2><span class="listras h"><i></i><i></i><i></i></span><span class="novo">NOVO</span></div>
-<div class="cham"><div style="display:flex;align-items:center;gap:14px"><div class="carregando"><i></i><i style="opacity:.6"></i><i style="opacity:.3"></i></div><span class="txt">Carregando… <span style="color:var(--muted)">(os tracinhos correm, nada gira)</span></span></div></div>
+<div class="cham"><div style="display:flex;flex-direction:column;gap:10px"><div class="trilho corre"><i style="--w:100%"></i></div><span class="txt">Carregando… <span style="color:var(--muted)">(as listras correm, nada gira)</span></span></div></div>
 <div class="cham"><div class="vazio"><div class="ico" style="--cor:#5a5d63"><svg viewBox="0 0 24 24"><path d="M4 7h16v12H4zM9 7V5h6v2"/></svg></div>Nada aqui ainda.<br>O que fazer: toca no + embaixo à direita.</div></div>
 <div class="cham" style="--cor:#EF4444"><div style="display:flex;flex-direction:column;gap:10px"><span style="font:900 13px 'Arial Black';color:#EF4444;letter-spacing:.03em">&gt; NÃO DEU</span><span class="txt">Sem internet. O texto continua aí; toca em tentar de novo.</span><div class="botoes"><button class="bt" style="--cor:#EF4444;color:#fff">TENTAR DE NOVO</button></div></div></div>
 <ul class="reg"><li>Toda tela tem os 3 estados desenhados: <b>carregando</b>, <b>vazio</b> (com o que fazer) e <b>erro</b> (com o que fazer).</li></ul>
@@ -428,7 +447,7 @@ table.tb { width: 100%; border-collapse: collapse; font-size: 13px; } .tb th { f
   <li><b>Respiro</b>: nada colado na borda nem no vizinho (padding 20 px ou mais, espaço entre blocos 10 px ou mais).</li>
   <li><b>Cada item do Menu é um sistema novo</b>, com cara própria, honrando este guia.</li>
   <li><b>Uma cor por tela</b> + preto, branco e cinza.</li>
-  <li><b>Chanfro, tracinho inclinado e brilho</b>: são a assinatura da casa. Nada redondo, nada liso.</li>
+  <li><b>Chanfro, tracinho inclinado, tracejado e brilho</b>: são a assinatura da casa. Nada redondo, nada liso.</li><li><b>Preto em volta de letra = stroke da letra</b> (May 11:49), em toda peça e animação.</li>
   <li>Peça nova sai daqui. Se não está no guia, entra no guia primeiro (com o ok da May), depois na tela.</li>
 </ul>
 </div>
