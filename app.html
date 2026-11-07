@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.145">
-<meta name="app-novidade" content="Casa tirada do Inst: cada coisa com a medida e de onde veio, tomadas, Alexa e a garagem com 6,50">
+<meta name="app-versao" content="2026-11-07.146">
+<meta name="app-novidade" content="Casa: portas, janelas e pé-direito de cada cômodo, tirados do Inst">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -4246,7 +4246,7 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
         cp.append(ul, elD('p', 'p-nota', 'Medida e lugar tirados do Inst (' + (k.fontes || []).map(f => f.replace(/^casa\//, '')).join(', ') + '). O lugar no desenho é aproximado quando o arquivo só diz a parede; apagada = fica na parede ou em cima de outra coisa.')); marcaLista();
       }], ['Medidas', cp => { const ul = elD('ul', 'pl-med'); [['Largura', num(k.w) + ' m'], ['Comprimento', num(k.h) + ' m'], ['Área', num(areaDe(k)) + ' m²'], ['Perímetro', num(2 * (k.w + k.h)) + ' m'], ['Posição', 'X ' + num(k.x) + ' · Y ' + num(k.y)]].forEach(([a, b]) => { const li = elD('li'); li.append(elD('span', '', a), elD('b', '', b)); ul.append(li); }); cp.append(ul); }]];
       if ((k.tomadas || []).length) abas.splice(1, 0, ['Tomadas · ' + k.tomadas.length, cp => { const ul = elD('ul', 'pl-med'); k.tomadas.forEach(t => { const li = elD('li'); li.append(elD('span', '', t)); ul.append(li); }); cp.append(ul, elD('p', 'p-nota', 'Da May em 21/10 (casa/TOMADAS-DA-CASA-21-10-2026.md).')); }]);   // tomadas de cada cômodo, do levantamento dela
-      if (k.obs || k.doc || k.alexa || k.eletrica) abas.push(['Sobre', cp => { if (k.obs) cp.append(elD('p', 'pl-obs', k.obs)); [['Alexa', k.alexa], ['Elétrica', k.eletrica]].forEach(([t, xs]) => { if (!(xs || []).length) return; cp.append(elD('small', 'ob-folha-rot', t)); const ul = elD('ul', 'pl-med'); xs.forEach(x => { const li = elD('li'); li.append(elD('span', '', x)); ul.append(li); }); cp.append(ul); }); if (k.doc) { const ab = elD('button', 'pl-bt on', 'Inventário completo'); ab.type = 'button'; ab.onclick = () => abreCartoes({ nome: k.nome, arq: k.doc }); cp.append(ab); } }]);
+      if (k.obs || k.doc || k.alexa || k.eletrica || k.portas || k.janelas || k.pe_direito) abas.push(['Sobre', cp => { if (k.obs) cp.append(elD('p', 'pl-obs', k.obs)); [['Pé-direito', k.pe_direito ? [k.pe_direito] : null], ['Portas', k.portas], ['Janelas', k.janelas], ['Alexa', k.alexa], ['Elétrica', k.eletrica]].forEach(([t, xs]) => { if (!(xs || []).length) return; cp.append(elD('small', 'ob-folha-rot', t)); const ul = elD('ul', 'pl-med'); xs.forEach(x => { const li = elD('li'); li.append(elD('span', '', x)); ul.append(li); }); cp.append(ul); }); if (k.doc) { const ab = elD('button', 'pl-bt on', 'Inventário completo'); ab.type = 'button'; ab.onclick = () => abreCartoes({ nome: k.nome, arq: k.doc }); cp.append(ab); } }]);
       if (!semAba || abasAt.length < 2 || !/^Coisas/.test(abasAt[0][0]) || nomeEl.dataset.k !== k.nome) pintaAbas(abas, 0); nomeEl.dataset.k = k.nome;
       surge([nomeEl, sub]);
     };
