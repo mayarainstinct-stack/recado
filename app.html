@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.81">
+<meta name="app-versao" content="2026-11-07.82">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -691,7 +691,7 @@ img.esq { min-height: 140px; }
 .fixa-pop.saindo .pp-card { animation: pop-desce .18s cubic-bezier(.5,0,.8,.4) forwards; }
 @keyframes pop-sobe { from { transform: translateY(60px) scale(.94); } to { transform: none; } }
 @keyframes pop-desce { to { transform: translateY(80px) scale(.94); } }
-.pp-av { width: 56px; height: 56px; border-radius: 50%; margin: -50px auto 6px; display: grid; place-items: center; background: var(--quem) center / cover; color: #fff; font-weight: 800; font-size: 20px; box-shadow: 0 0 0 3px var(--paper), 0 0 0 5px var(--quem); }
+.pp-av { width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 6px; display: grid; place-items: center; background: var(--quem) center / cover; color: #fff; font-weight: 800; font-size: 20px; box-shadow: 0 0 0 3px var(--paper), 0 0 0 5px var(--quem); }
 .pp-quem { font-size: 13px; font-weight: 700; color: color-mix(in srgb, var(--quem) 65%, var(--fg)); margin-bottom: 10px; }
 .pp-perg { font-size: 17px; line-height: 1.35; font-weight: 700; margin: 0 6px 16px; overflow-wrap: break-word; text-wrap: balance; max-height: 30vh; overflow-y: auto; }
 .pp-perg.longa { font-size: 15px; font-weight: 600; text-align: left; text-wrap: pretty; }
@@ -702,6 +702,7 @@ img.esq { min-height: 140px; }
 .pp-op.rec { background: var(--quem); border-color: var(--quem); color: #fff; }
 .pp-midia { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin: 0 0 14px; }
 .pp-midia > * { flex: 0 0 100%; min-width: 0; max-width: 100%; scroll-snap-align: center; height: 38vh; width: 100%; border-radius: 16px; background: #000 center / contain no-repeat; border: 1px solid var(--line); padding: 0; }
+.pp-card { max-height: calc(100dvh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); overflow-y: auto; overscroll-behavior: contain; }   /* nunca maior que a tela: rola por dentro (May 11:18) */
 .pp-card { max-width: calc(100vw - 24px); min-width: 0; } .pp-midia { min-width: 0; max-width: 100%; }   /* vídeo empurrava o popup pra fora da tela no iPhone (May, 07/11/2026 11:01) */
 .pp-midia.varias > * { flex-basis: 86%; } .pp-midia video { object-fit: contain; }
 .pp-midia video { width: 100%; }
@@ -2557,7 +2558,7 @@ async function mandaFixa(it, on, comOk) {   // comOk = texto da resposta ("✅ s
   if (foi && comOk) { const antes = respondendo; respondendo = { nome: nomeCita(it), trecho: trechoDe(it) }; const x = novoPendente(comOk === true ? '✅ ok' : comOk, [], FILE); respondendo = antes; foi = await enviar(x.p, x.el); }
   if (!foi) { marcaFixa(k, null); render(lastItems, true); showNote(on ? 'Não deu pra fixar: toca de novo quando a internet voltar.' : 'Não foi: a mensagem continua fixada até dar certo.', true); }
 }
-let fixaVer = 0; const fixaPopVista = new Set();   // pergunta que já saltou como popup nesta abertura do app   // qual da fila ela está vendo (0 = a mais recente)
+let fixaVer = 0, popAdiado = false; const fixaPopVista = new Set();   // pergunta que já saltou como popup nesta abertura do app   // qual da fila ela está vendo (0 = a mais recente)
 function alternativasDe(txt) {   // "a) uma coisa b) outra" -> [['a','uma coisa'], ['b','outra']]; só letras a-d (número costuma ser lista de perguntas)
   const t = String(txt || ''), achou = [...t.matchAll(/(?:^|[\s(:;])([a-dA-D])\)\s+/g)];
   if (achou.length < 2 || achou[0][1].toLowerCase() !== 'a') return [];
@@ -2573,7 +2574,8 @@ function abrePergunta(it, g, alts, k, conta) {   // padrão aprovado no HOUSE-BR
   const m0 = q.match(/(?:^|[\s(:;])a\)\s/i); if (m0) q = q.slice(0, m0.index).trim();
   const perg = document.createElement('div'); perg.className = 'pp-perg' + (q.length > 120 ? ' longa' : ''); perg.textContent = q;
   const fecha = () => { fixaPopVista.add(k); ov.classList.add('saindo'); document.removeEventListener('keydown', esc); setTimeout(() => { ov.remove(); if (FILE === GERAL.arq) render(lastItems, true); }, 180); };
-  const esc = (e) => { if (e.key === 'Escape') fecha(); };
+  const adia = () => { popAdiado = true; fecha(); };   // fechou ou tocou fora = não quer responder agora: nenhuma outra salta até ela reabrir o app (May, 07/11/2026 11:18)
+  const esc = (e) => { if (e.key === 'Escape') adia(); };
   const manda = (txt) => { mandaFixa(it, false, txt); fecha(); };
   // pergunta com foto ou vídeo (May, 07/11/2026 10:31: "um balão que me mostra imagens e vídeos pra eu clicar em aprovo, reprovo ou digitar"): a mídia vem no popup
   const midia = (it.fotos || []).filter(Boolean), md = document.createElement('div'); md.className = 'pp-midia' + (midia.length > 1 ? ' varias' : '');
@@ -2592,9 +2594,9 @@ function abrePergunta(it, g, alts, k, conta) {   // padrão aprovado no HOUSE-BR
   ta.addEventListener('input', () => { ta.style.height = 'auto'; ta.style.height = Math.min(120, ta.scrollHeight) + 'px'; });
   const env = document.createElement('button'); env.type = 'button'; env.setAttribute('aria-label', 'Mandar'); env.innerHTML = icone('reply'); env.onclick = () => { const t = ta.value.trim(); if (t) manda(t); };
   outra.append(ta, env);
-  const x = document.createElement('button'); x.type = 'button'; x.className = 'pp-x'; x.setAttribute('aria-label', 'Responder depois'); x.innerHTML = icone('close'); x.onclick = fecha;
+  const x = document.createElement('button'); x.type = 'button'; x.className = 'pp-x'; x.setAttribute('aria-label', 'Responder depois'); x.innerHTML = icone('close'); x.onclick = adia;
   card.append(x, av, nm, perg, ...(midia.length ? [md] : []), ops, outra); ov.append(card);
-  ov.addEventListener('click', e => { if (e.target === ov) fecha(); });
+  ov.addEventListener('click', e => { if (e.target === ov) adia(); });
   document.addEventListener('keydown', esc);
   document.body.append(ov);
 }
@@ -2602,7 +2604,7 @@ function mostraFixa(items, fila) {   // cópia do balão no topo (o original fic
   const pergs = fila.filter(i => RE_PERG.test(items[i].text || ''));
   fila = fila.filter(i => !RE_PERG.test(items[i].text || ''));
   const abertas = pergs.filter(i => !fixaPopVista.has(chaveDe(items[i])));
-  if (abertas.length && !document.querySelector('.fixa-pop')) { const it = items[abertas[0]], g = (it.from === 'may' ? EU : GRUPO[it.quem]) || {}, todas = it.opcoes && it.opcoes.length ? it.opcoes.map((t, i) => ['abcdefgh'[i] || String(i + 1), t]) : alternativasDe(it.text); abrePergunta(it, g, todas.length > 4 ? [] : todas, chaveDe(it), abertas.length > 1 ? '1 de ' + abertas.length : ''); }
+  if (abertas.length && !popAdiado && !document.querySelector('.fixa-pop')) { const it = items[abertas[0]], g = (it.from === 'may' ? EU : GRUPO[it.quem]) || {}, todas = it.opcoes && it.opcoes.length ? it.opcoes.map((t, i) => ['abcdefgh'[i] || String(i + 1), t]) : alternativasDe(it.text); abrePergunta(it, g, todas.length > 4 ? [] : todas, chaveDe(it), abertas.length > 1 ? '1 de ' + abertas.length : ''); }
   if (!fila.length) return;
   if (fixaVer >= fila.length) fixaVer = 0;
   const idx = fila[fixaVer], orig = feed.querySelector('.msg[data-i="' + idx + '"]');
