@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.85">
+<meta name="app-versao" content="2026-11-07.86">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -3394,6 +3394,7 @@ function abreIdeias(m) {
   });
 }
 function abreItemMenu(m) {
+  if (m.donos && m.donos.length) donosTela = m.donos;   // dono da tela (e o item de dentro herda do grupo se não tiver o seu)
   painel.style.setProperty('--c', (COR_ASSUNTO.find(([re]) => re.test(m.nome)) || [])[1] || 'var(--accent)');   // a tela fica na cor do assunto, igual o azulejo dela
   if (m.tipo === 'pagina') { location.href = m.arq; return; }   // página própria do app (ex.: jogos.html), volta pelo botão dela
   if (m.tipo === 'catalogo') return abreCatalogo();
@@ -3783,12 +3784,20 @@ async function mandaPraLyra(txt, btn) {   // manda direto pra caixa da Geral, se
   }
 }
 // Caixinha "📝 Anotar" (May, 22/10: "todo lugar tem q dar pra mim escrever"): manda pra Geral com o contexto na frente
+let donosTela = [];
+function destinoNota() {
+  const on = k => { const hb = (onlineGrupoLista || []).find(x => x.chave === k); return !!(hb && fmtVisto(hb.ultimaAtualizacao).online); };
+  const robos = Object.keys(GRUPO).filter(k => !/^pc\d$/.test(k) && k !== 'gabriel' && GRUPO[k].foto);
+  return donosTela.find(on) || robos.find(on) || donosTela[0] || 'lyra';
+}
+const nomeRobo = k => (GRUPO[k] ? GRUPO[k].nome : 'Lyra').replace(/\s*\(.*\)$/, '');
 function notaBox(contexto, fecha) {
   const nb = document.createElement('div'); nb.className = 'nota-box';
-  nb.innerHTML = '<label>' + icone('note') + ' Escrever sobre isso</label><textarea rows="3" maxlength="600" placeholder="Escreve aqui, vai pra Lyra"></textarea><button type="button" class="manda" disabled>Mandar pra Lyra</button>';
-  const ta = nb.querySelector('textarea'), mb = nb.querySelector('.manda');
-  ta.oninput = () => { mb.disabled = !ta.value.trim(); if (!mb.disabled) mb.textContent = 'Mandar pra Lyra'; };
-  mb.onclick = async () => { const t = ta.value.trim(); if (t && await enviarComentario('📝 ' + contexto + ': ' + t, mb, fecha)) ta.value = ''; };
+  const dest = destinoNota(), nome = nomeRobo(dest), pra = 'Mandar pro ' + nome;
+  nb.innerHTML = '<label>' + icone('note') + ' Escrever sobre isso</label><textarea rows="3" maxlength="600"></textarea><button type="button" class="manda" disabled></button>';
+  const ta = nb.querySelector('textarea'), mb = nb.querySelector('.manda'); ta.placeholder = 'Escreve aqui, vai pro ' + nome; mb.textContent = pra;
+  ta.oninput = () => { mb.disabled = !ta.value.trim(); if (!mb.disabled) mb.textContent = pra; };
+  mb.onclick = async () => { const t = ta.value.trim(); if (t && await enviarComentario('📝 ' + contexto + ': @' + nome + ' ' + t, mb, fecha)) ta.value = ''; };
   return nb;
 }
 // Ficha: popup por cima de tudo, com o detalhe (foto grande, texto) e a caixinha de anotação embaixo
@@ -4068,6 +4077,7 @@ sair.onclick = () => { store.set('gh-token', ''); token = ''; askToken(); };
 token = store.get('gh-token');
 token ? start() : askToken();
 if (location.hash === '#diagnostico') {   // veio da Máquinas: abre o Menu e já entra no Diagnóstico
+  donosTela = ['orfeu', 'vega', 'nyx'];
   history.replaceState(null, '', location.pathname + location.search);
   const t0 = Date.now(), espera = setInterval(() => { if (FILE || Date.now() - t0 > 15000) { clearInterval(espera); if (FILE) { document.getElementById('abre-menu').click(); setTimeout(abreDiagnostico, 200); } } }, 100);
 }
