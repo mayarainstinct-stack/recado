@@ -704,7 +704,8 @@ img.esq { min-height: 140px; }
 .pp-midia > * { flex: 0 0 100%; min-width: 0; max-width: 100%; scroll-snap-align: center; height: 38vh; width: 100%; border-radius: 16px; background: #000 center / contain no-repeat; border: 1px solid var(--line); padding: 0; }
 .pp-card { max-width: calc(100vw - 24px); min-width: 0; } .pp-midia { min-width: 0; max-width: 100%; }   /* vídeo empurrava o popup pra fora da tela no iPhone (May, 07/11/2026 11:01) */
 .pp-midia.varias > * { flex-basis: 86%; } .pp-midia video { object-fit: contain; }
-.pp-card { max-width: calc(100vw - 24px); min-width: 0; } .pp-midia { min-width: 0; max-width: 100%; } .pp-midia > * { min-width: 0; max-width: 100%; } .pp-midia video { width: 100%; }   /* vídeo largo (900 px) empurrava o popup pra fora da tela (May 07/11 11:01) */
+.pp-midia video { width: 100%; }
+.pp-card:has(.pp-midia) .pp-perg { max-height: 16vh; max-height: 16dvh; font-size: 15px; font-weight: 600; text-align: left; } .pp-card:has(.pp-midia) .pp-midia > * { height: 30vh; height: 30dvh; }   /* pergunta c/ foto ou vídeo cabe inteira na altura do celular, o texto rola por dentro (May 07/11 11:18) */
 .pp-op:active { transform: scale(.95); }
 .pp-aviso { flex: 1; font-size: 13px; color: var(--muted); }
 .pp-outra { display: flex; gap: 8px; align-items: flex-end; text-align: left; }
