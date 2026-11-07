@@ -912,6 +912,14 @@ body.na-geral form textarea:focus { border-color: #FACC15; box-shadow: 0 0 0 3px
 .ct-nos .ct-prox { opacity: .6; transform: scale(.72); }
 .ct-nos .ct-in1 { position: relative; z-index: 1; font-size: 10px; max-width: 100%; }
 .ct-nos .ct-in1 svg { width: 40px; height: 40px; }
+.ct-insignias .ct-tr1 svg .a, .ct-trofeus .ct-tr1 svg path.a, .ct-tr1 svg path.a { fill: #F6C709 !important; stroke: #6b3f00 !important; stroke-width: 1.2; }
+.ct-tr1 svg { filter: drop-shadow(0 0 6px rgba(246,199,9,.7)) drop-shadow(0 2px 3px rgba(0,0,0,.5)); }
+.ct-tr1 svg g { stroke: #4a2a00; }
+.ct-tr1 { position: relative; overflow: hidden; }
+.ct-tr1::after { content: ''; position: absolute; left: 50%; top: 0; width: 40px; height: 40px; margin-left: -20px; border-radius: 50%; background: linear-gradient(115deg, transparent 38%, rgba(255,255,255,.85) 50%, transparent 62%); background-size: 260% 100%; animation: tr-brilho 2.6s ease-in-out infinite; pointer-events: none; mix-blend-mode: screen; }
+@keyframes tr-brilho { 0%, 55% { background-position: 150% 0; } 100% { background-position: -50% 0; } }
+@media (prefers-reduced-motion: reduce) { .ct-tr1::after { animation: none; } }
+.ct-trofeus .ct-tit { color: #F6C709; }
 .ct-painel .ct-ins-fila { row-gap: 12px; padding: 10px 4px; border-radius: 14px; background: rgba(0,0,0,.3); }
 .ct-abas { position: relative; display: flex; gap: 4px; padding: 4px; border-radius: 16px; background: #0B0B0E; border: 1px solid rgba(255,255,255,.1); }
 .ct-abas button { width: auto; height: auto; min-width: 0; min-height: 54px; border-radius: 12px; border: none; background: none; color: rgba(255,255,255,.62); display: grid; justify-items: center; align-content: center; gap: 3px; padding: 6px 1px; font-size: calc(11px - (var(--n, 4) - 4) * .6px); font-weight: 800; letter-spacing: -.01em; overflow: hidden; }   /* 7 abas cabem no celular */
@@ -1375,6 +1383,7 @@ const ICO_FICHA = {
 const INSIGNIA = '<svg viewBox="0 0 40 40" aria-hidden="true"><path class="a" d="M20 2l15 8.5v19L20 38 5 29.5v-19z"/><path class="b" d="M20 7l11 6.3v13.4L20 33 9 26.7V13.3z"/><path class="c" d="M20 12.5l2.3 4.7 5.2.8-3.8 3.7.9 5.2-4.6-2.4-4.6 2.4.9-5.2-3.8-3.7 5.2-.8z"/></svg>';
 // cada insígnia com o ícone e a moldura dela (fichas.json: icone, moldura); sem eles, o hexágono com estrela de antes
 const ICO_INSIGNIA = {
+  gato: '<path d="M5 20V9l2.5-5L11 8h2l3.5-4L19 9v11z"/><circle cx="9.5" cy="13" r=".9"/><circle cx="14.5" cy="13" r=".9"/><path d="M11 16.5h2M12 16.5v1.2M7 15.5H4M17 15.5h3"/>',   // troféu do Stray (May 07/11 13:01: "tipo um gatinho")
   nota: '<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>',
   guitarra: '<path d="M14 10l6-6"/><path d="M18.5 2.5l3 3"/><path d="M11.5 9.5c-1.6-1.2-4-1-5.3.4-.8.8-.9 1.9-.6 2.8-1.4.2-2.6 1.3-2.6 2.9 0 2.5 2.7 5.4 5.3 5.4 1.6 0 2.7-1.2 2.9-2.6.9.3 2 .2 2.8-.6 1.4-1.3 1.6-3.7.4-5.3"/><circle cx="9.5" cy="14.5" r="1.3"/>',
   fone: '<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="7" rx="1.5"/><rect x="17" y="14" width="4" height="7" rx="1.5"/>',
@@ -1474,7 +1483,13 @@ async function abreCracha(chave) {
   if (!gente) { const chama = el('button', 'ct-chama', 'Mandar recado ' + (['orfeu', 'vega', 'hermes', 'sigma'].includes(k) ? 'pro ' : 'pra ') + nome); chama.type = 'button'; chama.onclick = e => { e.stopPropagation(); const t = document.getElementById('texto'); if (t) { const n = '@' + nome + ' '; if (!t.value.startsWith(n)) t.value = n + t.value; t.dispatchEvent(new Event('input')); pop.remove(); t.focus(); } }; pe.append(chama); }
   pe.append(dica('Arrasta pro lado pra virar o cartão'));
   fi.append(cab, quem, el('div', 'ct-faz', f.faz), maq); if (gente && f.olhar) fi.append(el('div', 'ct-olhar', f.olhar));   // ela não tem o botão de recado: o olhar ocupa o lugar
-  if (ins.length || !gente) fi.append(insBox); fi.append(pe);
+  if (ins.length || !gente) fi.append(insBox);
+  if ((f.trofeus || []).length) {   // troféus dos jogos zerados, cada jogo com a insígnia dele, em ouro (May 07/11 13:01)
+    const tb = el('div', 'ct-ins ct-trofeus'), tf = el('div', 'ct-ins-fila');
+    f.trofeus.slice(-3).reverse().forEach(t => { const d = el('div', 'ct-in1 ct-tr1'); d.innerHTML = svgInsignia({ icone: t.icone, moldura: t.moldura || 'circulo' }); d.append(el('span', '', t.nome)); if (t.data) d.append(el('small', '', t.data.slice(0, 5))); tf.append(d); });
+    tb.append(el('div', 'ct-tit', 'Troféus'), tf); fi.append(tb);
+  }
+  fi.append(pe);
   const bloco = (tit, ...filhos) => { const d = el('div'); if (tit) d.append(el('div', 'ct-tit', tit)); d.append(...filhos); return d; };
   const selos = (lista, icone) => { const w = el('div', 'ct-selos'); lista.forEach(n => w.append(ic(icone, null, n))); return w; };
   const pAtr = el('div', 'ct-p-atr'), pJeito = el('div');
