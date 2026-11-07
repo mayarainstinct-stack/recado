@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.119">
+<meta name="app-versao" content="2026-11-07.120">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -714,7 +714,8 @@ img.esq { min-height: 140px; }
 .p-grade.apps .ic.mini { width: 100%; height: auto; display: grid; gap: 2px; padding: 0 4px; filter: none; font-variant-numeric: tabular-nums; }
 .p-grade.apps .mini-l { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; font-size: 11px; line-height: 1.35; } .p-grade.apps .mini-l span { opacity: .75; font-weight: 600; } .p-grade.apps .mini-l b { font-weight: 800; }
 .p-grade.apps .bt-pendencias .mini-l { color: #78350F; border-bottom: 1px solid #FCD34D; } .p-grade.apps .bt-pendencias .mini-l.pos b { color: #15803D; } .p-grade.apps .bt-pendencias .mini-l.neg b { color: #B91C1C; }
-.p-grade.apps .bt-contas .mini-l { color: #14532D; } .p-grade.apps .bt-contas .ic.mini { padding: 0 2px 0 0; }
+.p-grade.apps .bt-contas .mini-l { color: #14532D; }
+.p-grade.apps .ic.mini.so-num { justify-items: end; gap: 0; padding: 0 10px; } .p-grade.apps .so-num b { font-size: 12.5px; font-weight: 800; line-height: 1.3; } .p-grade.apps .so-num .pos { color: #15803D; } .p-grade.apps .so-num .neg { color: #B91C1C; } .p-grade.apps .so-num .saldo { font-size: 16px; border-top: 1.5px solid #B45309; padding-top: 1px; margin-top: 2px; } .p-grade.apps .bt-contas .ic.mini { padding: 0 2px 0 0; }
 .p-grade.apps .p-azulejo:active { transform: scale(.95); } .p-grade.apps .bt-ideias:active { transform: rotate(-1.5deg) scale(.95); }
 .p-grade .p-azulejo { touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .p-grade .p-azulejo.arrastando { position: relative; z-index: 5; touch-action: none; box-shadow: 0 16px 34px rgba(0,0,0,.5); transition: none; }
@@ -3325,7 +3326,7 @@ function vesteBotao(b, nome) {
     const ic = b.querySelector('.ic'); ic.className = 'ic mini'; ic.replaceChildren();
     lerArquivo('contas/pendencias.json').then(t => {
       const d = JSON.parse(t), n = v => Math.round(v).toLocaleString('pt-BR'), linha = (a, z, cls) => { const l = elD('div', 'mini-l ' + (cls || '')); l.append(elD('span', '', a), elD('b', '', z)); ic.append(l); };
-      if (k === 'pendencias') { const fr = d.receber.reduce((s, x) => s + x.falta, 0), fp = d.pagar.reduce((s, x) => s + x.falta, 0); linha('Receber', n(fr), 'pos'); linha('Pagar', n(fp), 'neg'); linha('Saldo', n(fr - fp), fr - fp < 0 ? 'neg' : 'pos'); return; }
+      if (k === 'pendencias') { const fr = d.receber.reduce((s, x) => s + x.falta, 0), fp = d.pagar.reduce((s, x) => s + x.falta, 0), sd = fr - fp; ic.classList.add('so-num'); ic.append(elD('b', 'pos', '+' + n(fr)), elD('b', 'neg', '−' + n(fp)), elD('b', 'saldo ' + (sd < 0 ? 'neg' : 'pos'), (sd < 0 ? '−' : '+') + n(Math.abs(sd)))); return; }   // só os números, sem palavra (May 15:50)
       const hoje = new Date(), vence = dia => new Date(hoje.getFullYear(), hoje.getMonth() + (hoje.getDate() > dia ? 1 : 0), dia);
       d.pagar.filter(x => x.falta > 0).map(x => ({ x, q: vence(x.dia || 6), v: Math.min((x.pagamentos[x.pagamentos.length - 1] || {}).valor || x.falta, x.falta) })).sort((a, b) => a.q - b.q).slice(0, 3)
         .forEach(({ q, v }) => linha(String(q.getDate()).padStart(2, '0') + '/' + String(q.getMonth() + 1).padStart(2, '0'), n(v)));
