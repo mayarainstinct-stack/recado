@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.146">
-<meta name="app-novidade" content="Casa: portas, janelas e pé-direito de cada cômodo, tirados do Inst">
+<meta name="app-versao" content="2026-11-07.147">
+<meta name="app-novidade" content="Tarefas: o título das colunas fica parado em cima enquanto os post-its rolam">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -851,8 +851,8 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 .ie-abas button { flex: 1; width: auto; height: auto; padding: 9px 4px; border-radius: 10px; background: none; color: var(--muted); font: inherit; font-size: 13px; font-weight: 800; } .ie-abas button.on { background: #FACC15; color: #1F1A03; }
 .ie-trilho { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; margin: 10px -4px 0; padding: 0 4px; }
 .ie-quadro { display: flex; flex-direction: column; gap: 16px; padding: 14px 6px 24px; }
-.ie-quadro.ie-colunas { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; align-items: start; padding: 10px 2px 24px; }
-.ie-col h4 { display: flex; justify-content: space-between; align-items: center; margin: 0 4px 12px; font: 900 11px 'Arial Black', sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); } .ie-conta { min-width: 22px; padding: 1px 7px; border-radius: 999px; background: color-mix(in srgb, var(--fg) 10%, transparent); text-align: center; }
+.ie-quadro.ie-colunas { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; align-items: stretch; padding: 10px 2px 24px; }
+.ie-col h4 { position: sticky; top: 0; z-index: 3; padding: 8px 4px; margin-top: -8px; background: var(--bg); box-shadow: 0 8px 10px -8px rgba(0,0,0,.6); display: flex; justify-content: space-between; align-items: center; margin: 0 4px 12px; font: 900 11px 'Arial Black', sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); } .ie-conta { min-width: 22px; padding: 1px 7px; border-radius: 999px; background: color-mix(in srgb, var(--fg) 10%, transparent); text-align: center; }
 .ie-lista { display: flex; flex-direction: column; gap: 16px; min-height: 160px; padding: 8px 2px 12px; border-radius: 12px; transition: background .2s; } .ie-col.alvo .ie-lista { background: rgba(250,204,21,.08); outline: 1.5px dashed rgba(250,204,21,.45); }
 .ie-colunas .ie-post { padding: 17px 9px 9px; border-radius: 2px 2px 12px 2px; } .ie-colunas .ie-sub { font-size: 13.5px; } .ie-colunas .ie-txt { font-size: 12.5px; line-height: 1.3; } .ie-colunas .ie-num { font-size: 9.5px; right: 7px; } .ie-colunas .ie-pe { margin-top: 8px; font-size: 11px; gap: 5px; } .ie-colunas .ie-av { width: 20px; height: 20px; } .ie-colunas .ie-est { display: none; }
 .ie-post { --p: #FFFDF5; position: relative; color: #22190A; background: linear-gradient(172deg, var(--p), color-mix(in srgb, var(--p) 86%, #6B4E16)); border-radius: 2px 2px 16px 2px; padding: 20px 14px 12px; box-shadow: 0 1px 1px rgba(0,0,0,.12), 0 12px 18px -10px rgba(0,0,0,.55); transform: rotate(var(--r, 0deg)); touch-action: pan-y; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; cursor: grab; }
