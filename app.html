@@ -909,7 +909,7 @@ body.na-geral form textarea:focus { border-color: #FACC15; box-shadow: 0 0 0 3px
 .ct-ins-fila { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 .ct-in1 { display: grid; justify-items: center; align-content: start; gap: 5px; text-align: center; font-size: 11.5px; line-height: 1.2; overflow-wrap: anywhere; }
 .ct-in1 svg { width: 44px; height: 44px; stroke: none; filter: drop-shadow(0 2px 4px rgba(0,0,0,.5)); }
-.ct-in1 .a { fill: var(--quem); stroke: rgba(255,255,255,.85); stroke-width: 1.6; } .ct-in1 .b { fill: rgba(0,0,0,.32); } .ct-in1 .c { fill: #fff; }
+.ct-in1 .a { fill: var(--quem); stroke: none; } .ct-in1 .b { fill: rgba(0,0,0,.32); } .ct-in1 .c { fill: #fff; }
 .ct.eu .ct-in1:not(.vazia):nth-child(3n+1) .a { fill: #E31B23; } .ct.eu .ct-in1:not(.vazia):nth-child(3n+2) .a { fill: #EAB308; } .ct.eu .ct-in1:not(.vazia):nth-child(3n) .a { fill: #16A34A; }
 .ct.sigma .ct-in1:not(.vazia):nth-child(even) .a { fill: #6B7280; }
 .ct-in1.vazia { color: rgba(255,255,255,.45); } .ct-in1.vazia .a { fill: none; stroke: rgba(255,255,255,.35); stroke-dasharray: 3 3; } .ct-in1.vazia .b, .ct-in1.vazia .c { display: none; }
@@ -996,14 +996,14 @@ body.na-geral form textarea:focus { border-color: #FACC15; box-shadow: 0 0 0 3px
 .ct-nos .ct-prox { opacity: .6; transform: scale(.72); }
 .ct-nos .ct-in1 { position: relative; z-index: 1; font-size: 10px; max-width: 100%; }
 .ct-nos .ct-in1 svg { width: 40px; height: 40px; }
-.ct-insignias .ct-tr1 svg .a, .ct-trofeus .ct-tr1 svg path.a, .ct-tr1 svg path.a { fill: #F6C709 !important; stroke: #6b3f00 !important; stroke-width: 1.2; }
-.ct-tr1 svg { filter: drop-shadow(0 0 6px rgba(246,199,9,.7)) drop-shadow(0 2px 3px rgba(0,0,0,.5)); }
+.ct-tr1 svg path.a { fill: #F3BA15 !important; stroke: none !important; }
+.ct-tr1 svg { filter: drop-shadow(0 0 6px rgba(250,215,3,.7)) drop-shadow(0 2px 3px rgba(0,0,0,.5)); }
 .ct-tr1 svg g { stroke: #4a2a00; }
 .ct-tr1 { position: relative; overflow: hidden; }
-.ct-tr1::after { content: ''; position: absolute; left: 50%; top: 0; width: 40px; height: 40px; margin-left: -20px; border-radius: 50%; background: linear-gradient(115deg, transparent 38%, rgba(255,255,255,.85) 50%, transparent 62%); background-size: 260% 100%; animation: tr-brilho 2.6s ease-in-out infinite; pointer-events: none; mix-blend-mode: screen; }
-@keyframes tr-brilho { 0%, 55% { background-position: 150% 0; } 100% { background-position: -50% 0; } }
-@media (prefers-reduced-motion: reduce) { .ct-tr1::after { animation: none; } }
-.ct-trofeus .ct-tit { color: #F6C709; }
+@keyframes tr-brilho { 0%, 55% { transform: translateX(0) rotate(20deg); } 100% { transform: translateX(110px) rotate(20deg); } }
+.tr-brilho { animation: tr-brilho 3.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .tr-brilho { animation: none; } }
+.ct-trofeus .ct-tit { color: #FAD703; }
 .ct-painel .ct-ins-fila { row-gap: 12px; padding: 10px 4px; border-radius: 14px; background: rgba(0,0,0,.3); }
 .ct-abas { position: relative; display: flex; gap: 4px; padding: 4px; border-radius: 16px; background: #0B0B0E; border: 1px solid rgba(255,255,255,.1); }
 .ct-abas button { width: auto; height: auto; min-width: 0; min-height: 54px; border-radius: 12px; border: none; background: none; color: rgba(255,255,255,.62); display: grid; justify-items: center; align-content: center; gap: 3px; padding: 6px 1px; font-size: calc(11px - (var(--n, 4) - 4) * .6px); font-weight: 800; letter-spacing: -.01em; overflow: hidden; }   /* 7 abas cabem no celular */
@@ -1520,7 +1520,12 @@ const MOLDURA_PATH = {
   estrela: 'M20 1.5L24.6 8.9L33.1 6.9L31.1 15.4L38.5 20L31.1 24.6L33.1 33.1L24.6 31.1L20 38.5L15.4 31.1L6.9 33.1L8.9 24.6L1.5 20L8.9 15.4L6.9 6.9L15.4 8.9Z',
   losango: 'M20 1.5L38.5 20L20 38.5L1.5 20Z'
 };
-const svgInsignia = it => it && ICO_INSIGNIA[it.icone] ? '<svg viewBox="0 0 40 40" aria-hidden="true"><path class="a" d="' + (MOLDURA_PATH[it.moldura] || MOLDURA_PATH.hexagono) + '"/><g transform="translate(10.5 10.5) scale(.79)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">' + ICO_INSIGNIA[it.icone] + '</g></svg>' : INSIGNIA;
+// insígnia normal (cartão): borda de prata em alto relevo e miolo afundado na cor do robô; a de jogo zerado (ouro) usa o dourado oficial da Parede (May 07/11 14:31)
+const DEFS_INSIG = '<defs><linearGradient id="insPrata" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".3" stop-color="#D8DDE3"/><stop offset=".6" stop-color="#8E959E"/><stop offset="1" stop-color="#3F454C"/></linearGradient><linearGradient id="insOuro" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#FBE931"/><stop offset=".22" stop-color="#FAD703"/><stop offset=".45" stop-color="#F3BA15"/><stop offset=".65" stop-color="#DE960B"/><stop offset=".82" stop-color="#CF8002"/><stop offset="1" stop-color="#995905"/></linearGradient><linearGradient id="insFundo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset=".45" stop-color="#000" stop-opacity=".12"/><stop offset="1" stop-color="#fff" stop-opacity=".22"/></linearGradient></defs>';
+// troféu de jogo zerado = a mesma insígnia do jogos.html: a silhueta do jogo, borda de ouro em alto relevo, miolo afundado (May 07/11 13:52 e 14:31)
+const FORMA_TROFEU = { gato: 'M32 58C20 58 10 52 9 42L5 37l5-3c-1-6 0-12 2-17L14 4l11 11c2-.6 4.5-1 7-1s5 .4 7 1L50 4l2 13c2 5 3 11 2 17l5 3-4 5c-1 10-11 16-23 16z' }, GOTA_TROFEU = 'M32 4c9 12 20 24 20 36a20 20 0 0 1-40 0C12 28 23 16 32 4z';
+const svgTrofeu = t => { const d = FORMA_TROFEU[t.icone] || GOTA_TROFEU; return '<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="trA" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="#FBE931"/><stop offset=".22" stop-color="#FAD703"/><stop offset=".45" stop-color="#F3BA15"/><stop offset=".65" stop-color="#DE960B"/><stop offset=".82" stop-color="#CF8002"/><stop offset="1" stop-color="#995905"/></linearGradient><linearGradient id="trF" x1="0" y1="0" x2=".2" y2="1"><stop offset="0" stop-color="#995905"/><stop offset=".3" stop-color="#CF8002"/><stop offset=".55" stop-color="#DE960B"/><stop offset=".8" stop-color="#F3BA15"/><stop offset="1" stop-color="#FAD703"/></linearGradient></defs><path d="' + d + '" fill="#1a0800" stroke="#1a0800" stroke-width="9" stroke-linejoin="round"/><path d="' + d + '" fill="url(#trF)" stroke="url(#trA)" stroke-width="6" stroke-linejoin="round"/><path d="' + d + '" fill="none" stroke="#2b0e00" stroke-opacity=".7" stroke-width="1.6" transform="translate(32 34) scale(.82) translate(-32 -34)"/><clipPath id="trC' + t.icone + '"><path d="' + d + '"/></clipPath><g clip-path="url(#trC' + t.icone + ')"><rect class="tr-brilho" x="-30" y="-10" width="16" height="90" fill="#fff" opacity=".75" transform="rotate(20 32 32)"/></g></svg>'; };
+const svgInsignia = (it, ouro) => { if (!(it && ICO_INSIGNIA[it.icone])) return INSIGNIA; const d = MOLDURA_PATH[it.moldura] || MOLDURA_PATH.hexagono; return '<svg viewBox="0 0 40 40" aria-hidden="true">' + DEFS_INSIG + '<path class="a" d="' + d + '"/><path d="' + d + '" fill="url(#insFundo)"/><path d="' + d + '" fill="none" stroke="#000" stroke-opacity=".45" stroke-width="1" transform="translate(20 20) scale(.8) translate(-20 -20)"/><path d="' + d + '" fill="none" stroke="url(#' + (ouro ? 'insOuro' : 'insPrata') + ')" stroke-width="3.2" stroke-linejoin="round"/><g transform="translate(10.5 11.2) scale(.79)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 -1px 0 rgba(0,0,0,.45))">' + ICO_INSIGNIA[it.icone] + '</g></svg>'; };
 async function abreCracha(chave) {
   if (!FICHA) { try { FICHA = JSON.parse(await lerArquivo('casa/fichas.json')); } catch (e) { showNote('Não consegui abrir a ficha. Confere a internet.', true); return; } }
   const k = ALIAS_FICHA[chave] || chave;
@@ -1570,7 +1575,7 @@ async function abreCracha(chave) {
   if (ins.length || !gente) fi.append(insBox);
   if ((f.trofeus || []).length) {   // troféus dos jogos zerados, cada jogo com a insígnia dele, em ouro (May 07/11 13:01)
     const tb = el('div', 'ct-ins ct-trofeus'), tf = el('div', 'ct-ins-fila');
-    f.trofeus.slice(-3).reverse().forEach(t => { const d = el('div', 'ct-in1 ct-tr1'); d.innerHTML = svgInsignia({ icone: t.icone, moldura: t.moldura || 'circulo' }); d.append(el('span', '', t.nome)); if (t.data) d.append(el('small', '', t.data.slice(0, 5))); tf.append(d); });
+    f.trofeus.slice(-3).reverse().forEach(t => { const d = el('div', 'ct-in1 ct-tr1'); d.innerHTML = svgTrofeu(t); d.append(el('span', '', t.nome)); if (t.data) d.append(el('small', '', t.data.slice(0, 5))); tf.append(d); });
     tb.append(el('div', 'ct-tit', 'Troféus'), tf); fi.append(tb);
   }
   fi.append(pe);
