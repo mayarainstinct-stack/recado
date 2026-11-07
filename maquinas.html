@@ -22,7 +22,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .topo .marca-sis i{width:10px;height:10px;border-radius:3px;background:var(--k1);box-shadow:0 0 10px var(--k1);transform:rotate(45deg)}
 .topo .tot{margin-left:auto;font-size:12px;color:var(--texto3)}
 /* a fileira de máquinas, igual à tela inicial de um console */
-#fundo.marca{background-size:120px 120px;background-repeat:repeat;background-position:center}#fundo.marca.foto{background-size:cover,cover;background-repeat:no-repeat;background-position:center,center 20%}
+#fundo.marca{background-position:center}
 .card .logo{position:absolute;right:-14px;top:-10px;width:116px;height:116px;opacity:.26;object-fit:contain;transform:rotate(-8deg)}.card .logo-txt{position:absolute;right:6px;top:-4px;font-size:64px;font-weight:800;font-style:italic;opacity:.2;letter-spacing:-.04em}
 .grade{flex:1;min-height:0;overflow-y:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:6px 16px 24px;align-content:start;animation:entra .32s cubic-bezier(.2,.8,.2,1)}
 .card{position:relative;overflow:hidden;min-height:132px;border-radius:20px;padding:12px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;text-align:left;color:#fff;font:inherit;cursor:pointer;background:linear-gradient(150deg,color-mix(in srgb,var(--c) 85%,#000),color-mix(in srgb,var(--c) 35%,#000));border:1px solid rgba(255,255,255,.18);box-shadow:0 10px 24px color-mix(in srgb,var(--c) 30%,transparent)}
@@ -107,6 +107,48 @@ const W_SVG={
 const W_DE={ps1:"ps",ps2:"ps",ps4:"ps",ps5:"ps",switch:"switch","3ds":"3ds",snes:"snes",x360:"x360"}
 const W_FOTO={ps1:"ps1",ps2:"ps2",ps4:"ps4",switch:"switch","3ds":"3ds",snes:"snes",x360:"x360"}
 const veu=(c,a,b)=>"linear-gradient(180deg,color-mix(in srgb,"+c+" "+a+"%,transparent),color-mix(in srgb,"+c+" "+b+"%,transparent))"   // a cor do console por cima da foto, de leve em cima a quase cheia embaixo
+const ESTILO=(location.hash.match(/estilo=([abcd])/)||[])[1]||"a"   // a confete · b neon · c 3D · d escuro com rastros (exemplos dela 19:04; ela escolhe entre os 4)
+// Fundos de console no espírito dos exemplos dela (19:04): a) confete de símbolos, b) símbolos grandes em neon, c) formas 3D flutuando, d) escuro com cubos e rastros de luz.
+// Tudo desenhado aqui em SVG (formas próprias, nada baixado nem logo oficial: Sigma 18:58), com a cor do console em degradê por cima (May 18:56).
+const FORMAS={
+  ps:['<path d="M0 -1L.87 .5H-.87Z"/>','<circle r=".85"/>','<path d="M-.7 -.7L.7 .7M.7 -.7L-.7 .7"/>','<rect x="-.75" y="-.75" width="1.5" height="1.5"/>'],
+  switch:['<rect x="-.42" y="-1" width=".84" height="2" rx=".42"/>','<circle r=".55"/>','<path d="M0 -.8V.8M-.8 0H.8"/>','<rect x="-.9" y="-.6" width="1.8" height="1.2" rx=".25"/>'],
+  "3ds":['<circle r=".8"/>','<path d="M0 -.9V.9M-.9 0H.9"/>','<rect x="-.9" y="-.65" width="1.8" height="1.3" rx=".2"/>','<path d="M-.6 .5L0 -.6L.6 .5"/>'],
+  snes:['<circle r=".8"/>','<path d="M-.3 -.9h.6v.6h.6v.6h-.6v.6h-.6v-.6h-.6v-.6h.6z"/>','<rect x="-.9" y="-.35" width="1.8" height=".7" rx=".35"/>','<circle r=".5"/>'],
+  x360:['<circle r=".85"/>','<path d="M-.6 -.6L.6 .6M.6 -.6L-.6 .6"/>','<circle r=".4"/>','<path d="M-.9 0A.9 .9 0 0 1 .9 0"/>'],
+  pc:['<rect x="-.7" y="-.7" width="1.4" height="1.4" rx=".15"/>','<path d="M-1 0H-.3L0 -.4H1"/>','<circle r=".25"/>','<path d="M-.6 .6L.6 -.6"/>']}
+const SNES_COR=['#E8434C','#F3C83C','#3DAA5C','#3E6FD8']
+function sorteio(semente){let a=0;for(const ch of semente)a=(a*31+ch.charCodeAt(0))>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const usa=(k,i,x,y,s,rot,extra)=>'<g transform="translate('+x.toFixed(1)+' '+y.toFixed(1)+') rotate('+rot.toFixed(0)+') scale('+s.toFixed(2)+')" '+(extra||'')+'>'+FORMAS[k][i%FORMAS[k].length]+'</g>'
+function desenhaFundo(est,k,cor){
+  const R=sorteio(k+est),W=400,H=300;let g='<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+cor+'"/><stop offset="1" stop-color="#03050c"/></linearGradient>'
+  g+='<linearGradient id="neon" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff5fd2"/><stop offset=".5" stop-color="#9aa8ff"/><stop offset="1" stop-color="#5ff2ff"/></linearGradient>'
+  g+='<linearGradient id="vol" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset=".45" stop-color="'+cor+'"/><stop offset="1" stop-color="#03050c"/></linearGradient>'
+  g+='<filter id="gl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter><filter id="bl"><feGaussianBlur stdDeviation="2.2"/></filter></defs>'
+  if(est==="a"){   // confete de símbolos de vários tamanhos
+    g+='<rect width="'+W+'" height="'+H+'" fill="'+cor+'"/><rect width="'+W+'" height="'+H+'" fill="url(#bg)" opacity=".35"/>'
+    for(let i=0;i<120;i++){const s=3+R()*9,cs=k==="snes"?SNES_COR[i%4]:'#fff';g+=usa(k,i,R()*W,R()*H,s,R()*360,'fill="'+(k==="snes"&&i%2?cs:'none')+'" stroke="'+cs+'" stroke-width="'+(1.6/s).toFixed(2)+'" opacity="'+(.18+R()*.45).toFixed(2)+'"')}
+  }else if(est==="b"){   // símbolos grandes em neon, com brilho
+    g+='<rect width="'+W+'" height="'+H+'" fill="url(#bg)"/><circle cx="330" cy="40" r="140" fill="'+cor+'" opacity=".55" filter="url(#bl)"/>'
+    const pos=[[300,70,48,-18],[200,190,38,12],[350,210,30,24],[120,90,26,-30]]
+    pos.forEach(([x,y,s,r],i)=>{g+=usa(k,i,x,y,s,r,'fill="none" stroke="url(#neon)" stroke-width="'+(5/s).toFixed(2)+'" filter="url(#gl)"')})
+    for(let i=0;i<40;i++)g+='<circle cx="'+(R()*W).toFixed(0)+'" cy="'+(R()*H).toFixed(0)+'" r="'+(R()*1.4+.3).toFixed(1)+'" fill="#fff" opacity="'+(R()*.7).toFixed(2)+'"/>'
+  }else if(est==="c"){   // formas 3D flutuando: uma cópia escura atrás dá o volume, as do fundo ficam borradas
+    g+='<rect width="'+W+'" height="'+H+'" fill="url(#bg)"/>'
+    for(let i=0;i<22;i++){const x=R()*W,y=R()*H,s=8+R()*30,r=R()*360,longe=s<16,f=longe?' filter="url(#bl)"':'',sw=(0.9).toFixed(2)
+      g+='<g'+f+' opacity="'+(longe?.55:.95)+'">'+usa(k,i,x+s*.18,y+s*.18,s,r,'fill="#03050c" stroke="#03050c" stroke-width="'+sw+'" opacity=".6"')+usa(k,i,x,y,s,r,'fill="url(#vol)" stroke="url(#vol)" stroke-width="'+sw+'"')+'</g>'}
+  }else{   // escuro com cubos e rastros de luz, os símbolos pequenos no meio
+    g+='<rect width="'+W+'" height="'+H+'" fill="#05070f"/><rect width="'+W+'" height="'+H+'" fill="url(#bg)" opacity=".55"/>'
+    for(let i=0;i<16;i++){const x=R()*W,y=R()*H,s=10+R()*34,o=(.15+R()*.35).toFixed(2);g+='<g opacity="'+o+'" transform="translate('+x.toFixed(0)+' '+y.toFixed(0)+') scale('+(s/20).toFixed(2)+')"><path d="M0 -10L9 -5V5L0 10L-9 5V-5Z" fill="#9aa3b8"/><path d="M0 -10L9 -5L0 0L-9 -5Z" fill="#e2e6f0"/><path d="M0 0V10L9 5V-5Z" fill="#5d6577"/></g>'}
+    const cores=['#ff4fa3','#4fe3ff','#7dff8a','#c58bff'];for(let i=0;i<4;i++){const x0=R()*W,y0=R()*H;g+='<path d="M'+x0.toFixed(0)+' '+y0.toFixed(0)+' q '+(R()*160-80).toFixed(0)+' '+(R()*-120).toFixed(0)+' '+(R()*220-110).toFixed(0)+' '+(R()*-60).toFixed(0)+'" fill="none" stroke="'+cores[i]+'" stroke-width="1.6" opacity=".8" filter="url(#gl)"/>'}
+    for(let i=0;i<4;i++)g+=usa(k,i,186+(i%2)*28,140+Math.floor(i/2)*24,8,0,'fill="none" stroke="#fff" stroke-width=".18" opacity=".9"')
+  }
+  return 'url("data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid slice">'+g+'</svg>')+'")'
+}
+function aplicaFundo(el,x,w,cheio){   // o fundo no estilo escolhido, com a cor do console por cima em degradê
+  if(!w)return;const k=x.robo?"pc":W_DE[x.console]
+  el.style.backgroundImage=veu(w.cor,cheio?10:0,cheio?70:45)+","+desenhaFundo(ESTILO,k,w.cor);el.style.backgroundSize="cover,cover";el.style.backgroundPosition="center,center";el.style.backgroundRepeat="no-repeat,no-repeat"
+}
 function fotoFundo(x){const k=W_FOTO[x.console];return k?foto("casa/fotos/maquinas/wallpaper/"+k+".jpg"):Promise.reject()}
 function wallpaper(x){const k=x.robo?"pc":W_DE[x.console];if(!k)return null;const [bg,g]=W_SVG[k],cor0=bg||cor(x);return{cor:cor0,url:'url("data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">'+g+'</svg>')+'")'}}
 const MARCA_SVG={ps1:"playstation",ps2:"playstation",ps4:"playstation",ps5:"playstation",switch:"switch","3ds":"3ds",snes:"snes",n64:"n64"},svgs={}
@@ -127,7 +169,7 @@ function grade(){
   const topo=el("div","topo"),ms2=el("div","marca-sis");ms2.append(el("i"),"Minha coleção");const t=D.total||{}
   topo.append(ms2,el("span","tot",D.maquinas.length+" máquinas · "+(t.zerados??"–")+" zerados"));app.append(topo)
   const g=el("div","grade");D.maquinas.forEach((x,j)=>{const b=el("button","card");b.style.setProperty("--c",cor(x));b.setAttribute("aria-label",x.nome)
-    {const w=wallpaper(x);if(w){b.style.setProperty("--c",w.cor);b.style.backgroundImage=w.url+",linear-gradient(150deg,color-mix(in srgb,"+w.cor+" 92%,#fff),color-mix(in srgb,"+w.cor+" 70%,#000))";b.style.backgroundSize="120px 120px,cover";fotoFundo(x).then(u=>{b.style.backgroundImage=veu(w.cor,30,92)+",url("+u+")";b.style.backgroundSize="cover,cover";b.style.backgroundPosition="center,center"}).catch(()=>{})}}
+    {const w=wallpaper(x);if(w){b.style.setProperty("--c",w.cor);aplicaFundo(b,x,w,false)}}
     if(x.robo&&ROBO[x.robo]){const im=el("img","rob");im.alt="";im.src=ROBO[x.robo][2];b.append(im)}
     const st=x.stats;b.append(el("span","cur",CURTO[x.console]||(x.robo?"PC":"")),el("b","",x.nome),el("small","",st?(st.zerados||0)+" zerados · "+(st.jogos||0)+" jogos":(x.modelo||x.papel||"")))
     b.onclick=()=>monta(j);g.append(b)})
@@ -137,7 +179,7 @@ function grade(){
 function monta(i){
   atual=i;const ms=D.maquinas,m=ms[i],k=cor(m);try{sessionStorage.setItem("maq-atual",m.id)}catch(e){}
   document.documentElement.style.setProperty("--k1",k)
-  {const w=wallpaper(m);fundo.classList.toggle("marca",!!w);fundo.classList.remove("foto");fundo.style.backgroundImage=w?w.url:"none";fundo.style.backgroundColor=w?w.cor:"";if(w)fotoFundo(m).then(u=>{if(atual!==i)return;fundo.classList.add("foto");fundo.style.backgroundImage=veu(w.cor,25,85)+",url("+u+")"}).catch(()=>{})}   // fundo = o logo da marca repetido, não a foto (May 18:45); as fotos ficam na aba Fotos
+  {const w=wallpaper(m);fundo.classList.toggle("marca",!!w);fundo.style.backgroundImage="none";fundo.style.backgroundColor=w?w.cor:"";if(w)aplicaFundo(fundo,m,w,true)}   // fundo = o logo da marca repetido, não a foto (May 18:45); as fotos ficam na aba Fotos
   app.replaceChildren()
   const topo=el("div","topo"),vt=el("button","volta-col","← Coleção");vt.onclick=grade;const t=D.total||{}
   topo.append(vt,el("span","tot",(t.zerados??"–")+" zerados"));app.append(topo)
