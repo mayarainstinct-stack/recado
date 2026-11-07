@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.122">
+<meta name="app-versao" content="2026-11-07.123">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -724,6 +724,19 @@ img.esq { min-height: 140px; }
 .pl-svg { width: 100%; height: 100%; display: block; touch-action: manipulation; }
 .pl-terreno { fill: #12161B; stroke: #3A4350; stroke-width: .05; stroke-dasharray: .25 .15; }
 .pl-parede { fill: none; stroke: #E7E2D8; stroke-width: .09; transition: stroke .3s; } .pl-piso { transition: filter .3s; }
+.pl-caixa.cad { position: relative; background: linear-gradient(rgba(34,211,238,.10) 1px, transparent 1px) 0 0 / 12px 12px, linear-gradient(90deg, rgba(34,211,238,.10) 1px, transparent 1px) 0 0 / 12px 12px, #0B1220; border: 1px solid #1E3A5F; border-radius: 6px; padding: 24px 0 30px; }
+.cad-barra, .cad-status { position: absolute; left: 0; right: 0; display: flex; align-items: center; gap: 10px; padding: 0 10px; background: #16233A; font: 11px Consolas, monospace; color: #7DD3FC; z-index: 2; } .cad-barra { top: 0; height: 22px; border-bottom: 1px solid #1E3A5F; } .cad-barra b { color: #E0F2FE; } .cad-coord { margin-left: auto; color: #FACC15; }
+.cad-status { bottom: 0; height: 28px; border-top: 1px solid #1E3A5F; } .cad-st { color: #64748B; letter-spacing: .08em; }
+.cad-nivel { width: 26px; height: 20px; border-radius: 2px; border: 1px solid #22D3EE; background: transparent; color: #22D3EE; font: 700 11px Consolas, monospace; } .cad-nivel.on { background: #22D3EE; color: #0B1220; }
+.cad-terreno { fill: none; stroke: #475569; stroke-width: .04; stroke-dasharray: .3 .18; }
+.cad-c { cursor: pointer; transition: transform .35s cubic-bezier(.2,.8,.2,1); } .cad-piso { fill: rgba(11,18,32,.001); } .cad-parede { fill: none; stroke: #F8FAFC; stroke-width: .06; }
+.cad-c.on { transform: translateY(-.14px); } .cad-c.on .cad-piso { fill: rgba(34,211,238,.14); } .cad-c.on .cad-parede { stroke: #22D3EE; stroke-width: .09; filter: drop-shadow(0 0 .12px #22D3EE); }
+.cad-nome { fill: #E0F2FE; font-family: Consolas, monospace; font-weight: 700; text-anchor: middle; dominant-baseline: central; pointer-events: none; } .cad-area { fill: #7DD3FC; font-family: Consolas, monospace; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.cad-cota { stroke: #FACC15; stroke-width: .022; } .cad-cota-t { fill: #FACC15; font-family: Consolas, monospace; text-anchor: middle; pointer-events: none; }
+.cad-coisa { fill: #67E8F9; font-family: Consolas, monospace; pointer-events: none; }
+.desenhando .cad-parede, .desenhando .cad-cota { stroke-dasharray: 1; animation: cad-desenha .9s cubic-bezier(.4,0,.2,1) both; } .desenhando text { animation: cad-texto .5s .5s both; }
+@keyframes cad-desenha { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } } @keyframes cad-texto { from { opacity: 0; } }
+.pl-tela .pl-info-topo b { font-family: Consolas, monospace; } .pl-tela .pl-itens li { font-family: Consolas, monospace; font-size: 12.5px; background: #0B1220; color: #E0F2FE; border: 1px solid #22D3EE; border-radius: 2px; }
 .pl-c { cursor: pointer; } .pl-c text { fill: #F5F1E8; font-weight: 800; text-anchor: middle; dominant-baseline: central; pointer-events: none; font-family: inherit; paint-order: stroke; stroke: rgba(0,0,0,.55); stroke-width: .06; }
 .pl-c text.pl-qtd { font-weight: 700; fill: #CFC8BA; }
 .pl-c.on .pl-parede { stroke: var(--c, #14B8A6); stroke-width: .13; filter: drop-shadow(0 0 .18px var(--c, #14B8A6)); } .pl-c.on .pl-piso { filter: brightness(1.35) saturate(1.2); }
@@ -3934,7 +3947,7 @@ function arrastaPostits(q, salva) {
 // tocou no cômodo, a planta voa até ele (zoom) e embaixo aparece o que tem ali; "Casa inteira" volta
 // Planta da casa (May, 07/11/2026 12:40 e 12:49): mapa de verdade, com o piso de cada cômodo; tocou, a planta voa até ele e as coisas de lá vão surgindo
 // (fade liberado aqui, exceção dela só pra este mapa). Dados: casa/planta-mapa.json (cômodos em metros; itens = o que tem, tirado do inventário)
-function abrePlanta(m) {
+function abrePlanta(m) {   // planta com cara de AutoCAD, igual ao botão (May, 07/11/2026 15:50): 4 níveis de detalhe que se desenham; tocou no cômodo, ele sobe, a próxima camada se desenha e o que tem nele aparece embaixo
   tela(m.nome, async c => {
     const cor = (COR_ASSUNTO.find(([re]) => re.test('Casa')) || [])[1] || 'var(--accent)'; painel.style.setProperty('--c', cor); c.classList.add('pl-tela');
     cabecalho({ icone: 'home', sub: 'toca num cômodo' });
@@ -3942,48 +3955,61 @@ function abrePlanta(m) {
     let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { nota.textContent = 'Não consegui abrir a planta. Confere a internet.'; return; }
     nota.remove();
     const NS = 'http://www.w3.org/2000/svg', ns = (t, at) => { const e = document.createElementNS(NS, t); Object.entries(at || {}).forEach(([a, v]) => e.setAttribute(a, v)); return e; };
-    const svg = ns('svg', { class: 'pl-svg', preserveAspectRatio: 'xMidYMid meet' }), cx = elD('div', 'pl-caixa'), semMov = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const defs = ns('defs'); svg.append(defs);
-    const padrao = (id, w, h, fundo, desenho) => { const pt = ns('pattern', { id, width: w, height: h, patternUnits: 'userSpaceOnUse' }); pt.append(ns('rect', { width: w, height: h, fill: fundo })); desenho.forEach(([t, at]) => pt.append(ns(t, at))); defs.append(pt); };
-    padrao('pl-madeira', 0.9, 0.18, '#3A2A1F', [['rect', { x: 0, y: 0.17, width: 0.9, height: 0.012, fill: '#24190F' }], ['rect', { x: 0.42, y: 0, width: 0.012, height: 0.18, fill: '#2A1D13' }], ['rect', { x: 0.05, y: 0.06, width: 0.3, height: 0.01, fill: '#46342A', opacity: 0.7 }]]);
-    padrao('pl-lajota', 0.4, 0.4, '#2B323C', [['rect', { x: 0, y: 0, width: 0.4, height: 0.015, fill: '#1C2128' }], ['rect', { x: 0, y: 0, width: 0.015, height: 0.4, fill: '#1C2128' }]]);
-    padrao('pl-grama', 0.3, 0.3, '#17331F', [['circle', { cx: 0.07, cy: 0.09, r: 0.022, fill: '#21502C' }], ['circle', { cx: 0.21, cy: 0.22, r: 0.018, fill: '#1E4728' }], ['circle', { cx: 0.24, cy: 0.06, r: 0.014, fill: '#2A5E36' }]]);
-    padrao('pl-agua', 0.8, 0.4, '#0B4B66', [['path', { d: 'M0 .2 q .2 -.1 .4 0 t .4 0', fill: 'none', stroke: '#2C86A8', 'stroke-width': 0.03, opacity: 0.8 }]]);
-    padrao('pl-concreto', 0.5, 0.5, '#2A2C2F', [['circle', { cx: 0.1, cy: 0.12, r: 0.012, fill: '#3A3D41' }], ['circle', { cx: 0.33, cy: 0.38, r: 0.01, fill: '#35383C' }], ['circle', { cx: 0.42, cy: 0.1, r: 0.008, fill: '#1F2124' }]]);
-    const pisoDe = n => /piscina/i.test(n) ? 'agua' : /banheiro/i.test(n) ? 'lajota' : /quarto|sala/i.test(n) ? 'madeira' : /cozinha|copa|banheiro|lavanderia/i.test(n) ? 'lajota' : /garagem|churras/i.test(n) ? 'concreto' : 'grama';
-    const todo = [-0.4, -0.4, d.largura + 0.8, d.altura + 0.8]; let vb = todo.slice(), anim = 0;
+    const svg = ns('svg', { class: 'pl-svg', preserveAspectRatio: 'xMidYMid meet' }), cx = elD('div', 'pl-caixa cad'), semMov = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const barra = elD('div', 'cad-barra'), camada = elD('span', '', ''), coord = elD('span', 'cad-coord', ''); barra.append(elD('b', '', 'PLANTA.DWG'), camada, coord);
+    const status = elD('div', 'cad-status'), niveis = [];
+    const NOMES = ['PAREDES', 'CÔMODOS', 'COTAS', 'COISAS'];
+    const todo = [-0.6, -0.6, d.largura + 1.2, d.altura + 1.2]; let vb = todo.slice(), anim = 0, nivel = 0, sel = null;
     const poe = v => svg.setAttribute('viewBox', v.map(x => x.toFixed(3)).join(' '));
-    const voa = alvo => { const de = vb.slice(), t0 = performance.now(), dur = semMov ? 1 : 520; cancelAnimationFrame(anim);
-      const passo = t => { const k = Math.min(1, (t - t0) / dur), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; vb = de.map((x, j) => x + (alvo[j] - x) * e); poe(vb); if (k < 1) anim = requestAnimationFrame(passo); }; anim = requestAnimationFrame(passo); };
+    const voa = alvo => { const de = vb.slice(), t0 = performance.now(), dur = semMov ? 1 : 560; cancelAnimationFrame(anim);
+      const passo = t => { const k = Math.max(0, Math.min(1, (t - t0) / dur)), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; vb = de.map((x, j) => x + (alvo[j] - x) * e); poe(vb); if (k < 1) anim = requestAnimationFrame(passo); }; anim = requestAnimationFrame(passo); };   // k preso entre 0 e 1: relógio do quadro atrás do performance.now() não explode o viewBox
     poe(vb);
-    svg.append(ns('rect', { x: -0.08, y: -0.08, width: d.largura + 0.16, height: d.altura + 0.16, rx: 0.1, class: 'pl-terreno' }));
-    const info = elD('div', 'pl-info'), topo = elD('div', 'pl-info-topo'), nomeEl = elD('b', '', 'Casa inteira'), sub = elD('span', '', d.comodos.length + ' cômodos · toca num pra ver o que tem'), lista = elD('ul', 'pl-itens'), acoes = elD('div', 'pl-acoes');
+    const num = v => String(Math.round(v * 100) / 100).replace('.', ',');
+    svg.append(ns('rect', { x: 0, y: 0, width: d.largura, height: d.altura, class: 'cad-terreno' }));
+    const camadas = [ns('g', { class: 'cad-l1' }), ns('g', { class: 'cad-l2' }), ns('g', { class: 'cad-l3' }), ns('g', { class: 'cad-l4' })]; camadas.forEach(g => { g.style.display = 'none'; svg.append(g); });
+    const linha = (g, x1, y1, x2, y2, cls) => { const l = ns('line', { x1, y1, x2, y2, class: cls, pathLength: 1 }); g.append(l); return l; };
+    d.comodos.forEach(k => {
+      const g = ns('g', { class: 'cad-c', 'data-nome': k.nome }); k.g = g;
+      g.append(ns('rect', { x: k.x, y: k.y, width: k.w, height: k.h, class: 'cad-piso' }), ns('rect', { x: k.x, y: k.y, width: k.w, height: k.h, class: 'cad-parede', pathLength: 1 }));
+      camadas[0].append(g); g.addEventListener('click', () => toca(k));
+      const fs = Math.min(0.36, k.w * 1.6 / Math.max(6, k.nome.length), k.h / 3.2), t = ns('text', { x: k.x + k.w / 2, y: k.y + k.h / 2 - fs * .35, 'font-size': fs.toFixed(3), class: 'cad-nome' }); t.textContent = k.nome.toUpperCase();
+      const a = ns('text', { x: k.x + k.w / 2, y: k.y + k.h / 2 + fs * .85, 'font-size': (fs * .7).toFixed(3), class: 'cad-area' }); a.textContent = num(k.w * k.h) + ' m²'; camadas[1].append(t, a);
+      if (k.w > 0.8 && k.h > 0.8) {   // cota de largura embaixo e de comprimento do lado
+        const yb = k.y + k.h - 0.18, xr = k.x + k.w - 0.18, cf = Math.min(0.2, k.w / 9, k.h / 9);
+        linha(camadas[2], k.x + .08, yb, k.x + k.w - .08, yb, 'cad-cota'); linha(camadas[2], k.x + .08, yb - .07, k.x + .08, yb + .07, 'cad-cota'); linha(camadas[2], k.x + k.w - .08, yb - .07, k.x + k.w - .08, yb + .07, 'cad-cota');
+        const tw = ns('text', { x: k.x + k.w / 2, y: yb - .06, 'font-size': cf.toFixed(3), class: 'cad-cota-t' }); tw.textContent = num(k.w); camadas[2].append(tw);
+        linha(camadas[2], xr, k.y + .08, xr, k.y + k.h - .3, 'cad-cota');
+        const th = ns('text', { x: xr - .06, y: k.y + k.h / 2, 'font-size': cf.toFixed(3), class: 'cad-cota-t', transform: 'rotate(-90 ' + (xr - .06) + ' ' + (k.y + k.h / 2) + ')' }); th.textContent = num(k.h); camadas[2].append(th);
+      }
+      (k.itens || []).slice(0, 6).forEach((it, n) => { const ft = Math.min(0.17, k.w / 16), tx = ns('text', { x: k.x + .14, y: k.y + .3 + n * ft * 1.45, 'font-size': ft.toFixed(3), class: 'cad-coisa' }); tx.textContent = '· ' + it; camadas[3].append(tx); });
+    });
+    const desenha = n => {   // liga as camadas até n; a nova se desenha (as linhas correm) e o texto aparece (fade liberado só aqui, May 12:49)
+      camadas.forEach((g, k) => { g.style.display = k < n ? '' : 'none'; });
+      const nova = camadas[n - 1]; if (!semMov && n > nivel) { nova.classList.remove('desenhando'); void nova.getBBox(); nova.classList.add('desenhando'); }
+      nivel = n; camada.textContent = 'CAMADA ' + n + ' · ' + NOMES[n - 1]; niveis.forEach((b, k) => b.classList.toggle('on', k < n));
+    };
+    const info = elD('div', 'pl-info'), topo = elD('div', 'pl-info-topo'), nomeEl = elD('b', '', 'Casa inteira'), sub = elD('span', '', 'terreno 6 × 30 m · ' + d.comodos.length + ' cômodos'), lista = elD('ul', 'pl-itens'), acoes = elD('div', 'pl-acoes');
     const inteira = elD('button', 'pl-bt', 'Casa inteira'); inteira.type = 'button';
     topo.append(nomeEl, sub); info.append(topo, lista, acoes);
     const surge = els => els.forEach((el, k) => { if (!semMov && el.animate) el.animate([{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { duration: 320, delay: 80 + k * 70, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'backwards' }); });
-    const mostra = k => {
-      svg.querySelectorAll('.pl-c.on').forEach(x => x.classList.remove('on'));
-      lista.replaceChildren(); acoes.replaceChildren();
-      if (!k) { voa(todo); nomeEl.textContent = 'Casa inteira'; sub.textContent = d.comodos.length + ' cômodos · toca num pra ver o que tem'; cabecalho({ icone: 'home', sub: 'toca num cômodo' }); surge([nomeEl, sub]); return; }
+    const toca = k => {
+      if (sel) sel.g.classList.remove('on'); sel = k; lista.replaceChildren(); acoes.replaceChildren();
+      if (!k) { voa(todo); nomeEl.textContent = 'Casa inteira'; sub.textContent = 'terreno 6 × 30 m · ' + d.comodos.length + ' cômodos'; coord.textContent = ''; cabecalho({ icone: 'home', sub: 'toca num cômodo' }); surge([nomeEl, sub]); return; }
       k.g.classList.add('on');
-      const fol = Math.max(k.w, k.h) * 0.35 + 0.5, alvo = [k.x - fol, k.y - fol, k.w + fol * 2, k.h + fol * 2], asp = svg.clientWidth / Math.max(1, svg.clientHeight);
+      const fol = Math.max(k.w, k.h) * 0.4 + 0.6, alvo = [k.x - fol, k.y - fol, k.w + fol * 2, k.h + fol * 2], asp = svg.clientWidth / Math.max(1, svg.clientHeight);
       if (alvo[2] / alvo[3] < asp) { const nw = alvo[3] * asp; alvo[0] -= (nw - alvo[2]) / 2; alvo[2] = nw; } else { const nh = alvo[2] / asp; alvo[1] -= (nh - alvo[3]) / 2; alvo[3] = nh; }
-      voa(alvo); nomeEl.textContent = k.nome; sub.textContent = String(k.w).replace('.', ',') + ' × ' + String(k.h).replace('.', ',') + ' m'; cabecalho({ icone: 'home', sub: k.nome });
+      voa(alvo); if (nivel < 4) desenha(nivel + 1);
+      nomeEl.textContent = k.nome; sub.textContent = num(k.w) + ' × ' + num(k.h) + ' m · ' + num(k.w * k.h) + ' m²'; coord.textContent = 'X ' + num(k.x) + '  Y ' + num(k.y); cabecalho({ icone: 'home', sub: k.nome });
       const its = k.itens || []; its.forEach(t => lista.append(elD('li', '', t)));
-      if (!its.length) lista.append(elD('li', 'vazio', k.obs || 'Ainda não tem nada anotado daqui.'));
+      if (!its.length) lista.append(elD('li', 'vazio', k.obs || 'Ainda não tem nada anotado daqui.')); else if (k.obs) lista.append(elD('li', 'vazio', k.obs));
       acoes.append(inteira);
       if (k.doc) { const ab = elD('button', 'pl-bt on', 'Inventário completo'); ab.type = 'button'; ab.onclick = () => abreCartoes({ nome: k.nome, arq: k.doc }); acoes.append(ab); }
       surge([nomeEl, sub, ...lista.children, acoes]);
     };
-    inteira.onclick = () => mostra(null);
-    d.comodos.forEach(k => {
-      const g = ns('g', { class: 'pl-c' }), fs = Math.min(0.42, k.w * 1.7 / Math.max(6, k.nome.length), k.h / 2.8);
-      g.append(ns('rect', { x: k.x, y: k.y, width: k.w, height: k.h, fill: 'url(#pl-' + pisoDe(k.nome) + ')', class: 'pl-piso' }), ns('rect', { x: k.x, y: k.y, width: k.w, height: k.h, class: 'pl-parede' }));
-      const tx = ns('text', { x: k.x + k.w / 2, y: k.y + k.h / 2 - ((k.itens || []).length ? fs * 0.45 : 0), 'font-size': fs.toFixed(3) }); tx.textContent = k.nome; g.append(tx);
-      if ((k.itens || []).length) { const q = ns('text', { x: k.x + k.w / 2, y: k.y + k.h / 2 + fs * 0.75, 'font-size': (fs * 0.7).toFixed(3), class: 'pl-qtd' }); q.textContent = k.itens.length + ' coisas'; g.append(q); }
-      k.g = g; svg.append(g); g.addEventListener('click', () => mostra(k));
-    });
-    cx.append(svg); c.append(cx, info);
+    inteira.onclick = () => toca(null);
+    NOMES.forEach((t, k) => { const b = elD('button', 'cad-nivel', String(k + 1)); b.type = 'button'; b.title = t; b.onclick = () => desenha(k + 1); niveis.push(b); status.append(b); });
+    status.prepend(elD('span', 'cad-st', 'DETALHE'));
+    cx.append(barra, svg, status); c.append(cx, info); desenha(1);
   });
 }
 // Pendências como sistema financeiro (May, 07/11/2026 12:43: "quase uma planilha, pra ver e pra lançar por popup") e Contas do mês (12:47).
