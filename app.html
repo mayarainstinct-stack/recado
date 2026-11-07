@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.77">
+<meta name="app-versao" content="2026-11-07.78">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -650,6 +650,9 @@ img.esq { min-height: 140px; }
 .pp-ops { display: grid; grid-template-columns: repeat(var(--n, 2), 1fr); gap: 8px; margin-bottom: 12px; }
 .pp-op { width: 100%; flex: 1 1 0; min-width: 0; height: auto; min-height: 46px; padding: 8px 10px; border-radius: 999px; border: 1.5px solid color-mix(in srgb, var(--quem) 50%, var(--line)); background: transparent; color: var(--fg); font-size: 14px; font-weight: 700; line-height: 1.2; cursor: pointer; overflow-wrap: break-word; hyphens: auto; transition: transform .12s; }
 .pp-op.rec { background: var(--quem); border-color: var(--quem); color: #fff; }
+.pp-midia { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin: 0 0 14px; }
+.pp-midia > * { flex: 0 0 100%; scroll-snap-align: center; height: 38vh; width: auto; border-radius: 16px; background: #000 center / contain no-repeat; border: 1px solid var(--line); padding: 0; }
+.pp-midia.varias > * { flex-basis: 86%; } .pp-midia video { object-fit: contain; }
 .pp-op:active { transform: scale(.95); }
 .pp-aviso { flex: 1; font-size: 13px; color: var(--muted); }
 .pp-outra { display: flex; gap: 8px; align-items: flex-end; text-align: left; }
@@ -2454,7 +2457,7 @@ let FIXAS = {}, fixasLidas = false, fixasProntas = false, fixaLocal = [];   // p
 try { fixaLocal = JSON.parse(localStorage.getItem('fixa-local') || '[]'); } catch (e) {}
 function carregaFixas() {
   if (fixasLidas || !token) return; fixasLidas = true;
-  lerArquivo(ARQ_FIXAS).then(t => { FIXAS = JSON.parse(t || '{}'); fixasProntas = true; if (FILE === GERAL.arq) render(lastItems, true); }).catch(e => { fixasLidas = false; if (e && e.status === 404) { fixasProntas = true; fixasLidas = true; } });
+  lerArquivo(ARQ_FIXAS).then(t => { FIXAS = JSON.parse(t || '{}'); fixasProntas = true; if (FILE === GERAL.arq) render(lastItems, true); }).catch(e => { fixasLidas = false; if (e && e.status === 404) { fixasProntas = true; fixasLidas = true; if (FILE === GERAL.arq) render(lastItems, true); } });
 }
 async function gravaFixa(k, on) {   // lê o mais novo e grava por cima com o sha dele; 409 = alguém gravou junto, tenta de novo
   for (let t = 0; t < 4; t++) {
@@ -2519,8 +2522,14 @@ function abrePergunta(it, g, alts, k, conta) {   // padrão aprovado no HOUSE-BR
   const fecha = () => { fixaPopVista.add(k); ov.classList.add('saindo'); document.removeEventListener('keydown', esc); setTimeout(() => { ov.remove(); if (FILE === GERAL.arq) render(lastItems, true); }, 180); };
   const esc = (e) => { if (e.key === 'Escape') fecha(); };
   const manda = (txt) => { mandaFixa(it, false, txt); fecha(); };
+  // pergunta com foto ou vídeo (May, 07/11/2026 10:31: "um balão que me mostra imagens e vídeos pra eu clicar em aprovo, reprovo ou digitar"): a mídia vem no popup
+  const midia = (it.fotos || []).filter(Boolean), md = document.createElement('div'); md.className = 'pp-midia' + (midia.length > 1 ? ' varias' : '');
+  midia.forEach(pth => {
+    if (/\.(mp4|webm|mov)$/i.test(pth)) { const v = document.createElement('video'); v.controls = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'metadata'; fotoUrl(pth, true).then(u => { v.src = u; }).catch(() => {}); md.append(v); }
+    else { const b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', 'Ver maior'); fotoUrl(pth).then(u => { b.style.backgroundImage = 'url(' + u + ')'; b.onclick = () => fotoUrl(pth, true).then(o => abreZoom(o, pth, midia)); }).catch(() => {}); md.append(b); }
+  });
   const ops = document.createElement('div'); ops.className = 'pp-ops';
-  const lista = alts.length >= 2 ? alts.map(([l, t]) => { const rec = /^\*/.test(t); t = t.replace(/^\*\s*/, ''); return [t, '✅ ' + l + ') ' + t, rec]; }) : [['Não', '❌ não', false], ['Sim', '✅ sim', true]];
+  const lista = alts.length >= 2 ? alts.map(([l, t]) => { const rec = /^\*/.test(t); t = t.replace(/^\*\s*/, ''); return [t, '✅ ' + l + ') ' + t, rec]; }) : midia.length ? [['Reprovo', '❌ reprovo', false], ['Aprovo', '✅ aprovo', true]] : [['Não', '❌ não', false], ['Sim', '✅ sim', true]];
   if (alts.length === 0 && /(?:^|[\s(:;])[a-h]\)\s/i.test(String(it.text || '')) && alternativasDe(it.text).length > 4) { const av2 = document.createElement('div'); av2.className = 'pp-aviso'; av2.textContent = 'Essa pergunta veio com mais de 4 alternativas: responde escrevendo, ou pede pro robô dividir.'; ops.append(av2); }
   else ops.style.setProperty('--n', lista.length === 4 ? 2 : lista.length), lista.some(([t]) => t.length > 22) && ops.classList.add('lista'), lista.forEach(([t, v, rec]) => {   // alternativa comprida: uma por linha, deitada   // 4 = 2 por linha, pra palavra não quebrar no meio
    const b = document.createElement('button'); b.type = 'button'; b.className = 'pp-op' + (rec ? ' rec' : ''); b.textContent = t; b.onclick = () => manda(v); ops.append(b); });
@@ -2531,7 +2540,7 @@ function abrePergunta(it, g, alts, k, conta) {   // padrão aprovado no HOUSE-BR
   const env = document.createElement('button'); env.type = 'button'; env.setAttribute('aria-label', 'Mandar'); env.innerHTML = icone('reply'); env.onclick = () => { const t = ta.value.trim(); if (t) manda(t); };
   outra.append(ta, env);
   const x = document.createElement('button'); x.type = 'button'; x.className = 'pp-x'; x.setAttribute('aria-label', 'Responder depois'); x.innerHTML = icone('close'); x.onclick = fecha;
-  card.append(x, av, nm, perg, ops, outra); ov.append(card);
+  card.append(x, av, nm, perg, ...(midia.length ? [md] : []), ops, outra); ov.append(card);
   ov.addEventListener('click', e => { if (e.target === ov) fecha(); });
   document.addEventListener('keydown', esc);
   document.body.append(ov);
