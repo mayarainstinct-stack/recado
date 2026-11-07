@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.126">
+<meta name="app-versao" content="2026-11-07.127">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -1205,6 +1205,7 @@ const ICONES_SVG = {
   close: '<path d="M6 6l12 12M18 6 6 18"/>',
   back: '<path d="M19 12H5M11 5l-7 7 7 7"/>',
   down: '<path d="M12 5v14M5 12l7 7 7-7"/>',
+  grade: '<rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/>',
   more: '<circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/>',
   reply: '<path d="M9 14 4 9l5-5M4 9h10a6 6 0 0 1 6 6v3"/>',
   retry: '<path d="M4 12a8 8 0 1 0 2.3-5.7M4 4v4h4"/>',
@@ -2385,7 +2386,9 @@ let onlineGrupoLista = [], ultimaOnlineGrupo = 0, onlineGrupoCarregando = null;
 const semanaEl = document.getElementById('semana');
 let semanaToque = 0;
 semanaEl.addEventListener('click', e => { const t = Date.now(); if (t - semanaToque > 400) { semanaToque = t; return; } semanaToque = 0; e.stopPropagation();
-  geralLiberada = true; if (typeof fechaPainel === 'function') fechaPainel(); if (!sending) abrir(GERAL).catch(() => {}); });
+  if (typeof fechaPainel === 'function') fechaPainel(); if (sending) return;
+  if (FILE === GERAL.arq) { abrir(TRAB).catch(() => {}); return; }   // da Geral volta pro Trabalho com os mesmos dois toques (May 16:25)
+  geralLiberada = true; abrir(GERAL).catch(() => {}); });
 function mostraSemana(lista) {
   // número de antes da semana zerar não vale (o Vega parado desde 11:54 deixava 93% no anel depois do zerar das 15h, May 06/11/2026 19:21)
   const agora = Date.now() / 1000, fresco = p => p.semanaReset ? p.semanaReset > agora : Date.now() - Date.parse(p.ultimaAtualizacao || 0) < 6 * 3600e3;
@@ -3107,7 +3110,8 @@ form.addEventListener('submit', async e => {
 
 const mais = document.getElementById('mais');
 const menu = document.getElementById('menu');
-mais.onclick = e => { e.stopPropagation(); if (typeof menuCasa !== 'undefined' && menu.parentElement !== menuCasa) menuCasa.append(menu);
+mais.onclick = e => { e.stopPropagation(); if (FILE === GERAL.arq) { menu.hidden = true; abreMenu.click(); return; }   // na Geral o botão é o Menu direto (May 16:25)
+  if (typeof menuCasa !== 'undefined' && menu.parentElement !== menuCasa) menuCasa.append(menu);
   if (typeof ocultosConversa !== 'undefined' && ocultosConversa) { [irGeral.hidden, irTrab.hidden, abreMenu.hidden] = ocultosConversa; ocultosConversa = null; } menu.classList.remove('no-painel'); menu.hidden = !menu.hidden; mais.setAttribute('aria-expanded', String(!menu.hidden)); };
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
@@ -3271,6 +3275,7 @@ function mostraLista() {
 function abrir(c) {
   store.set('ultima-conv', c.arq); store.set('ultima-nome', c.nome);
   if (c.arq === TRAB.arq) geralLiberada = false;
+  mais.innerHTML = icone(c.arq === GERAL.arq ? 'grade' : 'more'); mais.setAttribute('aria-label', c.arq === GERAL.arq ? 'Menu' : 'Mais opções');
   irGeral.hidden = c.arq === GERAL.arq || escondeGeral(); irTrab.hidden = c.arq === TRAB.arq; abreMenu.hidden = c.arq !== GERAL.arq;   // Trabalho é só trabalho; Casa juntada na Geral (pedido dela, 02/11/2026)
   if (typeof ocultosConversa !== 'undefined') ocultosConversa = null;
   document.body.classList.toggle('na-geral', c.arq === GERAL.arq);   // a Geral tem cara de casa (grafite, gamer); o Trabalho fica simples e sério (May, 07/11/2026 12:00)
