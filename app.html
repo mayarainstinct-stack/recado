@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.105">
+<meta name="app-versao" content="2026-11-07.106">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -177,7 +177,7 @@ textarea:focus-visible { outline: none; }
 .marca-cor { text-shadow: 0 0 3px rgba(0,0,0,.9), 0 1px 1px rgba(0,0,0,.8); background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.12) 48%, rgba(0,0,0,.12) 52%, rgba(0,0,0,.42)), var(--quem);   /* pílula de vidro em todo mundo (May, 06/11/2026 01:53) */
   color: #FFFFFF; border-radius: 999px;
   padding: 1px 9px; margin: 0 1px; font-size: 13px; display: inline-block; line-height: 1.6; vertical-align: text-bottom; }
-.mencoes { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-start; flex-direction: row-reverse; margin: 0 max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); }
+.mencoes { display: flex; gap: 6px; flex-wrap: wrap-reverse; justify-content: flex-start; flex-direction: row-reverse; margin: 0 max(24px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); }
 .mencoes button { width: auto; height: auto; padding: 4px 12px; border-radius: 999px; font-size: 13.5px; font-weight: 700;
   background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.12) 48%, rgba(0,0,0,.12) 52%, rgba(0,0,0,.42)), var(--quem); color: #FFFFFF; border: none; opacity: .8; text-shadow: 0 0 3px rgba(0,0,0,.9), 0 1px 1px rgba(0,0,0,.8); }
 .mencoes button.sel { opacity: 1; outline: 2px solid #FFFFFF; outline-offset: -2px; }
@@ -761,7 +761,7 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 .ie-post.pegando { z-index: 5; cursor: grabbing; box-shadow: 0 2px 2px rgba(0,0,0,.1), 0 26px 40px -12px rgba(0,0,0,.65); }
 .ie-post.feito { opacity: .78; } .ie-post.feito .ie-txt { text-decoration: line-through; text-decoration-thickness: 1.5px; }
 .ie-num { position: absolute; top: 6px; right: 10px; font-size: 11px; font-weight: 800; opacity: .5; }
-.ie-sub { display: block; margin: 0 40px 4px 0; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; opacity: .75; }
+.ie-sub { display: block; margin: 2px 0 4px; font-size: 16px; font-weight: 900; line-height: 1.2; } .ie-post .ie-txt { font-weight: 500; font-size: 14px; opacity: .85; }
 .ie-txt { margin: 0; font-size: 15px; font-weight: 600; line-height: 1.32; }
 .ie-pe { display: flex; align-items: center; gap: 7px; margin-top: 10px; font-size: 12.5px; } .ie-pe b { font-weight: 800; }
 .ie-av { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; background: rgba(0,0,0,.12); } .ie-sem { opacity: .6; }
@@ -2758,12 +2758,13 @@ function abrePergunta(it, g, alts, k, conta) {   // padrão aprovado no HOUSE-BR
   fechaPuxando(ov, adia, () => card, () => card);
   document.body.append(ov);
 }
+let tecladoFechouEm = 0; document.addEventListener('focusout', e => { if (e.target && /TEXTAREA|INPUT/.test(e.target.tagName)) tecladoFechouEm = Date.now(); });
 function mostraFixa(items, fila) {   // cópia do balão no topo (o original fica no lugar dele), com "1 de N" quando tem mais de uma
   const pergs = fila.filter(i => RE_PERG.test(items[i].text || ''));
   fila = fila.filter(i => !RE_PERG.test(items[i].text || ''));
   const abertas = pergs.filter(i => !fixaPopVista.has(chaveDe(items[i])));
   pergsNaFila = abertas.map(i => chaveDe(items[i]));
-  const escrevendo = (document.activeElement && /TEXTAREA|INPUT/.test(document.activeElement.tagName)) || !!(box.value || '').trim();   // teclado aberto ou texto na caixa: o popup espera ela mandar (May, 07/11/2026 12:49)
+  const escrevendo = (document.activeElement && /TEXTAREA|INPUT/.test(document.activeElement.tagName)) || !!(box.value || '').trim() || Date.now() - tecladoFechouEm < 1500;   // o toque que fecha o teclado não pode cair num popup nascendo (May 12:49 e 13:19)   // teclado aberto ou texto na caixa: o popup espera ela mandar (May, 07/11/2026 12:49)
   if (abertas.length && !escrevendo && !document.querySelector('.fixa-pop')) { const it = items[abertas[0]], g = (it.from === 'may' ? EU : GRUPO[it.quem]) || {}, todas = it.opcoes && it.opcoes.length ? it.opcoes.map((t, i) => ['abcdefgh'[i] || String(i + 1), t]) : alternativasDe(it.text); abrePergunta(it, g, todas.length > 4 ? [] : todas, chaveDe(it), abertas.length > 1 ? '1 de ' + abertas.length : ''); }
   if (!fila.length) return;
   if (fixaVer >= fila.length) fixaVer = 0;
@@ -2927,12 +2928,18 @@ function destacaMencao() {
   const sel = mencoesEl.children[mencaoSel];
   if (sel) sel.scrollIntoView({ block: 'nearest', inline: 'nearest' });
 }
+const ORDEM_POLEGAR = ['orfeu', 'hermes', 'sigma', 'nyx', 'lyra', 'todos', 'gabriel', 'vega'];
+function porUso(nomes) {   // o @ que ela mais usa fica mais perto do polegar (May 11:21 e 13:07, Sigma 13:17): conta nas mensagens dela da conversa aberta
+  const conta = {}; (lastItems || []).forEach(it => { if (it.from !== 'may') return; (String(it.text || '').match(/@\w+/g) || []).forEach(x => { const k = x.slice(1).toLowerCase(); conta[k] = (conta[k] || 0) + 1; }); });
+  const pos = n => { const i = ORDEM_POLEGAR.indexOf(n.toLowerCase()); return i < 0 ? 99 : i; };
+  return nomes.slice().sort((a, b) => (conta[b.toLowerCase()] || 0) - (conta[a.toLowerCase()] || 0) || pos(a) - pos(b));
+}
 function checaMencao() {
   const pos = box.selectionStart, antes = box.value.slice(0, pos);
   const m = antes.match(/(^|\s)@(\w*)$/);
   if (!m) { mencoesEl.hidden = true; mencaoSel = -1; return; }
   const alvo = m[2].toLowerCase();
-  const nomes = nomesGrupo().filter(n => n.toLowerCase().startsWith(alvo));
+  const nomes = porUso(nomesGrupo().filter(n => n.toLowerCase().startsWith(alvo)));   // 1º = embaixo à direita, no polegar (Sigma 13:17)
   if (!nomes.length) { mencoesEl.hidden = true; mencaoSel = -1; return; }
   mencoesEl.replaceChildren(...nomes.map(n => {
     const b = document.createElement('button'); b.type = 'button'; b.textContent = '@' + n;
@@ -3675,12 +3682,12 @@ function abreIdeias(m) {
       const pe = elD('div', 'ie-pe');
       if (g) { const av = fotoRobo(g); av.className = 'ie-av'; pe.append(av, elD('b', '', g.nome.replace(/\s*\(.*\)$/, ''))); } else pe.append(elD('b', 'ie-sem', 'sem dono'));
       pe.append(elD('span', 'ie-est ie-' + p.estado, p.estado === 'concluido' ? 'concluído' : p.estado));
-      el.append(elD('small', 'ie-num', '#' + p.id)); if (p.tela) el.append(elD('b', 'ie-sub', p.tela)); el.append(elD('p', 'ie-txt', p.texto), pe);   // subtítulo em negrito = a tela onde se faz (May 13:19)
+      const cat = p.categoria || p.tela || '', sub = p.assunto || cat; el.append(elD('small', 'ie-num', (cat && cat !== sub ? cat + ' · ' : '') + '#' + p.id)); if (sub) el.append(elD('b', 'ie-sub', sub)); el.append(elD('p', 'ie-txt', p.texto), pe);   // subtítulo em negrito = a tela onde se faz (May 13:19)
       return el;
     };
     const detalhe = p => {
       const cp = elD('div', 'ie-det'), g = GRUPO[p.dono];
-      if (p.tela) cp.append(elD('b', 'ie-sub', p.tela)); cp.append(elD('p', 'ie-det-txt', p.texto), elD('p', 'p-nota', (g ? g.nome.replace(/\s*\(.*\)$/, '') : 'Sem dono: o Sigma faz a triagem') + ' · ' + (p.estado === 'concluido' ? 'concluído' : p.estado) + ' · ' + p.quando));
+      if (p.assunto || p.categoria || p.tela) cp.append(elD('b', 'ie-sub', [p.categoria || p.tela, p.assunto].filter(Boolean).join(' · '))); cp.append(elD('p', 'ie-det-txt', p.texto), elD('p', 'p-nota', (g ? g.nome.replace(/\s*\(.*\)$/, '') : 'Sem dono: o Sigma faz a triagem') + ' · ' + (p.estado === 'concluido' ? 'concluído' : p.estado) + ' · ' + p.quando));
       if (p.nota) cp.append(elD('p', 'p-nota', p.nota));
       if (p.estado !== 'concluido' && abertos()[0] !== p) { const b = elD('button', 'ie-topo', 'Mais urgente: pro topo'); b.type = 'button'; b.onclick = () => { fecha(); const ids = abertos().map(x => x.id).filter(x => x !== p.id); ids.unshift(p.id); salvaOrdem(ids); pinta(); }; cp.append(b); }
       const fecha = pop('Pedido #' + p.id, cp);
@@ -3706,7 +3713,7 @@ function abreIdeias(m) {
       const t = ta.value.trim().replace(/\s+/g, ' '); if (!t) return;
       const mm = t.match(/@(\w+)/g) || [], dono = (mm.map(x => x.slice(1).toLowerCase()).find(x => ROBOS_IE.includes(x))) || '';
       const dt = new Date(), quando = String(dt.getDate()).padStart(2, '0') + '/' + String(dt.getMonth() + 1).padStart(2, '0') + '/' + dt.getFullYear() + ' ' + String(dt.getHours()).padStart(2, '0') + ':' + String(dt.getMinutes()).padStart(2, '0');
-      const novo = dd => { const n = Math.max(0, ...dd.postits.map(x => parseInt(x.id, 10) || 0)) + 1, ord = Math.max(0, ...dd.postits.map(x => x.ordem)) + 1; const p = { id: String(n), texto: t, quando, estado: 'esperando', dono, ordem: ord, nota: '', tela: '' }; dd.postits.push(p); return p; };
+      const novo = dd => { const n = Math.max(0, ...dd.postits.map(x => parseInt(x.id, 10) || 0)) + 1, ord = Math.max(0, ...dd.postits.map(x => x.ordem)) + 1; const p = { id: String(n), texto: t, quando, estado: 'esperando', dono, ordem: ord, nota: '', categoria: '', assunto: '' }; dd.postits.push(p); return p; };
       ta.value = ''; ta.style.height = ''; novo(d); aba = 'quadro'; pinta();
       const q = tr.querySelector('.ie-quadro'); if (q && q.lastElementChild) { q.lastElementChild.scrollIntoView({ block: 'nearest' }); if (q.lastElementChild.animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) q.lastElementChild.animate([{ transform: 'translateY(40px) rotate(-6deg) scale(.9)', opacity: 0 }, { transform: 'rotate(' + q.lastElementChild.dataset.r + 'deg)', opacity: 1 }], { duration: 320, easing: 'cubic-bezier(.2,.9,.3,1.2)' }); }
       const ok = await gravaJson(arq, dd => { novo(dd); }, 'Pedido novo da May pelo app');
