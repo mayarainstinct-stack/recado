@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.110">
+<meta name="app-versao" content="2026-11-07.111">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -566,7 +566,7 @@ img.esq { min-height: 140px; }
 .pcd-dq { position: absolute; top: 4px; bottom: 4px; left: 0; width: 0; border-radius: 12px; z-index: 0; pointer-events: none; background: color-mix(in srgb, var(--qc, var(--accent)) 22%, transparent); box-shadow: inset 0 -3px 0 var(--qc, var(--accent)); transition: transform .24s cubic-bezier(.3,.7,.2,1), width .24s ease, background .24s ease; }
 .pcd-trilho { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; align-items: flex-start; overscroll-behavior-x: contain; }
 .pcd-trilho::-webkit-scrollbar, .pcd-datas::-webkit-scrollbar { display: none; }
-.pcd-pag { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; scroll-snap-stop: always; }
+.pcd-pag { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; scroll-snap-stop: always; padding-bottom: 76px; }   /* espaço do tamanho das abas de baixo: nada fica escondido atrás delas (Sigma 14:25) */
 .pcd-cmp { --rc: var(--accent); } .pcd-lin { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
 .pcd-cab div { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 6px; border-radius: 10px; background: color-mix(in srgb, var(--rc) 16%, transparent); border-bottom: 3px solid var(--rc); font-size: 14px; }
 .pcd-cab img { width: 24px; height: 24px; border-radius: 8px; background: #0E0F12; }
@@ -764,6 +764,13 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 .ob-dias li { display: flex; gap: 10px; align-items: baseline; padding: 5px 0; border-bottom: 1px dashed rgba(0,0,0,.15); } .ob-dias li:last-child { border-bottom: 0; }
 .ob-dias li::before { content: ''; flex: none; width: 9px; height: 9px; border-radius: 50%; background: #16A34A; transform: translateY(-1px); } .ob-dias li.faltou::before { background: #DC2626; } .ob-dias li.faltou span { opacity: .6; }
 .ob-maicon .ob-fonte { color: #FFF7ED; }
+.ob-diario { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; } .ob-diario > * { min-width: 0; } .ob-folha { background: linear-gradient(#FFFDF5, #FFFDF5) padding-box, repeating-linear-gradient(transparent 0 23px, rgba(59,130,246,.18) 23px 24px); background: repeating-linear-gradient(#FFFDF5 0 23px, #E8EEF8 23px 24px); padding: 16px 14px 12px 22px; border-radius: 3px 3px 14px 3px; border-left: 3px solid #F87171; }
+.ob-folha::before { content: ''; position: absolute; top: -8px; left: 50%; width: 70px; height: 18px; margin-left: -35px; background: rgba(255,255,255,.55); box-shadow: 0 1px 2px rgba(0,0,0,.25); transform: rotate(-2deg); }
+.ob-folha-cab { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; } .ob-folha-data { font-size: 24px; font-weight: 900; letter-spacing: -.02em; } .ob-folha-cab .ob-chip { margin: 0 0 0 auto; }
+.ob-folha-rot { display: block; margin-top: 8px; font-size: 10.5px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; opacity: .55; }
+.ob-folha ul { margin: 2px 0 0; padding-left: 18px; font-size: 13.5px; line-height: 1.35; } .ob-folha li + li { margin-top: 3px; } .ob-feito { list-style: '✓  '; } .ob-depois { list-style: '→  '; } .ob-decidido { list-style: '★  '; }
+.ob-tira { display: flex; gap: 10px; overflow-x: auto; padding: 10px 2px 4px; scrollbar-width: none; } .ob-tira::-webkit-scrollbar { display: none; }
+.ob-pol { flex: none; width: 104px; padding: 5px 5px 14px; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,.35); cursor: zoom-in; } .ob-pol:nth-child(odd) { transform: rotate(-2deg); } .ob-pol:nth-child(even) { transform: rotate(1.5deg); } .ob-pol img { display: block; width: 100%; aspect-ratio: 3 / 4; object-fit: cover; background: #E7E5E4; }
 .ie-abas { display: flex; gap: 6px; padding: 4px; border-radius: 14px; background: var(--paper); border: 1px solid var(--line); flex: none; }
 .ie-abas button { flex: 1; width: auto; height: auto; padding: 9px 4px; border-radius: 10px; background: none; color: var(--muted); font: inherit; font-size: 13px; font-weight: 800; } .ie-abas button.on { background: #FACC15; color: #1F1A03; }
 .ie-trilho { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; margin: 10px -4px 0; padding: 0 4px; }
@@ -3639,7 +3646,7 @@ function abreObra(m) {
     nota.remove();
     const vivo = {}; Promise.all([lerArquivo('casa/fundo/maicon-dias.json').then(t => { vivo.dias = JSON.parse(t).dias || []; }).catch(() => {}), lerArquivo('contas/pendencias.json').then(t => { vivo.pago = (JSON.parse(t).pagar || []).find(x => /maicon/i.test(x.nome)); }).catch(() => {})]).then(() => { if (aba === 'agora' || aba === 'dinheiro') pinta(0); });
     cabecalho({ icone: 'ruler', sub: 'piscina e fundo · mural' });
-    const nav = elD('nav', 'ob-abas'), parede = elD('div', 'ob-parede'); c.append(nav, parede);
+    const nav = elD('nav', 'ob-abas'), parede = elD('div', 'ob-parede'), cacheFonte = {}; c.append(nav, parede);
     const abas = d.abas || []; let aba = (abas[0] || {}).id;
     const rs = v => 'R$ ' + Math.round(v).toLocaleString('pt-BR');
     const fonte = f => elD('small', 'ob-fonte', f ? 'fonte: ' + f : '');
@@ -3674,6 +3681,24 @@ function abreObra(m) {
       abas.forEach(a => { const b = elD('button', a.id === aba ? 'on' : '', a.nome); b.type = 'button'; b.onclick = () => { if (a.id === aba) return; const i0 = abas.findIndex(z => z.id === aba), i1 = abas.indexOf(a); aba = a.id; pinta(i1 > i0 ? 1 : -1); }; nav.append(b); });
       requestAnimationFrame(() => { const on = nav.querySelector('.on'); if (on) nav.scrollTo({ left: on.offsetLeft - (nav.clientWidth - on.offsetWidth) / 2, behavior: dir ? 'smooth' : 'auto' }); });   // a aba escolhida nunca fica cortada na borda
       const a = abas.find(z => z.id === aba) || abas[0]; if (!a) return;
+      if (a.fonte) {   // Diário da obra (May 14:29): uma folha por dia, a mais nova em cima, com as fotos daquele dia
+        const g = elD('div', 'ob-diario'); parede.append(g);
+        const monta = dd => {
+          g.replaceChildren();
+          (dd.dias || []).forEach((dia, k) => {
+            const f = elD('div', 'ob-c ob-folha'), gr = GIRO[k % GIRO.length] / 2; f.dataset.r = gr; f.style.setProperty('--r', gr + 'deg');
+            const cab = elD('div', 'ob-folha-cab'); cab.append(elD('b', 'ob-folha-data', dia.data.slice(0, 5)), elD('span', 'ob-tit', dia.titulo || '')); if (dia.maicon) cab.append(elD('span', 'ob-chip ok', 'Maicon ' + dia.maicon)); else if (!(dia.feito || []).length) cab.append(elD('span', 'ob-chip', 'não veio')); f.append(cab);
+            const lista = (rot, itens, cls) => { if (!(itens || []).length) return; f.append(elD('small', 'ob-folha-rot', rot)); const ul = elD('ul', cls); itens.forEach(t => ul.append(elD('li', '', t))); f.append(ul); };
+            lista('Feito', dia.feito, 'ob-feito'); lista('Depois', dia.depois, 'ob-depois'); lista('Decidido', dia.decidido, 'ob-decidido');
+            if ((dia.fotos || []).length) { const tira = elD('div', 'ob-tira'); dia.fotos.forEach(fp => { const pol = elD('div', 'ob-pol'), im = elD('img'); im.alt = 'Obra ' + dia.data; im.loading = 'lazy'; pol.append(im); tira.append(pol); fotoUrl(fp).then(u => { im.src = u; pol.onclick = () => abreZoom(u, fp, dia.fotos); }).catch(() => pol.remove()); }); f.append(tira); }
+            g.append(f);
+            if (dir !== 0 && !matchMedia('(prefers-reduced-motion: reduce)').matches && f.animate) f.animate([{ transform: 'translateY(-26px) rotate(' + (gr * 4) + 'deg)', opacity: 0 }, { transform: 'translateY(3px) rotate(' + gr + 'deg)', opacity: 1, offset: .7 }, { transform: 'rotate(' + gr + 'deg)', opacity: 1 }], { duration: 380, delay: k * 60, easing: 'cubic-bezier(.3,.7,.3,1)', fill: 'backwards' });
+          });
+        };
+        if (cacheFonte[a.fonte]) monta(cacheFonte[a.fonte]); else { g.append(elD('p', 'p-nota', 'Carregando o diário…')); lerArquivo(a.fonte).then(t => { cacheFonte[a.fonte] = JSON.parse(t); if (aba === a.id) monta(cacheFonte[a.fonte]); }).catch(() => { g.replaceChildren(elD('p', 'p-nota', 'Não consegui abrir o diário. Confere a internet.')); }); }
+        if (dir) entraDoLado(parede, dir);
+        return;
+      }
       const fotos = (a.cartoes || []).filter(x => x.tipo === 'foto').map(x => x.arq);
       const g = elD('div', 'ob-grade' + (a.cartoes.every(x => x.tipo === 'foto') ? ' ob-fotos' : ''));
       a.cartoes.forEach((x, k) => g.append(cartao(x, k, fotos))); parede.append(g);
