@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.73">
+<meta name="app-versao" content="2026-11-07.74">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -177,7 +177,7 @@ textarea:focus-visible { outline: none; }
 .marca-cor { text-shadow: 0 0 3px rgba(0,0,0,.9), 0 1px 1px rgba(0,0,0,.8); background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.12) 48%, rgba(0,0,0,.12) 52%, rgba(0,0,0,.42)), var(--quem);   /* pílula de vidro em todo mundo (May, 06/11/2026 01:53) */
   color: #FFFFFF; border-radius: 999px;
   padding: 1px 9px; margin: 0 1px; font-size: 13px; display: inline-block; line-height: 1.6; vertical-align: text-bottom; }
-.mencoes { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); }
+.mencoes { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; flex-direction: row-reverse; margin: 0 max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); }
 .mencoes button { width: auto; height: auto; padding: 4px 12px; border-radius: 999px; font-size: 13.5px; font-weight: 700;
   background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.12) 48%, rgba(0,0,0,.12) 52%, rgba(0,0,0,.42)), var(--quem); color: #FFFFFF; border: none; opacity: .8; text-shadow: 0 0 3px rgba(0,0,0,.9), 0 1px 1px rgba(0,0,0,.8); }
 .mencoes button.sel { opacity: 1; outline: 2px solid #FFFFFF; outline-offset: -2px; }
@@ -536,19 +536,21 @@ img.esq { min-height: 140px; }
 .pcd-val.neutro { background: color-mix(in srgb, var(--fg) 6%, transparent); border-left-color: transparent; }
 @media (prefers-reduced-motion: reduce) { .pcd-dq { transition: none; } }
 .bi-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
-.bi-kpi { background: color-mix(in srgb, var(--fg) 5%, transparent); border-radius: 12px; padding: 10px 12px; min-width: 0; }
+.bi-kpi { position: relative; overflow: hidden; background: linear-gradient(135deg, color-mix(in srgb, var(--ec, var(--accent)) 20%, transparent), color-mix(in srgb, var(--fg) 4%, transparent) 70%); border: 1px solid color-mix(in srgb, var(--ec, var(--accent)) 45%, transparent); box-shadow: 0 0 16px color-mix(in srgb, var(--ec, var(--accent)) 22%, transparent), inset 0 1px 0 rgba(255,255,255,.06); border-radius: 14px; padding: 10px 12px; min-width: 0; }   /* mais gamer (May, 07/11/2026 09:56): neon na cor do estado */
+.bi-kpi::after { content: ''; position: absolute; right: -18px; top: -18px; width: 60px; height: 60px; border-radius: 50%; background: radial-gradient(color-mix(in srgb, var(--ec, var(--accent)) 35%, transparent), transparent 70%); }
 .bi-kpi span { display: block; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
-.bi-kpi b { display: block; font-size: 30px; line-height: 1.1; letter-spacing: -.02em; margin-top: 2px; font-variant-numeric: tabular-nums; }
+.bi-kpi b { display: block; font-size: 30px; line-height: 1.1; text-shadow: 0 0 14px color-mix(in srgb, var(--ec, var(--accent)) 55%, transparent); letter-spacing: -.02em; margin-top: 2px; font-variant-numeric: tabular-nums; }
 .bi-kpi small { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); } .bi-kpi small i { width: 8px; height: 8px; border-radius: 50%; background: var(--ec); flex: none; }
-.bi-graf { margin-top: 14px; } .bi-graf h5 { margin: 0 0 2px; font-size: 14px; } .bi-graf > p { margin: 0 0 8px; font-size: 12px; color: var(--muted); }
+.bi-graf { margin-top: 16px; } .bi-graf h5 { margin: 0 0 2px; font-size: 14px; display: flex; align-items: center; gap: 8px; } .bi-graf h5::before { content: ''; width: 4px; height: 14px; border-radius: 2px; background: linear-gradient(#E31B23, #6FCF00 50%, #3B82F6); } .bi-graf > p { margin: 0 0 8px; font-size: 12px; color: var(--muted); }
 .bi-lin { display: grid; grid-template-columns: 44px 1fr; align-items: center; gap: 8px; margin: 5px 0; font-size: 12px; font-weight: 700; color: var(--muted); }
 .bi-tri { position: relative; height: 18px; border-left: 1px solid var(--line); }
-.bi-bar { position: absolute; left: 0; top: 2px; height: 14px; width: var(--w); min-width: 2px; border-radius: 0 4px 4px 0; background: var(--bc, color-mix(in srgb, var(--fg) 62%, transparent)); }
-.bi-bar.fraca { --bc: color-mix(in srgb, var(--fg) 26%, transparent); }
+.bi-bar { position: absolute; left: 0; top: 2px; height: 14px; width: var(--w); min-width: 2px; border-radius: 0 4px 4px 0; background: linear-gradient(90deg, color-mix(in srgb, var(--rc2, var(--fg)) 55%, transparent), var(--rc2, color-mix(in srgb, var(--fg) 62%, transparent))); box-shadow: 0 0 10px color-mix(in srgb, var(--rc2, transparent) 60%, transparent); }
+.bi-lin.cor > span { color: var(--fg); }
+.bi-bar.fraca { background: color-mix(in srgb, var(--rc2, var(--fg)) 30%, transparent); box-shadow: none; }
 .bi-val { position: absolute; top: 0; left: calc(var(--w) + 6px); font-size: 12px; font-weight: 700; color: var(--fg); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .bi-tri.dupla { height: 30px; } .bi-tri.dupla .bi-bar { height: 11px; } .bi-tri.dupla .bi-bar.fraca { top: 16px; } .bi-tri.dupla .bi-val.fraca { top: 14px; color: var(--muted); }
 .bi-leg { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin: 0 0 6px; } .bi-leg span { display: flex; align-items: center; gap: 6px; }
-.bi-leg i { width: 12px; height: 8px; border-radius: 2px; background: color-mix(in srgb, var(--fg) 62%, transparent); } .bi-leg i.fraca { background: color-mix(in srgb, var(--fg) 26%, transparent); }
+.bi-leg i { width: 12px; height: 8px; border-radius: 2px; background: var(--rc2, color-mix(in srgb, var(--fg) 62%, transparent)); box-shadow: 0 0 6px var(--rc2, transparent); } .bi-leg i.fraca { background: color-mix(in srgb, var(--rc2, var(--fg)) 30%, transparent); box-shadow: none; }
 .bi-multi { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 .bi-multi .bi-lin { grid-template-columns: 28px 1fr; gap: 4px; font-size: 11px; } .bi-multi h6 { margin: 0; font-size: 12px; }
 .cartao h3 { margin: 0 0 4px; font-size: 16px; } .cartao h4 { margin: 10px 0 2px; font-size: 14px; color: var(--accent); }
@@ -2383,11 +2385,11 @@ const RE_PIN = /^(?:\s*@[\wÀ-ÿ]+)*\s*(?:📌|❓)/, RE_PERG = /^(?:\s*@[\wÀ-�
 const nomeCita = it => it.from === 'may' ? 'Você' : (GRUPO[it.quem] ? GRUPO[it.quem].nome : 'Lyra');
 const baseFixa = (nome, trecho) => String(nome).replace(/\s*\(.*\)$/, '').toLowerCase() + '|' + String(trecho).trim();
 const chaveDe = it => baseFixa(nomeCita(it), trechoDe(it)) + '|' + (it.day || '') + ' ' + (it.time || '');
-let FIXAS = {}, fixasLidas = false, fixaLocal = [];
+let FIXAS = {}, fixasLidas = false, fixasProntas = false, fixaLocal = [];   // prontas = o fixas.json já chegou: antes disso nada vai pro topo (piscava fixa já solta, May 07/11/2026 09:56)
 try { fixaLocal = JSON.parse(localStorage.getItem('fixa-local') || '[]'); } catch (e) {}
 function carregaFixas() {
   if (fixasLidas || !token) return; fixasLidas = true;
-  lerArquivo(ARQ_FIXAS).then(t => { FIXAS = JSON.parse(t || '{}'); if (FILE === GERAL.arq) render(lastItems, true); }).catch(() => { fixasLidas = false; });
+  lerArquivo(ARQ_FIXAS).then(t => { FIXAS = JSON.parse(t || '{}'); fixasProntas = true; if (FILE === GERAL.arq) render(lastItems, true); }).catch(e => { fixasLidas = false; if (e && e.status === 404) { fixasProntas = true; fixasLidas = true; } });
 }
 async function gravaFixa(k, on) {   // lê o mais novo e grava por cima com o sha dele; 409 = alguém gravou junto, tenta de novo
   for (let t = 0; t < 4; t++) {
@@ -2423,6 +2425,7 @@ function estadoFixa(items) {   // chave -> momento em que foi fixada (a mais rec
 function listaFixas(items) {   // índices das fixadas, a mais recente primeiro
   if (FILE !== GERAL.arq) return [];
   carregaFixas();
+  if (!fixasProntas) return [];
   const st = estadoFixa(items);
   return items.map((x, i) => [i, st[chaveDe(x)]]).filter(([i, v]) => v).sort((a, b) => b[1] - a[1]).map(x => x[0]);
 }
@@ -3048,8 +3051,8 @@ function cartaoPc(p) {
 // barras de um tom só (a cor fica pros estados), valor na ponta de cada barra; dados em dia.indicadores
 function barras(lista, max, fmt, dupla, escala = 78) {   // lista = [[rótulo, valor, valor2?]]; escala = % da trilha que a maior ocupa (sobra lugar pro número)
   const box = elD('div');
-  lista.forEach(([rot, v, v2]) => {
-    const ln = elD('div', 'bi-lin'), tri = elD('div', 'bi-tri' + (dupla ? ' dupla' : '')); ln.append(elD('span', '', rot));
+  lista.forEach(([rot, v, v2, cor]) => {
+    const ln = elD('div', 'bi-lin' + (cor ? ' cor' : '')), tri = elD('div', 'bi-tri' + (dupla ? ' dupla' : '')); ln.append(elD('span', '', rot)); if (cor) ln.style.setProperty('--rc2', cor);
     [[v, ''], ...(dupla ? [[v2, ' fraca']] : [])].forEach(([x, f]) => {
       const w = (max ? Math.max(0, x) / max * escala : 0).toFixed(1) + '%', b = elD('i', 'bi-bar' + f), t = elD('span', 'bi-val' + f, fmt(x));
       b.style.setProperty('--w', w); t.style.setProperty('--w', w); tri.append(b, t);
@@ -3060,6 +3063,7 @@ function barras(lista, max, fmt, dupla, escala = 78) {   // lista = [[rótulo, v
 }
 function painelPcs(dia) {
   const ind = dia.indicadores; if (!ind) return null;
+  const corPc = pc => { const p = dia.pcs.find(x => x.pc === pc), g = p && GRUPO[p.robo]; return g ? 'color-mix(in srgb, ' + g.cor + ' 78%, #fff)' : ''; };   // a cor do robô de cada PC, clareada pra brilhar no escuro
   const d = elD('div', 'pcd pcd-cmp'), k = elD('div', 'bi-kpis'), soma = c => ind.pcs.reduce((n, p) => n + (p[c] || 0), 0);
   const emOrdem = dia.pcs.filter(p => p.estado === 'ok').length, ruins = dia.pcs.filter(p => p.estado !== 'ok').map(p => p.pc);
   const tile = (rot, val, nota, tom) => { const t = elD('div', 'bi-kpi'); t.append(elD('span', '', rot), elD('b', '', val)); if (nota) { const sm = elD('small'), i = elD('i'); i.style.setProperty('--ec', TOM_PC[tom] || 'var(--muted)'); sm.append(i, nota); t.append(sm); } k.append(t); };
@@ -3069,15 +3073,16 @@ function painelPcs(dia) {
   tile('Driver de vídeo caiu', String(soma('quedas')), qd.length ? '30 dias · ' + qd.map(p => p.pc).join(', ') : '30 dias · nenhum', soma('quedas') ? 'atencao' : 'ok');
   tile('Desligou na marra', String(ds), '30 dias · os 3 PCs', ds > 10 ? 'ruim' : ds ? 'atencao' : 'ok');
   d.append(k);
-  const g1 = elD('div', 'bi-graf'); g1.append(elD('h5', '', 'Espaço livre no C:'), elD('p', '', 'GB livres de ' + ind.pcs[0].total + ' GB em cada um'), barras(ind.pcs.map(p => [p.pc, p.livre]), Math.max(...ind.pcs.map(p => p.total)), v => String(v).replace('.', ',') + ' GB')); d.append(g1);
+  const g1 = elD('div', 'bi-graf'); g1.append(elD('h5', '', 'Espaço livre no C:'), elD('p', '', 'GB livres de ' + ind.pcs[0].total + ' GB em cada um'), barras(ind.pcs.map(p => [p.pc, p.livre, 0, corPc(p.pc)]), Math.max(...ind.pcs.map(p => p.total)), v => String(v).replace('.', ',') + ' GB')); d.append(g1);
   const g2 = elD('div', 'bi-graf'), mm = elD('div', 'bi-multi'); g2.append(elD('h5', '', 'Problemas em 30 dias'), elD('p', '', 'quantas vezes aconteceu em cada PC'));
-  [['quedas', 'Driver caiu'], ['desligou', 'Desligou na marra'], ['whea', 'Erro de hardware']].forEach(([c, t]) => { const col = elD('div'), mx = Math.max(1, ...ind.pcs.map(p => p[c] || 0)); col.append(elD('h6', '', t), barras(ind.pcs.map(p => [p.pc, p[c] || 0]), mx, String, false, 55)); mm.append(col); });
+  [['quedas', 'Driver caiu'], ['desligou', 'Desligou na marra'], ['whea', 'Erro de hardware']].forEach(([c, t]) => { const col = elD('div'), mx = Math.max(1, ...ind.pcs.map(p => p[c] || 0)); col.append(elD('h6', '', t), barras(ind.pcs.map(p => [p.pc, p[c] || 0, 0, corPc(p.pc)]), mx, String, false, 55)); mm.append(col); });
   g2.append(mm); d.append(g2);
   if (ind.fps) {
     const f = ind.fps, g3 = elD('div', 'bi-graf'), lg = elD('div', 'bi-leg'), mx = Math.max(...f.series.flatMap(x => x.v));
     g3.append(elD('h5', '', f.titulo), elD('p', '', f.sub));
     f.series.forEach((x, i) => { const sp = elD('span'), sw = elD('i', i ? 'fraca' : ''); sp.append(sw, x.nome); lg.append(sp); }); g3.append(lg);
-    g3.append(barras(f.cenas.map((c, i) => [c, f.series[0].v[i], f.series[1].v[i]]), mx, v => v + ' FPS', true));
+    const cf = corPc(f.pc || 'PC3'); lg.style.setProperty('--rc2', cf);
+    g3.append(barras(f.cenas.map((c, i) => [c, f.series[0].v[i], f.series[1].v[i], cf]), mx, v => v + ' FPS', true));
     const md = x => Math.round(x.v.reduce((a, b) => a + b, 0) / x.v.length); g3.append(elD('p', '', 'Média: ' + f.series.map(x => x.nome + ' ' + md(x) + ' FPS').join(' · ')));
     d.append(g3);
   }
