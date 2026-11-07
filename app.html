@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.125">
+<meta name="app-versao" content="2026-11-07.126">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -854,6 +854,9 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 @keyframes ie-pisca { 50% { opacity: .25; } }
 .ie-det-txt { font-size: 16px; font-weight: 600; line-height: 1.4; margin: 4px 0 8px; text-align: left; } .ie-det .p-nota { text-align: left; }
 .ie-mover { background: #22C55E !important; color: #052E16 !important; }
+.ie-busca { margin-top: 8px; width: 100%; box-sizing: border-box; font: inherit; font-size: 14px; padding: 9px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--paper); color: var(--fg); }
+.ie-post.com-prio { box-shadow: inset 5px 0 0 var(--pr), 0 1px 1px rgba(0,0,0,.12), 0 12px 18px -10px rgba(0,0,0,.55); } .ie-prio { position: absolute; top: 6px; left: 10px; font-size: 9.5px; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; color: var(--pr); }
+.ie-datas { display: block; margin-top: 6px; font-size: 10.5px; font-weight: 700; opacity: .6; }
 .ie-topo { margin-top: 10px; width: 100%; height: auto; padding: 12px; border-radius: 14px; font: inherit; font-weight: 800; background: #FACC15; color: #1F1A03; }
 .p-corpo > .tela.ie-tela { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 0; } .p-corpo > .tela.ie-tela > .ie-trilho { flex: 1 1 0; min-height: 0; } .id-nova.ie-nova { margin-top: 8px; padding-right: 0; } .id-nova.ie-nova button { background: #22C55E; }
 .id-lista { display: flex; flex-direction: column; gap: 8px; } .id-card { border-radius: 14px; padding: 10px 12px; background: var(--paper); border: 1px solid var(--line); border-left: 4px solid var(--c, var(--accent)); }
@@ -2475,7 +2478,7 @@ async function atualizaOnlineGrupo(forcar) {
     // ninguém respondeu por rede/chave/limite: não é "0 online", é sem conexão; guarda a lista anterior
     const falha = lista.filter(p => p.chave !== 'may').every(p => p.falhou) && (lista.find(p => p.falhou) || {}).falhou;
     if (falha) { onlineBadge.textContent = statusFalha(falha); return; }
-    onlineGrupoLista = lista;   // sempre os participantes todos (mesmo quem nunca apareceu), pra lista nunca ficar vazia
+    onlineGrupoLista = lista.map(p => p.falhou ? (onlineGrupoLista.find(q => q.chave === p.chave && !q.falhou) || p) : p);   // leitura que falhou guarda o último sinal, não vira "nunca visto" (Sigma 16:11)   // sempre os participantes todos (mesmo quem nunca apareceu), pra lista nunca ficar vazia
     mostraSemana(lista);   // uma conta só pra casa e serviço: a Lyra entra também (May, 06/11/2026 19:21)
     mostraFazendo(fazendoGrupo());
     const n = onlineGrupoLista.filter(p => p.chave !== 'may' && fmtVisto(p.ultimaAtualizacao).online).length;   // bots: ela não conta
@@ -3315,7 +3318,7 @@ const irGeral = document.getElementById('ir-geral'), irTrab = document.getElemen
 const painel = document.getElementById('painel'), pCorpo = document.getElementById('p-corpo'), pTit = document.getElementById('p-tit'), pExtra = document.getElementById('p-extra');
 let pilha = [], catalogo = null;
 const reais = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
-const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#EF4444'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#A855F7'], [/^listas/i, '#F59E0B'], [/ideia/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia|contas/i, '#F59E0B']];
+const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#EF4444'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#A855F7'], [/^listas/i, '#F59E0B'], [/ideia|tarefa/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia|contas/i, '#F59E0B']];
 // Arrumar o Menu arrastando (May, 07/11/2026 12:03: "dar pra eu clicar e arrastar, aí eu mesma organizava"): segura o azulejo até ele levantar,
 // arrasta pro lugar do outro e solta; a ordem fica guardada neste aparelho
 function arrumaArrastando(grade) {
@@ -3354,14 +3357,14 @@ const ICONES_MENU = [
   [/obra|piscina/i, '<rect class="f1" x="4" y="18" width="30" height="22" rx="5"/><path d="M8 27c3-2 5 2 8 0s5 2 8 0 5 2 8 0M8 33c3-2 5 2 8 0s5 2 8 0 5 2 8 0"/><path class="f2" d="M36 4l8 8-10 4-2-2z"/><path d="M33 15l-6 6"/>'],
   [/m[ií]dia|imagen|v[ií]deo|anima/i, '<rect class="f1" x="5" y="9" width="38" height="30" rx="3"/><path d="M5 15h38M5 33h38M11 9v6M19 9v6M27 9v6M35 9v6M11 33v6M19 33v6M27 33v6M35 33v6"/><path class="f2" d="M21 19.5v9l8-4.5z"/>'],
   [/lista/i, '<rect class="f1" x="9" y="7" width="30" height="36" rx="3"/><rect class="f2" x="17" y="4" width="14" height="6" rx="2"/><path d="M15 19l2 2 4-4M15 28l2 2 4-4M15 37l2 2 4-4M25 19h8M25 28h8M25 37h8"/>'],
-  [/ideia/i, '<path class="f1" d="M24 6a12 12 0 0 1 7 21.7V33H17v-5.3A12 12 0 0 1 24 6z"/><path d="M18 38h12M20 43h8M8 18H5M43 18h-3M11 8L9 6M37 8l2-2"/><path class="f2" d="M22 15l-3 7h6l-3 7"/>'],
+  [/ideia|tarefa/i, '<path class="f1" d="M24 6a12 12 0 0 1 7 21.7V33H17v-5.3A12 12 0 0 1 24 6z"/><path d="M18 38h12M20 43h8M8 18H5M43 18h-3M11 8L9 6M37 8l2-2"/><path class="f2" d="M22 15l-3 7h6l-3 7"/>'],
   [/conta|comida/i, '<ellipse class="f2" cx="18" cy="36" rx="12" ry="4"/><ellipse class="f1" cx="18" cy="30" rx="12" ry="4"/><ellipse class="f1" cx="18" cy="24" rx="12" ry="4"/><rect class="f1" x="28" y="5" width="16" height="16" rx="2"/><path d="M28 10h16M32 3v4M40 3v4M33 15l2 2 4-4"/>']
 ];
 function iconeMenu(nome) { const a = ICONES_MENU.find(([re]) => re.test(nome)); return a ? '<svg class="im" viewBox="0 0 48 48" aria-hidden="true">' + a[1] + '</svg>' : ''; }
 // Menu: cada botão com a cara da tela de dentro (May, 07/11/2026 15:08 e 15:16: "cara de botão, mas cada botão tem que ser o CSS separado;
 // o que eles têm de igual é largura e altura, o resto cada um pega do seu interior"). Classe bt-<assunto>; a Agenda mostra o dia de hoje
 const BOTAO_DE = [[/jogo/i, 'jogos'], [/m[aá]quina|console/i, 'maquinas'], [/pend[eê]ncia/i, 'pendencias'], [/sa[uú]de|cirurgia/i, 'saude'], [/treino|academia/i, 'treino'], [/casa/i, 'casa'],
-  [/obra|piscina/i, 'obra'], [/m[ií]dia|imagen|v[ií]deo|anima/i, 'midia'], [/lista/i, 'listas'], [/ideia/i, 'ideias'], [/conta|comida/i, 'contas'], [/agenda/i, 'agenda']];
+  [/obra|piscina/i, 'obra'], [/m[ií]dia|imagen|v[ií]deo|anima/i, 'midia'], [/lista/i, 'listas'], [/ideia|tarefa/i, 'ideias'], [/conta|comida/i, 'contas'], [/agenda/i, 'agenda']];
 const ICONE_LIMPO = {   // desenho de linha limpo, traço igual em todos (May 15:33: "tá parecendo uma criança desenhando, tem que ser mais profissional")
   midia: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9.2l5 2.8-5 2.8z"/>', listas: '<path d="M10 6.5h10M10 12h10M10 17.5h10"/><path d="M4 6.5l1.3 1.3L7.6 5.5M4 12l1.3 1.3L7.6 11M4 17.5l1.3 1.3 2.3-2.3"/>',
   ideias: '<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.9 10.6c.6.6.9 1.4.9 2.4h6c0-1 .3-1.8.9-2.4A6 6 0 0 0 12 3z"/>', maquinas: '<rect x="3" y="4" width="18" height="12" rx="1.6"/><path d="M8 20h8M12 16v4"/><path d="M7.5 10h3M9 8.5v3"/><circle cx="15.5" cy="10" r=".9"/>',
@@ -3551,7 +3554,7 @@ abreMenu.onclick = () => {
     const conta = n => { uso[n] = (uso[n] || 0) + 1; try { store.set('menu-uso', JSON.stringify(uso)); } catch (e) {} };
     lerArquivo('menu/menu.json').then(t => JSON.parse(t).itens).catch(() => [{ tipo: 'catalogo', icone: 'bag', nome: 'Catálogo', sub: 'piscina, piso, borda, churrasqueira…' }])
       .then(itens => {   // ordem: a que ela arrumou arrastando (fica neste aparelho); sem isso, a do menu.json (mão direita)
-        let ordem = []; try { ordem = JSON.parse(store.get('menu-ordem') || '[]'); } catch (e) {}
+        let ordem = []; try { ordem = JSON.parse(store.get('menu-ordem') || '[]').map(n => n === 'Ideias' ? 'Tarefas' : n); } catch (e) {}   // Ideias virou Tarefas (May 16:16): a ordem que ela arrumou continua valendo
         const pos = n => { const i = ordem.indexOf(n); return i < 0 ? 999 : i; };
         itens.map((m, i) => [m, i]).sort((a, b) => pos(a[0].nome) - pos(b[0].nome) || a[1] - b[1]).forEach(([m]) => { const b = botaoGrade(m.icone, m.nome, m.sub, () => { conta(m.nome); abreItemMenu(m); }); b.dataset.nome = m.nome; vesteBotao(b, m.nome); lista.append(b); });
         arrumaArrastando(lista);
@@ -3874,21 +3877,26 @@ function abreIdeias(m) {
     const nota = elD('p', 'p-nota', 'Carregando o quadro…'); c.append(nota);
     let d; try { d = JSON.parse(await lerArquivo(arq)); } catch (e) { nota.textContent = 'Não consegui abrir o quadro. Confere a internet.'; return; }
     nota.remove();
-    const abas = [['quadro', 'Quadro'], ['feitos', 'Concluídos']], nav = elD('nav', 'ie-abas'), tr = elD('div', 'ie-trilho');
+    const abas = [['quadro', 'Quadro'], ['feitos', 'Concluídos']], nav = elD('nav', 'ie-abas'), tr = elD('div', 'ie-trilho'), busca = elD('input', 'ie-busca'); busca.type = 'search'; busca.placeholder = 'Procurar em todas as tarefas (até nas concluídas)'; busca.enterKeyHint = 'search';
     const caixa = elD('div', 'id-nova ie-nova'), ta = elD('textarea'); ta.rows = 1; ta.placeholder = 'Novo pedido (@Orfeu manda direto)'; ta.enterKeyHint = 'send';
     const env = elD('button'); env.type = 'button'; env.setAttribute('aria-label', 'Pregar o post-it'); env.innerHTML = icone('reply'); caixa.append(ta, env);
-    c.append(nav, tr, caixa);
+    c.append(nav, busca, tr, caixa);
     let aba = 'quadro';
+    busca.addEventListener('input', () => pinta());
     const papel = p => { const g = GRUPO[p.dono]; return g ? 'color-mix(in srgb, ' + g.cor + ' 52%, #FFF8E7)' : '#FFFDF5'; };
-    const abertos = () => d.postits.filter(p => p.estado !== 'concluido').sort((a, b) => a.ordem - b.ordem);
-    const feitos = () => d.postits.filter(p => p.estado === 'concluido').sort((a, b) => b.ordem - a.ordem);
+    const prio = p => p.prioridade || 3, quandoNum = q => { const m = String(q || '').match(/(\d\d)\/(\d\d)\/(\d{4}) (\d\d):(\d\d)/); return m ? +(m[3] + m[2] + m[1] + m[4] + m[5]) : 0; };
+    const abertos = () => d.postits.filter(p => p.estado !== 'concluido').sort((a, b) => prio(a) - prio(b) || a.ordem - b.ordem);   // prioridade primeiro, depois a ordem dela (May 16:18)
+    const feitos = () => d.postits.filter(p => p.estado === 'concluido').sort((a, b) => quandoNum(b.feito) - quandoNum(a.feito) || b.ordem - a.ordem);   // o que terminou por último em cima (May 16:20)
+    const PRIO = { 1: ['altíssima', '#DC2626'], 2: ['alta', '#F97316'], 4: ['baixa', '#64748B'], 5: ['sem pressa', '#94A3B8'] };
     const pop = (titulo, corpo) => { const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card ie-card'), x = elD('button', 'pp-x'); x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; card.append(x, elD('div', 'pp-perg', titulo), corpo); ov.append(card); document.body.append(ov); fechaPuxando(ov, fecha, () => card, () => card); return fecha; };
     const postit = (p, k) => {
       const el = elD('div', 'ie-post' + (p.estado === 'concluido' ? ' feito' : '')), g = GRUPO[p.dono], gi = GIRO[k % GIRO.length];
       el.dataset.id = p.id; el.dataset.r = gi; el.style.setProperty('--p', papel(p)); el.style.setProperty('--r', gi + 'deg');
+      if (PRIO[prio(p)] && p.estado !== 'concluido') { el.style.setProperty('--pr', PRIO[prio(p)][1]); el.classList.add('com-prio'); el.append(elD('span', 'ie-prio', PRIO[prio(p)][0])); }
       const pe = elD('div', 'ie-pe');
       if (g) { const av = fotoRobo(g); av.className = 'ie-av'; pe.append(av, elD('b', '', g.nome.replace(/\s*\(.*\)$/, ''))); } else pe.append(elD('b', 'ie-sem', 'sem dono'));
       pe.append(elD('span', 'ie-est ie-' + p.estado, p.estado === 'concluido' ? 'concluído' : p.estado));
+      if (p.estado === 'concluido') el.append(elD('small', 'ie-datas', 'pedido ' + String(p.quando || '').slice(0, 16) + (p.feito ? ' · feito ' + String(p.feito).slice(0, 16) : '')));   // a hora que pediu e a que terminou (May 16:20)
       const cat = p.categoria || p.tela || '', sub = p.assunto || cat; el.append(elD('small', 'ie-num', (cat && cat !== sub ? cat + ' · ' : '') + '#' + p.id)); if (sub) el.append(elD('b', 'ie-sub', sub)); el.append(elD('p', 'ie-txt', p.texto), pe);   // subtítulo em negrito = a tela onde se faz (May 13:19)
       return el;
     };
@@ -3901,8 +3909,13 @@ function abreIdeias(m) {
       if (p.estado !== 'concluido' && daColuna[0] !== p) { const b = elD('button', 'ie-topo', 'Mais urgente: pro topo'); b.type = 'button'; b.onclick = () => { fecha(); const cols = {}; [['esperando', 'Esperando'], ['fazendo', 'Fazendo']].forEach(([e]) => { cols[e] = abertos().filter(x => x.estado === e).map(x => x.id); }); cols[p.estado] = [p.id, ...cols[p.estado].filter(x => x !== p.id)]; salvaOrdem(cols); pinta(); }; cp.append(b); }
       const fecha = pop('Pedido #' + p.id, cp);
     };
-    const salvaOrdem = async cols => {   // cols = { esperando: [ids], fazendo: [ids] }: a ordem de cima pra baixo é a urgência; mudar de coluna muda o estado (May 15:26)
-      const aplica = dd => { let k = Math.min(...dd.postits.filter(x => x.estado !== 'concluido').map(x => x.ordem), 1); ['fazendo', 'esperando'].forEach(e => (cols[e] || []).forEach(id => { const x = dd.postits.find(y => y.id === id); if (x && x.estado !== 'concluido') { x.estado = e; x.ordem = k++; } })); };
+    const salvaOrdem = async (cols, movido) => {   // cols = { esperando: [ids], fazendo: [ids] }: a ordem de cima pra baixo é a urgência; mudar de coluna muda o estado (May 15:26)
+      const NOMEP = { 1: 'altíssima', 2: 'alta', 3: 'normal', 4: 'baixa', 5: 'sem pressa' };
+      const aplica = dd => {
+        let k = Math.min(...dd.postits.filter(x => x.estado !== 'concluido').map(x => x.ordem), 1);
+        ['fazendo', 'esperando'].forEach(e => (cols[e] || []).forEach(id => { const x = dd.postits.find(y => y.id === id); if (x && x.estado !== 'concluido') { x.estado = e; x.ordem = k++; } }));
+        if (movido) Object.values(cols).forEach(ids => { const i = ids.indexOf(movido); if (i < 0) return; const viz = dd.postits.find(y => y.id === (ids[i - 1] || ids[i + 1])), x = dd.postits.find(y => y.id === movido); if (viz && x) { x.prioridade = viz.prioridade || 3; x.prioridadeNome = NOMEP[x.prioridade]; } });
+      };
       aplica(d);
       if (!(await gravaJson(arq, aplica, 'Quadro: May mudou a ordem ou a coluna pelo app'))) showNote('Não guardou: confere a internet.', true);
     };
@@ -3910,6 +3923,15 @@ function abreIdeias(m) {
       cabecalho({ icone: 'pin', sub: abertos().length + ' no quadro · ' + abertos().filter(x => x.estado === 'fazendo').length + ' fazendo' });
       nav.replaceChildren(); tr.replaceChildren();
       abas.forEach(([id, rot]) => { const n = id === 'quadro' ? abertos().length : feitos().length, b = elD('button', aba === id ? 'on' : '', rot + ' · ' + n); b.type = 'button'; b.onclick = () => { if (aba === id) return; const dir = id === 'feitos' ? 1 : -1; aba = id; pinta(); entraDoLado(tr, dir); }; nav.append(b); });
+      const termo = busca.value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      if (termo) {   // procurando: uma lista só com tudo que bate, aberto ou concluído
+        const q = elD('div', 'ie-quadro'), sem = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const achou = d.postits.filter(p => [p.texto, p.assunto, p.categoria, p.tela, p.nota, '#' + p.id].some(t => sem(t).includes(termo))).sort((a, b) => (a.estado === 'concluido') - (b.estado === 'concluido') || prio(a) - prio(b) || a.ordem - b.ordem);
+        q.append(elD('p', 'p-nota', achou.length ? achou.length + ' tarefa' + (achou.length > 1 ? 's' : '') + ' com "' + busca.value.trim() + '"' : 'Nada com "' + busca.value.trim() + '".'));
+        achou.forEach((p, k) => q.append(postit(p, k))); tr.append(q);
+        q.addEventListener('click', e => { const el = e.target.closest('.ie-post'); if (!el) return; const p = d.postits.find(x => x.id === el.dataset.id); if (p) detalhe(p); });
+        return;
+      }
       const q = elD('div', 'ie-quadro' + (aba === 'quadro' ? ' ie-colunas' : ''));
       if (aba === 'quadro') [['esperando', 'Esperando'], ['fazendo', 'Fazendo']].forEach(([e, rot]) => {   // duas colunas lado a lado: Esperando e Fazendo (May 15:26)
         const col = elD('div', 'ie-col'), lst = elD('div', 'ie-lista'), ps = abertos().filter(x => x.estado === e); col.dataset.estado = e;
@@ -3919,7 +3941,7 @@ function abreIdeias(m) {
       else { const lista = feitos(); if (!lista.length) q.append(elD('p', 'p-nota', 'Nada concluído ainda.')); lista.forEach((p, k) => q.append(postit(p, k))); }
       tr.append(q);
       q.addEventListener('click', e => { const el = e.target.closest('.ie-post'); if (!el || q.dataset.arrastou) return; const p = d.postits.find(x => x.id === el.dataset.id); if (p) detalhe(p); });
-      if (aba === 'quadro') arrastaPostits(q, cols => { salvaOrdem(cols); });
+      if (aba === 'quadro') arrastaPostits(q, (cols, movido) => { salvaOrdem(cols, movido); });
     };
     pinta();
     arrastaAbas(tr, () => abas.findIndex(a => a[0] === aba), i => { aba = abas[i][0]; pinta(); }, abas.length);
@@ -3927,7 +3949,7 @@ function abreIdeias(m) {
       const t = ta.value.trim().replace(/\s+/g, ' '); if (!t) return;
       const mm = t.match(/@(\w+)/g) || [], dono = (mm.map(x => x.slice(1).toLowerCase()).find(x => ROBOS_IE.includes(x))) || '';
       const dt = new Date(), quando = String(dt.getDate()).padStart(2, '0') + '/' + String(dt.getMonth() + 1).padStart(2, '0') + '/' + dt.getFullYear() + ' ' + String(dt.getHours()).padStart(2, '0') + ':' + String(dt.getMinutes()).padStart(2, '0');
-      const novo = dd => { const n = Math.max(0, ...dd.postits.map(x => parseInt(x.id, 10) || 0)) + 1, ord = Math.max(0, ...dd.postits.map(x => x.ordem)) + 1; const p = { id: String(n), texto: t, quando, estado: 'esperando', dono, ordem: ord, nota: '', categoria: '', assunto: '' }; dd.postits.push(p); return p; };
+      const novo = dd => { const n = Math.max(0, ...dd.postits.map(x => parseInt(x.id, 10) || 0)) + 1, ord = Math.max(0, ...dd.postits.map(x => x.ordem)) + 1; const p = { id: String(n), texto: t, quando, estado: 'esperando', dono, ordem: ord, nota: '', categoria: '', assunto: '', prioridade: 3, prioridadeNome: 'normal' }; dd.postits.push(p); return p; };
       ta.value = ''; ta.style.height = ''; novo(d); aba = 'quadro'; pinta();
       const ult = tr.querySelector('.ie-col[data-estado="esperando"] .ie-lista')?.lastElementChild; if (ult) { ult.scrollIntoView({ block: 'nearest' }); if (ult.animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) ult.animate([{ transform: 'translateY(40px) rotate(-6deg) scale(.9)', opacity: 0 }, { transform: 'rotate(' + ult.dataset.r + 'deg)', opacity: 1 }], { duration: 320, easing: 'cubic-bezier(.2,.9,.3,1.2)' }); }
       const ok = await gravaJson(arq, dd => { novo(dd); }, 'Pedido novo da May pelo app');
@@ -3968,7 +3990,7 @@ function arrastaPostits(q, salva) {
     e1.classList.remove('pegando'); e1.style.transition = 'transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .2s'; e1.style.transform = ''; setTimeout(() => { e1.style.transition = ''; }, 260);
     q.dataset.arrastou = '1'; setTimeout(() => { delete q.dataset.arrastou; }, 80);
     q.querySelectorAll('.ie-col').forEach(c => { const ps = c.querySelectorAll('.ie-post'); c.querySelector('.ie-conta').textContent = ps.length; ps.forEach((x, k) => { const gi = [-1.2, .8, -.5, 1.1, -.9, .6][k % 6]; x.dataset.r = gi; x.style.setProperty('--r', gi + 'deg'); }); });
-    if (mudou) { const cols = {}; q.querySelectorAll('.ie-col').forEach(c => { cols[c.dataset.estado] = [...c.querySelectorAll('.ie-post')].map(x => x.dataset.id); }); salva(cols); }
+    if (mudou) { const cols = {}; q.querySelectorAll('.ie-col').forEach(c => { cols[c.dataset.estado] = [...c.querySelectorAll('.ie-post')].map(x => x.dataset.id); }); salva(cols, e1.dataset.id); }
   };
   q.addEventListener('pointerup', solta); q.addEventListener('pointercancel', solta);
   q.addEventListener('touchmove', e => { if (el) e.preventDefault(); }, { passive: false });
