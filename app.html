@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.97">
+<meta name="app-versao" content="2026-11-07.99">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -499,6 +499,9 @@ button:disabled { opacity: .45; cursor: default; }
 .painel .cartao h3, .painel .p-sec { color: color-mix(in srgb, var(--c) 72%, var(--fg)); }
 .painel .item .ph { background: color-mix(in srgb, var(--c) 18%, transparent); color: color-mix(in srgb, var(--c) 70%, var(--fg)); }
 .painel .p-topo { background: linear-gradient(color-mix(in srgb, var(--c) 72%, black), color-mix(in srgb, var(--c) 52%, black)); }
+body.na-geral .painel .p-topo { position: relative; background: linear-gradient(160deg, #262A33, #16181E 70%); border-bottom: 0; box-shadow: 0 8px 24px rgba(0,0,0,.45); }   /* o Menu com a cara da Geral (May 12:52): grafite, e a linha embaixo na cor da tela */
+body.na-geral .painel .p-topo::after { content: ''; position: absolute; left: 14px; right: 14px; bottom: 0; height: 3px; border-radius: 2px; background: var(--c); box-shadow: 0 0 10px color-mix(in srgb, var(--c) 60%, transparent); }
+body.na-geral .painel { background: radial-gradient(rgba(255,255,255,.03) 1px, transparent 1.4px) 0 0 / 18px 18px, #121419; }
 /* Esqueleto (skeleton): enquanto a imagem não chega, um bloco cinza com brilho correndo no lugar dela, sem buraco nem susto (May, 06/11/2026) */
 .esq { background: linear-gradient(100deg, color-mix(in srgb, var(--fg) 8%, transparent) 30%, color-mix(in srgb, var(--fg) 16%, transparent) 50%, color-mix(in srgb, var(--fg) 8%, transparent) 70%) 0 0 / 300% 100% !important; animation: esq 1.3s ease-in-out infinite; color: transparent !important; }
 @keyframes esq { from { background-position: 100% 0; } to { background-position: -100% 0; } }
@@ -687,14 +690,14 @@ img.esq { min-height: 140px; }
 ul.marcavel { list-style: none; padding-left: 0; } ul.marcavel li { display: flex; gap: 10px; align-items: flex-start; padding: 7px 4px; border-radius: 10px; cursor: pointer; }
 ul.marcavel li::before { content: ''; flex: none; width: 20px; height: 20px; margin-top: 1px; border-radius: 6px; border: 2px solid #EC4899; }
 ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcavel li.feito::before { background: #EC4899 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E") center / 14px no-repeat; }
-.ag-cal { border-radius: 20px; padding: 12px; color: #fff; background: radial-gradient(120% 80% at 100% 0%, rgba(255,255,255,.18), transparent 60%), linear-gradient(155deg, #3B82F6, #1D4ED8 60%, #1E3A8A); box-shadow: 0 10px 26px rgba(37,99,235,.35); }
+.ag-cal { border-radius: 20px; padding: 12px; color: #fff; background: radial-gradient(120% 80% at 100% 0%, rgba(255,255,255,.18), transparent 60%), linear-gradient(155deg, #2DD4BF, #0D9488 60%, #115E59); box-shadow: 0 10px 26px rgba(13,148,136,.35); }   /* verde-água (May 12:54) */
 .ag-cal-topo { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; } .ag-cal-topo b { font-size: 17px; text-transform: capitalize; }
 .ag-seta { width: 38px; height: 38px; border-radius: 12px; background: rgba(255,255,255,.16); color: #fff; display: grid; place-items: center; } .ag-seta svg { width: 18px; height: 18px; } .ag-seta.dir svg { transform: scaleX(-1); }
 .ag-grade { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; } .ag-sem { font-size: 11px; font-weight: 800; opacity: .7; padding-bottom: 2px; }
 .ag-dia { position: relative; width: auto; height: 36px; border-radius: 10px; background: rgba(255,255,255,.08); color: #fff; font: inherit; font-size: 14px; font-weight: 700; }
 .ag-dia.tem::after { content: ''; position: absolute; left: 50%; bottom: 4px; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: #FDE047; box-shadow: 0 0 6px #FDE047; }
-.ag-dia.hoje { outline: 2px solid #fff; outline-offset: -2px; } .ag-dia.sel { background: #fff; color: #1D4ED8; }
-.ag-tudo { margin-top: 10px; width: auto; height: auto; border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 13px; font-weight: 800; background: #fff; color: #1D4ED8; }
+.ag-dia.hoje { outline: 2px solid #fff; outline-offset: -2px; } .ag-dia.sel { background: #fff; color: #0F766E; }
+.ag-tudo { margin-top: 10px; width: auto; height: auto; border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 13px; font-weight: 800; background: #fff; color: #0F766E; }
 .gr-hero { display: flex; align-items: center; gap: 14px; padding: 16px; border-radius: 22px; color: #fff; background: radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--k1) 75%, transparent), transparent 65%), linear-gradient(160deg, color-mix(in srgb, var(--k1) 45%, #0B0B10), #0B0B10); box-shadow: 0 10px 30px color-mix(in srgb, var(--k1) 30%, transparent); }
 .gr-hero .gr-ic { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); flex: none; } .gr-hero .gr-ic svg { width: 30px; height: 30px; }
 .gr-hero b { display: block; font-size: 22px; font-weight: 900; } .gr-hero span { font-size: 13px; opacity: .85; }
@@ -3074,7 +3077,7 @@ const irGeral = document.getElementById('ir-geral'), irTrab = document.getElemen
 const painel = document.getElementById('painel'), pCorpo = document.getElementById('p-corpo'), pTit = document.getElementById('p-tit'), pExtra = document.getElementById('p-extra');
 let pilha = [], catalogo = null;
 const reais = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
-const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#EF4444'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#2563EB'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#A855F7'], [/^listas/i, '#F59E0B'], [/ideia/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia/i, '#F59E0B']];
+const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#EF4444'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#A855F7'], [/^listas/i, '#F59E0B'], [/ideia/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia/i, '#F59E0B']];
 // Arrumar o Menu arrastando (May, 07/11/2026 12:03: "dar pra eu clicar e arrastar, aí eu mesma organizava"): segura o azulejo até ele levantar,
 // arrasta pro lugar do outro e solta; a ordem fica guardada neste aparelho
 function arrumaArrastando(grade) {
@@ -3832,7 +3835,11 @@ function montaCalendario(cal, c) {   // mês em grade; dia com compromisso tem p
   const els = [...c.querySelectorAll('.ag[data-dia]')], dias = new Set(els.map(e => e.dataset.dia)), hoje = new Date();
   let ano = hoje.getFullYear(), mes = hoje.getMonth(), sel = '';
   const NOMES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
-  const filtra = () => { c.querySelectorAll('.ag').forEach(e => { e.hidden = !!sel && e.dataset.dia !== sel; }); c.querySelectorAll('.p-sec').forEach(t => { t.hidden = !!sel; }); };
+  const filtra = () => {   // sem dia escolhido: só os próximos (o que já passou some); com dia: só os dele (May 12:54)
+    c.querySelectorAll('.ag').forEach(e => { e.hidden = sel ? e.dataset.dia !== sel : e.classList.contains('passou'); });
+    c.querySelectorAll('.p-sec').forEach(t => { t.hidden = !!sel || /anterior/i.test(t.textContent); });
+    if (proxT) { proxT.textContent = 'Compromissos do dia'; proxT.hidden = !sel; } };
+  const proxT = elD('div', 'p-sec', 'Próximos'); cal.after(proxT);
   const desenha = () => {
     cal.replaceChildren();
     const topo = elD('div', 'ag-cal-topo'), ant = elD('button', 'ag-seta'), prox = elD('button', 'ag-seta');
@@ -3852,7 +3859,7 @@ function montaCalendario(cal, c) {   // mês em grade; dia com compromisso tem p
     cal.append(g);
     if (sel) { const v = elD('button', 'ag-tudo', 'Ver tudo'); v.type = 'button'; v.onclick = () => { sel = ''; filtra(); desenha(); }; cal.append(v); }
   };
-  desenha();
+  desenha(); filtra();
 }
 function abreAgenda(m) {
   tela(m.nome, async c => {
@@ -4077,7 +4084,7 @@ function abreZoom(src, path, listaFotos) {   // listaFotos: as fotos do álbum (
   let ocupado = false;
   const vai = async dir => {   // dir: -1 anterior, +1 seguinte; pula foto que já saiu do repo
     if (i < 0 || ocupado) return; ocupado = true;
-    try { for (let k = i + dir; k >= 0 && k < lista.length; k += dir) { try { const u = await fotoUrl(lista[k]); i = k; im.src = u; mostraCont(); break; } catch (e) {} } }
+    try { for (let k = i + dir; k >= 0 && k < lista.length; k += dir) { try { const u = await fotoUrl(lista[k]); i = k; im.src = u; mostraCont(); if (im.animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) im.animate([{ transform: 'translateX(' + (dir * 60) + '%) scale(.96)' }, { transform: 'none' }], { duration: 280, easing: 'cubic-bezier(.2,.8,.2,1)' }); break; } catch (e) {} } }   // a foto nova entra deslizando do lado (May, 07/11/2026 12:52)
     finally { ocupado = false; }
   };
   salvar.onclick = async e => {
