@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.94">
+<meta name="app-versao" content="2026-11-07.95">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -678,6 +678,15 @@ img.esq { min-height: 140px; }
 .pl-info { display: grid; gap: 4px; padding: 12px 64px 4px 4px; } .pl-info b { font-size: 20px; } .pl-info span { font-size: 13px; color: var(--muted); }
 .pl-acoes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; } .pl-bt { width: auto; height: auto; border-radius: 999px; padding: 9px 16px; font: inherit; font-size: 14px; font-weight: 700; background: var(--paper); color: var(--fg); border: 1px solid var(--line); }
 .pl-bt.on { background: var(--c, #14B8A6); border-color: transparent; color: #fff; }
+.gr-saude .gr-hero-saude, .gr-hero-saude { background: radial-gradient(110% 90% at 100% 0%, rgba(255,255,255,.35), transparent 60%), linear-gradient(150deg, #F472B6, #DB2777 55%, #9D174D); box-shadow: 0 12px 30px rgba(219,39,119,.35); }
+.gr-hero-saude .gr-ic { background: rgba(255,255,255,.22); border-color: rgba(255,255,255,.5); }
+.gr-grade.gr-grade-saude { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.gr-grade.gr-grade-saude .gr-item { min-height: 92px; border-radius: 18px; background: linear-gradient(160deg, #FFF1F7, #FCE7F3); border: 1px solid #FBCFE8; box-shadow: 0 4px 12px rgba(219,39,119,.12); }
+.gr-grade-saude .gr-item .ic { color: #DB2777; } .gr-grade-saude .gr-item .t { color: #831843; font-size: 12px; line-height: 1.2; }
+@media (prefers-color-scheme: dark) { .gr-grade-saude .gr-item { background: linear-gradient(160deg, #3B0F24, #2A0A1A); border-color: #6B1D3F; } .gr-grade-saude .gr-item .ic { color: #F472B6; } .gr-grade-saude .gr-item .t { color: #FBCFE8; } }
+ul.marcavel { list-style: none; padding-left: 0; } ul.marcavel li { display: flex; gap: 10px; align-items: flex-start; padding: 7px 4px; border-radius: 10px; cursor: pointer; }
+ul.marcavel li::before { content: ''; flex: none; width: 20px; height: 20px; margin-top: 1px; border-radius: 6px; border: 2px solid #EC4899; }
+ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcavel li.feito::before { background: #EC4899 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E") center / 14px no-repeat; }
 .gr-hero { display: flex; align-items: center; gap: 14px; padding: 16px; border-radius: 22px; color: #fff; background: radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--k1) 75%, transparent), transparent 65%), linear-gradient(160deg, color-mix(in srgb, var(--k1) 45%, #0B0B10), #0B0B10); box-shadow: 0 10px 30px color-mix(in srgb, var(--k1) 30%, transparent); }
 .gr-hero .gr-ic { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); flex: none; } .gr-hero .gr-ic svg { width: 30px; height: 30px; }
 .gr-hero b { display: block; font-size: 22px; font-weight: 900; } .gr-hero span { font-size: 13px; opacity: .85; }
@@ -1009,6 +1018,7 @@ const ICONES_SVG = {
   bag: '<path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/>',
   suitcase: '<rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V5h8v3M8 20v1M16 20v1"/>',
   chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  laco: '<path d="M12 3c-2 0-3.4 1.5-3.4 3.4 0 1.9 1.3 3.9 3.4 6.4 2.1-2.5 3.4-4.5 3.4-6.4C15.4 4.5 14 3 12 3Z"/><path d="M10.3 12.4 6.5 21l2.8-1.1 1.6 2.4 2.2-6.3M13.7 12.4 17.5 21l-2.8-1.1-1.6 2.4-2.2-6.3"/>',   // laço do Outubro Rosa (Saúde, May 07/11/2026)
   fileira: '<rect x="2" y="8" width="6" height="7" rx="1.6"/><rect x="9" y="6.5" width="6" height="9" rx="1.6"/><rect x="16" y="8" width="6" height="7" rx="1.6"/><path d="M6 19.5h12"/>',   // Máquinas e consoles: a fileira de blocos da tela de dentro (May, 07/11/2026 11:26)
   pulso: '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M6.5 11H9l1.5-3 2.5 6 1.5-3h3M9 21h6M12 17v4"/>',   // monitor com batimento: Diagnóstico dos PCs (May, 07/11/2026)
   sofa: '<path d="M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3M3 13a2 2 0 0 1 4 0v2h10v-2a2 2 0 0 1 4 0v5H3zM5 18v2M19 18v2"/>',
@@ -3413,8 +3423,9 @@ function abreGrupo(m) {
   tela(m.nome, c => {
     const cor = (COR_ASSUNTO.find(([re]) => re.test(m.nome)) || [])[1] || 'var(--accent)'; painel.style.setProperty('--c', cor);
     const h = elD('div', 'gr-hero'); h.style.setProperty('--k1', cor); const ic = elD('span', 'gr-ic'); ic.innerHTML = icone(m.icone); const tx = elD('div'); tx.append(elD('b', '', m.nome), elD('span', '', m.sub || '')); h.append(ic, tx); c.append(h);
-    const g = elD('div', 'gr-grade'); c.append(g);
-    (m.itens || []).forEach(x => { const b = botaoGrade(x.icone, x.nome, x.sub, () => abreItemMenu(x)); b.classList.add('gr-item'); b.style.setProperty('--c', cor); const sb = elD('small', 'gr-sub', x.sub || ''); b.append(sb); g.append(b); });
+    if (m.estilo) { c.classList.add('gr-' + m.estilo); h.classList.add('gr-hero-' + m.estilo); }   // grupo com cara própria (ex.: Saúde rosa)
+    const g = elD('div', 'gr-grade' + (m.estilo ? ' gr-grade-' + m.estilo : '')); c.append(g);
+    (m.itens || []).forEach(x => { const b = botaoGrade(x.icone, x.nome, x.sub, () => abreItemMenu(x)); b.classList.add('gr-item'); b.style.setProperty('--c', x.cor || cor); if (!m.estilo) { const sb = elD('small', 'gr-sub', x.sub || ''); b.append(sb); } g.append(b); });
   });
 }
 // Ideias (May via Sigma, 07/11/2026): anotar rápido ideia do app, da casa ou de conteúdo; vira pauta pros robôs. Arquivo: m.arq, uma linha por ideia, a mais nova embaixo
@@ -3936,7 +3947,7 @@ function abreCartoes(m) {
       }
       const alvo = card || c;
       if (/^###+ /.test(l)) { const h = document.createElement('h4'); neg(h, l.replace(/^#+ /, '')); alvo.append(h); ul = null; return; }
-      if (/^\s*[-*] /.test(l)) { if (!ul) { ul = document.createElement('ul'); alvo.append(ul); } const li = document.createElement('li'); neg(li, l.replace(/^\s*[-*] /, '')); ul.append(li); return; }
+      if (/^\s*[-*] /.test(l)) { if (!ul) { ul = document.createElement('ul'); if (m.marca) ul.className = 'marcavel'; alvo.append(ul); } const li = document.createElement('li'); neg(li, l.replace(/^\s*[-*] /, '')); if (m.marca) { const k = 'marca:' + m.arq + ':' + li.textContent; if (store.get(k)) li.classList.add('feito'); li.onclick = e => { e.stopPropagation(); const f = li.classList.toggle('feito'); store.set(k, f ? '1' : ''); }; } ul.append(li); return; }
       const n = document.createElement('p'); n.className = card ? '' : 'p-nota'; neg(n, l.replace(/^>\s?/, '')); alvo.append(n); ul = null;
     });
     const fc = c.querySelector('.ficha'); if (fc) fc.remove();
