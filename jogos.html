@@ -474,6 +474,14 @@ nav button{height:58px;border-radius:22px;font-size:14px}
 nav .nav-dq{position:absolute;z-index:0;top:7px;bottom:7px;left:0;width:0;border-radius:22px;background:linear-gradient(color-mix(in srgb,#00FF8C 34%,#07040f),color-mix(in srgb,#00FF8C 14%,#07040f));box-shadow:inset 0 2px 0 rgba(255,255,255,.18),inset 0 -3px 0 rgba(0,0,0,.35),0 0 0 1px rgba(0,255,140,.5);transition:transform .36s cubic-bezier(.2,.9,.3,1.12),width .36s}
 #pop,#envio{align-items:center!important;justify-content:center;padding:calc(env(safe-area-inset-top) + 44px) 30px calc(env(safe-area-inset-bottom) + 44px)}
 #pop .pc{padding:16px 18px 18px;border-radius:18px}
+#envio .folha{position:relative;padding:22px 16px 16px!important;text-align:center;border:2px solid color-mix(in srgb,var(--cor) 70%,transparent)!important}
+#envio h4{font-size:16px;padding:0 40px}
+#envio p{margin:4px 0 12px}
+#envio .pra{justify-content:center}
+#envio textarea{font-size:16px;text-align:left;margin-top:2px}
+#envio textarea:focus{border-color:var(--cor);box-shadow:0 0 0 3px color-mix(in srgb,var(--cor) 25%,transparent)}
+#envio .acoes .env{border-radius:999px;background:var(--cor);min-height:46px}
+#envio .e-x{position:absolute;right:12px;top:12px;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(0,0,0,.25);border:1.5px solid color-mix(in srgb,var(--cor) 70%,#fff)}
 #pop .folha,#envio .folha{width:100%;max-height:100%;overflow-y:auto;border-radius:24px!important;box-shadow:0 0 0 1px rgba(255,255,255,.18),0 24px 60px rgba(0,0,0,.7)}
 nav .nav-dq.ouro{background:var(--ouro-metal);box-shadow:inset 0 2px 0 rgba(255,255,255,.45),inset 0 -3px 0 rgba(0,0,0,.25),0 0 16px rgba(250,215,3,.45)}
 nav button{position:relative;z-index:1}nav button.on{background:none!important;box-shadow:none!important}
@@ -616,7 +624,7 @@ nav button{position:relative;z-index:1}nav button.on{background:none!important;b
 </section>
 <div id="envio">
 <div class="folha">
-<div class="alca"></div>
+<button class="e-x" id="e-x" aria-label="Fechar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
 <h4 id="e-tt">Mandar algo sobre este jogo</h4>
 <p>Vai pra Geral. Escolhe quem precisa ver:</p>
 <div class="pra" id="e-pra"><button data-q="Vega" class="on">Tela (Vega)</button><button data-q="Orfeu" class="on">História e dados (Orfeu)</button><button data-q="Nyx">Capa e imagens (Nyx)</button></div>
@@ -938,6 +946,7 @@ document.getElementById("f-corpo").addEventListener("scroll",e=>document.getElem
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>trocaAba(b.dataset.aba,Math.sign(ABAS_L.indexOf(b.dataset.aba)-ABAS_L.indexOf(aba))))
 document.getElementById("f-msg").onclick=()=>{document.getElementById("envio").classList.add("on");setTimeout(()=>document.getElementById("e-txt").focus(),50)}
 document.getElementById("envio").onclick=e=>{if(e.target.id=="envio")e.currentTarget.classList.remove("on")}
+document.getElementById("e-x").onclick=()=>document.getElementById("envio").classList.remove("on")
 let enviando=false
 document.querySelectorAll("#e-pra button").forEach(x=>x.onclick=e=>{e.stopPropagation();x.classList.toggle("on")})
 document.getElementById("e-env").onclick=async()=>{const t=document.getElementById("e-txt").value.trim();if(!t||enviando)return;enviando=true;const b=document.getElementById("e-env"),a=document.getElementById("aviso"),n=new Date(),p=x=>String(x).padStart(2,"0"),rot=b.innerHTML;b.disabled=true;b.classList.add("indo");b.innerHTML='<span class="giro"></span>Enviando…';document.getElementById("e-txt").readOnly=true
