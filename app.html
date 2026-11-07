@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.75">
+<meta name="app-versao" content="2026-11-07.76">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -2062,12 +2062,13 @@ function mostraSemana(lista) {
   const v = Math.max(0, Math.min(100, Math.round(c.semana)));
   const R = 17.5, C = 2 * Math.PI * R;
   semanaEl.innerHTML = '<svg viewBox="0 0 42 42" aria-hidden="true"><circle class="fundo" cx="21" cy="21" r="' + R + '"/><circle class="cheio" cx="21" cy="21" r="' + R + '" stroke-dasharray="' + (C * v / 100).toFixed(1) + ' ' + C.toFixed(1) + '"/></svg><b>' + v + '</b>';
-  // cor pelo ritmo (May, 05/11/2026): 100% / 7 dias = a cota de cada dia; no dia N o planejado é N cotas.
+  // cor pelo ritmo POR HORA (May, 07/11/2026 09:58; antes era por dia): a semana zera sexta 15h, são 168 h; a cada hora fechada o planejado sobe 100/168.
   // até 70% do planejado = verde, abaixo do planejado = amarelo (tá quase), chegou ou passou = vermelho
-  const dia = c.semanaReset ? Math.min(7, Math.max(1, Math.ceil((Date.now() / 1000 - (c.semanaReset - 7 * 86400)) / 86400))) : 7, plano = dia * 100 / 7;
+  const sex15 = () => { const d = new Date(); d.setHours(15, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 2) % 7)); if (d > new Date()) d.setDate(d.getDate() - 7); return d.getTime() / 1000; };   // sexta 15h mais recente, sem o reset do robô
+  const inicio = c.semanaReset ? c.semanaReset - 7 * 86400 : sex15(), hora = Math.min(168, Math.max(1, Math.floor((Date.now() / 1000 - inicio) / 3600))), plano = hora * 100 / 168, dia = Math.ceil(hora / 24);
   const cor = v >= plano ? 'estouro' : v > plano * .7 ? 'alto' : 'ok';
   ['ok', 'alto', 'estouro'].forEach(x => semanaEl.classList.toggle(x, x === cor));
-  semanaEl.title = 'Limite de 7 dias: ' + v + '% usado, planejado até hoje (dia ' + dia + ' de 7) ' + Math.round(plano) + '%'; semanaEl.hidden = false;
+  semanaEl.title = 'Limite de 7 dias: ' + v + '% usado, planejado até agora (hora ' + hora + ' de 168, dia ' + dia + ') ' + Math.round(plano) + '%'; semanaEl.hidden = false;
 }
 async function semanaTrabalho() {   // Geral e Trabalho mostram o MESMO anel: é uma conta só (May, 06/11/2026 19:21)
   const ks = GERAL.participantes.filter(k => k !== 'may');
