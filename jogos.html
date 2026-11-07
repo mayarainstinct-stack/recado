@@ -223,7 +223,7 @@ html body #ficha.premium .bloco small,html body #ficha.premium .bloco .k,html bo
 /* Parede da Vitória em cartas: uma por vez, desliza pro lado, a carta do lado gira e encolhe como num baralho (Hermes, May 14:28) */
 .deck{display:flex;gap:0;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:26px 0 14px;margin:0 -16px}
 .deck::-webkit-scrollbar{display:none}
-.carta{--f:0;--lado:0;flex:0 0 78%;scroll-snap-align:center;position:relative;margin:0 2%;padding:14px 6px 18px;border-radius:22px;background:none;border:0;box-shadow:none;transform:rotate(calc(var(--lado) * var(--f) * 6deg)) scale(calc(1 - var(--f) * .12)) translateY(calc(var(--f) * 18px));transition:transform .08s linear;cursor:pointer}
+.carta{--f:0;--lado:0;flex:0 0 78%;scroll-snap-align:center;position:relative;margin:0 2%;padding:14px 6px 18px;border-radius:22px;background:none;border:0;box-shadow:none;transform:rotate(calc(var(--lado) * var(--f) * 6deg)) scale(calc(1 - var(--f) * .12)) translateY(calc(var(--f) * 18px));will-change:transform;contain:layout style;cursor:pointer}
 
 .carta:first-child{margin-left:11%}.carta:last-child{margin-right:11%}
 .carta-capa{position:relative;height:min(46vh,92vw);border-radius:16px;overflow:hidden;border:6px solid transparent;background:var(--ouro-metal) border-box;box-shadow:0 0 0 1px #4a2a00,0 12px 30px rgba(0,0,0,.6),0 0 22px rgba(250,215,3,.35)}
@@ -457,11 +457,18 @@ nav button{height:58px;border-radius:22px;font-size:14px}
 .topo h2{font-size:24px;letter-spacing:.2px;text-shadow:0 2px 0 rgba(0,0,0,.4)}
 .painel .bloco{margin:0 14px 14px}
 .painel .bloco h3{font-size:12px}
-@keyframes entraD{from{transform:translateX(48px)}to{transform:none}}
-@keyframes entraE{from{transform:translateX(-48px)}to{transform:none}}
+@keyframes entraD{from{transform:translateX(100%)}to{transform:none}}
+@keyframes entraE{from{transform:translateX(-100%)}to{transform:none}}
 @keyframes sobeP{0%{transform:translateY(70px)}70%{transform:translateY(-6px)}100%{transform:none}}
 @keyframes fichaE{from{transform:translateX(100%)}to{transform:none}}
-.entra-d{animation:entraD .3s cubic-bezier(.2,.8,.2,1) both}
+.entra-d{animation:entraD .36s cubic-bezier(.2,.8,.2,1) both}
+.lista-fantasma{position:fixed;z-index:2;overflow:hidden;pointer-events:none}
+.lista-fantasma.sai-d{animation:saiD .36s cubic-bezier(.2,.8,.2,1) both}.lista-fantasma.sai-e{animation:saiE .36s cubic-bezier(.2,.8,.2,1) both}
+@keyframes saiD{to{transform:translateX(-100%)}}@keyframes saiE{to{transform:translateX(100%)}}
+nav .nav-dq{position:absolute;z-index:0;top:7px;bottom:7px;left:0;width:0;border-radius:22px;background:linear-gradient(color-mix(in srgb,#00FF8C 34%,#07040f),color-mix(in srgb,#00FF8C 14%,#07040f));box-shadow:inset 0 2px 0 rgba(255,255,255,.18),inset 0 -3px 0 rgba(0,0,0,.35),0 0 0 1px rgba(0,255,140,.5);transition:transform .36s cubic-bezier(.2,.9,.3,1.12),width .36s}
+nav .nav-dq.ouro{background:var(--ouro-metal);box-shadow:inset 0 2px 0 rgba(255,255,255,.45),inset 0 -3px 0 rgba(0,0,0,.25),0 0 16px rgba(250,215,3,.45)}
+nav button{position:relative;z-index:1}nav button.on{background:none!important;box-shadow:none!important}
+@media (prefers-reduced-motion:reduce){nav .nav-dq{transition:none}.lista-fantasma{display:none}}
 .entra-e{animation:entraE .3s cubic-bezier(.2,.8,.2,1) both}
 #ficha.on{animation:fichaE .32s cubic-bezier(.2,.8,.2,1)}
 #pop.on .folha{animation:sobeP .34s cubic-bezier(.2,.9,.3,1) both}
@@ -580,6 +587,7 @@ nav button{height:58px;border-radius:22px;font-size:14px}
 </header>
 <main id="lista"></main>
 <nav>
+<i class="nav-dq" aria-hidden="true"></i>
 <button id="tab-jogando" class="on" data-aba="jogando"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11h4M8 9v4M15 12h.01M18 10h.01"/><path d="M17.3 5H6.7a4 4 0 0 0-3.96 3.43L2 14.5A3 3 0 0 0 7.2 17l1.3-1.5h7l1.3 1.5a3 3 0 0 0 5.2-2.5l-.74-6.07A4 4 0 0 0 17.3 5z"/></svg>JOGANDO</button>
 <button id="tab-concluidos" data-aba="concluidos"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>ZERADOS</button>
 </nav>
@@ -774,7 +782,7 @@ document.getElementById("sub").textContent=`${z.length} zerados`
 L.innerHTML=`<div class="parede-tt"><img class="parede-logo" data-p="categorias/games/tela/parede-logo.png" alt="Parede da Vitória"><p>${z.length} zerados · ${z.filter(j=>j.parede).length} com plaquinha no launcher</p></div><div class="deck" id="deck">${z.map((j,i)=>`<div class="carta" style="--cor:${cor(j.console)}" data-id="${j.id}" data-i="${i}"><div class="carta-capa">${capaHtml(j)}${j.parede?`<span class="carta-num">Nº ${String(j.parede.numero).padStart(2,"0")}</span>`:""}</div>${insigniaJogo(j)}<div class="carta-tt">${tagHack(j)}${esc(j.titulo)}</div><div class="carta-dt"><span class="chip">${icone(j.console)}${esc(curto(j.console))}</span>${j.parede&&j.parede.data?`<span>${esc(j.parede.data.replace(/^Zerad[oa] (n[ao] |em )?/i,""))}</span>`:""}</div></div>`).join("")}</div><div class="deck-cont"><b id="deck-n">1</b> de ${z.length} · desliza pro lado</div>`   // Parede da Vitória em cartas, uma por vez, deslizando tipo Tinder, com a insígnia de ouro grande (May 07/11 14:28)
 }
 L.querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>abrir(b.dataset.id))
-{const dk=document.getElementById("deck");if(dk){const cs=[...dk.querySelectorAll(".carta")],n=document.getElementById("deck-n");const vivo=()=>{const c=dk.scrollLeft+dk.clientWidth/2;let m=0,md=1e9;cs.forEach((e,k)=>{const d=Math.abs(e.offsetLeft+e.offsetWidth/2-c);const f=Math.min(1,d/e.offsetWidth);e.style.setProperty("--f",f.toFixed(3));e.style.setProperty("--lado",Math.sign(e.offsetLeft+e.offsetWidth/2-c));if(d<md){md=d;m=k}});n.textContent=m+1};dk.addEventListener("scroll",()=>requestAnimationFrame(vivo),{passive:true});requestAnimationFrame(vivo)}}
+{const dk=document.getElementById("deck");if(dk){const cs=[...dk.querySelectorAll(".carta")],n=document.getElementById("deck-n");let mei=[],lw=1,pend=false,ult=-1;const mede=()=>{mei=cs.map(e=>e.offsetLeft+e.offsetWidth/2);lw=cs[0]?cs[0].offsetWidth:1};const vivo=()=>{pend=false;const c=dk.scrollLeft+dk.clientWidth/2;let m=0,md=1e9;mei.forEach((x,k)=>{const d=Math.abs(x-c);if(d<md){md=d;m=k}});for(let k=Math.max(0,m-2);k<=Math.min(cs.length-1,m+2);k++){const e=cs[k],d=mei[k]-c;e.style.setProperty("--f",Math.min(1,Math.abs(d)/lw).toFixed(3));e.style.setProperty("--lado",Math.sign(d))}if(m!=ult){ult=m;n.textContent=m+1}};mede();cs.forEach(e=>{e.style.setProperty("--f",1);e.style.setProperty("--lado",1)});dk.addEventListener("scroll",()=>{if(!pend){pend=true;requestAnimationFrame(vivo)}},{passive:true});addEventListener("resize",()=>{mede();vivo()});requestAnimationFrame(vivo)}}
 anima(L,dirAnim);dirAnim=0
 }
 function linha(j){return`<button class="linha" style="--cor:${cor(j.console)}" data-id="${j.id}"><div class="mini">${capaHtml(j)}</div><div class="tx"><div class="tt">${tagHack(j)}${esc(j.titulo)}</div><div class="sub">${esc(curto(j.console))}${j.parei?" · "+esc(j.parei):""}</div>${barra(j)}</div><div class="pc">${pctTxt(j)}</div></button>`}
@@ -900,7 +908,7 @@ return{t:p.nome,h:`<div class="pop-poke"><p class="pop-p">Buscando na Pokédex�
 function abrePop(o){const b=document.getElementById("pop");b.style.setProperty("--cor",fichaAtual?paleta(fichaAtual.console).base:"#3C3C5A");b.querySelector("h4").textContent=o.t;const c=b.querySelector(".pc");c.innerHTML=o.h;hidrata(c);c.onclick=e=>{const im=e.target.closest("img[data-z]");if(im&&im.src)abreZoom([im.src],0)};b.classList.add("on");b.querySelector(".folha").scrollTop=0;if(o.depois)o.depois(c)}
 function sobreJogo(j){const s=((window.EXT||{}).sobre||{})[j.id];const b=document.getElementById("f-sobre");const pt=s&&s.lingua=="en"?(window.SOBREPT||{})[j.id]:s&&s.texto;if(!pt||!b)return;b.querySelector("p").textContent=pt;const a=b.querySelector("a");a.href=s.url||"#";a.textContent=`Fonte: Wikipédia${s.lingua=="en"?" em inglês (traduzido)":""}`;b.hidden=false}
 function rotuloStatus(s){return{jogando:"Jogando agora",quer_terminar:"Parou, mas quer terminar",parado:"Começou e parou",zerado:"Zerado · parede da vitória",largado:"Largado",nao_comecou:"Ainda não começou",espiou:"Só espiou",bloqueado:"Bloqueado por acesso",nao_funciona:"Não funciona mais",casual:"Casual, sem %",assistiu:"Do Gabriel, ela assistiu",colecao:"Coleção por nostalgia",memoria:"Memória antiga",de_olho:"De olho"}[s]||"Sem status"}
-function deslizar(el,vai){let x0=null,y0=0;el.addEventListener("touchstart",e=>{if(e.touches.length!=1||e.target.closest(".prateleira,.abas-f,.pager,#pop,#zoom,#envio,textarea")){x0=null;return}x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});el.addEventListener("touchend",e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.6)vai(dx<0?1:-1)},{passive:true})}
+function deslizar(el,vai){let x0=null,y0=0;el.addEventListener("touchstart",e=>{if(e.touches.length!=1||e.target.closest(".prateleira,.abas-f,.pager,.deck,#pop,#zoom,#envio,textarea")){x0=null;return}x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});el.addEventListener("touchend",e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.6)vai(dx<0?1:-1)},{passive:true})}
 const fechaFicha=()=>{const f=document.getElementById("ficha");if(!f.classList.contains("on")||f.classList.contains("sai"))return;history.replaceState(null,"","#"+aba);const fim=()=>{f.classList.remove("on","sai");document.getElementById("ficha-veu").classList.remove("on")};if(matchMedia("(prefers-reduced-motion:reduce)").matches)return fim();f.classList.add("sai");setTimeout(fim,240)}
 document.getElementById("ficha-veu").onclick=fechaFicha
 function voltaEPuxa(el,volta,puxa){let x0=null,y0=0,topo=false;el.addEventListener("touchstart",e=>{if(e.touches.length!=1){x0=null;return}x0=e.touches[0].clientX;y0=e.touches[0].clientY;topo=(e.currentTarget.scrollTop||0)<=0},{passive:true});el.addEventListener("touchend",e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;if(x0<24&&dx>80&&Math.abs(dx)>Math.abs(dy)*1.4)volta();else if(puxa&&topo&&dy>90&&dy>Math.abs(dx)*1.5)puxa();x0=null},{passive:true})}
@@ -908,11 +916,14 @@ voltaEPuxa(document.getElementById("f-corpo"),fechaFicha,fechaFicha)
 voltaEPuxa(document.getElementById("lista"),()=>{location.href="app.html#menu"},null)
 document.addEventListener("keydown",e=>{if(e.key!="Escape"||document.getElementById("zoom").classList.contains("on"))return;for(const id of["pop","envio"]){const el=document.getElementById(id);if(el.classList.contains("on")){el.classList.remove("on");return}}if(document.getElementById("ficha").classList.contains("on"))fechaFicha()})
 const ABAS_L=["jogando","concluidos"]
-deslizar(document.getElementById("lista"),d=>{const i=ABAS_L.indexOf(aba)+d;if(i<0||i>=ABAS_L.length)return;aba=ABAS_L[i];dirAnim=d;history.replaceState(null,"","#"+aba);render();document.getElementById("lista").scrollTop=0})
+const posDq=()=>{const b=document.querySelector("nav button.on"),q=document.querySelector("nav .nav-dq");if(b&&q){q.classList.toggle("ouro",b.id=="tab-concluidos");q.style.width=b.offsetWidth+"px";q.style.transform=`translateX(${b.offsetLeft}px)`}}
+function trocaAba(nova,d){if(nova==aba||!d)return;const L=document.getElementById("lista"),r=L.getBoundingClientRect(),g=document.createElement("div"),dentro=document.createElement("div");g.className="lista-fantasma";Object.assign(g.style,{left:r.left+"px",top:r.top+"px",width:r.width+"px",height:r.height+"px"});dentro.style.padding=getComputedStyle(L).padding;dentro.style.transform=`translateY(${-L.scrollTop}px)`;dentro.innerHTML=L.innerHTML;dentro.querySelectorAll("[id]").forEach(e=>e.removeAttribute("id"));g.appendChild(dentro);document.body.appendChild(g);g.classList.add(d>0?"sai-d":"sai-e");setTimeout(()=>g.remove(),400);aba=nova;dirAnim=d;history.replaceState(null,"","#"+aba);render();L.scrollTop=0;posDq()}
+addEventListener("resize",posDq);requestAnimationFrame(posDq)
+deslizar(document.getElementById("lista"),d=>{const i=ABAS_L.indexOf(aba)+d;if(i<0||i>=ABAS_L.length)return;trocaAba(ABAS_L[i],d)})
 document.getElementById("f-voltar").onclick=fechaFicha
 document.getElementById("ficha").addEventListener("click",e=>{const b=e.target.closest("[data-ir]");if(b&&POR[b.dataset.ir]){e.stopPropagation();abrir(b.dataset.ir);document.getElementById("f-corpo").scrollTop=0}})
 document.getElementById("f-corpo").addEventListener("scroll",e=>document.getElementById("f-msg").classList.toggle("mini",e.target.scrollTop>60),{passive:true})
-document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{dirAnim=Math.sign(ABAS_L.indexOf(b.dataset.aba)-ABAS_L.indexOf(aba));aba=b.dataset.aba;history.replaceState(null,"","#"+aba);render();document.getElementById("lista").scrollTop=0})
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>trocaAba(b.dataset.aba,Math.sign(ABAS_L.indexOf(b.dataset.aba)-ABAS_L.indexOf(aba))))
 document.getElementById("f-msg").onclick=()=>{document.getElementById("envio").classList.add("on");setTimeout(()=>document.getElementById("e-txt").focus(),50)}
 document.getElementById("envio").onclick=e=>{if(e.target.id=="envio")e.currentTarget.classList.remove("on")}
 let enviando=false
