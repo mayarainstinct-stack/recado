@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.123">
+<meta name="app-versao" content="2026-11-07.124">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -702,7 +702,7 @@ img.esq { min-height: 140px; }
 .p-grade.apps .bt-listas { background: repeating-linear-gradient(#FFFDF5 0 17px, #DBEAFE 17px 18px); border: 0; border-left: 5px solid #F87171; border-radius: 3px 10px 10px 3px; text-shadow: none; box-shadow: 0 6px 12px rgba(0,0,0,.3); }
 .p-grade.apps .bt-listas .ic { color: #D97706; filter: none; } .p-grade.apps .bt-listas .t { color: #1F2937; }
 .p-grade.apps .bt-ideias { background: linear-gradient(172deg, #FEF9C3, #FDE047); border: 0; border-radius: 2px 2px 16px 2px; transform: rotate(-1.5deg); text-shadow: none; box-shadow: 0 10px 14px -8px rgba(0,0,0,.6); overflow: visible; }
-.p-grade.apps .bt-ideias::before { content: ''; position: absolute; top: -6px; left: 50%; width: 46px; height: 14px; margin-left: -23px; background: rgba(255,255,255,.6); transform: rotate(-3deg); box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+.p-grade.apps .bt-ideias::before { content: ''; position: absolute; top: -6px; left: 50%; width: 48px; height: 15px; margin-left: -24px; background: linear-gradient(rgba(255,255,255,.66), rgba(240,240,232,.55)); transform: rotate(-3deg); filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)); clip-path: polygon(3% 0, 0 12%, 4% 25%, 1% 38%, 5% 50%, 0 63%, 4% 75%, 1% 88%, 4% 100%, 96% 100%, 100% 87%, 97% 75%, 100% 62%, 95% 50%, 99% 37%, 96% 25%, 100% 12%, 97% 0); }   /* o mesmo durex rasgadinho de dentro (May 15:58) */
 .p-grade.apps .bt-ideias .ic { color: #A16207; filter: none; } .p-grade.apps .bt-ideias .t { color: #422006; }
 .p-grade.apps .bt-contas { background: linear-gradient(#217346 0 20px, transparent 20px), linear-gradient(90deg, #F3F4F6 0 16px, transparent 16px), linear-gradient(#E5E7EB 1px, transparent 1px) 0 20px / 100% 18px, linear-gradient(90deg, #E5E7EB 1px, transparent 1px) 16px 0 / 34px 100%, #FFFFFF; border: 1px solid #217346; border-radius: 3px; text-shadow: none; padding: 26px 6px 8px 22px; }   /* planilha do Excel, profissional (May 15:20) */
 .p-grade.apps .bt-contas::before { content: 'A      B      C'; position: absolute; top: 3px; left: 24px; font: 700 10px Consolas, monospace; color: #E7F5EC; white-space: pre; }
@@ -749,7 +749,7 @@ img.esq { min-height: 140px; }
 .gr-grade.gr-grade-saude { grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .gr-grade.gr-grade-saude .gr-item { min-height: 92px; border-radius: 18px; background: linear-gradient(160deg, #FFF1F7, #FCE7F3); border: 1px solid #FBCFE8; box-shadow: 0 4px 12px rgba(219,39,119,.12); }
 .gr-grade-saude .gr-item .ic { color: #DB2777; } .gr-grade-saude .gr-item .t { color: #831843; font-size: 12px; line-height: 1.2; }
-@media (prefers-color-scheme: dark) { .gr-grade-saude .gr-item { background: linear-gradient(160deg, #3B0F24, #2A0A1A); border-color: #6B1D3F; } .gr-grade-saude .gr-item .ic { color: #F472B6; } .gr-grade-saude .gr-item .t { color: #FBCFE8; } }
+.gr-grade.gr-grade-saude .gr-item .t { color: #831843; text-shadow: none; font-weight: 800; } .gr-grade.gr-grade-saude .gr-item .ic { color: #BE185D; filter: none; }   /* rosa-escuro no rosa-claro nos dois modos: contraste ~9:1 (May 16:00: "letra branca no fundo branco não estou enxergando nada") */
 ul.marcavel { list-style: none; padding-left: 0; } ul.marcavel li { display: flex; gap: 10px; align-items: flex-start; padding: 7px 4px; border-radius: 10px; cursor: pointer; }
 ul.marcavel li::before { content: ''; flex: none; width: 20px; height: 20px; margin-top: 1px; border-radius: 6px; border: 2px solid #EC4899; }
 ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcavel li.feito::before { background: #EC4899 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E") center / 14px no-repeat; }
@@ -853,6 +853,7 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 .ie-est.ie-fazendo { background: #22190A; color: #FDE68A; } .ie-est.ie-fazendo::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: 5px; border-radius: 50%; background: #FACC15; vertical-align: 1px; animation: ie-pisca 1.4s ease-in-out infinite; }
 @keyframes ie-pisca { 50% { opacity: .25; } }
 .ie-det-txt { font-size: 16px; font-weight: 600; line-height: 1.4; margin: 4px 0 8px; text-align: left; } .ie-det .p-nota { text-align: left; }
+.ie-mover { background: #22C55E !important; color: #052E16 !important; }
 .ie-topo { margin-top: 10px; width: 100%; height: auto; padding: 12px; border-radius: 14px; font: inherit; font-weight: 800; background: #FACC15; color: #1F1A03; }
 .p-corpo > .tela.ie-tela { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 0; } .p-corpo > .tela.ie-tela > .ie-trilho { flex: 1 1 0; min-height: 0; } .id-nova.ie-nova { margin-top: 8px; padding-right: 0; } .id-nova.ie-nova button { background: #22C55E; }
 .id-lista { display: flex; flex-direction: column; gap: 8px; } .id-card { border-radius: 14px; padding: 10px 12px; background: var(--paper); border: 1px solid var(--line); border-left: 4px solid var(--c, var(--accent)); }
@@ -3866,6 +3867,7 @@ function abreIdeias(m) {
       const cp = elD('div', 'ie-det'), g = GRUPO[p.dono];
       if (p.assunto || p.categoria || p.tela) cp.append(elD('b', 'ie-sub', [p.categoria || p.tela, p.assunto].filter(Boolean).join(' · '))); cp.append(elD('p', 'ie-det-txt', p.texto), elD('p', 'p-nota', (g ? g.nome.replace(/\s*\(.*\)$/, '') : 'Sem dono: o Sigma faz a triagem') + ' · ' + (p.estado === 'concluido' ? 'concluído' : p.estado) + ' · ' + p.quando));
       if (p.nota) cp.append(elD('p', 'p-nota', p.nota));
+      if (p.estado !== 'concluido') { const para = p.estado === 'fazendo' ? 'esperando' : 'fazendo', mv = elD('button', 'ie-topo ie-mover', para === 'fazendo' ? 'Começar a fazer' : 'Voltar pra Esperando'); mv.type = 'button'; mv.onclick = () => { fecha(); const cols = {}; [['esperando'], ['fazendo']].forEach(([e]) => { cols[e] = abertos().filter(x => x.estado === e && x !== p).map(x => x.id); }); cols[para].unshift(p.id); salvaOrdem(cols); pinta(); }; cp.append(mv); }   // mudar de coluna com um toque, além de arrastar (May 15:58)
       const daColuna = abertos().filter(x => x.estado === p.estado);
       if (p.estado !== 'concluido' && daColuna[0] !== p) { const b = elD('button', 'ie-topo', 'Mais urgente: pro topo'); b.type = 'button'; b.onclick = () => { fecha(); const cols = {}; [['esperando', 'Esperando'], ['fazendo', 'Fazendo']].forEach(([e]) => { cols[e] = abertos().filter(x => x.estado === e).map(x => x.id); }); cols[p.estado] = [p.id, ...cols[p.estado].filter(x => x !== p.id)]; salvaOrdem(cols); pinta(); }; cp.append(b); }
       const fecha = pop('Pedido #' + p.id, cp);
