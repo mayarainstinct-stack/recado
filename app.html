@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.109">
+<meta name="app-versao" content="2026-11-07.110">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -3850,7 +3850,7 @@ function abreFinancas(m) {
     nota.remove();
     cabecalho({ icone: 'money', sub: 'da planilha · ' + String(d.atualizado || '').replace(/\/\d{4}/, ''), acao: { icone: 'retry', rotulo: 'Ler a planilha de novo', fn: () => desenhaTela() } });
     const [dd, mm, aa, hh, mi] = (String(d.atualizado).match(/\d+/g) || []).map(Number), base = dd ? new Date(aa, mm - 1, dd, hh || 0, mi || 0).getTime() : 0;
-    const aplica = l => { const lado = l.tipo === 'pagar' ? d.pagar : d.receber, x = lado.find(y => y.nome.toLowerCase() === l.nome.toLowerCase()); if (!x) return; x.pagamentos.push({ data: l.data, valor: l.valor, nota: (l.nota ? l.nota + ' · ' : '') + 'lançado no app' }); x.falta = Math.max(0, x.falta - l.valor); x.pago += l.valor; };
+    const aplica = l => { const lado = l.tipo === 'pagar' ? d.pagar : d.receber, x = lado.find(y => [y.nome, y.chave].some(n => n && n.toLowerCase() === l.nome.toLowerCase())); if (!x) return; x.pagamentos.push({ data: l.data, valor: l.valor, nota: (l.nota ? l.nota + ' · ' : '') + 'lançado no app' }); x.falta = Math.max(0, x.falta - l.valor); x.pago += l.valor; };
     lancamentosDe(lmd, base).forEach(aplica);
     const box = elD('div', 'fin'); c.append(box);
     const pintaFin = abaIni => {
@@ -3869,10 +3869,10 @@ function abreFinancas(m) {
       const pag = (lista, lado) => { const pg = elD('div', 'fin-pag'); const tb = elD('div', 'fin-tab'); tb.append(cabeca(['Quem', 'Total', lado === 'pagar' ? 'Pago' : 'Recebido', 'Falta', 'Último'])); lista.slice().sort((a, b) => b.falta - a.falta).forEach(x => tb.append(linhaDe(x, lado))); const tot = elD('div', 'fin-lin fin-tot'); celulas(tot, [['Total', 'nome'], [num(lista.reduce((n, x) => n + x.total, 0))], [num(lista.reduce((n, x) => n + x.pago, 0)), 'ok'], [num(lista.reduce((n, x) => n + x.falta, 0)), 'falta'], ['']]); tb.append(tot); pg.append(tb); return pg; };
       tr.append(pag(d.receber, 'receber'), pag(d.pagar, 'pagar'));
       // Contas do mês: a próxima parcela de cada conta a pagar, pelo histórico dela (última parcela; vence dia 6, a regra dela de 07/11)
-      const hoje = new Date(), vence = new Date(hoje.getFullYear(), hoje.getMonth() + (hoje.getDate() > 6 ? 1 : 0), 6), pc2 = elD('div', 'fin-pag'), tb2 = elD('div', 'fin-tab');
-      const prox = d.pagar.filter(x => x.falta > 0).map(x => { const ult = (x.pagamentos[x.pagamentos.length - 1] || {}).valor || x.falta; return { x, parcela: Math.min(ult, x.falta) }; });
-      const cab = elD('div', 'fin-mes'); cab.append(elD('span', '', 'Próximo vencimento: ' + vence.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })), elD('b', '', reaisFin(prox.reduce((n, y) => n + y.parcela, 0)))); pc2.append(cab);
-      if (prox.length) tb2.append(cabeca(['Conta', 'Parcela', 'Vence', 'Falta', ''])); prox.forEach(({ x, parcela }) => { const l = elD('button', 'fin-lin'); l.type = 'button'; celulas(l, [[x.nome, 'nome'], [num(parcela), 'falta'], [String(vence.getDate()).padStart(2, '0') + '/' + String(vence.getMonth() + 1).padStart(2, '0'), 'dia'], [num(x.falta)], ['']]); l.onclick = () => detalhe(x, 'pagar', parcela); tb2.append(l); });
+      const hoje = new Date(), venceDia = n => new Date(hoje.getFullYear(), hoje.getMonth() + (hoje.getDate() > n ? 1 : 0), n), vence = venceDia(6), pc2 = elD('div', 'fin-pag'), tb2 = elD('div', 'fin-tab');   // cada conta no dia dela (Vô dia 5 e dia 20, May 13:54); sem dia = 6
+      const prox = d.pagar.filter(x => x.falta > 0).map(x => { const ult = (x.pagamentos[x.pagamentos.length - 1] || {}).valor || x.falta; return { x, parcela: Math.min(ult, x.falta), quando: venceDia(x.dia || 6) }; }).sort((a, b) => a.quando - b.quando);
+      const cab = elD('div', 'fin-mes'); cab.append(elD('span', '', 'Próximo vencimento: ' + (prox.length ? prox[0].quando : vence).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })), elD('b', '', reaisFin(prox.reduce((n, y) => n + y.parcela, 0)))); pc2.append(cab);
+      if (prox.length) tb2.append(cabeca(['Conta', 'Parcela', 'Vence', 'Falta', ''])); prox.forEach(({ x, parcela, quando }) => { const l = elD('button', 'fin-lin'); l.type = 'button'; celulas(l, [[x.nome, 'nome'], [num(parcela), 'falta'], [String(quando.getDate()).padStart(2, '0') + '/' + String(quando.getMonth() + 1).padStart(2, '0'), 'dia'], [num(x.falta)], ['']]); l.onclick = () => detalhe(x, 'pagar', parcela); tb2.append(l); });
       if (!prox.length) tb2.append(elD('p', 'p-nota', 'Nada pra pagar. Tudo quitado.'));
       pc2.append(tb2); tr.append(pc2);
       abas.forEach(([id, t], j) => { const b = elD('button', '', t); b.type = 'button'; b.onclick = () => tr.scrollTo({ left: j * tr.clientWidth, behavior: 'smooth' }); nav.append(b); });
