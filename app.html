@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.70">
+<meta name="app-versao" content="2026-11-07.71">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -838,6 +838,7 @@ const ICONES_SVG = {
   bag: '<path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/>',
   suitcase: '<rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V5h8v3M8 20v1M16 20v1"/>',
   chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  pulso: '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M6.5 11H9l1.5-3 2.5 6 1.5-3h3M9 21h6M12 17v4"/>',   // monitor com batimento: Diagnóstico dos PCs (May, 07/11/2026)
   sofa: '<path d="M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3M3 13a2 2 0 0 1 4 0v2h10v-2a2 2 0 0 1 4 0v5H3zM5 18v2M19 18v2"/>',
   check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
   check2: '<path d="M1.5 12.5 6 17l9.5-9.5M10 16l1 1 10.5-10.5"/>',
@@ -3008,7 +3009,7 @@ abreMenu.onclick = () => {
     lerArquivo('menu/menu.json').then(t => JSON.parse(t).itens).catch(() => [{ tipo: 'catalogo', icone: 'bag', nome: 'Catálogo', sub: 'piscina, piso, borda, churrasqueira…' }])
       .then(itens => itens.map((m, i) => [m, i]).sort((a, b) => (uso[b[0].nome] || 0) - (uso[a[0].nome] || 0) || a[1] - b[1])
         .forEach(([m]) => lista.append(botaoGrade(m.icone, m.nome, m.sub, () => { conta(m.nome); abreItemMenu(m); }))))
-      .then(() => lista.append(botaoGrade('question', 'Diagnóstico', 'saúde dos 3 PCs e do app', abreDiagnostico)));   // junto com o resto: sem linha quase vazia
+      .then(() => lista.append(botaoGrade('pulso', 'Diagnóstico', 'saúde dos 3 PCs e do app', abreDiagnostico)));   // junto com o resto: sem linha quase vazia
   });
 };
 // Diagnóstico (05/11/2026): só leitura, pra "tá lento / não chega" virar dado
