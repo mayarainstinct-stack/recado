@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.138">
-<meta name="app-novidade" content="As perguntas dos robôs voltam a aparecer mesmo com rascunho na caixa da Geral">
+<meta name="app-versao" content="2026-11-07.139">
+<meta name="app-novidade" content="Casa: a planta encaixa pela largura, arrasta pra passear e os nomes dos cômodos dá pra ler">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -722,7 +722,7 @@ img.esq { min-height: 140px; }
 .p-grade .p-azulejo.arrastando { position: relative; z-index: 5; touch-action: none; box-shadow: 0 16px 34px rgba(0,0,0,.5); transition: none; }
 .p-corpo > .tela.pl-tela { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 10px; } .p-corpo > .tela.pl-tela > .pl-caixa { flex: 0 0 52%; min-height: 0; } .p-corpo > .tela.pl-tela > .pl-info { flex: 1 1 0; min-height: 0; }   /* metade de cima a casa, metade de baixo as abas (May 16:50) */
 .pl-caixa { flex: 1 1 0; min-height: 0; border-radius: 20px; overflow: hidden; background: radial-gradient(rgba(255,255,255,.05) 1px, transparent 1.4px) 0 0 / 14px 14px, #0E1116; border: 1px solid var(--line); box-shadow: inset 0 0 40px rgba(0,0,0,.5); }
-.pl-svg { width: 100%; height: 100%; display: block; touch-action: manipulation; }
+.pl-svg { width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
 .pl-terreno { fill: #12161B; stroke: #3A4350; stroke-width: .05; stroke-dasharray: .25 .15; }
 .pl-parede { fill: none; stroke: #E7E2D8; stroke-width: .09; transition: stroke .3s; } .pl-piso { transition: filter .3s; }
 .pl-caixa.cad { position: relative; background: linear-gradient(rgba(34,211,238,.10) 1px, transparent 1px) 0 0 / 12px 12px, linear-gradient(90deg, rgba(34,211,238,.10) 1px, transparent 1px) 0 0 / 12px 12px, #0B1220; border: 1px solid #1E3A5F; border-radius: 6px; padding: 24px 0 30px; }
@@ -732,7 +732,7 @@ img.esq { min-height: 140px; }
 .cad-terreno { fill: none; stroke: #475569; stroke-width: .04; stroke-dasharray: .3 .18; }
 .cad-c { cursor: pointer; transition: transform .35s cubic-bezier(.2,.8,.2,1); } .cad-piso { fill: rgba(11,18,32,.001); } .cad-parede { fill: none; stroke: #F8FAFC; stroke-width: .06; }
 .cad-c.on { transform: translateY(-.14px); } .cad-c.on .cad-piso { fill: rgba(34,211,238,.14); } .cad-c.on .cad-parede { stroke: #22D3EE; stroke-width: .09; filter: drop-shadow(0 0 .12px #22D3EE); }
-.cad-nome { fill: #E0F2FE; font-family: Consolas, monospace; font-weight: 700; text-anchor: middle; dominant-baseline: central; pointer-events: none; } .cad-area { fill: #7DD3FC; font-family: Consolas, monospace; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.cad-nome { fill: #E0F2FE; font-family: Consolas, monospace; font-weight: 700; text-anchor: middle; dominant-baseline: central; pointer-events: none; paint-order: stroke; stroke: #0B1220; stroke-width: .05px; } .cad-area { fill: #7DD3FC; font-family: Consolas, monospace; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
 .cad-cota { stroke: #FACC15; stroke-width: .022; } .cad-cota-t { fill: #FACC15; font-family: Consolas, monospace; text-anchor: middle; pointer-events: none; }
 .cad-coisa { fill: #67E8F9; font-family: Consolas, monospace; text-anchor: middle; dominant-baseline: hanging; pointer-events: none; }
 .cad-nome.apagado, .cad-area.apagado { opacity: .1; transition: opacity .3s; } .cad-obj { cursor: pointer; } .cad-obj-toque { fill: rgba(0,0,0,.001); stroke: none; } .cad-obj-l { fill: none; stroke: #67E8F9; stroke-width: 1.3px; stroke-linecap: round; stroke-linejoin: round; transition: stroke .25s; }
@@ -4074,6 +4074,13 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
     const voa = alvo => { const de = vb.slice(), t0 = performance.now(), dur = semMov ? 1 : 560; cancelAnimationFrame(anim);
       const passo = t => { const k = Math.max(0, Math.min(1, (t - t0) / dur)), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; vb = de.map((x, j) => x + (alvo[j] - x) * e); poe(vb); if (k < 1) anim = requestAnimationFrame(passo); }; anim = requestAnimationFrame(passo); clearTimeout(fimVoo); fimVoo = setTimeout(() => { cancelAnimationFrame(anim); vb = alvo.slice(); poe(vb); }, dur + 90); };   // k preso entre 0 e 1: relógio do quadro atrás do performance.now() não explode o viewBox; sem quadro (aba no fundo) chega no alvo do mesmo jeito
     const enquadra = (x, y, w, h, fol) => { const alvo = [x - fol, y - fol, w + fol * 2, h + fol * 2], asp = svg.clientWidth / Math.max(1, svg.clientHeight); if (alvo[2] / alvo[3] < asp) { const nw = alvo[3] * asp; alvo[0] -= (nw - alvo[2]) / 2; alvo[2] = nw; } else { const nh = alvo[2] / asp; alvo[1] -= (nh - alvo[3]) / 2; alvo[3] = nh; } voa(alvo); };   // o zoom fica do tamanho que precisa pro que ela tocou
+    const peLargura = y => { const w = d.largura + 1.2, h = w * svg.clientHeight / Math.max(1, svg.clientWidth); return [-0.6, Math.max(-0.6, Math.min(y, d.altura + 0.6 - h)), w, h]; };   // a casa encaixa pela LARGURA e o resto se vê arrastando (Sigma 17:44: em pé virava uma faixa ilegível)
+    { let p0 = null, arrastou = false;   // arrastar dentro da planta passeia por ela; soltou sem arrastar = toque normal no cômodo
+      svg.addEventListener('pointerdown', e => { p0 = { x: e.clientX, y: e.clientY, vb: vb.slice() }; arrastou = false; });
+      svg.addEventListener('pointermove', e => { if (!p0) return; const dx = e.clientX - p0.x, dy = e.clientY - p0.y; if (!arrastou && Math.hypot(dx, dy) < 8) return; if (!arrastou) { arrastou = true; cancelAnimationFrame(anim); clearTimeout(fimVoo); try { svg.setPointerCapture(e.pointerId); } catch (er) {} } const k = p0.vb[2] / Math.max(1, svg.clientWidth); vb = [Math.max(-0.6 - p0.vb[2] / 2, Math.min(p0.vb[0] - dx * k, d.largura + 0.6 - p0.vb[2] / 2)), Math.max(-0.6 - p0.vb[3] / 2, Math.min(p0.vb[1] - dy * k, d.altura + 0.6 - p0.vb[3] / 2)), p0.vb[2], p0.vb[3]]; poe(vb); });
+      const solta = () => { p0 = null; if (arrastou) setTimeout(() => { arrastou = false; }, 0); };
+      svg.addEventListener('pointerup', solta); svg.addEventListener('pointercancel', solta);
+      svg.addEventListener('click', e => { if (arrastou) { e.stopPropagation(); e.preventDefault(); } }, true); }
     poe(vb);
     const num = v => String(Math.round(v * 100) / 100).replace('.', ',');
     svg.append(ns('rect', { x: 0, y: 0, width: d.largura, height: d.altura, class: 'cad-terreno' }));
@@ -4128,8 +4135,11 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
       const g = ns('g', { class: 'cad-c', 'data-nome': k.nome }); k.g = g;
       g.append(ns('rect', { x: k.x, y: k.y, width: k.w, height: k.h, class: 'cad-piso' }), ns('rect', { x: k.x, y: k.y, width: k.w, height: k.h, class: 'cad-parede', pathLength: 1 }));
       camadas[0].append(g); g.addEventListener('click', () => toca(k));
-      const fs = Math.min(0.36, k.w * 1.6 / Math.max(6, k.nome.length), k.h / 3.2), t = ns('text', { x: k.x + k.w / 2, y: k.y + k.h / 2 - fs * .35, 'font-size': fs.toFixed(3), class: 'cad-nome' }); t.textContent = k.nome.toUpperCase();
-      const a = ns('text', { x: k.x + k.w / 2, y: k.y + k.h / 2 + fs * .85, 'font-size': (fs * .7).toFixed(3), class: 'cad-area' }); a.textContent = num(k.w * k.h) + ' m²'; camadas[0].append(t, a); k.rot = [t, a];
+      const pal = k.nome.toUpperCase().split(' '), corte = pal.length > 1 ? pal.reduce((m, _, i) => i && Math.abs(pal.slice(0, i).join(' ').length - pal.slice(i).join(' ').length) < Math.abs(pal.slice(0, m).join(' ').length - pal.slice(m).join(' ').length) ? i : m, 1) : 0;
+      const l2 = corte ? [pal.slice(0, corte).join(' '), pal.slice(corte).join(' ')] : null, fs1 = Math.min(0.36, k.w * 1.6 / Math.max(6, k.nome.length), k.h / 3.2), fs2 = l2 ? Math.min(0.36, k.w * 1.6 / Math.max(5, ...l2.map(x => x.length)), k.h / 4.4) : 0;
+      const duas = fs2 > fs1 * 1.15, fs = Math.max(0.15, duas ? fs2 : fs1), t = ns('text', { x: k.x + k.w / 2, y: k.y + k.h / 2 - fs * (duas ? .9 : .35), 'font-size': fs.toFixed(3), class: 'cad-nome' });   // cômodo pequeno: o nome quebra em 2 linhas e nunca fica menor que dá pra ler (Sigma 17:44)
+      (duas ? l2 : [k.nome.toUpperCase()]).forEach((tx, i) => { const sp = ns('tspan', { x: k.x + k.w / 2, dy: i ? (fs * 1.1).toFixed(3) : 0 }); sp.textContent = tx; t.append(sp); });
+      const a = ns('text', { x: k.x + k.w / 2, y: k.y + k.h / 2 + fs * (duas ? 1.25 : .85), 'font-size': (fs * .7).toFixed(3), class: 'cad-area' }); a.textContent = num(k.w * k.h) + ' m²'; camadas[0].append(t, a); k.rot = [t, a];
       if (k.w > 0.8 && k.h > 0.8) {   // cota de largura embaixo e de comprimento do lado
         const yb = k.y + k.h - 0.18, xr = k.x + k.w - 0.18, cf = Math.min(0.2, k.w / 9, k.h / 9);
         linha(camadas[2], k.x + .08, yb, k.x + k.w - .08, yb, 'cad-cota'); linha(camadas[2], k.x + .08, yb - .07, k.x + .08, yb + .07, 'cad-cota'); linha(camadas[2], k.x + k.w - .08, yb - .07, k.x + k.w - .08, yb + .07, 'cad-cota');
@@ -4172,7 +4182,7 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
     const toca = (k, semAba) => {
       if (sel) { sel.g.classList.remove('on'); sel.rot.forEach(t => t.classList.remove('apagado')); } if (selC) { selC.g.classList.remove('on'); selC = null; } sel = k;
       if (!k) {
-        enquadra(0, 0, d.largura, d.altura, .6); nomeEl.textContent = 'Casa inteira'; sub.textContent = 'terreno ' + num(d.largura) + ' × ' + num(d.altura) + ' m · ' + d.comodos.length + ' cômodos'; coord.textContent = ''; inteira.hidden = true; cabecalho({ icone: 'home', sub: 'toca num cômodo' });
+        voa(peLargura(-0.6)); nomeEl.textContent = 'Casa inteira'; sub.textContent = 'terreno ' + num(d.largura) + ' × ' + num(d.altura) + ' m · ' + d.comodos.length + ' cômodos'; coord.textContent = '↕ ARRASTA'; inteira.hidden = true; cabecalho({ icone: 'home', sub: 'toca num cômodo' });
         pintaAbas([['Cômodos', cp => { const ul = elD('ul', 'pl-itens'); d.comodos.forEach(kk => { const li = elD('li', 'pl-toca', kk.nome); li.onclick = () => toca(kk); ul.append(li); }); cp.append(ul); }],
           ['Medidas', cp => { const ul = elD('ul', 'pl-med'); d.comodos.forEach(kk => { const li = elD('li'); li.append(elD('span', '', kk.nome), elD('b', '', num(kk.w) + ' × ' + num(kk.h) + ' m · ' + num(kk.w * kk.h) + ' m²')); li.onclick = () => toca(kk); ul.append(li); }); cp.append(ul); }]]);
         surge([nomeEl, sub]); return;
