@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.96">
+<meta name="app-versao" content="2026-11-07.97">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -687,6 +687,14 @@ img.esq { min-height: 140px; }
 ul.marcavel { list-style: none; padding-left: 0; } ul.marcavel li { display: flex; gap: 10px; align-items: flex-start; padding: 7px 4px; border-radius: 10px; cursor: pointer; }
 ul.marcavel li::before { content: ''; flex: none; width: 20px; height: 20px; margin-top: 1px; border-radius: 6px; border: 2px solid #EC4899; }
 ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcavel li.feito::before { background: #EC4899 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E") center / 14px no-repeat; }
+.ag-cal { border-radius: 20px; padding: 12px; color: #fff; background: radial-gradient(120% 80% at 100% 0%, rgba(255,255,255,.18), transparent 60%), linear-gradient(155deg, #3B82F6, #1D4ED8 60%, #1E3A8A); box-shadow: 0 10px 26px rgba(37,99,235,.35); }
+.ag-cal-topo { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; } .ag-cal-topo b { font-size: 17px; text-transform: capitalize; }
+.ag-seta { width: 38px; height: 38px; border-radius: 12px; background: rgba(255,255,255,.16); color: #fff; display: grid; place-items: center; } .ag-seta svg { width: 18px; height: 18px; } .ag-seta.dir svg { transform: scaleX(-1); }
+.ag-grade { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; } .ag-sem { font-size: 11px; font-weight: 800; opacity: .7; padding-bottom: 2px; }
+.ag-dia { position: relative; width: auto; height: 36px; border-radius: 10px; background: rgba(255,255,255,.08); color: #fff; font: inherit; font-size: 14px; font-weight: 700; }
+.ag-dia.tem::after { content: ''; position: absolute; left: 50%; bottom: 4px; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: #FDE047; box-shadow: 0 0 6px #FDE047; }
+.ag-dia.hoje { outline: 2px solid #fff; outline-offset: -2px; } .ag-dia.sel { background: #fff; color: #1D4ED8; }
+.ag-tudo { margin-top: 10px; width: auto; height: auto; border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 13px; font-weight: 800; background: #fff; color: #1D4ED8; }
 .gr-hero { display: flex; align-items: center; gap: 14px; padding: 16px; border-radius: 22px; color: #fff; background: radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--k1) 75%, transparent), transparent 65%), linear-gradient(160deg, color-mix(in srgb, var(--k1) 45%, #0B0B10), #0B0B10); box-shadow: 0 10px 30px color-mix(in srgb, var(--k1) 30%, transparent); }
 .gr-hero .gr-ic { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); flex: none; } .gr-hero .gr-ic svg { width: 30px; height: 30px; }
 .gr-hero b { display: block; font-size: 22px; font-weight: 900; } .gr-hero span { font-size: 13px; opacity: .85; }
@@ -3066,7 +3074,7 @@ const irGeral = document.getElementById('ir-geral'), irTrab = document.getElemen
 const painel = document.getElementById('painel'), pCorpo = document.getElementById('p-corpo'), pTit = document.getElementById('p-tit'), pExtra = document.getElementById('p-extra');
 let pilha = [], catalogo = null;
 const reais = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
-const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#EF4444'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#A855F7'], [/^listas/i, '#F59E0B'], [/ideia/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia/i, '#F59E0B']];
+const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#EF4444'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#2563EB'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#A855F7'], [/^listas/i, '#F59E0B'], [/ideia/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia/i, '#F59E0B']];
 // Arrumar o Menu arrastando (May, 07/11/2026 12:03: "dar pra eu clicar e arrastar, aí eu mesma organizava"): segura o azulejo até ele levantar,
 // arrasta pro lugar do outro e solta; a ordem fica guardada neste aparelho
 function arrumaArrastando(grade) {
@@ -3820,11 +3828,38 @@ function dataDe(rot) {   // "04/11", "~29/10", "13/02/2027", "05/11 (qui) 10h" �
   const m = rot.match(/(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?/); if (!m) return null;
   const hoje = new Date(); return new Date(+(m[3] || hoje.getFullYear()), +m[2] - 1, +m[1]);
 }
+function montaCalendario(cal, c) {   // mês em grade; dia com compromisso tem ponto; tocar no dia mostra só os dele; setas trocam o mês
+  const els = [...c.querySelectorAll('.ag[data-dia]')], dias = new Set(els.map(e => e.dataset.dia)), hoje = new Date();
+  let ano = hoje.getFullYear(), mes = hoje.getMonth(), sel = '';
+  const NOMES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  const filtra = () => { c.querySelectorAll('.ag').forEach(e => { e.hidden = !!sel && e.dataset.dia !== sel; }); c.querySelectorAll('.p-sec').forEach(t => { t.hidden = !!sel; }); };
+  const desenha = () => {
+    cal.replaceChildren();
+    const topo = elD('div', 'ag-cal-topo'), ant = elD('button', 'ag-seta'), prox = elD('button', 'ag-seta');
+    ant.type = prox.type = 'button'; ant.innerHTML = icone('back'); prox.innerHTML = icone('back'); prox.classList.add('dir'); ant.setAttribute('aria-label', 'Mês anterior'); prox.setAttribute('aria-label', 'Próximo mês');
+    ant.onclick = () => { mes--; if (mes < 0) { mes = 11; ano--; } desenha(); }; prox.onclick = () => { mes++; if (mes > 11) { mes = 0; ano++; } desenha(); };
+    topo.append(ant, elD('b', '', NOMES[mes] + ' ' + ano), prox); cal.append(topo);
+    const g = elD('div', 'ag-grade'); ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].forEach(x => g.append(elD('span', 'ag-sem', x)));
+    const primeiro = new Date(ano, mes, 1).getDay(), total = new Date(ano, mes + 1, 0).getDate();
+    for (let k = 0; k < primeiro; k++) g.append(elD('span'));
+    for (let dd = 1; dd <= total; dd++) {
+      const chave = ano + '-' + String(mes + 1).padStart(2, '0') + '-' + String(dd).padStart(2, '0'), b = elD('button', 'ag-dia', String(dd)); b.type = 'button';
+      if (dias.has(chave)) b.classList.add('tem'); if (chave === sel) b.classList.add('sel');
+      if (dd === hoje.getDate() && mes === hoje.getMonth() && ano === hoje.getFullYear()) b.classList.add('hoje');
+      b.onclick = () => { sel = sel === chave ? '' : chave; filtra(); desenha(); };
+      g.append(b);
+    }
+    cal.append(g);
+    if (sel) { const v = elD('button', 'ag-tudo', 'Ver tudo'); v.type = 'button'; v.onclick = () => { sel = ''; filtra(); desenha(); }; cal.append(v); }
+  };
+  desenha();
+}
 function abreAgenda(m) {
   tela(m.nome, async c => {
     const p = document.createElement('p'); p.className = 'p-nota'; p.textContent = 'Carregando…'; c.append(p);
     let md; try { md = await lerArquivo(m.arq); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
     p.remove();
+    const cal = elD('div', 'ag-cal'); c.append(cal); setTimeout(() => montaCalendario(cal, c), 0);   // calendário do mês em cima (May, 07/11/2026 12:43 e 12:44: agenda de verdade, azul)
     const neg = (el, txt) => txt.split(/(\*\*[^*]+\*\*)/).forEach(parte => {
       if (/^\*\*[^*]+\*\*$/.test(parte)) { const b = document.createElement('b'); b.textContent = parte.slice(2, -2); el.append(b); }
       else if (parte) el.append(document.createTextNode(parte));
@@ -3844,7 +3879,7 @@ function abreAgenda(m) {
       const rot = (txt.match(/^\*\*([^*]+?):?\*\*:?\s*/) || [])[1] || '';
       const corpo = rot ? txt.replace(/^\*\*[^*]+\*\*:?\s*/, '') : txt;
       const d = dataDe(rot);
-      const el = document.createElement('div'); el.className = 'ag';
+      const el = document.createElement('div'); el.className = 'ag'; if (d) el.dataset.dia = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
       const dt = document.createElement('div'); dt.className = 'dt';
       if (d) { dt.innerHTML = '<b></b><small></small>'; dt.querySelector('b').textContent = d.getDate(); dt.querySelector('small').textContent = MESES[d.getMonth()]; }
       else { dt.classList.add('ic'); dt.innerHTML = icone(iconeDe(txt)); }
