@@ -382,7 +382,7 @@ button:disabled { opacity: .45; cursor: default; }
   body.web.lado .conv.ativa { background: color-mix(in srgb, var(--accent) 14%, transparent); }
   body.web.lado .desce { right: max(24px, calc(50vw - 676px)); }
 }
-.zoom { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,.92); display: grid; place-items: center; padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px); animation: entra .18s ease-out both; }
+.zoom { position: fixed; inset: 0; z-index: 1100; background: rgba(0,0,0,.92); display: grid; place-items: center; padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px); animation: entra .18s ease-out both; }   /* acima do popup de pergunta (1000): tocar na foto do popup abria o zoom por trás (Hermes 07/11) */
 .zoom img { max-width: 100vw; max-height: 100%; object-fit: contain; touch-action: pinch-zoom; }
 .zoom .zx { position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); right: 14px; width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,.18); color: #fff; font-size: 20px; }
 .zoom .zcont { position: absolute; top: calc(20px + env(safe-area-inset-top, 0px)); left: 16px; padding: 4px 12px; border-radius: 14px; background: rgba(255,255,255,.18); color: #fff; font-size: 15px; font-variant-numeric: tabular-nums; }
