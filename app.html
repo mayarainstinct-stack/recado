@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.79">
+<meta name="app-versao" content="2026-11-07.80">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -701,7 +701,8 @@ img.esq { min-height: 140px; }
 .pp-op { width: 100%; flex: 1 1 0; min-width: 0; height: auto; min-height: 46px; padding: 8px 10px; border-radius: 999px; border: 1.5px solid color-mix(in srgb, var(--quem) 50%, var(--line)); background: transparent; color: var(--fg); font-size: 14px; font-weight: 700; line-height: 1.2; cursor: pointer; overflow-wrap: break-word; hyphens: auto; transition: transform .12s; }
 .pp-op.rec { background: var(--quem); border-color: var(--quem); color: #fff; }
 .pp-midia { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin: 0 0 14px; }
-.pp-midia > * { flex: 0 0 100%; scroll-snap-align: center; height: 38vh; width: auto; border-radius: 16px; background: #000 center / contain no-repeat; border: 1px solid var(--line); padding: 0; }
+.pp-midia > * { flex: 0 0 100%; min-width: 0; max-width: 100%; scroll-snap-align: center; height: 38vh; width: 100%; border-radius: 16px; background: #000 center / contain no-repeat; border: 1px solid var(--line); padding: 0; }
+.pp-card { max-width: calc(100vw - 24px); min-width: 0; } .pp-midia { min-width: 0; max-width: 100%; }   /* vídeo empurrava o popup pra fora da tela no iPhone (May, 07/11/2026 11:01) */
 .pp-midia.varias > * { flex-basis: 86%; } .pp-midia video { object-fit: contain; }
 .pp-op:active { transform: scale(.95); }
 .pp-aviso { flex: 1; font-size: 13px; color: var(--muted); }
