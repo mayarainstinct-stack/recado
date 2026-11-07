@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.91">
+<meta name="app-versao" content="2026-11-07.92">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -220,6 +220,8 @@ textarea:focus-visible { outline: none; }
 .gravando .rec { width: 10px; height: 10px; border-radius: 50%; background: #EF4444; animation: pisca 1s infinite; }
 .gravando .dica { color: var(--muted); font-size: 13px; margin-left: auto; }
 @keyframes pisca { 50% { opacity: .25; } }
+#enviar, #mic { background: #22C55E; color: #fff; box-shadow: 0 4px 14px rgba(34,197,94,.35); }   /* o verde DELA (o das 3 cores), não o verde genérico do app (May, 07/11/2026 12:36) */
+#enviar:disabled { background: color-mix(in srgb, #22C55E 45%, #3A3F4A); box-shadow: none; }
 #mic { touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 #mic:active { transform: scale(1.25); background: #EF4444; color: #fff; }
 .opcoes { display: grid; gap: 6px; margin-top: 8px; }
