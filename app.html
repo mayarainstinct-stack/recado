@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.74">
+<meta name="app-versao" content="2026-11-07.75">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -374,7 +374,7 @@ button:disabled { opacity: .45; cursor: default; }
 .p-topo h2 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -.01em; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* Corpo rolável: coluna flex com filhos que NÃO encolhem (grid + overflow:hidden nos cartões os espremia a ~50px) */
 .p-corpo { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 12px;
-  padding: 16px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px)); }
+  padding: 16px max(16px, env(safe-area-inset-right, 0px)) 88px max(16px, env(safe-area-inset-left, 0px)); }   /* espaço pro voltar de baixo */
 .p-corpo > * { flex: none; min-width: 0; }
 .p-corpo > .tela { display: contents; }
 .p-corpo > .tela > * { flex: none; min-width: 0; }
@@ -535,24 +535,48 @@ img.esq { min-height: 140px; }
 .pcd-val { padding: 7px 8px; border-radius: 10px; font-size: 13px; font-weight: 600; line-height: 1.3; background: color-mix(in srgb, var(--ec) 14%, transparent); border-left: 3px solid var(--ec); }
 .pcd-val.neutro { background: color-mix(in srgb, var(--fg) 6%, transparent); border-left-color: transparent; }
 @media (prefers-reduced-motion: reduce) { .pcd-dq { transition: none; } }
-.bi-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
-.bi-kpi { position: relative; overflow: hidden; background: linear-gradient(135deg, color-mix(in srgb, var(--ec, var(--accent)) 20%, transparent), color-mix(in srgb, var(--fg) 4%, transparent) 70%); border: 1px solid color-mix(in srgb, var(--ec, var(--accent)) 45%, transparent); box-shadow: 0 0 16px color-mix(in srgb, var(--ec, var(--accent)) 22%, transparent), inset 0 1px 0 rgba(255,255,255,.06); border-radius: 14px; padding: 10px 12px; min-width: 0; }   /* mais gamer (May, 07/11/2026 09:56): neon na cor do estado */
-.bi-kpi::after { content: ''; position: absolute; right: -18px; top: -18px; width: 60px; height: 60px; border-radius: 50%; background: radial-gradient(color-mix(in srgb, var(--ec, var(--accent)) 35%, transparent), transparent 70%); }
-.bi-kpi span { display: block; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
-.bi-kpi b { display: block; font-size: 30px; line-height: 1.1; text-shadow: 0 0 14px color-mix(in srgb, var(--ec, var(--accent)) 55%, transparent); letter-spacing: -.02em; margin-top: 2px; font-variant-numeric: tabular-nums; }
-.bi-kpi small { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); } .bi-kpi small i { width: 8px; height: 8px; border-radius: 50%; background: var(--ec); flex: none; }
-.bi-graf { margin-top: 16px; } .bi-graf h5 { margin: 0 0 2px; font-size: 14px; display: flex; align-items: center; gap: 8px; } .bi-graf h5::before { content: ''; width: 4px; height: 14px; border-radius: 2px; background: linear-gradient(#E31B23, #6FCF00 50%, #3B82F6); } .bi-graf > p { margin: 0 0 8px; font-size: 12px; color: var(--muted); }
-.bi-lin { display: grid; grid-template-columns: 44px 1fr; align-items: center; gap: 8px; margin: 5px 0; font-size: 12px; font-weight: 700; color: var(--muted); }
-.bi-tri { position: relative; height: 18px; border-left: 1px solid var(--line); }
-.bi-bar { position: absolute; left: 0; top: 2px; height: 14px; width: var(--w); min-width: 2px; border-radius: 0 4px 4px 0; background: linear-gradient(90deg, color-mix(in srgb, var(--rc2, var(--fg)) 55%, transparent), var(--rc2, color-mix(in srgb, var(--fg) 62%, transparent))); box-shadow: 0 0 10px color-mix(in srgb, var(--rc2, transparent) 60%, transparent); }
-.bi-lin.cor > span { color: var(--fg); }
-.bi-bar.fraca { background: color-mix(in srgb, var(--rc2, var(--fg)) 30%, transparent); box-shadow: none; }
-.bi-val { position: absolute; top: 0; left: calc(var(--w) + 6px); font-size: 12px; font-weight: 700; color: var(--fg); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.bi-tri.dupla { height: 30px; } .bi-tri.dupla .bi-bar { height: 11px; } .bi-tri.dupla .bi-bar.fraca { top: 16px; } .bi-tri.dupla .bi-val.fraca { top: 14px; color: var(--muted); }
-.bi-leg { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin: 0 0 6px; } .bi-leg span { display: flex; align-items: center; gap: 6px; }
-.bi-leg i { width: 12px; height: 8px; border-radius: 2px; background: var(--rc2, color-mix(in srgb, var(--fg) 62%, transparent)); box-shadow: 0 0 6px var(--rc2, transparent); } .bi-leg i.fraca { background: color-mix(in srgb, var(--rc2, var(--fg)) 30%, transparent); box-shadow: none; }
-.bi-multi { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-.bi-multi .bi-lin { grid-template-columns: 28px 1fr; gap: 4px; font-size: 11px; } .bi-multi h6 { margin: 0; font-size: 12px; }
+.rel { position: relative; overflow: hidden; border-radius: 20px; padding: 14px; border: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
+  background: radial-gradient(120% 60% at 0% 0%, rgba(227,27,35,.16), transparent 60%), radial-gradient(120% 60% at 100% 0%, rgba(59,130,246,.18), transparent 60%), radial-gradient(90% 50% at 50% 100%, rgba(111,207,0,.12), transparent 70%), linear-gradient(180deg, color-mix(in srgb, var(--paper) 92%, #000), var(--paper));
+  box-shadow: 0 10px 30px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.06); }
+.rel::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 4px); }
+.rel > * { position: relative; }
+.rel-cab { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; } .rel-cab div { flex: 1; min-width: 0; }
+.rel-cab b { display: block; font-size: 18px; font-weight: 900; letter-spacing: .02em; text-transform: uppercase; background: linear-gradient(90deg, #FF4D55, #8BE22B 50%, #60A5FA); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.rel-cab span { font-size: 12px; color: var(--muted); }
+.rel-selo { flex: none; font-size: 12px; font-weight: 800; padding: 5px 10px; border-radius: 999px; color: var(--fg); background: color-mix(in srgb, var(--ec) 20%, transparent); border: 1px solid color-mix(in srgb, var(--ec) 60%, transparent); box-shadow: 0 0 12px color-mix(in srgb, var(--ec) 35%, transparent); display: flex; align-items: center; gap: 6px; }
+.rel-selo i, .rel-kpi small i { width: 8px; height: 8px; border-radius: 50%; background: var(--ec); box-shadow: 0 0 8px var(--ec); flex: none; }
+.rel-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.rel-kpi { position: relative; overflow: hidden; border-radius: 14px; padding: 10px 12px; min-width: 0; background: linear-gradient(135deg, color-mix(in srgb, var(--ec) 24%, transparent), color-mix(in srgb, var(--fg) 4%, transparent) 75%); border: 1px solid color-mix(in srgb, var(--ec) 50%, transparent); box-shadow: 0 0 18px color-mix(in srgb, var(--ec) 20%, transparent); }
+.rel-kpi > span { display: block; font-size: 10.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.rel-kpi b { display: block; font-size: 26px; font-weight: 900; line-height: 1.1; margin: 3px 0 2px; letter-spacing: -.02em; font-variant-numeric: tabular-nums; text-shadow: 0 0 16px color-mix(in srgb, var(--ec) 60%, transparent); }
+.rel-kpi b em { font-style: normal; font-size: 14px; font-weight: 800; color: var(--muted); text-shadow: none; }
+.rel-kpi small { display: flex; align-items: flex-start; gap: 5px; font-size: 11.5px; line-height: 1.3; color: var(--muted); } .rel-kpi small i { margin-top: 3px; }
+.rel-sec { margin: 18px 0 8px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; }
+.rel-sec::before { content: ''; width: 4px; height: 16px; border-radius: 2px; background: linear-gradient(#FF4D55, #8BE22B 50%, #60A5FA); box-shadow: 0 0 8px rgba(96,165,250,.6); }
+.rel-sec small { margin-left: auto; font-size: 11px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--muted); }
+.rel-roscas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.rel-rosca { display: grid; justify-items: center; gap: 4px; padding: 10px 4px; border-radius: 14px; background: color-mix(in srgb, var(--rc) 9%, transparent); border: 1px solid color-mix(in srgb, var(--rc) 30%, transparent); }
+.rel-rosca svg { width: 84px; height: 84px; filter: drop-shadow(0 0 8px color-mix(in srgb, var(--rc) 55%, transparent)); }
+.rel-rosca .t { fill: none; stroke: color-mix(in srgb, var(--fg) 10%, transparent); stroke-width: 9; } .rel-rosca .v { fill: none; stroke-width: 9; stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; }
+.rel-rosca text { fill: var(--fg); font-weight: 900; font-size: 17px; text-anchor: middle; dominant-baseline: central; font-family: inherit; }
+.rel-rosca b { font-size: 13px; } .rel-rosca span { font-size: 11px; color: var(--muted); text-align: center; }
+.rel-prog { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 8px; margin: 6px 0; font-size: 12px; font-weight: 800; }
+.rel-prog > span:first-child { color: var(--muted); }
+.rel-trilha { height: 10px; border-radius: 999px; background: color-mix(in srgb, var(--fg) 9%, transparent); overflow: hidden; }
+.rel-trilha i { display: block; height: 100%; width: var(--w); min-width: 3px; border-radius: 999px; background: linear-gradient(90deg, color-mix(in srgb, var(--rc) 45%, transparent), var(--rc)); box-shadow: 0 0 10px var(--rc); }
+.rel-trilha i.fraca { background: color-mix(in srgb, var(--rc) 35%, transparent); box-shadow: none; }
+.rel-prog b { min-width: 28px; text-align: right; font-variant-numeric: tabular-nums; }
+.rel-grupo { padding: 8px 10px; border-radius: 12px; background: color-mix(in srgb, var(--fg) 4%, transparent); margin-bottom: 8px; } .rel-grupo h6 { margin: 0 0 2px; font-size: 12px; } .rel-grupo p { margin: 0 0 4px; font-size: 11px; color: var(--muted); }
+.rel-fps { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.rel-fps div { border-radius: 12px; padding: 8px 10px; background: color-mix(in srgb, var(--rc) 14%, transparent); border: 1px solid color-mix(in srgb, var(--rc) 35%, transparent); }
+.rel-fps div.fraca { background: color-mix(in srgb, var(--fg) 5%, transparent); border-color: color-mix(in srgb, var(--fg) 12%, transparent); }
+.rel-fps span { display: block; font-size: 11px; color: var(--muted); } .rel-fps b { font-size: 24px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.rel-nota { display: flex; gap: 6px; align-items: flex-start; font-size: 12px; color: var(--muted); margin: 6px 0 0; } .rel-nota i { width: 8px; height: 8px; margin-top: 4px; border-radius: 50%; background: var(--ec); box-shadow: 0 0 8px var(--ec); flex: none; }
+.pcd-abas.embaixo { position: sticky; bottom: 8px; z-index: 3; margin-right: 64px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); background: color-mix(in srgb, var(--paper) 82%, transparent); box-shadow: 0 8px 24px rgba(0,0,0,.35); }   /* abas perto do polegar direito (May, 07/11/2026 09:55) */
+.p-voltar-baixo { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 5; width: 56px; height: 56px; border-radius: 50%; background: var(--head); color: var(--head-fg); box-shadow: 0 8px 24px rgba(0,0,0,.4), 0 0 0 1px color-mix(in srgb, var(--head-fg) 18%, transparent); display: grid; place-items: center; }
+.p-voltar-baixo svg { width: 24px; height: 24px; }
+.painel:has(#p-extra:not([hidden])) .p-voltar-baixo { bottom: calc(92px + env(safe-area-inset-bottom, 0px)); }
+#p-voltar { display: none; }   /* o voltar mora embaixo à direita, perto do polegar (May, 07/11/2026 09:55) */
 .cartao h3 { margin: 0 0 4px; font-size: 16px; } .cartao h4 { margin: 10px 0 2px; font-size: 14px; color: var(--accent); }
 .cartao ul { margin: 2px 0; padding-left: 18px; } .cartao li { margin: 2px 0; }
 .ag.perto { border: 2px solid var(--accent); }
@@ -821,6 +845,7 @@ body.web.lado .anexos { grid-column: 2; grid-row: 5; }
 <div class="painel" id="painel" hidden>
   <div class="p-topo"><button type="button" id="p-voltar" aria-label="Voltar" data-i="back"></button><h2 id="p-tit">Menu</h2><button type="button" id="p-anotar" aria-label="Escrever sobre esta tela" data-i="note"></button><button type="button" id="p-mais" aria-label="Mais opções" aria-haspopup="menu" data-i="more"></button></div>
   <div class="p-corpo" id="p-corpo"></div>
+  <button type="button" class="p-voltar-baixo" id="p-voltar-baixo" aria-label="Voltar" data-i="back"></button>
   <div class="p-extra" id="p-extra">
     <button type="button" id="notificar" data-i="bell" data-t="Ativar notificações"></button>
     <button type="button" id="sair" data-i="key" data-t="Trocar chave"></button>
@@ -2889,7 +2914,7 @@ const irGeral = document.getElementById('ir-geral'), irTrab = document.getElemen
 const painel = document.getElementById('painel'), pCorpo = document.getElementById('p-corpo'), pTit = document.getElementById('p-tit'), pExtra = document.getElementById('p-extra');
 let pilha = [], catalogo = null;
 const reais = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
-const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#EF4444'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#94A3B8']];
+const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#EF4444'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/pend[eê]ncia/i, '#F59E0B']];
 function botaoGrade(ic, txt, sub, fn) {   // azulejo do Menu: ícone grande em cima, nome curto embaixo, na cor do assunto
   const b = document.createElement('button'); b.type = 'button'; b.className = 'p-azulejo'; if (sub) b.title = sub;
   const cor = (COR_ASSUNTO.find(([re]) => re.test(txt)) || [])[1]; if (cor) b.style.setProperty('--c', cor);
@@ -2914,7 +2939,7 @@ document.getElementById('p-anotar').onclick = () => abreFicha({ titulo: 'Anotar 
 { let bx = null, by = 0;   // arrastar da borda esquerda pra direita = voltar, igual o iPhone
   painel.addEventListener('touchstart', e => { const t = e.touches[0]; bx = t.clientX < 28 ? t.clientX : null; by = t.clientY; }, { passive: true });
   painel.addEventListener('touchend', e => { if (bx === null) return; const t = e.changedTouches[0], dx = t.clientX - bx, dy = t.clientY - by; bx = null; if (dx > 70 && Math.abs(dy) < dx * .7) document.getElementById('p-voltar').click(); }, { passive: true }); }
-document.getElementById('p-voltar').onclick = () => { pilha.pop(); if (pilha.length) desenhaTela(); else fechaPainel(); };
+document.getElementById('p-voltar').onclick = document.getElementById('p-voltar-baixo').onclick = () => { pilha.pop(); if (pilha.length) desenhaTela(); else fechaPainel(); };
 // ---- Dados da conversa (tocar no nome ou na foto lá em cima): foto, quem participa e tudo que já foi mandado nela
 const EXT_IMG = /\.(png|jpe?g|webp|gif)$/i, EXT_AUDIO = /\.(m4a|webm|mp3|wav|ogg)$/i, EXT_TEXTO = /\.(md|txt|json|csv|py|sh|ps1|html|svg)$/i;
 const RE_CAMINHO = /(?:^|[\s(`'"])((?:[\w.-]+\/)+[\w.-]+\.(?:png|jpe?g|webp|gif|m4a|webm|mp3|wav|ogg|md|pdf|json|txt|csv|docx?|xlsx?|pptx?|zip|apk|cdr|psd|ps1|py|sh|html|svg))(?=$|[\s),.;:`'"!?])/gi;
@@ -3047,44 +3072,57 @@ function cartaoPc(p) {
   [['feito', 'Feito', ''], ['falta', 'Falta', ''], ['peca', 'Só peça resolve', 'peca']].forEach(([k, t, cls]) => { if (!(p[k] || []).length) return; d.append(elD('h4', cls, t)); const ul = elD('ul'); p[k].forEach(i => ul.append(elD('li', '', i))); d.append(ul); });
   return d;
 }
-// Painel de indicadores do Comparar (May, 07/11/2026 09:51: "bem indicadores, bem análise, bem Power BI"): números grandes em cima,
-// barras de um tom só (a cor fica pros estados), valor na ponta de cada barra; dados em dia.indicadores
-function barras(lista, max, fmt, dupla, escala = 78) {   // lista = [[rótulo, valor, valor2?]]; escala = % da trilha que a maior ocupa (sobra lugar pro número)
-  const box = elD('div');
-  lista.forEach(([rot, v, v2, cor]) => {
-    const ln = elD('div', 'bi-lin' + (cor ? ' cor' : '')), tri = elD('div', 'bi-tri' + (dupla ? ' dupla' : '')); ln.append(elD('span', '', rot)); if (cor) ln.style.setProperty('--rc2', cor);
-    [[v, ''], ...(dupla ? [[v2, ' fraca']] : [])].forEach(([x, f]) => {
-      const w = (max ? Math.max(0, x) / max * escala : 0).toFixed(1) + '%', b = elD('i', 'bi-bar' + f), t = elD('span', 'bi-val' + f, fmt(x));
-      b.style.setProperty('--w', w); t.style.setProperty('--w', w); tri.append(b, t);
-    });
-    ln.append(tri); box.append(ln);
-  });
-  return box;
+// Relatório dos PCs no Comparar (May, 07/11/2026 09:51 "bem Power BI", 09:56 "mais gamer", 09:57 áudio "rosca, progressão, degradê, cara de PS4/Xbox";
+// Sigma 09:59): número grande = o PIOR caso, nunca soma; cada PC na cor do robô em todos os gráficos; verde/amarelo/vermelho só no estado;
+// mesma escala nas barras de problema; selo "medido há X h" (passou de 6 h, amarelo). Dados em dia.indicadores.
+function horasDesde(dia) {
+  const m = String(dia.data || '').match(/(\d\d)\/(\d\d)\/(\d{4})\s+(\d\d):(\d\d)/), t = dia.medido ? Date.parse(dia.medido) : m ? new Date(+m[3], m[2] - 1, +m[1], +m[4], +m[5]).getTime() : 0;
+  return t ? Math.max(0, (Date.now() - t) / 36e5) : null;
+}
+const txtHoras = h => h == null ? 'sem hora' : h < 1 ? 'há ' + Math.max(1, Math.round(h * 60)) + ' min' : h < 48 ? 'há ' + Math.round(h) + ' h' : 'há ' + Math.round(h / 24) + ' dias';
+function rosca(pct, cor, id) {   // anel de medidor: quanto do C: tá livre
+  const R = 34, C = 2 * Math.PI * R, v = Math.max(0, Math.min(100, pct));
+  return '<svg viewBox="0 0 84 84" aria-hidden="true"><defs><linearGradient id="' + id + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + cor + '" stop-opacity=".55"/><stop offset="1" stop-color="' + cor + '"/></linearGradient></defs>' +
+    '<circle class="t" cx="42" cy="42" r="' + R + '"/><circle class="v" cx="42" cy="42" r="' + R + '" stroke="url(#' + id + ')" stroke-dasharray="' + (C * v / 100).toFixed(1) + ' ' + C.toFixed(1) + '"/><text x="42" y="42">' + Math.round(v) + '%</text></svg>';
 }
 function painelPcs(dia) {
   const ind = dia.indicadores; if (!ind) return null;
-  const corPc = pc => { const p = dia.pcs.find(x => x.pc === pc), g = p && GRUPO[p.robo]; return g ? 'color-mix(in srgb, ' + g.cor + ' 78%, #fff)' : ''; };   // a cor do robô de cada PC, clareada pra brilhar no escuro
-  const d = elD('div', 'pcd pcd-cmp'), k = elD('div', 'bi-kpis'), soma = c => ind.pcs.reduce((n, p) => n + (p[c] || 0), 0);
-  const emOrdem = dia.pcs.filter(p => p.estado === 'ok').length, ruins = dia.pcs.filter(p => p.estado !== 'ok').map(p => p.pc);
-  const tile = (rot, val, nota, tom) => { const t = elD('div', 'bi-kpi'); t.append(elD('span', '', rot), elD('b', '', val)); if (nota) { const sm = elD('small'), i = elD('i'); i.style.setProperty('--ec', TOM_PC[tom] || 'var(--muted)'); sm.append(i, nota); t.append(sm); } k.append(t); };
-  tile('PCs em ordem', emOrdem + ' de ' + dia.pcs.length, ruins.length ? 'olhar: ' + ruins.join(', ') : 'todos bem', ruins.length ? 'atencao' : 'ok');
-  tile('Espaço livre', Math.round(soma('livre')) + ' GB', 'somando os 3 C:', '');
-  const qd = ind.pcs.filter(p => p.quedas), ds = soma('desligou');
-  tile('Driver de vídeo caiu', String(soma('quedas')), qd.length ? '30 dias · ' + qd.map(p => p.pc).join(', ') : '30 dias · nenhum', soma('quedas') ? 'atencao' : 'ok');
-  tile('Desligou na marra', String(ds), '30 dias · os 3 PCs', ds > 10 ? 'ruim' : ds ? 'atencao' : 'ok');
+  const corPc = pc => { const p = dia.pcs.find(x => x.pc === pc), g = p && GRUPO[p.robo]; return g ? 'color-mix(in srgb, ' + g.cor + ' 72%, #fff)' : 'var(--accent)'; };
+  const d = elD('div', 'rel'), cab = elD('div', 'rel-cab'), tit = elD('div'), h = horasDesde(dia), selo = elD('span', 'rel-selo');
+  tit.append(elD('b', '', 'Relatório dos PCs'), elD('span', '', dia.pcs.length + ' máquinas · ' + dia.data));
+  selo.style.setProperty('--ec', TOM_PC[h != null && h <= 6 ? 'ok' : 'atencao']); selo.append(elD('i'), 'medido ' + txtHoras(h)); cab.append(tit, selo); d.append(cab);
+  const k = elD('div', 'rel-kpis'), tile = (rot, val, sub, nota, tom) => { const t = elD('div', 'rel-kpi'), b = elD('b', '', val), sm = elD('small'); t.style.setProperty('--ec', TOM_PC[tom] || 'var(--accent)'); if (sub) b.append(' ', elD('em', '', sub)); sm.append(elD('i'), nota); t.append(elD('span', '', rot), b, sm); k.append(t); };
+  const fora = dia.pcs.filter(p => p.estado !== 'ok').map(p => p.pc);
+  tile('PCs em ordem', dia.pcs.length - fora.length + ' de ' + dia.pcs.length, '', fora.length ? 'de olho: ' + fora.join(', ') : 'todos bem', fora.length ? 'atencao' : 'ok');
+  const pior = ind.pcs.slice().sort((a, b) => a.livre / a.total - b.livre / b.total)[0], pp = Math.round(pior.livre / pior.total * 100);
+  tile('Menos espaço livre', pior.pc + ' · ' + pp + '%', '', String(pior.livre).replace('.', ',') + ' de ' + pior.total + ' GB livres no C:', pp < 15 ? 'ruim' : pp < 25 ? 'atencao' : 'ok');
+  const qa = ind.pcs.filter(p => p.quedas), qd = ind.pcs.reduce((n, p) => n + (p.quedas_depois || 0), 0);
+  tile('Driver de vídeo caiu', String(qd), 'desde ' + (ind.quedas_desde || '?'), qa.length ? 'antes: ' + qa.map(p => p.pc + ' ' + p.quedas + ' em 30 dias').join(', ') + ' · cedo pra dizer' : 'nenhuma em 30 dias', qd ? 'ruim' : qa.length ? 'atencao' : 'ok');
+  const pn = ind.pcs.slice().sort((a, b) => (b.desligou_nov || 0) - (a.desligou_nov || 0))[0];
+  tile('Desligou na marra', pn.desligou_nov ? pn.pc + ' · ' + pn.desligou_nov : '0', 'em nov', '30 dias: ' + ind.pcs.map(p => p.pc + ' ' + (p.desligou || 0)).join(' · '), (pn.desligou_nov || 0) > 2 ? 'ruim' : pn.desligou_nov ? 'atencao' : 'ok');
   d.append(k);
-  const g1 = elD('div', 'bi-graf'); g1.append(elD('h5', '', 'Espaço livre no C:'), elD('p', '', 'GB livres de ' + ind.pcs[0].total + ' GB em cada um'), barras(ind.pcs.map(p => [p.pc, p.livre, 0, corPc(p.pc)]), Math.max(...ind.pcs.map(p => p.total)), v => String(v).replace('.', ',') + ' GB')); d.append(g1);
-  const g2 = elD('div', 'bi-graf'), mm = elD('div', 'bi-multi'); g2.append(elD('h5', '', 'Problemas em 30 dias'), elD('p', '', 'quantas vezes aconteceu em cada PC'));
-  [['quedas', 'Driver caiu'], ['desligou', 'Desligou na marra'], ['whea', 'Erro de hardware']].forEach(([c, t]) => { const col = elD('div'), mx = Math.max(1, ...ind.pcs.map(p => p[c] || 0)); col.append(elD('h6', '', t), barras(ind.pcs.map(p => [p.pc, p[c] || 0, 0, corPc(p.pc)]), mx, String, false, 55)); mm.append(col); });
-  g2.append(mm); d.append(g2);
+  const sec = (t, sub) => { const x = elD('div', 'rel-sec', t); if (sub) x.append(elD('small', '', sub)); d.append(x); };
+  sec('Espaço livre', 'C: de cada PC');
+  const rs = elD('div', 'rel-roscas');
+  ind.pcs.forEach((p, i) => { const c = corPc(p.pc), x = elD('div', 'rel-rosca'); x.style.setProperty('--rc', c); x.insertAdjacentHTML('beforeend', rosca(p.livre / p.total * 100, c, 'rg' + i + Date.now() % 1e5)); x.append(elD('b', '', p.pc), elD('span', '', String(p.livre).replace('.', ',') + ' de ' + p.total + ' GB')); rs.append(x); });
+  d.append(rs);
+  const MET = [['quedas', 'Driver de vídeo caiu', 'antes da reinstalação no PC3'], ['desligou', 'Desligou na marra', 'travou ou faltou luz'], ['whea', 'Erro de hardware', 'corrigido pelo próprio PC']];
+  const mx = Math.max(1, ...MET.flatMap(([c]) => ind.pcs.map(p => p[c] || 0)));
+  sec('Problemas · 30 dias', 'escala única: ' + mx + ' = cheia');
+  MET.forEach(([c, t, sub]) => {
+    const g = elD('div', 'rel-grupo'); g.append(elD('h6', '', t), elD('p', '', sub));
+    ind.pcs.forEach(p => { const ln = elD('div', 'rel-prog'), tr = elD('div', 'rel-trilha'), fill = elD('i'); ln.style.setProperty('--rc', corPc(p.pc)); fill.style.setProperty('--w', ((p[c] || 0) / mx * 100).toFixed(1) + '%'); if (!p[c]) fill.style.minWidth = '0'; tr.append(fill); ln.append(elD('span', '', p.pc), tr, elD('b', '', String(p[c] || 0))); g.append(ln); });
+    d.append(g);
+  });
   if (ind.fps) {
-    const f = ind.fps, g3 = elD('div', 'bi-graf'), lg = elD('div', 'bi-leg'), mx = Math.max(...f.series.flatMap(x => x.v));
-    g3.append(elD('h5', '', f.titulo), elD('p', '', f.sub));
-    f.series.forEach((x, i) => { const sp = elD('span'), sw = elD('i', i ? 'fraca' : ''); sp.append(sw, x.nome); lg.append(sp); }); g3.append(lg);
-    const cf = corPc(f.pc || 'PC3'); lg.style.setProperty('--rc2', cf);
-    g3.append(barras(f.cenas.map((c, i) => [c, f.series[0].v[i], f.series[1].v[i], cf]), mx, v => v + ' FPS', true));
-    const md = x => Math.round(x.v.reduce((a, b) => a + b, 0) / x.v.length); g3.append(elD('p', '', 'Média: ' + f.series.map(x => x.nome + ' ' + md(x) + ' FPS').join(' · ')));
-    d.append(g3);
+    const f = ind.fps, c = corPc(f.pc || 'PC3'), md = x => Math.round(x.v.reduce((a, b) => a + b, 0) / x.v.length), fmx = Math.max(...f.series.flatMap(x => x.v));
+    sec(f.titulo, f.sub);
+    const top = elD('div', 'rel-fps'); top.style.setProperty('--rc', c);
+    f.series.forEach((x, i) => { const b = elD('div', i ? 'fraca' : ''); b.append(elD('span', '', 'média · ' + x.nome), elD('b', '', md(x) + ' FPS')); top.append(b); }); d.append(top);
+    const g = elD('div', 'rel-grupo');
+    f.cenas.forEach((cn, i) => f.series.forEach((x, j) => { const ln = elD('div', 'rel-prog'), tr = elD('div', 'rel-trilha'), fill = elD('i', j ? 'fraca' : ''); ln.style.setProperty('--rc', c); fill.style.setProperty('--w', (x.v[i] / fmx * 100).toFixed(1) + '%'); tr.append(fill); ln.append(elD('span', '', j ? '' : cn.replace('Cena ', 'C')), tr, elD('b', '', String(x.v[i]))); g.append(ln); }));
+    d.append(g);
+    (f.notas || []).forEach(([t, tom]) => { const n = elD('p', 'rel-nota'), i = elD('i'); i.style.setProperty('--ec', TOM_PC[tom] || 'var(--muted)'); n.append(i, t); d.append(n); });
   }
   return d;
 }
@@ -3112,7 +3150,7 @@ function montaDiaPcs(caixa, dia) {
     dq.style.transform = 'translateX(' + b.offsetLeft + 'px)'; dq.style.width = b.offsetWidth + 'px'; if (b.dataset.cor) dq.style.setProperty('--qc', b.dataset.cor); else dq.style.removeProperty('--qc');
   };
   trilho.addEventListener('scroll', () => marca(Math.round(trilho.scrollLeft / Math.max(1, trilho.clientWidth))), { passive: true });
-  caixa.replaceChildren(nav, trilho); requestAnimationFrame(() => marca(0));
+  nav.classList.add('embaixo'); caixa.replaceChildren(trilho, nav); requestAnimationFrame(() => marca(0));
 }
 function abreDiagnostico() {
   tela('Diagnóstico', async c => {
