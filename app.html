@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.100">
+<meta name="app-versao" content="2026-11-07.101">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -702,6 +702,25 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 .ag-dia.tem::after { content: ''; position: absolute; left: 50%; bottom: 4px; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: #FDE047; box-shadow: 0 0 6px #FDE047; }
 .ag-dia.hoje { outline: 2px solid #fff; outline-offset: -2px; } .ag-dia.sel { background: #fff; color: #0F766E; }
 .ag-tudo { margin-top: 10px; width: auto; height: auto; border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 13px; font-weight: 800; background: #fff; color: #0F766E; }
+.fin { display: flex; flex-direction: column; gap: 12px; min-height: calc(100dvh - 190px); }
+.fin-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.fin-kpi { border-radius: 14px; padding: 10px; background: var(--paper); border: 1px solid var(--line); } .fin-kpi span { display: block; font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.fin-kpi b { font-size: 17px; font-variant-numeric: tabular-nums; } .fin-kpi.rec b { color: #22C55E; } .fin-kpi.pag b { color: #F59E0B; }
+.fin-abas { display: flex; gap: 6px; padding: 4px; border-radius: 14px; background: var(--paper); border: 1px solid var(--line); }
+.fin-abas button { flex: 1; width: auto; height: auto; padding: 9px 4px; border-radius: 10px; background: none; color: var(--muted); font: inherit; font-size: 13px; font-weight: 800; } .fin-abas button.on { background: #F59E0B; color: #1A1203; }
+.fin-trilho { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; flex: 1; } .fin-trilho::-webkit-scrollbar { display: none; }
+.fin-pag { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; scroll-snap-stop: always; }
+.fin-tab { border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: var(--paper); }
+.fin-lin { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; width: 100%; height: auto; border-radius: 0; padding: 10px 12px; background: none; color: var(--fg); text-align: left; border-top: 1px solid var(--line); font: inherit; }
+.fin-lin { justify-items: stretch; place-items: center stretch; } .fin-nome { text-align: left; min-width: 0; width: 100%; }
+.fin-lin:first-child { border-top: 0; } .fin-nome b { display: block; font-size: 15px; } .fin-nome small { display: block; font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+.fin-bar { display: block; height: 5px; border-radius: 999px; background: color-mix(in srgb, var(--fg) 10%, transparent); margin-top: 6px; overflow: hidden; } .fin-bar::before { content: ''; display: block; height: 100%; width: var(--p); background: #22C55E; border-radius: 999px; }
+.fin-falta { text-align: right; } .fin-falta small { display: block; font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; } .fin-falta b { font-size: 15px; font-variant-numeric: tabular-nums; color: #F59E0B; }
+.fin-mes { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; margin-bottom: 8px; border-radius: 14px; background: linear-gradient(135deg, rgba(245,158,11,.2), transparent); border: 1px solid rgba(245,158,11,.4); font-size: 13px; } .fin-mes b { font-size: 18px; color: #F59E0B; }
+.fin-lancar { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(84px + env(safe-area-inset-bottom, 0px)); z-index: 6; width: auto; height: 48px; border-radius: 999px; padding: 0 18px; background: #F59E0B; color: #1A1203; font: inherit; font-weight: 900; box-shadow: 0 8px 22px rgba(245,158,11,.4); }
+.fin-hist { display: grid; gap: 6px; margin: 8px 0 12px; max-height: 40vh; overflow-y: auto; } .fin-hist div { display: grid; grid-template-columns: 84px auto 1fr; gap: 8px; font-size: 13px; text-align: left; } .fin-hist small { color: var(--muted); }
+.fin-form { display: grid; gap: 10px; } .fin-form select, .fin-form input { font: inherit; font-size: 16px; padding: 11px 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+.fin-tipo { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .fin-tipo button { width: auto; height: 44px; border-radius: 999px; background: var(--paper); color: var(--fg); border: 1px solid var(--line); font: inherit; font-weight: 800; } .fin-tipo button.on { background: #F59E0B; color: #1A1203; border-color: transparent; }
 .gr-hero { display: flex; align-items: center; gap: 14px; padding: 16px; border-radius: 22px; color: #fff; background: radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--k1) 75%, transparent), transparent 65%), linear-gradient(160deg, color-mix(in srgb, var(--k1) 45%, #0B0B10), #0B0B10); box-shadow: 0 10px 30px color-mix(in srgb, var(--k1) 30%, transparent); }
 .gr-hero .gr-ic { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); flex: none; } .gr-hero .gr-ic svg { width: 30px; height: 30px; }
 .gr-hero b { display: block; font-size: 22px; font-weight: 900; } .gr-hero span { font-size: 13px; opacity: .85; }
@@ -3110,7 +3129,7 @@ const irGeral = document.getElementById('ir-geral'), irTrab = document.getElemen
 const painel = document.getElementById('painel'), pCorpo = document.getElementById('p-corpo'), pTit = document.getElementById('p-tit'), pExtra = document.getElementById('p-extra');
 let pilha = [], catalogo = null;
 const reais = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
-const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#EF4444'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#A855F7'], [/^listas/i, '#F59E0B'], [/ideia/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia/i, '#F59E0B']];
+const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#EF4444'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#A855F7'], [/^listas/i, '#F59E0B'], [/ideia/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia|contas/i, '#F59E0B']];
 // Arrumar o Menu arrastando (May, 07/11/2026 12:03: "dar pra eu clicar e arrastar, aí eu mesma organizava"): segura o azulejo até ele levantar,
 // arrasta pro lugar do outro e solta; a ordem fica guardada neste aparelho
 function arrumaArrastando(grade) {
@@ -3561,6 +3580,81 @@ function abrePlanta(m) {
     cx.append(svg); c.append(cx, info);
   });
 }
+// Pendências como sistema financeiro (May, 07/11/2026 12:43: "quase uma planilha, pra ver e pra lançar por popup") e Contas do mês (12:47).
+// Dados: contas/pendencias.json (gerado da planilha dela por contas/gerar_pendencias.py) + contas/LANCAMENTOS.md (o que ela lança aqui; vale na hora)
+const reaisFin = v => 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
+function lancamentosDe(md, depois) {
+  return String(md || '').split(/\r?\n/).map(l => l.trim().match(/^- \[(\d\d)\/(\d\d)\/(\d{4}) (\d\d):(\d\d)\]\s*(pagar|receber)\s*·\s*([^·]+?)\s*·\s*([\d.,]+)\s*(?:·\s*(.*))?$/)).filter(Boolean)
+    .map(x => ({ quando: new Date(+x[3], x[2] - 1, +x[1], +x[4], +x[5]).getTime(), data: x[1] + '/' + x[2] + '/' + x[3], tipo: x[6], nome: x[7], valor: parseFloat(x[8].replace(/\./g, '').replace(',', '.')), nota: x[9] || '' }))
+    .filter(l => l.quando > depois);
+}
+function abreFinancas(m) {
+  tela(m.nome, async c => {
+    painel.style.setProperty('--c', '#F59E0B');
+    const nota = elD('p', 'p-nota', 'Carregando…'); c.append(nota);
+    let d, lmd = ''; try { d = JSON.parse(await lerArquivo('contas/pendencias.json')); } catch (e) { nota.textContent = 'Não consegui abrir as contas. Confere a internet.'; return; }
+    try { lmd = await lerArquivo('contas/LANCAMENTOS.md'); } catch (e) {}
+    nota.remove();
+    const [dd, mm, aa, hh, mi] = (String(d.atualizado).match(/\d+/g) || []).map(Number), base = dd ? new Date(aa, mm - 1, dd, hh || 0, mi || 0).getTime() : 0;
+    const aplica = l => { const lado = l.tipo === 'pagar' ? d.pagar : d.receber, x = lado.find(y => y.nome.toLowerCase() === l.nome.toLowerCase()); if (!x) return; x.pagamentos.push({ data: l.data, valor: l.valor, nota: (l.nota ? l.nota + ' · ' : '') + 'lançado no app' }); x.falta = Math.max(0, x.falta - l.valor); x.pago += l.valor; };
+    lancamentosDe(lmd, base).forEach(aplica);
+    const box = elD('div', 'fin'); c.append(box);
+    const pintaFin = abaIni => {
+      box.replaceChildren();
+      const fr = d.receber.reduce((n, x) => n + x.falta, 0), fp = d.pagar.reduce((n, x) => n + x.falta, 0);
+      const k = elD('div', 'fin-kpis'); [['A receber', fr, 'rec'], ['A pagar', fp, 'pag'], ['Saldo', fr - fp, fr - fp >= 0 ? 'rec' : 'pag']].forEach(([t, v, cl]) => { const b = elD('div', 'fin-kpi ' + cl); b.append(elD('span', '', t), elD('b', '', reaisFin(v))); k.append(b); }); box.append(k);
+      const abas = [['receber', 'A receber'], ['pagar', 'A pagar'], ['contas', 'Contas do mês']], nav = elD('nav', 'fin-abas'), tr = elD('div', 'fin-trilho');
+      const linhaDe = (x, lado) => {
+        const r0 = elD('button', 'fin-lin'); r0.type = 'button'; const pc = x.total ? Math.min(100, Math.round(x.pago / x.total * 100)) : 0;
+        const a = elD('div', 'fin-nome'); a.append(elD('b', '', x.nome), elD('small', '', reaisFin(x.pago) + ' de ' + reaisFin(x.total) + (x.como ? ' · ' + x.como : '')));
+        const bar = elD('i', 'fin-bar'); bar.style.setProperty('--p', pc + '%'); a.append(bar);
+        const f = elD('div', 'fin-falta'); f.append(elD('small', '', x.falta > 0 ? 'falta' : ''), elD('b', '', x.falta > 0 ? reaisFin(x.falta) : 'quitado'));
+        r0.append(a, f); r0.onclick = () => detalhe(x, lado); return r0;
+      };
+      const pag = (lista, lado) => { const pg = elD('div', 'fin-pag'); const tb = elD('div', 'fin-tab'); lista.slice().sort((a, b) => b.falta - a.falta).forEach(x => tb.append(linhaDe(x, lado))); pg.append(tb); return pg; };
+      tr.append(pag(d.receber, 'receber'), pag(d.pagar, 'pagar'));
+      // Contas do mês: a próxima parcela de cada conta a pagar, pelo histórico dela (última parcela; vence dia 6, a regra dela de 07/11)
+      const hoje = new Date(), vence = new Date(hoje.getFullYear(), hoje.getMonth() + (hoje.getDate() > 6 ? 1 : 0), 6), pc2 = elD('div', 'fin-pag'), tb2 = elD('div', 'fin-tab');
+      const prox = d.pagar.filter(x => x.falta > 0).map(x => { const ult = (x.pagamentos[x.pagamentos.length - 1] || {}).valor || x.falta; return { x, parcela: Math.min(ult, x.falta) }; });
+      const cab = elD('div', 'fin-mes'); cab.append(elD('span', '', 'Próximo vencimento: ' + vence.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })), elD('b', '', reaisFin(prox.reduce((n, y) => n + y.parcela, 0)))); pc2.append(cab);
+      prox.forEach(({ x, parcela }) => { const l = elD('button', 'fin-lin'); l.type = 'button'; const a = elD('div', 'fin-nome'); a.append(elD('b', '', x.nome), elD('small', '', x.como || ('parcela pelo histórico · falta ' + reaisFin(x.falta)))); const f = elD('div', 'fin-falta'); f.append(elD('small', '', 'dia ' + vence.getDate()), elD('b', '', reaisFin(parcela))); l.append(a, f); l.onclick = () => detalhe(x, 'pagar', parcela); tb2.append(l); });
+      if (!prox.length) tb2.append(elD('p', 'p-nota', 'Nada pra pagar. Tudo quitado.'));
+      pc2.append(tb2); tr.append(pc2);
+      abas.forEach(([id, t], j) => { const b = elD('button', '', t); b.type = 'button'; b.onclick = () => tr.scrollTo({ left: j * tr.clientWidth, behavior: 'smooth' }); nav.append(b); });
+      const marca = () => { const j = Math.round(tr.scrollLeft / Math.max(1, tr.clientWidth)); [...nav.children].forEach((b, x) => b.classList.toggle('on', x === j)); };
+      tr.addEventListener('scroll', marca, { passive: true });
+      box.append(nav, tr);
+      const j0 = Math.max(0, abas.findIndex(a => a[0] === abaIni)); requestAnimationFrame(() => { tr.scrollLeft = j0 * tr.clientWidth; marca(); });
+      const fab = elD('button', 'fin-lancar', '+ Lançar'); fab.type = 'button'; fab.onclick = () => lancar(); box.append(fab);
+    };
+    const pop = (titulo, corpo) => { const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card fin-card'), x = elD('button', 'pp-x'); x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; card.append(x, elD('div', 'pp-perg', titulo), corpo); ov.append(card); document.body.append(ov); return fecha; };
+    const detalhe = (x, lado, sugerido) => {
+      const cp = elD('div', 'fin-det'); cp.append(elD('p', 'p-nota', (lado === 'pagar' ? 'Pago ' : 'Recebido ') + reaisFin(x.pago) + ' de ' + reaisFin(x.total) + ' · falta ' + reaisFin(x.falta)));
+      const ul = elD('div', 'fin-hist'); x.pagamentos.slice().reverse().forEach(y => { const l = elD('div'); l.append(elD('span', '', y.data), elD('b', '', reaisFin(y.valor)), elD('small', '', y.nota || '')); ul.append(l); }); cp.append(ul);
+      const bt = elD('button', 'pp-op rec', lado === 'pagar' ? 'Lançar pagamento' : 'Lançar recebimento'); bt.type = 'button'; cp.append(bt);
+      const fecha = pop(x.nome, cp); bt.onclick = () => { fecha(); lancar(lado, x.nome, sugerido); };
+    };
+    const lancar = (lado = 'pagar', nome = '', sugerido = '') => {
+      const f = elD('div', 'fin-form'), tipo = elD('div', 'fin-tipo'); let t = lado;
+      const bt = (v, txt) => { const b = elD('button', v === t ? 'on' : '', txt); b.type = 'button'; b.onclick = () => { t = v; [...tipo.children].forEach(x => x.classList.toggle('on', x === b)); enche(); }; return b; };
+      tipo.append(bt('pagar', 'Paguei'), bt('receber', 'Recebi'));
+      const quem = elD('select'), valor = elD('input'), obs = elD('input'); valor.inputMode = 'decimal'; valor.placeholder = 'Valor (R$)'; if (sugerido) valor.value = String(sugerido).replace('.', ','); obs.placeholder = 'Nota (opcional)';
+      const enche = () => { quem.replaceChildren(); (t === 'pagar' ? d.pagar : d.receber).forEach(x => { const o = elD('option', '', x.nome); o.value = x.nome; if (x.nome === nome) o.selected = true; quem.append(o); }); };
+      enche();
+      const ok = elD('button', 'pp-op rec', 'Lançar'); ok.type = 'button';
+      f.append(tipo, quem, valor, obs, ok);
+      const fecha = pop('Lançar', f);
+      ok.onclick = async () => {
+        const v = parseFloat(String(valor.value).replace(/\./g, '').replace(',', '.')); if (!(v > 0)) { valor.focus(); return; }
+        const dt = new Date(), linha = '- [' + stamp(dt) + '] ' + t + ' · ' + quem.value + ' · ' + String(v).replace('.', ',') + (obs.value.trim() ? ' · ' + obs.value.trim().replace(/·/g, '-') : '');
+        ok.disabled = true; ok.textContent = 'Lançando…';
+        if (await gravaLinha('contas/LANCAMENTOS.md', linha)) { aplica({ tipo: t, nome: quem.value, valor: v, nota: obs.value.trim(), data: stamp(dt).slice(0, 10) }); fecha(); pintaFin(t); showNote('Lançado: ' + reaisFin(v) + ' · ' + quem.value); }
+        else { ok.disabled = false; ok.textContent = 'Lançar'; showNote('Não lançou: confere a internet.', true); }
+      };
+    };
+    pintaFin(m.aba || 'receber');
+  });
+}
 function abreItemMenu(m) {
   if (m.donos && m.donos.length) donosTela = m.donos;   // dono da tela (e o item de dentro herda do grupo se não tiver o seu)
   painel.style.setProperty('--c', (COR_ASSUNTO.find(([re]) => re.test(m.nome)) || [])[1] || 'var(--accent)');   // a tela fica na cor do assunto, igual o azulejo dela
@@ -3569,6 +3663,7 @@ function abreItemMenu(m) {
   if (m.tipo === 'grupo') return abreGrupo(m);
   if (m.tipo === 'ideias') return abreIdeias(m);
   if (m.tipo === 'planta') return abrePlanta(m);
+  if (m.tipo === 'financas') return abreFinancas(m);
   if (m.tipo === 'diagnostico') return abreDiagnostico();
   if (m.tipo === 'maquinas') return abreMaquinas(m);
   if (m.tipo === 'imagens') return abreImagens(m);
