@@ -187,7 +187,7 @@ function grade(){
   blocos.forEach(([tit,lista])=>{if(!lista.length)return;g.append(el("h3","bloco-tit",tit));lista.forEach(([x,j])=>{const b=el("button","card");b.style.setProperty("--c",cor(x));b.setAttribute("aria-label",x.nome)
     {const w=wallpaper(x);if(w){b.style.setProperty("--c",w.cor);aplicaFundo(b,x,w,false)}}
     if(x.robo&&ROBO[x.robo]){const im=el("img","rob");im.alt="";im.src=ROBO[x.robo][2];b.append(im)}
-    const st=x.stats;b.append(el("span","cur",CURTO[x.console]||(x.robo?"PC":"")),el("b","",x.nome),el("small","",st?(st.zerados||0)+" zerados · "+(st.jogos||0)+" jogos":(x.modelo||x.papel||"")))
+    const st=x.stats;b.append(el("b","",x.nome),el("small","",st?(st.zerados||0)+(st.zerados===1?" zerado · ":" zerados · ")+(st.jogos||0)+(st.jogos===1?" jogo":" jogos"):(x.modelo||x.papel||"")))   // o nome uma vez só; geração e portátil ficam nos selos de dentro (May 20:28, Sigma 20:33)
     if(x.ativo===false){b.classList.add("inativo");b.append(el("span","selo-inativo","ainda não tá ativo"))}   // máquina parada fica toda cinza (May 19:36)
     b.onclick=()=>monta(j);g.append(b)})})
   app.append(g)
