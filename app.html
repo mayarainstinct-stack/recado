@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.134">
+<meta name="app-versao" content="2026-11-07.135">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -4958,7 +4958,6 @@ async function abreTreinoSeHora() {
 }
 function start() {
   chaveVencida = false; aplicaLargura(); grupoTrabEm = 0;   // chave nova: tenta o grupo do Trabalho de novo na hora
-  mais.hidden = false;
   const veioDoPush = trataHashPush();   // veio da notificação: abre a conversa dela já respondendo
   if (!veioDoPush) { if (MODO_WEB) mostraLista(); else abrir(ultimaConv()).catch(() => {}); }   // celular: Trabalho no horário de trabalho, senão Geral
   if (!MODO_WEB && !veioDoPush) abreTreinoSeHora();   // na hora da academia, abre direto no treino de hoje (não se veio de notificação)
