@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.68">
+<meta name="app-versao" content="2026-11-06.69">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -510,6 +510,14 @@ img.esq { min-height: 140px; }
 .ficha .manda { width: 100%; min-height: 48px; border-radius: 12px; background: var(--accent); color: var(--accent-fg); font-size: 16px; font-weight: 700; }
 .ficha .manda:disabled { opacity: .45; }
 .cartao { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; font-size: 15px; line-height: 1.45; overflow-wrap: anywhere; }
+.pcd { background: var(--paper); border: 1px solid var(--line); border-top: 4px solid var(--rc); border-radius: 16px; padding: 12px 14px; font-size: 14px; line-height: 1.45; overflow-wrap: anywhere; }
+.pcd-top { display: flex; align-items: center; gap: 10px; } .pcd-top img { width: 40px; height: 40px; border-radius: 12px; background: #0E0F12; }
+.pcd-top b { display: block; font-size: 16px; } .pcd-top span { font-size: 12px; color: var(--muted); } .pcd-top div { flex: 1; min-width: 0; }
+.pcd-est { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; white-space: nowrap; background: color-mix(in srgb, var(--ec) 18%, transparent); color: var(--ec); }
+.pcd-res { margin: 10px 0 4px; } .pcd-num { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0; }
+.pcd-num div { background: color-mix(in srgb, var(--rc) 8%, transparent); border-radius: 10px; padding: 6px 9px; } .pcd-num span { display: block; font-size: 11px; color: var(--muted); } .pcd-num b { font-size: 14px; }
+.pcd h4 { margin: 10px 0 2px; font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); } .pcd ul { margin: 2px 0; padding-left: 18px; } .pcd li { margin: 3px 0; }
+.pcd h4.peca { color: #EF4444; }
 .cartao h3 { margin: 0 0 4px; font-size: 16px; } .cartao h4 { margin: 10px 0 2px; font-size: 14px; color: var(--accent); }
 .cartao ul { margin: 2px 0; padding-left: 18px; } .cartao li { margin: 2px 0; }
 .ag.perto { border: 2px solid var(--accent); }
@@ -2983,13 +2991,31 @@ abreMenu.onclick = () => {
     lerArquivo('menu/menu.json').then(t => JSON.parse(t).itens).catch(() => [{ tipo: 'catalogo', icone: 'bag', nome: 'Catálogo', sub: 'piscina, piso, borda, churrasqueira…' }])
       .then(itens => itens.map((m, i) => [m, i]).sort((a, b) => (uso[b[0].nome] || 0) - (uso[a[0].nome] || 0) || a[1] - b[1])
         .forEach(([m]) => lista.append(botaoGrade(m.icone, m.nome, m.sub, () => { conta(m.nome); abreItemMenu(m); }))))
-      .then(() => lista.append(botaoGrade('question', 'Diagnóstico', 'versão, última leitura, limite do GitHub', abreDiagnostico)));   // junto com o resto: sem linha quase vazia
+      .then(() => lista.append(botaoGrade('question', 'Diagnóstico', 'saúde dos 3 PCs e do app', abreDiagnostico)));   // junto com o resto: sem linha quase vazia
   });
 };
 // Diagnóstico (05/11/2026): só leitura, pra "tá lento / não chega" virar dado
+// Saúde dos PCs (May, 06/11/2026 21:10): casa/diagnostico-pcs.json, o Orfeu junta o que cada robô mediu; a data no topo é a do arquivo
+const EST_PC = { ok: ['Em ordem', '#22C55E'], atencao: ['Atenção', '#F59E0B'], peca: ['Precisa de peça', '#EF4444'] };
+function cartaoPc(p) {
+  const g = GRUPO[p.robo] || TRAB_NEUTRO, [en, ec] = EST_PC[p.estado] || EST_PC.atencao, el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+  const d = el('div', 'pcd'); d.style.setProperty('--rc', g.cor);
+  const top = el('div', 'pcd-top'), im = el('img'); im.alt = ''; im.src = AVATAR_PAGES[g.foto] || ''; const nm = el('div'); nm.append(el('b', '', p.pc + ' · ' + g.nome.replace(/\s*\(.*\)/, '')), el('span', '', p.papel || ''));
+  const es = el('span', 'pcd-est', en); es.style.setProperty('--ec', ec); top.append(im, nm, es); d.append(top);
+  if (p.resumo) d.append(el('p', 'pcd-res', p.resumo));
+  if ((p.numeros || []).length) { const n = el('div', 'pcd-num'); p.numeros.forEach(([k, v]) => { const b = el('div'); b.append(el('span', '', k), el('b', '', v)); n.append(b); }); d.append(n); }
+  [['feito', 'Feito hoje', ''], ['falta', 'Falta', ''], ['peca', 'Só peça resolve', 'peca']].forEach(([k, t, cls]) => { if (!(p[k] || []).length) return; d.append(el('h4', cls, t)); const ul = el('ul'); p[k].forEach(i => ul.append(el('li', '', i))); d.append(ul); });
+  return d;
+}
 function abreDiagnostico() {
-  tela('Diagnóstico', c => {
+  tela('Diagnóstico', async c => {
+    const sp = document.createElement('div'); sp.className = 'p-lista'; c.append(sp);
+    const t1 = document.createElement('div'); t1.className = 'p-sec'; t1.textContent = 'Saúde dos PCs'; sp.append(t1);
+    const nota = document.createElement('p'); nota.className = 'p-nota'; nota.textContent = 'Carregando…'; sp.append(nota);
+    const t2 = document.createElement('div'); t2.className = 'p-sec'; t2.textContent = 'Este app'; c.append(t2);
     const x = document.createElement('div'); x.className = 'p-texto'; c.append(x);
+    lerArquivo('casa/diagnostico-pcs.json').then(t => JSON.parse(t)).then(dg => { nota.textContent = 'Diagnóstico de ' + dg.data + (dg.quem ? ' · ' + dg.quem : ''); dg.pcs.forEach(p => sp.append(cartaoPc(p))); })
+      .catch(() => { nota.textContent = 'Não consegui abrir o diagnóstico dos PCs. Confere a internet.'; });
     const linha = (t, v) => { const p = document.createElement('p'), b = document.createElement('b'); b.textContent = t + ': '; p.append(b, v); x.append(p); };
     const perm = window.Notification ? { granted: 'ligada', denied: 'bloqueada (Ajustes → Notificações)', default: 'ainda não pedida' }[Notification.permission] || Notification.permission : 'este navegador não tem';
     linha('Versão do app', VERSAO || 'sem versão');
