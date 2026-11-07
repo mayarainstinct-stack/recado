@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.106">
+<meta name="app-versao" content="2026-11-07.107">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -713,6 +713,12 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 .fin-tab { border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: var(--paper); }
 .fin-lin { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; width: 100%; height: auto; border-radius: 0; padding: 10px 12px; background: none; color: var(--fg); text-align: left; border-top: 1px solid var(--line); font: inherit; }
 .fin-lin { justify-items: stretch; place-items: center stretch; } .fin-nome { text-align: left; min-width: 0; width: 100%; }
+.fin-tab .fin-lin { grid-template-columns: minmax(0, 1fr) 58px 62px 62px 42px; gap: 6px; padding: 9px 10px; font-size: 13px; font-variant-numeric: tabular-nums; }
+.fin-tab .fin-lin:nth-child(even):not(.fin-cab) { background: color-mix(in srgb, var(--fg) 4%, transparent); }
+.fin-c { text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .fin-c.nome { text-align: left; font-weight: 800; font-size: 14px; white-space: normal; line-height: 1.2; overflow-wrap: anywhere; } .fin-c.ok { color: #22C55E; } .fin-c.falta { color: #F59E0B; font-weight: 800; } .fin-c.dia { color: var(--muted); font-size: 12px; }
+.fin-cab { pointer-events: none; background: color-mix(in srgb, #F59E0B 14%, transparent) !important; } .fin-cab .fin-c { font-size: 10.5px; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.fin-tot { pointer-events: none; border-top: 2px solid var(--line) !important; } .fin-tot .fin-c { font-weight: 900; }
+.fin-kpi.neg b { color: #EF4444; }
 .fin-lin:first-child { border-top: 0; } .fin-nome b { display: block; font-size: 15px; } .fin-nome small { display: block; font-size: 11.5px; color: var(--muted); margin-top: 1px; }
 .fin-bar { display: block; height: 5px; border-radius: 999px; background: color-mix(in srgb, var(--fg) 10%, transparent); margin-top: 6px; overflow: hidden; } .fin-bar::before { content: ''; display: block; height: 100%; width: var(--p); background: #22C55E; border-radius: 999px; }
 .fin-falta { text-align: right; } .fin-falta small { display: block; font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; } .fin-falta b { font-size: 15px; font-variant-numeric: tabular-nums; color: #F59E0B; }
@@ -3809,22 +3815,23 @@ function abreFinancas(m) {
     const pintaFin = abaIni => {
       box.replaceChildren();
       const fr = d.receber.reduce((n, x) => n + x.falta, 0), fp = d.pagar.reduce((n, x) => n + x.falta, 0);
-      const k = elD('div', 'fin-kpis'); [['A receber', fr, 'rec'], ['A pagar', fp, 'pag'], ['Saldo', fr - fp, fr - fp >= 0 ? 'rec' : 'pag']].forEach(([t, v, cl]) => { const b = elD('div', 'fin-kpi ' + cl); b.append(elD('span', '', t), elD('b', '', reaisFin(v))); k.append(b); }); box.append(k);
+      const k = elD('div', 'fin-kpis'); [['A receber', fr, 'rec'], ['A pagar', fp, 'pag'], ['Saldo', fr - fp, fr - fp >= 0 ? 'rec' : 'neg']].forEach(([t, v, cl]) => { const b = elD('div', 'fin-kpi ' + cl); b.append(elD('span', '', t), elD('b', '', reaisFin(v))); k.append(b); }); box.append(k);
       const abas = [['receber', 'A receber'], ['pagar', 'A pagar'], ['contas', 'Contas do mês']], nav = elD('nav', 'fin-abas'), tr = elD('div', 'fin-trilho');
-      const linhaDe = (x, lado) => {
-        const r0 = elD('button', 'fin-lin'); r0.type = 'button'; const pc = x.total ? Math.min(100, Math.round(x.pago / x.total * 100)) : 0;
-        const a = elD('div', 'fin-nome'); a.append(elD('b', '', x.nome), elD('small', '', reaisFin(x.pago) + ' de ' + reaisFin(x.total) + (x.como ? ' · ' + x.como : '')));
-        const bar = elD('i', 'fin-bar'); bar.style.setProperty('--p', pc + '%'); a.append(bar);
-        const f = elD('div', 'fin-falta'); f.append(elD('small', '', x.falta > 0 ? 'falta' : ''), elD('b', '', x.falta > 0 ? reaisFin(x.falta) : 'quitado'));
-        r0.append(a, f); r0.onclick = () => detalhe(x, lado); return r0;
+      const num = v => reaisFin(v).replace(/^R\$\s*/, ''), dia = x => ((x.pagamentos[x.pagamentos.length - 1] || {}).data || '').slice(0, 5);
+      const celulas = (l, vs) => vs.forEach(([t, cl]) => l.append(elD('span', 'fin-c ' + (cl || ''), t)));
+      const cabeca = cols => { const h = elD('div', 'fin-lin fin-cab'); celulas(h, cols.map((t, i) => [t, i ? '' : 'nome'])); return h; };
+      const linhaDe = (x, lado) => {   // planilha de verdade (Sigma 13:17): quem, total, pago, falta, dia do último, colunas alinhadas
+        const r0 = elD('button', 'fin-lin'); r0.type = 'button';
+        celulas(r0, [[x.nome, 'nome'], [num(x.total)], [num(x.pago), 'ok'], [x.falta > 0 ? num(x.falta) : 'quitado', x.falta > 0 ? 'falta' : 'ok'], [dia(x), 'dia']]);
+        r0.onclick = () => detalhe(x, lado); return r0;
       };
-      const pag = (lista, lado) => { const pg = elD('div', 'fin-pag'); const tb = elD('div', 'fin-tab'); lista.slice().sort((a, b) => b.falta - a.falta).forEach(x => tb.append(linhaDe(x, lado))); pg.append(tb); return pg; };
+      const pag = (lista, lado) => { const pg = elD('div', 'fin-pag'); const tb = elD('div', 'fin-tab'); tb.append(cabeca(['Quem', 'Total', lado === 'pagar' ? 'Pago' : 'Recebido', 'Falta', 'Último'])); lista.slice().sort((a, b) => b.falta - a.falta).forEach(x => tb.append(linhaDe(x, lado))); const tot = elD('div', 'fin-lin fin-tot'); celulas(tot, [['Total', 'nome'], [num(lista.reduce((n, x) => n + x.total, 0))], [num(lista.reduce((n, x) => n + x.pago, 0)), 'ok'], [num(lista.reduce((n, x) => n + x.falta, 0)), 'falta'], ['']]); tb.append(tot); pg.append(tb); return pg; };
       tr.append(pag(d.receber, 'receber'), pag(d.pagar, 'pagar'));
       // Contas do mês: a próxima parcela de cada conta a pagar, pelo histórico dela (última parcela; vence dia 6, a regra dela de 07/11)
       const hoje = new Date(), vence = new Date(hoje.getFullYear(), hoje.getMonth() + (hoje.getDate() > 6 ? 1 : 0), 6), pc2 = elD('div', 'fin-pag'), tb2 = elD('div', 'fin-tab');
       const prox = d.pagar.filter(x => x.falta > 0).map(x => { const ult = (x.pagamentos[x.pagamentos.length - 1] || {}).valor || x.falta; return { x, parcela: Math.min(ult, x.falta) }; });
       const cab = elD('div', 'fin-mes'); cab.append(elD('span', '', 'Próximo vencimento: ' + vence.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })), elD('b', '', reaisFin(prox.reduce((n, y) => n + y.parcela, 0)))); pc2.append(cab);
-      prox.forEach(({ x, parcela }) => { const l = elD('button', 'fin-lin'); l.type = 'button'; const a = elD('div', 'fin-nome'); a.append(elD('b', '', x.nome), elD('small', '', x.como || ('parcela pelo histórico · falta ' + reaisFin(x.falta)))); const f = elD('div', 'fin-falta'); f.append(elD('small', '', 'dia ' + vence.getDate()), elD('b', '', reaisFin(parcela))); l.append(a, f); l.onclick = () => detalhe(x, 'pagar', parcela); tb2.append(l); });
+      if (prox.length) tb2.append(cabeca(['Conta', 'Parcela', 'Vence', 'Falta', ''])); prox.forEach(({ x, parcela }) => { const l = elD('button', 'fin-lin'); l.type = 'button'; celulas(l, [[x.nome, 'nome'], [num(parcela), 'falta'], [String(vence.getDate()).padStart(2, '0') + '/' + String(vence.getMonth() + 1).padStart(2, '0'), 'dia'], [num(x.falta)], ['']]); l.onclick = () => detalhe(x, 'pagar', parcela); tb2.append(l); });
       if (!prox.length) tb2.append(elD('p', 'p-nota', 'Nada pra pagar. Tudo quitado.'));
       pc2.append(tb2); tr.append(pc2);
       abas.forEach(([id, t], j) => { const b = elD('button', '', t); b.type = 'button'; b.onclick = () => tr.scrollTo({ left: j * tr.clientWidth, behavior: 'smooth' }); nav.append(b); });
