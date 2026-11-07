@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.129">
+<meta name="app-versao" content="2026-11-07.132">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -853,9 +853,13 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 .ie-est.ie-fazendo { background: #22190A; color: #FDE68A; } .ie-est.ie-fazendo::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: 5px; border-radius: 50%; background: #FACC15; vertical-align: 1px; animation: ie-pisca 1.4s ease-in-out infinite; }
 @keyframes ie-pisca { 50% { opacity: .25; } }
 .ie-det-txt { font-size: 16px; font-weight: 600; line-height: 1.4; margin: 4px 0 8px; text-align: left; } .ie-det .p-nota { text-align: left; }
+.ct-rec .pp-card textarea { width: 100%; box-sizing: border-box; margin: 10px 0 12px; font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); resize: none; }
 .ie-mover { background: #22C55E !important; color: #052E16 !important; }
+.ie-volta { background: var(--paper) !important; color: var(--fg) !important; border: 1px solid var(--line); } .ie-reprova { background: #DC2626 !important; color: #fff !important; }
+.ie-motivo { margin-top: 10px; width: 100%; box-sizing: border-box; font: inherit; font-size: 14px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--paper); color: var(--fg); resize: vertical; }
+.ie-est.ie-aguardando { background: #4C1D95; color: #EDE9FE; } .ie-est.ie-revisando { background: #7C3AED; color: #fff; }
 .ie-busca { margin-top: 8px; width: 100%; box-sizing: border-box; font: inherit; font-size: 14px; padding: 9px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--paper); color: var(--fg); }
-.ie-post.com-prio { box-shadow: inset 5px 0 0 var(--pr), 0 1px 1px rgba(0,0,0,.12), 0 12px 18px -10px rgba(0,0,0,.55); } .ie-prio { position: absolute; top: 6px; left: 10px; font-size: 9.5px; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; color: var(--pr); }
+.ie-prio { position: absolute; top: 4px; left: 9px; font: 900 13px 'Arial Black', sans-serif; color: #111; }
 .ie-datas { display: block; margin-top: 6px; font-size: 10.5px; font-weight: 700; opacity: .6; }
 .ie-topo { margin-top: 10px; width: 100%; height: auto; padding: 12px; border-radius: 14px; font: inherit; font-weight: 800; background: #FACC15; color: #1F1A03; }
 .p-corpo > .tela.ie-tela { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 0; } .p-corpo > .tela.ie-tela > .ie-trilho { flex: 1 1 0; min-height: 0; } .id-nova.ie-nova { margin-top: 8px; padding-right: 0; } .id-nova.ie-nova button { background: #22C55E; }
@@ -1639,7 +1643,13 @@ async function abreCracha(chave) {
   insBox.append(el('div', 'ct-tit', 'Insígnias'), fila);
   const pe = el('div', 'ct-pe');
   const gente = k === 'may' || /^humano/i.test(f.classe || '');
-  if (!gente) { const chama = el('button', 'ct-chama', 'Mandar recado ' + (['orfeu', 'vega', 'hermes', 'sigma'].includes(k) ? 'pro ' : 'pra ') + nome); chama.type = 'button'; chama.onclick = e => { e.stopPropagation(); const t = document.getElementById('texto'); if (t) { const n = '@' + nome + ' '; if (!t.value.startsWith(n)) t.value = n + t.value; t.dispatchEvent(new Event('input')); pop.remove(); t.focus(); } }; pe.append(chama); }
+  if (!gente) { const chama = el('button', 'ct-chama', 'Mandar recado ' + (['orfeu', 'vega', 'hermes', 'sigma'].includes(k) ? 'pro ' : 'pra ') + nome); chama.type = 'button'; chama.onclick = e => {   // o recado sai dali mesmo, num popup, sem jogar pra Geral (May, 07/11/2026 16:43 e 16:44: regra pra todo "mandar recado")
+    e.stopPropagation(); const ov = el('div', 'fixa-pop ct-rec'), card = el('div', 'pp-card'), x = el('button', 'pp-x'), ta = el('textarea'), pp = ['orfeu', 'vega', 'hermes', 'sigma'].includes(k) ? 'pro ' : 'pra ', b = el('button', 'pp-op rec', 'Mandar ' + pp + nome);
+    x.type = b.type = 'button'; x.innerHTML = icone('close'); ta.rows = 4; ta.placeholder = 'Recado ' + pp + nome + '…';
+    const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = ev => { if (ev.target === ov) fecha(); };
+    b.onclick = async () => { const t = ta.value.trim(); if (!t) { ta.focus(); return; } await enviarComentario('@' + nome + ' ' + t, b, fecha); };
+    card.append(x, el('div', 'pp-perg', 'Recado ' + pp + nome), ta, b); ov.append(card); document.body.append(ov); fechaPuxando(ov, fecha, () => card, () => card); ta.focus();
+  }; pe.append(chama); }
   pe.append(dica('Arrasta pro lado pra virar o cartão'));
   fi.append(cab, quem, el('div', 'ct-faz', f.faz), maq); if (gente && f.olhar) fi.append(el('div', 'ct-olhar', f.olhar));   // ela não tem o botão de recado: o olhar ocupa o lugar
   if (ins.length || !gente) fi.append(insBox);
@@ -3883,7 +3893,8 @@ function abreIdeias(m) {
     const nota = elD('p', 'p-nota', 'Carregando o quadro…'); c.append(nota);
     let d; try { d = JSON.parse(await lerArquivo(arq)); } catch (e) { nota.textContent = 'Não consegui abrir o quadro. Confere a internet.'; return; }
     nota.remove();
-    const abas = [['quadro', 'Quadro'], ['feitos', 'Concluídos']], nav = elD('nav', 'ie-abas'), tr = elD('div', 'ie-trilho'), busca = elD('input', 'ie-busca'); busca.type = 'search'; busca.placeholder = 'Procurar em todas as tarefas (até nas concluídas)'; busca.enterKeyHint = 'search';
+    const TELAS = { quadro: [['esperando', 'Esperando'], ['fazendo', 'Fazendo']], revisao: [['aguardando', 'Aguardando'], ['revisando', 'Revisando']] }, NOME_EST = { concluido: 'concluído', aguardando: 'aguardando revisão', revisando: 'Sigma revisando' };
+    const abas = [['quadro', 'Planejado'], ['revisao', 'Revisão'], ['feitos', 'Concluído']], nav = elD('nav', 'ie-abas'), tr = elD('div', 'ie-trilho'), busca = elD('input', 'ie-busca'); busca.type = 'search'; busca.placeholder = 'Procurar em todas as tarefas (até nas concluídas)'; busca.enterKeyHint = 'search';
     const caixa = elD('div', 'id-nova ie-nova'), ta = elD('textarea'); ta.rows = 1; ta.placeholder = 'Novo pedido (@Orfeu manda direto)'; ta.enterKeyHint = 'send';
     const env = elD('button'); env.type = 'button'; env.setAttribute('aria-label', 'Pregar o post-it'); env.innerHTML = icone('reply'); caixa.append(ta, env);
     c.append(nav, busca, tr, caixa);
@@ -3891,63 +3902,82 @@ function abreIdeias(m) {
     busca.addEventListener('input', () => pinta());
     const papel = p => { const g = GRUPO[p.dono]; return g ? 'color-mix(in srgb, ' + g.cor + ' 52%, #FFF8E7)' : '#FFFDF5'; };
     const prio = p => p.prioridade || 3, quandoNum = q => { const m = String(q || '').match(/(\d\d)\/(\d\d)\/(\d{4}) (\d\d):(\d\d)/); return m ? +(m[3] + m[2] + m[1] + m[4] + m[5]) : 0; };
-    const abertos = () => d.postits.filter(p => p.estado !== 'concluido').sort((a, b) => prio(a) - prio(b) || a.ordem - b.ordem);   // prioridade primeiro, depois a ordem dela (May 16:18)
+    const daTela = t => d.postits.filter(p => TELAS[t].some(([e]) => e === p.estado)).sort((a, b) => prio(a) - prio(b) || a.ordem - b.ordem);   // prioridade primeiro, depois a ordem dela (May 16:18)
+    const abertos = () => daTela('quadro'), telaDe = p => Object.keys(TELAS).find(t => TELAS[t].some(([e]) => e === p.estado)) || 'feitos';
     const feitos = () => d.postits.filter(p => p.estado === 'concluido').sort((a, b) => quandoNum(b.feito) - quandoNum(a.feito) || b.ordem - a.ordem);   // o que terminou por último em cima (May 16:20)
     const PRIO = { 1: ['altíssima', '#DC2626'], 2: ['alta', '#F97316'], 4: ['baixa', '#64748B'], 5: ['sem pressa', '#94A3B8'] };
     const pop = (titulo, corpo) => { const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card ie-card'), x = elD('button', 'pp-x'); x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; card.append(x, elD('div', 'pp-perg', titulo), corpo); ov.append(card); document.body.append(ov); fechaPuxando(ov, fecha, () => card, () => card); return fecha; };
     const postit = (p, k) => {
       const el = elD('div', 'ie-post' + (p.estado === 'concluido' ? ' feito' : '')), g = GRUPO[p.dono], gi = GIRO[k % GIRO.length];
       el.dataset.id = p.id; el.dataset.r = gi; el.style.setProperty('--p', papel(p)); el.style.setProperty('--r', gi + 'deg');
-      if (PRIO[prio(p)] && p.estado !== 'concluido') { el.style.setProperty('--pr', PRIO[prio(p)][1]); el.classList.add('com-prio'); el.append(elD('span', 'ie-prio', PRIO[prio(p)][0])); }
+      if (p.estado !== 'concluido') { const pr = elD('span', 'ie-prio', String(prio(p))); pr.title = 'Prioridade ' + prio(p) + ' (1 mais urgente, 5 sem pressa)'; el.append(pr); }   // prioridade = só o número preto no canto, o papel fica de uma cor só (May 16:56)
       const pe = elD('div', 'ie-pe');
       if (g) { const av = fotoRobo(g); av.className = 'ie-av'; pe.append(av, elD('b', '', g.nome.replace(/\s*\(.*\)$/, ''))); } else pe.append(elD('b', 'ie-sem', 'sem dono'));
-      pe.append(elD('span', 'ie-est ie-' + p.estado, p.estado === 'concluido' ? 'concluído' : p.estado));
-      if (p.estado === 'concluido') el.append(elD('small', 'ie-datas', 'pedido ' + String(p.quando || '').slice(0, 16) + (p.feito ? ' · feito ' + String(p.feito).slice(0, 16) : '')));   // a hora que pediu e a que terminou (May 16:20)
+      pe.append(elD('span', 'ie-est ie-' + p.estado, NOME_EST[p.estado] || p.estado));
+      if (p.estado === 'concluido') el.append(elD('small', 'ie-datas', 'pedido ' + String(p.quando || '').slice(0, 16) + (p.feito ? ' · feito ' + String(p.feito).slice(0, 16) : '') + (p.aprovadoSigma ? ' · Sigma ok ' + String(p.aprovadoSigma).slice(0, 16) : '')));   // a hora que pediu e a que terminou (May 16:20)
       const cat = p.categoria || p.tela || '', sub = p.assunto || cat; el.append(elD('small', 'ie-num', (cat && cat !== sub ? cat + ' · ' : '') + '#' + p.id)); if (sub) el.append(elD('b', 'ie-sub', sub)); el.append(elD('p', 'ie-txt', p.texto), pe);   // subtítulo em negrito = a tela onde se faz (May 13:19)
       return el;
     };
     const detalhe = p => {
       const cp = elD('div', 'ie-det'), g = GRUPO[p.dono];
-      if (p.assunto || p.categoria || p.tela) cp.append(elD('b', 'ie-sub', [p.categoria || p.tela, p.assunto].filter(Boolean).join(' · '))); cp.append(elD('p', 'ie-det-txt', p.texto), elD('p', 'p-nota', (g ? g.nome.replace(/\s*\(.*\)$/, '') : 'Sem dono: o Sigma faz a triagem') + ' · ' + (p.estado === 'concluido' ? 'concluído' : p.estado) + ' · ' + p.quando));
+      if (p.assunto || p.categoria || p.tela) cp.append(elD('b', 'ie-sub', [p.categoria || p.tela, p.assunto].filter(Boolean).join(' · '))); cp.append(elD('p', 'ie-det-txt', p.texto), elD('p', 'p-nota', (g ? g.nome.replace(/\s*\(.*\)$/, '') : 'Sem dono: o Sigma faz a triagem') + ' · ' + (NOME_EST[p.estado] || p.estado) + ' · ' + p.quando));
       if (p.nota) cp.append(elD('p', 'p-nota', p.nota));
-      if (p.estado !== 'concluido') { const para = p.estado === 'fazendo' ? 'esperando' : 'fazendo', mv = elD('button', 'ie-topo ie-mover', para === 'fazendo' ? 'Começar a fazer' : 'Voltar pra Esperando'); mv.type = 'button'; mv.onclick = () => { fecha(); const cols = {}; [['esperando'], ['fazendo']].forEach(([e]) => { cols[e] = abertos().filter(x => x.estado === e && x !== p).map(x => x.id); }); cols[para].unshift(p.id); salvaOrdem(cols); pinta(); }; cp.append(mv); }   // mudar de coluna com um toque, além de arrastar (May 15:58)
-      const daColuna = abertos().filter(x => x.estado === p.estado);
-      if (p.estado !== 'concluido' && daColuna[0] !== p) { const b = elD('button', 'ie-topo', 'Mais urgente: pro topo'); b.type = 'button'; b.onclick = () => { fecha(); const cols = {}; [['esperando', 'Esperando'], ['fazendo', 'Fazendo']].forEach(([e]) => { cols[e] = abertos().filter(x => x.estado === e).map(x => x.id); }); cols[p.estado] = [p.id, ...cols[p.estado].filter(x => x !== p.id)]; salvaOrdem(cols); pinta(); }; cp.append(b); }
+      const t = telaDe(p), move = (para, extra) => { fecha(); muda(p, para, extra); };
+      const botao = (rot, cls, fn) => { const b = elD('button', 'ie-topo ' + cls, rot); b.type = 'button'; b.onclick = fn; cp.append(b); return b; };   // mudar de coluna com um toque, além de arrastar (May 15:58)
+      if (p.estado === 'esperando') botao('Começar a fazer', 'ie-mover', () => move('fazendo'));
+      if (p.estado === 'fazendo') { botao('Entregar pra revisão do Sigma', 'ie-mover', () => move('aguardando', { entregue: agoraBr() })); botao('Voltar pra Esperando', 'ie-volta', () => move('esperando')); }
+      if (p.estado === 'aguardando') botao('Sigma começa a revisar', 'ie-mover', () => move('revisando'));
+      if (p.estado === 'revisando') {   // só o Sigma aprova; reprovado volta pra fila do dono com o motivo (May 16:48)
+        botao('Aprovado: vai pra Concluído', 'ie-mover', () => move('concluido', { feito: p.feito || p.entregue || agoraBr(), aprovadoSigma: agoraBr() }));
+        const mot = elD('textarea', 'ie-motivo'); mot.rows = 2; mot.placeholder = 'Por que reprovou? (vai na nota pro dono)';
+        const rb = botao('Reprovado: volta pro dono', 'ie-reprova', () => { const m = mot.value.trim(); if (!m) { mot.hidden = false; mot.focus(); return; } move('esperando', { nota: 'REPROVADO pelo Sigma ' + agoraBr() + ': ' + m + (p.nota ? ' | ' + p.nota : '') }); });
+        mot.hidden = true; cp.insertBefore(mot, rb);
+      }
+      const daColuna = t !== 'feitos' ? daTela(t).filter(x => x.estado === p.estado) : [];
+      if (daColuna.length && daColuna[0] !== p) botao('Mais urgente: pro topo', '', () => { fecha(); const cols = colsDe(t); cols[p.estado] = [p.id, ...cols[p.estado].filter(x => x !== p.id)]; salvaOrdem(cols); pinta(); });
       const fecha = pop('Pedido #' + p.id, cp);
+    };
+    const agoraBr = () => { const dt = new Date(); return String(dt.getDate()).padStart(2, '0') + '/' + String(dt.getMonth() + 1).padStart(2, '0') + '/' + dt.getFullYear() + ' ' + String(dt.getHours()).padStart(2, '0') + ':' + String(dt.getMinutes()).padStart(2, '0'); };
+    const colsDe = t => { const cols = {}; TELAS[t].forEach(([e]) => { cols[e] = daTela(t).filter(x => x.estado === e).map(x => x.id); }); return cols; };
+    const muda = async (p, para, extra) => {   // troca o estado com um toque; vai pro topo da coluna nova
+      const aplica = dd => { const x = dd.postits.find(y => y.id === p.id); if (!x) return; x.estado = para; Object.assign(x, extra || {}); x.ordem = Math.min(0, ...dd.postits.map(y => y.ordem)) - 1; };
+      aplica(d); const dest = Object.keys(TELAS).find(t => TELAS[t].some(([e]) => e === para)) || 'feitos'; if (dest !== aba) { const dir = abas.findIndex(a => a[0] === dest) > abas.findIndex(a => a[0] === aba) ? 1 : -1; aba = dest; pinta(); entraDoLado(tr, dir); } else pinta();
+      showNote({ fazendo: 'Foi pra Fazendo', aguardando: 'Entregue: aguardando o Sigma', revisando: 'Sigma revisando', concluido: 'Aprovado: concluído', esperando: extra && extra.nota ? 'Reprovado: voltou pro dono' : 'Voltou pra Esperando' }[para] || 'Mudou');
+      if (!(await gravaJson(arq, aplica, 'Quadro: #' + p.id + ' foi pra ' + para + ' pelo app'))) showNote('Não guardou: confere a internet.', true);
     };
     const salvaOrdem = async (cols, movido) => {   // cols = { esperando: [ids], fazendo: [ids] }: a ordem de cima pra baixo é a urgência; mudar de coluna muda o estado (May 15:26)
       const NOMEP = { 1: 'altíssima', 2: 'alta', 3: 'normal', 4: 'baixa', 5: 'sem pressa' };
       const aplica = dd => {
         let k = Math.min(...dd.postits.filter(x => x.estado !== 'concluido').map(x => x.ordem), 1);
-        ['fazendo', 'esperando'].forEach(e => (cols[e] || []).forEach(id => { const x = dd.postits.find(y => y.id === id); if (x && x.estado !== 'concluido') { x.estado = e; x.ordem = k++; } }));
+        Object.keys(cols).forEach(e => (cols[e] || []).forEach(id => { const x = dd.postits.find(y => y.id === id); if (x && x.estado !== 'concluido') { x.estado = e; x.ordem = k++; } }));
         if (movido) Object.values(cols).forEach(ids => { const i = ids.indexOf(movido); if (i < 0) return; const viz = dd.postits.find(y => y.id === (ids[i - 1] || ids[i + 1])), x = dd.postits.find(y => y.id === movido); if (viz && x) { x.prioridade = viz.prioridade || 3; x.prioridadeNome = NOMEP[x.prioridade]; } });
       };
       aplica(d);
       if (!(await gravaJson(arq, aplica, 'Quadro: May mudou a ordem ou a coluna pelo app'))) showNote('Não guardou: confere a internet.', true);
     };
     const pinta = () => {
-      cabecalho({ icone: 'pin', sub: abertos().length + ' no quadro · ' + abertos().filter(x => x.estado === 'fazendo').length + ' fazendo' });
+      cabecalho({ icone: 'pin', sub: abertos().length + ' planejadas · ' + daTela('revisao').length + ' na revisão' });
       nav.replaceChildren(); tr.replaceChildren();
-      abas.forEach(([id, rot]) => { const n = id === 'quadro' ? abertos().length : feitos().length, b = elD('button', aba === id ? 'on' : '', rot + ' · ' + n); b.type = 'button'; b.onclick = () => { if (aba === id) return; const dir = id === 'feitos' ? 1 : -1; aba = id; pinta(); entraDoLado(tr, dir); }; nav.append(b); });
+      abas.forEach(([id, rot]) => { const n = TELAS[id] ? daTela(id).length : feitos().length, b = elD('button', aba === id ? 'on' : '', rot + ' · ' + n); b.type = 'button'; b.onclick = () => { if (aba === id) return; const dir = abas.findIndex(a => a[0] === id) > abas.findIndex(a => a[0] === aba) ? 1 : -1; aba = id; pinta(); entraDoLado(tr, dir); }; nav.append(b); });
       const termo = busca.value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       if (termo) {   // procurando: uma lista só com tudo que bate, aberto ou concluído
         const q = elD('div', 'ie-quadro'), sem = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        const achou = d.postits.filter(p => [p.texto, p.assunto, p.categoria, p.tela, p.nota, '#' + p.id].some(t => sem(t).includes(termo))).sort((a, b) => (a.estado === 'concluido') - (b.estado === 'concluido') || prio(a) - prio(b) || a.ordem - b.ordem);
+        const achou = d.postits.filter(p => [p.texto, p.assunto, p.categoria, p.tela, p.nota, '#' + p.id].some(t => sem(t).includes(termo))).sort((a, b) => abas.findIndex(z => z[0] === telaDe(a)) - abas.findIndex(z => z[0] === telaDe(b)) || prio(a) - prio(b) || a.ordem - b.ordem);
         q.append(elD('p', 'p-nota', achou.length ? achou.length + ' tarefa' + (achou.length > 1 ? 's' : '') + ' com "' + busca.value.trim() + '"' : 'Nada com "' + busca.value.trim() + '".'));
         achou.forEach((p, k) => q.append(postit(p, k))); tr.append(q);
         q.addEventListener('click', e => { const el = e.target.closest('.ie-post'); if (!el) return; const p = d.postits.find(x => x.id === el.dataset.id); if (p) detalhe(p); });
         return;
       }
-      const q = elD('div', 'ie-quadro' + (aba === 'quadro' ? ' ie-colunas' : ''));
-      if (aba === 'quadro') [['esperando', 'Esperando'], ['fazendo', 'Fazendo']].forEach(([e, rot]) => {   // duas colunas lado a lado: Esperando e Fazendo (May 15:26)
-        const col = elD('div', 'ie-col'), lst = elD('div', 'ie-lista'), ps = abertos().filter(x => x.estado === e); col.dataset.estado = e;
+      const q = elD('div', 'ie-quadro' + (TELAS[aba] ? ' ie-colunas' : ''));
+      if (TELAS[aba]) TELAS[aba].forEach(([e, rot]) => {   // duas colunas lado a lado: Esperando e Fazendo (May 15:26); na Revisão, Aguardando e Revisando (May 16:48)
+        const col = elD('div', 'ie-col'), lst = elD('div', 'ie-lista'), ps = daTela(aba).filter(x => x.estado === e); col.dataset.estado = e;
         const h = elD('h4'); h.append(elD('span', '', rot), elD('span', 'ie-conta', String(ps.length))); col.append(h, lst);
         ps.forEach((p, k) => lst.append(postit(p, k))); q.append(col);
       });
-      else { const lista = feitos(); if (!lista.length) q.append(elD('p', 'p-nota', 'Nada concluído ainda.')); lista.forEach((p, k) => q.append(postit(p, k))); }
+      else { const lista = feitos(); if (!lista.length) q.append(elD('p', 'p-nota', 'Nada concluído ainda: tudo passa pela revisão do Sigma antes.')); lista.forEach((p, k) => q.append(postit(p, k))); }
       tr.append(q);
       q.addEventListener('click', e => { const el = e.target.closest('.ie-post'); if (!el || q.dataset.arrastou) return; const p = d.postits.find(x => x.id === el.dataset.id); if (p) detalhe(p); });
-      if (aba === 'quadro') arrastaPostits(q, (cols, movido) => { salvaOrdem(cols, movido); });
+      if (TELAS[aba]) arrastaPostits(q, (cols, movido) => { salvaOrdem(cols, movido); });
     };
     pinta();
     arrastaAbas(tr, () => abas.findIndex(a => a[0] === aba), i => { aba = abas[i][0]; pinta(); }, abas.length);
@@ -3956,7 +3986,7 @@ function abreIdeias(m) {
       const mm = t.match(/@(\w+)/g) || [], dono = (mm.map(x => x.slice(1).toLowerCase()).find(x => ROBOS_IE.includes(x))) || '';
       const dt = new Date(), quando = String(dt.getDate()).padStart(2, '0') + '/' + String(dt.getMonth() + 1).padStart(2, '0') + '/' + dt.getFullYear() + ' ' + String(dt.getHours()).padStart(2, '0') + ':' + String(dt.getMinutes()).padStart(2, '0');
       const novo = dd => { const n = Math.max(0, ...dd.postits.map(x => parseInt(x.id, 10) || 0)) + 1, ord = Math.max(0, ...dd.postits.map(x => x.ordem)) + 1; const p = { id: String(n), texto: t, quando, estado: 'esperando', dono, ordem: ord, nota: '', categoria: '', assunto: '', prioridade: 3, prioridadeNome: 'normal' }; dd.postits.push(p); return p; };
-      ta.value = ''; ta.style.height = ''; novo(d); aba = 'quadro'; pinta();
+      ta.value = ''; ta.style.height = ''; novo(d); if (aba !== 'quadro') { aba = 'quadro'; pinta(); entraDoLado(tr, -1); } else pinta();
       const ult = tr.querySelector('.ie-col[data-estado="esperando"] .ie-lista')?.lastElementChild; if (ult) { ult.scrollIntoView({ block: 'nearest' }); if (ult.animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) ult.animate([{ transform: 'translateY(40px) rotate(-6deg) scale(.9)', opacity: 0 }, { transform: 'rotate(' + ult.dataset.r + 'deg)', opacity: 1 }], { duration: 320, easing: 'cubic-bezier(.2,.9,.3,1.2)' }); }
       const ok = await gravaJson(arq, dd => { novo(dd); }, 'Pedido novo da May pelo app');
       if (!ok) { showNote('Não pregou: confere a internet e manda de novo.', true); ta.value = t; } else { d = ok; showNote(dono ? 'Post-it pro ' + GRUPO[dono].nome.replace(/\s*\(.*\)$/, '') : 'Post-it pregado: o Sigma dá o dono'); }
@@ -4554,7 +4584,7 @@ function avisoCurto(txt, ico = 'check') {
   document.body.append(a); setTimeout(() => a.remove(), 2200);
 }
 // enviarComentario: o único jeito de mandar comentário pra Lyra no app (Menu, catálogo, ficha). Botão vira loading e trava; deu certo = fecha o popup (se tiver) e avisa; falhou = fica aberto, com o texto, e o botão diz o porquê
-async function enviarComentario(txt, btn, fecha) { const ok = await mandaPraLyra(txt, btn); if (ok) { if (fecha) fecha(); avisoCurto('Mandado pra Lyra'); } return ok; }
+async function enviarComentario(txt, btn, fecha) { const ok = await mandaPraLyra(txt, btn); if (ok) { if (fecha) fecha(); avisoCurto('Mandado'); } return ok; }
 async function mandaPraLyra(txt, btn) {   // manda direto pra caixa da Geral, sem sair da tela
   const antes = btn.innerHTML; btn.disabled = true; btn.classList.add('enviando'); btn.textContent = 'Enviando…';
   const url = apiDe(GERAL.arq);
@@ -4564,7 +4594,7 @@ async function mandaPraLyra(txt, btn) {   // manda direto pra caixa da Geral, se
       let md = conteudoSeguro(f).replace(/\n- \s*$/, '\n');
       md = md.replace(/\s*$/, '') + '\n- [' + stamp(new Date()) + '] ' + txt.replace(/\r?\n/g, '\\n') + '\n';
       await apiOk(url, { method: 'PUT', body: JSON.stringify({ message: 'recado do iPhone', content: b64encode(md), sha: f.sha }) });
-      btn.classList.remove('enviando'); btn.innerHTML = icone('check') + ' Mandado pra Lyra'; return true;
+      btn.classList.remove('enviando'); btn.innerHTML = icone('check') + ' Mandado'; return true;
     } catch (err) {
       if (err.status === 409 && tentativa < 3) { await new Promise(r => setTimeout(r, 600)); continue; }
       btn.innerHTML = icone('warn') + (err.inseguro ? ' Caixa vazia ou cheia demais, não gravei' : err.status === 401 ? ' Chave vencida (menu → Trocar chave)' : err.limite ? ' Limite do GitHub, tenta às ' + horaDe(limiteAte) : (err.rede || navigator.onLine === false) ? ' Sem internet, toca de novo' : ' Não foi, toca de novo');
