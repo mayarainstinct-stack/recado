@@ -230,7 +230,10 @@ html body #ficha.premium .bloco small,html body #ficha.premium .bloco .k,html bo
 .carta-capa img{border-radius:10px}
 .carta-capa img.inteira{position:relative;width:100%;height:100%;object-fit:contain;z-index:1}
 .carta-capa.leve img.borra{display:none}
-.carta-capa.leve{background:var(--fundo-leve) center/cover no-repeat padding-box,var(--ouro-metal) border-box}
+.carta-capa{background:linear-gradient(180deg,rgba(255,250,214,.6),rgba(255,255,255,0) 32%,rgba(0,0,0,0) 62%,rgba(70,30,0,.5)) border-box,var(--ouro-metal) border-box;box-shadow:0 0 0 2.5px #1a0800,0 0 0 3.5px rgba(251,233,49,.35),0 12px 30px rgba(0,0,0,.6),0 0 22px rgba(250,215,3,.35)}
+.carta-capa::after{content:"";position:absolute;inset:0;z-index:3;border-radius:10px;pointer-events:none;box-shadow:inset 0 0 0 2.5px #1a0800,inset 0 2px 0 3px rgba(0,0,0,.35)}
+#app.dourado #sub,#app.dourado .parede-tt p,#app.dourado .deck-cont{color:#FBE931;text-shadow:0 1px 2px rgba(0,0,0,.7)}
+.carta-capa.leve{background:var(--fundo-leve) center/cover no-repeat padding-box,linear-gradient(180deg,rgba(255,250,214,.6),rgba(255,255,255,0) 32%,rgba(0,0,0,0) 62%,rgba(70,30,0,.5)) border-box,var(--ouro-metal) border-box}
 .carta-capa img.borra{position:absolute;inset:-8%;width:116%;height:116%;object-fit:cover;filter:blur(20px) brightness(.7) saturate(1.3);z-index:0;border-radius:0}
 .carta-num{position:absolute;left:10px;top:10px;font:800 13px system-ui,"Segoe UI";color:#FBE931;background:rgba(0,0,0,.72);padding:4px 9px;border-radius:8px;letter-spacing:.5px}
 .carta .insig-jogo{width:92px;height:92px;right:-18px;top:-22px;animation:none}
