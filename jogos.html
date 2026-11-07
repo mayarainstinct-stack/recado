@@ -526,7 +526,7 @@ try{caches.delete("jogos-img-v1").catch(()=>{})}catch(e){}
 const CACHE_IMG="jogos-img-v2",chaveCache=p=>"https://cache.jogos.local/"+p
 const baixa=p=>gh(p,{headers:{Accept:"application/vnd.github.raw"},cache:"default"}).then(r=>{if(!r.ok)throw r.status;return r.blob()})
 function priv(p){return blobs[p]||(blobs[p]=(async()=>{const img=/\.(jpe?g|png|webp|gif)$/i.test(p);let c=null;if(img&&window.caches){try{c=await caches.open(CACHE_IMG);const m=await c.match(chaveCache(p));if(m){const bl=await m.blob();if(bl.size>500&&/^image\//.test(bl.type))return URL.createObjectURL(bl);c.delete(chaveCache(p)).catch(()=>{})}}catch(e){c=null}}const b=await baixa(p);if(c&&b.size>500&&/^image\//.test(b.type||"image/jpeg"))c.put(chaveCache(p),new Response(b,{headers:{"Content-Type":b.type||"image/jpeg"}})).catch(()=>{});return URL.createObjectURL(b)})())}
-const poe=im=>{const p=im.dataset.p;if(!p)return;im.removeAttribute("data-p");priv(p).then(u=>{im.src=u}).catch(()=>im.remove())}
+const poe=im=>{const p=im.dataset.p;if(!p)return;im.removeAttribute("data-p");const o=im.dataset.o;priv(p).catch(e=>{if(!o)throw e;return priv(o)}).then(u=>{im.src=u}).catch(()=>im.remove())}
 const perto="IntersectionObserver" in window?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){perto.unobserve(e.target);poe(e.target)}}),{rootMargin:"400px 600px"}):null
 function hidrata(raiz){(raiz||document).querySelectorAll("img[data-p]").forEach(im=>perto&&!im.closest("#zoom,#pop,.topo")?perto.observe(im):poe(im))}
 const ehPriv=u=>u&&!/^(https?:|data:|blob:)/.test(u)
@@ -551,10 +551,17 @@ document.addEventListener("keydown",e=>{if(!document.getElementById("zoom").clas
 // Abertura J2 do Hermes (v6, aprovada pela May em 05/11/2026 23:57): motor e peças lidos do Inst privado (marca/mays-play/abertura-j2/v2),
 // nada copiado pro repo público. As peças viram blob antes e o motor recebe a imagem pronta pelo J2SRC.
 const J2_DIR="marca/mays-play/abertura-j2/v2/"
-function carregaJ2(){const raw=p=>gh(p,{headers:{Accept:"application/vnd.github.raw"}}).then(r=>{if(!r.ok)throw r.status;return r.text()})
+// um arquivo só (pacote.json: dados, motor e as 54 peças) e guardado no aparelho: abre na hora e confere se mudou por trás pra próxima vez (Hermes, 07/11/2026)
+function carregaJ2(){const chave=chaveCache("j2-pacote"),usa=pac=>{window.J2SRC=n=>pac.pecas[n];new Function(pac.dados)();new Function(pac.motor)();return window.AberturaJ2||null}
+const busca=()=>gh(J2_DIR+"pacote.json",{headers:{Accept:"application/vnd.github.raw"}}).then(r=>{if(!r.ok)throw r.status;return r.text()})
+const guarda=t=>window.caches&&caches.open(CACHE_IMG).then(c=>c.put(chave,new Response(t,{headers:{"Content-Type":"application/json"}}))).catch(()=>{})
+const antigo=()=>{const raw=p=>gh(p,{headers:{Accept:"application/vnd.github.raw"}}).then(r=>{if(!r.ok)throw r.status;return r.text()})
 return Promise.all([raw(J2_DIR+"dados.js"),raw(J2_DIR+"j2.js"),gh(J2_DIR+"pecas").then(r=>r.json())]).then(async([dados,motor,lista])=>{const mapa={};await Promise.all(lista.filter(x=>/\.webp$/.test(x.name)).map(x=>priv(x.path).then(u=>{mapa[x.name.replace(/\.webp$/,"")]=u}).catch(()=>{})));window.J2SRC=n=>mapa[n]
-new Function(dados)();new Function(motor)();return window.AberturaJ2||null}).catch(()=>null)}
+new Function(dados)();new Function(motor)();return window.AberturaJ2||null})}
+return (window.caches?caches.open(CACHE_IMG).then(c=>c.match(chave)).then(m=>m?m.text():null).catch(()=>null):Promise.resolve(null)).then(t=>{if(t){busca().then(n=>{if(n!==t)guarda(n)}).catch(()=>{});return usa(JSON.parse(t))}return busca().then(n=>{guarda(n);return usa(JSON.parse(n))})}).catch(()=>antigo()).catch(()=>null)}
 window.J2PROMESSA=TOKEN&&!new URLSearchParams(location.search).has("semabertura")?carregaJ2():Promise.resolve(null)
+// a J2 já toca enquanto a lista baixa (antes só começava depois dos dados); quando acaba fica parada no logo até a lista chegar (Hermes, 07/11/2026)
+window.J2TOCA=window.J2PROMESSA.then(A=>{const el=document.getElementById("abertura");if(!A||window.J2FIM||!el.classList.contains("on")||matchMedia("(prefers-reduced-motion: reduce)").matches)return null;return new Promise(fim=>{try{const cv=document.createElement("canvas");cv.className="j2-canvas";el.append(cv);el.classList.add("v6");const ab=A.criar(cv,{src:n=>window.J2SRC&&window.J2SRC(n),transparente:true,duracao:4});window.J2AB=ab;el.onclick=()=>ab.pular();ab.tocar(()=>{window.J2ACABOU=true;fim(ab)})}catch(e){fim(null)}})})
 async function carrega(){
 if(!TOKEN){location.replace("app.html");return}
 // tudo em paralelo: no 4G cada ida e volta pesa, e antes eram 5 em fila (Vega, 06/11/2026)
@@ -618,7 +625,10 @@ function outrasPlat(j){const v=Array.isArray((window.JOGOS||{}).consoles)?window
 function capaUrl(j){if(j.capa)return j.capa;const p=j.parede&&j.parede.imagens&&j.parede.imagens[0];if(p)return RAIZ_DOCS+p.arquivo;const pr=(j.prints||[]).filter(x=>USO[x.arquivo]==1).map(x=>corte(x.arquivo)).find(Boolean);return pr||null}
 // selo J2 montado com as peças do logo que o Hermes recortou (J e 2), não letra digitada (May 08:11)
 const LOGO_J2='<div class="ini j2"><img class="j2img" data-p="categorias/games/tela/j2-selo.webp" alt="J2"></div>'
-function capaHtml(j,cls){const u=capaUrl(j);return u?`<img class="borra" loading="lazy" ${srcAttr(u)} alt="" onerror="this.remove()"><img class="inteira" loading="lazy" ${srcAttr(u)} alt="" onerror="semCapa(this)">${LOGO_J2.replace('class="ini j2"','class="ini j2" style="z-index:-1"')}`:LOGO_J2}
+// capa leve (450 px, WebP) só pra lista e ficha; a grande fica guardada e abre no zoom (Hermes, 07/11/2026)
+const capaLeve=u=>/^categorias\/games\/capas\/[^/]+\.(jpe?g|png|webp)$/i.test(u)?u.replace("/capas/","/capas-lista/").replace(/\.\w+$/,".webp"):u
+function capaAttr(u){const l=capaLeve(u);return l==u||!ehPriv(u)?srcAttr(u):`data-p="${escA(l)}" data-o="${escA(u)}"`}
+function capaHtml(j,cls){const u=capaUrl(j);return u?`<img class="borra" loading="lazy" ${capaAttr(u)} alt="" onerror="this.remove()"><img class="inteira" loading="lazy" ${capaAttr(u)} alt="" onerror="semCapa(this)">${LOGO_J2.replace('class="ini j2"','class="ini j2" style="z-index:-1"')}`:LOGO_J2}
 function pctN(j){if(j.status=="zerado")return 100;return j.pct==null?null:j.estimado?Math.round(j.pct/10)*10:j.pct}
 function pctTxt(j){const n=pctN(j);return n==null?"":n+"%"}
 function barra(j){return j.pct==null?'<div class="barra"></div>':`<div class="barra"><i class="${j.estimado?"est":""}" style="width:${Math.max(0,Math.min(100,j.pct))}%"></i></div>`}
@@ -808,10 +818,10 @@ const pra=[...document.querySelectorAll("#e-pra button.on")].map(x=>"@"+x.datase
 const linha=`- [${p(n.getDate())}/${p(n.getMonth()+1)}/${n.getFullYear()} ${p(n.getHours())}:${p(n.getMinutes())}] ${pra} sobre o jogo ${fichaAtual.titulo}: ${t.replace(/\r?\n/g,"\\n")}`
 let ok=false;for(let k=0;k<4&&!ok;k++){try{const f=await(await gh("CAIXA-DE-ENTRADA.md")).json();const md=decodeURIComponent(escape(atob(f.content.replace(/\n/g,""))));if(!md.includes("## Recados")||md.length<200)break;const novo=md.replace(/\s*$/,"")+"\n"+linha+"\n";const r=await gh("CAIXA-DE-ENTRADA.md",{method:"PUT",body:JSON.stringify({message:"recado do iPhone (jogos)",content:btoa(unescape(encodeURIComponent(novo))),sha:f.sha})});if(r.ok)ok=true;else if(r.status!==409)break;else await new Promise(z=>setTimeout(z,600))}catch(e){break}}
 enviando=false;b.disabled=false;b.classList.remove("indo");b.innerHTML=rot;document.getElementById("e-txt").readOnly=false;a.classList.toggle("erro",!ok);if(ok){document.getElementById("e-txt").value="";document.getElementById("envio").classList.remove("on");a.textContent="Mandado pra Geral."}else a.textContent="Não foi. Toca em Enviar pra tentar de novo (o texto continua aí).";a.style.display="block";setTimeout(()=>a.style.display="none",3200)}
-function aberturaJogos(pronto,parar){const el=document.getElementById("abertura"),rm=matchMedia("(prefers-reduced-motion: reduce)").matches;if(rm){el.classList.remove("on","j2","v6");pronto();return}el.classList.add("on");let fim=false,ab=null;const sai=()=>{if(fim)return;fim=true;el.classList.add("sai");setTimeout(()=>{el.classList.remove("on","sai","j2","v6");const t=document.getElementById("troca");t.classList.remove("on");void t.offsetWidth;t.classList.add("on");pronto()},300)};el.onclick=()=>ab?ab.pular():sai();el.onkeydown=e=>{if(e.key=="Enter"||e.key==" "||e.key=="Escape")ab?ab.pular():sai()}
+function aberturaJogos(pronto,parar){const el=document.getElementById("abertura"),rm=matchMedia("(prefers-reduced-motion: reduce)").matches;if(rm){el.classList.remove("on","j2","v6");pronto();return}el.classList.add("on");let fim=false,ab=null;const sai=()=>{if(fim)return;fim=true;window.J2FIM=true;el.classList.add("sai");setTimeout(()=>{el.classList.remove("on","sai","j2","v6");const t=document.getElementById("troca");t.classList.remove("on");void t.offsetWidth;t.classList.add("on");pronto()},300)};const pula=()=>window.J2AB&&!window.J2PULOU?(window.J2PULOU=true,window.J2AB.pular()):sai();el.onclick=pula;el.onkeydown=e=>{if(e.key=="Enter"||e.key==" "||e.key=="Escape")pula()}
 setTimeout(sai,9000)
-// J2 do Hermes recebe as peças por op.src (sem mexer no código dele); se não ficar pronto em 3 s, vai direto pra lista e as peças seguem pro cache pra próxima vez (Sigma, 06/11 00:57)
-Promise.race([window.J2PROMESSA,new Promise(r=>setTimeout(()=>r(null),3000))]).then(A=>{if(fim)return;if(!A){sai();return}try{const cv=document.createElement("canvas");cv.className="j2-canvas";el.append(cv);el.classList.add("v6");ab=A.criar(cv,{src:n=>window.J2SRC&&window.J2SRC(n),transparente:true,duracao:4});ab.tocar(sai)}catch(e){sai()}})}
+// a J2 já começou a tocar no carregamento (J2TOCA); aqui só espera ela acabar. Se em 3 s ela nem começou, vai direto pra lista (Sigma, 06/11 00:57)
+Promise.race([window.J2TOCA,new Promise(r=>setTimeout(()=>r(null),window.J2AB?8500:3000))]).then(()=>{if(window.J2AB&&!window.J2ACABOU)window.J2TOCA.then(sai);else sai()})}
 function iniciar(){const hs=location.hash.slice(1);if(hs.startsWith("jogo=")){aba=POR[hs.slice(5)]&&POR[hs.slice(5)].status=="zerado"?"concluidos":"jogando";render();abrir(hs.slice(5));return}if(hs=="concluidos")aba="concluidos";render()}
 document.getElementById("voltar-app").onclick=()=>{location.href="app.html#menu"}
 const q=new URLSearchParams(location.search)
