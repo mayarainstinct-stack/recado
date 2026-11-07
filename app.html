@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.149">
-<meta name="app-novidade" content="Pergunta que você respondeu escrevendo sai do popup, mesmo com o relógio do robô adiantado">
+<meta name="app-versao" content="2026-11-07.150">
+<meta name="app-novidade" content="O Menu começa direto em Recados, sem a barra de cima">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -3477,6 +3477,7 @@ function cabecalhoGenerico() { pTopo.classList.remove('proprio'); pTopo.querySel
 function desenhaTela() {
   const [titulo, montar, rolou] = pilha[pilha.length - 1];
   pTit.textContent = titulo; pCorpo.scrollTop = 0; pExtra.hidden = pilha.length > 1; cabecalhoGenerico();
+  pTopo.hidden = pilha.length === 1 && titulo === 'Menu';   // o Menu começa direto em Recados, sem a barra de cima (May 18:40); voltar fica no botão de baixo e no deslize
   const t = document.createElement('div'); t.className = 'tela'; pCorpo.replaceChildren(t);   // carga atrasada de tela que já saiu cai no invólucro velho
   const r = montar(t); if (rolou) Promise.resolve(r).then(() => { if (t.isConnected) pCorpo.scrollTop = rolou; });   // voltando: devolve a rolagem de onde ela estava
 }
