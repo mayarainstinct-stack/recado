@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.104">
+<meta name="app-versao" content="2026-11-07.105">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -726,6 +726,32 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 .gr-hero b { display: block; font-size: 22px; font-weight: 900; } .gr-hero span { font-size: 13px; opacity: .85; }
 .gr-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .gr-grade .gr-item { min-height: 132px; } .gr-grade .gr-sub { display: block; font-size: 11.5px; opacity: .8; padding: 0 8px; text-align: center; line-height: 1.3; }
+.p-corpo > .tela.ob-tela { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 0; } .p-corpo > .tela.ob-tela > .ob-parede { flex: 1 1 0; min-height: 0; }
+.ob-abas { display: flex; gap: 6px; padding: 4px; border-radius: 14px; background: var(--paper); border: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; } .ob-abas::-webkit-scrollbar { display: none; }
+.ob-abas button { flex: 1 0 auto; width: auto; height: auto; padding: 9px 10px; border-radius: 10px; background: none; color: var(--muted); font: inherit; font-size: 13px; font-weight: 800; } .ob-abas button.on { background: #F97316; color: #1F0D02; }
+.ob-parede { margin: 10px -16px 0; padding: 16px 14px 24px; overflow-y: auto; overscroll-behavior: contain; background: radial-gradient(120% 70% at 50% 0%, rgba(255,190,120,.10), transparent 60%), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='34'%3E%3Crect width='64' height='34' fill='%232A2420'/%3E%3Cg fill='%233B312A'%3E%3Crect x='1.5' y='1.5' width='61' height='14' rx='1.5'/%3E%3Crect x='-30.5' y='18.5' width='61' height='14' rx='1.5'/%3E%3Crect x='33.5' y='18.5' width='61' height='14' rx='1.5'/%3E%3C/g%3E%3C/svg%3E"); box-shadow: inset 0 10px 18px -8px rgba(0,0,0,.6); }
+.ob-grade { columns: 2; column-gap: 12px; } .ob-grade > * { break-inside: avoid; margin-bottom: 16px; }
+.ob-c { position: relative; display: block; color: #22190A; transform: rotate(var(--r, 0deg)); box-shadow: 0 1px 1px rgba(0,0,0,.2), 0 12px 18px -10px rgba(0,0,0,.75); }
+.ob-tit { display: block; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .05em; } .ob-sub { margin: 4px 0 0; font-size: 12.5px; line-height: 1.3; opacity: .8; }
+.ob-fonte { display: block; margin-top: 8px; font-size: 10px; opacity: .5; overflow-wrap: anywhere; }
+.ob-nota { background: var(--p); padding: 18px 12px 10px; border-radius: 2px 2px 12px 2px; }
+.ob-nota::before, .ob-peca::before { content: ''; position: absolute; top: 5px; left: 50%; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #FCA5A5, #DC2626 55%, #7F1D1D); box-shadow: 0 3px 4px rgba(0,0,0,.45); }
+.ob-nota ul { margin: 6px 0 0; padding-left: 16px; font-size: 13px; line-height: 1.35; } .ob-nota li + li { margin-top: 3px; }
+.ob-num { display: block; margin: 2px 0; font-size: 22px; font-weight: 900; letter-spacing: -.02em; }
+.ob-c.ob-valor { background: linear-gradient(170deg, #E7C9A0, #C9A270); padding: 14px 12px 10px 12px; border-radius: 4px 12px 12px 4px; clip-path: polygon(14px 0, 100% 0, 100% 100%, 14px 100%, 0 calc(100% - 14px), 0 14px); padding-left: 20px; }
+.ob-c.ob-valor.ob-destaque { background: linear-gradient(170deg, #FDBA74, #F97316); }
+.ob-furo { position: absolute; left: 7px; top: 50%; width: 8px; height: 8px; margin-top: -4px; border-radius: 50%; background: #2A2420; box-shadow: inset 0 1px 2px rgba(0,0,0,.6); }
+.ob-barra { height: 8px; margin-top: 8px; border-radius: 4px; background: rgba(0,0,0,.18); overflow: hidden; } .ob-barra i { display: block; height: 100%; background: #16A34A; }
+.ob-peca { background: #FFFDF5; padding: 18px 10px 10px; border-radius: 4px; } .ob-peca img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 3px; margin-bottom: 8px; background: #E7E5E4; }
+.ob-modelo { display: block; margin-top: 2px; font-size: 14px; line-height: 1.25; }
+.ob-chip { display: inline-block; margin-top: 6px; padding: 2px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; background: rgba(0,0,0,.08); } .ob-chip.ok { background: #16A34A; color: #fff; }
+.ob-foto { background: #FFFFFF; padding: 8px 8px 6px; border-radius: 2px; cursor: zoom-in; } .ob-foto img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; background: #E7E5E4; } .ob-leg { display: block; margin-top: 6px; font-size: 12px; font-weight: 700; text-align: center; }
+.ob-maicon { column-span: all; background: linear-gradient(170deg, #A47148, #7C5232); padding: 22px 10px 10px; border-radius: 10px; color: #FFF7ED; transform: none; }
+.ob-maicon .ob-clipe { position: absolute; top: -6px; left: 50%; width: 64px; height: 18px; margin-left: -32px; border-radius: 6px 6px 3px 3px; background: linear-gradient(#D6D3D1, #78716C); box-shadow: 0 2px 3px rgba(0,0,0,.5); }
+.ob-dias { list-style: none; margin: 8px 0 0; padding: 10px; border-radius: 4px; background: #FFFDF5; color: #22190A; font-size: 13px; }
+.ob-dias li { display: flex; gap: 10px; align-items: baseline; padding: 5px 0; border-bottom: 1px dashed rgba(0,0,0,.15); } .ob-dias li:last-child { border-bottom: 0; }
+.ob-dias li::before { content: ''; flex: none; width: 9px; height: 9px; border-radius: 50%; background: #16A34A; transform: translateY(-1px); } .ob-dias li.faltou::before { background: #DC2626; } .ob-dias li.faltou span { opacity: .6; }
+.ob-maicon .ob-fonte { color: #FFF7ED; }
 .ie-abas { display: flex; gap: 6px; padding: 4px; border-radius: 14px; background: var(--paper); border: 1px solid var(--line); flex: none; }
 .ie-abas button { flex: 1; width: auto; height: auto; padding: 9px 4px; border-radius: 10px; background: none; color: var(--muted); font: inherit; font-size: 13px; font-weight: 800; } .ie-abas button.on { background: #FACC15; color: #1F1A03; }
 .ie-trilho { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; margin: 10px -4px 0; padding: 0 4px; }
@@ -3574,6 +3600,59 @@ async function gravaJson(arq, muda, msg) {   // lê o JSON mais novo com o sha, 
 }
 // Ideias = quadro de pedidos da casa (May, 07/11/2026 12:38 a 13:11): todo pedido dela vira post-it; branco = sem dono (o Sigma faz a triagem),
 // na cor do robô = já tem dono; de cima pra baixo = urgência, ela reordena segurando e arrastando; aba 1 esperando + fazendo, aba 2 concluídos
+// Obra = mural na parede (May, 07/11/2026 12:42): bilhete com tachinha, etiqueta de preço, polaroid e a prancheta do Maicon; abas que deslizam
+function abreObra(m) {
+  const PAPEL = { amarelo: '#FEF08A', rosa: '#FBCFE8', azul: '#BFDBFE', verde: '#BBF7D0', branco: '#FFFDF5' }, GIRO = [-1.4, 1, -.6, 1.3, -1, .7];
+  tela(m.nome, async c => {
+    painel.style.setProperty('--c', '#F97316'); c.classList.add('ob-tela');
+    const nota = elD('p', 'p-nota', 'Carregando o mural…'); c.append(nota);
+    let d; try { d = JSON.parse(await lerArquivo(m.arq || 'casa/obra-mural.json')); } catch (e) { nota.textContent = 'Não consegui abrir o mural. Confere a internet.'; return; }
+    nota.remove();
+    const vivo = {}; Promise.all([lerArquivo('casa/fundo/maicon-dias.json').then(t => { vivo.dias = JSON.parse(t).dias || []; }).catch(() => {}), lerArquivo('contas/pendencias.json').then(t => { vivo.pago = (JSON.parse(t).pagar || []).find(x => /maicon/i.test(x.nome)); }).catch(() => {})]).then(() => { if (aba === 'agora' || aba === 'dinheiro') pinta(0); });
+    const nav = elD('nav', 'ob-abas'), parede = elD('div', 'ob-parede'); c.append(nav, parede);
+    const abas = d.abas || []; let aba = (abas[0] || {}).id;
+    const rs = v => 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+    const fonte = f => elD('small', 'ob-fonte', f ? 'fonte: ' + f : '');
+    const cartao = (x, k, fotos) => {
+      const el = elD('div', 'ob-c ob-' + x.tipo + (x.destaque ? ' ob-destaque' : '')); const gr = x.tipo === 'maicon' ? 0 : GIRO[k % GIRO.length]; el.dataset.r = gr; el.style.setProperty('--r', gr + 'deg');
+      if (x.tipo === 'nota') { el.style.setProperty('--p', PAPEL[x.cor] || PAPEL.amarelo); const ul = elD('ul'); (x.linhas || []).forEach(l => ul.append(elD('li', '', l))); el.append(elD('b', 'ob-tit', x.titulo || ''), ul, fonte(x.fonte)); }
+      else if (x.tipo === 'valor') {
+        el.append(elD('span', 'ob-furo'), elD('small', 'ob-tit', x.titulo || ''), elD('b', 'ob-num', x.valor || ''), elD('p', 'ob-sub', x.sub || ''));
+        if (x.vivo === 'maicon' && vivo.pago) { const b = elD('div', 'ob-barra'), f = elD('i'); f.style.width = Math.min(100, vivo.pago.pago * 100 / (vivo.pago.total || 1)) + '%'; b.append(f); el.append(b, elD('small', 'ob-sub', 'pago ' + rs(vivo.pago.pago) + ' · falta ' + rs(vivo.pago.falta))); }
+        el.append(fonte(x.fonte));
+      }
+      else if (x.tipo === 'peca') {
+        if (x.foto) { const im = elD('img'); im.alt = x.titulo || ''; im.loading = 'lazy'; el.append(im); fotoUrl(x.foto).then(u => { im.src = u; im.onclick = () => abreZoom(u, x.foto); }).catch(() => im.remove()); }
+        el.append(elD('small', 'ob-tit', x.titulo || ''), elD('b', 'ob-modelo', x.modelo || ''));
+        if (x.preco) el.append(elD('p', 'ob-sub', x.preco));
+        if (x.estado) el.append(elD('span', 'ob-chip' + (/escolhid/.test(x.estado) ? ' ok' : ''), x.estado));
+        el.append(fonte(x.fonte));
+      }
+      else if (x.tipo === 'foto') { const im = elD('img'); im.alt = x.legenda || ''; im.loading = 'lazy'; el.append(im, elD('small', 'ob-leg', x.legenda || '')); fotoUrl(x.arq).then(u => { im.src = u; el.onclick = () => abreZoom(u, x.arq, fotos); }).catch(() => el.remove()); }
+      else if (x.tipo === 'maicon') {
+        el.append(elD('span', 'ob-clipe'), elD('b', 'ob-tit', x.titulo || 'Maicon'));
+        const ds = vivo.dias || [], veio = ds.filter(z => z.veio).length;
+        el.append(elD('p', 'ob-sub', ds.length ? veio + ' dia' + (veio === 1 ? '' : 's') + ' de obra em ' + ds.length + ' sábado' + (ds.length === 1 ? '' : 's') : 'Carregando os dias…'));
+        const ul = elD('ul', 'ob-dias');
+        ds.slice().reverse().forEach(z => { const li = elD('li', z.veio ? 'veio' : 'faltou'); li.append(elD('b', '', z.data.slice(0, 5)), elD('span', '', z.veio ? [z.chegou && z.saiu ? z.chegou + ' às ' + z.saiu : z.chegou ? 'desde ' + z.chegou : '', z.fez || ''].filter(Boolean).join(' · ') : 'não veio')); ul.append(li); });
+        el.append(ul, fonte(x.fonte));
+      }
+      return el;
+    };
+    const pinta = dir => {
+      nav.replaceChildren(); parede.replaceChildren();
+      abas.forEach(a => { const b = elD('button', a.id === aba ? 'on' : '', a.nome); b.type = 'button'; b.onclick = () => { if (a.id === aba) return; const i0 = abas.findIndex(z => z.id === aba), i1 = abas.indexOf(a); aba = a.id; pinta(i1 > i0 ? 1 : -1); }; nav.append(b); });
+      requestAnimationFrame(() => { const on = nav.querySelector('.on'); if (on) nav.scrollTo({ left: on.offsetLeft - (nav.clientWidth - on.offsetWidth) / 2, behavior: dir ? 'smooth' : 'auto' }); });   // a aba escolhida nunca fica cortada na borda
+      const a = abas.find(z => z.id === aba) || abas[0]; if (!a) return;
+      const fotos = (a.cartoes || []).filter(x => x.tipo === 'foto').map(x => x.arq);
+      const g = elD('div', 'ob-grade' + (a.cartoes.every(x => x.tipo === 'foto') ? ' ob-fotos' : ''));
+      a.cartoes.forEach((x, k) => g.append(cartao(x, k, fotos))); parede.append(g);
+      if (dir) entraDoLado(parede, dir);
+      if (dir !== 0 && !matchMedia('(prefers-reduced-motion: reduce)').matches) [...g.children].forEach((el, k) => { if (el.animate) el.animate([{ transform: 'translateY(-26px) rotate(' + (el.dataset.r * 4) + 'deg)', opacity: 0 }, { transform: 'translateY(3px) rotate(' + el.dataset.r + 'deg)', opacity: 1, offset: .7 }, { transform: 'rotate(' + el.dataset.r + 'deg)', opacity: 1 }], { duration: 380, delay: k * 45, easing: 'cubic-bezier(.3,.7,.3,1)', fill: 'backwards' }); });   // cada papel é pregado na parede, um depois do outro
+    };
+    pinta(); arrastaAbas(parede, () => abas.findIndex(z => z.id === aba), i => { aba = abas[i].id; pinta(); }, abas.length);
+  });
+}
 function abreIdeias(m) {
   const arq = /\.json$/.test(m.arq || '') ? m.arq : 'casa/ideias.json', ROBOS_IE = ['orfeu', 'nyx', 'vega', 'hermes', 'sigma', 'lyra'], GIRO = [-1.2, .8, -.5, 1.1, -.9, .6];
   tela(m.nome, async c => {
@@ -3784,6 +3863,7 @@ function abreItemMenu(m) {
   if (m.tipo === 'grupo') return abreGrupo(m);
   if (m.tipo === 'ideias') return abreIdeias(m);
   if (m.tipo === 'planta') return abrePlanta(m);
+  if (m.tipo === 'obra') return abreObra(m);
   if (m.tipo === 'financas') return abreFinancas(m);
   if (m.tipo === 'diagnostico') return abreDiagnostico();
   if (m.tipo === 'maquinas') return abreMaquinas(m);
