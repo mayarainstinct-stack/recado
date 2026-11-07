@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.116">
+<meta name="app-versao" content="2026-11-07.118">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -710,6 +710,11 @@ img.esq { min-height: 140px; }
 .p-grade.apps .bt-agenda { background: linear-gradient(#0D9488 0 32px, #F0FDFA 32px); border: 0; border-radius: 8px; text-shadow: none; align-content: start; padding-top: 4px; gap: 2px; box-shadow: 0 6px 14px rgba(13,148,136,.35); }
 .p-grade.apps .bt-agenda .ic { width: auto; height: auto; display: grid; justify-items: center; filter: none; color: #134E4A; } .p-grade.apps .bt-agenda .ic small { font-size: 10.5px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; color: #fff; line-height: 24px; }
 .p-grade.apps .bt-agenda .ic b { font-size: 34px; font-weight: 300; line-height: 1.15; margin-top: 4px; } .p-grade.apps .bt-agenda .t { color: #134E4A; }
+.p-grade.apps svg.lp { width: 36px; height: 36px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.p-grade.apps .ic.mini { width: 100%; height: auto; display: grid; gap: 2px; padding: 0 4px; filter: none; font-variant-numeric: tabular-nums; }
+.p-grade.apps .mini-l { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; font-size: 11px; line-height: 1.35; } .p-grade.apps .mini-l span { opacity: .75; font-weight: 600; } .p-grade.apps .mini-l b { font-weight: 800; }
+.p-grade.apps .bt-pendencias .mini-l { color: #78350F; border-bottom: 1px solid #FCD34D; } .p-grade.apps .bt-pendencias .mini-l.pos b { color: #15803D; } .p-grade.apps .bt-pendencias .mini-l.neg b { color: #B91C1C; }
+.p-grade.apps .bt-contas .mini-l { color: #14532D; } .p-grade.apps .bt-contas .ic.mini { padding: 0 2px 0 0; }
 .p-grade.apps .p-azulejo:active { transform: scale(.95); } .p-grade.apps .bt-ideias:active { transform: rotate(-1.5deg) scale(.95); }
 .p-grade .p-azulejo { touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .p-grade .p-azulejo.arrastando { position: relative; z-index: 5; touch-action: none; box-shadow: 0 16px 34px rgba(0,0,0,.5); transition: none; }
@@ -799,7 +804,8 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 .ob-dias li::before { content: ''; flex: none; width: 9px; height: 9px; border-radius: 50%; background: #16A34A; transform: translateY(-1px); } .ob-dias li.faltou::before { background: #DC2626; } .ob-dias li.faltou span { opacity: .6; }
 .ob-maicon .ob-fonte { color: #FFF7ED; }
 .ob-diario { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; } .ob-diario > * { min-width: 0; } .ob-folha { background: linear-gradient(#FFFDF5, #FFFDF5) padding-box, repeating-linear-gradient(transparent 0 23px, rgba(59,130,246,.18) 23px 24px); background: repeating-linear-gradient(#FFFDF5 0 23px, #E8EEF8 23px 24px); padding: 16px 14px 12px 22px; border-radius: 3px 3px 14px 3px; border-left: 3px solid #F87171; }
-.ob-folha::before { content: ''; position: absolute; top: -8px; left: 50%; width: 70px; height: 18px; margin-left: -35px; background: rgba(255,255,255,.55); box-shadow: 0 1px 2px rgba(0,0,0,.25); transform: rotate(-2deg); }
+.ob-folha::before { content: ''; position: absolute; top: 6px; left: 50%; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #FCA5A5, #DC2626 55%, #7F1D1D); box-shadow: 0 4px 5px rgba(0,0,0,.45); z-index: 2; }   /* alfinete, não durex (May 15:29) */
+.ob-contador { display: flex; align-items: baseline; gap: 10px; padding: 12px 16px; background: #FFFDF5; border-left: 4px solid #F97316; border-radius: 3px 3px 12px 3px; color: #22190A; box-shadow: 0 10px 16px -10px rgba(0,0,0,.7); } .ob-contador b { font: italic 34px Impact, 'Arial Black', sans-serif; color: #F97316; line-height: 1; } .ob-contador span { font-weight: 700; font-size: 14px; }
 .ob-folha-cab { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; } .ob-folha-data { font-size: 24px; font-weight: 900; letter-spacing: -.02em; } .ob-folha-cab .ob-chip { margin: 0 0 0 auto; }
 .ob-folha-rot { display: block; margin-top: 8px; font-size: 10.5px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; opacity: .55; }
 .ob-folha ul { margin: 2px 0 0; padding-left: 18px; font-size: 13.5px; line-height: 1.35; } .ob-folha li + li { margin-top: 3px; } .ob-feito { list-style: '✓  '; } .ob-depois { list-style: '→  '; } .ob-decidido { list-style: '★  '; }
@@ -3297,9 +3303,27 @@ function iconeMenu(nome) { const a = ICONES_MENU.find(([re]) => re.test(nome)); 
 // o que eles têm de igual é largura e altura, o resto cada um pega do seu interior"). Classe bt-<assunto>; a Agenda mostra o dia de hoje
 const BOTAO_DE = [[/jogo/i, 'jogos'], [/m[aá]quina|console/i, 'maquinas'], [/pend[eê]ncia/i, 'pendencias'], [/sa[uú]de|cirurgia/i, 'saude'], [/treino|academia/i, 'treino'], [/casa/i, 'casa'],
   [/obra|piscina/i, 'obra'], [/m[ií]dia|imagen|v[ií]deo|anima/i, 'midia'], [/lista/i, 'listas'], [/ideia/i, 'ideias'], [/conta|comida/i, 'contas'], [/agenda/i, 'agenda']];
+const ICONE_LIMPO = {   // desenho de linha limpo, traço igual em todos (May 15:33: "tá parecendo uma criança desenhando, tem que ser mais profissional")
+  midia: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9.2l5 2.8-5 2.8z"/>', listas: '<path d="M10 6.5h10M10 12h10M10 17.5h10"/><path d="M4 6.5l1.3 1.3L7.6 5.5M4 12l1.3 1.3L7.6 11M4 17.5l1.3 1.3 2.3-2.3"/>',
+  ideias: '<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.9 10.6c.6.6.9 1.4.9 2.4h6c0-1 .3-1.8.9-2.4A6 6 0 0 0 12 3z"/>', maquinas: '<rect x="3" y="4" width="18" height="12" rx="1.6"/><path d="M8 20h8M12 16v4"/><path d="M7.5 10h3M9 8.5v3"/><circle cx="15.5" cy="10" r=".9"/>',
+  obra: '<path d="M2.5 17.5h19"/><path d="M4.5 17.5a7.5 7.5 0 0 1 15 0"/><path d="M10 10.5V6h4v4.5"/>', saude: '<path d="M12 3c-2 0-3.5 1.6-3.5 3.5 0 2 1.4 4 3.5 6.5 2.1-2.5 3.5-4.5 3.5-6.5C15.5 4.6 14 3 12 3z"/><path d="M10.3 12.5 6 21l3-1.2 1.7 2.5 2.4-6.8M13.7 12.5 18 21l-3-1.2-1.7 2.5-2.4-6.8"/>',
+  jogos: '<path d="M6.5 8.5h11a3.5 3.5 0 0 1 3.4 4.3l-.9 3.9a2 2 0 0 1-3.5.8L15 15.5H9l-1.5 2a2 2 0 0 1-3.5-.8l-.9-3.9a3.5 3.5 0 0 1 3.4-4.3z"/><path d="M8.5 11v3M7 12.5h3"/><circle cx="15.5" cy="12" r=".9"/><circle cx="17.3" cy="13.6" r=".9"/>',
+  treino: '<path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/>', casa: '<path d="M3 11l9-7 9 7"/><path d="M5 9.5V20h14V9.5"/>'
+};
 function vesteBotao(b, nome) {
   const k = (BOTAO_DE.find(([re]) => re.test(nome)) || [])[1]; if (!k) return;
   b.classList.add('bt-' + k);
+  if (ICONE_LIMPO[k]) b.querySelector('.ic').innerHTML = '<svg class="lp" viewBox="0 0 24 24" aria-hidden="true">' + ICONE_LIMPO[k] + '</svg>';
+  if (k === 'pendencias' || k === 'contas') {   // no lugar do desenho, o número de verdade, que nem painel (lido da planilha dela)
+    const ic = b.querySelector('.ic'); ic.className = 'ic mini'; ic.replaceChildren();
+    lerArquivo('contas/pendencias.json').then(t => {
+      const d = JSON.parse(t), n = v => Math.round(v).toLocaleString('pt-BR'), linha = (a, z, cls) => { const l = elD('div', 'mini-l ' + (cls || '')); l.append(elD('span', '', a), elD('b', '', z)); ic.append(l); };
+      if (k === 'pendencias') { const fr = d.receber.reduce((s, x) => s + x.falta, 0), fp = d.pagar.reduce((s, x) => s + x.falta, 0); linha('Receber', n(fr), 'pos'); linha('Pagar', n(fp), 'neg'); linha('Saldo', n(fr - fp), fr - fp < 0 ? 'neg' : 'pos'); return; }
+      const hoje = new Date(), vence = dia => new Date(hoje.getFullYear(), hoje.getMonth() + (hoje.getDate() > dia ? 1 : 0), dia);
+      d.pagar.filter(x => x.falta > 0).map(x => ({ x, q: vence(x.dia || 6), v: Math.min((x.pagamentos[x.pagamentos.length - 1] || {}).valor || x.falta, x.falta) })).sort((a, b) => a.q - b.q).slice(0, 3)
+        .forEach(({ q, v }) => linha(String(q.getDate()).padStart(2, '0') + '/' + String(q.getMonth() + 1).padStart(2, '0'), n(v)));
+    }).catch(() => {});
+  }
   if (k === 'agenda') { const d = new Date(), ic = b.querySelector('.ic'); ic.replaceChildren(elD('small', '', d.toLocaleDateString('pt-BR', { weekday: 'long' }).split('-')[0]), elD('b', '', String(d.getDate()))); }
 }
 function botaoGrade(ic, txt, sub, fn) {   // azulejo do Menu: ícone grande em cima, nome curto embaixo, na cor do assunto
@@ -3739,7 +3763,9 @@ function abreObra(m) {
         const g = elD('div', 'ob-diario'); parede.append(g);
         const monta = dd => {
           g.replaceChildren();
-          (dd.dias || []).forEach((dia, k) => {
+          const veio = (dd.dias || []).filter(dia => dia.maicon || (dia.feito || []).length), ds = (dd.dias || []).map(x => x.data).sort((a, b) => a.split('/').reverse().join('') < b.split('/').reverse().join('') ? -1 : 1);
+          const cont = elD('div', 'ob-contador'); cont.append(elD('b', '', String(veio.length)), elD('span', '', 'dia' + (veio.length === 1 ? '' : 's') + ' de obra do Maicon' + (ds.length ? ' · de ' + ds[0].slice(0, 5) + ' a ' + ds[ds.length - 1].slice(0, 5) : ''))); g.append(cont);   // o que importa é quantos dias ele veio (May 15:33)
+          veio.forEach((dia, k) => {
             const f = elD('div', 'ob-c ob-folha'), gr = GIRO[k % GIRO.length] / 2; f.dataset.r = gr; f.style.setProperty('--r', gr + 'deg');
             const cab = elD('div', 'ob-folha-cab'); cab.append(elD('b', 'ob-folha-data', dia.data.slice(0, 5)), elD('span', 'ob-tit', dia.titulo || '')); if (dia.maicon) cab.append(elD('span', 'ob-chip ok', 'Maicon ' + dia.maicon)); else if (!(dia.feito || []).length) cab.append(elD('span', 'ob-chip', 'não veio')); f.append(cab);
             const lista = (rot, itens, cls) => { if (!(itens || []).length) return; f.append(elD('small', 'ob-folha-rot', rot)); const ul = elD('ul', cls); itens.forEach(t => ul.append(elD('li', '', t))); f.append(ul); };
@@ -4592,11 +4618,25 @@ function abreZoom(src, path, listaFotos) {   // listaFotos: as fotos do álbum (
   const fecha = () => { z.remove(); document.removeEventListener('keydown', esc); };
   const esc = e => { if (e.key === 'Escape') fecha(); else if (e.key === 'ArrowLeft') vai(-1); else if (e.key === 'ArrowRight') vai(1); };
   let t0 = null;
-  z.addEventListener('touchstart', e => { t0 = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null; }, { passive: true });
+  let horiz = null;   // a foto anda junto com o dedo pro lado e só troca quando solta (May, 07/11/2026 15:29: "a foto mexe junto com meu dedo")
+  const temFoto = dir => i >= 0 && i + dir >= 0 && i + dir < lista.length, semMovZ = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  z.addEventListener('touchstart', e => { t0 = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null; horiz = null; }, { passive: true });
+  z.addEventListener('touchmove', e => {
+    if (!t0 || semMovZ) return; const dx = e.touches[0].clientX - t0.x, dy = e.touches[0].clientY - t0.y;
+    if (horiz === null) { if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return; horiz = lista.length > 1 && Math.abs(dx) > Math.abs(dy) * 1.2; }
+    if (!horiz) return;
+    const k = temFoto(dx < 0 ? 1 : -1) ? 1 : .3; im.style.transition = 'none'; im.style.transform = 'translateX(' + (dx * k) + 'px) scale(' + (1 - Math.min(.06, Math.abs(dx) / 3000)) + ')';
+  }, { passive: true });
   z.addEventListener('touchend', e => {
     if (!t0) return; const t = e.changedTouches[0], dx = t.clientX - t0.x, dy = t.clientY - t0.y; t0 = null;
-    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) { z.dataset.sw = '1'; setTimeout(() => { delete z.dataset.sw; }, 400); vai(dx < 0 ? 1 : -1); }
-    else if (Math.abs(dy) > 12) { z.dataset.sw = '1'; setTimeout(() => { delete z.dataset.sw; }, 400); }   // puxar pra baixo: quem fecha é o fechaPuxando, seguindo o dedo
+    if (horiz || (semMovZ && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5)) {
+      z.dataset.sw = '1'; setTimeout(() => { delete z.dataset.sw; }, 400);
+      const dir = dx < 0 ? 1 : -1;
+      if (Math.abs(dx) > 60 && temFoto(dir)) { if (semMovZ) { vai(dir); return; } im.style.transition = 'transform .18s ease-in'; im.style.transform = 'translateX(' + (-dir * innerWidth) + 'px)'; setTimeout(() => { im.style.transition = 'none'; im.style.transform = ''; vai(dir); }, 180); }
+      else { im.style.transition = 'transform .25s cubic-bezier(.2,.8,.2,1)'; im.style.transform = ''; }
+      horiz = null; return;
+    }
+    if (Math.abs(dy) > 12) { z.dataset.sw = '1'; setTimeout(() => { delete z.dataset.sw; }, 400); }   // puxar pra baixo: quem fecha é o fechaPuxando, seguindo o dedo
   });
   z.onclick = () => { if (!z.dataset.sw) fecha(); };
   fechaPuxando(z, fecha, null, () => im);
