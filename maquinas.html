@@ -28,6 +28,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .card{position:relative;overflow:hidden;min-height:132px;border-radius:20px;padding:12px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;text-align:left;color:#fff;font:inherit;cursor:pointer;background:linear-gradient(150deg,color-mix(in srgb,var(--c) 85%,#000),color-mix(in srgb,var(--c) 35%,#000));border:1px solid rgba(255,255,255,.18);box-shadow:0 10px 24px color-mix(in srgb,var(--c) 30%,transparent)}
 .card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.45}.card img.rob{inset:auto 8px 8px auto;width:58px;height:58px;opacity:.95;object-fit:contain}
 .card .cur{position:absolute;top:10px;left:12px;font-weight:800;font-size:13px;letter-spacing:.1em}.card b{position:relative;font-size:16px;line-height:1.15;padding-right:44px;text-shadow:0 1px 8px rgba(0,0,0,.6)}.card small{position:relative;font-size:11.5px;opacity:.88}.card:has(img.rob) small,.card:has(img.rob) b{padding-right:60px}
+.bloco-tit{grid-column:1/-1;margin:8px 2px -2px;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--texto2)}.card.diag-largo{grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center;justify-content:flex-start;gap:14px;background:linear-gradient(110deg,#7C3AED,#4C1D95);box-shadow:0 10px 24px rgba(139,92,246,.35)}.diag-ic{flex:none;width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:rgba(255,255,255,.14)}.diag-ic svg{width:30px;height:30px}.diag-tx{display:flex;flex-direction:column;gap:2px;min-width:0}.diag-tx b{padding-right:0}
 .volta-col{font:inherit;font-size:13px;font-weight:700;padding:8px 12px;border-radius:999px;background:var(--vidro);border:1px solid var(--borda);color:var(--texto);cursor:pointer}
 .fila{flex:none;display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 20px 16px;scroll-padding-left:20px;scrollbar-width:none}
 .fila::-webkit-scrollbar{display:none}
@@ -168,12 +169,17 @@ function grade(){
   document.documentElement.style.setProperty("--k1","#4F46E5");fundo.style.backgroundImage="none";app.replaceChildren()
   const topo=el("div","topo"),ms2=el("div","marca-sis");ms2.append(el("i"),"Minha coleção");const t=D.total||{}
   topo.append(ms2,el("span","tot",D.maquinas.length+" máquinas · "+(t.zerados??"–")+" zerados"));app.append(topo)
-  const g=el("div","grade");D.maquinas.forEach((x,j)=>{const b=el("button","card");b.style.setProperty("--c",cor(x));b.setAttribute("aria-label",x.nome)
+  const g=el("div","grade")
+  {const b=el("button","card diag-largo"),ic=el("span","diag-ic"),tx=el("span","diag-tx"),res=el("small","","a saúde dos PCs");b.style.setProperty("--c","#8B5CF6")
+    ic.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="19" height="13" rx="2"/><path d="M8 20.5h8M12 16.5v4"/><path d="M5.5 10h3l1.5-3 2.5 6 1.5-3h4.5"/></svg>'
+    tx.append(el("b","","Diagnóstico · a saúde dos PCs"),res);b.append(ic,tx);b.onclick=()=>{location.href="app.html#diagnostico"};g.append(b)
+    gh("casa/diagnostico-pcs.json",true).then(r=>r.ok?r.json():Promise.reject()).then(dg=>{const dia=(dg.dias||[])[0];if(!dia)return;const ord={ruim:0,atencao:1,ok:2},nome={ruim:"ruim",atencao:"de olho",ok:"tudo bem"},pior=(dia.pcs||[]).slice().sort((a,b)=>(ord[a.estado]??3)-(ord[b.estado]??3))[0];res.textContent=String(dia.data).slice(0,5)+(pior?" · pior: "+pior.pc+" ("+(nome[pior.estado]||pior.estado)+")":"")}).catch(()=>{})}   // o resumo do último dia: o pior PC e como ele tá   // primeiro, comprido na horizontal (May 19:20: \"ninguém acha\" no fim)
+  const ePC=x=>!!(x.robo||x.tipo==="pc"||/^pc/.test(x.id)),ordem=D.maquinas.map((x,j)=>[x,j]),blocos=[["Máquinas",ordem.filter(([x])=>ePC(x))],["Consoles",ordem.filter(([x])=>!ePC(x))]]   // Máquinas em cima, Consoles embaixo, cada bloco com título (May 19:20, Sigma 19:27)
+  blocos.forEach(([tit,lista])=>{if(!lista.length)return;g.append(el("h3","bloco-tit",tit));lista.forEach(([x,j])=>{const b=el("button","card");b.style.setProperty("--c",cor(x));b.setAttribute("aria-label",x.nome)
     {const w=wallpaper(x);if(w){b.style.setProperty("--c",w.cor);aplicaFundo(b,x,w,false)}}
     if(x.robo&&ROBO[x.robo]){const im=el("img","rob");im.alt="";im.src=ROBO[x.robo][2];b.append(im)}
     const st=x.stats;b.append(el("span","cur",CURTO[x.console]||(x.robo?"PC":"")),el("b","",x.nome),el("small","",st?(st.zerados||0)+" zerados · "+(st.jogos||0)+" jogos":(x.modelo||x.papel||"")))
-    b.onclick=()=>monta(j);g.append(b)})
-  {const b=el("button","card");b.style.setProperty("--c","#8B5CF6");b.append(el("span","cur","PCs"),el("b","","Diagnóstico"),el("small","","a saúde dos PCs"));b.onclick=()=>{location.href="app.html#diagnostico"};g.append(b)}
+    b.onclick=()=>monta(j);g.append(b)})})
   app.append(g)
 }
 function monta(i){
@@ -186,7 +192,6 @@ function monta(i){
   const fila=el("div","fila");ms.forEach((x,j)=>{const b=el("button","bloco"+(j===i?" ativo":""));b.style.setProperty("--c",cor(x));b.setAttribute("aria-label",x.nome)
     if(x.robo&&ROBO[x.robo]){const im=el("img");im.alt="";im.src=ROBO[x.robo][2];b.append(im)}else b.append(el("span","",CURTO[x.console]||x.nome.slice(0,4)))
     b.onclick=()=>{if(j!==atual)monta(j)};fila.append(b)});
-  {const b=el("button","bloco diag");b.style.setProperty("--c","#8B5CF6");b.setAttribute("aria-label","Diagnóstico: a saúde dos PCs");b.innerHTML='<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M6.5 11H9l1.5-3 2.5 6 1.5-3h3M9 21h6M12 17v4"/></svg>';b.onclick=()=>{location.href="app.html#diagnostico"};fila.append(b)}   // o Diagnóstico mora aqui dentro (Sigma, 07/11 11:42)app.append(fila,el("div","nomefila",ms.length+" máquinas e o Diagnóstico no fim · desliza pro lado"))
   requestAnimationFrame(()=>{const a=fila.children[i];if(a)fila.scrollTo({left:Math.max(0,a.offsetLeft-20),behavior:"smooth"})})
   const p=el("div","palco"),se=el("div","selos")
   const mc=m.robo?(ROBO[m.robo]?ROBO[m.robo][0]+" mora aqui":"PC"):MARCA[m.console]
