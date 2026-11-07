@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.84">
+<meta name="app-versao" content="2026-11-07.85">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -666,6 +666,16 @@ img.esq { min-height: 140px; }
 .mq-chips { display: flex; flex-wrap: wrap; gap: 6px; } .mq-chips span { font-size: 12.5px; padding: 5px 10px; border-radius: 999px; background: color-mix(in srgb, var(--fg) 6%, transparent); border: 1px solid var(--line); }
 .mq-falta li { color: var(--muted); }
 .mq-fotos { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; } .mq-fotos button { flex: none; width: 110px; height: 110px; border-radius: 14px; background: var(--paper) center / cover; border: 1px solid var(--line); }
+.gr-hero { display: flex; align-items: center; gap: 14px; padding: 16px; border-radius: 22px; color: #fff; background: radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--k1) 75%, transparent), transparent 65%), linear-gradient(160deg, color-mix(in srgb, var(--k1) 45%, #0B0B10), #0B0B10); box-shadow: 0 10px 30px color-mix(in srgb, var(--k1) 30%, transparent); }
+.gr-hero .gr-ic { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); flex: none; } .gr-hero .gr-ic svg { width: 30px; height: 30px; }
+.gr-hero b { display: block; font-size: 22px; font-weight: 900; } .gr-hero span { font-size: 13px; opacity: .85; }
+.gr-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.gr-grade .gr-item { min-height: 132px; } .gr-grade .gr-sub { display: block; font-size: 11.5px; opacity: .8; padding: 0 8px; text-align: center; line-height: 1.3; }
+.id-lista { display: flex; flex-direction: column; gap: 8px; } .id-card { border-radius: 14px; padding: 10px 12px; background: var(--paper); border: 1px solid var(--line); border-left: 4px solid var(--c, var(--accent)); }
+.id-card small { font-size: 11px; color: var(--muted); } .id-card p { margin: 2px 0 0; font-size: 15px; line-height: 1.4; }
+.id-nova { margin-top: auto; position: sticky; bottom: 0; display: flex; gap: 8px; align-items: flex-end; padding: 8px 64px 4px 0; background: var(--bg); }
+.id-nova textarea { flex: 1; min-width: 0; font: inherit; font-size: 15px; padding: 10px 14px; border-radius: 18px; border: 1px solid var(--line); background: var(--paper); color: var(--fg); resize: none; }
+.id-nova button { flex: none; width: 46px; height: 46px; border-radius: 50%; background: var(--c, var(--accent)); color: #fff; display: grid; place-items: center; }
 .cartao h3 { margin: 0 0 4px; font-size: 16px; } .cartao h4 { margin: 10px 0 2px; font-size: 14px; color: var(--accent); }
 .cartao ul { margin: 2px 0; padding-left: 18px; } .cartao li { margin: 2px 0; }
 .ag.perto { border: 2px solid var(--accent); }
@@ -3020,7 +3030,7 @@ const irGeral = document.getElementById('ir-geral'), irTrab = document.getElemen
 const painel = document.getElementById('painel'), pCorpo = document.getElementById('p-corpo'), pTit = document.getElementById('p-tit'), pExtra = document.getElementById('p-extra');
 let pilha = [], catalogo = null;
 const reais = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
-const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#EF4444'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia/i, '#F59E0B']];
+const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#EF4444'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#A855F7'], [/^listas/i, '#F59E0B'], [/ideia/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia/i, '#F59E0B']];
 function botaoGrade(ic, txt, sub, fn) {   // azulejo do Menu: ícone grande em cima, nome curto embaixo, na cor do assunto
   const b = document.createElement('button'); b.type = 'button'; b.className = 'p-azulejo'; if (sub) b.title = sub;
   const cor = (COR_ASSUNTO.find(([re]) => re.test(txt)) || [])[1]; if (cor) b.style.setProperty('--c', cor);
@@ -3157,9 +3167,7 @@ abreMenu.onclick = () => {
     let uso = {}; try { uso = JSON.parse(store.get('menu-uso') || '{}'); } catch (e) {}
     const conta = n => { uso[n] = (uso[n] || 0) + 1; try { store.set('menu-uso', JSON.stringify(uso)); } catch (e) {} };
     lerArquivo('menu/menu.json').then(t => JSON.parse(t).itens).catch(() => [{ tipo: 'catalogo', icone: 'bag', nome: 'Catálogo', sub: 'piscina, piso, borda, churrasqueira…' }])
-      .then(itens => itens.map((m, i) => [m, i]).sort((a, b) => (uso[b[0].nome] || 0) - (uso[a[0].nome] || 0) || a[1] - b[1])
-        .forEach(([m]) => lista.append(botaoGrade(m.icone, m.nome, m.sub, () => { conta(m.nome); abreItemMenu(m); }))))
-      .then(() => lista.append(botaoGrade('pulso', 'Diagnóstico', 'saúde dos 3 PCs e do app', abreDiagnostico)));   // junto com o resto: sem linha quase vazia
+      .then(itens => itens.forEach(m => lista.append(botaoGrade(m.icone, m.nome, m.sub, () => { conta(m.nome); abreItemMenu(m); }))));   // ordem do menu.json: a mão direita manda (o de todo dia embaixo à direita), não o uso
   });
 };
 // Diagnóstico (05/11/2026): só leitura, pra "tá lento / não chega" virar dado
@@ -3338,10 +3346,60 @@ function abreMaquina(x) {
     if ((x.falta || []).length) { d.append(elD('div', 'p-sec', 'A descobrir')); const ul = elD('ul', 'mq-falta'); x.falta.forEach(t => ul.append(elD('li', '', t))); d.append(ul); }
   });
 }
+// Grupo do Menu (May, 07/11/2026 11:36: "o que pode ser submenu engloba num total"): Mídia, Listas, Saúde... cada um com os itens dele, em azulejos grandes
+function abreGrupo(m) {
+  tela(m.nome, c => {
+    const cor = (COR_ASSUNTO.find(([re]) => re.test(m.nome)) || [])[1] || 'var(--accent)'; painel.style.setProperty('--c', cor);
+    const h = elD('div', 'gr-hero'); h.style.setProperty('--k1', cor); const ic = elD('span', 'gr-ic'); ic.innerHTML = icone(m.icone); const tx = elD('div'); tx.append(elD('b', '', m.nome), elD('span', '', m.sub || '')); h.append(ic, tx); c.append(h);
+    const g = elD('div', 'gr-grade'); c.append(g);
+    (m.itens || []).forEach(x => { const b = botaoGrade(x.icone, x.nome, x.sub, () => abreItemMenu(x)); b.classList.add('gr-item'); b.style.setProperty('--c', cor); const sb = elD('small', 'gr-sub', x.sub || ''); b.append(sb); g.append(b); });
+  });
+}
+// Ideias (May via Sigma, 07/11/2026): anotar rápido ideia do app, da casa ou de conteúdo; vira pauta pros robôs. Arquivo: m.arq, uma linha por ideia, a mais nova embaixo
+async function gravaLinha(arq, linha) {   // acrescenta 1 linha no fim do arquivo do Inst (lê o mais novo com o sha; 409 = alguém gravou junto, tenta de novo)
+  for (let t = 0; t < 4; t++) {
+    try {
+      const r = await api(apiDe(arq)); let atual = '', sha;
+      if (r.ok) { const j = await r.json(); sha = j.sha; atual = b64decode(j.content) || ''; } else if (r.status !== 404) throw erroDe(r.status);
+      const corpo = { message: 'Ideia nova pelo app', content: b64encode(atual.replace(/\s*$/, '\n') + linha + '\n') }; if (sha) corpo.sha = sha;
+      const w = await api(apiDe(arq), { method: 'PUT', body: JSON.stringify(corpo) });
+      if (w.ok) return true;
+      if (w.status !== 409 && w.status !== 422) return false;
+    } catch (e) { if (t === 3) return false; }
+    await new Promise(ok => setTimeout(ok, 600));
+  }
+  return false;
+}
+function abreIdeias(m) {
+  tela(m.nome, async c => {
+    const cor = (COR_ASSUNTO.find(([re]) => re.test(m.nome)) || [])[1] || 'var(--accent)'; painel.style.setProperty('--c', cor);
+    const caixa = elD('div', 'id-nova'), ta = elD('textarea'); ta.rows = 2; ta.placeholder = 'Anota a ideia (app, casa, conteúdo…)'; ta.enterKeyHint = 'send';
+    const env = elD('button'); env.type = 'button'; env.setAttribute('aria-label', 'Guardar ideia'); env.innerHTML = icone('reply');
+    const lista = elD('div', 'id-lista'), nota = elD('p', 'p-nota', 'Carregando…');
+    caixa.append(ta, env); c.append(nota, lista, caixa);
+    const desenha = (txt) => {
+      lista.replaceChildren();
+      const ls = String(txt || '').split(/\r?\n/).map(l => l.match(/^- \[([^\]]+)\]\s*(.+)$/)).filter(Boolean).reverse();
+      nota.textContent = ls.length ? ls.length + ' ideia' + (ls.length > 1 ? 's' : '') + ' · a mais nova em cima' : 'Nenhuma ideia ainda. Escreve embaixo.';
+      ls.forEach(([, q, t]) => { const d = elD('div', 'id-card'); d.append(elD('small', '', q), elD('p', '', t)); lista.append(d); });
+    };
+    let txt = ''; try { txt = await lerArquivo(m.arq); } catch (e) {} desenha(txt);
+    const manda = async () => {
+      const t = ta.value.trim().replace(/\s+/g, ' '); if (!t) return;
+      const d = new Date(), q = String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear() + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+      const linha = '- [' + q + '] ' + t; ta.value = ''; txt = txt.replace(/\s*$/, '\n') + linha; desenha(txt);
+      if (!(await gravaLinha(m.arq, linha))) { showNote('Não guardou: confere a internet e manda de novo.', true); ta.value = t; } else showNote('Ideia guardada');
+    };
+    env.onclick = manda; ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); manda(); } });
+  });
+}
 function abreItemMenu(m) {
   painel.style.setProperty('--c', (COR_ASSUNTO.find(([re]) => re.test(m.nome)) || [])[1] || 'var(--accent)');   // a tela fica na cor do assunto, igual o azulejo dela
   if (m.tipo === 'pagina') { location.href = m.arq; return; }   // página própria do app (ex.: jogos.html), volta pelo botão dela
   if (m.tipo === 'catalogo') return abreCatalogo();
+  if (m.tipo === 'grupo') return abreGrupo(m);
+  if (m.tipo === 'ideias') return abreIdeias(m);
+  if (m.tipo === 'diagnostico') return abreDiagnostico();
   if (m.tipo === 'maquinas') return abreMaquinas(m);
   if (m.tipo === 'imagens') return abreImagens(m);
   if (m.tipo === 'videos') return abreVideos(m);
@@ -4009,6 +4067,10 @@ sair.onclick = () => { store.set('gh-token', ''); token = ''; askToken(); };
 
 token = store.get('gh-token');
 token ? start() : askToken();
+if (location.hash === '#diagnostico') {   // veio da Máquinas: abre o Menu e já entra no Diagnóstico
+  history.replaceState(null, '', location.pathname + location.search);
+  const t0 = Date.now(), espera = setInterval(() => { if (FILE || Date.now() - t0 > 15000) { clearInterval(espera); if (FILE) { document.getElementById('abre-menu').click(); setTimeout(abreDiagnostico, 200); } } }, 100);
+}
 if (location.hash === '#menu') {   // voltou da tela Jogos (ou de outra página do Menu): cai direto no Menu, não na conversa (May, 06/11/2026 11:29)
   history.replaceState(null, '', location.pathname + location.search);
   const t0 = Date.now(), espera = setInterval(() => { if (FILE || Date.now() - t0 > 15000) { clearInterval(espera); if (FILE) document.getElementById('abre-menu').click(); } }, 100);

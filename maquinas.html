@@ -106,7 +106,8 @@ function monta(i){
   topo.append(ms2,el("span","tot",(t.jogados??"–")+" jogados · "+(t.zerados??"–")+" zerados"));app.append(topo)
   const fila=el("div","fila");ms.forEach((x,j)=>{const b=el("button","bloco"+(j===i?" ativo":""));b.style.setProperty("--c",cor(x));b.setAttribute("aria-label",x.nome)
     if(x.robo&&ROBO[x.robo]){const im=el("img");im.alt="";im.src=ROBO[x.robo][2];b.append(im)}else b.append(el("span","",CURTO[x.console]||x.nome.slice(0,4)))
-    b.onclick=()=>{if(j!==atual)monta(j)};fila.append(b)});app.append(fila,el("div","nomefila",ms.length+" máquinas · desliza pro lado"))
+    b.onclick=()=>{if(j!==atual)monta(j)};fila.append(b)});
+  {const b=el("button","bloco diag");b.style.setProperty("--c","#8B5CF6");b.setAttribute("aria-label","Diagnóstico: a saúde dos PCs");b.innerHTML='<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M6.5 11H9l1.5-3 2.5 6 1.5-3h3M9 21h6M12 17v4"/></svg>';b.onclick=()=>{location.href="app.html#diagnostico"};fila.append(b)}   // o Diagnóstico mora aqui dentro (Sigma, 07/11 11:42)app.append(fila,el("div","nomefila",ms.length+" máquinas e o Diagnóstico no fim · desliza pro lado"))
   requestAnimationFrame(()=>{const a=fila.children[i];if(a)fila.scrollTo({left:Math.max(0,a.offsetLeft-20),behavior:"smooth"})})
   const p=el("div","palco"),se=el("div","selos")
   const mc=m.robo?(ROBO[m.robo]?ROBO[m.robo][0]+" mora aqui":"PC"):MARCA[m.console]
