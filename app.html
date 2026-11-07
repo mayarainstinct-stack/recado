@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.111">
+<meta name="app-versao" content="2026-11-07.112">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -2951,7 +2951,9 @@ const ORDEM_POLEGAR = ['orfeu', 'hermes', 'sigma', 'nyx', 'lyra', 'todos', 'gabr
 function porUso(nomes) {   // o @ que ela mais usa fica mais perto do polegar (May 11:21 e 13:07, Sigma 13:17): conta nas mensagens dela da conversa aberta
   const conta = {}; (lastItems || []).forEach(it => { if (it.from !== 'may') return; (String(it.text || '').match(/@\w+/g) || []).forEach(x => { const k = x.slice(1).toLowerCase(); conta[k] = (conta[k] || 0) + 1; }); });
   const pos = n => { const i = ORDEM_POLEGAR.indexOf(n.toLowerCase()); return i < 0 ? 99 : i; };
-  return nomes.slice().sort((a, b) => (conta[b.toLowerCase()] || 0) - (conta[a.toLowerCase()] || 0) || pos(a) - pos(b));
+  const on = new Set(onlineGrupoLista.filter(p => fmtVisto(p.ultimaAtualizacao).online).map(p => ({ pc1: 'orfeu', pc2: 'nyx', pc3: 'vega', pc4: 'hermes' }[p.chave] || p.chave)));
+  const fora = n => n.toLowerCase() === 'todos' ? -1 : on.has(n.toLowerCase()) ? 0 : 1;   // @todos fica sempre no mesmo canto; quem tá online vem pra direita, offline pra esquerda (May, 07/11/2026 14:35)
+  return nomes.slice().sort((a, b) => fora(a) - fora(b) || (conta[b.toLowerCase()] || 0) - (conta[a.toLowerCase()] || 0) || pos(a) - pos(b));
 }
 function checaMencao() {
   const pos = box.selectionStart, antes = box.value.slice(0, pos);
