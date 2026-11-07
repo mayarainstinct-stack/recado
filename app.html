@@ -273,6 +273,9 @@ textarea:focus-visible { outline: none; }
 .aviso-curto { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 9999; display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: #1F2C34; color: #E9EDEF; font-size: 14.5px; font-weight: 600; box-shadow: 0 6px 20px rgba(0,0,0,.45); animation: entra .2s ease-out; }
 .aviso-curto svg.i { color: #4ADE80; }
 .video-cheio { display: block; width: 100%; max-height: 70vh; border-radius: 14px; background: #000; margin: 4px 0 10px; }
+.versao { margin: 0 0 22px; }
+.versao h3 { font-size: 15px; margin: 0 0 6px; }
+.versao .anim-cheia { display: block; width: 100%; max-height: 70vh; object-fit: contain; border-radius: 14px; background: #000; margin: 4px 0 6px; min-height: 180px; }
 .msg.may.eu.pendente.falhou { animation: none; }   /* não foi: para de girar */
 .msg.pendente.falhou { cursor: pointer; }
 .msg.pendente:not(.falhou) .copiar-msg { display: none; }   /* opções só no balão que não foi */
@@ -3450,19 +3453,38 @@ function abreVideos(m) {
       el.append(fotoDe({ nome: v.titulo, foto: v.capa }, { icone: 'video' }, false));
       const b = document.createElement('div'); b.className = 'i-corpo';
       const h = document.createElement('h3'); h.textContent = v.titulo; b.append(h);
-      const n = document.createElement('div'); n.className = 'det'; n.textContent = [v.duracao, v.nota].filter(Boolean).join(' · '); b.append(n);
+      const n = document.createElement('div'); n.className = 'det'; n.textContent = [v.duracao, v.nota, v.versoes && v.versoes.length ? (v.versoes.length + 1) + ' versões' : ''].filter(Boolean).join(' · '); b.append(n);
       el.append(b); el.onclick = () => abreVideo(v); c.append(el);
     });
   });
 }
+// versões em feed (May 07/11 10:28): a mais nova em cima, rolando aparecem as outras, cada uma só carrega quando chega perto da tela
 function abreVideo(v) {
+  const lista = [v, ...(v.versoes || [])];
   tela(v.titulo, c => {
-    const vd = document.createElement('video'); vd.controls = true; vd.playsInline = true; vd.setAttribute('playsinline', ''); vd.preload = 'metadata';
-    vd.className = 'video-cheio'; c.append(vd);
-    const st = document.createElement('p'); st.className = 'p-nota'; st.textContent = 'Carregando o vídeo…'; c.append(st);
-    if (v.capa) fotoUrl(v.capa).then(u => { vd.poster = u; }).catch(() => {});
-    fotoUrl(v.arq, true).then(u => { vd.src = u; st.textContent = v.nota || ''; if (!v.nota) st.remove(); }).catch(e => { st.textContent = e && e.status === 404 ? 'Esse vídeo ainda não subiu.' : 'Não consegui abrir o vídeo. Confere a internet.'; });
+    const ob = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => {
+      const el = e.target;
+      if (e.isIntersecting && !el.dataset.ok) { el.dataset.ok = '1'; carregaVersao(el); }
+      if (!e.isIntersecting && el.tagName === 'VIDEO' && !el.paused) el.pause();
+    }), { rootMargin: '300px 0px' }) : null;
+    lista.forEach((x, k) => {
+      const box = document.createElement('div'); box.className = 'versao';
+      if (lista.length > 1) { const h = document.createElement('h3'); h.textContent = x.versao || x.titulo; box.append(h); }
+      const anim = /\.(webp|gif)$/i.test(x.arq);
+      const el = document.createElement(anim ? 'img' : 'video');
+      if (anim) { el.className = 'anim-cheia'; el.alt = ''; } else { el.controls = true; el.playsInline = true; el.setAttribute('playsinline', ''); el.preload = 'metadata'; el.className = 'video-cheio'; }
+      el._v = x; box.append(el);
+      const st = document.createElement('p'); st.className = 'p-nota'; st.textContent = 'Carregando…'; box.append(st); el._st = st;
+      c.append(box);
+      if (k === 0 || !ob) { el.dataset.ok = '1'; carregaVersao(el); }
+      if (ob) ob.observe(el);
+    });
   });
+}
+function carregaVersao(el) {
+  const x = el._v, st = el._st, nota = [x.duracao, x.nota].filter(Boolean).join(' · ');
+  if (el.tagName === 'VIDEO' && x.capa) fotoUrl(x.capa).then(u => { el.poster = u; }).catch(() => {});
+  fotoUrl(x.arq, true).then(u => { el.src = u; st.textContent = nota; if (!nota) st.remove(); }).catch(e => { st.textContent = e && e.status === 404 ? 'Esse vídeo ainda não subiu.' : 'Não consegui abrir o vídeo. Confere a internet.'; });
 }
 function abreAlbum(g, m) {
   tela(g.nome, c => {
