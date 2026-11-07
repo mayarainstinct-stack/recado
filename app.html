@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.152">
-<meta name="app-novidade" content="Casa: pinça com dois dedos aproxima e afasta a planta">
+<meta name="app-versao" content="2026-11-07.153">
+<meta name="app-novidade" content="Contas do mês virou uma agenda própria, com as contas fixas (luz, água, internet) e a tua metade">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -794,6 +794,13 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 .fin-bar { display: block; height: 5px; border-radius: 999px; background: color-mix(in srgb, var(--fg) 10%, transparent); margin-top: 6px; overflow: hidden; } .fin-bar::before { content: ''; display: block; height: 100%; width: var(--p); background: #22C55E; border-radius: 999px; }
 .fin-falta { text-align: right; } .fin-falta small { display: block; font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; } .fin-falta b { font-size: 15px; font-variant-numeric: tabular-nums; color: #F59E0B; }
 .fin-mes { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; margin-bottom: 8px; border-radius: 14px; background: linear-gradient(135deg, rgba(245,158,11,.2), transparent); border: 1px solid rgba(245,158,11,.4); font-size: 13px; } .fin-mes b { font-size: 18px; color: #F59E0B; }
+.cm-topo { display: grid; gap: 2px; padding: 16px 18px; border-radius: 20px; background: linear-gradient(135deg, #16A34A, #065F46); color: #fff; box-shadow: 0 12px 28px rgba(22,163,74,.3); } .cm-topo span { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .85; } .cm-topo b { font-size: 32px; letter-spacing: -.02em; } .cm-topo small { font-size: 13px; opacity: .85; }
+.cm-lista { display: grid; gap: 8px; margin-top: 14px; } .cm-mes { margin: 10px 4px 2px; font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.cm-item { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 16px; background: var(--paper); border: 1px solid var(--line); } .cm-item.perto { border-color: #F59E0B; box-shadow: inset 4px 0 0 #F59E0B; }
+.cm-dia { display: grid; place-items: center; height: 56px; border-radius: 14px; background: color-mix(in srgb, #16A34A 16%, var(--bg)); } .cm-dia b { font-size: 22px; line-height: 1; } .cm-dia small { font-size: 11px; font-weight: 700; text-transform: uppercase; opacity: .7; }
+.cm-item.cm-parcela .cm-dia { background: color-mix(in srgb, #F59E0B 18%, var(--bg)); } .cm-meio { display: grid; gap: 2px; min-width: 0; } .cm-meio strong { font-size: 15px; } .cm-meio small { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.cm-chip { justify-self: start; padding: 1px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; background: #16A34A; color: #fff; } .cm-item.cm-parcela .cm-chip { background: #F59E0B; color: #1F1300; } .cm-perto { font-size: 11.5px; font-weight: 700; font-style: normal; color: #B45309; }
+.cm-val { font-weight: 800; font-size: 15px; white-space: nowrap; } .cm-bloco { margin-top: 12px; display: grid; gap: 6px; } .cm-mini { display: grid; gap: 2px; padding: 10px 12px; border-radius: 14px; border: 1px dashed var(--line); } .cm-mini small { font-size: 12px; color: var(--muted); }
 .fin-lancar { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(84px + env(safe-area-inset-bottom, 0px)); z-index: 6; width: auto; height: 48px; border-radius: 999px; padding: 0 18px; background: #F59E0B; color: #1A1203; font: inherit; font-weight: 900; box-shadow: 0 8px 22px rgba(245,158,11,.4); }
 .fin-hist { display: grid; gap: 6px; margin: 8px 0 12px; max-height: 40vh; overflow-y: auto; } .fin-hist div { display: grid; grid-template-columns: 84px auto 1fr; gap: 8px; font-size: 13px; text-align: left; } .fin-hist small { color: var(--muted); }
 .fin-form { display: grid; gap: 10px; } .fin-form select, .fin-form input { font: inherit; font-size: 16px; padding: 11px 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
@@ -4289,6 +4296,44 @@ function lancamentosDe(md, depois) {
     .map(x => ({ quando: new Date(+x[3], x[2] - 1, +x[1], +x[4], +x[5]).getTime(), data: x[1] + '/' + x[2] + '/' + x[3], tipo: x[6], nome: x[7], valor: parseFloat(x[8].replace(/\./g, '').replace(',', '.')), nota: x[9] || '' }))
     .filter(l => l.quando > depois);
 }
+// Contas do mês (May 18:40 e 18:32): uma agenda do que vence, cada conta no dia dela, com as parcelas dos empréstimos e as contas fixas (categoria própria).
+// Dados: contas/pendencias.json (parcelas) e contas/contas-fixas.json (luz, água, internet, veículos; a metade da casa é do Gabriel)
+function abreContasMes(m) {
+  tela(m.nome, async c => {
+    painel.style.setProperty('--c', '#16A34A'); c.classList.add('cm-tela');
+    const nota = elD('p', 'p-nota', 'Carregando as contas…'); c.append(nota);
+    let pd = { pagar: [] }, fx = { mensais: [], anuais: [] };
+    try { pd = JSON.parse(await lerArquivo('contas/pendencias.json')); } catch (e) {}
+    try { fx = JSON.parse(await lerArquivo('contas/contas-fixas.json')); } catch (e) {}
+    nota.remove();
+    const hoje = new Date(); hoje.setHours(0, 0, 0, 0); const SEM = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'], MES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+    const proxDia = n => { const d = new Date(hoje.getFullYear(), hoje.getMonth(), n); if (d < hoje) d.setMonth(d.getMonth() + 1); return d; };
+    const itens = [];
+    (pd.pagar || []).filter(x => x.falta > 0).forEach(x => { const ult = ((x.pagamentos || [])[(x.pagamentos || []).length - 1] || {}).valor || x.falta; itens.push({ quando: proxDia(x.dia || 6), nome: x.nome, cat: 'parcela', valor: Math.min(ult, x.falta), sub: 'falta ' + reaisFin(x.falta) + (x.dia ? '' : ' · dia 6, o padrão dela') }); });
+    (fx.mensais || []).filter(x => x.dia).forEach(x => itens.push({ quando: proxDia(x.dia), nome: x.nome, cat: 'fixa', valor: x.valor, sub: (x.metade ? 'tua metade ' + reaisFin(x.valor / 2) + ' · ' : '') + 'última: ' + (x.de || '') + (x.nota ? ' · ' + x.nota : '') }));
+    itens.sort((a, b) => a.quando - b.quando);
+    const fim = new Date(hoje.getFullYear(), hoje.getMonth() + 1, hoje.getDate()), noMes = itens.filter(x => x.quando < fim), tua = noMes.reduce((n, x) => n + (x.cat === 'fixa' ? x.valor / 2 : x.valor), 0);
+    cabecalho({ icone: 'calendar', sub: 'de hoje até ' + fim.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' }) });
+    const topo = elD('div', 'cm-topo'); topo.append(elD('span', '', 'Próximos 30 dias · tua parte'), elD('b', '', reaisFin(tua)), elD('small', '', noMes.length + ' contas · ' + noMes.filter(x => x.cat === 'parcela').length + ' parcelas e ' + noMes.filter(x => x.cat === 'fixa').length + ' fixas')); c.append(topo);
+    const lista = elD('div', 'cm-lista'); let mesAt = -1;
+    itens.forEach(x => {
+      if (x.quando.getMonth() !== mesAt) { mesAt = x.quando.getMonth(); lista.append(elD('h4', 'cm-mes', MES[mesAt])); }
+      const l = elD('div', 'cm-item cm-' + x.cat), dia = elD('div', 'cm-dia'), meio = elD('div', 'cm-meio'), dd = Math.round((x.quando - hoje) / 864e5);
+      dia.append(elD('b', '', String(x.quando.getDate())), elD('small', '', SEM[x.quando.getDay()]));
+      meio.append(elD('span', 'cm-chip', x.cat === 'fixa' ? 'conta fixa' : 'parcela'), elD('strong', '', x.nome), elD('small', '', x.sub));
+      l.append(dia, meio, elD('div', 'cm-val', reaisFin(x.valor)));
+      if (dd <= 3) l.classList.add('perto'); if (dd <= 3) meio.append(elD('em', 'cm-perto', dd === 0 ? 'vence hoje' : dd === 1 ? 'vence amanhã' : 'vence em ' + dd + ' dias'));
+      lista.append(l);
+    });
+    if (!itens.length) lista.append(elD('p', 'p-nota', 'Nada vencendo.'));
+    c.append(lista);
+    const semDia = (fx.mensais || []).filter(x => !x.dia), anuais = fx.anuais || [];
+    [['Sem dia anotado', semDia.map(x => [x.nome, reaisFin(x.valor) + (x.nota ? ' · ' + x.nota : '')])], ['Uma vez por ano', anuais.map(x => [x.nome, (x.mes ? 'vence em ' + x.mes + ' · ' : '') + (x.nota || '')])]].forEach(([t, xs]) => {
+      if (!xs.length) return; const b = elD('div', 'cm-bloco'); b.append(elD('h4', 'cm-mes', t)); xs.forEach(([n, v]) => { const l = elD('div', 'cm-mini'); l.append(elD('strong', '', n), elD('small', '', v)); b.append(l); }); c.append(b);
+    });
+    c.append(elD('p', 'p-nota', 'Parcelas: contas/pendencias.json (a planilha dela). Contas fixas: contas/contas-fixas.json; a metade da casa é do Gabriel.'));
+  });
+}
 function abreFinancas(m) {
   tela(m.nome, async c => {
     painel.style.setProperty('--c', '#F59E0B');
@@ -4305,7 +4350,7 @@ function abreFinancas(m) {
       box.replaceChildren();
       const fr = d.receber.reduce((n, x) => n + x.falta, 0), fp = d.pagar.reduce((n, x) => n + x.falta, 0);
       const k = elD('div', 'fin-kpis'); [['A receber', fr, 'rec'], ['A pagar', fp, 'pag'], ['Saldo', fr - fp, fr - fp >= 0 ? 'rec' : 'neg']].forEach(([t, v, cl]) => { const b = elD('div', 'fin-kpi ' + cl); b.append(elD('span', '', t), elD('b', '', reaisFin(v))); k.append(b); }); box.append(k);
-      const abas = [['receber', 'A receber'], ['pagar', 'A pagar'], ['contas', 'Contas do mês']], nav = elD('nav', 'fin-abas'), tr = elD('div', 'fin-trilho');
+      const abas = [['receber', 'A receber'], ['pagar', 'A pagar']], nav = elD('nav', 'fin-abas'), tr = elD('div', 'fin-trilho');
       const num = v => reaisFin(v).replace(/^R\$\s*/, ''), dia = x => ((x.pagamentos[x.pagamentos.length - 1] || {}).data || '').slice(0, 5);
       const celulas = (l, vs) => vs.forEach(([t, cl]) => l.append(elD('span', 'fin-c ' + (cl || ''), t)));
       const cabeca = cols => { const h = elD('div', 'fin-lin fin-cab'); celulas(h, cols.map((t, i) => [t, i ? '' : 'nome'])); return h; };
@@ -4316,13 +4361,6 @@ function abreFinancas(m) {
       };
       const pag = (lista, lado) => { const pg = elD('div', 'fin-pag'); const tb = elD('div', 'fin-tab'); tb.append(cabeca(['Quem', 'Total', lado === 'pagar' ? 'Pago' : 'Recebido', 'Falta', 'Último'])); lista.slice().sort((a, b) => b.falta - a.falta).forEach(x => tb.append(linhaDe(x, lado))); const tot = elD('div', 'fin-lin fin-tot'); celulas(tot, [['Total', 'nome'], [num(lista.reduce((n, x) => n + x.total, 0))], [num(lista.reduce((n, x) => n + x.pago, 0)), 'ok'], [num(lista.reduce((n, x) => n + x.falta, 0)), 'falta'], ['']]); tb.append(tot); pg.append(tb); return pg; };
       tr.append(pag(d.receber, 'receber'), pag(d.pagar, 'pagar'));
-      // Contas do mês: a próxima parcela de cada conta a pagar, pelo histórico dela (última parcela; vence dia 6, a regra dela de 07/11)
-      const hoje = new Date(), venceDia = n => new Date(hoje.getFullYear(), hoje.getMonth() + (hoje.getDate() > n ? 1 : 0), n), vence = venceDia(6), pc2 = elD('div', 'fin-pag'), tb2 = elD('div', 'fin-tab');   // cada conta no dia dela (Vô dia 5 e dia 20, May 13:54); sem dia = 6
-      const prox = d.pagar.filter(x => x.falta > 0).map(x => { const ult = (x.pagamentos[x.pagamentos.length - 1] || {}).valor || x.falta; return { x, parcela: Math.min(ult, x.falta), quando: venceDia(x.dia || 6) }; }).sort((a, b) => a.quando - b.quando);
-      const cab = elD('div', 'fin-mes'); cab.append(elD('span', '', 'Próximo vencimento: ' + (prox.length ? prox[0].quando : vence).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })), elD('b', '', reaisFin(prox.reduce((n, y) => n + y.parcela, 0)))); pc2.append(cab);
-      if (prox.length) tb2.append(cabeca(['Conta', 'Parcela', 'Vence', 'Falta', ''])); prox.forEach(({ x, parcela, quando }) => { const l = elD('button', 'fin-lin'); l.type = 'button'; celulas(l, [[x.nome, 'nome'], [num(parcela), 'falta'], [String(quando.getDate()).padStart(2, '0') + '/' + String(quando.getMonth() + 1).padStart(2, '0'), 'dia'], [num(x.falta)], ['']]); l.onclick = () => detalhe(x, 'pagar', parcela); tb2.append(l); });
-      if (!prox.length) tb2.append(elD('p', 'p-nota', 'Nada pra pagar. Tudo quitado.'));
-      pc2.append(tb2); tr.append(pc2);
       abas.forEach(([id, t], j) => { const b = elD('button', '', t); b.type = 'button'; b.onclick = () => tr.scrollTo({ left: j * tr.clientWidth, behavior: 'smooth' }); nav.append(b); });
       const marca = () => { const j = Math.round(tr.scrollLeft / Math.max(1, tr.clientWidth)); [...nav.children].forEach((b, x) => b.classList.toggle('on', x === j)); };
       tr.addEventListener('scroll', marca, { passive: true });
@@ -4367,7 +4405,7 @@ function abreItemMenu(m) {
   if (m.tipo === 'ideias') return abreIdeias(m);
   if (m.tipo === 'planta') return abrePlanta(m);
   if (m.tipo === 'obra') return abreObra(m);
-  if (m.tipo === 'financas') return abreFinancas(m);
+  if (m.tipo === 'financas') return m.aba === 'contas' ? abreContasMes(m) : abreFinancas(m);
   if (m.tipo === 'diagnostico') return abreDiagnostico();
   if (m.tipo === 'maquinas') return abreMaquinas(m);
   if (m.tipo === 'imagens') return abreImagens(m);
