@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.102">
+<meta name="app-versao" content="2026-11-07.103">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -726,6 +726,24 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 .gr-hero b { display: block; font-size: 22px; font-weight: 900; } .gr-hero span { font-size: 13px; opacity: .85; }
 .gr-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .gr-grade .gr-item { min-height: 132px; } .gr-grade .gr-sub { display: block; font-size: 11.5px; opacity: .8; padding: 0 8px; text-align: center; line-height: 1.3; }
+.ie-abas { display: flex; gap: 6px; padding: 4px; border-radius: 14px; background: var(--paper); border: 1px solid var(--line); flex: none; }
+.ie-abas button { flex: 1; width: auto; height: auto; padding: 9px 4px; border-radius: 10px; background: none; color: var(--muted); font: inherit; font-size: 13px; font-weight: 800; } .ie-abas button.on { background: #FACC15; color: #1F1A03; }
+.ie-trilho { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; margin: 10px -4px 0; padding: 0 4px; }
+.ie-quadro { display: flex; flex-direction: column; gap: 16px; padding: 14px 6px 24px; }
+.ie-post { --p: #FFFDF5; position: relative; color: #22190A; background: linear-gradient(172deg, var(--p), color-mix(in srgb, var(--p) 86%, #6B4E16)); border-radius: 2px 2px 16px 2px; padding: 20px 14px 12px; box-shadow: 0 1px 1px rgba(0,0,0,.12), 0 12px 18px -10px rgba(0,0,0,.55); transform: rotate(var(--r, 0deg)); touch-action: pan-y; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; cursor: grab; }
+.ie-post::before { content: ''; position: absolute; top: -9px; left: 50%; width: 70px; height: 20px; margin-left: -35px; background: rgba(255,255,255,.5); border-left: 1px dashed rgba(0,0,0,.08); border-right: 1px dashed rgba(0,0,0,.08); box-shadow: 0 1px 2px rgba(0,0,0,.18); transform: rotate(-3deg); }
+.ie-post.pegando { z-index: 5; cursor: grabbing; box-shadow: 0 2px 2px rgba(0,0,0,.1), 0 26px 40px -12px rgba(0,0,0,.65); }
+.ie-post.feito { opacity: .78; } .ie-post.feito .ie-txt { text-decoration: line-through; text-decoration-thickness: 1.5px; }
+.ie-num { position: absolute; top: 6px; right: 10px; font-size: 11px; font-weight: 800; opacity: .5; }
+.ie-txt { margin: 0; font-size: 15px; font-weight: 600; line-height: 1.32; }
+.ie-pe { display: flex; align-items: center; gap: 7px; margin-top: 10px; font-size: 12.5px; } .ie-pe b { font-weight: 800; }
+.ie-av { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; background: rgba(0,0,0,.12); } .ie-sem { opacity: .6; }
+.ie-est { margin-left: auto; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; background: rgba(0,0,0,.1); }
+.ie-est.ie-fazendo { background: #22190A; color: #FDE68A; } .ie-est.ie-fazendo::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: 5px; border-radius: 50%; background: #FACC15; vertical-align: 1px; animation: ie-pisca 1.4s ease-in-out infinite; }
+@keyframes ie-pisca { 50% { opacity: .25; } }
+.ie-det-txt { font-size: 16px; font-weight: 600; line-height: 1.4; margin: 4px 0 8px; text-align: left; } .ie-det .p-nota { text-align: left; }
+.ie-topo { margin-top: 10px; width: 100%; height: auto; padding: 12px; border-radius: 14px; font: inherit; font-weight: 800; background: #FACC15; color: #1F1A03; }
+.p-corpo > .tela.ie-tela { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 0; } .p-corpo > .tela.ie-tela > .ie-trilho { flex: 1 1 0; min-height: 0; } .id-nova.ie-nova { margin-top: 8px; padding-right: 0; } .id-nova.ie-nova button { background: #22C55E; }
 .id-lista { display: flex; flex-direction: column; gap: 8px; } .id-card { border-radius: 14px; padding: 10px 12px; background: var(--paper); border: 1px solid var(--line); border-left: 4px solid var(--c, var(--accent)); }
 .id-card small { font-size: 11px; color: var(--muted); } .id-card p { margin: 2px 0 0; font-size: 15px; line-height: 1.4; }
 .id-nova { margin-top: auto; position: sticky; bottom: 0; display: flex; gap: 8px; align-items: flex-end; padding: 8px 64px 4px 0; background: var(--bg); }
@@ -3540,28 +3558,112 @@ async function gravaLinha(arq, linha) {   // acrescenta 1 linha no fim do arquiv
   }
   return false;
 }
+async function gravaJson(arq, muda, msg) {   // lê o JSON mais novo com o sha, aplica a mudança e grava; 409 = alguém gravou junto, refaz em cima do novo
+  for (let t = 0; t < 4; t++) {
+    try {
+      const r = await api(apiDe(arq)); if (!r.ok) throw erroDe(r.status); const j = await r.json(), d = JSON.parse(b64decode(j.content)); muda(d);
+      const w = await api(apiDe(arq), { method: 'PUT', body: JSON.stringify({ message: msg, content: b64encode(JSON.stringify(d, null, 1) + '\n'), sha: j.sha }) });
+      if (w.ok) return d;
+      if (w.status !== 409 && w.status !== 422) return null;
+    } catch (e) { if (t === 3) return null; }
+    await new Promise(ok => setTimeout(ok, 600));
+  }
+  return null;
+}
+// Ideias = quadro de pedidos da casa (May, 07/11/2026 12:38 a 13:11): todo pedido dela vira post-it; branco = sem dono (o Sigma faz a triagem),
+// na cor do robô = já tem dono; de cima pra baixo = urgência, ela reordena segurando e arrastando; aba 1 esperando + fazendo, aba 2 concluídos
 function abreIdeias(m) {
+  const arq = /\.json$/.test(m.arq || '') ? m.arq : 'casa/ideias.json', ROBOS_IE = ['orfeu', 'nyx', 'vega', 'hermes', 'sigma', 'lyra'], GIRO = [-1.2, .8, -.5, 1.1, -.9, .6];
   tela(m.nome, async c => {
-    const cor = (COR_ASSUNTO.find(([re]) => re.test(m.nome)) || [])[1] || 'var(--accent)'; painel.style.setProperty('--c', cor);
-    const caixa = elD('div', 'id-nova'), ta = elD('textarea'); ta.rows = 2; ta.placeholder = 'Anota a ideia (app, casa, conteúdo…)'; ta.enterKeyHint = 'send';
-    const env = elD('button'); env.type = 'button'; env.setAttribute('aria-label', 'Guardar ideia'); env.innerHTML = icone('reply');
-    const lista = elD('div', 'id-lista'), nota = elD('p', 'p-nota', 'Carregando…');
-    caixa.append(ta, env); c.append(nota, lista, caixa);
-    const desenha = (txt) => {
-      lista.replaceChildren();
-      const ls = String(txt || '').split(/\r?\n/).map(l => l.match(/^- \[([^\]]+)\]\s*(.+)$/)).filter(Boolean).reverse();
-      nota.textContent = ls.length ? ls.length + ' ideia' + (ls.length > 1 ? 's' : '') + ' · a mais nova em cima' : 'Nenhuma ideia ainda. Escreve embaixo.';
-      ls.forEach(([, q, t]) => { const d = elD('div', 'id-card'); d.append(elD('small', '', q), elD('p', '', t)); lista.append(d); });
+    painel.style.setProperty('--c', '#FACC15'); c.classList.add('ie-tela');
+    const nota = elD('p', 'p-nota', 'Carregando o quadro…'); c.append(nota);
+    let d; try { d = JSON.parse(await lerArquivo(arq)); } catch (e) { nota.textContent = 'Não consegui abrir o quadro. Confere a internet.'; return; }
+    nota.remove();
+    const abas = [['quadro', 'Quadro'], ['feitos', 'Concluídos']], nav = elD('nav', 'ie-abas'), tr = elD('div', 'ie-trilho');
+    const caixa = elD('div', 'id-nova ie-nova'), ta = elD('textarea'); ta.rows = 1; ta.placeholder = 'Novo pedido (@Orfeu manda direto)'; ta.enterKeyHint = 'send';
+    const env = elD('button'); env.type = 'button'; env.setAttribute('aria-label', 'Pregar o post-it'); env.innerHTML = icone('reply'); caixa.append(ta, env);
+    c.append(nav, tr, caixa);
+    let aba = 'quadro';
+    const papel = p => { const g = GRUPO[p.dono]; return g ? 'color-mix(in srgb, ' + g.cor + ' 52%, #FFF8E7)' : '#FFFDF5'; };
+    const abertos = () => d.postits.filter(p => p.estado !== 'concluido').sort((a, b) => a.ordem - b.ordem);
+    const feitos = () => d.postits.filter(p => p.estado === 'concluido').sort((a, b) => b.ordem - a.ordem);
+    const pop = (titulo, corpo) => { const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card ie-card'), x = elD('button', 'pp-x'); x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; card.append(x, elD('div', 'pp-perg', titulo), corpo); ov.append(card); document.body.append(ov); fechaPuxando(ov, fecha, () => card, () => card); return fecha; };
+    const postit = (p, k) => {
+      const el = elD('div', 'ie-post' + (p.estado === 'concluido' ? ' feito' : '')), g = GRUPO[p.dono], gi = GIRO[k % GIRO.length];
+      el.dataset.id = p.id; el.dataset.r = gi; el.style.setProperty('--p', papel(p)); el.style.setProperty('--r', gi + 'deg');
+      const pe = elD('div', 'ie-pe');
+      if (g) { const av = fotoRobo(g); av.className = 'ie-av'; pe.append(av, elD('b', '', g.nome.replace(/\s*\(.*\)$/, ''))); } else pe.append(elD('b', 'ie-sem', 'sem dono'));
+      pe.append(elD('span', 'ie-est ie-' + p.estado, p.estado === 'concluido' ? 'concluído' : p.estado));
+      el.append(elD('small', 'ie-num', '#' + p.id), elD('p', 'ie-txt', p.texto), pe);
+      return el;
     };
-    let txt = ''; try { txt = await lerArquivo(m.arq); } catch (e) {} desenha(txt);
+    const detalhe = p => {
+      const cp = elD('div', 'ie-det'), g = GRUPO[p.dono];
+      cp.append(elD('p', 'ie-det-txt', p.texto), elD('p', 'p-nota', (g ? g.nome.replace(/\s*\(.*\)$/, '') : 'Sem dono: o Sigma faz a triagem') + ' · ' + (p.estado === 'concluido' ? 'concluído' : p.estado) + ' · ' + p.quando));
+      if (p.nota) cp.append(elD('p', 'p-nota', p.nota));
+      if (p.estado !== 'concluido' && abertos()[0] !== p) { const b = elD('button', 'ie-topo', 'Mais urgente: pro topo'); b.type = 'button'; b.onclick = () => { fecha(); const ids = abertos().map(x => x.id).filter(x => x !== p.id); ids.unshift(p.id); salvaOrdem(ids); pinta(); }; cp.append(b); }
+      const fecha = pop('Pedido #' + p.id, cp);
+    };
+    const salvaOrdem = async ids => {
+      const aplica = dd => { const base = Math.min(...dd.postits.filter(x => x.estado !== 'concluido').map(x => x.ordem), 1); ids.forEach((id, k) => { const x = dd.postits.find(y => y.id === id); if (x) x.ordem = base + k; }); };
+      aplica(d);
+      if (!(await gravaJson(arq, aplica, 'Quadro: May mudou a urgência pelo app'))) showNote('Não guardou a ordem: confere a internet.', true);
+    };
+    const pinta = () => {
+      nav.replaceChildren(); tr.replaceChildren();
+      abas.forEach(([id, rot]) => { const n = id === 'quadro' ? abertos().length : feitos().length, b = elD('button', aba === id ? 'on' : '', rot + ' · ' + n); b.type = 'button'; b.onclick = () => { if (aba === id) return; const dir = id === 'feitos' ? 1 : -1; aba = id; pinta(); entraDoLado(tr, dir); }; nav.append(b); });
+      const lista = aba === 'quadro' ? abertos() : feitos(), q = elD('div', 'ie-quadro');
+      if (!lista.length) q.append(elD('p', 'p-nota', aba === 'quadro' ? 'Quadro limpo. Escreve um pedido embaixo.' : 'Nada concluído ainda.'));
+      lista.forEach((p, k) => q.append(postit(p, k)));
+      tr.append(q);
+      q.addEventListener('click', e => { const el = e.target.closest('.ie-post'); if (!el || q.dataset.arrastou) return; const p = d.postits.find(x => x.id === el.dataset.id); if (p) detalhe(p); });
+      if (aba === 'quadro') arrastaPostits(q, ids => { salvaOrdem(ids); });
+    };
+    pinta();
+    arrastaAbas(tr, () => abas.findIndex(a => a[0] === aba), i => { aba = abas[i][0]; pinta(); }, abas.length);
     const manda = async () => {
       const t = ta.value.trim().replace(/\s+/g, ' '); if (!t) return;
-      const d = new Date(), q = String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear() + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-      const linha = '- [' + q + '] ' + t; ta.value = ''; txt = txt.replace(/\s*$/, '\n') + linha; desenha(txt);
-      if (!(await gravaLinha(m.arq, linha))) { showNote('Não guardou: confere a internet e manda de novo.', true); ta.value = t; } else showNote('Ideia guardada');
+      const mm = t.match(/@(\w+)/g) || [], dono = (mm.map(x => x.slice(1).toLowerCase()).find(x => ROBOS_IE.includes(x))) || '';
+      const dt = new Date(), quando = String(dt.getDate()).padStart(2, '0') + '/' + String(dt.getMonth() + 1).padStart(2, '0') + '/' + dt.getFullYear() + ' ' + String(dt.getHours()).padStart(2, '0') + ':' + String(dt.getMinutes()).padStart(2, '0');
+      const novo = dd => { const n = Math.max(0, ...dd.postits.map(x => parseInt(x.id, 10) || 0)) + 1, ord = Math.max(0, ...dd.postits.map(x => x.ordem)) + 1; const p = { id: String(n), texto: t, quando, estado: 'esperando', dono, ordem: ord, nota: '' }; dd.postits.push(p); return p; };
+      ta.value = ''; ta.style.height = ''; novo(d); aba = 'quadro'; pinta();
+      const q = tr.querySelector('.ie-quadro'); if (q && q.lastElementChild) { q.lastElementChild.scrollIntoView({ block: 'nearest' }); if (q.lastElementChild.animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) q.lastElementChild.animate([{ transform: 'translateY(40px) rotate(-6deg) scale(.9)', opacity: 0 }, { transform: 'rotate(' + q.lastElementChild.dataset.r + 'deg)', opacity: 1 }], { duration: 320, easing: 'cubic-bezier(.2,.9,.3,1.2)' }); }
+      const ok = await gravaJson(arq, dd => { novo(dd); }, 'Pedido novo da May pelo app');
+      if (!ok) { showNote('Não pregou: confere a internet e manda de novo.', true); ta.value = t; } else { d = ok; showNote(dono ? 'Post-it pro ' + GRUPO[dono].nome.replace(/\s*\(.*\)$/, '') : 'Post-it pregado: o Sigma dá o dono'); }
     };
     env.onclick = manda; ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); manda(); } });
+    ta.addEventListener('input', () => { ta.style.height = 'auto'; ta.style.height = Math.min(110, ta.scrollHeight) + 'px'; });
   });
+}
+// segurar o post-it (0,4 s) e arrastar pra cima ou pra baixo; os outros abrem espaço deslizando; soltou = nova ordem
+function arrastaPostits(q, salva) {
+  let el = null, y0 = 0, timer = 0, x0 = 0, inicio = null, mudou = false;
+  const semMov = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const desliza = (outro, antes) => { if (semMov || !outro.animate) return; const depois = outro.getBoundingClientRect().top, dy = antes - depois; if (dy) outro.animate([{ transform: 'translateY(' + dy + 'px) rotate(' + outro.dataset.r + 'deg)' }, { transform: 'rotate(' + outro.dataset.r + 'deg)' }], { duration: 200, easing: 'cubic-bezier(.2,.8,.2,1)' }); };
+  const poe = dy => { el.style.transform = 'translateY(' + dy + 'px) rotate(0deg) scale(1.04)'; };
+  q.addEventListener('pointerdown', e => {
+    const alvo = e.target.closest('.ie-post'); if (!alvo || e.button > 0) return;
+    x0 = e.clientX; y0 = e.clientY; inicio = alvo; mudou = false;
+    timer = setTimeout(() => { el = inicio; el.classList.add('pegando'); el.style.transition = 'box-shadow .2s'; poe(0); try { el.setPointerCapture(e.pointerId); } catch (er) {} if (navigator.vibrate) navigator.vibrate(15); }, 400);
+  });
+  q.addEventListener('pointermove', e => {
+    if (!el) { if (inicio && (Math.abs(e.clientY - y0) > 8 || Math.abs(e.clientX - x0) > 8)) { clearTimeout(timer); inicio = null; } return; }
+    let dy = e.clientY - y0; poe(dy);
+    const meio = el.getBoundingClientRect().top + el.offsetHeight / 2;
+    const ant = el.previousElementSibling, prox = el.nextElementSibling;
+    if (prox && prox.classList.contains('ie-post') && meio > prox.getBoundingClientRect().top + prox.offsetHeight / 2) { const a = prox.getBoundingClientRect().top, t0 = el.offsetTop; q.insertBefore(prox, el); desliza(prox, a); y0 += el.offsetTop - t0; mudou = true; poe(e.clientY - y0); }
+    else if (ant && ant.classList.contains('ie-post') && meio < ant.getBoundingClientRect().top + ant.offsetHeight / 2) { const a = ant.getBoundingClientRect().top, t0 = el.offsetTop; q.insertBefore(el, ant); desliza(ant, a); y0 += el.offsetTop - t0; mudou = true; poe(e.clientY - y0); }
+  });
+  const solta = () => {
+    clearTimeout(timer); inicio = null; if (!el) return;
+    const e1 = el; el = null; e1.classList.remove('pegando'); e1.style.transition = 'transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .2s'; e1.style.transform = ''; setTimeout(() => { e1.style.transition = ''; }, 260);
+    q.dataset.arrastou = '1'; setTimeout(() => { delete q.dataset.arrastou; }, 80);
+    [...q.querySelectorAll('.ie-post')].forEach((x, k) => { const gi = [-1.2, .8, -.5, 1.1, -.9, .6][k % 6]; x.dataset.r = gi; x.style.setProperty('--r', gi + 'deg'); });
+    if (mudou) salva([...q.querySelectorAll('.ie-post')].map(x => x.dataset.id));
+  };
+  q.addEventListener('pointerup', solta); q.addEventListener('pointercancel', solta);
+  q.addEventListener('touchmove', e => { if (el) e.preventDefault(); }, { passive: false });
+  q.addEventListener('contextmenu', e => { if (inicio || el) e.preventDefault(); });
 }
 // Planta da casa navegável (May, 07/11/2026 12:40: "clico no cômodo e vou navegando com zoom automático"): casa/planta-mapa.json em metros;
 // tocou no cômodo, a planta voa até ele (zoom) e embaixo aparece o que tem ali; "Casa inteira" volta
