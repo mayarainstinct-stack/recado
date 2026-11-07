@@ -8,7 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.136">
+<meta name="app-versao" content="2026-11-07.137">
+<meta name="app-novidade" content="Tarefas com Revisão, Casa com a planta em cima e as coisas desenhadas, e o Diário da obra com fotos">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -909,6 +910,9 @@ body.na-geral form textarea:focus { border-color: #FACC15; box-shadow: 0 0 0 3px
 .fixa { display: flex; flex-direction: column; gap: 6px; } .fixa > .msg { align-self: flex-start; max-width: 100%; margin: 0; }
 .fixa-barra { display: flex; align-items: center; gap: 8px; } .fixa-barra { flex-wrap: wrap; } .fixa-barra span { flex: 1 1 100%; font-size: 12.5px; color: var(--muted); }
 .treino-naovou { margin: 0 0 12px; }
+.novo-ver { position: fixed; z-index: 1200; top: calc(env(safe-area-inset-top, 0px) + 10px); left: 50%; width: min(420px, calc(100vw - 32px)); height: auto; display: grid; justify-items: start; gap: 2px; padding: 12px 16px; border-radius: 16px; background: var(--paper); color: var(--fg); border: 1.5px solid var(--accent); box-shadow: 0 14px 34px rgba(0,0,0,.35); text-align: left; font: inherit; transform: translateX(-50%); animation: nv-desce .42s cubic-bezier(.2,.9,.3,1.2) both; }
+.novo-ver b { font-size: 13px; font-weight: 900; color: var(--accent); } .novo-ver span { font-size: 14px; line-height: 1.35; } .novo-ver.sai { animation: nv-sobe .3s cubic-bezier(.5,0,.8,.4) forwards; }
+@keyframes nv-desce { from { transform: translate(-50%, calc(-100% - 30px)); } to { transform: translateX(-50%); } } @keyframes nv-sobe { to { transform: translate(-50%, calc(-100% - 30px)); } }   /* entra descendo e sai subindo pelo topo, sem fade */
 .fixa-pop { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 16px; background: rgba(0,0,0,.5); }
 .fixa-pop ~ .fixa-pop { padding: 16px 34px; } .fixa-pop ~ .fixa-pop .pp-card { width: min(400px, 100%); } .fixa-pop ~ .fixa-pop ~ .fixa-pop { padding: 16px 52px; } .fixa-pop ~ .fixa-pop ~ .fixa-pop .pp-card { width: min(360px, 100%); }   /* popup em cima de popup: o de cima mais estreito e centralizado, pra ver o de trás (May, 07/11/2026 17:11, regra) */
 .pp-card { --quem: var(--accent); position: relative; width: min(440px, 100%); background: var(--paper); border-radius: 24px; padding: 22px 16px 16px; border: 2px solid color-mix(in srgb, var(--quem) 70%, transparent); box-shadow: 0 24px 60px rgba(0,0,0,.45); text-align: center; animation: pop-sobe .26s cubic-bezier(.2,.8,.2,1.15); }
@@ -4974,6 +4978,9 @@ function start() {
 // Volta pra página: busca o que chegou (sem recarregar: o reload perdia fotos na bandeja, áudio, citação e nota).
 // Recarrega só se o app.html publicado é de outra versão e não tem nada pela metade (05/11/2026).
 const VERSAO = (document.querySelector('meta[name="app-versao"]') || {}).content || '';
+{ const NOV = (document.querySelector('meta[name="app-novidade"]') || {}).content || '', vista = store.get('versao-vista');   // balão de atualizado: o número da versão e uma frase do que mudou (#34); desce do topo e sobe de volta
+  if (VERSAO && vista && vista !== VERSAO && NOV) setTimeout(() => { const b = document.createElement('button'); b.type = 'button'; b.className = 'novo-ver'; b.append(document.createElement('b'), document.createElement('span')); b.firstChild.textContent = 'Atualizado · versão ' + VERSAO.split('.').pop(); b.lastChild.textContent = NOV; document.body.append(b); const sai = () => { if (b.classList.contains('sai')) return; b.classList.add('sai'); setTimeout(() => b.remove(), 320); }; b.onclick = sai; setTimeout(sai, 7000); }, 1200);
+  if (VERSAO) store.set('versao-vista', VERSAO); }
 async function versaoNova() {
   try { const r = await fetch('app.html', { cache: 'no-cache' }); if (!r.ok) return false; const m = (await r.text()).match(/<meta name="app-versao" content="([^"]+)"/); return !!(m && VERSAO && m[1] !== VERSAO); } catch (e) { return false; }
 }
