@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.72">
+<meta name="app-versao" content="2026-11-07.73">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -535,6 +535,22 @@ img.esq { min-height: 140px; }
 .pcd-val { padding: 7px 8px; border-radius: 10px; font-size: 13px; font-weight: 600; line-height: 1.3; background: color-mix(in srgb, var(--ec) 14%, transparent); border-left: 3px solid var(--ec); }
 .pcd-val.neutro { background: color-mix(in srgb, var(--fg) 6%, transparent); border-left-color: transparent; }
 @media (prefers-reduced-motion: reduce) { .pcd-dq { transition: none; } }
+.bi-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
+.bi-kpi { background: color-mix(in srgb, var(--fg) 5%, transparent); border-radius: 12px; padding: 10px 12px; min-width: 0; }
+.bi-kpi span { display: block; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.bi-kpi b { display: block; font-size: 30px; line-height: 1.1; letter-spacing: -.02em; margin-top: 2px; font-variant-numeric: tabular-nums; }
+.bi-kpi small { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); } .bi-kpi small i { width: 8px; height: 8px; border-radius: 50%; background: var(--ec); flex: none; }
+.bi-graf { margin-top: 14px; } .bi-graf h5 { margin: 0 0 2px; font-size: 14px; } .bi-graf > p { margin: 0 0 8px; font-size: 12px; color: var(--muted); }
+.bi-lin { display: grid; grid-template-columns: 44px 1fr; align-items: center; gap: 8px; margin: 5px 0; font-size: 12px; font-weight: 700; color: var(--muted); }
+.bi-tri { position: relative; height: 18px; border-left: 1px solid var(--line); }
+.bi-bar { position: absolute; left: 0; top: 2px; height: 14px; width: var(--w); min-width: 2px; border-radius: 0 4px 4px 0; background: var(--bc, color-mix(in srgb, var(--fg) 62%, transparent)); }
+.bi-bar.fraca { --bc: color-mix(in srgb, var(--fg) 26%, transparent); }
+.bi-val { position: absolute; top: 0; left: calc(var(--w) + 6px); font-size: 12px; font-weight: 700; color: var(--fg); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.bi-tri.dupla { height: 30px; } .bi-tri.dupla .bi-bar { height: 11px; } .bi-tri.dupla .bi-bar.fraca { top: 16px; } .bi-tri.dupla .bi-val.fraca { top: 14px; color: var(--muted); }
+.bi-leg { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin: 0 0 6px; } .bi-leg span { display: flex; align-items: center; gap: 6px; }
+.bi-leg i { width: 12px; height: 8px; border-radius: 2px; background: color-mix(in srgb, var(--fg) 62%, transparent); } .bi-leg i.fraca { background: color-mix(in srgb, var(--fg) 26%, transparent); }
+.bi-multi { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.bi-multi .bi-lin { grid-template-columns: 28px 1fr; gap: 4px; font-size: 11px; } .bi-multi h6 { margin: 0; font-size: 12px; }
 .cartao h3 { margin: 0 0 4px; font-size: 16px; } .cartao h4 { margin: 10px 0 2px; font-size: 14px; color: var(--accent); }
 .cartao ul { margin: 2px 0; padding-left: 18px; } .cartao li { margin: 2px 0; }
 .ag.perto { border: 2px solid var(--accent); }
@@ -3028,6 +3044,45 @@ function cartaoPc(p) {
   [['feito', 'Feito', ''], ['falta', 'Falta', ''], ['peca', 'Só peça resolve', 'peca']].forEach(([k, t, cls]) => { if (!(p[k] || []).length) return; d.append(elD('h4', cls, t)); const ul = elD('ul'); p[k].forEach(i => ul.append(elD('li', '', i))); d.append(ul); });
   return d;
 }
+// Painel de indicadores do Comparar (May, 07/11/2026 09:51: "bem indicadores, bem análise, bem Power BI"): números grandes em cima,
+// barras de um tom só (a cor fica pros estados), valor na ponta de cada barra; dados em dia.indicadores
+function barras(lista, max, fmt, dupla, escala = 78) {   // lista = [[rótulo, valor, valor2?]]; escala = % da trilha que a maior ocupa (sobra lugar pro número)
+  const box = elD('div');
+  lista.forEach(([rot, v, v2]) => {
+    const ln = elD('div', 'bi-lin'), tri = elD('div', 'bi-tri' + (dupla ? ' dupla' : '')); ln.append(elD('span', '', rot));
+    [[v, ''], ...(dupla ? [[v2, ' fraca']] : [])].forEach(([x, f]) => {
+      const w = (max ? Math.max(0, x) / max * escala : 0).toFixed(1) + '%', b = elD('i', 'bi-bar' + f), t = elD('span', 'bi-val' + f, fmt(x));
+      b.style.setProperty('--w', w); t.style.setProperty('--w', w); tri.append(b, t);
+    });
+    ln.append(tri); box.append(ln);
+  });
+  return box;
+}
+function painelPcs(dia) {
+  const ind = dia.indicadores; if (!ind) return null;
+  const d = elD('div', 'pcd pcd-cmp'), k = elD('div', 'bi-kpis'), soma = c => ind.pcs.reduce((n, p) => n + (p[c] || 0), 0);
+  const emOrdem = dia.pcs.filter(p => p.estado === 'ok').length, ruins = dia.pcs.filter(p => p.estado !== 'ok').map(p => p.pc);
+  const tile = (rot, val, nota, tom) => { const t = elD('div', 'bi-kpi'); t.append(elD('span', '', rot), elD('b', '', val)); if (nota) { const sm = elD('small'), i = elD('i'); i.style.setProperty('--ec', TOM_PC[tom] || 'var(--muted)'); sm.append(i, nota); t.append(sm); } k.append(t); };
+  tile('PCs em ordem', emOrdem + ' de ' + dia.pcs.length, ruins.length ? 'olhar: ' + ruins.join(', ') : 'todos bem', ruins.length ? 'atencao' : 'ok');
+  tile('Espaço livre', Math.round(soma('livre')) + ' GB', 'somando os 3 C:', '');
+  const qd = ind.pcs.filter(p => p.quedas), ds = soma('desligou');
+  tile('Driver de vídeo caiu', String(soma('quedas')), qd.length ? '30 dias · ' + qd.map(p => p.pc).join(', ') : '30 dias · nenhum', soma('quedas') ? 'atencao' : 'ok');
+  tile('Desligou na marra', String(ds), '30 dias · os 3 PCs', ds > 10 ? 'ruim' : ds ? 'atencao' : 'ok');
+  d.append(k);
+  const g1 = elD('div', 'bi-graf'); g1.append(elD('h5', '', 'Espaço livre no C:'), elD('p', '', 'GB livres de ' + ind.pcs[0].total + ' GB em cada um'), barras(ind.pcs.map(p => [p.pc, p.livre]), Math.max(...ind.pcs.map(p => p.total)), v => String(v).replace('.', ',') + ' GB')); d.append(g1);
+  const g2 = elD('div', 'bi-graf'), mm = elD('div', 'bi-multi'); g2.append(elD('h5', '', 'Problemas em 30 dias'), elD('p', '', 'quantas vezes aconteceu em cada PC'));
+  [['quedas', 'Driver caiu'], ['desligou', 'Desligou na marra'], ['whea', 'Erro de hardware']].forEach(([c, t]) => { const col = elD('div'), mx = Math.max(1, ...ind.pcs.map(p => p[c] || 0)); col.append(elD('h6', '', t), barras(ind.pcs.map(p => [p.pc, p[c] || 0]), mx, String, false, 55)); mm.append(col); });
+  g2.append(mm); d.append(g2);
+  if (ind.fps) {
+    const f = ind.fps, g3 = elD('div', 'bi-graf'), lg = elD('div', 'bi-leg'), mx = Math.max(...f.series.flatMap(x => x.v));
+    g3.append(elD('h5', '', f.titulo), elD('p', '', f.sub));
+    f.series.forEach((x, i) => { const sp = elD('span'), sw = elD('i', i ? 'fraca' : ''); sp.append(sw, x.nome); lg.append(sp); }); g3.append(lg);
+    g3.append(barras(f.cenas.map((c, i) => [c, f.series[0].v[i], f.series[1].v[i]]), mx, v => v + ' FPS', true));
+    const md = x => Math.round(x.v.reduce((a, b) => a + b, 0) / x.v.length); g3.append(elD('p', '', 'Média: ' + f.series.map(x => x.nome + ' ' + md(x) + ' FPS').join(' · ')));
+    d.append(g3);
+  }
+  return d;
+}
 function comparaPcs(dia) {   // os 3 lado a lado, uma linha por medida; a cor diz se tá bom (verde), de olho (amarelo) ou ruim (vermelho)
   const d = elD('div', 'pcd pcd-cmp'), cab = elD('div', 'pcd-lin pcd-cab');
   dia.pcs.forEach(p => { const g = GRUPO[p.robo] || TRAB_NEUTRO, h = elD('div'); h.style.setProperty('--rc', g.cor); h.append(fotoRobo(g), elD('b', '', p.pc)); cab.append(h); }); d.append(cab);
@@ -3044,7 +3099,7 @@ function montaDiaPcs(caixa, dia) {
     const g = p && (GRUPO[p.robo] || TRAB_NEUTRO), b = elD('button'); b.type = 'button'; b.dataset.cor = g ? g.cor : '';
     if (g) b.append(fotoRobo(g)); else b.insertAdjacentHTML('beforeend', icone('chart')); b.append(elD('span', '', rot));
     b.onclick = () => trilho.scrollTo({ left: i * trilho.clientWidth, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); nav.append(b);
-    const pg = elD('div', 'pcd-pag'); pg.append(p ? cartaoPc(p) : comparaPcs(dia)); trilho.append(pg);
+    const pg = elD('div', 'pcd-pag'); if (p) pg.append(cartaoPc(p)); else { const bi = painelPcs(dia); pg.className += ' p-lista'; if (bi) pg.append(bi); pg.append(comparaPcs(dia)); } trilho.append(pg);
   });
   let at = -1; const marca = i => {   // o destaque desliza até a aba da página que tá na tela
     const bs = nav.querySelectorAll('button'), b = bs[i]; if (!b || i === at) return; at = i;
