@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.88">
+<meta name="app-versao" content="2026-11-07.89">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -678,6 +678,17 @@ img.esq { min-height: 140px; }
 .id-nova { margin-top: auto; position: sticky; bottom: 0; display: flex; gap: 8px; align-items: flex-end; padding: 8px 64px 4px 0; background: var(--bg); }
 .id-nova textarea { flex: 1; min-width: 0; font: inherit; font-size: 15px; padding: 10px 14px; border-radius: 18px; border: 1px solid var(--line); background: var(--paper); color: var(--fg); resize: none; }
 .id-nova button { flex: none; width: 46px; height: 46px; border-radius: 50%; background: var(--c, var(--accent)); color: #fff; display: grid; place-items: center; }
+/* Geral = casa, "cara de não estou trabalhando" (May, 07/11/2026 12:00): grafite sempre, barra chanfrada com as 3 cores dela, envio em vidro escuro */
+body.na-geral { --bg: #121419; --paper: #171A20; --fg: #F1F5F9; --muted: #9AA3B2; --line: #2A2F38; --theirs: #20242C; --cinza: #22262E; --head: #1B1E24; --head-fg: #F8FAFC; color-scheme: dark; }
+body.na-geral .app { background: #121419; }
+body.na-geral header { background: linear-gradient(160deg, #262A33, #16181E 70%); border-radius: 0; box-shadow: 0 8px 24px rgba(0,0,0,.45);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px)); }
+body.na-geral header::after { content: ''; position: absolute; left: 14px; right: 14px; bottom: 0; height: 3px; border-radius: 2px; background: linear-gradient(90deg, #E31B23, #FACC15 50%, #22C55E); box-shadow: 0 0 10px rgba(250,204,21,.45); }
+body.na-geral #feed { background: radial-gradient(70% 40% at 0% 0%, rgba(227,27,35,.08), transparent 70%), radial-gradient(70% 40% at 100% 100%, rgba(34,197,94,.07), transparent 70%), radial-gradient(rgba(255,255,255,.035) 1px, transparent 1.4px) 0 0 / 18px 18px, #121419; }
+body.na-geral .day { background: #1C1F26; border-color: #2E333D; color: #AEB6C4; }
+body.na-geral form { background: rgba(23,26,32,.94); border-top: 0; box-shadow: 0 -1px 0 #2A2F38, 0 -10px 24px rgba(0,0,0,.35); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+body.na-geral form textarea { background: #1F232B; color: #F1F5F9; border: 1px solid #323844; border-radius: 22px; }
+body.na-geral form textarea:focus { border-color: #FACC15; box-shadow: 0 0 0 3px rgba(250,204,21,.18); outline: none; }
 .cartao h3 { margin: 0 0 4px; font-size: 16px; } .cartao h4 { margin: 10px 0 2px; font-size: 14px; color: var(--accent); }
 .cartao ul { margin: 2px 0; padding-left: 18px; } .cartao li { margin: 2px 0; }
 .ag.perto { border: 2px solid var(--accent); }
@@ -2992,6 +3003,7 @@ function abrir(c) {
   store.set('ultima-conv', c.arq); store.set('ultima-nome', c.nome);
   irGeral.hidden = c.arq === GERAL.arq; irTrab.hidden = c.arq === TRAB.arq; abreMenu.hidden = c.arq !== GERAL.arq;   // Trabalho é só trabalho; Casa juntada na Geral (pedido dela, 02/11/2026)
   if (typeof ocultosConversa !== 'undefined') ocultosConversa = null;
+  document.body.classList.toggle('na-geral', c.arq === GERAL.arq);   // a Geral tem cara de casa (grafite, gamer); o Trabalho fica simples e sério (May, 07/11/2026 12:00)
   FILE = c.arq; API = apiDe(c.arq); nomeConv = c.nome; fotoConv = c.foto || (conversas.find(x => x.arq === c.arq) || {}).foto || '';
   logoEl.style.backgroundImage = ''; convAv.style.backgroundImage = ''; convAv.hidden = true;
   if (fotoConv) fotoUrl(fotoConv).then(u => { if (FILE === c.arq) { logoEl.style.backgroundImage = 'url(' + u + ')'; convAv.style.backgroundImage = 'url(' + u + ')'; convAv.hidden = false; } }).catch(() => {});
