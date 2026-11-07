@@ -22,6 +22,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .topo .marca-sis i{width:10px;height:10px;border-radius:3px;background:var(--k1);box-shadow:0 0 10px var(--k1);transform:rotate(45deg)}
 .topo .tot{margin-left:auto;font-size:12px;color:var(--texto3)}
 /* a fileira de máquinas, igual à tela inicial de um console */
+#fundo.marca{background-size:120px 120px;background-repeat:repeat;background-position:center;background-color:color-mix(in srgb,var(--k1) 35%,#070A14)}
+.card .logo{position:absolute;right:-14px;top:-10px;width:116px;height:116px;opacity:.26;object-fit:contain;transform:rotate(-8deg)}.card .logo-txt{position:absolute;right:6px;top:-4px;font-size:64px;font-weight:800;font-style:italic;opacity:.2;letter-spacing:-.04em}
 .grade{flex:1;min-height:0;overflow-y:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:6px 16px 24px;align-content:start;animation:entra .32s cubic-bezier(.2,.8,.2,1)}
 .card{position:relative;overflow:hidden;min-height:132px;border-radius:20px;padding:12px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;text-align:left;color:#fff;font:inherit;cursor:pointer;background:linear-gradient(150deg,color-mix(in srgb,var(--c) 85%,#000),color-mix(in srgb,var(--c) 35%,#000));border:1px solid rgba(255,255,255,.18);box-shadow:0 10px 24px color-mix(in srgb,var(--c) 30%,transparent)}
 .card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.45}.card img.rob{inset:auto 8px 8px auto;width:58px;height:58px;opacity:.95;object-fit:contain}
@@ -93,6 +95,8 @@ const CURTO={ps1:"PS1",ps2:"PS2",ps4:"PS4",switch:"Switch","3ds":"3DS",snes:"SNE
 const GERACAO={snes:"4ª geração",ps1:"5ª geração",ps2:"6ª geração",x360:"7ª geração",ps4:"8ª geração",switch:"8ª geração","3ds":"8ª geração"},SELO={"3ds":"portátil",switch:"híbrido"}
 const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
 const fotos={}
+const MARCA_SVG={ps1:"playstation",ps2:"playstation",ps4:"playstation",ps5:"playstation",switch:"switch","3ds":"3ds",snes:"snes",n64:"n64"},svgs={}
+function logo(x){const k=x.robo?"pc":MARCA_SVG[x.console];if(!k)return Promise.reject();if(svgs[k])return svgs[k];return svgs[k]=gh("marca/consoles/"+k+".svg",true).then(r=>{if(!r.ok)throw 0;return r.text()}).then(t=>"data:image/svg+xml;charset=utf-8,"+encodeURIComponent(t.replace(/currentColor/g,"#ffffff").replace(/color="[^"]*"/,'color="#ffffff"')))}
 function foto(p){if(!p)return Promise.reject();if(fotos[p])return fotos[p];return fotos[p]=gh(p,true).then(r=>{if(!r.ok)throw 0;return r.blob()}).then(b=>URL.createObjectURL(b))}
 const cor=m=>m.robo&&ROBO[m.robo]?ROBO[m.robo][1]:(m.cor||"#4F46E5")
 const app=document.getElementById("app"),fundo=document.getElementById("fundo")
@@ -109,7 +113,8 @@ function grade(){
   const topo=el("div","topo"),ms2=el("div","marca-sis");ms2.append(el("i"),"Minha coleção");const t=D.total||{}
   topo.append(ms2,el("span","tot",D.maquinas.length+" máquinas · "+(t.zerados??"–")+" zerados"));app.append(topo)
   const g=el("div","grade");D.maquinas.forEach((x,j)=>{const b=el("button","card");b.style.setProperty("--c",cor(x));b.setAttribute("aria-label",x.nome)
-    if(x.robo&&ROBO[x.robo]){const im=el("img","rob");im.alt="";im.src=ROBO[x.robo][2];b.append(im)}else if((x.fotos||[])[0]){const im=el("img");im.alt="";b.append(im);foto(x.fotos[0]).then(u=>{im.src=u}).catch(()=>im.remove())}
+    {const lg=el("img","logo");lg.alt="";b.append(lg);logo(x).then(u=>{lg.src=u}).catch(()=>{lg.replaceWith(el("span","logo-txt",CURTO[x.console]||""))})}
+    if(x.robo&&ROBO[x.robo]){const im=el("img","rob");im.alt="";im.src=ROBO[x.robo][2];b.append(im)}
     const st=x.stats;b.append(el("span","cur",CURTO[x.console]||(x.robo?"PC":"")),el("b","",x.nome),el("small","",st?(st.zerados||0)+" zerados · "+(st.jogos||0)+" jogos":(x.modelo||x.papel||"")))
     b.onclick=()=>monta(j);g.append(b)})
   {const b=el("button","card");b.style.setProperty("--c","#8B5CF6");b.append(el("span","cur","PCs"),el("b","","Diagnóstico"),el("small","","a saúde dos PCs"));b.onclick=()=>{location.href="app.html#diagnostico"};g.append(b)}
@@ -118,7 +123,7 @@ function grade(){
 function monta(i){
   atual=i;const ms=D.maquinas,m=ms[i],k=cor(m);try{sessionStorage.setItem("maq-atual",m.id)}catch(e){}
   document.documentElement.style.setProperty("--k1",k)
-  fundo.style.backgroundImage="none";foto((m.fotos||[])[0]).then(u=>{if(atual===i)fundo.style.backgroundImage="url("+u+")"}).catch(()=>{})
+  fundo.style.backgroundImage="none";fundo.classList.remove("marca");logo(m).then(u=>{if(atual===i){fundo.style.backgroundImage="url("+u+")";fundo.classList.add("marca")}}).catch(()=>{})   // fundo = o logo da marca repetido, não a foto (May 18:45); as fotos ficam na aba Fotos
   app.replaceChildren()
   const topo=el("div","topo"),vt=el("button","volta-col","← Coleção");vt.onclick=grade;const t=D.total||{}
   topo.append(vt,el("span","tot",(t.zerados??"–")+" zerados"));app.append(topo)
