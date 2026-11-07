@@ -253,8 +253,8 @@ table.tb { width: 100%; border-collapse: collapse; font-size: 13px; } .tb th { f
 .menu-azul { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 .menu-azul .t { display: flex; flex-direction: column; gap: 8px; align-items: center; font: 900 10px "Arial Black", sans-serif; letter-spacing: .04em; text-align: center; }
 .trilho { position: relative; height: 14px; background: #1a1a1d; box-shadow: inset 0 0 0 1px #2a2a2e; clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px); }
-.trilho > i { position: absolute; left: 0; top: 0; bottom: 0; width: var(--w, 50%); --c2: var(--cor); background: repeating-linear-gradient(-45deg, rgba(255,255,255,.28) 0 6px, rgba(0,0,0,.18) 6px 12px), linear-gradient(90deg, var(--cor), var(--c2)); clip-path: polygon(7px 0, 100% 0, calc(100% - 7px) 100%, 0 100%, 0 7px); filter: drop-shadow(0 0 5px var(--c2)); }
-.trilho.ouro > i { --c2: color-mix(in srgb, var(--cor) calc((1 - var(--p)) * 100%), #E3B341); }
+.trilho > i { position: absolute; left: 0; top: 0; bottom: 0; width: var(--w, 50%); --c2: var(--cor); background: repeating-linear-gradient(-45deg, rgba(255,255,255,.32) 0 6px, transparent 6px 12px), var(--c2); clip-path: polygon(7px 0, 100% 0, calc(100% - 7px) 100%, 0 100%, 0 7px); filter: drop-shadow(0 0 5px var(--c2)); }
+.trilho.ouro > i { --c2: color-mix(in oklch, var(--cor) calc((1 - var(--p)) * 100%), #FFC234); }
 .trilho.corre > i { animation: corre-listra .6s linear infinite; background-size: 17px 17px, 100% 100%; }
 @keyframes corre-listra { to { background-position: 17px 0, 0 0; } }
 .hbar { display: grid; grid-template-columns: 64px 1fr 52px; align-items: center; gap: 12px; }
@@ -341,7 +341,7 @@ table.tb { width: 100%; border-collapse: collapse; font-size: 13px; } .tb th { f
 <div class="sec"><div class="tit"><span class="n">05</span><h2>Botões</h2><span class="listras h"><i></i><i></i><i></i></span></div>
 <div class="botoes"><button class="bt">PRINCIPAL</button><button class="bt sec2">SECUNDÁRIO</button><button class="bt perigo">APAGAR</button></div>
 <div class="peca"><span class="rot">Botão de ação flutuante <span class="novo">NOVO</span></span><div style="display:flex;gap:16px;align-items:center"><div class="fab"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div><span class="txt" style="font-size:13px">Sempre <b>embaixo à direita</b>, a 16 px das bordas (mão direita).</span></div></div>
-<ul class="reg"><li>Chanfro de 10 px, Arial Black. Principal na cor; secundário cinza com linha; apagar em vermelho.</li><li>Ao tocar: afunda (diminui um pouco) e volta. Nada pisca.</li></ul>
+<ul class="reg"><li>Chanfro de 10 px, Arial Black. Principal na cor; secundário cinza com linha; apagar em vermelho.</li><li>Ao tocar: afunda (diminui um pouco) e volta. Nada pisca.</li><li><b>Todo botão tem borda fechando a forma inteira</b>, inclusive o de fechar (X): a borda segue o chanfro ou o círculo, sem pedaço aberto (May 07/11 15:4x).</li></ul>
 </div>
 <div class="sep"></div>
 
@@ -398,12 +398,12 @@ table.tb { width: 100%; border-collapse: collapse; font-size: 13px; } .tb th { f
 <div class="hbar" style="--cor:#6FCF00"><b>NYX</b><div class="trilho"><i style="--w:90%"></i></div><span>90</span></div>
 <div class="hbar" style="--cor:#1D4ED8"><b>VEGA</b><div class="trilho"><i style="--w:28%"></i></div><span>28</span></div>
 <div class="hbar" style="--cor:#E31B23"><b>ORFEU</b><div class="trilho"><i style="--w:46%"></i></div><span>46</span></div></div>
-<div class="peca"><span class="rot">Progresso de jogo · cor do console até o dourado da vitória</span>
+<div class="peca"><span class="rot">Progresso de jogo · uma cor só, que muda com a porcentagem: do console até o dourado da vitória</span>
 <div class="hbar" style="--cor:#14A89A"><b>PS1</b><div class="trilho ouro"><i style="--w:30%;--p:.3"></i></div><span>30%</span></div>
 <div class="hbar" style="--cor:#14A89A"><b>PS1</b><div class="trilho ouro"><i style="--w:80%;--p:.8"></i></div><span>80%</span></div>
 <div class="hbar" style="--cor:#14A89A"><b>PS1</b><div class="trilho ouro"><i style="--w:100%;--p:1"></i></div><span style="color:#E3B341">100%</span></div></div>
 <table class="tb"><tr><th>PC</th><th>SITUAÇÃO</th><th style="text-align:right">LIVRE</th></tr><tr><td>PC1</td><td><span class="estado"><i style="background:#F5B301"></i>de olho</span></td><td class="n" style="--cor:#E31B23">53 GB</td></tr><tr><td>PC2</td><td><span class="estado"><i style="background:#22C55E"></i>bom</span></td><td class="n" style="--cor:#6FCF00">37 GB</td></tr></table>
-<ul class="reg"><li>Barra de gráfico = <b>uma linha só, do começo ao fim</b>, chanfrada e tracejada, <b>na cor do dono</b> (robô, PC, console). Nada empilhado.</li><li>Progresso de jogo: começa na cor do console e vai dourando até o <b>dourado da parede da vitória</b> em 100%.</li><li>Número grande em Impact itálico; o valor sempre na ponta.</li><li>Mesma escala em gráficos lado a lado.</li></ul>
+<ul class="reg"><li>Barra de gráfico = <b>uma linha só, do começo ao fim</b>, chanfrada e tracejada, <b>na cor do dono</b> (robô, PC, console). Nada empilhado.</li><li>Progresso de jogo: a barra inteira é <b>uma cor só, sem degradê</b>; no começo é a cor do console e, quanto mais perto do fim, mais ela vira o <b>dourado da parede da vitória</b>.</li><li>Número grande em Impact itálico; o valor sempre na ponta.</li><li>Mesma escala em gráficos lado a lado.</li></ul>
 </div>
 <div class="sep"></div>
 
