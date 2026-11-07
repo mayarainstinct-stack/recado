@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.101">
+<meta name="app-versao" content="2026-11-07.102">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -177,7 +177,7 @@ textarea:focus-visible { outline: none; }
 .marca-cor { text-shadow: 0 0 3px rgba(0,0,0,.9), 0 1px 1px rgba(0,0,0,.8); background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.12) 48%, rgba(0,0,0,.12) 52%, rgba(0,0,0,.42)), var(--quem);   /* pílula de vidro em todo mundo (May, 06/11/2026 01:53) */
   color: #FFFFFF; border-radius: 999px;
   padding: 1px 9px; margin: 0 1px; font-size: 13px; display: inline-block; line-height: 1.6; vertical-align: text-bottom; }
-.mencoes { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; flex-direction: row-reverse; margin: 0 max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); }
+.mencoes { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-start; flex-direction: row-reverse; margin: 0 max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); }
 .mencoes button { width: auto; height: auto; padding: 4px 12px; border-radius: 999px; font-size: 13.5px; font-weight: 700;
   background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.12) 48%, rgba(0,0,0,.12) 52%, rgba(0,0,0,.42)), var(--quem); color: #FFFFFF; border: none; opacity: .8; text-shadow: 0 0 3px rgba(0,0,0,.9), 0 1px 1px rgba(0,0,0,.8); }
 .mencoes button.sel { opacity: 1; outline: 2px solid #FFFFFF; outline-offset: -2px; }
@@ -763,6 +763,7 @@ body.na-geral form textarea:focus { border-color: #FACC15; box-shadow: 0 0 0 3px
 .treino-naovou { margin: 0 0 12px; }
 .fixa-pop { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 16px; background: rgba(0,0,0,.5); }
 .pp-card { --quem: var(--accent); position: relative; width: min(440px, 100%); background: var(--paper); border-radius: 24px; padding: 22px 16px 16px; border: 2px solid color-mix(in srgb, var(--quem) 70%, transparent); box-shadow: 0 24px 60px rgba(0,0,0,.45); text-align: center; animation: pop-sobe .26s cubic-bezier(.2,.8,.2,1.15); }
+.pp-card.puxado, .fixa-pop.saindo .pp-card.puxado { animation: none; }
 .fixa-pop.saindo .pp-card { animation: pop-desce .18s cubic-bezier(.5,0,.8,.4) forwards; }
 @keyframes pop-sobe { from { transform: translateY(60px) scale(.94); } to { transform: none; } }
 @keyframes pop-desce { to { transform: translateY(80px) scale(.94); } }
@@ -1595,7 +1596,9 @@ async function abreCracha(chave) {
   // deslizar pra cima ou pra baixo fecha (May, 05/11/2026): só quando o conteúdo já está no começo (pra baixo) ou no fim (pra cima), senão é rolagem
   let ty0 = null, tx0 = 0, rol = null;
   trilho.addEventListener('touchstart', e => { const t = e.touches[0]; ty0 = t.clientY; tx0 = t.clientX; const sc = e.target.closest('.ct-nos, .ct-painel, .ct-frente .ct-in'); rol = sc ? { topo: sc.scrollTop <= 0, fim: sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 2 } : { topo: true, fim: true }; }, { passive: true });
-  trilho.addEventListener('touchend', e => { if (ty0 === null || girando) return; const t = e.changedTouches[0], dy = t.clientY - ty0, dx = t.clientX - tx0; ty0 = null; if (Math.abs(dy) > 90 && Math.abs(dx) < 70 && ((dy > 0 && rol.topo) || (dy < 0 && rol.fim))) fechaCt(dy > 0 ? 1 : -1); }, { passive: true });
+  let puxa = 0;
+  trilho.addEventListener('touchmove', e => { if (ty0 === null || girando || semMov) return; const t = e.touches[0], dy = t.clientY - ty0, dx = t.clientX - tx0; if (!puxa && (Math.abs(dy) < 12 || Math.abs(dy) < Math.abs(dx) * 1.4 || !((dy > 0 && rol.topo) || (dy < 0 && rol.fim)))) return; puxa = dy; ct.style.transition = 'none'; ct.style.transform = 'translateY(' + dy + 'px)'; ct.style.opacity = String(Math.max(.35, 1 - Math.abs(dy) / 700)); }, { passive: true });
+  trilho.addEventListener('touchend', e => { if (ty0 === null || girando) return; const t = e.changedTouches[0], dy = t.clientY - ty0, dx = t.clientX - tx0; ty0 = null; const p = puxa; puxa = 0; if (Math.abs(dy) > 90 && (p || Math.abs(dx) < 70) && ((dy > 0 && rol.topo) || (dy < 0 && rol.fim))) fechaCt(dy > 0 ? 1 : -1); else if (p) { ct.style.transition = 'transform .28s cubic-bezier(.2,.8,.2,1), opacity .28s'; ct.style.transform = ''; ct.style.opacity = ''; } }, { passive: true });
   const fechaCt = dir => { if (semMov) { pop.remove(); return; } ct.style.transition = 'transform .22s ease-in, opacity .22s ease-in'; ct.style.transform = 'translateY(' + (dir * 60) + 'vh)'; ct.style.opacity = '0'; setTimeout(() => pop.remove(), 220); };
   const COMUNS_EXP = { 'Foco': 'Fica no que importa até terminar, sem se perder no meio.', 'Rapidez': 'Entrega sem enrolar.', 'Capricho': 'Faz bem feito, nos detalhes, e confere antes de dizer que acabou.', 'Comunicação': 'Avisa o que fez, explica direito e responde quando chamam.', 'Iniciativa': 'Resolve sem esperar alguém pedir.' };
   const explica = (tit, txt) => { ct.querySelector('.ct-exp')?.remove(); const w = el('div', 'ct-exp'), c = el('div', 'ct-exp-c'); w.setAttribute('role', 'dialog'); w.setAttribute('aria-label', tit); c.append(el('b', '', tit), el('p', '', txt), el('small', '', 'toque pra fechar')); w.append(c); w.onclick = e => { e.stopPropagation(); w.remove(); }; ct.append(w); };
@@ -2706,6 +2709,7 @@ function abrePergunta(it, g, alts, k, conta) {   // padrão aprovado no HOUSE-BR
   card.append(x, av, nm, perg, ...(midia.length ? [md] : []), ops, outra); ov.append(card);
   ov.addEventListener('click', e => { if (e.target === ov) adia(); });
   document.addEventListener('keydown', esc);
+  fechaPuxando(ov, adia, () => card, () => card);
   document.body.append(ov);
 }
 function mostraFixa(items, fila) {   // cópia do balão no topo (o original fica no lugar dele), com "1 de N" quando tem mais de uma
@@ -3219,10 +3223,23 @@ function anexosDaConversa(itens) {
   return tipos;
 }
 // Gesto padrão de fechar (GESTOS-PADRAO.md no Inst): puxar pra baixo fecha popup/foto/cartão, desde que o conteúdo já esteja no topo
-function fechaPuxando(el, fechar, rolavel) {
-  let y0 = null, x0 = 0, topo = true;
-  el.addEventListener('touchstart', e => { if (e.touches.length !== 1) { y0 = null; return; } const t = e.touches[0]; y0 = t.clientY; x0 = t.clientX; const sc = rolavel ? rolavel() : null; topo = !sc || sc.scrollTop <= 0; }, { passive: true });
-  el.addEventListener('touchend', e => { if (y0 === null) return; const t = e.changedTouches[0], dy = t.clientY - y0, dx = t.clientX - x0; y0 = null; if (dy > 90 && Math.abs(dx) < Math.abs(dy) * .7 && topo) fechar(); }, { passive: true });
+function fechaPuxando(el, fechar, rolavel, alvo) {
+  let y0 = null, x0 = 0, topo = true, dy = 0, vert = null;
+  const semMov = matchMedia('(prefers-reduced-motion: reduce)').matches, c = () => (alvo && alvo()) || el.firstElementChild || el;
+  const poe = (y, t) => { const a = c(); a.style.transition = t ? 'transform ' + t + 's cubic-bezier(.2,.8,.2,1), opacity ' + t + 's' : 'none'; a.style.transform = y ? 'translateY(' + y + 'px)' : ''; a.style.opacity = y > 0 ? String(Math.max(.35, 1 - y / 700)) : ''; };
+  el.addEventListener('touchstart', e => { if (e.touches.length !== 1) { y0 = null; return; } const t = e.touches[0]; y0 = t.clientY; x0 = t.clientX; dy = 0; vert = null; const sc = rolavel ? rolavel() : null; topo = !sc || sc.scrollTop <= 0; }, { passive: true });
+  el.addEventListener('touchmove', e => {
+    if (y0 === null || semMov) return; const t = e.touches[0], ddy = t.clientY - y0, ddx = t.clientX - x0;
+    if (vert === null) { if (Math.abs(ddy) < 8 && Math.abs(ddx) < 8) return; vert = topo && ddy > 0 && Math.abs(ddx) < Math.abs(ddy) * .7; }
+    if (vert) { dy = Math.max(0, ddy); poe(dy, 0); }
+  }, { passive: true });
+  el.addEventListener('touchend', e => {
+    if (y0 === null) return; const t = e.changedTouches[0], fdy = t.clientY - y0, dx = t.clientX - x0; y0 = null;
+    if (semMov) { if (fdy > 90 && Math.abs(dx) < Math.abs(fdy) * .7 && topo) fechar(); return; }
+    if (!vert) return;
+    if (dy > 90) { c().classList.add('puxado'); poe(innerHeight, .22); setTimeout(fechar, 200); } else poe(0, .28);
+  }, { passive: true });
+  el.addEventListener('touchcancel', () => { if (y0 !== null && vert) poe(0, .28); y0 = null; }, { passive: true });
 }
 // Trocar de aba arrastando pro lado, em todo o app (May, 05/11/2026): gesto horizontal claro (>60px e mais lado que cima)
 function entraDoLado(el, dir) {   // a aba nova entra deslizando do lado do gesto (May, 05/11/2026: "tudo tem q ter animação")
@@ -3627,7 +3644,7 @@ function abreFinancas(m) {
       const j0 = Math.max(0, abas.findIndex(a => a[0] === abaIni)); requestAnimationFrame(() => { tr.scrollLeft = j0 * tr.clientWidth; marca(); });
       const fab = elD('button', 'fin-lancar', '+ Lançar'); fab.type = 'button'; fab.onclick = () => lancar(); box.append(fab);
     };
-    const pop = (titulo, corpo) => { const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card fin-card'), x = elD('button', 'pp-x'); x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; card.append(x, elD('div', 'pp-perg', titulo), corpo); ov.append(card); document.body.append(ov); return fecha; };
+    const pop = (titulo, corpo) => { const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card fin-card'), x = elD('button', 'pp-x'); x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; card.append(x, elD('div', 'pp-perg', titulo), corpo); ov.append(card); document.body.append(ov); fechaPuxando(ov, fecha, () => card, () => card); return fecha; };
     const detalhe = (x, lado, sugerido) => {
       const cp = elD('div', 'fin-det'); cp.append(elD('p', 'p-nota', (lado === 'pagar' ? 'Pago ' : 'Recebido ') + reaisFin(x.pago) + ' de ' + reaisFin(x.total) + ' · falta ' + reaisFin(x.falta)));
       const ul = elD('div', 'fin-hist'); x.pagamentos.slice().reverse().forEach(y => { const l = elD('div'); l.append(elD('span', '', y.data), elD('b', '', reaisFin(y.valor)), elD('small', '', y.nota || '')); ul.append(l); }); cp.append(ul);
@@ -4110,7 +4127,7 @@ function abreFicha({ titulo, foto, corpo, contexto, fotos }) {
   const fecha = () => { f.remove(); document.removeEventListener('keydown', esc, true); };
   const esc = e => { if (e.key === 'Escape' && !document.querySelector('.zoom')) { e.stopPropagation(); fecha(); } };
   x.onclick = fecha; f.onclick = e => { if (e.target === f) fecha(); }; document.addEventListener('keydown', esc, true);
-  fechaPuxando(f, fecha, () => cx);
+  fechaPuxando(f, fecha, () => cx, () => cx);
   return f;
 }
 // ---- Texto em cartões (Comida e água…): cada "## " vira um cartão; "### " subtítulo; "- " item. Tocar abre a ficha com anotação.
@@ -4249,9 +4266,10 @@ function abreZoom(src, path, listaFotos) {   // listaFotos: as fotos do álbum (
   z.addEventListener('touchend', e => {
     if (!t0) return; const t = e.changedTouches[0], dx = t.clientX - t0.x, dy = t.clientY - t0.y; t0 = null;
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) { z.dataset.sw = '1'; setTimeout(() => { delete z.dataset.sw; }, 400); vai(dx < 0 ? 1 : -1); }
-    else if (dy > 90 && Math.abs(dx) < Math.abs(dy) * .7) { z.dataset.sw = '1'; fecha(); }   // puxar pra baixo fecha a foto
+    else if (Math.abs(dy) > 12) { z.dataset.sw = '1'; setTimeout(() => { delete z.dataset.sw; }, 400); }   // puxar pra baixo: quem fecha é o fechaPuxando, seguindo o dedo
   });
   z.onclick = () => { if (!z.dataset.sw) fecha(); };
+  fechaPuxando(z, fecha, null, () => im);
   document.addEventListener('keydown', esc);
 }
 // Nova conversa: popup da própria página com nome e foto do grupo
