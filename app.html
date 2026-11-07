@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.137">
-<meta name="app-novidade" content="Tarefas com Revisão, Casa com a planta em cima e as coisas desenhadas, e o Diário da obra com fotos">
+<meta name="app-versao" content="2026-11-07.138">
+<meta name="app-novidade" content="As perguntas dos robôs voltam a aparecer mesmo com rascunho na caixa da Geral">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -2918,7 +2918,7 @@ function mostraFixa(items, fila) {   // cópia do balão no topo (o original fic
   fila = fila.filter(i => !RE_PERG.test(items[i].text || ''));
   const abertas = pergs.filter(i => !fixaPopVista.has(chaveDe(items[i])));
   pergsNaFila = abertas.map(i => chaveDe(items[i]));
-  const escrevendo = (document.activeElement && /TEXTAREA|INPUT/.test(document.activeElement.tagName)) || !!(box.value || '').trim() || Date.now() - tecladoFechouEm < 1500;   // o toque que fecha o teclado não pode cair num popup nascendo (May 12:49 e 13:19)   // teclado aberto ou texto na caixa: o popup espera ela mandar (May, 07/11/2026 12:49)
+  const escrevendo = (document.activeElement && /TEXTAREA|INPUT/.test(document.activeElement.tagName)) || Date.now() - tecladoFechouEm < 1500;   // só a caixa EM FOCO (teclado aberto) segura o popup; rascunho parado sem foco não segura nada (Sigma 17:01 e 17:44: o popup esperava pra sempre)   // o toque que fecha o teclado não pode cair num popup nascendo (May 12:49 e 13:19)   // teclado aberto ou texto na caixa: o popup espera ela mandar (May, 07/11/2026 12:49)
   if (abertas.length && !escrevendo && !document.querySelector('.fixa-pop')) { const it = items[abertas[0]], g = (it.from === 'may' ? EU : GRUPO[it.quem]) || {}, todas = it.opcoes && it.opcoes.length ? it.opcoes.map((t, i) => ['abcdefgh'[i] || String(i + 1), t]) : alternativasDe(it.text); abrePergunta(it, g, todas.length > 4 ? [] : todas, chaveDe(it), abertas.length > 1 ? '1 de ' + abertas.length : ''); }
   if (!fila.length) return;
   if (fixaVer >= fila.length) fixaVer = 0;
