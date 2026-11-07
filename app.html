@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.87">
+<meta name="app-versao" content="2026-11-07.88">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -666,6 +666,8 @@ img.esq { min-height: 140px; }
 .mq-chips { display: flex; flex-wrap: wrap; gap: 6px; } .mq-chips span { font-size: 12.5px; padding: 5px 10px; border-radius: 999px; background: color-mix(in srgb, var(--fg) 6%, transparent); border: 1px solid var(--line); }
 .mq-falta li { color: var(--muted); }
 .mq-fotos { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; } .mq-fotos button { flex: none; width: 110px; height: 110px; border-radius: 14px; background: var(--paper) center / cover; border: 1px solid var(--line); }
+.p-grade .p-azulejo { touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.p-grade .p-azulejo.arrastando { position: relative; z-index: 5; touch-action: none; box-shadow: 0 16px 34px rgba(0,0,0,.5); transition: none; }
 .gr-hero { display: flex; align-items: center; gap: 14px; padding: 16px; border-radius: 22px; color: #fff; background: radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--k1) 75%, transparent), transparent 65%), linear-gradient(160deg, color-mix(in srgb, var(--k1) 45%, #0B0B10), #0B0B10); box-shadow: 0 10px 30px color-mix(in srgb, var(--k1) 30%, transparent); }
 .gr-hero .gr-ic { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); flex: none; } .gr-hero .gr-ic svg { width: 30px; height: 30px; }
 .gr-hero b { display: block; font-size: 22px; font-weight: 900; } .gr-hero span { font-size: 13px; opacity: .85; }
@@ -3031,6 +3033,32 @@ const painel = document.getElementById('painel'), pCorpo = document.getElementBy
 let pilha = [], catalogo = null;
 const reais = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
 const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#EF4444'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#A855F7'], [/^listas/i, '#F59E0B'], [/ideia/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia/i, '#F59E0B']];
+// Arrumar o Menu arrastando (May, 07/11/2026 12:03: "dar pra eu clicar e arrastar, aí eu mesma organizava"): segura o azulejo até ele levantar,
+// arrasta pro lugar do outro e solta; a ordem fica guardada neste aparelho
+function arrumaArrastando(grade) {
+  let seg = null, arr = null, ox = 0, oy = 0, fantasma = null, mexeu = false;
+  const salva = () => { try { store.set('menu-ordem', JSON.stringify([...grade.children].map(b => b.dataset.nome).filter(Boolean))); } catch (e) {} };
+  grade.addEventListener('pointerdown', e => {
+    const b = e.target.closest('.p-azulejo'); if (!b || !b.dataset.nome) return;
+    ox = e.clientX; oy = e.clientY; mexeu = false;
+    seg = setTimeout(() => { arr = b; b.classList.add('arrastando'); if (navigator.vibrate) navigator.vibrate(15); const r0 = b.getBoundingClientRect(); fantasma = { dx: ox - r0.left, dy: oy - r0.top }; }, 450);
+  });
+  grade.addEventListener('pointermove', e => {
+    if (!arr) { if (seg && Math.hypot(e.clientX - ox, e.clientY - oy) > 10) { clearTimeout(seg); seg = null; } return; }
+    e.preventDefault(); mexeu = true;
+    arr.style.transform = 'translate(' + (e.clientX - ox) + 'px,' + (e.clientY - oy) + 'px) scale(1.08)';
+    const sob = document.elementsFromPoint(e.clientX, e.clientY).map(x => x.closest && x.closest('.p-azulejo')).find(x => x && x !== arr && x.parentNode === grade);
+    if (sob) { const lista = [...grade.children], a = lista.indexOf(arr), b = lista.indexOf(sob); if (a < b) sob.after(arr); else sob.before(arr); arr.style.transform = ''; const r1 = arr.getBoundingClientRect(); ox = r1.left + fantasma.dx; oy = r1.top + fantasma.dy; arr.style.transform = 'translate(' + (e.clientX - ox) + 'px,' + (e.clientY - oy) + 'px) scale(1.08)'; }   // trocou de lugar: o azulejo continua embaixo do dedo
+  }, { passive: false });
+  const fim = e => {
+    clearTimeout(seg); seg = null; if (!arr) return;
+    const b = arr; arr = null; b.classList.remove('arrastando'); b.style.transform = '';
+    if (mexeu) { salva(); const para = ev => { ev.stopPropagation(); ev.preventDefault(); }; b.addEventListener('click', para, { capture: true, once: true }); showNote('Menu arrumado: fica assim neste celular'); }
+  };
+  grade.addEventListener('touchmove', e => { if (arr) e.preventDefault(); }, { passive: false });   // arrastando: a tela não rola
+  grade.addEventListener('pointerup', fim); grade.addEventListener('pointercancel', fim);
+  grade.addEventListener('contextmenu', e => { if (e.target.closest('.p-azulejo')) e.preventDefault(); });
+}
 function botaoGrade(ic, txt, sub, fn) {   // azulejo do Menu: ícone grande em cima, nome curto embaixo, na cor do assunto
   const b = document.createElement('button'); b.type = 'button'; b.className = 'p-azulejo'; if (sub) b.title = sub;
   const cor = (COR_ASSUNTO.find(([re]) => re.test(txt)) || [])[1]; if (cor) b.style.setProperty('--c', cor);
@@ -3167,7 +3195,12 @@ abreMenu.onclick = () => {
     let uso = {}; try { uso = JSON.parse(store.get('menu-uso') || '{}'); } catch (e) {}
     const conta = n => { uso[n] = (uso[n] || 0) + 1; try { store.set('menu-uso', JSON.stringify(uso)); } catch (e) {} };
     lerArquivo('menu/menu.json').then(t => JSON.parse(t).itens).catch(() => [{ tipo: 'catalogo', icone: 'bag', nome: 'Catálogo', sub: 'piscina, piso, borda, churrasqueira…' }])
-      .then(itens => itens.forEach(m => lista.append(botaoGrade(m.icone, m.nome, m.sub, () => { conta(m.nome); abreItemMenu(m); }))));   // ordem do menu.json: a mão direita manda (o de todo dia embaixo à direita), não o uso
+      .then(itens => {   // ordem: a que ela arrumou arrastando (fica neste aparelho); sem isso, a do menu.json (mão direita)
+        let ordem = []; try { ordem = JSON.parse(store.get('menu-ordem') || '[]'); } catch (e) {}
+        const pos = n => { const i = ordem.indexOf(n); return i < 0 ? 999 : i; };
+        itens.map((m, i) => [m, i]).sort((a, b) => pos(a[0].nome) - pos(b[0].nome) || a[1] - b[1]).forEach(([m]) => { const b = botaoGrade(m.icone, m.nome, m.sub, () => { conta(m.nome); abreItemMenu(m); }); b.dataset.nome = m.nome; lista.append(b); });
+        arrumaArrastando(lista);
+      });
   });
 };
 // Diagnóstico (05/11/2026): só leitura, pra "tá lento / não chega" virar dado
