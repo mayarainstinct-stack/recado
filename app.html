@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.93">
+<meta name="app-versao" content="2026-11-07.94">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -670,6 +670,14 @@ img.esq { min-height: 140px; }
 .mq-fotos { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; } .mq-fotos button { flex: none; width: 110px; height: 110px; border-radius: 14px; background: var(--paper) center / cover; border: 1px solid var(--line); }
 .p-grade .p-azulejo { touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .p-grade .p-azulejo.arrastando { position: relative; z-index: 5; touch-action: none; box-shadow: 0 16px 34px rgba(0,0,0,.5); transition: none; }
+.pl-caixa { flex: none; height: 60dvh; border-radius: 20px; overflow: hidden; background: radial-gradient(rgba(255,255,255,.05) 1px, transparent 1.4px) 0 0 / 14px 14px, #101318; border: 1px solid var(--line); }
+.pl-svg { width: 100%; height: 100%; display: block; touch-action: manipulation; }
+.pl-c rect { fill: #1E2530; stroke: #5B6B80; stroke-width: .06; transition: fill .25s, stroke .25s; } .pl-c text { fill: #DCE4EE; font-weight: 700; text-anchor: middle; dominant-baseline: central; pointer-events: none; font-family: inherit; }
+.pl-c.fora rect { fill: #1A2420; } .pl-c.agua rect { fill: #0F3B4A; stroke: #38BDF8; }
+.pl-c.on rect { fill: color-mix(in srgb, var(--c, #14B8A6) 45%, #1E2530); stroke: var(--c, #14B8A6); stroke-width: .1; filter: drop-shadow(0 0 .25px var(--c, #14B8A6)); }
+.pl-info { display: grid; gap: 4px; padding: 12px 64px 4px 4px; } .pl-info b { font-size: 20px; } .pl-info span { font-size: 13px; color: var(--muted); }
+.pl-acoes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; } .pl-bt { width: auto; height: auto; border-radius: 999px; padding: 9px 16px; font: inherit; font-size: 14px; font-weight: 700; background: var(--paper); color: var(--fg); border: 1px solid var(--line); }
+.pl-bt.on { background: var(--c, #14B8A6); border-color: transparent; color: #fff; }
 .gr-hero { display: flex; align-items: center; gap: 14px; padding: 16px; border-radius: 22px; color: #fff; background: radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--k1) 75%, transparent), transparent 65%), linear-gradient(160deg, color-mix(in srgb, var(--k1) 45%, #0B0B10), #0B0B10); box-shadow: 0 10px 30px color-mix(in srgb, var(--k1) 30%, transparent); }
 .gr-hero .gr-ic { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); flex: none; } .gr-hero .gr-ic svg { width: 30px; height: 30px; }
 .gr-hero b { display: block; font-size: 22px; font-weight: 900; } .gr-hero span { font-size: 13px; opacity: .85; }
@@ -3447,6 +3455,40 @@ function abreIdeias(m) {
     env.onclick = manda; ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); manda(); } });
   });
 }
+// Planta da casa navegável (May, 07/11/2026 12:40: "clico no cômodo e vou navegando com zoom automático"): casa/planta-mapa.json em metros;
+// tocou no cômodo, a planta voa até ele (zoom) e embaixo aparece o que tem ali; "Casa inteira" volta
+function abrePlanta(m) {
+  tela(m.nome, async c => {
+    const cor = (COR_ASSUNTO.find(([re]) => re.test('Casa')) || [])[1] || 'var(--accent)'; painel.style.setProperty('--c', cor);
+    const nota = elD('p', 'p-nota', 'Carregando a planta…'); c.append(nota);
+    let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { nota.textContent = 'Não consegui abrir a planta. Confere a internet.'; return; }
+    nota.remove();
+    const NS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NS, 'svg'), cx = elD('div', 'pl-caixa'); svg.setAttribute('class', 'pl-svg'); svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    const todo = [-0.3, -0.3, d.largura + 0.6, d.altura + 0.6]; let vb = todo.slice(), anim = 0;
+    const poe = v => svg.setAttribute('viewBox', v.map(x => x.toFixed(3)).join(' '));
+    const voa = alvo => { const de = vb.slice(), t0 = performance.now(), dur = matchMedia('(prefers-reduced-motion: reduce)').matches ? 1 : 420; cancelAnimationFrame(anim);
+      const passo = t => { const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3); vb = de.map((x, j) => x + (alvo[j] - x) * e); poe(vb); if (k < 1) anim = requestAnimationFrame(passo); }; anim = requestAnimationFrame(passo); };
+    poe(vb);
+    const info = elD('div', 'pl-info'), nomeEl = elD('b', '', 'Toca num cômodo'), sub = elD('span', '', 'a planta vai até ele'), acoes = elD('div', 'pl-acoes');
+    const inteira = elD('button', 'pl-bt', 'Casa inteira'); inteira.type = 'button'; inteira.onclick = () => { svg.querySelectorAll('.pl-c.on').forEach(x => x.classList.remove('on')); voa(todo); nomeEl.textContent = 'Toca num cômodo'; sub.textContent = 'a planta vai até ele'; acoes.replaceChildren(inteira); };
+    acoes.append(inteira); info.append(nomeEl, sub, acoes);
+    d.comodos.forEach(k => {
+      const g = document.createElementNS(NS, 'g'), r0 = document.createElementNS(NS, 'rect'), tx = document.createElementNS(NS, 'text'); g.setAttribute('class', 'pl-c' + (/piscina/i.test(k.nome) ? ' agua' : /quintal|churras|externo/i.test(k.nome) ? ' fora' : ''));
+      [['x', k.x], ['y', k.y], ['width', k.w], ['height', k.h], ['rx', 0.12]].forEach(([a, v]) => r0.setAttribute(a, v));
+      tx.setAttribute('x', k.x + k.w / 2); tx.setAttribute('y', k.y + k.h / 2); tx.setAttribute('font-size', Math.min(0.45, k.w * 1.7 / Math.max(6, k.nome.length), k.h / 2.6).toFixed(3)); tx.textContent = k.nome;
+      g.append(r0, tx); svg.append(g);
+      g.addEventListener('click', () => {
+        svg.querySelectorAll('.pl-c.on').forEach(x => x.classList.remove('on')); g.classList.add('on');
+        const fol = Math.max(k.w, k.h) * 0.35 + 0.4, alvo = [k.x - fol, k.y - fol, k.w + fol * 2, k.h + fol * 2], asp = svg.clientWidth / Math.max(1, svg.clientHeight);
+        if (alvo[2] / alvo[3] < asp) { const nw = alvo[3] * asp; alvo[0] -= (nw - alvo[2]) / 2; alvo[2] = nw; } else { const nh = alvo[2] / asp; alvo[1] -= (nh - alvo[3]) / 2; alvo[3] = nh; }
+        voa(alvo); nomeEl.textContent = k.nome; sub.textContent = String(k.w).replace('.', ',') + ' x ' + String(k.h).replace('.', ',') + ' m (rascunho)';
+        acoes.replaceChildren(inteira);
+        if (k.doc) { const ab = elD('button', 'pl-bt on', 'O que tem aqui'); ab.type = 'button'; ab.onclick = () => abreCartoes({ nome: k.nome, arq: k.doc }); acoes.append(ab); }
+      });
+    });
+    cx.append(svg); c.append(cx, info);
+  });
+}
 function abreItemMenu(m) {
   if (m.donos && m.donos.length) donosTela = m.donos;   // dono da tela (e o item de dentro herda do grupo se não tiver o seu)
   painel.style.setProperty('--c', (COR_ASSUNTO.find(([re]) => re.test(m.nome)) || [])[1] || 'var(--accent)');   // a tela fica na cor do assunto, igual o azulejo dela
@@ -3454,6 +3496,7 @@ function abreItemMenu(m) {
   if (m.tipo === 'catalogo') return abreCatalogo();
   if (m.tipo === 'grupo') return abreGrupo(m);
   if (m.tipo === 'ideias') return abreIdeias(m);
+  if (m.tipo === 'planta') return abrePlanta(m);
   if (m.tipo === 'diagnostico') return abreDiagnostico();
   if (m.tipo === 'maquinas') return abreMaquinas(m);
   if (m.tipo === 'imagens') return abreImagens(m);
