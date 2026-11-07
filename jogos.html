@@ -223,10 +223,11 @@ html body #ficha.premium .bloco small,html body #ficha.premium .bloco .k,html bo
 /* Parede da Vitória em cartas: uma por vez, desliza pro lado, a carta do lado gira e encolhe como num baralho (Hermes, May 14:28) */
 .deck{display:flex;gap:0;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:26px 0 14px;margin:0 -16px}
 .deck::-webkit-scrollbar{display:none}
-.carta{--f:0;--lado:0;flex:0 0 78%;scroll-snap-align:center;position:relative;margin:0 2%;padding:14px 14px 18px;border-radius:22px;background:linear-gradient(color-mix(in srgb,var(--cor) 24%,#0b0507),color-mix(in srgb,var(--cor) 10%,#050203));border:5px solid transparent;background-clip:padding-box;box-shadow:0 0 0 5px #8a5a03,0 18px 40px rgba(0,0,0,.6),0 0 24px rgba(250,215,3,.3);transform:rotate(calc(var(--lado) * var(--f) * 6deg)) scale(calc(1 - var(--f) * .12)) translateY(calc(var(--f) * 18px));transition:transform .08s linear;cursor:pointer}
-.carta::before{content:"";position:absolute;inset:-5px;border-radius:22px;padding:5px;background:var(--ouro-metal);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.carta{--f:0;--lado:0;flex:0 0 78%;scroll-snap-align:center;position:relative;margin:0 2%;padding:14px 6px 18px;border-radius:22px;background:none;border:0;box-shadow:none;transform:rotate(calc(var(--lado) * var(--f) * 6deg)) scale(calc(1 - var(--f) * .12)) translateY(calc(var(--f) * 18px));transition:transform .08s linear;cursor:pointer}
+
 .carta:first-child{margin-left:11%}.carta:last-child{margin-right:11%}
-.carta-capa{position:relative;height:min(46vh,92vw);border-radius:14px;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,.5)}
+.carta-capa{position:relative;height:min(46vh,92vw);border-radius:16px;overflow:hidden;border:6px solid transparent;background:var(--ouro-metal) border-box;box-shadow:0 0 0 1px #4a2a00,0 12px 30px rgba(0,0,0,.6),0 0 22px rgba(250,215,3,.35)}
+.carta-capa img{border-radius:10px}
 .carta-capa img{width:100%;height:100%;object-fit:cover}
 .carta-num{position:absolute;left:10px;top:10px;font:800 13px system-ui,"Segoe UI";color:#FBE931;background:rgba(0,0,0,.72);padding:4px 9px;border-radius:8px;letter-spacing:.5px}
 .carta .insig-jogo{width:92px;height:92px;right:-18px;top:-22px;animation:none}
