@@ -274,6 +274,31 @@ textarea:focus-visible { outline: none; }
 .aviso-curto svg.i { color: #4ADE80; }
 .video-cheio { display: block; width: 100%; max-height: 70vh; border-radius: 14px; background: #000; margin: 4px 0 10px; }
 .versao { margin: 0 0 22px; }
+/* Animações = estúdio (Hermes 07/11): a mais nova grande e animada em cima, o resto em grade de 2 com capa parada */
+.estudio-hero { position: relative; border-radius: 18px; overflow: hidden; background: #0e1420; margin: 2px 0 16px; box-shadow: 0 12px 30px rgba(0,0,0,.5), 0 0 0 2px color-mix(in srgb, var(--c) 55%, transparent); cursor: pointer; }
+.estudio-hero img { width: 100%; aspect-ratio: 16/9; object-fit: contain; display: block; }
+.estudio-hero .leg { padding: 10px 14px 13px; background: rgba(0,0,0,.35); box-shadow: inset 0 1px 0 rgba(255,255,255,.08); }
+.estudio-hero .chip, .estudio-tile .qtd, .cine-capa .dur { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: .5px; padding: 3px 8px; border-radius: 999px; color: #fff; background: rgba(255,255,255,.14); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: inset 0 0 0 1px rgba(255,255,255,.28); }
+.estudio-hero .chip { background: color-mix(in srgb, var(--c) 80%, transparent); color: #111; }
+.estudio-hero h2 { font-size: 19px; margin: 6px 0 2px; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,.7); }
+.estudio-hero small { color: rgba(255,255,255,.8); font-size: 12px; }
+.estudio-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.estudio-tile { all: unset; cursor: pointer; display: flex; flex-direction: column; justify-content: flex-start; align-self: start; }
+.estudio-tile .cp { position: relative; aspect-ratio: 1; border-radius: 14px; overflow: hidden; background: #0e1420; box-shadow: 0 8px 20px rgba(0,0,0,.45); }
+.estudio-tile .cp img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.estudio-tile .qtd { position: absolute; right: 7px; top: 7px; }
+.estudio-tile h3 { font-size: 13px; line-height: 1.25; margin: 7px 2px 0; }
+.estudio-tile:active .cp, .estudio-hero:active { transform: scale(.98); }
+/* Vídeos = cinema (Hermes 07/11): pôster grande, play de vidro, duração e quantas versões */
+.cine-card { all: unset; cursor: pointer; display: block; margin: 0 0 18px; }
+.cine-capa { position: relative; aspect-ratio: 16/9; border-radius: 16px; overflow: hidden; background: #000; box-shadow: 0 10px 26px rgba(0,0,0,.5); }
+.cine-capa img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cine-capa .play { position: absolute; left: 50%; top: 50%; width: 58px; height: 58px; margin: -29px 0 0 -29px; border-radius: 50%; background: rgba(255,255,255,.16); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: inset 0 0 0 1px rgba(255,255,255,.35), 0 0 22px color-mix(in srgb, var(--c) 60%, transparent); }
+.cine-capa .play::after { content: ""; position: absolute; left: 23px; top: 18px; border-style: solid; border-width: 11px 0 11px 18px; border-color: transparent transparent transparent #fff; }
+.cine-capa .dur { position: absolute; right: 8px; bottom: 8px; }
+.cine-card h3 { font-size: 15px; margin: 9px 2px 2px; }
+.cine-card .det { margin: 0 2px; }
+.cine-card:active .cine-capa { transform: scale(.98); }
 .versao h3 { font-size: 15px; margin: 0 0 6px; }
 .versao .anim-cheia { display: block; width: 100%; max-height: 70vh; object-fit: contain; border-radius: 14px; background: #000; margin: 4px 0 6px; min-height: 180px; }
 .msg.may.eu.pendente.falhou { animation: none; }   /* não foi: para de girar */
@@ -3439,6 +3464,7 @@ function abreImagens(m) {
     const p = document.createElement('p'); p.className = 'p-nota'; p.textContent = 'Carregando…'; c.append(p);
     let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
     p.textContent = 'Toca num álbum pra abrir.';
+    if (m.estilo === 'estudio') return estudio(c, d.grupos.filter(g => g.imagens.length), m, p);
     d.grupos.forEach(g => {
       if (!g.imagens.length) return;
       const el = document.createElement('div'); el.className = 'item';
@@ -3450,20 +3476,47 @@ function abreImagens(m) {
     });
   });
 }
+function estudio(c, gs, m, p) {
+  p.remove();
+  const qt = g => g.imagens.length + (g.imagens.length > 1 ? ' imagens' : ' imagem');
+  const img = (path, el) => fotoUrl(path, true).then(u => { el.src = u; }).catch(() => {});
+  if (!gs.length) return;
+  const [g0, ...resto] = gs;
+  const hero = document.createElement('div'); hero.className = 'estudio-hero';
+  const hi = document.createElement('img'); hi.alt = ''; hero.append(hi); img(g0.capa || g0.imagens[0].arq, hi);
+  const leg = document.createElement('div'); leg.className = 'leg';
+  const chip = document.createElement('span'); chip.className = 'chip'; chip.textContent = 'MAIS NOVA'; leg.append(chip);
+  const h = document.createElement('h2'); h.textContent = g0.nome; leg.append(h);
+  const sm = document.createElement('small'); sm.textContent = qt(g0) + ' · toca pra abrir'; leg.append(sm);
+  hero.append(leg); hero.onclick = () => abreAlbum(g0, m); c.append(hero);
+  const grade = document.createElement('div'); grade.className = 'estudio-grade';
+  resto.forEach(g => {
+    const t = document.createElement('button'); t.type = 'button'; t.className = 'estudio-tile';
+    const cp = document.createElement('div'); cp.className = 'cp';
+    const im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; cp.append(im); img(g.capa_fixa || g.capa || g.imagens[0].arq, im);
+    const q = document.createElement('span'); q.className = 'qtd'; q.textContent = g.imagens.length; cp.append(q);
+    const h3 = document.createElement('h3'); h3.textContent = g.nome;
+    t.append(cp, h3); t.onclick = () => abreAlbum(g, m); grade.append(t);
+  });
+  c.append(grade);
+}
 // Vídeos (Sigma/May, 06/11/2026): lista com capa e duração; o player é o do próprio iPhone, com som, sem tocar sozinho
 function abreVideos(m) {
   tela(m.nome, async c => {
     const p = document.createElement('p'); p.className = 'p-nota'; p.textContent = 'Carregando…'; c.append(p);
     let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
     const vs = d.videos || [];
-    p.textContent = vs.length ? 'Toca num vídeo pra assistir.' : 'Nenhum vídeo ainda.';
+    p.textContent = vs.length ? '' : 'Nenhum vídeo ainda.'; if (vs.length) p.remove();
     vs.forEach(v => {
-      const el = document.createElement('div'); el.className = 'item';
-      el.append(fotoDe({ nome: v.titulo, foto: v.capa }, { icone: 'video' }, false));
-      const b = document.createElement('div'); b.className = 'i-corpo';
-      const h = document.createElement('h3'); h.textContent = v.titulo; b.append(h);
-      const n = document.createElement('div'); n.className = 'det'; n.textContent = [v.duracao, v.nota, v.versoes && v.versoes.length ? (v.versoes.length + 1) + ' versões' : ''].filter(Boolean).join(' · '); b.append(n);
-      el.append(b); el.onclick = () => abreVideo(v); c.append(el);
+      const el = document.createElement('button'); el.type = 'button'; el.className = 'cine-card';
+      const cp = document.createElement('div'); cp.className = 'cine-capa';
+      const im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; cp.append(im);
+      if (v.capa) fotoUrl(v.capa, true).then(u => { im.src = u; }).catch(() => {});
+      const pl = document.createElement('span'); pl.className = 'play'; cp.append(pl);
+      if (v.duracao) { const du = document.createElement('span'); du.className = 'dur'; du.textContent = v.duracao; cp.append(du); }
+      const h = document.createElement('h3'); h.textContent = v.titulo;
+      const n = document.createElement('div'); n.className = 'det'; n.textContent = [v.versao || v.nota, v.versoes && v.versoes.length ? (v.versoes.length + 1) + ' versões' : ''].filter(Boolean).join(' · ');
+      el.append(cp, h, n); el.onclick = () => abreVideo(v); c.append(el);
     });
   });
 }
