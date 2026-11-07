@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.71">
+<meta name="app-versao" content="2026-11-07.72">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -3015,7 +3015,7 @@ abreMenu.onclick = () => {
 // Diagnóstico (05/11/2026): só leitura, pra "tá lento / não chega" virar dado
 // Saúde dos PCs (May, 06/11/2026 21:10 e 21:26): casa/diagnostico-pcs.json = { dias: [{ data, quem, comparar: [{ nome, v: [[texto, tom] x3] }], pcs: [...] }] }, o mais novo primeiro.
 // Em cima a data; embaixo as abas Comparar / PC1 / PC2 / PC3, que deslizam (arrasta pro lado ou toca na aba). O Orfeu junta o que cada robô mediu.
-const EST_PC = { ok: ['Em ordem', '#22C55E'], atencao: ['Atenção', '#F59E0B'], peca: ['Precisa de peça', '#EF4444'] }, TOM_PC = { ok: '#22C55E', atencao: '#F59E0B', ruim: '#EF4444' };
+const EST_PC = { ok: ['Em ordem', '#22C55E'], atencao: ['Atenção', '#F59E0B'], investigando: ['Investigando', '#3B82F6'], peca: ['Precisa de peça', '#EF4444'] }, TOM_PC = { ok: '#22C55E', atencao: '#F59E0B', investigando: '#3B82F6', ruim: '#EF4444' };   // investigando = sem causa ainda, peça só depois do teste de graça (Sigma, 06/11/2026)
 const elD = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
 const fotoRobo = g => { const im = elD('img'); im.alt = ''; im.src = AVATAR_PAGES[g.foto] || ''; return im; };
 function cartaoPc(p) {
@@ -3031,7 +3031,7 @@ function cartaoPc(p) {
 function comparaPcs(dia) {   // os 3 lado a lado, uma linha por medida; a cor diz se tá bom (verde), de olho (amarelo) ou ruim (vermelho)
   const d = elD('div', 'pcd pcd-cmp'), cab = elD('div', 'pcd-lin pcd-cab');
   dia.pcs.forEach(p => { const g = GRUPO[p.robo] || TRAB_NEUTRO, h = elD('div'); h.style.setProperty('--rc', g.cor); h.append(fotoRobo(g), elD('b', '', p.pc)); cab.append(h); }); d.append(cab);
-  const sit = { nome: 'Situação', v: dia.pcs.map(p => [(EST_PC[p.estado] || EST_PC.atencao)[0], { ok: 'ok', peca: 'ruim' }[p.estado] || 'atencao']) };
+  const sit = { nome: 'Situação', v: dia.pcs.map(p => [(EST_PC[p.estado] || EST_PC.atencao)[0], { ok: 'ok', peca: 'ruim', investigando: 'investigando' }[p.estado] || 'atencao']) };
   [sit, ...(dia.comparar || [])].forEach(l => {
     d.append(elD('div', 'pcd-rot', l.nome)); const ln = elD('div', 'pcd-lin');
     l.v.forEach(([t, tom]) => { const c = elD('div', 'pcd-val', t); if (TOM_PC[tom]) c.style.setProperty('--ec', TOM_PC[tom]); else c.classList.add('neutro'); ln.append(c); }); d.append(ln);
