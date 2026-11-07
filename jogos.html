@@ -235,6 +235,12 @@ html body #ficha.premium .bloco small,html body #ficha.premium .bloco .k,html bo
 .carta-dt{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 4px;font-size:13px;color:#e8dcc0}
 .deck-cont{text-align:center;font-size:12px;color:var(--texto3);margin:10px 0 110px;letter-spacing:.5px}.deck-cont b{color:#FBE931;font-size:15px}
 @media (prefers-reduced-motion:reduce){.carta{transform:none}}
+/* respiro na ficha (May 16:33: "nada colado nos cantos da tela"): 22 px dos lados em tudo, as abas começam com margem e a insígnia não cobre o título */
+#ficha .topo{padding:10px 22px 20px!important;gap:20px!important}
+#ficha .abas-f{padding-left:22px!important;padding-right:22px!important;scroll-padding-left:22px}
+#ficha .bloco,#ficha .painel .bloco{margin-left:22px!important;margin-right:22px!important}
+#ficha .dados{padding-right:2px}
+#ficha .capa-insig .insig-jogo{right:-12px;top:-14px;width:50px;height:50px}
 /* ícones da Parede da Vitória em ouro de metal, como a logo, não amarelo (May 12:30) */
 .placa .zer{background:var(--ouro-metal);box-shadow:0 0 0 1px #CF8002,0 2px 8px rgba(243,186,21,.55)}
 .placa .num{color:#FBE931;text-shadow:0 0 6px rgba(243,186,21,.6)}
