@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.95">
+<meta name="app-versao" content="2026-11-07.96">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -2650,7 +2650,8 @@ function mostraFixa(items, fila) {   // cópia do balão no topo (o original fic
   fila = fila.filter(i => !RE_PERG.test(items[i].text || ''));
   const abertas = pergs.filter(i => !fixaPopVista.has(chaveDe(items[i])));
   pergsNaFila = abertas.map(i => chaveDe(items[i]));
-  if (abertas.length && !document.querySelector('.fixa-pop')) { const it = items[abertas[0]], g = (it.from === 'may' ? EU : GRUPO[it.quem]) || {}, todas = it.opcoes && it.opcoes.length ? it.opcoes.map((t, i) => ['abcdefgh'[i] || String(i + 1), t]) : alternativasDe(it.text); abrePergunta(it, g, todas.length > 4 ? [] : todas, chaveDe(it), abertas.length > 1 ? '1 de ' + abertas.length : ''); }
+  const escrevendo = (document.activeElement && /TEXTAREA|INPUT/.test(document.activeElement.tagName)) || !!(box.value || '').trim();   // teclado aberto ou texto na caixa: o popup espera ela mandar (May, 07/11/2026 12:49)
+  if (abertas.length && !escrevendo && !document.querySelector('.fixa-pop')) { const it = items[abertas[0]], g = (it.from === 'may' ? EU : GRUPO[it.quem]) || {}, todas = it.opcoes && it.opcoes.length ? it.opcoes.map((t, i) => ['abcdefgh'[i] || String(i + 1), t]) : alternativasDe(it.text); abrePergunta(it, g, todas.length > 4 ? [] : todas, chaveDe(it), abertas.length > 1 ? '1 de ' + abertas.length : ''); }
   if (!fila.length) return;
   if (fixaVer >= fila.length) fixaVer = 0;
   const idx = fila[fixaVer], orig = feed.querySelector('.msg[data-i="' + idx + '"]');
