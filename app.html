@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.142">
-<meta name="app-novidade" content="A Geral ganhou som: gota quando chega recado, papel subindo quando você manda, sininho na pergunta (desliga no rodapé do Menu)">
+<meta name="app-versao" content="2026-11-07.143">
+<meta name="app-novidade" content="Casa: o Gol hatch, o Siena sedã e a Ninja carenada, cada um com a forma de verdade">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -4135,8 +4135,9 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
     const linha = (g, x1, y1, x2, y2, cls) => { const l = ns('line', { x1, y1, x2, y2, class: cls, pathLength: 1 }); g.append(l); return l; };
     // desenho de cada coisa numa caixa de 0 a 1 (traço de planta baixa); [palavra, largura, comprimento em metros, traços]
     const TIPOS = [
-      [/moto/i, .75, 2.05, ['M.5 .02a.13 .13 0 1 0 .001 0', 'M.5 .72a.13 .13 0 1 0 .001 0', 'M.5 .28V.72', 'M.2 .26H.8', 'M.36 .4H.64V.62H.36Z']],
-      [/carro|\bgol\b|siena|fiat/i, 1.75, 3.9, ['M.12 .02H.88Q.98 .02 .98 .12V.88Q.98 .98 .88 .98H.12Q.02 .98 .02 .88V.12Q.02 .02 .12 .02Z', 'M.16 .26H.84L.8 .4H.2Z', 'M.2 .72H.8L.84 .82H.16Z', 'M.0 .16V.3M1 .16V.3M0 .7V.84M1 .7V.84']],
+      [/moto/i, .72, 2.02, ['M.5 .02C.8 .08 .92 .3 .88 .5C.86 .72 .76 .93 .5 .98C.24 .93 .14 .72 .12 .5C.08 .3 .2 .08 .5 .02Z', 'M.06 .22H.94', 'M.5 .02V.12M.5 .86V.98', 'M.34 .3H.66L.62 .44H.38Z', 'M.36 .5H.64V.8H.36Z']],   // moto carenada e gorda, de cima: a Ninja 300 (May 18:09)
+      [/\bgol\b|hatch/i, 1.63, 3.88, ['M.12 .02H.88Q.98 .02 .98 .12V.9Q.98 .98 .9 .98H.1Q.02 .98 .02 .9V.12Q.02 .02 .12 .02Z', 'M.16 .28H.84L.8 .42H.2Z', 'M.2 .42V.8M.8 .42V.8', 'M.2 .8H.8L.86 .94H.14Z', 'M0 .17V.31M1 .17V.31M0 .7V.84M1 .7V.84']],   // hatch (o Gol): a traseira acaba no vidro de trás, sem porta-malas (May 18:08)
+      [/carro|siena|fiat|sed[aã]/i, 1.64, 4.16, ['M.12 .02H.88Q.98 .02 .98 .12V.88Q.98 .98 .88 .98H.12Q.02 .98 .02 .88V.12Q.02 .02 .12 .02Z', 'M.16 .25H.84L.8 .37H.2Z', 'M.2 .37V.64M.8 .37V.64', 'M.2 .64H.8L.84 .73H.16Z', 'M.1 .8H.9', 'M0 .15V.28M1 .15V.28M0 .68V.81M1 .68V.81']],   // sedã (o Siena): vidro de trás e depois o porta-malas
       [/cama/i, 1.4, 1.9, ['M0 0H1V1H0Z', 'M.08 .05H.46V.19H.08Z', 'M.54 .05H.92V.19H.54Z', 'M0 .27H1']],
       [/sof[aá]/i, 2, .85, ['M0 0H1V1H0Z', 'M0 .32H1', 'M.1 .32V1M.9 .32V1', 'M.5 .32V1']],
       [/puff/i, 1.4, .35, ['M.12 .5a.11 .38 0 1 0 .001 0', 'M.37 .5a.11 .38 0 1 0 .001 0', 'M.62 .5a.11 .38 0 1 0 .001 0', 'M.87 .5a.11 .38 0 1 0 .001 0']],
