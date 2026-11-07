@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.99">
+<meta name="app-versao" content="2026-11-07.100">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -2502,6 +2502,20 @@ async function pegaMic() {
   return micStream;
 }
 document.addEventListener('visibilitychange', () => { if (document.hidden && !gravador) soltaMicStream(); });
+// fechou o app com recado ainda indo (May, 07/11/2026 12:53: "digito rapidinho, envio e fecho o app"): joga cada um, só texto, num arquivinho
+// _geral/recados/fila/<id>.json com keepalive (o celular deixa terminar mesmo fechando); o PC1 junta na conversa em até 1 min (house-bridge/junta-fila.sh).
+// Abriu de novo e o recado ainda tava pendente: o envio normal confere (jaGravado) e não duplica.
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden || !token) return;
+  Object.values(pendentes).forEach(({ p }) => {
+    if (!p || p.filaEnviada || p.audio || (p.fotos || []).length || !p.text) return;
+    const txt = p.text.replace(/\r?\n/g, '\n'), cita = p.re ? ' ⟪re: ' + p.re.nome + ': ' + p.re.trecho + '⟫' : '';
+    if (!p.linhas || !p.linhas.length) p.linhas = ['- [' + stamp(new Date(p.em || Date.now())) + '] ' + txt + cita];
+    p.filaEnviada = true; try { guardaPendente(p); } catch (e) {}
+    const corpo = JSON.stringify({ message: 'recado do iPhone (fila, app fechando)', content: b64encode(JSON.stringify({ arq: p.arq, linhas: p.linhas })) });
+    try { fetch(apiDe('_geral/recados/fila/' + p.id + '.json'), { method: 'PUT', keepalive: true, headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' }, body: corpo }).catch(() => {}); } catch (e) {}
+  });
+});
 async function comecaGravar() {
   if (gravador || sending) return;
   pararAoIniciar = false;
