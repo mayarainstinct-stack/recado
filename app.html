@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.132">
+<meta name="app-versao" content="2026-11-07.133">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -854,9 +854,10 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 @keyframes ie-pisca { 50% { opacity: .25; } }
 .ie-det-txt { font-size: 16px; font-weight: 600; line-height: 1.4; margin: 4px 0 8px; text-align: left; } .ie-det .p-nota { text-align: left; }
 .ct-rec .pp-card textarea { width: 100%; box-sizing: border-box; margin: 10px 0 12px; font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); resize: none; }
+.pp-card textarea:focus, .pp-card input:focus { outline: none; border-color: var(--quem) !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--quem) 25%, transparent) !important; }
 .ie-mover { background: #22C55E !important; color: #052E16 !important; }
 .ie-volta { background: var(--paper) !important; color: var(--fg) !important; border: 1px solid var(--line); } .ie-reprova { background: #DC2626 !important; color: #fff !important; }
-.ie-motivo { margin-top: 10px; width: 100%; box-sizing: border-box; font: inherit; font-size: 14px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--paper); color: var(--fg); resize: vertical; }
+.ie-ops { margin-top: 12px; flex-direction: column; } .ie-motivo { margin-top: 0; width: 100%; box-sizing: border-box; font: inherit; font-size: 14px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--paper); color: var(--fg); resize: vertical; }
 .ie-est.ie-aguardando { background: #4C1D95; color: #EDE9FE; } .ie-est.ie-revisando { background: #7C3AED; color: #fff; }
 .ie-busca { margin-top: 8px; width: 100%; box-sizing: border-box; font: inherit; font-size: 14px; padding: 9px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--paper); color: var(--fg); }
 .ie-prio { position: absolute; top: 4px; left: 9px; font: 900 13px 'Arial Black', sans-serif; color: #111; }
@@ -1644,7 +1645,7 @@ async function abreCracha(chave) {
   const pe = el('div', 'ct-pe');
   const gente = k === 'may' || /^humano/i.test(f.classe || '');
   if (!gente) { const chama = el('button', 'ct-chama', 'Mandar recado ' + (['orfeu', 'vega', 'hermes', 'sigma'].includes(k) ? 'pro ' : 'pra ') + nome); chama.type = 'button'; chama.onclick = e => {   // o recado sai dali mesmo, num popup, sem jogar pra Geral (May, 07/11/2026 16:43 e 16:44: regra pra todo "mandar recado")
-    e.stopPropagation(); const ov = el('div', 'fixa-pop ct-rec'), card = el('div', 'pp-card'), x = el('button', 'pp-x'), ta = el('textarea'), pp = ['orfeu', 'vega', 'hermes', 'sigma'].includes(k) ? 'pro ' : 'pra ', b = el('button', 'pp-op rec', 'Mandar ' + pp + nome);
+    e.stopPropagation(); const ov = el('div', 'fixa-pop ct-rec'), card = el('div', 'pp-card'); card.style.setProperty('--quem', g.cor || 'var(--accent)'); const x = el('button', 'pp-x'), ta = el('textarea'), pp = ['orfeu', 'vega', 'hermes', 'sigma'].includes(k) ? 'pro ' : 'pra ', b = el('button', 'pp-op rec', 'Mandar ' + pp + nome);
     x.type = b.type = 'button'; x.innerHTML = icone('close'); ta.rows = 4; ta.placeholder = 'Recado ' + pp + nome + '…';
     const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = ev => { if (ev.target === ov) fecha(); };
     b.onclick = async () => { const t = ta.value.trim(); if (!t) { ta.focus(); return; } await enviarComentario('@' + nome + ' ' + t, b, fecha); };
@@ -3558,6 +3559,10 @@ function abreInfoConversa() {
   });
 }
 [tituloEl.parentElement, logoEl, convAv].forEach(e => e.addEventListener('click', () => { if (FILE) abreInfoConversa(); }));
+{ let gx = null, gy = 0, gt = 0;   // na Geral, deslizar da direita pra esquerda abre o Menu: atalho de uma mão só, o ícone de cima continua (May, 07/11/2026 16:46)
+  feed.addEventListener('touchstart', e => { const t = e.touches[0]; gx = e.touches.length === 1 && FILE === GERAL.arq && !abreMenu.hidden && painel.hidden && !document.querySelector('.fixa-pop') && !e.target.closest('.player, input, textarea, .opcoes') ? t.clientX : null; gy = t.clientY; gt = Date.now(); }, { passive: true });
+  feed.addEventListener('touchend', e => { if (gx === null) return; const t = e.changedTouches[0], dx = t.clientX - gx, dy = t.clientY - gy; gx = null; if (dx < -70 && Math.abs(dy) < -dx * .6 && Date.now() - gt < 700) { abreMenu.click(); if (painel.animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) painel.animate([{ transform: 'translateX(100%)' }, { transform: 'none' }], { duration: 260, easing: 'cubic-bezier(.2,.8,.2,1)' }); } }, { passive: true });
+  feed.addEventListener('touchcancel', () => { gx = null; }, { passive: true }); }
 abreMenu.onclick = () => {
   menu.hidden = true; painel.hidden = false; pilha = []; painel.style.removeProperty('--c');
   tela('Menu', c => {
@@ -3906,7 +3911,7 @@ function abreIdeias(m) {
     const abertos = () => daTela('quadro'), telaDe = p => Object.keys(TELAS).find(t => TELAS[t].some(([e]) => e === p.estado)) || 'feitos';
     const feitos = () => d.postits.filter(p => p.estado === 'concluido').sort((a, b) => quandoNum(b.feito) - quandoNum(a.feito) || b.ordem - a.ordem);   // o que terminou por último em cima (May 16:20)
     const PRIO = { 1: ['altíssima', '#DC2626'], 2: ['alta', '#F97316'], 4: ['baixa', '#64748B'], 5: ['sem pressa', '#94A3B8'] };
-    const pop = (titulo, corpo) => { const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card ie-card'), x = elD('button', 'pp-x'); x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; card.append(x, elD('div', 'pp-perg', titulo), corpo); ov.append(card); document.body.append(ov); fechaPuxando(ov, fecha, () => card, () => card); return fecha; };
+    const pop = (titulo, corpo, cor) => { const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card ie-card'), x = elD('button', 'pp-x'); card.style.setProperty('--quem', cor || '#FACC15'); x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; card.append(x, elD('div', 'pp-perg', titulo), corpo); ov.append(card); document.body.append(ov); fechaPuxando(ov, fecha, () => card, () => card); return fecha; };   // o mesmo popup padrão, na cor do robô dono (May 17:02)
     const postit = (p, k) => {
       const el = elD('div', 'ie-post' + (p.estado === 'concluido' ? ' feito' : '')), g = GRUPO[p.dono], gi = GIRO[k % GIRO.length];
       el.dataset.id = p.id; el.dataset.r = gi; el.style.setProperty('--p', papel(p)); el.style.setProperty('--r', gi + 'deg');
@@ -3923,7 +3928,7 @@ function abreIdeias(m) {
       if (p.assunto || p.categoria || p.tela) cp.append(elD('b', 'ie-sub', [p.categoria || p.tela, p.assunto].filter(Boolean).join(' · '))); cp.append(elD('p', 'ie-det-txt', p.texto), elD('p', 'p-nota', (g ? g.nome.replace(/\s*\(.*\)$/, '') : 'Sem dono: o Sigma faz a triagem') + ' · ' + (NOME_EST[p.estado] || p.estado) + ' · ' + p.quando));
       if (p.nota) cp.append(elD('p', 'p-nota', p.nota));
       const t = telaDe(p), move = (para, extra) => { fecha(); muda(p, para, extra); };
-      const botao = (rot, cls, fn) => { const b = elD('button', 'ie-topo ' + cls, rot); b.type = 'button'; b.onclick = fn; cp.append(b); return b; };   // mudar de coluna com um toque, além de arrastar (May 15:58)
+      const ops = elD('div', 'pp-ops lista ie-ops'), botao = (rot, cls, fn) => { const b = elD('button', 'pp-op' + (cls === 'ie-mover' ? ' rec' : ''), rot); b.type = 'button'; b.onclick = fn; ops.append(b); return b; };   // os mesmos botões do popup padrão (May 17:02)   // mudar de coluna com um toque, além de arrastar (May 15:58)
       if (p.estado === 'esperando') botao('Começar a fazer', 'ie-mover', () => move('fazendo'));
       if (p.estado === 'fazendo') { botao('Entregar pra revisão do Sigma', 'ie-mover', () => move('aguardando', { entregue: agoraBr() })); botao('Voltar pra Esperando', 'ie-volta', () => move('esperando')); }
       if (p.estado === 'aguardando') botao('Sigma começa a revisar', 'ie-mover', () => move('revisando'));
@@ -3931,11 +3936,12 @@ function abreIdeias(m) {
         botao('Aprovado: vai pra Concluído', 'ie-mover', () => move('concluido', { feito: p.feito || p.entregue || agoraBr(), aprovadoSigma: agoraBr() }));
         const mot = elD('textarea', 'ie-motivo'); mot.rows = 2; mot.placeholder = 'Por que reprovou? (vai na nota pro dono)';
         const rb = botao('Reprovado: volta pro dono', 'ie-reprova', () => { const m = mot.value.trim(); if (!m) { mot.hidden = false; mot.focus(); return; } move('esperando', { nota: 'REPROVADO pelo Sigma ' + agoraBr() + ': ' + m + (p.nota ? ' | ' + p.nota : '') }); });
-        mot.hidden = true; cp.insertBefore(mot, rb);
+        mot.hidden = true; ops.insertBefore(mot, rb);
       }
       const daColuna = t !== 'feitos' ? daTela(t).filter(x => x.estado === p.estado) : [];
       if (daColuna.length && daColuna[0] !== p) botao('Mais urgente: pro topo', '', () => { fecha(); const cols = colsDe(t); cols[p.estado] = [p.id, ...cols[p.estado].filter(x => x !== p.id)]; salvaOrdem(cols); pinta(); });
-      const fecha = pop('Pedido #' + p.id, cp);
+      if (ops.children.length) cp.append(ops);
+      const fecha = pop('Pedido #' + p.id, cp, g && g.cor);
     };
     const agoraBr = () => { const dt = new Date(); return String(dt.getDate()).padStart(2, '0') + '/' + String(dt.getMonth() + 1).padStart(2, '0') + '/' + dt.getFullYear() + ' ' + String(dt.getHours()).padStart(2, '0') + ':' + String(dt.getMinutes()).padStart(2, '0'); };
     const colsDe = t => { const cols = {}; TELAS[t].forEach(([e]) => { cols[e] = daTela(t).filter(x => x.estado === e).map(x => x.id); }); return cols; };
