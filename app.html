@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.83">
+<meta name="app-versao" content="2026-11-07.84">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -2559,7 +2559,7 @@ async function mandaFixa(it, on, comOk) {   // comOk = texto da resposta ("✅ s
   if (foi && comOk) { const antes = respondendo; respondendo = { nome: nomeCita(it), trecho: trechoDe(it) }; const x = novoPendente(comOk === true ? '✅ ok' : comOk, [], FILE); respondendo = antes; foi = await enviar(x.p, x.el); }
   if (!foi) { marcaFixa(k, null); render(lastItems, true); showNote(on ? 'Não deu pra fixar: toca de novo quando a internet voltar.' : 'Não foi: a mensagem continua fixada até dar certo.', true); }
 }
-let fixaVer = 0, popAdiado = false; const fixaPopVista = new Set();   // pergunta que já saltou como popup nesta abertura do app   // qual da fila ela está vendo (0 = a mais recente)
+let fixaVer = 0, pergsNaFila = []; const fixaPopVista = new Set();   // pergunta que já saltou como popup nesta abertura do app   // qual da fila ela está vendo (0 = a mais recente)
 function alternativasDe(txt) {   // "a) uma coisa b) outra" -> [['a','uma coisa'], ['b','outra']]; só letras a-d (número costuma ser lista de perguntas)
   const t = String(txt || ''), achou = [...t.matchAll(/(?:^|[\s(:;])([a-dA-D])\)\s+/g)];
   if (achou.length < 2 || achou[0][1].toLowerCase() !== 'a') return [];
@@ -2575,7 +2575,7 @@ function abrePergunta(it, g, alts, k, conta) {   // padrão aprovado no HOUSE-BR
   const m0 = q.match(/(?:^|[\s(:;])a\)\s/i); if (m0) q = q.slice(0, m0.index).trim();
   const perg = document.createElement('div'); perg.className = 'pp-perg' + (q.length > 120 ? ' longa' : ''); perg.textContent = q;
   const fecha = () => { fixaPopVista.add(k); ov.classList.add('saindo'); document.removeEventListener('keydown', esc); setTimeout(() => { ov.remove(); if (FILE === GERAL.arq) render(lastItems, true); }, 180); };
-  const adia = () => { popAdiado = true; fecha(); };   // fechou ou tocou fora = não quer responder agora: nenhuma outra salta até ela reabrir o app (May, 07/11/2026 11:18)
+  const adia = () => { pergsNaFila.forEach(x => fixaPopVista.add(x)); fecha(); };   // fechou ou tocou fora = não quer responder agora: as que já estavam na fila param de saltar; pergunta NOVA que chegar depois salta na hora, sem reabrir o app (May, 07/11/2026 11:18 e 11:35)
   const esc = (e) => { if (e.key === 'Escape') adia(); };
   const manda = (txt) => { mandaFixa(it, false, txt); fecha(); };
   // pergunta com foto ou vídeo (May, 07/11/2026 10:31: "um balão que me mostra imagens e vídeos pra eu clicar em aprovo, reprovo ou digitar"): a mídia vem no popup
@@ -2605,7 +2605,8 @@ function mostraFixa(items, fila) {   // cópia do balão no topo (o original fic
   const pergs = fila.filter(i => RE_PERG.test(items[i].text || ''));
   fila = fila.filter(i => !RE_PERG.test(items[i].text || ''));
   const abertas = pergs.filter(i => !fixaPopVista.has(chaveDe(items[i])));
-  if (abertas.length && !popAdiado && !document.querySelector('.fixa-pop')) { const it = items[abertas[0]], g = (it.from === 'may' ? EU : GRUPO[it.quem]) || {}, todas = it.opcoes && it.opcoes.length ? it.opcoes.map((t, i) => ['abcdefgh'[i] || String(i + 1), t]) : alternativasDe(it.text); abrePergunta(it, g, todas.length > 4 ? [] : todas, chaveDe(it), abertas.length > 1 ? '1 de ' + abertas.length : ''); }
+  pergsNaFila = abertas.map(i => chaveDe(items[i]));
+  if (abertas.length && !document.querySelector('.fixa-pop')) { const it = items[abertas[0]], g = (it.from === 'may' ? EU : GRUPO[it.quem]) || {}, todas = it.opcoes && it.opcoes.length ? it.opcoes.map((t, i) => ['abcdefgh'[i] || String(i + 1), t]) : alternativasDe(it.text); abrePergunta(it, g, todas.length > 4 ? [] : todas, chaveDe(it), abertas.length > 1 ? '1 de ' + abertas.length : ''); }
   if (!fila.length) return;
   if (fixaVer >= fila.length) fixaVer = 0;
   const idx = fila[fixaVer], orig = feed.querySelector('.msg[data-i="' + idx + '"]');
