@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.90">
+<meta name="app-versao" content="2026-11-07.91">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -681,8 +681,7 @@ img.esq { min-height: 140px; }
 /* Geral = casa, "cara de não estou trabalhando" (May, 07/11/2026 12:00): grafite sempre, barra chanfrada com as 3 cores dela, envio em vidro escuro */
 body.na-geral { --bg: #121419; --paper: #171A20; --fg: #F1F5F9; --muted: #9AA3B2; --line: #2A2F38; --theirs: #20242C; --cinza: #22262E; --head: #1B1E24; --head-fg: #F8FAFC; color-scheme: dark; }
 body.na-geral .app { background: #121419; }
-body.na-geral header { background: linear-gradient(160deg, #262A33, #16181E 70%); border-radius: 0; box-shadow: 0 8px 24px rgba(0,0,0,.45);
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px)); }
+body.na-geral header { background: linear-gradient(160deg, #262A33, #16181E 70%); border-radius: 0 0 14px 14px; box-shadow: 0 8px 24px rgba(0,0,0,.45); }   /* sem clip-path: ele cortava a janelinha do "bots online" (May 12:10) */
 body.na-geral header::after { content: ''; position: absolute; left: 14px; right: 14px; bottom: 0; height: 3px; border-radius: 2px; background: var(--faixa, #3A3F4A); box-shadow: 0 0 10px rgba(255,255,255,.18); transition: background .6s; }   /* cores dos robôs online */
 body.na-geral #feed { background: radial-gradient(70% 40% at 0% 0%, rgba(227,27,35,.08), transparent 70%), radial-gradient(70% 40% at 100% 100%, rgba(34,197,94,.07), transparent 70%), radial-gradient(rgba(255,255,255,.035) 1px, transparent 1.4px) 0 0 / 18px 18px, #121419; }
 body.na-geral .day { background: #1C1F26; border-color: #2E333D; color: #AEB6C4; }
