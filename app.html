@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.76">
+<meta name="app-versao" content="2026-11-07.77">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -577,6 +577,42 @@ img.esq { min-height: 140px; }
 .p-voltar-baixo svg { width: 24px; height: 24px; }
 .painel:has(#p-extra:not([hidden])) .p-voltar-baixo { bottom: calc(92px + env(safe-area-inset-bottom, 0px)); }
 #p-voltar { display: none; }   /* o voltar mora embaixo à direita, perto do polegar (May, 07/11/2026 09:55) */
+.mq-hero { position: relative; overflow: hidden; border-radius: 20px; padding: 16px; color: #fff; background: radial-gradient(100% 80% at 0% 0%, #E31B23, transparent 60%), radial-gradient(100% 80% at 100% 0%, #286EDC, transparent 60%), radial-gradient(120% 80% at 50% 120%, #6FCF00, transparent 60%), #0B0B10; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
+.mq-hero::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 4px); pointer-events: none; }
+.mq-hero b { position: relative; display: block; font-size: 22px; font-weight: 900; letter-spacing: .02em; text-transform: uppercase; text-shadow: 0 0 18px rgba(255,255,255,.35); }
+.mq-hero span { position: relative; font-size: 13px; opacity: .85; }
+.mq-hero .mq-tot { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+.mq-hero .mq-tot div { border-radius: 12px; padding: 8px 10px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18); backdrop-filter: blur(6px); }
+.mq-hero .mq-tot b { font-size: 22px; } .mq-hero .mq-tot small { display: block; font-size: 11px; opacity: .8; }
+.mq-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mq-card { position: relative; overflow: hidden; border-radius: 18px; min-height: 178px; padding: 0; text-align: left; color: #fff; border: 1px solid color-mix(in srgb, var(--k1) 60%, transparent); background: linear-gradient(160deg, color-mix(in srgb, var(--k1) 92%, #000), color-mix(in srgb, var(--k2) 70%, #000)); box-shadow: 0 8px 22px color-mix(in srgb, var(--k1) 30%, transparent); display: flex; flex-direction: column; width: auto; height: auto; }
+.mq-card .ft { height: 92px; background: #0005 center / cover; position: relative; }
+.mq-card .ft::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, color-mix(in srgb, var(--k1) 85%, #000)); }
+.mq-card .tx { padding: 8px 10px 10px; display: grid; gap: 2px; flex: 1; }
+.mq-card .tx b { font-size: 15px; font-weight: 900; line-height: 1.15; text-shadow: 0 1px 6px rgba(0,0,0,.4); } .mq-card .tx small { font-size: 11.5px; opacity: .85; }
+.mq-card .xp { margin-top: auto; display: grid; gap: 3px; font-size: 10.5px; font-weight: 800; opacity: .95; }
+.mq-card .xp i, .mq-dos .xp i { display: block; height: 6px; border-radius: 999px; background: rgba(255,255,255,.22); overflow: hidden; }
+.mq-card .xp i::before, .mq-dos .xp i::before { content: ''; display: block; height: 100%; width: var(--p); border-radius: 999px; background: linear-gradient(90deg, #fff, color-mix(in srgb, var(--k2) 40%, #fff)); box-shadow: 0 0 8px #fff; }
+.mq-card .tag { position: absolute; top: 8px; left: 8px; z-index: 1; font-size: 10px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; background: rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.25); }
+.mq-dos { display: flex; flex-direction: column; gap: 12px; }
+.mq-capa { position: relative; overflow: hidden; border-radius: 22px; min-height: 230px; color: #fff; background: color-mix(in srgb, var(--k1) 80%, #000) center / cover; box-shadow: 0 12px 34px color-mix(in srgb, var(--k1) 40%, transparent); display: flex; align-items: flex-end; }
+.mq-capa::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, color-mix(in srgb, var(--k1) 92%, #000) 92%); }
+.mq-capa > div { position: relative; z-index: 1; padding: 14px 16px; } .mq-capa b { display: block; font-size: 26px; font-weight: 900; line-height: 1.05; text-shadow: 0 2px 12px rgba(0,0,0,.5); }
+.mq-capa span { display: inline-block; margin-top: 6px; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 999px; background: rgba(0,0,0,.4); border: 1px solid rgba(255,255,255,.3); }
+.mq-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.mq-stats div { border-radius: 14px; padding: 10px; text-align: center; background: linear-gradient(160deg, color-mix(in srgb, var(--k1) 22%, transparent), transparent); border: 1px solid color-mix(in srgb, var(--k1) 40%, transparent); }
+.mq-stats b { display: block; font-size: 26px; font-weight: 900; font-variant-numeric: tabular-nums; text-shadow: 0 0 14px color-mix(in srgb, var(--k1) 60%, transparent); } .mq-stats small { font-size: 11px; color: var(--muted); }
+.mq-dos .xp { display: grid; gap: 4px; font-size: 12px; font-weight: 800; } .mq-dos .xp i { height: 9px; background: color-mix(in srgb, var(--fg) 10%, transparent); }
+.mq-dos .xp i::before { background: linear-gradient(90deg, var(--k1), color-mix(in srgb, var(--k2) 60%, #fff)); box-shadow: 0 0 10px var(--k1); }
+.mq-ficha { border-radius: 16px; background: var(--paper); border: 1px solid var(--line); overflow: hidden; }
+.mq-ficha div { display: grid; grid-template-columns: 96px 1fr; gap: 10px; padding: 9px 12px; font-size: 14px; border-top: 1px solid var(--line); } .mq-ficha div:first-child { border-top: 0; }
+.mq-ficha span { font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); padding-top: 2px; }
+.mq-hist { border-radius: 16px; padding: 12px 14px; font-size: 15px; line-height: 1.45; background: linear-gradient(135deg, color-mix(in srgb, var(--k1) 16%, var(--paper)), var(--paper)); border-left: 4px solid var(--k1); }
+.mq-ins { display: flex; flex-wrap: wrap; gap: 8px; } .mq-ins span { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; padding: 7px 12px; border-radius: 12px; background: color-mix(in srgb, var(--k1) 14%, var(--paper)); border: 1px solid color-mix(in srgb, var(--k1) 45%, transparent); }
+.mq-ins span::before { content: '★'; color: var(--k1); text-shadow: 0 0 8px var(--k1); }
+.mq-chips { display: flex; flex-wrap: wrap; gap: 6px; } .mq-chips span { font-size: 12.5px; padding: 5px 10px; border-radius: 999px; background: color-mix(in srgb, var(--fg) 6%, transparent); border: 1px solid var(--line); }
+.mq-falta li { color: var(--muted); }
+.mq-fotos { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; } .mq-fotos button { flex: none; width: 110px; height: 110px; border-radius: 14px; background: var(--paper) center / cover; border: 1px solid var(--line); }
 .cartao h3 { margin: 0 0 4px; font-size: 16px; } .cartao h4 { margin: 10px 0 2px; font-size: 14px; color: var(--accent); }
 .cartao ul { margin: 2px 0; padding-left: 18px; } .cartao li { margin: 2px 0; }
 .ag.perto { border: 2px solid var(--accent); }
@@ -2915,7 +2951,7 @@ const irGeral = document.getElementById('ir-geral'), irTrab = document.getElemen
 const painel = document.getElementById('painel'), pCorpo = document.getElementById('p-corpo'), pTit = document.getElementById('p-tit'), pExtra = document.getElementById('p-extra');
 let pilha = [], catalogo = null;
 const reais = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
-const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#EF4444'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/pend[eê]ncia/i, '#F59E0B']];
+const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#EF4444'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[aá]quina|console/i, '#EC4899'], [/pend[eê]ncia/i, '#F59E0B']];
 function botaoGrade(ic, txt, sub, fn) {   // azulejo do Menu: ícone grande em cima, nome curto embaixo, na cor do assunto
   const b = document.createElement('button'); b.type = 'button'; b.className = 'p-azulejo'; if (sub) b.title = sub;
   const cor = (COR_ASSUNTO.find(([re]) => re.test(txt)) || [])[1]; if (cor) b.style.setProperty('--c', cor);
@@ -3174,10 +3210,56 @@ function abreDiagnostico() {
     linha('Internet', navigator.onLine === false ? 'sem conexão' : 'conectado');
   });
 }
+// Máquinas e consoles (May, 07/11/2026 10:19: "a capivara dos meus consoles e máquina, completa e bonita, gamificada, com a cara de cada console";
+// 10:22 entrou no lugar da Comida e água). Dados em casa/maquinas.json; a cor de cada cartão é a do console (vocab do jogos.json) ou a do robô (PC).
+const corMaq = x => { const g = x.robo && GRUPO[x.robo]; return [x.cor || (g && g.cor) || '#64748B', x.cor2 || x.cor || (g && g.cor) || '#334155']; };
+function fundoFoto(el, path) { if (path) fotoUrl(path).then(u => { el.style.backgroundImage = 'url(' + u + ')'; }).catch(() => {}); }
+function abreMaquinas(m) {
+  tela(m.nome, async c => {
+    const p = elD('p', 'p-nota', 'Carregando…'); c.append(p);
+    let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    p.remove();
+    const ms = d.maquinas || [], soma = k => ms.reduce((n, x) => n + ((x.stats && x.stats[k]) || 0), 0);
+    const h = elD('div', 'mq-hero'), tot = elD('div', 'mq-tot');
+    h.append(elD('b', '', 'Minha coleção'), elD('span', '', ms.filter(x => x.tipo === 'console').length + ' consoles · ' + ms.filter(x => x.tipo === 'pc').length + ' PCs · atualizado ' + (d.atualizado || '')));
+    [['jogos', 'jogos'], ['zerados', 'zerados'], ['jogando', 'jogando']].forEach(([k, t]) => { const b = elD('div'); b.append(elD('b', '', String(soma(k))), elD('small', '', t)); tot.append(b); });
+    h.append(tot); c.append(h);
+    const g = elD('div', 'mq-grade'); c.append(g);
+    ms.forEach(x => {
+      const [k1, k2] = corMaq(x), b = elD('button', 'mq-card'); b.type = 'button'; b.style.setProperty('--k1', k1); b.style.setProperty('--k2', k2);
+      const ft = elD('div', 'ft'); fundoFoto(ft, (x.fotos || [])[0]);
+      const tx = elD('div', 'tx'); tx.append(elD('b', '', x.nome), elD('small', '', x.apelido || x.papel || x.modelo || ''));
+      const st = x.stats;
+      if (st && st.jogos) { const xp = elD('div', 'xp'), bar = elD('i'); bar.style.setProperty('--p', Math.round(st.zerados / st.jogos * 100) + '%'); xp.append(st.zerados + ' de ' + st.jogos + ' zerados', bar); tx.append(xp); }
+      else if (x.robo) tx.append(elD('div', 'xp', (GRUPO[x.robo] || {}).nome || ''));
+      b.append(ft, tx, elD('span', 'tag', x.tipo === 'pc' ? 'PC' : (x.geracao || 'console'))); b.onclick = () => abreMaquina(x); g.append(b);
+    });
+  });
+}
+function abreMaquina(x) {
+  tela(x.nome, c => {
+    const [k1, k2] = corMaq(x), d = elD('div', 'mq-dos'); d.style.setProperty('--k1', k1); d.style.setProperty('--k2', k2); c.append(d);
+    const capa = elD('div', 'mq-capa'), ct = elD('div'); fundoFoto(capa, (x.fotos || [])[0]); ct.append(elD('b', '', x.nome)); if (x.apelido) ct.append(elD('span', '', x.apelido)); capa.append(ct); d.append(capa);
+    const st = x.stats;
+    if (st) {
+      const s3 = elD('div', 'mq-stats'); [['jogos', 'na biblioteca'], ['zerados', 'zerados'], ['jogando', 'jogando agora']].forEach(([k, t]) => { const b = elD('div'); b.append(elD('b', '', String(st[k] || 0)), elD('small', '', t)); s3.append(b); }); d.append(s3);
+      if (st.jogos) { const xp = elD('div', 'xp'), bar = elD('i'); bar.style.setProperty('--p', Math.round(st.zerados / st.jogos * 100) + '%'); xp.append('Progresso da coleção: ' + Math.round(st.zerados / st.jogos * 100) + '% zerado', bar); d.append(xp); }
+    }
+    if (x.historia) d.append(elD('div', 'mq-hist', x.historia));
+    const f = elD('div', 'mq-ficha');
+    [['Modelo', x.modelo], ['Geração', x.geracao], ['Onde fica', x.onde], ['De quem', x.dono], ['Papel', x.papel], ['Desde', x.desde], ['Como veio', x.como_veio], ['Controles', x.controles], ['Estado', x.estado], ['Robô', x.robo && (GRUPO[x.robo] || {}).nome]].forEach(([t, v]) => { if (!v) return; const l = elD('div'); l.append(elD('span', '', t), elD('b', '', v)); f.append(l); });
+    if (f.childElementCount) d.append(f);
+    if ((x.conquistas || []).length) { d.append(elD('div', 'p-sec', 'Insígnias')); const i = elD('div', 'mq-ins'); x.conquistas.forEach(t => i.append(elD('span', '', t))); d.append(i); }
+    if ((x.acessorios || []).length) { d.append(elD('div', 'p-sec', 'Acessórios')); const a = elD('div', 'mq-chips'); x.acessorios.forEach(t => a.append(elD('span', '', t))); d.append(a); }
+    if ((x.fotos || []).length) { d.append(elD('div', 'p-sec', 'Fotos')); const fs = elD('div', 'mq-fotos'); x.fotos.forEach(pth => { const b = elD('button'); b.type = 'button'; b.setAttribute('aria-label', 'Abrir foto'); fundoFoto(b, pth); b.onclick = () => fotoUrl(pth, true).then(u => abreZoom(u, pth, x.fotos)).catch(() => {}); fs.append(b); }); d.append(fs); }
+    if ((x.falta || []).length) { d.append(elD('div', 'p-sec', 'A descobrir')); const ul = elD('ul', 'mq-falta'); x.falta.forEach(t => ul.append(elD('li', '', t))); d.append(ul); }
+  });
+}
 function abreItemMenu(m) {
   painel.style.setProperty('--c', (COR_ASSUNTO.find(([re]) => re.test(m.nome)) || [])[1] || 'var(--accent)');   // a tela fica na cor do assunto, igual o azulejo dela
   if (m.tipo === 'pagina') { location.href = m.arq; return; }   // página própria do app (ex.: jogos.html), volta pelo botão dela
   if (m.tipo === 'catalogo') return abreCatalogo();
+  if (m.tipo === 'maquinas') return abreMaquinas(m);
   if (m.tipo === 'imagens') return abreImagens(m);
   if (m.tipo === 'videos') return abreVideos(m);
   if (m.tipo === 'texto' && m.cartoes) return abreCartoes(m);
