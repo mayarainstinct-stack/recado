@@ -22,7 +22,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .topo .marca-sis i{width:10px;height:10px;border-radius:3px;background:var(--k1);box-shadow:0 0 10px var(--k1);transform:rotate(45deg)}
 .topo .tot{margin-left:auto;font-size:12px;color:var(--texto3)}
 /* a fileira de máquinas, igual à tela inicial de um console */
-#fundo.marca{background-size:120px 120px;background-repeat:repeat;background-position:center;background-color:color-mix(in srgb,var(--k1) 35%,#070A14)}
+#fundo.marca{background-size:120px 120px;background-repeat:repeat;background-position:center}
 .card .logo{position:absolute;right:-14px;top:-10px;width:116px;height:116px;opacity:.26;object-fit:contain;transform:rotate(-8deg)}.card .logo-txt{position:absolute;right:6px;top:-4px;font-size:64px;font-weight:800;font-style:italic;opacity:.2;letter-spacing:-.04em}
 .grade{flex:1;min-height:0;overflow-y:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:6px 16px 24px;align-content:start;animation:entra .32s cubic-bezier(.2,.8,.2,1)}
 .card{position:relative;overflow:hidden;min-height:132px;border-radius:20px;padding:12px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;text-align:left;color:#fff;font:inherit;cursor:pointer;background:linear-gradient(150deg,color-mix(in srgb,var(--c) 85%,#000),color-mix(in srgb,var(--c) 35%,#000));border:1px solid rgba(255,255,255,.18);box-shadow:0 10px 24px color-mix(in srgb,var(--c) 30%,transparent)}
@@ -95,6 +95,17 @@ const CURTO={ps1:"PS1",ps2:"PS2",ps4:"PS4",switch:"Switch","3ds":"3DS",snes:"SNE
 const GERACAO={snes:"4ª geração",ps1:"5ª geração",ps2:"6ª geração",x360:"7ª geração",ps4:"8ª geração",switch:"8ª geração","3ds":"8ª geração"},SELO={"3ds":"portátil",switch:"híbrido"}
 const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
 const fotos={}
+// Papel de parede de cada console (May 18:54: "fundo do PlayStation azul e X, bolinha, triângulo de branco, tipo wallpaper oficial de console").
+// Formas desenhadas aqui em SVG, nada de wallpaper baixado nem logo da marca (Sigma 18:58, regra de copyright).
+const W_SVG={
+  ps:["#0B3FA8",'<g fill="none" stroke="#fff" stroke-width="3" opacity=".22" stroke-linecap="round" stroke-linejoin="round"><path d="M28 14l12 20H16z"/><circle cx="92" cy="26" r="11"/><path d="M18 82l20 20M38 82l-20 20"/><rect x="80" y="80" width="22" height="22" rx="2"/></g>'],
+  switch:["#D7192E",'<g fill="none" stroke="#fff" stroke-width="3" opacity=".22" stroke-linecap="round"><rect x="20" y="22" width="24" height="56" rx="12"/><rect x="76" y="22" width="24" height="56" rx="12"/><circle cx="32" cy="38" r="5"/><circle cx="88" cy="58" r="5"/><path d="M60 92v14M53 99h14"/></g>'],
+  "3ds":["#B0122B",'<g fill="none" stroke="#fff" stroke-width="3" opacity=".22" stroke-linecap="round"><circle cx="34" cy="34" r="12"/><path d="M84 22v24M72 34h24"/><circle cx="34" cy="90" r="4"/><circle cx="48" cy="90" r="4"/><rect x="70" y="78" width="30" height="22" rx="4"/></g>'],
+  snes:["#5B4D8E",'<g opacity=".32"><circle cx="30" cy="30" r="9" fill="#E8434C"/><circle cx="48" cy="48" r="9" fill="#F3C83C"/><circle cx="30" cy="66" r="9" fill="#3DAA5C"/><circle cx="12" cy="48" r="9" fill="#3E6FD8"/></g><g fill="none" stroke="#fff" stroke-width="3" opacity=".2"><path d="M86 74v30M71 89h30"/></g>'],
+  x360:["#127C1F",'<g fill="none" stroke="#fff" stroke-width="3" opacity=".22" stroke-linecap="round"><circle cx="36" cy="36" r="18"/><path d="M26 26l20 20M46 26l-20 20"/><circle cx="90" cy="88" r="7"/><circle cx="76" cy="102" r="3"/><circle cx="104" cy="74" r="3"/></g>'],
+  pc:[null,'<g fill="none" stroke="#fff" stroke-width="2.5" opacity=".2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 30h30l10 10h30M80 40v30l10 10h20M20 90h40l10-10"/><circle cx="10" cy="30" r="3"/><circle cx="110" cy="80" r="3"/><circle cx="20" cy="90" r="3"/><rect x="44" y="52" width="22" height="22" rx="3"/></g>']}
+const W_DE={ps1:"ps",ps2:"ps",ps4:"ps",ps5:"ps",switch:"switch","3ds":"3ds",snes:"snes",x360:"x360"}
+function wallpaper(x){const k=x.robo?"pc":W_DE[x.console];if(!k)return null;const [bg,g]=W_SVG[k],cor0=bg||cor(x);return{cor:cor0,url:'url("data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">'+g+'</svg>')+'")'}}
 const MARCA_SVG={ps1:"playstation",ps2:"playstation",ps4:"playstation",ps5:"playstation",switch:"switch","3ds":"3ds",snes:"snes",n64:"n64"},svgs={}
 function logo(x){const k=x.robo?"pc":MARCA_SVG[x.console];if(!k)return Promise.reject();if(svgs[k])return svgs[k];return svgs[k]=gh("marca/consoles/"+k+".svg",true).then(r=>{if(!r.ok)throw 0;return r.text()}).then(t=>"data:image/svg+xml;charset=utf-8,"+encodeURIComponent(t.replace(/currentColor/g,"#ffffff").replace(/color="[^"]*"/,'color="#ffffff"')))}
 function foto(p){if(!p)return Promise.reject();if(fotos[p])return fotos[p];return fotos[p]=gh(p,true).then(r=>{if(!r.ok)throw 0;return r.blob()}).then(b=>URL.createObjectURL(b))}
@@ -113,7 +124,7 @@ function grade(){
   const topo=el("div","topo"),ms2=el("div","marca-sis");ms2.append(el("i"),"Minha coleção");const t=D.total||{}
   topo.append(ms2,el("span","tot",D.maquinas.length+" máquinas · "+(t.zerados??"–")+" zerados"));app.append(topo)
   const g=el("div","grade");D.maquinas.forEach((x,j)=>{const b=el("button","card");b.style.setProperty("--c",cor(x));b.setAttribute("aria-label",x.nome)
-    {const lg=el("img","logo");lg.alt="";b.append(lg);logo(x).then(u=>{lg.src=u}).catch(()=>{lg.replaceWith(el("span","logo-txt",CURTO[x.console]||""))})}
+    {const w=wallpaper(x);if(w){b.style.setProperty("--c",w.cor);b.style.backgroundImage=w.url+",linear-gradient(150deg,color-mix(in srgb,"+w.cor+" 92%,#fff),color-mix(in srgb,"+w.cor+" 70%,#000))";b.style.backgroundSize="120px 120px,cover"}}
     if(x.robo&&ROBO[x.robo]){const im=el("img","rob");im.alt="";im.src=ROBO[x.robo][2];b.append(im)}
     const st=x.stats;b.append(el("span","cur",CURTO[x.console]||(x.robo?"PC":"")),el("b","",x.nome),el("small","",st?(st.zerados||0)+" zerados · "+(st.jogos||0)+" jogos":(x.modelo||x.papel||"")))
     b.onclick=()=>monta(j);g.append(b)})
@@ -123,7 +134,7 @@ function grade(){
 function monta(i){
   atual=i;const ms=D.maquinas,m=ms[i],k=cor(m);try{sessionStorage.setItem("maq-atual",m.id)}catch(e){}
   document.documentElement.style.setProperty("--k1",k)
-  fundo.style.backgroundImage="none";fundo.classList.remove("marca");logo(m).then(u=>{if(atual===i){fundo.style.backgroundImage="url("+u+")";fundo.classList.add("marca")}}).catch(()=>{})   // fundo = o logo da marca repetido, não a foto (May 18:45); as fotos ficam na aba Fotos
+  {const w=wallpaper(m);fundo.classList.toggle("marca",!!w);fundo.style.backgroundImage=w?w.url:"none";fundo.style.backgroundColor=w?w.cor:""}   // fundo = o logo da marca repetido, não a foto (May 18:45); as fotos ficam na aba Fotos
   app.replaceChildren()
   const topo=el("div","topo"),vt=el("button","volta-col","← Coleção");vt.onclick=grade;const t=D.total||{}
   topo.append(vt,el("span","tot",(t.zerados??"–")+" zerados"));app.append(topo)
