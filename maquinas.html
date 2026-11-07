@@ -52,6 +52,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .prog{margin-top:12px;font-size:12px;color:var(--texto2);display:grid;gap:6px}
 .prog i{display:block;height:10px;border-radius:999px;background:rgba(255,255,255,.09);overflow:hidden}
 .prog i{height:14px;border-radius:4px;transform:skewX(-18deg)}
+.prog i.ouro::before{background:repeating-linear-gradient(90deg,transparent 0 0),linear-gradient(100deg,#8A6416,#F5D237 30%,#FFF6C8 45%,#E2B33A 60%,#8A6416);box-shadow:0 0 18px #F5D237,0 0 4px #FFF6C8;animation:brilho 2.4s linear infinite;background-size:100% 100%,220% 100%}
+@keyframes brilho{from{background-position:0 0,100% 0}to{background-position:0 0,-120% 0}}   /* 100% = troféu: dourado metálico, bem diferente do 99% (May 07/11 11:57) */
 .prog i::before{content:"";display:block;height:100%;width:var(--p);background:repeating-linear-gradient(90deg,var(--bc) 0 9px,transparent 9px 13px);box-shadow:0 0 12px color-mix(in srgb,var(--bc) 60%,transparent)}   /* barra tracejada do launcher: UMA cor só, que vai da cor do console (0%) ao dourado da parede da vitória (100%) (May 07/11 11:48 e 11:51) */
 .hist{font-size:15px;line-height:1.5;color:var(--texto)}
 .ficha div{display:grid;grid-template-columns:96px 1fr;gap:10px;padding:9px 0;border-top:1px solid rgba(255,255,255,.08);font-size:14px}
@@ -117,7 +119,7 @@ function monta(i){
   const pags=[],vid=(t)=>{const v=el("section","vidro");v.append(el("h2","",t));pags.push([t,v]);return v}
   const st=m.stats
   if(st){const v=vid("Na biblioteca"),n=el("div","nums");[["jogados","jogados"],["zerados","zerados"],["andamento","em andamento"]].forEach(([c,tt])=>{const d=el("div");d.append(el("b","",String(st[c]||0)),el("small","",tt));n.append(d)});v.append(n)
-    if(st.jogados){const pc=Math.round(st.zerados/st.jogados*100),g=el("div","prog"),b=el("i");b.style.setProperty("--p",Math.max(pc,3)+"%");b.style.setProperty("--bc","color-mix(in srgb,#F5D237 "+pc+"%,"+k+")");g.append("Coleção zerada: "+pc+"% ("+st.zerados+" de "+st.jogados+")",b);v.append(g)}}
+    if(st.jogados){const pc=Math.round(st.zerados/st.jogados*100),g=el("div","prog"),b=el("i");b.style.setProperty("--p",Math.max(pc,3)+"%");b.style.setProperty("--bc","color-mix(in srgb,#F5D237 "+pc+"%,"+k+")");if(pc>=100)b.classList.add("ouro");g.append("Coleção zerada: "+pc+"% ("+st.zerados+" de "+st.jogados+")",b);v.append(g)}}
   if(m.historia){const v=vid("História");v.append(el("p","hist",m.historia))}
   const f=el("div","ficha");[["Modelo",m.modelo],["Onde fica",m.onde],["De quem",m.dono],["Papel",m.papel],["Desde",m.desde],["Como veio",m.como_veio],["Controles",m.controles],["Estado",m.estado]].forEach(([a,b])=>{if(!b)return;const l=el("div");l.append(el("span","",a),el("b","",b));f.append(l)})
   if(f.childElementCount){const v=vid("Ficha");v.append(f)}
