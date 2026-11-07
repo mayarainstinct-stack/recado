@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Máquinas e consoles</title>
+<meta name="robots" content="noindex">
+<style>
+@font-face{font-family:Inter;src:url(fontes/Inter-Regular.ttf);font-weight:400}
+@font-face{font-family:Inter;src:url(fontes/Inter-Bold.ttf);font-weight:700}
+:root{--fundo:#070A14;--texto:#F5F8FC;--texto2:#C9D1E3;--texto3:#8C96AE;--vidro:rgba(255,255,255,.07);--borda:rgba(255,255,255,.14);--k1:#4F46E5;--k2:#4F46E5}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--fundo);color:var(--texto);font-family:Inter,"Segoe UI",system-ui,sans-serif}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+/* fundo: a foto da máquina escolhida, tingida na cor dela, com as riscas de tela (Máquinas = um sistema próprio, May 07/11/2026 11:26) */
+#fundo{position:fixed;inset:0;z-index:0;background:var(--fundo) center/cover no-repeat;transition:background-image .01s}
+#fundo::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 70% at 85% 0%,color-mix(in srgb,var(--k1) 55%,transparent),transparent 60%),linear-gradient(180deg,rgba(7,10,20,.35),rgba(7,10,20,.88) 45%,#070A14 80%)}
+#fundo::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 4px)}
+#app{position:relative;z-index:1;height:100dvh;display:flex;flex-direction:column;padding:max(16px,env(safe-area-inset-top)) 0 calc(84px + env(safe-area-inset-bottom));overflow:hidden}   /* uma tela só, sem rolar pra baixo: o resto vai em abas que deslizam (May 07/11 11:27) */
+.topo{flex:none;display:flex;align-items:center;gap:10px;padding:0 16px 12px}
+.topo .marca-sis{display:flex;align-items:center;gap:8px;font-weight:700;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--texto2)}
+.topo .marca-sis i{width:10px;height:10px;border-radius:3px;background:var(--k1);box-shadow:0 0 10px var(--k1);transform:rotate(45deg)}
+.topo .tot{margin-left:auto;font-size:12px;color:var(--texto3)}
+/* a fileira de máquinas, igual à tela inicial de um console */
+.fila{flex:none;display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 20px 16px;scroll-padding-left:20px;scrollbar-width:none}
+.fila::-webkit-scrollbar{display:none}
+.bloco{flex:none;scroll-snap-align:start;width:76px;height:76px;border-radius:18px;position:relative;overflow:hidden;background:linear-gradient(150deg,color-mix(in srgb,var(--c) 85%,#000),color-mix(in srgb,var(--c) 35%,#000));border:2px solid rgba(255,255,255,.12);display:grid;place-items:center;font-weight:700;font-size:13px;letter-spacing:.06em;transition:transform .22s cubic-bezier(.2,.8,.2,1.15),border-color .2s}
+.bloco img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.9}
+.bloco span{position:relative;z-index:1;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.bloco.ativo{transform:scale(1.14);border-color:#fff;box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 70%,transparent),0 10px 26px color-mix(in srgb,var(--c) 45%,transparent)}
+.nomefila{flex:none;padding:0 16px;font-size:12px;color:var(--texto3);min-height:16px}
+/* destaque da máquina escolhida */
+.palco{flex:none;padding:14px 16px 0;animation:entra .32s cubic-bezier(.2,.8,.2,1)}
+@keyframes entra{from{transform:translateX(28px)}to{transform:none}}
+.palco .selos{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.selo{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:999px;background:var(--vidro);border:1px solid var(--borda);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.selo.marca{background:var(--k1);border-color:transparent;color:#fff;box-shadow:0 0 14px color-mix(in srgb,var(--k1) 60%,transparent)}
+.palco h1{font-size:30px;line-height:1.05;font-weight:700;letter-spacing:-.01em;text-shadow:0 2px 18px rgba(0,0,0,.5)}
+.palco .apelido{margin-top:6px;font-size:15px;color:var(--texto2)}
+.abas{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:14px 16px 8px;flex:none}.abas::-webkit-scrollbar{display:none}
+.abas button{flex:none;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:8px 12px;border-radius:999px;background:var(--vidro);border:1px solid var(--borda);color:var(--texto2);transition:background .2s,color .2s}
+.abas button.on{background:var(--k1);border-color:transparent;color:#fff;box-shadow:0 0 14px color-mix(in srgb,var(--k1) 60%,transparent)}
+.trilho{flex:1;min-height:0;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}.trilho::-webkit-scrollbar{display:none}
+.pag{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;overflow-y:auto;padding-bottom:8px}
+.vidro{margin:0 16px;border-radius:20px;padding:14px;background:rgba(14,18,32,.62);border:1px solid var(--borda);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.vidro h2{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--texto2);margin-bottom:10px}
+.vidro h2::before{content:"";width:4px;height:14px;border-radius:2px;background:var(--k1);box-shadow:0 0 8px var(--k1)}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.nums div{border-radius:14px;padding:10px 6px;text-align:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}
+.nums b{display:block;font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;text-shadow:0 0 14px color-mix(in srgb,var(--k1) 70%,transparent)}
+.nums small{font-size:11px;color:var(--texto3)}
+.prog{margin-top:12px;font-size:12px;color:var(--texto2);display:grid;gap:6px}
+.prog i{display:block;height:10px;border-radius:999px;background:rgba(255,255,255,.09);overflow:hidden}
+.prog i::before{content:"";display:block;height:100%;width:var(--p);border-radius:999px;background:linear-gradient(90deg,color-mix(in srgb,var(--k1) 55%,transparent),var(--k1));box-shadow:0 0 12px var(--k1)}
+.hist{font-size:15px;line-height:1.5;color:var(--texto)}
+.ficha div{display:grid;grid-template-columns:96px 1fr;gap:10px;padding:9px 0;border-top:1px solid rgba(255,255,255,.08);font-size:14px}
+.ficha div:first-child{border-top:0}
+.ficha span{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--texto3);padding-top:2px}
+.ins{display:flex;flex-wrap:wrap;gap:8px}
+.ins span{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;padding:8px 12px;border-radius:12px;background:color-mix(in srgb,var(--k1) 18%,rgba(255,255,255,.03));border:1px solid color-mix(in srgb,var(--k1) 50%,transparent)}
+.ins span::before{content:"";width:10px;height:10px;transform:rotate(45deg);background:var(--k1);box-shadow:0 0 8px var(--k1);border-radius:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chips span{font-size:13px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
+.fotos{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}.fotos::-webkit-scrollbar{display:none}
+.fotos button{flex:none;width:120px;height:120px;border-radius:14px;background:#111 center/cover;border:1px solid var(--borda)}
+.falta li{margin:4px 0 4px 18px;color:var(--texto2);font-size:14px}
+.voltar{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom));z-index:5;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:rgba(14,18,32,.8);border:1px solid var(--borda);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 8px 24px rgba(0,0,0,.5),0 0 0 2px color-mix(in srgb,var(--k1) 60%,transparent)}
+.zoom{position:fixed;inset:0;z-index:9;background:rgba(0,0,0,.92);display:grid;place-items:center;padding:16px}.zoom img{max-width:100%;max-height:100%;border-radius:12px}
+.aviso{padding:40px 16px;color:var(--texto2);font-size:15px}
+@media (prefers-reduced-motion:reduce){.palco{animation:none}.bloco{transition:none}}
+</style>
+</head>
+<body>
+<div id="fundo"></div>
+<div id="app"><p class="aviso">Carregando a coleção…</p></div>
+<button class="voltar" id="voltar" aria-label="Voltar pro Menu"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+<script>
+// Máquinas e consoles como sistema próprio (May, 07/11/2026 11:26: "cada item do menu tem que parecer um sistema novo"). Dados: casa/maquinas.json (Inst privado),
+// cor de cada console = a mesma da página Jogos; PC na cor do robô que mora nele. Números = os da página Jogos (gerados com as mesmas regras).
+const REPO="mayarainstinct-stack/Inst",TOKEN=(()=>{try{return localStorage.getItem("gh-token")||""}catch(e){return""}})()
+const apiDe=p=>"https://api.github.com/repos/"+REPO+"/contents/"+p.split("/").map(encodeURIComponent).join("/")
+const gh=(p,raw)=>fetch(apiDe(p),{cache:"no-cache",headers:{Authorization:"Bearer "+TOKEN,Accept:raw?"application/vnd.github.raw":"application/vnd.github+json"}})
+const ROBO={orfeu:["Orfeu","#E31B23","avatares/orfeu-96.png"],nyx:["Nyx","#6FCF00","avatares/nyx-96.png"],vega:["Vega","#1D4ED8","avatares/vega-96.png"]}
+const MARCA={ps1:"PlayStation",ps2:"PlayStation",ps4:"PlayStation",ps5:"PlayStation",switch:"Nintendo","3ds":"Nintendo",snes:"Nintendo",n64:"Nintendo",x360:"Xbox"}
+const CURTO={ps1:"PS1",ps2:"PS2",ps4:"PS4",switch:"Switch","3ds":"3DS",snes:"SNES",x360:"360"}
+const GERACAO={snes:"4ª geração",ps1:"5ª geração",ps2:"6ª geração",x360:"7ª geração",ps4:"8ª geração",switch:"8ª geração","3ds":"8ª geração"},SELO={"3ds":"portátil",switch:"híbrido"}
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+const fotos={}
+function foto(p){if(!p)return Promise.reject();if(fotos[p])return fotos[p];return fotos[p]=gh(p,true).then(r=>{if(!r.ok)throw 0;return r.blob()}).then(b=>URL.createObjectURL(b))}
+const cor=m=>m.robo&&ROBO[m.robo]?ROBO[m.robo][1]:(m.cor||"#4F46E5")
+const app=document.getElementById("app"),fundo=document.getElementById("fundo")
+const volta=()=>{location.href="app.html#menu"};document.getElementById("voltar").onclick=volta
+{let bx=null,by=0;addEventListener("touchstart",e=>{const t=e.touches[0];bx=t.clientX<28?t.clientX:null;by=t.clientY},{passive:true});addEventListener("touchend",e=>{if(bx===null)return;const t=e.changedTouches[0],dx=t.clientX-bx,dy=t.clientY-by;bx=null;if(dx>70&&Math.abs(dy)<dx*.7)volta()},{passive:true})}   // arrastar da borda esquerda pra direita = voltar, igual o resto do app (May 07/11 11:28)
+let D=null,atual=0
+async function inicio(){
+  if(!TOKEN){app.innerHTML='<p class="aviso">Abre primeiro o app de recados neste aparelho (ele guarda a chave).</p>';return}
+  try{const r=await gh("casa/maquinas.json",true);if(!r.ok)throw 0;D=JSON.parse(await r.text())}catch(e){app.innerHTML='<p class="aviso">Não consegui abrir a coleção. Confere a internet.</p>';return}
+  let i=0;try{i=Math.max(0,D.maquinas.findIndex(m=>m.id===(sessionStorage.getItem("maq-atual")||"")))}catch(e){}
+  monta(i)
+}
+function monta(i){
+  atual=i;const ms=D.maquinas,m=ms[i],k=cor(m);try{sessionStorage.setItem("maq-atual",m.id)}catch(e){}
+  document.documentElement.style.setProperty("--k1",k)
+  fundo.style.backgroundImage="none";foto((m.fotos||[])[0]).then(u=>{if(atual===i)fundo.style.backgroundImage="url("+u+")"}).catch(()=>{})
+  app.replaceChildren()
+  const topo=el("div","topo"),ms2=el("div","marca-sis");ms2.append(el("i"),"Minha coleção");const t=D.total||{}
+  topo.append(ms2,el("span","tot",(t.jogados??"–")+" jogados · "+(t.zerados??"–")+" zerados"));app.append(topo)
+  const fila=el("div","fila");ms.forEach((x,j)=>{const b=el("button","bloco"+(j===i?" ativo":""));b.style.setProperty("--c",cor(x));b.setAttribute("aria-label",x.nome)
+    if(x.robo&&ROBO[x.robo]){const im=el("img");im.alt="";im.src=ROBO[x.robo][2];b.append(im)}else b.append(el("span","",CURTO[x.console]||x.nome.slice(0,4)))
+    b.onclick=()=>{if(j!==atual)monta(j)};fila.append(b)});app.append(fila,el("div","nomefila",ms.length+" máquinas · desliza pro lado"))
+  requestAnimationFrame(()=>{const a=fila.children[i];if(a)fila.scrollTo({left:Math.max(0,a.offsetLeft-20),behavior:"smooth"})})
+  const p=el("div","palco"),se=el("div","selos")
+  const mc=m.robo?(ROBO[m.robo]?ROBO[m.robo][0]+" mora aqui":"PC"):MARCA[m.console]
+  if(mc)se.append(el("span","selo marca",mc));if(GERACAO[m.console])se.append(el("span","selo",GERACAO[m.console]));if(SELO[m.console])se.append(el("span","selo",SELO[m.console]))
+  p.append(se,el("h1","",m.nome));if(m.apelido||m.papel)p.append(el("p","apelido",m.apelido||m.papel));app.append(p)
+  const pags=[],vid=(t)=>{const v=el("section","vidro");v.append(el("h2","",t));pags.push([t,v]);return v}
+  const st=m.stats
+  if(st){const v=vid("Na biblioteca"),n=el("div","nums");[["jogados","jogados"],["zerados","zerados"],["andamento","em andamento"]].forEach(([c,tt])=>{const d=el("div");d.append(el("b","",String(st[c]||0)),el("small","",tt));n.append(d)});v.append(n)
+    if(st.jogados){const pc=Math.round(st.zerados/st.jogados*100),g=el("div","prog"),b=el("i");b.style.setProperty("--p",pc+"%");g.append("Coleção zerada: "+pc+"% ("+st.zerados+" de "+st.jogados+")",b);v.append(g)}}
+  if(m.historia){const v=vid("História");v.append(el("p","hist",m.historia))}
+  const f=el("div","ficha");[["Modelo",m.modelo],["Onde fica",m.onde],["De quem",m.dono],["Papel",m.papel],["Desde",m.desde],["Como veio",m.como_veio],["Controles",m.controles],["Estado",m.estado]].forEach(([a,b])=>{if(!b)return;const l=el("div");l.append(el("span","",a),el("b","",b));f.append(l)})
+  if(f.childElementCount){const v=vid("Ficha");v.append(f)}
+  if((m.conquistas||[]).length){const v=vid("Insígnias"),c=el("div","ins");m.conquistas.forEach(x=>c.append(el("span","",x)));v.append(c)}
+  if((m.acessorios||[]).length){const v=vid("Acessórios"),c=el("div","chips");m.acessorios.forEach(x=>c.append(el("span","",x)));v.append(c)}
+  if((m.fotos||[]).length){const v=vid("Fotos"),c=el("div","fotos");m.fotos.forEach(pth=>{const b=el("button");b.setAttribute("aria-label","Abrir foto");foto(pth).then(u=>{b.style.backgroundImage="url("+u+")";b.onclick=()=>{const z=el("div","zoom"),im=el("img");im.src=u;im.alt="";z.append(im);z.onclick=()=>z.remove();document.body.append(z)}}).catch(()=>{});c.append(b)});v.append(c)}
+  if((m.falta||[]).length){const v=vid("A descobrir"),ul=el("ul","falta");m.falta.forEach(x=>ul.append(el("li","",x)));v.append(ul)}
+  const ab=el("nav","abas"),tr=el("div","trilho");pags.forEach(([t,v],j)=>{const b=el("button",j?"":"on",t==="Na biblioteca"?"Números":t);b.onclick=()=>tr.scrollTo({left:j*tr.clientWidth,behavior:"smooth"});ab.append(b);const pg=el("div","pag");pg.append(v);tr.append(pg)})
+  tr.addEventListener("scroll",()=>{const j=Math.round(tr.scrollLeft/Math.max(1,tr.clientWidth));[...ab.children].forEach((b,x)=>b.classList.toggle("on",x===j));const a=ab.children[j];if(a)a.scrollIntoView({inline:"nearest",block:"nearest"})},{passive:true})
+  app.append(ab,tr)
+}
+inicio()
+</script>
+</body>
+</html>

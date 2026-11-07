@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.82">
+<meta name="app-versao" content="2026-11-07.83">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -977,6 +977,7 @@ const ICONES_SVG = {
   bag: '<path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/>',
   suitcase: '<rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V5h8v3M8 20v1M16 20v1"/>',
   chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  fileira: '<rect x="2" y="8" width="6" height="7" rx="1.6"/><rect x="9" y="6.5" width="6" height="9" rx="1.6"/><rect x="16" y="8" width="6" height="7" rx="1.6"/><path d="M6 19.5h12"/>',   // Máquinas e consoles: a fileira de blocos da tela de dentro (May, 07/11/2026 11:26)
   pulso: '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M6.5 11H9l1.5-3 2.5 6 1.5-3h3M9 21h6M12 17v4"/>',   // monitor com batimento: Diagnóstico dos PCs (May, 07/11/2026)
   sofa: '<path d="M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3M3 13a2 2 0 0 1 4 0v2h10v-2a2 2 0 0 1 4 0v5H3zM5 18v2M19 18v2"/>',
   check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
@@ -3018,7 +3019,7 @@ const irGeral = document.getElementById('ir-geral'), irTrab = document.getElemen
 const painel = document.getElementById('painel'), pCorpo = document.getElementById('p-corpo'), pTit = document.getElementById('p-tit'), pExtra = document.getElementById('p-extra');
 let pilha = [], catalogo = null;
 const reais = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
-const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#EF4444'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[aá]quina|console/i, '#EC4899'], [/pend[eê]ncia/i, '#F59E0B']];
+const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#EF4444'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia/i, '#F59E0B']];
 function botaoGrade(ic, txt, sub, fn) {   // azulejo do Menu: ícone grande em cima, nome curto embaixo, na cor do assunto
   const b = document.createElement('button'); b.type = 'button'; b.className = 'p-azulejo'; if (sub) b.title = sub;
   const cor = (COR_ASSUNTO.find(([re]) => re.test(txt)) || [])[1]; if (cor) b.style.setProperty('--c', cor);
