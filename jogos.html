@@ -221,7 +221,7 @@ html body #ficha.premium .bloco small,html body #ficha.premium .bloco .k,html bo
 .placa .zer{background:var(--ouro-metal);box-shadow:0 0 0 1px #CD7802,0 2px 8px rgba(245,183,4,.55)}
 .placa .num{color:#FBE74E;text-shadow:0 0 6px rgba(245,183,4,.6)}
 /* 100% = zerado: ouro de metal de verdade, a medalha (May 07/11 11:57: "o 99 e o 100 tem que dar muita diferença") */
-.barra i.ouro{background:var(--ouro-metal);box-shadow:0 0 8px #F5B704,0 0 20px rgba(245,183,4,.8),0 0 34px rgba(251,231,78,.45);overflow:hidden}
+.barra i.ouro{background:repeating-linear-gradient(-45deg,rgba(255,255,255,.38) 0 6px,transparent 6px 12px),var(--ouro-metal);box-shadow:0 0 8px #F5B704,0 0 20px rgba(245,183,4,.8),0 0 34px rgba(251,231,78,.45);overflow:hidden}
 .barra i.ouro::after{left:0;right:auto;top:0;bottom:0;height:auto;width:40%;border-radius:0;background:linear-gradient(100deg,transparent,rgba(255,255,255,.85),transparent);animation:brilha-ouro 2.4s ease-in-out infinite}
 @keyframes brilha-ouro{0%,55%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
 .tile:has(.barra i.ouro) .pc{background:linear-gradient(180deg,#FBE74E,#F5B704 55%,#CD7802);color:#3a2400;box-shadow:0 0 10px rgba(245,183,4,.8)}
