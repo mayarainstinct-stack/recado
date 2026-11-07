@@ -223,7 +223,7 @@ html body #ficha.premium .bloco small,html body #ficha.premium .bloco .k,html bo
 /* Parede da Vitória em cartas: uma por vez, desliza pro lado, a carta do lado gira e encolhe como num baralho (Hermes, May 14:28) */
 .deck{display:flex;gap:0;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:26px 0 14px;margin:0 -16px}
 .deck::-webkit-scrollbar{display:none}
-.carta{--f:0;--lado:0;flex:0 0 78%;scroll-snap-align:center;position:relative;margin:0 2%;padding:14px 6px 18px;border-radius:22px;background:none;border:0;box-shadow:none;transform:rotate(calc(var(--lado) * var(--f) * 6deg)) scale(calc(1 - var(--f) * .12)) translateY(calc(var(--f) * 18px));will-change:transform;contain:layout style;cursor:pointer}
+.carta{--f:0;--lado:0;flex:0 0 78%;scroll-snap-align:center;position:relative;margin:0 2%;padding:14px 6px 18px;border-radius:22px;background:none;border:0;box-shadow:none;transform:rotate(calc(var(--lado) * var(--f) * 6deg)) scale(calc(1 - var(--f) * .12)) translateY(calc(var(--f) * 18px));contain:layout style;cursor:pointer}
 
 .carta:first-child{margin-left:11%}.carta:last-child{margin-right:11%}
 .carta-capa{position:relative;height:min(46vh,92vw);border-radius:16px;overflow:hidden;border:6px solid transparent;background:var(--ouro-metal) border-box;box-shadow:0 0 0 1px #4a2a00,0 12px 30px rgba(0,0,0,.6),0 0 22px rgba(250,215,3,.35)}
@@ -468,8 +468,7 @@ nav button{height:58px;border-radius:22px;font-size:14px}
 @keyframes sobeP{0%{transform:translateY(70px)}70%{transform:translateY(-6px)}100%{transform:none}}
 @keyframes fichaE{from{transform:translateX(100%)}to{transform:none}}
 .entra-d{animation:entraD .36s cubic-bezier(.2,.8,.2,1) both}
-.lista-fantasma{position:fixed;z-index:2;overflow:hidden;pointer-events:none}
-.lista-fantasma.sai-d{animation:saiD .36s cubic-bezier(.2,.8,.2,1) both}.lista-fantasma.sai-e{animation:saiE .36s cubic-bezier(.2,.8,.2,1) both}
+#lista.sai-d{animation:saiD .18s cubic-bezier(.5,0,.8,.4) both}#lista.sai-e{animation:saiE .18s cubic-bezier(.5,0,.8,.4) both}
 @keyframes saiD{to{transform:translateX(-100%)}}@keyframes saiE{to{transform:translateX(100%)}}
 nav .nav-dq{position:absolute;z-index:0;top:7px;bottom:7px;left:0;width:0;border-radius:22px;background:linear-gradient(color-mix(in srgb,#00FF8C 34%,#07040f),color-mix(in srgb,#00FF8C 14%,#07040f));box-shadow:inset 0 2px 0 rgba(255,255,255,.18),inset 0 -3px 0 rgba(0,0,0,.35),0 0 0 1px rgba(0,255,140,.5);transition:transform .36s cubic-bezier(.2,.9,.3,1.12),width .36s}
 #pop,#envio{align-items:center!important;justify-content:center;padding:calc(env(safe-area-inset-top) + 44px) 30px calc(env(safe-area-inset-bottom) + 44px)}
@@ -485,7 +484,7 @@ nav .nav-dq{position:absolute;z-index:0;top:7px;bottom:7px;left:0;width:0;border
 #pop .folha,#envio .folha{width:100%;max-height:100%;overflow-y:auto;border-radius:24px!important;box-shadow:0 0 0 1px rgba(255,255,255,.18),0 24px 60px rgba(0,0,0,.7)}
 nav .nav-dq.ouro{background:var(--ouro-metal);box-shadow:inset 0 2px 0 rgba(255,255,255,.45),inset 0 -3px 0 rgba(0,0,0,.25),0 0 16px rgba(250,215,3,.45)}
 nav button{position:relative;z-index:1}nav button.on{background:none!important;box-shadow:none!important}
-@media (prefers-reduced-motion:reduce){nav .nav-dq{transition:none}.lista-fantasma{display:none}}
+@media (prefers-reduced-motion:reduce){nav .nav-dq{transition:none}#lista.sai-d,#lista.sai-e{animation:none}}
 .entra-e{animation:entraE .3s cubic-bezier(.2,.8,.2,1) both}
 #ficha.on{animation:fichaE .32s cubic-bezier(.2,.8,.2,1)}
 #pop.on .folha{animation:sobeP .34s cubic-bezier(.2,.9,.3,1) both}
@@ -937,7 +936,8 @@ voltaEPuxa(document.getElementById("lista"),()=>{location.href="app.html#menu"},
 document.addEventListener("keydown",e=>{if(e.key!="Escape"||document.getElementById("zoom").classList.contains("on"))return;for(const id of["pop","envio"]){const el=document.getElementById(id);if(el.classList.contains("on")){el.classList.remove("on");return}}if(document.getElementById("ficha").classList.contains("on"))fechaFicha()})
 const ABAS_L=["jogando","concluidos"]
 const posDq=()=>{const b=document.querySelector("nav button.on"),q=document.querySelector("nav .nav-dq");if(b&&q){q.classList.toggle("ouro",b.id=="tab-concluidos");q.style.width=b.offsetWidth+"px";q.style.transform=`translateX(${b.offsetLeft}px)`}}
-function trocaAba(nova,d){if(nova==aba||!d)return;const L=document.getElementById("lista"),r=L.getBoundingClientRect(),g=document.createElement("div"),dentro=document.createElement("div");g.className="lista-fantasma";Object.assign(g.style,{left:r.left+"px",top:r.top+"px",width:r.width+"px",height:r.height+"px"});dentro.style.padding=getComputedStyle(L).padding;dentro.style.transform=`translateY(${-L.scrollTop}px)`;dentro.innerHTML=L.innerHTML;dentro.querySelectorAll("[id]").forEach(e=>e.removeAttribute("id"));g.appendChild(dentro);document.body.appendChild(g);g.classList.add(d>0?"sai-d":"sai-e");setTimeout(()=>g.remove(),400);aba=nova;dirAnim=d;history.replaceState(null,"","#"+aba);render();L.scrollTop=0;posDq()}
+let trocando=false
+function trocaAba(nova,d){if(nova==aba||!d||trocando)return;const L=document.getElementById("lista"),vai=()=>{L.classList.remove("sai-d","sai-e");aba=nova;dirAnim=d;history.replaceState(null,"","#"+aba);render();L.scrollTop=0;posDq();trocando=false};document.getElementById("tab-jogando").classList.toggle("on",nova=="jogando");document.getElementById("tab-concluidos").classList.toggle("on",nova=="concluidos");posDq();if(matchMedia("(prefers-reduced-motion: reduce)").matches)return vai();trocando=true;L.classList.add(d>0?"sai-d":"sai-e");setTimeout(vai,180)}
 addEventListener("resize",posDq);requestAnimationFrame(posDq)
 deslizar(document.getElementById("lista"),d=>{const i=ABAS_L.indexOf(aba)+d;if(i<0||i>=ABAS_L.length)return;trocaAba(ABAS_L[i],d)})
 document.getElementById("f-voltar").onclick=fechaFicha
