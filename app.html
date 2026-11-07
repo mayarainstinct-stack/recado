@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.115">
+<meta name="app-versao" content="2026-11-07.116">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -809,10 +809,14 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 .ie-abas button { flex: 1; width: auto; height: auto; padding: 9px 4px; border-radius: 10px; background: none; color: var(--muted); font: inherit; font-size: 13px; font-weight: 800; } .ie-abas button.on { background: #FACC15; color: #1F1A03; }
 .ie-trilho { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; margin: 10px -4px 0; padding: 0 4px; }
 .ie-quadro { display: flex; flex-direction: column; gap: 16px; padding: 14px 6px 24px; }
+.ie-quadro.ie-colunas { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; align-items: start; padding: 10px 2px 24px; }
+.ie-col h4 { display: flex; justify-content: space-between; align-items: center; margin: 0 4px 12px; font: 900 11px 'Arial Black', sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); } .ie-conta { min-width: 22px; padding: 1px 7px; border-radius: 999px; background: color-mix(in srgb, var(--fg) 10%, transparent); text-align: center; }
+.ie-lista { display: flex; flex-direction: column; gap: 16px; min-height: 160px; padding: 8px 2px 12px; border-radius: 12px; transition: background .2s; } .ie-col.alvo .ie-lista { background: rgba(250,204,21,.08); outline: 1.5px dashed rgba(250,204,21,.45); }
+.ie-colunas .ie-post { padding: 17px 9px 9px; border-radius: 2px 2px 12px 2px; } .ie-colunas .ie-sub { font-size: 13.5px; } .ie-colunas .ie-txt { font-size: 12.5px; line-height: 1.3; } .ie-colunas .ie-num { font-size: 9.5px; right: 7px; } .ie-colunas .ie-pe { margin-top: 8px; font-size: 11px; gap: 5px; } .ie-colunas .ie-av { width: 20px; height: 20px; } .ie-colunas .ie-est { display: none; }
 .ie-post { --p: #FFFDF5; position: relative; color: #22190A; background: linear-gradient(172deg, var(--p), color-mix(in srgb, var(--p) 86%, #6B4E16)); border-radius: 2px 2px 16px 2px; padding: 20px 14px 12px; box-shadow: 0 1px 1px rgba(0,0,0,.12), 0 12px 18px -10px rgba(0,0,0,.55); transform: rotate(var(--r, 0deg)); touch-action: pan-y; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; cursor: grab; }
-.ie-post::before { content: ''; position: absolute; top: -9px; left: 50%; width: 70px; height: 20px; margin-left: -35px; background: rgba(255,255,255,.5); border-left: 1px dashed rgba(0,0,0,.08); border-right: 1px dashed rgba(0,0,0,.08); box-shadow: 0 1px 2px rgba(0,0,0,.18); transform: rotate(-3deg); }
+.ie-post::before { content: ''; position: absolute; top: -9px; left: 50%; width: 72px; height: 20px; margin-left: -36px; background: linear-gradient(rgba(255,255,255,.62), rgba(240,240,232,.5)); filter: drop-shadow(0 1px 1px rgba(0,0,0,.22)); transform: rotate(-3deg); clip-path: polygon(3% 0, 0 12%, 4% 25%, 1% 38%, 5% 50%, 0 63%, 4% 75%, 1% 88%, 4% 100%, 96% 100%, 100% 87%, 97% 75%, 100% 62%, 95% 50%, 99% 37%, 96% 25%, 100% 12%, 97% 0); }   /* durex com as pontas rasgadinhas dos dois lados (May 15:27) */
 .ie-post.pegando { z-index: 5; cursor: grabbing; box-shadow: 0 2px 2px rgba(0,0,0,.1), 0 26px 40px -12px rgba(0,0,0,.65); }
-.ie-post.feito { opacity: .78; } .ie-post.feito .ie-txt { text-decoration: line-through; text-decoration-thickness: 1.5px; }
+.ie-post.feito { opacity: .9; } .ie-est.ie-concluido { background: #16A34A; color: #fff; }   /* concluído: sem riscado, pílula verde à direita (May 15:27) */
 .ie-num { position: absolute; top: 6px; right: 10px; font-size: 11px; font-weight: 800; opacity: .5; }
 .ie-sub { display: block; margin: 2px 0 4px; font-size: 16px; font-weight: 900; line-height: 1.2; } .ie-post .ie-txt { font-weight: 500; font-size: 14px; opacity: .85; }
 .ie-txt { margin: 0; font-size: 15px; font-weight: 600; line-height: 1.32; }
@@ -3787,24 +3791,29 @@ function abreIdeias(m) {
       const cp = elD('div', 'ie-det'), g = GRUPO[p.dono];
       if (p.assunto || p.categoria || p.tela) cp.append(elD('b', 'ie-sub', [p.categoria || p.tela, p.assunto].filter(Boolean).join(' · '))); cp.append(elD('p', 'ie-det-txt', p.texto), elD('p', 'p-nota', (g ? g.nome.replace(/\s*\(.*\)$/, '') : 'Sem dono: o Sigma faz a triagem') + ' · ' + (p.estado === 'concluido' ? 'concluído' : p.estado) + ' · ' + p.quando));
       if (p.nota) cp.append(elD('p', 'p-nota', p.nota));
-      if (p.estado !== 'concluido' && abertos()[0] !== p) { const b = elD('button', 'ie-topo', 'Mais urgente: pro topo'); b.type = 'button'; b.onclick = () => { fecha(); const ids = abertos().map(x => x.id).filter(x => x !== p.id); ids.unshift(p.id); salvaOrdem(ids); pinta(); }; cp.append(b); }
+      const daColuna = abertos().filter(x => x.estado === p.estado);
+      if (p.estado !== 'concluido' && daColuna[0] !== p) { const b = elD('button', 'ie-topo', 'Mais urgente: pro topo'); b.type = 'button'; b.onclick = () => { fecha(); const cols = {}; [['esperando', 'Esperando'], ['fazendo', 'Fazendo']].forEach(([e]) => { cols[e] = abertos().filter(x => x.estado === e).map(x => x.id); }); cols[p.estado] = [p.id, ...cols[p.estado].filter(x => x !== p.id)]; salvaOrdem(cols); pinta(); }; cp.append(b); }
       const fecha = pop('Pedido #' + p.id, cp);
     };
-    const salvaOrdem = async ids => {
-      const aplica = dd => { const base = Math.min(...dd.postits.filter(x => x.estado !== 'concluido').map(x => x.ordem), 1); ids.forEach((id, k) => { const x = dd.postits.find(y => y.id === id); if (x) x.ordem = base + k; }); };
+    const salvaOrdem = async cols => {   // cols = { esperando: [ids], fazendo: [ids] }: a ordem de cima pra baixo é a urgência; mudar de coluna muda o estado (May 15:26)
+      const aplica = dd => { let k = Math.min(...dd.postits.filter(x => x.estado !== 'concluido').map(x => x.ordem), 1); ['fazendo', 'esperando'].forEach(e => (cols[e] || []).forEach(id => { const x = dd.postits.find(y => y.id === id); if (x && x.estado !== 'concluido') { x.estado = e; x.ordem = k++; } })); };
       aplica(d);
-      if (!(await gravaJson(arq, aplica, 'Quadro: May mudou a urgência pelo app'))) showNote('Não guardou a ordem: confere a internet.', true);
+      if (!(await gravaJson(arq, aplica, 'Quadro: May mudou a ordem ou a coluna pelo app'))) showNote('Não guardou: confere a internet.', true);
     };
     const pinta = () => {
       cabecalho({ icone: 'pin', sub: abertos().length + ' no quadro · ' + abertos().filter(x => x.estado === 'fazendo').length + ' fazendo' });
       nav.replaceChildren(); tr.replaceChildren();
       abas.forEach(([id, rot]) => { const n = id === 'quadro' ? abertos().length : feitos().length, b = elD('button', aba === id ? 'on' : '', rot + ' · ' + n); b.type = 'button'; b.onclick = () => { if (aba === id) return; const dir = id === 'feitos' ? 1 : -1; aba = id; pinta(); entraDoLado(tr, dir); }; nav.append(b); });
-      const lista = aba === 'quadro' ? abertos() : feitos(), q = elD('div', 'ie-quadro');
-      if (!lista.length) q.append(elD('p', 'p-nota', aba === 'quadro' ? 'Quadro limpo. Escreve um pedido embaixo.' : 'Nada concluído ainda.'));
-      lista.forEach((p, k) => q.append(postit(p, k)));
+      const q = elD('div', 'ie-quadro' + (aba === 'quadro' ? ' ie-colunas' : ''));
+      if (aba === 'quadro') [['esperando', 'Esperando'], ['fazendo', 'Fazendo']].forEach(([e, rot]) => {   // duas colunas lado a lado: Esperando e Fazendo (May 15:26)
+        const col = elD('div', 'ie-col'), lst = elD('div', 'ie-lista'), ps = abertos().filter(x => x.estado === e); col.dataset.estado = e;
+        const h = elD('h4'); h.append(elD('span', '', rot), elD('span', 'ie-conta', String(ps.length))); col.append(h, lst);
+        ps.forEach((p, k) => lst.append(postit(p, k))); q.append(col);
+      });
+      else { const lista = feitos(); if (!lista.length) q.append(elD('p', 'p-nota', 'Nada concluído ainda.')); lista.forEach((p, k) => q.append(postit(p, k))); }
       tr.append(q);
       q.addEventListener('click', e => { const el = e.target.closest('.ie-post'); if (!el || q.dataset.arrastou) return; const p = d.postits.find(x => x.id === el.dataset.id); if (p) detalhe(p); });
-      if (aba === 'quadro') arrastaPostits(q, ids => { salvaOrdem(ids); });
+      if (aba === 'quadro') arrastaPostits(q, cols => { salvaOrdem(cols); });
     };
     pinta();
     arrastaAbas(tr, () => abas.findIndex(a => a[0] === aba), i => { aba = abas[i][0]; pinta(); }, abas.length);
@@ -3814,7 +3823,7 @@ function abreIdeias(m) {
       const dt = new Date(), quando = String(dt.getDate()).padStart(2, '0') + '/' + String(dt.getMonth() + 1).padStart(2, '0') + '/' + dt.getFullYear() + ' ' + String(dt.getHours()).padStart(2, '0') + ':' + String(dt.getMinutes()).padStart(2, '0');
       const novo = dd => { const n = Math.max(0, ...dd.postits.map(x => parseInt(x.id, 10) || 0)) + 1, ord = Math.max(0, ...dd.postits.map(x => x.ordem)) + 1; const p = { id: String(n), texto: t, quando, estado: 'esperando', dono, ordem: ord, nota: '', categoria: '', assunto: '' }; dd.postits.push(p); return p; };
       ta.value = ''; ta.style.height = ''; novo(d); aba = 'quadro'; pinta();
-      const q = tr.querySelector('.ie-quadro'); if (q && q.lastElementChild) { q.lastElementChild.scrollIntoView({ block: 'nearest' }); if (q.lastElementChild.animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) q.lastElementChild.animate([{ transform: 'translateY(40px) rotate(-6deg) scale(.9)', opacity: 0 }, { transform: 'rotate(' + q.lastElementChild.dataset.r + 'deg)', opacity: 1 }], { duration: 320, easing: 'cubic-bezier(.2,.9,.3,1.2)' }); }
+      const ult = tr.querySelector('.ie-col[data-estado="esperando"] .ie-lista')?.lastElementChild; if (ult) { ult.scrollIntoView({ block: 'nearest' }); if (ult.animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) ult.animate([{ transform: 'translateY(40px) rotate(-6deg) scale(.9)', opacity: 0 }, { transform: 'rotate(' + ult.dataset.r + 'deg)', opacity: 1 }], { duration: 320, easing: 'cubic-bezier(.2,.9,.3,1.2)' }); }
       const ok = await gravaJson(arq, dd => { novo(dd); }, 'Pedido novo da May pelo app');
       if (!ok) { showNote('Não pregou: confere a internet e manda de novo.', true); ta.value = t; } else { d = ok; showNote(dono ? 'Post-it pro ' + GRUPO[dono].nome.replace(/\s*\(.*\)$/, '') : 'Post-it pregado: o Sigma dá o dono'); }
     };
@@ -3822,31 +3831,38 @@ function abreIdeias(m) {
     ta.addEventListener('input', () => { ta.style.height = 'auto'; ta.style.height = Math.min(110, ta.scrollHeight) + 'px'; });
   });
 }
-// segurar o post-it (0,4 s) e arrastar pra cima ou pra baixo; os outros abrem espaço deslizando; soltou = nova ordem
+// segurar o post-it (0,4 s) e arrastar: sobe, desce ou passa pra outra coluna (May 15:26); os outros abrem espaço deslizando; soltou = nova ordem e estado
 function arrastaPostits(q, salva) {
-  let el = null, y0 = 0, timer = 0, x0 = 0, inicio = null, mudou = false;
-  const semMov = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const desliza = (outro, antes) => { if (semMov || !outro.animate) return; const depois = outro.getBoundingClientRect().top, dy = antes - depois; if (dy) outro.animate([{ transform: 'translateY(' + dy + 'px) rotate(' + outro.dataset.r + 'deg)' }, { transform: 'rotate(' + outro.dataset.r + 'deg)' }], { duration: 200, easing: 'cubic-bezier(.2,.8,.2,1)' }); };
-  const poe = dy => { el.style.transform = 'translateY(' + dy + 'px) rotate(0deg) scale(1.04)'; };
+  let el = null, timer = 0, x0 = 0, y0 = 0, gx = 0, gy = 0, inicio = null, mudou = false;
+  const semMov = matchMedia('(prefers-reduced-motion: reduce)').matches, posts = () => [...q.querySelectorAll('.ie-post')];
+  const segue = (px, py) => { el.style.transform = 'none'; const b = el.getBoundingClientRect(); el.style.transform = 'translate(' + (px - gx - b.left) + 'px,' + (py - gy - b.top) + 'px) rotate(0deg) scale(1.04)'; };
+  const move = (lst, antes) => {   // muda de lugar no DOM e os outros deslizam até o lugar novo
+    const r0 = new Map(posts().filter(x => x !== el).map(x => [x, x.getBoundingClientRect()]));
+    lst.insertBefore(el, antes); mudou = true;
+    if (!semMov) r0.forEach((a, x) => { const b = x.getBoundingClientRect(), dx = a.left - b.left, dy = a.top - b.top; if ((dx || dy) && x.animate) x.animate([{ transform: 'translate(' + dx + 'px,' + dy + 'px) rotate(' + x.dataset.r + 'deg)' }, { transform: 'rotate(' + x.dataset.r + 'deg)' }], { duration: 200, easing: 'cubic-bezier(.2,.8,.2,1)' }); });
+  };
   q.addEventListener('pointerdown', e => {
     const alvo = e.target.closest('.ie-post'); if (!alvo || e.button > 0) return;
     x0 = e.clientX; y0 = e.clientY; inicio = alvo; mudou = false;
-    timer = setTimeout(() => { el = inicio; el.classList.add('pegando'); el.style.transition = 'box-shadow .2s'; poe(0); try { el.setPointerCapture(e.pointerId); } catch (er) {} if (navigator.vibrate) navigator.vibrate(15); }, 400);
+    timer = setTimeout(() => { el = inicio; const b = el.getBoundingClientRect(); gx = x0 - b.left; gy = y0 - b.top; el.classList.add('pegando'); el.style.transition = 'box-shadow .2s'; segue(x0, y0); try { el.setPointerCapture(e.pointerId); } catch (er) {} if (navigator.vibrate) navigator.vibrate(15); }, 400);
   });
   q.addEventListener('pointermove', e => {
     if (!el) { if (inicio && (Math.abs(e.clientY - y0) > 8 || Math.abs(e.clientX - x0) > 8)) { clearTimeout(timer); inicio = null; } return; }
-    let dy = e.clientY - y0; poe(dy);
-    const meio = el.getBoundingClientRect().top + el.offsetHeight / 2;
-    const ant = el.previousElementSibling, prox = el.nextElementSibling;
-    if (prox && prox.classList.contains('ie-post') && meio > prox.getBoundingClientRect().top + prox.offsetHeight / 2) { const a = prox.getBoundingClientRect().top, t0 = el.offsetTop; q.insertBefore(prox, el); desliza(prox, a); y0 += el.offsetTop - t0; mudou = true; poe(e.clientY - y0); }
-    else if (ant && ant.classList.contains('ie-post') && meio < ant.getBoundingClientRect().top + ant.offsetHeight / 2) { const a = ant.getBoundingClientRect().top, t0 = el.offsetTop; q.insertBefore(el, ant); desliza(ant, a); y0 += el.offsetTop - t0; mudou = true; poe(e.clientY - y0); }
+    const col = [...q.querySelectorAll('.ie-col')].find(c => { const b = c.getBoundingClientRect(); return e.clientX >= b.left && e.clientX <= b.right; });
+    q.querySelectorAll('.ie-col').forEach(c => c.classList.toggle('alvo', c === col));
+    if (col) {
+      const lst = col.querySelector('.ie-lista'), antes = [...lst.children].find(x => x !== el && x.getBoundingClientRect().top + x.offsetHeight / 2 > e.clientY) || null;
+      if (el.parentNode !== lst || (antes ? el.nextElementSibling !== antes : lst.lastElementChild !== el)) move(lst, antes);
+    }
+    segue(e.clientX, e.clientY);
   });
   const solta = () => {
     clearTimeout(timer); inicio = null; if (!el) return;
-    const e1 = el; el = null; e1.classList.remove('pegando'); e1.style.transition = 'transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .2s'; e1.style.transform = ''; setTimeout(() => { e1.style.transition = ''; }, 260);
+    const e1 = el; el = null; q.querySelectorAll('.ie-col').forEach(c => c.classList.remove('alvo'));
+    e1.classList.remove('pegando'); e1.style.transition = 'transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .2s'; e1.style.transform = ''; setTimeout(() => { e1.style.transition = ''; }, 260);
     q.dataset.arrastou = '1'; setTimeout(() => { delete q.dataset.arrastou; }, 80);
-    [...q.querySelectorAll('.ie-post')].forEach((x, k) => { const gi = [-1.2, .8, -.5, 1.1, -.9, .6][k % 6]; x.dataset.r = gi; x.style.setProperty('--r', gi + 'deg'); });
-    if (mudou) salva([...q.querySelectorAll('.ie-post')].map(x => x.dataset.id));
+    q.querySelectorAll('.ie-col').forEach(c => { const ps = c.querySelectorAll('.ie-post'); c.querySelector('.ie-conta').textContent = ps.length; ps.forEach((x, k) => { const gi = [-1.2, .8, -.5, 1.1, -.9, .6][k % 6]; x.dataset.r = gi; x.style.setProperty('--r', gi + 'deg'); }); });
+    if (mudou) { const cols = {}; q.querySelectorAll('.ie-col').forEach(c => { cols[c.dataset.estado] = [...c.querySelectorAll('.ie-post')].map(x => x.dataset.id); }); salva(cols); }
   };
   q.addEventListener('pointerup', solta); q.addEventListener('pointercancel', solta);
   q.addEventListener('touchmove', e => { if (el) e.preventDefault(); }, { passive: false });
