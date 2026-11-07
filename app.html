@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.151">
-<meta name="app-novidade" content="Tarefas: cada coluna rola sozinha com o título parado; Menu com respiro em cima">
+<meta name="app-versao" content="2026-11-07.152">
+<meta name="app-novidade" content="Casa: pinça com dois dedos aproxima e afasta a planta">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -4138,11 +4138,21 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
       const passo = t => { const k = Math.max(0, Math.min(1, (t - t0) / dur)), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; vb = de.map((x, j) => x + (alvo[j] - x) * e); poe(vb); if (k < 1) anim = requestAnimationFrame(passo); }; anim = requestAnimationFrame(passo); clearTimeout(fimVoo); fimVoo = setTimeout(() => { cancelAnimationFrame(anim); vb = alvo.slice(); poe(vb); }, dur + 90); };   // k preso entre 0 e 1: relógio do quadro atrás do performance.now() não explode o viewBox; sem quadro (aba no fundo) chega no alvo do mesmo jeito
     const enquadra = (x, y, w, h, fol) => { const alvo = [x - fol, y - fol, w + fol * 2, h + fol * 2], asp = svg.clientWidth / Math.max(1, svg.clientHeight); if (alvo[2] / alvo[3] < asp) { const nw = alvo[3] * asp; alvo[0] -= (nw - alvo[2]) / 2; alvo[2] = nw; } else { const nh = alvo[2] / asp; alvo[1] -= (nh - alvo[3]) / 2; alvo[3] = nh; } voa(alvo); };   // o zoom fica do tamanho que precisa pro que ela tocou
     const peLargura = y => { const w = d.largura + 1.2, h = w * svg.clientHeight / Math.max(1, svg.clientWidth); return [-0.6, Math.max(-0.6, Math.min(y, d.altura + 0.6 - h)), w, h]; };   // a casa encaixa pela LARGURA e o resto se vê arrastando (Sigma 17:44: em pé virava uma faixa ilegível)
-    { let p0 = null, arrastou = false;   // arrastar dentro da planta passeia por ela; soltou sem arrastar = toque normal no cômodo
-      svg.addEventListener('pointerdown', e => { p0 = { x: e.clientX, y: e.clientY, vb: vb.slice() }; arrastou = false; });
-      svg.addEventListener('pointermove', e => { if (!p0) return; const dx = e.clientX - p0.x, dy = e.clientY - p0.y; if (!arrastou && Math.hypot(dx, dy) < 8) return; if (!arrastou) { arrastou = true; cancelAnimationFrame(anim); clearTimeout(fimVoo); try { svg.setPointerCapture(e.pointerId); } catch (er) {} } const k = p0.vb[2] / Math.max(1, svg.clientWidth); vb = [Math.max(-0.6 - p0.vb[2] / 2, Math.min(p0.vb[0] - dx * k, d.largura + 0.6 - p0.vb[2] / 2)), Math.max(-0.6 - p0.vb[3] / 2, Math.min(p0.vb[1] - dy * k, d.altura + 0.6 - p0.vb[3] / 2)), p0.vb[2], p0.vb[3]]; poe(vb); });
-      const solta = () => { p0 = null; if (arrastou) setTimeout(() => { arrastou = false; }, 0); };
+    { const dedos = new Map(); let p0 = null, arrastou = false, pin = null;   // um dedo arrasta e passeia; dois dedos fazem pinça: abrir aproxima, fechar afasta (May 19:10)
+      const comeca1 = e => { p0 = { x: e.clientX, y: e.clientY, vb: vb.slice() }; };
+      svg.addEventListener('pointerdown', e => { dedos.set(e.pointerId, { x: e.clientX, y: e.clientY }); try { svg.setPointerCapture(e.pointerId); } catch (er) {}
+        if (dedos.size === 1) { comeca1(e); arrastou = false; }
+        else if (dedos.size === 2) { const [a, b] = [...dedos.values()]; pin = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2, vb: vb.slice() }; arrastou = true; cancelAnimationFrame(anim); clearTimeout(fimVoo); } });
+      svg.addEventListener('pointermove', e => { if (!dedos.has(e.pointerId)) return; dedos.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        if (pin && dedos.size >= 2) { const [a, b] = [...dedos.values()], r = svg.getBoundingClientRect(), d2 = Math.hypot(a.x - b.x, a.y - b.y) || 1, cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2;
+          const k = Math.max(0.6 / pin.vb[2], Math.min((d.largura + 1.2) * 1.4 / pin.vb[2], pin.d / d2)), w = pin.vb[2] * k, h = pin.vb[3] * k;   // de ~0,6 m na tela até a casa inteira com folga
+          const mx = pin.vb[0] + (pin.cx - r.left) / r.width * pin.vb[2], my = pin.vb[1] + (pin.cy - r.top) / r.height * pin.vb[3];
+          vb = [mx - (cx - r.left) / r.width * w, my - (cy - r.top) / r.height * h, w, h]; poe(vb); return; }
+        if (!p0) return; const dx = e.clientX - p0.x, dy = e.clientY - p0.y; if (!arrastou && Math.hypot(dx, dy) < 8) return; if (!arrastou) { arrastou = true; cancelAnimationFrame(anim); clearTimeout(fimVoo); }
+        const k = p0.vb[2] / Math.max(1, svg.clientWidth); vb = [Math.max(-0.6 - p0.vb[2] / 2, Math.min(p0.vb[0] - dx * k, d.largura + 0.6 - p0.vb[2] / 2)), Math.max(-0.6 - p0.vb[3] / 2, Math.min(p0.vb[1] - dy * k, d.altura + 0.6 - p0.vb[3] / 2)), p0.vb[2], p0.vb[3]]; poe(vb); });
+      const solta = e => { dedos.delete(e.pointerId); if (dedos.size < 2) pin = null; if (dedos.size === 1) { const [u] = [...dedos.values()]; p0 = { x: u.x, y: u.y, vb: vb.slice() }; } if (!dedos.size) { p0 = null; if (arrastou) setTimeout(() => { arrastou = false; }, 0); } };
       svg.addEventListener('pointerup', solta); svg.addEventListener('pointercancel', solta);
+      svg.addEventListener('wheel', e => { e.preventDefault(); const r = svg.getBoundingClientRect(), k = Math.max(0.6 / vb[2], Math.min((d.largura + 1.2) * 1.4 / vb[2], Math.exp(e.deltaY * 0.0015))), mx = vb[0] + (e.clientX - r.left) / r.width * vb[2], my = vb[1] + (e.clientY - r.top) / r.height * vb[3]; vb = [mx - (mx - vb[0]) * k, my - (my - vb[1]) * k, vb[2] * k, vb[3] * k]; poe(vb); }, { passive: false });   // no PC, a rodinha faz o mesmo
       svg.addEventListener('click', e => { if (arrastou) { e.stopPropagation(); e.preventDefault(); } }, true); }
     poe(vb);
     const num = v => String(Math.round(v * 100) / 100).replace('.', ',');
