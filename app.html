@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.92">
+<meta name="app-versao" content="2026-11-07.93">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -3086,19 +3086,25 @@ function botao(ic, txt, sub, fn) {
   b.querySelector('.ic').innerHTML = icone(ic); b.querySelector('.t').textContent = txt; b.querySelector('small').textContent = sub || '';
   b.onclick = fn; return b;
 }
-function tela(titulo, montar) { if (pilha.length) pilha[pilha.length - 1][2] = pCorpo.scrollTop; pilha.push([titulo, montar, 0]); desenhaTela(); }
+function tela(titulo, montar) { if (pilha.length) pilha[pilha.length - 1][2] = pCorpo.scrollTop; pilha.push([titulo, montar, 0]); try { history.pushState({ painel: pilha.length }, ''); } catch (e) {} desenhaTela(); }   // cada tela = um passo no histórico: o voltar do app e o deslizar do iPhone fazem a mesma rota (May 12:37)
 function desenhaTela() {
   const [titulo, montar, rolou] = pilha[pilha.length - 1];
   pTit.textContent = titulo; pCorpo.scrollTop = 0; pExtra.hidden = pilha.length > 1;
   const t = document.createElement('div'); t.className = 'tela'; pCorpo.replaceChildren(t);   // carga atrasada de tela que já saiu cai no invólucro velho
   const r = montar(t); if (rolou) Promise.resolve(r).then(() => { if (t.isConnected) pCorpo.scrollTop = rolou; });   // voltando: devolve a rolagem de onde ela estava
 }
-function fechaPainel() { painel.hidden = true; pilha = []; }
+function fechaPainel() { const n = pilha.length; painel.hidden = true; pilha = []; if (n && history.state && history.state.painel) { fechandoPainel = true; try { history.go(-history.state.painel); } catch (e) { fechandoPainel = false; } } }
+let fechandoPainel = false;
+addEventListener('popstate', () => {   // voltar do navegador (deslizar da borda) = o mesmo voltar do app
+  if (fechandoPainel) { fechandoPainel = false; return; }
+  if (painel.hidden || !pilha.length) return;
+  pilha.pop(); if (pilha.length) desenhaTela(); else { painel.hidden = true; }
+});
 document.getElementById('p-anotar').onclick = () => abreFicha({ titulo: 'Anotar · ' + pTit.textContent, contexto: pTit.textContent });
 { let bx = null, by = 0;   // arrastar da borda esquerda pra direita = voltar, igual o iPhone
   painel.addEventListener('touchstart', e => { const t = e.touches[0]; bx = t.clientX < 28 ? t.clientX : null; by = t.clientY; }, { passive: true });
   painel.addEventListener('touchend', e => { if (bx === null) return; const t = e.changedTouches[0], dx = t.clientX - bx, dy = t.clientY - by; bx = null; if (dx > 70 && Math.abs(dy) < dx * .7) document.getElementById('p-voltar').click(); }, { passive: true }); }
-document.getElementById('p-voltar').onclick = document.getElementById('p-voltar-baixo').onclick = () => { pilha.pop(); if (pilha.length) desenhaTela(); else fechaPainel(); };
+document.getElementById('p-voltar').onclick = document.getElementById('p-voltar-baixo').onclick = () => { if (history.state && history.state.painel) history.back(); else { pilha.pop(); if (pilha.length) desenhaTela(); else fechaPainel(); } };
 // ---- Dados da conversa (tocar no nome ou na foto lá em cima): foto, quem participa e tudo que já foi mandado nela
 const EXT_IMG = /\.(png|jpe?g|webp|gif)$/i, EXT_AUDIO = /\.(m4a|webm|mp3|wav|ogg)$/i, EXT_TEXTO = /\.(md|txt|json|csv|py|sh|ps1|html|svg)$/i;
 const RE_CAMINHO = /(?:^|[\s(`'"])((?:[\w.-]+\/)+[\w.-]+\.(?:png|jpe?g|webp|gif|m4a|webm|mp3|wav|ogg|md|pdf|json|txt|csv|docx?|xlsx?|pptx?|zip|apk|cdr|psd|ps1|py|sh|html|svg))(?=$|[\s),.;:`'"!?])/gi;
@@ -4129,7 +4135,8 @@ if (location.hash === '#diagnostico') {   // veio da Máquinas: abre o Menu e j�
   history.replaceState(null, '', location.pathname + location.search);
   const t0 = Date.now(), espera = setInterval(() => { if (FILE || Date.now() - t0 > 15000) { clearInterval(espera); if (FILE) { document.getElementById('abre-menu').click(); setTimeout(abreDiagnostico, 200); } } }, 100);
 }
-if (location.hash === '#menu') {   // voltou da tela Jogos (ou de outra página do Menu): cai direto no Menu, não na conversa (May, 06/11/2026 11:29)
+if (location.hash === '#menu' || (history.state && history.state.painel && !location.hash)) {   // voltou de uma página do Menu (Jogos, Máquinas) pelo voltar ou pelo deslizar: reabre o Menu
+  try { history.replaceState(null, ''); } catch (e) {}   // voltou da tela Jogos (ou de outra página do Menu): cai direto no Menu, não na conversa (May, 06/11/2026 11:29)
   history.replaceState(null, '', location.pathname + location.search);
   const t0 = Date.now(), espera = setInterval(() => { if (FILE || Date.now() - t0 > 15000) { clearInterval(espera); if (FILE) document.getElementById('abre-menu').click(); } }, 100);
 }

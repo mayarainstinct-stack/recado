@@ -91,7 +91,7 @@ const fotos={}
 function foto(p){if(!p)return Promise.reject();if(fotos[p])return fotos[p];return fotos[p]=gh(p,true).then(r=>{if(!r.ok)throw 0;return r.blob()}).then(b=>URL.createObjectURL(b))}
 const cor=m=>m.robo&&ROBO[m.robo]?ROBO[m.robo][1]:(m.cor||"#4F46E5")
 const app=document.getElementById("app"),fundo=document.getElementById("fundo")
-const volta=()=>{location.href="app.html#menu"};document.getElementById("voltar").onclick=volta
+const volta=()=>{if(history.length>1&&/app\.html/.test(document.referrer))history.back();else location.replace("app.html#menu")}   // volta pelo histórico: o botão e o deslizar fazem a mesma rota (May 12:37);document.getElementById("voltar").onclick=volta
 {let bx=null,by=0;addEventListener("touchstart",e=>{const t=e.touches[0];bx=t.clientX<28?t.clientX:null;by=t.clientY},{passive:true});addEventListener("touchend",e=>{if(bx===null)return;const t=e.changedTouches[0],dx=t.clientX-bx,dy=t.clientY-by;bx=null;if(dx>70&&Math.abs(dy)<dx*.7)volta()},{passive:true})}   // arrastar da borda esquerda pra direita = voltar, igual o resto do app (May 07/11 11:28)
 let D=null,atual=0
 async function inicio(){
