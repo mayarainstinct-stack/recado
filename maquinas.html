@@ -22,7 +22,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .topo .marca-sis i{width:10px;height:10px;border-radius:3px;background:var(--k1);box-shadow:0 0 10px var(--k1);transform:rotate(45deg)}
 .topo .tot{margin-left:auto;font-size:12px;color:var(--texto3)}
 /* a fileira de máquinas, igual à tela inicial de um console */
-#fundo.marca{background-size:120px 120px;background-repeat:repeat;background-position:center}
+#fundo.marca{background-size:120px 120px;background-repeat:repeat;background-position:center}#fundo.marca.foto{background-size:cover,cover;background-repeat:no-repeat;background-position:center,center 20%}
 .card .logo{position:absolute;right:-14px;top:-10px;width:116px;height:116px;opacity:.26;object-fit:contain;transform:rotate(-8deg)}.card .logo-txt{position:absolute;right:6px;top:-4px;font-size:64px;font-weight:800;font-style:italic;opacity:.2;letter-spacing:-.04em}
 .grade{flex:1;min-height:0;overflow-y:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:6px 16px 24px;align-content:start;animation:entra .32s cubic-bezier(.2,.8,.2,1)}
 .card{position:relative;overflow:hidden;min-height:132px;border-radius:20px;padding:12px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;text-align:left;color:#fff;font:inherit;cursor:pointer;background:linear-gradient(150deg,color-mix(in srgb,var(--c) 85%,#000),color-mix(in srgb,var(--c) 35%,#000));border:1px solid rgba(255,255,255,.18);box-shadow:0 10px 24px color-mix(in srgb,var(--c) 30%,transparent)}
@@ -105,6 +105,9 @@ const W_SVG={
   x360:["#127C1F",'<g fill="none" stroke="#fff" stroke-width="3" opacity=".22" stroke-linecap="round"><circle cx="36" cy="36" r="18"/><path d="M26 26l20 20M46 26l-20 20"/><circle cx="90" cy="88" r="7"/><circle cx="76" cy="102" r="3"/><circle cx="104" cy="74" r="3"/></g>'],
   pc:[null,'<g fill="none" stroke="#fff" stroke-width="2.5" opacity=".2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 30h30l10 10h30M80 40v30l10 10h20M20 90h40l10-10"/><circle cx="10" cy="30" r="3"/><circle cx="110" cy="80" r="3"/><circle cx="20" cy="90" r="3"/><rect x="44" y="52" width="22" height="22" rx="3"/></g>']}
 const W_DE={ps1:"ps",ps2:"ps",ps4:"ps",ps5:"ps",switch:"switch","3ds":"3ds",snes:"snes",x360:"x360"}
+const W_FOTO={ps1:"ps1",ps2:"ps2",ps4:"ps4",switch:"switch","3ds":"3ds",snes:"snes",x360:"x360"}
+const veu=(c,a,b)=>"linear-gradient(180deg,color-mix(in srgb,"+c+" "+a+"%,transparent),color-mix(in srgb,"+c+" "+b+"%,transparent))"   // a cor do console por cima da foto, de leve em cima a quase cheia embaixo
+function fotoFundo(x){const k=W_FOTO[x.console];return k?foto("casa/fotos/maquinas/wallpaper/"+k+".jpg"):Promise.reject()}
 function wallpaper(x){const k=x.robo?"pc":W_DE[x.console];if(!k)return null;const [bg,g]=W_SVG[k],cor0=bg||cor(x);return{cor:cor0,url:'url("data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">'+g+'</svg>')+'")'}}
 const MARCA_SVG={ps1:"playstation",ps2:"playstation",ps4:"playstation",ps5:"playstation",switch:"switch","3ds":"3ds",snes:"snes",n64:"n64"},svgs={}
 function logo(x){const k=x.robo?"pc":MARCA_SVG[x.console];if(!k)return Promise.reject();if(svgs[k])return svgs[k];return svgs[k]=gh("marca/consoles/"+k+".svg",true).then(r=>{if(!r.ok)throw 0;return r.text()}).then(t=>"data:image/svg+xml;charset=utf-8,"+encodeURIComponent(t.replace(/currentColor/g,"#ffffff").replace(/color="[^"]*"/,'color="#ffffff"')))}
@@ -124,7 +127,7 @@ function grade(){
   const topo=el("div","topo"),ms2=el("div","marca-sis");ms2.append(el("i"),"Minha coleção");const t=D.total||{}
   topo.append(ms2,el("span","tot",D.maquinas.length+" máquinas · "+(t.zerados??"–")+" zerados"));app.append(topo)
   const g=el("div","grade");D.maquinas.forEach((x,j)=>{const b=el("button","card");b.style.setProperty("--c",cor(x));b.setAttribute("aria-label",x.nome)
-    {const w=wallpaper(x);if(w){b.style.setProperty("--c",w.cor);b.style.backgroundImage=w.url+",linear-gradient(150deg,color-mix(in srgb,"+w.cor+" 92%,#fff),color-mix(in srgb,"+w.cor+" 70%,#000))";b.style.backgroundSize="120px 120px,cover"}}
+    {const w=wallpaper(x);if(w){b.style.setProperty("--c",w.cor);b.style.backgroundImage=w.url+",linear-gradient(150deg,color-mix(in srgb,"+w.cor+" 92%,#fff),color-mix(in srgb,"+w.cor+" 70%,#000))";b.style.backgroundSize="120px 120px,cover";fotoFundo(x).then(u=>{b.style.backgroundImage=veu(w.cor,30,92)+",url("+u+")";b.style.backgroundSize="cover,cover";b.style.backgroundPosition="center,center"}).catch(()=>{})}}
     if(x.robo&&ROBO[x.robo]){const im=el("img","rob");im.alt="";im.src=ROBO[x.robo][2];b.append(im)}
     const st=x.stats;b.append(el("span","cur",CURTO[x.console]||(x.robo?"PC":"")),el("b","",x.nome),el("small","",st?(st.zerados||0)+" zerados · "+(st.jogos||0)+" jogos":(x.modelo||x.papel||"")))
     b.onclick=()=>monta(j);g.append(b)})
@@ -134,7 +137,7 @@ function grade(){
 function monta(i){
   atual=i;const ms=D.maquinas,m=ms[i],k=cor(m);try{sessionStorage.setItem("maq-atual",m.id)}catch(e){}
   document.documentElement.style.setProperty("--k1",k)
-  {const w=wallpaper(m);fundo.classList.toggle("marca",!!w);fundo.style.backgroundImage=w?w.url:"none";fundo.style.backgroundColor=w?w.cor:""}   // fundo = o logo da marca repetido, não a foto (May 18:45); as fotos ficam na aba Fotos
+  {const w=wallpaper(m);fundo.classList.toggle("marca",!!w);fundo.classList.remove("foto");fundo.style.backgroundImage=w?w.url:"none";fundo.style.backgroundColor=w?w.cor:"";if(w)fotoFundo(m).then(u=>{if(atual!==i)return;fundo.classList.add("foto");fundo.style.backgroundImage=veu(w.cor,25,85)+",url("+u+")"}).catch(()=>{})}   // fundo = o logo da marca repetido, não a foto (May 18:45); as fotos ficam na aba Fotos
   app.replaceChildren()
   const topo=el("div","topo"),vt=el("button","volta-col","← Coleção");vt.onclick=grade;const t=D.total||{}
   topo.append(vt,el("span","tot",(t.zerados??"–")+" zerados"));app.append(topo)
