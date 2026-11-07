@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Cache-Control" content="no-cache">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Jogos</title>
 <meta name="robots" content="noindex">
@@ -931,7 +932,7 @@ function rotuloStatus(s){return{jogando:"Jogando agora",quer_terminar:"Parou, ma
 function deslizar(el,vai){let x0=null,y0=0;el.addEventListener("touchstart",e=>{if(e.touches.length!=1||e.target.closest(".prateleira,.abas-f,.pager,.deck,#pop,#zoom,#envio,textarea")){x0=null;return}x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});el.addEventListener("touchend",e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.6)vai(dx<0?1:-1)},{passive:true})}
 const fechaFicha=()=>{const f=document.getElementById("ficha");if(!f.classList.contains("on")||f.classList.contains("sai"))return;history.replaceState(null,"","#"+aba);const fim=()=>{f.classList.remove("on","sai");document.getElementById("ficha-veu").classList.remove("on")};if(matchMedia("(prefers-reduced-motion:reduce)").matches)return fim();f.classList.add("sai");setTimeout(fim,240)}
 document.getElementById("ficha-veu").onclick=fechaFicha
-function voltaEPuxa(el,volta,puxa){let x0=null,y0=0,topo=false;el.addEventListener("touchstart",e=>{if(e.touches.length!=1){x0=null;return}x0=e.touches[0].clientX;y0=e.touches[0].clientY;topo=(e.currentTarget.scrollTop||0)<=0},{passive:true});el.addEventListener("touchend",e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;if(x0<24&&dx>80&&Math.abs(dx)>Math.abs(dy)*1.4)volta();else if(puxa&&topo&&dy>90&&dy>Math.abs(dx)*1.5)puxa();x0=null},{passive:true})}
+function voltaEPuxa(el,volta,puxa){let x0=null,y0=0,topo=false,lateral=false;el.addEventListener("touchstart",e=>{if(e.touches.length!=1){x0=null;return}x0=e.touches[0].clientX;y0=e.touches[0].clientY;topo=(e.currentTarget.scrollTop||0)<=0;lateral=el.id=="f-corpo"&&!e.target.closest(".abas-f,.prateleira,.prints,.serie,.pager,textarea,input")},{passive:true});el.addEventListener("touchend",e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;if((x0<24||lateral)&&dx>80&&Math.abs(dx)>Math.abs(dy)*1.4)volta();else if(puxa&&topo&&dy>90&&dy>Math.abs(dx)*1.5)puxa();x0=null},{passive:true})}
 voltaEPuxa(document.getElementById("f-corpo"),fechaFicha,fechaFicha)
 voltaEPuxa(document.getElementById("lista"),()=>{location.href="app.html#menu"},null)
 document.addEventListener("keydown",e=>{if(e.key!="Escape"||document.getElementById("zoom").classList.contains("on"))return;for(const id of["pop","envio"]){const el=document.getElementById(id);if(el.classList.contains("on")){el.classList.remove("on");return}}if(document.getElementById("ficha").classList.contains("on"))fechaFicha()})

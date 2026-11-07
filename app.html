@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.153">
+<meta name="app-versao" content="2026-11-07.154">
 <meta name="app-novidade" content="Contas do mês virou uma agenda própria, com as contas fixas (luz, água, internet) e a tua metade">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -4399,7 +4399,7 @@ function abreFinancas(m) {
 function abreItemMenu(m) {
   if (m.donos && m.donos.length) donosTela = m.donos;   // dono da tela (e o item de dentro herda do grupo se não tiver o seu)
   painel.style.setProperty('--c', (COR_ASSUNTO.find(([re]) => re.test(m.nome)) || [])[1] || 'var(--accent)');   // a tela fica na cor do assunto, igual o azulejo dela
-  if (m.tipo === 'pagina') { location.href = m.arq; return; }   // página própria do app (ex.: jogos.html), volta pelo botão dela
+  if (m.tipo === 'pagina') { location.href = m.arq + (m.arq.includes('?') ? '&' : '?') + 'v=' + encodeURIComponent(VERSAO); return; }   // ?v= da versão: o iPhone não reaproveita a página velha do cache (May 20:23, Parede de 05/11 aparecendo)   // página própria do app (ex.: jogos.html), volta pelo botão dela
   if (m.tipo === 'catalogo') return abreCatalogo();
   if (m.tipo === 'grupo') return abreGrupo(m);
   if (m.tipo === 'ideias') return abreIdeias(m);
