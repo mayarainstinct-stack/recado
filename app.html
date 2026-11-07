@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-06.69">
+<meta name="app-versao" content="2026-11-06.70">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -518,6 +518,23 @@ img.esq { min-height: 140px; }
 .pcd-num div { background: color-mix(in srgb, var(--rc) 8%, transparent); border-radius: 10px; padding: 6px 9px; } .pcd-num span { display: block; font-size: 11px; color: var(--muted); } .pcd-num b { font-size: 14px; }
 .pcd h4 { margin: 10px 0 2px; font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); } .pcd ul { margin: 2px 0; padding-left: 18px; } .pcd li { margin: 3px 0; }
 .pcd h4.peca { color: #EF4444; }
+.pcd-datas { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 2px; }
+.pcd-datas button { flex: none; width: auto; height: auto; border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; font-weight: 700; border: 1px solid var(--line); background: var(--paper); color: var(--fg); }
+.pcd-datas button.ativa { background: var(--accent); border-color: var(--accent); color: #fff; }
+.pcd-abas { position: relative; display: flex; gap: 4px; padding: 4px; border-radius: 16px; background: var(--paper); border: 1px solid var(--line); }
+.pcd-abas button { position: relative; z-index: 1; flex: 1 1 0; width: auto; height: auto; min-width: 0; min-height: 54px; border: none; border-radius: 12px; background: none !important; box-shadow: none !important; color: var(--muted); display: grid; justify-items: center; align-content: center; gap: 3px; padding: 6px 2px; font: inherit; font-size: 12px; font-weight: 800; transition: color .2s ease; }
+.pcd-abas button.ativa { color: var(--fg); } .pcd-abas img, .pcd-abas svg { width: 24px; height: 24px; border-radius: 8px; }
+.pcd-dq { position: absolute; top: 4px; bottom: 4px; left: 0; width: 0; border-radius: 12px; z-index: 0; pointer-events: none; background: color-mix(in srgb, var(--qc, var(--accent)) 22%, transparent); box-shadow: inset 0 -3px 0 var(--qc, var(--accent)); transition: transform .24s cubic-bezier(.3,.7,.2,1), width .24s ease, background .24s ease; }
+.pcd-trilho { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; align-items: flex-start; overscroll-behavior-x: contain; }
+.pcd-trilho::-webkit-scrollbar, .pcd-datas::-webkit-scrollbar { display: none; }
+.pcd-pag { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; scroll-snap-stop: always; }
+.pcd-cmp { --rc: var(--accent); } .pcd-lin { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.pcd-cab div { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 6px; border-radius: 10px; background: color-mix(in srgb, var(--rc) 16%, transparent); border-bottom: 3px solid var(--rc); font-size: 14px; }
+.pcd-cab img { width: 24px; height: 24px; border-radius: 8px; background: #0E0F12; }
+.pcd-rot { margin: 12px 0 4px; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.pcd-val { padding: 7px 8px; border-radius: 10px; font-size: 13px; font-weight: 600; line-height: 1.3; background: color-mix(in srgb, var(--ec) 14%, transparent); border-left: 3px solid var(--ec); }
+.pcd-val.neutro { background: color-mix(in srgb, var(--fg) 6%, transparent); border-left-color: transparent; }
+@media (prefers-reduced-motion: reduce) { .pcd-dq { transition: none; } }
 .cartao h3 { margin: 0 0 4px; font-size: 16px; } .cartao h4 { margin: 10px 0 2px; font-size: 14px; color: var(--accent); }
 .cartao ul { margin: 2px 0; padding-left: 18px; } .cartao li { margin: 2px 0; }
 .ag.perto { border: 2px solid var(--accent); }
@@ -2995,27 +3012,57 @@ abreMenu.onclick = () => {
   });
 };
 // Diagnóstico (05/11/2026): só leitura, pra "tá lento / não chega" virar dado
-// Saúde dos PCs (May, 06/11/2026 21:10): casa/diagnostico-pcs.json, o Orfeu junta o que cada robô mediu; a data no topo é a do arquivo
-const EST_PC = { ok: ['Em ordem', '#22C55E'], atencao: ['Atenção', '#F59E0B'], peca: ['Precisa de peça', '#EF4444'] };
+// Saúde dos PCs (May, 06/11/2026 21:10 e 21:26): casa/diagnostico-pcs.json = { dias: [{ data, quem, comparar: [{ nome, v: [[texto, tom] x3] }], pcs: [...] }] }, o mais novo primeiro.
+// Em cima a data; embaixo as abas Comparar / PC1 / PC2 / PC3, que deslizam (arrasta pro lado ou toca na aba). O Orfeu junta o que cada robô mediu.
+const EST_PC = { ok: ['Em ordem', '#22C55E'], atencao: ['Atenção', '#F59E0B'], peca: ['Precisa de peça', '#EF4444'] }, TOM_PC = { ok: '#22C55E', atencao: '#F59E0B', ruim: '#EF4444' };
+const elD = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+const fotoRobo = g => { const im = elD('img'); im.alt = ''; im.src = AVATAR_PAGES[g.foto] || ''; return im; };
 function cartaoPc(p) {
-  const g = GRUPO[p.robo] || TRAB_NEUTRO, [en, ec] = EST_PC[p.estado] || EST_PC.atencao, el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
-  const d = el('div', 'pcd'); d.style.setProperty('--rc', g.cor);
-  const top = el('div', 'pcd-top'), im = el('img'); im.alt = ''; im.src = AVATAR_PAGES[g.foto] || ''; const nm = el('div'); nm.append(el('b', '', p.pc + ' · ' + g.nome.replace(/\s*\(.*\)/, '')), el('span', '', p.papel || ''));
-  const es = el('span', 'pcd-est', en); es.style.setProperty('--ec', ec); top.append(im, nm, es); d.append(top);
-  if (p.resumo) d.append(el('p', 'pcd-res', p.resumo));
-  if ((p.numeros || []).length) { const n = el('div', 'pcd-num'); p.numeros.forEach(([k, v]) => { const b = el('div'); b.append(el('span', '', k), el('b', '', v)); n.append(b); }); d.append(n); }
-  [['feito', 'Feito hoje', ''], ['falta', 'Falta', ''], ['peca', 'Só peça resolve', 'peca']].forEach(([k, t, cls]) => { if (!(p[k] || []).length) return; d.append(el('h4', cls, t)); const ul = el('ul'); p[k].forEach(i => ul.append(el('li', '', i))); d.append(ul); });
+  const g = GRUPO[p.robo] || TRAB_NEUTRO, [en, ec] = EST_PC[p.estado] || EST_PC.atencao;
+  const d = elD('div', 'pcd'); d.style.setProperty('--rc', g.cor);
+  const top = elD('div', 'pcd-top'), nm = elD('div'); nm.append(elD('b', '', p.pc + ' · ' + g.nome.replace(/\s*\(.*\)/, '')), elD('span', '', p.papel || ''));
+  const es = elD('span', 'pcd-est', en); es.style.setProperty('--ec', ec); top.append(fotoRobo(g), nm, es); d.append(top);
+  if (p.resumo) d.append(elD('p', 'pcd-res', p.resumo));
+  if ((p.numeros || []).length) { const n = elD('div', 'pcd-num'); p.numeros.forEach(([k, v]) => { const b = elD('div'); b.append(elD('span', '', k), elD('b', '', v)); n.append(b); }); d.append(n); }
+  [['feito', 'Feito', ''], ['falta', 'Falta', ''], ['peca', 'Só peça resolve', 'peca']].forEach(([k, t, cls]) => { if (!(p[k] || []).length) return; d.append(elD('h4', cls, t)); const ul = elD('ul'); p[k].forEach(i => ul.append(elD('li', '', i))); d.append(ul); });
   return d;
+}
+function comparaPcs(dia) {   // os 3 lado a lado, uma linha por medida; a cor diz se tá bom (verde), de olho (amarelo) ou ruim (vermelho)
+  const d = elD('div', 'pcd pcd-cmp'), cab = elD('div', 'pcd-lin pcd-cab');
+  dia.pcs.forEach(p => { const g = GRUPO[p.robo] || TRAB_NEUTRO, h = elD('div'); h.style.setProperty('--rc', g.cor); h.append(fotoRobo(g), elD('b', '', p.pc)); cab.append(h); }); d.append(cab);
+  const sit = { nome: 'Situação', v: dia.pcs.map(p => [(EST_PC[p.estado] || EST_PC.atencao)[0], { ok: 'ok', peca: 'ruim' }[p.estado] || 'atencao']) };
+  [sit, ...(dia.comparar || [])].forEach(l => {
+    d.append(elD('div', 'pcd-rot', l.nome)); const ln = elD('div', 'pcd-lin');
+    l.v.forEach(([t, tom]) => { const c = elD('div', 'pcd-val', t); if (TOM_PC[tom]) c.style.setProperty('--ec', TOM_PC[tom]); else c.classList.add('neutro'); ln.append(c); }); d.append(ln);
+  });
+  return d;
+}
+function montaDiaPcs(caixa, dia) {
+  const nav = elD('nav', 'pcd-abas'), dq = elD('span', 'pcd-dq'), trilho = elD('div', 'pcd-trilho'); nav.setAttribute('aria-label', 'Abas do diagnóstico'); nav.append(dq);
+  [['Comparar', null], ...dia.pcs.map(p => [p.pc, p])].forEach(([rot, p], i) => {
+    const g = p && (GRUPO[p.robo] || TRAB_NEUTRO), b = elD('button'); b.type = 'button'; b.dataset.cor = g ? g.cor : '';
+    if (g) b.append(fotoRobo(g)); else b.insertAdjacentHTML('beforeend', icone('chart')); b.append(elD('span', '', rot));
+    b.onclick = () => trilho.scrollTo({ left: i * trilho.clientWidth, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); nav.append(b);
+    const pg = elD('div', 'pcd-pag'); pg.append(p ? cartaoPc(p) : comparaPcs(dia)); trilho.append(pg);
+  });
+  let at = -1; const marca = i => {   // o destaque desliza até a aba da página que tá na tela
+    const bs = nav.querySelectorAll('button'), b = bs[i]; if (!b || i === at) return; at = i;
+    bs.forEach((x, j) => { x.classList.toggle('ativa', j === i); x.setAttribute('aria-current', j === i ? 'true' : 'false'); });
+    dq.style.transform = 'translateX(' + b.offsetLeft + 'px)'; dq.style.width = b.offsetWidth + 'px'; if (b.dataset.cor) dq.style.setProperty('--qc', b.dataset.cor); else dq.style.removeProperty('--qc');
+  };
+  trilho.addEventListener('scroll', () => marca(Math.round(trilho.scrollLeft / Math.max(1, trilho.clientWidth))), { passive: true });
+  caixa.replaceChildren(nav, trilho); requestAnimationFrame(() => marca(0));
 }
 function abreDiagnostico() {
   tela('Diagnóstico', async c => {
-    const sp = document.createElement('div'); sp.className = 'p-lista'; c.append(sp);
-    const t1 = document.createElement('div'); t1.className = 'p-sec'; t1.textContent = 'Saúde dos PCs'; sp.append(t1);
-    const nota = document.createElement('p'); nota.className = 'p-nota'; nota.textContent = 'Carregando…'; sp.append(nota);
+    const sp = elD('div', 'p-lista'), datas = elD('div', 'pcd-datas'), nota = elD('p', 'p-nota', 'Carregando…'), caixa = elD('div', 'p-lista'); c.append(sp);
+    sp.append(elD('div', 'p-sec', 'Saúde dos PCs'), datas, nota, caixa);
     const t2 = document.createElement('div'); t2.className = 'p-sec'; t2.textContent = 'Este app'; c.append(t2);
     const x = document.createElement('div'); x.className = 'p-texto'; c.append(x);
-    lerArquivo('casa/diagnostico-pcs.json').then(t => JSON.parse(t)).then(dg => { nota.textContent = 'Diagnóstico de ' + dg.data + (dg.quem ? ' · ' + dg.quem : ''); dg.pcs.forEach(p => sp.append(cartaoPc(p))); })
-      .catch(() => { nota.textContent = 'Não consegui abrir o diagnóstico dos PCs. Confere a internet.'; });
+    lerArquivo('casa/diagnostico-pcs.json').then(t => JSON.parse(t)).then(dg => {
+      const dias = dg.dias || [dg], escolhe = i => { datas.querySelectorAll('button').forEach((b, j) => b.classList.toggle('ativa', j === i)); nota.textContent = dias[i].quem || ''; nota.hidden = !dias[i].quem; montaDiaPcs(caixa, dias[i]); };
+      dias.forEach((d, i) => { const b = elD('button', '', d.data); b.type = 'button'; b.onclick = () => escolhe(i); datas.append(b); }); escolhe(0);
+    }).catch(() => { nota.textContent = 'Não consegui abrir o diagnóstico dos PCs. Confere a internet.'; });
     const linha = (t, v) => { const p = document.createElement('p'), b = document.createElement('b'); b.textContent = t + ': '; p.append(b, v); x.append(p); };
     const perm = window.Notification ? { granted: 'ligada', denied: 'bloqueada (Ajustes → Notificações)', default: 'ainda não pedida' }[Notification.permission] || Notification.permission : 'este navegador não tem';
     linha('Versão do app', VERSAO || 'sem versão');
