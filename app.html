@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.113">
+<meta name="app-versao" content="2026-11-07.114">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -677,15 +677,39 @@ img.esq { min-height: 140px; }
 .mq-chips { display: flex; flex-wrap: wrap; gap: 6px; } .mq-chips span { font-size: 12.5px; padding: 5px 10px; border-radius: 999px; background: color-mix(in srgb, var(--fg) 6%, transparent); border: 1px solid var(--line); }
 .mq-falta li { color: var(--muted); }
 .mq-fotos { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; } .mq-fotos button { flex: none; width: 110px; height: 110px; border-radius: 14px; background: var(--paper) center / cover; border: 1px solid var(--line); }
-.p-grade.apps { grid-template-columns: repeat(4, 1fr); gap: 18px 6px; padding: 4px 2px; }
-.p-grade.apps .p-azulejo.app-ic { --a1: #94A3B8; --a2: #334155; --g: #fff; min-height: 0; padding: 0; gap: 7px; border: 0; background: none; box-shadow: none; filter: drop-shadow(0 6px 10px color-mix(in srgb, var(--a2) 55%, transparent)); }
-.p-grade.apps .app-ic .ic { position: relative; width: 66px; height: 66px; background: linear-gradient(150deg, var(--a1), var(--a2)); color: var(--g); filter: none; clip-path: polygon(11px 0, calc(100% - 11px) 0, 100% 11px, 100% calc(100% - 11px), calc(100% - 11px) 100%, 11px 100%, 0 calc(100% - 11px), 0 11px); }
-.p-grade.apps .app-ic .ic::after { content: ''; position: absolute; inset: 0; background: radial-gradient(120% 70% at 20% 0%, rgba(255,255,255,.38), transparent 55%); pointer-events: none; }
-.p-grade.apps .app-ic .ic svg.im { width: 42px; height: 42px; stroke: currentColor; } .p-grade.apps .app-ic .ic svg.im .f1 { fill: color-mix(in srgb, currentColor 24%, transparent); } .p-grade.apps .app-ic .ic svg.im .f2 { fill: currentColor; }
-.p-grade.apps .app-ic .ic.cal { background: #FFFFFF; color: #111; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 7px; } .p-grade.apps .app-ic .ic.cal::after { display: none; }
-.p-grade.apps .app-ic .ic.cal small { font-size: 10px; font-weight: 900; letter-spacing: .06em; color: #E31B23; } .p-grade.apps .app-ic .ic.cal b { font-size: 31px; font-weight: 300; line-height: 1; margin-top: 1px; }
-.p-grade.apps .app-ic .t { font-size: 11.5px; font-weight: 700; color: var(--fg); line-height: 1.15; }
-.p-grade.apps .app-ic:active .ic { transform: scale(.93); } .p-grade.apps .app-ic .ic { transition: transform .12s; }
+.p-grade.apps { gap: 12px 10px; }
+.p-grade.apps .p-azulejo { position: relative; height: 112px; min-height: 112px; overflow: hidden; }   /* igual em todos: só largura e altura */
+.p-grade.apps .bt-jogos { background: radial-gradient(90% 70% at 50% 30%, rgba(132,204,22,.25), transparent 70%), #070A05; border: 2px solid #84CC16; border-radius: 0; clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px); box-shadow: inset 0 0 18px rgba(132,204,22,.35); }
+.p-grade.apps .bt-jogos .ic { color: #BEF264; filter: drop-shadow(0 0 8px #84CC16); } .p-grade.apps .bt-jogos .t { font: italic 17px Impact, 'Arial Black', sans-serif; letter-spacing: .03em; text-transform: uppercase; color: #ECFCCB; }
+.p-grade.apps .bt-jogos::after { content: ''; position: absolute; left: 14px; right: 14px; bottom: 9px; height: 5px; background: repeating-linear-gradient(115deg, #A3E635 0 6px, transparent 6px 9px); filter: drop-shadow(0 0 4px #84CC16); }
+.p-grade.apps .bt-maquinas { background: linear-gradient(165deg, #3730A3, #111033 70%); border: 1px solid #6366F1; border-radius: 18px 18px 8px 8px; box-shadow: inset 0 2px 0 rgba(255,255,255,.25), inset 0 -10px 0 #0B0A24, 0 6px 14px rgba(0,0,0,.35); }
+.p-grade.apps .bt-maquinas::after { content: ''; position: absolute; top: 10px; right: 12px; width: 7px; height: 7px; border-radius: 50%; background: #34D399; box-shadow: 0 0 8px #34D399; } .p-grade.apps .bt-maquinas .ic { color: #C7D2FE; }
+.p-grade.apps .bt-pendencias { background: linear-gradient(#F59E0B 0 18px, transparent 18px), repeating-linear-gradient(90deg, transparent 0 25px, #FCD34D 25px 26px), repeating-linear-gradient(transparent 0 17px, #FCD34D 17px 18px), #FFFBEB; border: 1px solid #F59E0B; border-radius: 4px; text-shadow: none; padding-top: 22px; }
+.p-grade.apps .bt-pendencias .ic { color: #B45309; filter: none; } .p-grade.apps .bt-pendencias .t { color: #78350F; }
+.p-grade.apps .bt-saude { background: radial-gradient(110% 90% at 100% 0%, rgba(255,255,255,.35), transparent 60%), linear-gradient(150deg, #F472B6, #DB2777 55%, #9D174D); border: 0; border-radius: 28px; box-shadow: 0 8px 18px rgba(219,39,119,.35); }
+.p-grade.apps .bt-saude .ic { color: #fff; filter: none; }
+.p-grade.apps .bt-treino { background: #0A0A0A; border: 0; border-left: 7px solid #C6F432; border-radius: 3px; box-shadow: 0 6px 14px rgba(0,0,0,.4); }
+.p-grade.apps .bt-treino .ic { color: #C6F432; filter: none; } .p-grade.apps .bt-treino .t { color: #C6F432; text-transform: uppercase; letter-spacing: .08em; font-weight: 900; }
+.p-grade.apps .bt-casa { background: linear-gradient(90deg, transparent 49%, #E7E2D8 49% 51%, transparent 51%) 0 0 / 100% 100%, repeating-linear-gradient(transparent 0 13px, #2B323C 13px 14px), repeating-linear-gradient(90deg, #3A2A1F 0 13px, #2E2118 13px 14px); border: 3px solid #E7E2D8; border-radius: 2px; }
+.p-grade.apps .bt-casa .ic { color: #5EEAD4; background: rgba(14,17,22,.85); border-radius: 12px; } .p-grade.apps .bt-casa .t { background: rgba(14,17,22,.85); padding: 1px 8px; border-radius: 6px; }
+.p-grade.apps .bt-obra { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='17'%3E%3Crect width='32' height='17' fill='%232A2420'/%3E%3Cg fill='%2357402F'%3E%3Crect x='1' y='1' width='30' height='7' rx='1'/%3E%3Crect x='-15' y='9.5' width='30' height='7' rx='1'/%3E%3Crect x='17' y='9.5' width='30' height='7' rx='1'/%3E%3C/g%3E%3C/svg%3E"); border: 0; border-radius: 6px; box-shadow: inset 0 0 14px rgba(0,0,0,.6); }
+.p-grade.apps .bt-obra .ic { color: #7C2D12; background: #FEF08A; border-radius: 2px 2px 8px 2px; transform: rotate(-4deg); filter: drop-shadow(0 4px 4px rgba(0,0,0,.5)); }
+.p-grade.apps .bt-obra .ic::after { content: ''; position: absolute; } .p-grade.apps .bt-obra .ic { position: relative; } .p-grade.apps .bt-obra .ic::before { content: ''; position: absolute; top: -4px; left: 50%; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #FCA5A5, #DC2626 60%); }
+.p-grade.apps .bt-midia { background: linear-gradient(#050505 0 13px, transparent 13px calc(100% - 13px), #050505 0), linear-gradient(135deg, #7E22CE, #DB2777); border: 0; border-radius: 4px; }
+.p-grade.apps .bt-midia::before, .p-grade.apps .bt-midia::after { content: ''; position: absolute; left: 4px; right: 4px; height: 5px; background: repeating-linear-gradient(90deg, #F5F5F5 0 6px, transparent 6px 12px); border-radius: 1px; } .p-grade.apps .bt-midia::before { top: 4px; } .p-grade.apps .bt-midia::after { bottom: 4px; }
+.p-grade.apps .bt-midia .ic { color: #fff; filter: none; }
+.p-grade.apps .bt-listas { background: repeating-linear-gradient(#FFFDF5 0 17px, #DBEAFE 17px 18px); border: 0; border-left: 5px solid #F87171; border-radius: 3px 10px 10px 3px; text-shadow: none; box-shadow: 0 6px 12px rgba(0,0,0,.3); }
+.p-grade.apps .bt-listas .ic { color: #D97706; filter: none; } .p-grade.apps .bt-listas .t { color: #1F2937; }
+.p-grade.apps .bt-ideias { background: linear-gradient(172deg, #FEF9C3, #FDE047); border: 0; border-radius: 2px 2px 16px 2px; transform: rotate(-1.5deg); text-shadow: none; box-shadow: 0 10px 14px -8px rgba(0,0,0,.6); overflow: visible; }
+.p-grade.apps .bt-ideias::before { content: ''; position: absolute; top: -6px; left: 50%; width: 46px; height: 14px; margin-left: -23px; background: rgba(255,255,255,.6); transform: rotate(-3deg); box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+.p-grade.apps .bt-ideias .ic { color: #A16207; filter: none; } .p-grade.apps .bt-ideias .t { color: #422006; }
+.p-grade.apps .bt-contas { background: #F8FAFC; border: 0; border-radius: 4px; text-shadow: none; padding-bottom: 24px; mask: radial-gradient(4px at 50% 0, transparent 98%, #000) 0 0 / 12px 51% repeat-x, linear-gradient(#000, #000) 0 100% / 100% 50% no-repeat; }
+.p-grade.apps .bt-contas::after { content: ''; position: absolute; left: 14px; right: 14px; bottom: 8px; height: 12px; background: repeating-linear-gradient(90deg, #111 0 2px, transparent 2px 4px, #111 4px 5px, transparent 5px 8px, #111 8px 11px, transparent 11px 13px); }
+.p-grade.apps .bt-contas .ic { color: #0369A1; filter: none; } .p-grade.apps .bt-contas .t { color: #0F172A; }
+.p-grade.apps .bt-agenda { background: linear-gradient(#0D9488 0 32px, #F0FDFA 32px); border: 0; border-radius: 8px; text-shadow: none; align-content: start; padding-top: 4px; gap: 2px; box-shadow: 0 6px 14px rgba(13,148,136,.35); }
+.p-grade.apps .bt-agenda .ic { width: auto; height: auto; display: grid; justify-items: center; filter: none; color: #134E4A; } .p-grade.apps .bt-agenda .ic small { font-size: 10.5px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; color: #fff; line-height: 24px; }
+.p-grade.apps .bt-agenda .ic b { font-size: 34px; font-weight: 300; line-height: 1.15; margin-top: 4px; } .p-grade.apps .bt-agenda .t { color: #134E4A; }
+.p-grade.apps .p-azulejo:active { transform: scale(.95); } .p-grade.apps .bt-ideias:active { transform: rotate(-1.5deg) scale(.95); }
 .p-grade .p-azulejo { touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .p-grade .p-azulejo.arrastando { position: relative; z-index: 5; touch-action: none; box-shadow: 0 16px 34px rgba(0,0,0,.5); transition: none; }
 .p-corpo > .tela.pl-tela { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 10px; } .p-corpo > .tela.pl-tela > .pl-caixa { flex: 1 1 0; min-height: 0; } .p-corpo > .tela.pl-tela > .pl-info { flex: none; }
@@ -3264,16 +3288,14 @@ const ICONES_MENU = [
   [/conta|comida/i, '<ellipse class="f2" cx="18" cy="36" rx="12" ry="4"/><ellipse class="f1" cx="18" cy="30" rx="12" ry="4"/><ellipse class="f1" cx="18" cy="24" rx="12" ry="4"/><rect class="f1" x="28" y="5" width="16" height="16" rx="2"/><path d="M28 10h16M32 3v4M40 3v4M33 15l2 2 4-4"/>']
 ];
 function iconeMenu(nome) { const a = ICONES_MENU.find(([re]) => re.test(nome)); return a ? '<svg class="im" viewBox="0 0 48 48" aria-hidden="true">' + a[1] + '</svg>' : ''; }
-// Menu = ícones de app (May, 07/11/2026 15:08: "cada botão diferente como se fosse aplicativo do iPhone, cada um com desenho e cor diferente, refletindo o que tem dentro"):
-// quadrado chanfrado da casa cheio na cor do app, desenho branco do que tem dentro, nome embaixo; a Agenda mostra o dia de hoje
-const CORES_APP = [[/jogo/i, '#A3E635', '#3F6212'], [/m[aá]quina|console/i, '#818CF8', '#1E3A8A'], [/pend[eê]ncia/i, '#4ADE80', '#166534'], [/sa[uú]de|cirurgia/i, '#F9A8D4', '#BE185D'],
-  [/treino|academia/i, '#27272A', '#000000', '#C6F432'], [/casa/i, '#5EEAD4', '#0F766E'], [/obra|piscina/i, '#FDBA74', '#C2410C'], [/m[ií]dia|imagen|v[ií]deo|anima/i, '#C084FC', '#DB2777'],
-  [/lista/i, '#FCD34D', '#D97706'], [/ideia/i, '#FEF08A', '#EAB308', '#713F12'], [/conta|comida/i, '#7DD3FC', '#0369A1']];
-function vesteApp(b, nome) {
-  const c = CORES_APP.find(([re]) => re.test(nome)); b.classList.add('app-ic');
-  if (/agenda/i.test(nome)) { const d = new Date(), ic = b.querySelector('.ic'); ic.className = 'ic cal'; ic.replaceChildren(elD('small', '', d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '').toUpperCase()), elD('b', '', String(d.getDate()))); return; }
-  if (!c) return;
-  b.style.setProperty('--a1', c[1]); b.style.setProperty('--a2', c[2]); if (c[3]) b.style.setProperty('--g', c[3]);
+// Menu: cada botão com a cara da tela de dentro (May, 07/11/2026 15:08 e 15:16: "cara de botão, mas cada botão tem que ser o CSS separado;
+// o que eles têm de igual é largura e altura, o resto cada um pega do seu interior"). Classe bt-<assunto>; a Agenda mostra o dia de hoje
+const BOTAO_DE = [[/jogo/i, 'jogos'], [/m[aá]quina|console/i, 'maquinas'], [/pend[eê]ncia/i, 'pendencias'], [/sa[uú]de|cirurgia/i, 'saude'], [/treino|academia/i, 'treino'], [/casa/i, 'casa'],
+  [/obra|piscina/i, 'obra'], [/m[ií]dia|imagen|v[ií]deo|anima/i, 'midia'], [/lista/i, 'listas'], [/ideia/i, 'ideias'], [/conta|comida/i, 'contas'], [/agenda/i, 'agenda']];
+function vesteBotao(b, nome) {
+  const k = (BOTAO_DE.find(([re]) => re.test(nome)) || [])[1]; if (!k) return;
+  b.classList.add('bt-' + k);
+  if (k === 'agenda') { const d = new Date(), ic = b.querySelector('.ic'); ic.replaceChildren(elD('small', '', d.toLocaleDateString('pt-BR', { weekday: 'long' }).split('-')[0]), elD('b', '', String(d.getDate()))); }
 }
 function botaoGrade(ic, txt, sub, fn) {   // azulejo do Menu: ícone grande em cima, nome curto embaixo, na cor do assunto
   const b = document.createElement('button'); b.type = 'button'; b.className = 'p-azulejo'; if (sub) b.title = sub;
@@ -3443,7 +3465,7 @@ abreMenu.onclick = () => {
       .then(itens => {   // ordem: a que ela arrumou arrastando (fica neste aparelho); sem isso, a do menu.json (mão direita)
         let ordem = []; try { ordem = JSON.parse(store.get('menu-ordem') || '[]'); } catch (e) {}
         const pos = n => { const i = ordem.indexOf(n); return i < 0 ? 999 : i; };
-        itens.map((m, i) => [m, i]).sort((a, b) => pos(a[0].nome) - pos(b[0].nome) || a[1] - b[1]).forEach(([m]) => { const b = botaoGrade(m.icone, m.nome, m.sub, () => { conta(m.nome); abreItemMenu(m); }); b.dataset.nome = m.nome; vesteApp(b, m.nome); lista.append(b); });
+        itens.map((m, i) => [m, i]).sort((a, b) => pos(a[0].nome) - pos(b[0].nome) || a[1] - b[1]).forEach(([m]) => { const b = botaoGrade(m.icone, m.nome, m.sub, () => { conta(m.nome); abreItemMenu(m); }); b.dataset.nome = m.nome; vesteBotao(b, m.nome); lista.append(b); });
         arrumaArrastando(lista);
       });
   });
