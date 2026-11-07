@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.112">
+<meta name="app-versao" content="2026-11-07.113">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -677,6 +677,15 @@ img.esq { min-height: 140px; }
 .mq-chips { display: flex; flex-wrap: wrap; gap: 6px; } .mq-chips span { font-size: 12.5px; padding: 5px 10px; border-radius: 999px; background: color-mix(in srgb, var(--fg) 6%, transparent); border: 1px solid var(--line); }
 .mq-falta li { color: var(--muted); }
 .mq-fotos { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; } .mq-fotos button { flex: none; width: 110px; height: 110px; border-radius: 14px; background: var(--paper) center / cover; border: 1px solid var(--line); }
+.p-grade.apps { grid-template-columns: repeat(4, 1fr); gap: 18px 6px; padding: 4px 2px; }
+.p-grade.apps .p-azulejo.app-ic { --a1: #94A3B8; --a2: #334155; --g: #fff; min-height: 0; padding: 0; gap: 7px; border: 0; background: none; box-shadow: none; filter: drop-shadow(0 6px 10px color-mix(in srgb, var(--a2) 55%, transparent)); }
+.p-grade.apps .app-ic .ic { position: relative; width: 66px; height: 66px; background: linear-gradient(150deg, var(--a1), var(--a2)); color: var(--g); filter: none; clip-path: polygon(11px 0, calc(100% - 11px) 0, 100% 11px, 100% calc(100% - 11px), calc(100% - 11px) 100%, 11px 100%, 0 calc(100% - 11px), 0 11px); }
+.p-grade.apps .app-ic .ic::after { content: ''; position: absolute; inset: 0; background: radial-gradient(120% 70% at 20% 0%, rgba(255,255,255,.38), transparent 55%); pointer-events: none; }
+.p-grade.apps .app-ic .ic svg.im { width: 42px; height: 42px; stroke: currentColor; } .p-grade.apps .app-ic .ic svg.im .f1 { fill: color-mix(in srgb, currentColor 24%, transparent); } .p-grade.apps .app-ic .ic svg.im .f2 { fill: currentColor; }
+.p-grade.apps .app-ic .ic.cal { background: #FFFFFF; color: #111; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 7px; } .p-grade.apps .app-ic .ic.cal::after { display: none; }
+.p-grade.apps .app-ic .ic.cal small { font-size: 10px; font-weight: 900; letter-spacing: .06em; color: #E31B23; } .p-grade.apps .app-ic .ic.cal b { font-size: 31px; font-weight: 300; line-height: 1; margin-top: 1px; }
+.p-grade.apps .app-ic .t { font-size: 11.5px; font-weight: 700; color: var(--fg); line-height: 1.15; }
+.p-grade.apps .app-ic:active .ic { transform: scale(.93); } .p-grade.apps .app-ic .ic { transition: transform .12s; }
 .p-grade .p-azulejo { touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .p-grade .p-azulejo.arrastando { position: relative; z-index: 5; touch-action: none; box-shadow: 0 16px 34px rgba(0,0,0,.5); transition: none; }
 .p-corpo > .tela.pl-tela { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 10px; } .p-corpo > .tela.pl-tela > .pl-caixa { flex: 1 1 0; min-height: 0; } .p-corpo > .tela.pl-tela > .pl-info { flex: none; }
@@ -3255,6 +3264,17 @@ const ICONES_MENU = [
   [/conta|comida/i, '<ellipse class="f2" cx="18" cy="36" rx="12" ry="4"/><ellipse class="f1" cx="18" cy="30" rx="12" ry="4"/><ellipse class="f1" cx="18" cy="24" rx="12" ry="4"/><rect class="f1" x="28" y="5" width="16" height="16" rx="2"/><path d="M28 10h16M32 3v4M40 3v4M33 15l2 2 4-4"/>']
 ];
 function iconeMenu(nome) { const a = ICONES_MENU.find(([re]) => re.test(nome)); return a ? '<svg class="im" viewBox="0 0 48 48" aria-hidden="true">' + a[1] + '</svg>' : ''; }
+// Menu = ícones de app (May, 07/11/2026 15:08: "cada botão diferente como se fosse aplicativo do iPhone, cada um com desenho e cor diferente, refletindo o que tem dentro"):
+// quadrado chanfrado da casa cheio na cor do app, desenho branco do que tem dentro, nome embaixo; a Agenda mostra o dia de hoje
+const CORES_APP = [[/jogo/i, '#A3E635', '#3F6212'], [/m[aá]quina|console/i, '#818CF8', '#1E3A8A'], [/pend[eê]ncia/i, '#4ADE80', '#166534'], [/sa[uú]de|cirurgia/i, '#F9A8D4', '#BE185D'],
+  [/treino|academia/i, '#27272A', '#000000', '#C6F432'], [/casa/i, '#5EEAD4', '#0F766E'], [/obra|piscina/i, '#FDBA74', '#C2410C'], [/m[ií]dia|imagen|v[ií]deo|anima/i, '#C084FC', '#DB2777'],
+  [/lista/i, '#FCD34D', '#D97706'], [/ideia/i, '#FEF08A', '#EAB308', '#713F12'], [/conta|comida/i, '#7DD3FC', '#0369A1']];
+function vesteApp(b, nome) {
+  const c = CORES_APP.find(([re]) => re.test(nome)); b.classList.add('app-ic');
+  if (/agenda/i.test(nome)) { const d = new Date(), ic = b.querySelector('.ic'); ic.className = 'ic cal'; ic.replaceChildren(elD('small', '', d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '').toUpperCase()), elD('b', '', String(d.getDate()))); return; }
+  if (!c) return;
+  b.style.setProperty('--a1', c[1]); b.style.setProperty('--a2', c[2]); if (c[3]) b.style.setProperty('--g', c[3]);
+}
 function botaoGrade(ic, txt, sub, fn) {   // azulejo do Menu: ícone grande em cima, nome curto embaixo, na cor do assunto
   const b = document.createElement('button'); b.type = 'button'; b.className = 'p-azulejo'; if (sub) b.title = sub;
   const cor = (COR_ASSUNTO.find(([re]) => re.test(txt)) || [])[1]; if (cor) b.style.setProperty('--c', cor);
@@ -3416,14 +3436,14 @@ abreMenu.onclick = () => {
     const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = 'Atalhos'; c.append(t);
     // Os botões do Menu vêm de menu/menu.json (a Lyra acrescenta páginas sem mexer no app); sem ele, só o Catálogo.
     // grade de ícones em 3 colunas, o mais usado em cima (May, 06/11/2026: "lista muito grande")
-    const lista = document.createElement('div'); lista.className = 'p-grade'; c.append(lista);
+    const lista = document.createElement('div'); lista.className = 'p-grade apps'; c.append(lista);
     let uso = {}; try { uso = JSON.parse(store.get('menu-uso') || '{}'); } catch (e) {}
     const conta = n => { uso[n] = (uso[n] || 0) + 1; try { store.set('menu-uso', JSON.stringify(uso)); } catch (e) {} };
     lerArquivo('menu/menu.json').then(t => JSON.parse(t).itens).catch(() => [{ tipo: 'catalogo', icone: 'bag', nome: 'Catálogo', sub: 'piscina, piso, borda, churrasqueira…' }])
       .then(itens => {   // ordem: a que ela arrumou arrastando (fica neste aparelho); sem isso, a do menu.json (mão direita)
         let ordem = []; try { ordem = JSON.parse(store.get('menu-ordem') || '[]'); } catch (e) {}
         const pos = n => { const i = ordem.indexOf(n); return i < 0 ? 999 : i; };
-        itens.map((m, i) => [m, i]).sort((a, b) => pos(a[0].nome) - pos(b[0].nome) || a[1] - b[1]).forEach(([m]) => { const b = botaoGrade(m.icone, m.nome, m.sub, () => { conta(m.nome); abreItemMenu(m); }); b.dataset.nome = m.nome; lista.append(b); });
+        itens.map((m, i) => [m, i]).sort((a, b) => pos(a[0].nome) - pos(b[0].nome) || a[1] - b[1]).forEach(([m]) => { const b = botaoGrade(m.icone, m.nome, m.sub, () => { conta(m.nome); abreItemMenu(m); }); b.dataset.nome = m.nome; vesteApp(b, m.nome); lista.append(b); });
         arrumaArrastando(lista);
       });
   });
