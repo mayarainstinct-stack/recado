@@ -30,6 +30,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .card .cur{position:absolute;top:10px;left:12px;font-weight:800;font-size:13px;letter-spacing:.1em}.card b{position:relative;font-size:16px;line-height:1.15;padding-right:44px;text-shadow:0 1px 8px rgba(0,0,0,.6)}.card small{position:relative;font-size:11.5px;opacity:.88}.card:has(img.rob) small,.card:has(img.rob) b{padding-right:60px}.card small{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .bloco-tit{grid-column:1/-1;margin:8px 2px -2px;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--texto2)}.card.diag-largo{grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center;justify-content:flex-start;gap:14px;background:linear-gradient(110deg,#7C3AED,#4C1D95);box-shadow:0 10px 24px rgba(139,92,246,.35)}.diag-ic{flex:none;width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:rgba(255,255,255,.14)}.diag-ic svg{width:30px;height:30px}.diag-tx{display:flex;flex-direction:column;gap:2px;min-width:0}.diag-tx b{padding-right:0}
 .card.inativo{filter:grayscale(1) brightness(.75);opacity:.85}.selo-inativo{position:absolute;top:10px;right:10px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.45);color:#fff}
+.jg-tit{margin:12px 0 6px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--texto2)}.jg{list-style:none;display:grid;gap:4px}.jg li{display:flex;justify-content:space-between;gap:10px;padding:7px 10px;border-radius:10px;background:rgba(255,255,255,.05);font-size:14px}.jg li small{color:var(--texto3);font-weight:700}.jg-mais{color:var(--texto3);font-size:12px!important}
+.robo-mora{display:flex;align-items:center;gap:14px}.robo-mora img{width:96px;height:96px;border-radius:50%;object-fit:cover;box-shadow:0 0 24px var(--k1)}.robo-mora b{display:block;font-size:20px}.robo-mora small{color:var(--texto2)}
 .volta-col{font:inherit;font-size:13px;font-weight:700;padding:8px 12px;border-radius:999px;background:var(--vidro);border:1px solid var(--borda);color:var(--texto);cursor:pointer}
 .fila{flex:none;display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 20px 16px;scroll-padding-left:20px;scrollbar-width:none}
 .fila::-webkit-scrollbar{display:none}
@@ -147,9 +149,15 @@ function desenhaFundo(est,k,cor){
   }
   return 'url("data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid slice">'+g+'</svg>')+'")'
 }
-function aplicaFundo(el,x,w,cheio){   // o fundo no estilo escolhido, com a cor do console por cima em degradê
-  if(!w)return;const k=x.robo?"pc":W_DE[x.console]
-  el.style.backgroundImage=veu(w.cor,cheio?10:0,cheio?70:45)+","+desenhaFundo(ESTILO,k,w.cor);el.style.backgroundSize="cover,cover";el.style.backgroundPosition="center,center";el.style.backgroundRepeat="no-repeat,no-repeat"
+function aplicaFundo(el,x,w,cheio){   // o fundo renderizado da máquina (casa/fotos/maquinas/wallpaper/fundo-<id>.jpg, gerar-fundos.py) com o degradê PRETO de baixo pra cima por cima, pra ler o nome (May 19:13); sem a imagem, fica o desenho em SVG
+  if(!w)return;const k=x.robo?"pc":W_DE[x.console],id=x.robo?x.id:(W_FOTO[x.console]||x.console),preto="linear-gradient(0deg,rgba(0,0,0,"+(cheio?.92:.88)+") 0%,rgba(0,0,0,"+(cheio?.55:.45)+") 42%,rgba(0,0,0,0) 78%)"
+  el.style.backgroundImage=preto+","+desenhaFundo(ESTILO,k,w.cor);el.style.backgroundSize="cover,cover";el.style.backgroundPosition="center,center";el.style.backgroundRepeat="no-repeat,no-repeat"
+  foto("casa/fotos/maquinas/wallpaper/fundo-"+id+".jpg").then(u=>{el.style.backgroundImage=preto+",url("+u+")"}).catch(()=>{})
+}
+let jogosCache=null
+function jogosDe(m){   // os jogos da máquina pelo nome do console no tela-jogos.json (PC2 = os jogos de PC)
+  jogosCache=jogosCache||gh("categorias/games/tela-jogos.json",true).then(r=>r.ok?r.json():Promise.reject())
+  return jogosCache.then(t=>{const c=(t.consoles||[]).find(x=>x.id===m.console),nome=m.id==="pc2"?"PC":(c?c.nome:m.nome);return(t.jogos||[]).filter(j=>j.console===nome)})
 }
 function fotoFundo(x){const k=W_FOTO[x.console];return k?foto("casa/fotos/maquinas/wallpaper/"+k+".jpg"):Promise.reject()}
 function wallpaper(x){const k=x.robo?"pc":W_DE[x.console];if(!k)return null;const [bg,g]=W_SVG[k],cor0=bg||cor(x);return{cor:cor0,url:'url("data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">'+g+'</svg>')+'")'}}
@@ -169,7 +177,7 @@ async function inicio(){
 function grade(){
   document.documentElement.style.setProperty("--k1","#4F46E5");fundo.style.backgroundImage="none";app.replaceChildren()
   const topo=el("div","topo"),ms2=el("div","marca-sis");ms2.append(el("i"),"Minha coleção");const t=D.total||{}
-  topo.append(ms2,el("span","tot",D.maquinas.length+" máquinas · "+(t.zerados??"–")+" zerados"));app.append(topo)
+  topo.append(ms2,el("span","tot",D.maquinas.length+" máquinas · "+(t.zerados??"–")+(t.zerados===1?" zerado":" zerados")));app.append(topo)
   const g=el("div","grade")
   {const b=el("button","card diag-largo"),ic=el("span","diag-ic"),tx=el("span","diag-tx"),res=el("small","","a saúde dos PCs");b.style.setProperty("--c","#8B5CF6")
     ic.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="19" height="13" rx="2"/><path d="M8 20.5h8M12 16.5v4"/><path d="M5.5 10h3l1.5-3 2.5 6 1.5-3h4.5"/></svg>'
@@ -190,18 +198,18 @@ function monta(i){
   {const w=wallpaper(m);fundo.classList.toggle("marca",!!w);fundo.style.backgroundImage="none";fundo.style.backgroundColor=w?w.cor:"";if(w)aplicaFundo(fundo,m,w,true)}   // fundo = o logo da marca repetido, não a foto (May 18:45); as fotos ficam na aba Fotos
   app.replaceChildren()
   const topo=el("div","topo"),vt=el("button","volta-col","← Coleção");vt.onclick=grade;const t=D.total||{}
-  topo.append(vt,el("span","tot",(t.zerados??"–")+" zerados"));app.append(topo)
+  topo.append(vt,el("span","tot",(t.zerados??"–")+(t.zerados===1?" zerado":" zerados")));app.append(topo)
   const fila=el("div","fila");ms.forEach((x,j)=>{const b=el("button","bloco"+(j===i?" ativo":""));b.style.setProperty("--c",cor(x));b.setAttribute("aria-label",x.nome)
     if(x.robo&&ROBO[x.robo]){const im=el("img");im.alt="";im.src=ROBO[x.robo][2];b.append(im)}else b.append(el("span","",CURTO[x.console]||x.nome.slice(0,4)))
     b.onclick=()=>{if(j!==atual)monta(j)};fila.append(b)});
   requestAnimationFrame(()=>{const a=fila.children[i];if(a)fila.scrollTo({left:Math.max(0,a.offsetLeft-20),behavior:"smooth"})})
   const p=el("div","palco"),se=el("div","selos")
-  const mc=m.robo?(ROBO[m.robo]?ROBO[m.robo][0]+" mora aqui":"PC"):MARCA[m.console]
+  const mc=m.robo?(ROBO[m.robo]?ROBO[m.robo][0]+(m.ativo===false?" vai morar aqui":" mora aqui"):"PC"):MARCA[m.console]
   if(mc)se.append(el("span","selo marca",mc));if(GERACAO[m.console])se.append(el("span","selo",GERACAO[m.console]));if(SELO[m.console])se.append(el("span","selo",SELO[m.console]))
-  p.append(se,el("h1","",m.nome));if(m.apelido||m.papel)p.append(el("p","apelido",m.apelido||m.papel));app.append(p)
+  p.append(se,el("h1","",m.nome));if(m.apelido||m.papel)p.append(el("p","apelido",m.robo?m.papel||m.apelido:m.apelido||m.papel));app.append(p)
   const pags=[],vid=(t)=>{const v=el("section","vidro");v.append(el("h2","",t));pags.push([t,v]);return v}
   const st=m.stats
-  if(st){const v=vid("Na biblioteca"),n=el("div","nums");[["jogados","jogados"],["zerados","zerados"],["andamento","em andamento"]].forEach(([c,tt])=>{const d=el("div");d.append(el("b","",String(st[c]||0)),el("small","",tt));n.append(d)});v.append(n)
+  if(st){const v=vid("Na biblioteca"),n=el("div","nums");[["jogados","jogado","jogados"],["zerados","zerado","zerados"],["andamento","em andamento","em andamento"]].forEach(([c,um,tt])=>{const d=el("div");d.append(el("b","",String(st[c]||0)),el("small","",st[c]===1?um:tt));n.append(d)});v.append(n)
     if(st.jogados){const pc=Math.round(st.zerados/st.jogados*100),g=el("div","prog"),b=el("i");b.style.setProperty("--p",Math.max(pc,3)+"%");b.style.setProperty("--bc","color-mix(in srgb,#F5D237 "+pc+"%,"+k+")");if(pc>=100)b.classList.add("ouro");g.append("Coleção zerada: "+pc+"% ("+st.zerados+" de "+st.jogados+")",b);v.append(g)}}
   if(m.historia){const v=vid("História");v.append(el("p","hist",m.historia))}
   const f=el("div","ficha");[["Modelo",m.modelo],["Onde fica",m.onde],["De quem",m.dono],["Papel",m.papel],["Desde",m.desde],["Como veio",m.como_veio],["Controles",m.controles],["Estado",m.estado]].forEach(([a,b])=>{if(!b)return;const l=el("div");l.append(el("span","",a),el("b","",b));f.append(l)})
@@ -210,6 +218,16 @@ function monta(i){
   if((m.acessorios||[]).length){const v=vid("Acessórios"),c=el("div","chips");m.acessorios.forEach(x=>c.append(el("span","",x)));v.append(c)}
   if((m.fotos||[]).length){const v=vid("Fotos"),c=el("div","fotos");m.fotos.forEach(pth=>{const b=el("button");b.setAttribute("aria-label","Abrir foto");foto(pth).then(u=>{b.style.backgroundImage="url("+u+")";b.onclick=()=>{const z=el("div","zoom"),im=el("img");im.src=u;im.alt="";z.append(im);z.onclick=()=>z.remove();document.body.append(z)}}).catch(()=>{});c.append(b)});v.append(c)}
   if((m.falta||[]).length){const v=vid("A descobrir"),ul=el("ul","falta");m.falta.forEach(x=>ul.append(el("li","",x)));v.append(ul)}
+  const ePC2=!!(m.robo||m.tipo==="pc"||/^pc/.test(m.id))
+  if(!ePC2||m.id==="pc2"){const v=vid("Jogos");v.append(el("p","hist","Carregando os jogos…"));jogosDe(m).then(js=>{v.replaceChildren(el("h2","","Jogos"));const st=j=>j.status,grupo=(t,lst,mostra)=>{if(!lst.length)return;v.append(el("h3","jg-tit",t+" · "+lst.length));const ul=el("ul","jg");lst.slice(0,mostra).forEach(j=>{const li=el("li");li.append(el("span","",j.titulo),el("small","",j.pct&&j.pct!=="None"?j.pct+"%":""));ul.append(li)});if(lst.length>mostra)ul.append(el("li","jg-mais","+ "+(lst.length-mostra)+" na tela Jogos"));v.append(ul)}
+    grupo("Jogando agora",js.filter(j=>st(j)==="jogando").sort((a,b)=>(+b.pct||0)-(+a.pct||0)),10);grupo("Zerados",js.filter(j=>st(j)==="zerado"),12);grupo("Parados no meio",js.filter(j=>st(j)==="parado"||st(j)==="quer_terminar"),6)
+    if(!js.length)v.append(el("p","hist","Nenhum jogo desse console no jogos.json."))}).catch(()=>{v.replaceChildren(el("h2","","Jogos"),el("p","hist","Não consegui abrir os jogos."))})}   // os jogos daquela máquina, do categorias/games/tela-jogos.json
+  if(ePC2){const v=vid("Diagnóstico");v.append(el("p","hist","Carregando…"));gh("casa/diagnostico-pcs.json",true).then(r=>r.ok?r.json():Promise.reject()).then(dg=>{const dia=(dg.dias||[])[0]||{},pc=(dia.pcs||[]).find(x=>x.pc===m.nome)||{},ind=((dia.indicadores||{}).pcs||[]).find(x=>x.pc===m.nome),nome={ruim:"ruim",atencao:"de olho",ok:"tudo bem"};v.replaceChildren(el("h2","","Diagnóstico"))
+    if(!pc.estado&&!ind){v.append(el("p","hist","Esse PC ainda não foi medido."));return}
+    if(pc.estado)v.append(el("span","selo marca",nome[pc.estado]||pc.estado));if(pc.resumo)v.append(el("p","hist",pc.resumo))
+    if(ind){const n=el("div","nums");[[Math.round(ind.livre)+" GB","livres de "+ind.total],[ind.desligou,"desligou na marra (30 dias)"],[ind.whea,"erros de hardware (30 dias)"]].forEach(([a,b])=>{const d=el("div");d.append(el("b","",String(a)),el("small","",b));n.append(d)});v.append(n)}
+    v.append(el("p","hist","Medido em "+String(dia.data||"")+". Tudo no Diagnóstico, no cartão roxo da coleção."))}).catch(()=>{v.replaceChildren(el("h2","","Diagnóstico"),el("p","hist","Não consegui abrir o diagnóstico."))})}   // casa/diagnostico-pcs.json
+  if(ePC2&&m.robo&&ROBO[m.robo]){const v=vid("Robô"),c2=el("div","robo-mora"),im=el("img");im.alt="";im.src=ROBO[m.robo][2];c2.append(im,el("div","",""));c2.lastChild.append(el("b","",ROBO[m.robo][0]+(m.ativo===false?" vai morar aqui":" mora aqui")),el("small","",m.papel||""));v.append(c2)}   // quem mora nesse PC
   const ab=el("nav","abas"),tr=el("div","trilho");pags.forEach(([t,v],j)=>{const b=el("button",j?"":"on",t==="Na biblioteca"?"Números":t);b.onclick=()=>tr.scrollTo({left:j*tr.clientWidth,behavior:"smooth"});ab.append(b);const pg=el("div","pag");pg.append(v);tr.append(pg)})
   tr.addEventListener("scroll",()=>{const j=Math.round(tr.scrollLeft/Math.max(1,tr.clientWidth));[...ab.children].forEach((b,x)=>b.classList.toggle("on",x===j));const a=ab.children[j];if(a)a.scrollIntoView({inline:"nearest",block:"nearest"})},{passive:true})
   app.append(ab,tr)
