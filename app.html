@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.141">
-<meta name="app-novidade" content="Casa: o quintal e o lado direito viraram um lugar só, com o Siena do lado da sala">
+<meta name="app-versao" content="2026-11-07.142">
+<meta name="app-novidade" content="A Geral ganhou som: gota quando chega recado, papel subindo quando você manda, sininho na pergunta (desliga no rodapé do Menu)">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -1185,6 +1185,7 @@ body.web.lado .anexos { grid-column: 2; grid-row: 5; }
   <div class="p-extra" id="p-extra">
     <button type="button" id="notificar" data-i="bell" data-t="Ativar notificações"></button>
     <button type="button" id="sair" data-i="key" data-t="Trocar chave"></button>
+    <button type="button" id="som" data-i="headphones" data-t="Som"></button>
   </div>
 </div>
 
@@ -2155,6 +2156,7 @@ function render(items, manterPosicao) {
   recolocaPendentes();
   if (firstNew === items.length && !manterPosicao && !feed.dataset.jaAbriu) { feed.dataset.jaAbriu = '1'; feed.classList.add('chegando'); setTimeout(() => feed.classList.remove('chegando'), 1200); }
   if (!pertoDoFim && shown > 0 && items.length > shown) { novasLaEmCima += items.length - shown; desceQtd.textContent = novasLaEmCima; desceQtd.hidden = false; }
+  if (shown >= 0 && items.slice(firstNew).some(x => x.from !== 'may')) Som.chegou();   // chegou recado de alguém: uma gota
   shown = items.length;
   // só desce sozinho na primeira carga ou se ela já estava no fim; senão o balão que ela lia fica no mesmo lugar
   if (primeira || (pertoDoFim && !manterPosicao)) feed.scrollTop = feed.scrollHeight;
@@ -2357,7 +2359,7 @@ async function enviar(p, el) {
       }
     }
   } finally {
-    if (ok) { delete pendentes[p.id]; tiraPendente(p.id); el.remove(); desenhaEscrita(p.arq, ok); }
+    if (ok) { delete pendentes[p.id]; tiraPendente(p.id); el.remove(); desenhaEscrita(p.arq, ok); Som.foi(); }
     else { guardaPendente(p); marcaPend(el, p, true); if (FILE === p.arq && !el.isConnected) recolocaPendentes(); showNote(erro && erro.audioPerdido ? 'O áudio não ficou guardado no aparelho. Descarta e grava de novo.' : msgErro(erro || {}, p.audio && !p.audio.subiu ? 'mandar o áudio' : 'salvar'), true); }
     sending = false; syncBtn(); irProFim();
   }
@@ -2878,7 +2880,7 @@ function alternativasDe(txt) {   // "a) uma coisa b) outra" -> [['a','uma coisa'
   return achou.map((m, i) => [m[1].toLowerCase(), t.slice(m.index + m[0].length, i + 1 < achou.length ? achou[i + 1].index : undefined).replace(/[;,.]\s*$/, '').trim()]).filter(([, x]) => x);
 }
 function abrePergunta(it, g, alts, k, conta) {   // padrão aprovado no HOUSE-BRIDGE-PUSH.md: pergunta centrada, 2 a 4 botões redondos dividindo a largura, a recomendada (*) colorida, caixa redonda, sem rodapé
-  const ov = document.createElement('div'); ov.className = 'fixa-pop'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+  const ov = document.createElement('div'); ov.className = 'fixa-pop'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); Som.pergunta();
   const card = document.createElement('div'); card.className = 'pp-card'; card.style.setProperty('--quem', g.cor || 'var(--accent)');
   const av = document.createElement('span'); av.className = 'pp-av'; av.textContent = (g.nome || '?').charAt(0);
   if (g.foto) fotoUrl(g.foto).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.textContent = ''; }).catch(() => {});
@@ -3171,6 +3173,28 @@ document.addEventListener('focusin', () => { altT.forEach(clearTimeout); altT = 
 document.addEventListener('focusout', () => setTimeout(ajustaAltura, 300));
 const swPronto = ('serviceWorker' in navigator) ? navigator.serviceWorker.register('sw.js').catch(() => null) : Promise.resolve(null);
 function chave(b64) { const p = '='.repeat((4 - b64.length % 4) % 4); const r = atob((b64 + p).replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(r, c => c.charCodeAt(0)); }
+// Som da Geral (#147, Orfeu): tudo sintetizado aqui, do zero (sem arquivo, sem direito autoral). Cada som vem do objeto: o recado é papel que sobe,
+// o recado que chega é uma gota (bolha de Minnaert, f = 3,26/r, sobe de pitch ao fechar), o Menu é o vento da página virando, a pergunta é um sininho de vidro
+// (barra livre, parciais 1 : 2,76 : 5,40). Baixinho, com variação a cada toque pra não virar metralhadora; liga e desliga no rodapé do Menu.
+const Som = (() => {
+  let ctx = null;
+  const ligado = () => store.get('som') !== 'off';
+  const abre = () => { if (!ligado()) return null; try { ctx = ctx || new (window.AudioContext || window.webkitAudioContext)(); if (ctx.state === 'suspended') ctx.resume(); } catch (e) { return null; } return ctx; };
+  ['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, () => abre(), { once: true, passive: true }));   // o celular só libera o som depois do 1º toque
+  const vari = () => 1 + (Math.random() - .5) * .06;
+  const ruido = (c, dur) => { const b = c.createBuffer(1, Math.ceil(c.sampleRate * dur), c.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; const n = c.createBufferSource(); n.buffer = b; return n; };
+  const sopro = (f0, f1, dur, vol) => { const c = abre(); if (!c) return; const t = c.currentTime, n = ruido(c, dur), bp = c.createBiquadFilter(), g = c.createGain(); bp.type = 'bandpass'; bp.Q.value = 1.4; bp.frequency.setValueAtTime(f0 * vari(), t); bp.frequency.exponentialRampToValueAtTime(f1 * vari(), t + dur); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + dur * .3); g.gain.exponentialRampToValueAtTime(.0001, t + dur); n.connect(bp).connect(g).connect(c.destination); n.start(t); n.stop(t + dur + .02); };
+  const gota = (r, vol) => { const c = abre(); if (!c) return; const t = c.currentTime, f = 3.26 / r * vari(), d = .13 / r + .0072 * Math.pow(r, -1.5), dur = Math.min(.25, 6 / d), o = c.createOscillator(), g = c.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(f, t); o.frequency.linearRampToValueAtTime(f * (1 + .1 * d * dur), t + dur); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur); o.connect(g).connect(c.destination); o.start(t); o.stop(t + dur + .02); };
+  const sino = (f, vol) => { const c = abre(); if (!c) return; const t = c.currentTime; f *= vari(); [[1, 1, .9], [2.76, .45, .5], [5.4, .2, .3]].forEach(([m, a, dur]) => { const o = c.createOscillator(), g = c.createGain(); o.type = 'sine'; o.frequency.value = f * m; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol * a, t + .004); g.gain.exponentialRampToValueAtTime(.0001, t + dur); o.connect(g).connect(c.destination); o.start(t); o.stop(t + dur + .02); }); };
+  return {
+    ligado, liga: on => { store.set('som', on ? '' : 'off'); if (on) setTimeout(() => gota(.002, .1), 30); },
+    foi: () => { sopro(500, 2600, .17, .07); setTimeout(() => gota(.0012, .05), 120); },   // papel subindo e encostando na Geral
+    chegou: () => gota(.002, .11),
+    pagina: () => sopro(2200, 600, .22, .05),
+    pergunta: () => { sino(1318.5, .07); setTimeout(() => sino(1760, .05), 140); }
+  };
+})();
+{ const bs = document.getElementById('som'), pinta = () => { bs.innerHTML = icone('headphones') + ' Som ' + (Som.ligado() ? 'ligado' : 'desligado'); bs.classList.toggle('desligado', !Som.ligado()); }; pinta(); bs.onclick = () => { Som.liga(!Som.ligado()); pinta(); }; }
 const btnNotif = document.getElementById('notificar');
 function marcaNotif() { if (window.Notification && Notification.permission === 'granted') btnNotif.innerHTML = icone('bell') + ' Notificações ligadas'; }
 marcaNotif();
@@ -3582,7 +3606,7 @@ function abreInfoConversa() {
   feed.addEventListener('touchend', e => { if (gx === null) return; const t = e.changedTouches[0], dx = t.clientX - gx, dy = t.clientY - gy; gx = null; if (dx < -70 && Math.abs(dy) < -dx * .6 && Date.now() - gt < 700) { abreMenu.click(); if (painel.animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) painel.animate([{ transform: 'translateX(100%)' }, { transform: 'none' }], { duration: 260, easing: 'cubic-bezier(.2,.8,.2,1)' }); } }, { passive: true });
   feed.addEventListener('touchcancel', () => { gx = null; }, { passive: true }); }
 abreMenu.onclick = () => {
-  menu.hidden = true; painel.hidden = false; pilha = []; painel.style.removeProperty('--c');
+  menu.hidden = true; painel.hidden = false; pilha = []; painel.style.removeProperty('--c'); Som.pagina();
   tela('Menu', c => {
     const h = document.createElement('div'); h.className = 'p-hero'; h.innerHTML = '<div class="logo" aria-hidden="true" style="background-image:url(' + FOTO_GERAL + ');background-color:#0E0F12"></div><div><b>Recados</b><span>Atalhos da casa</span></div>'; c.append(h);
     const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = 'Atalhos'; c.append(t);
