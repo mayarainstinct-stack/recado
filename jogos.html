@@ -179,6 +179,9 @@ nav button#tab-concluidos.on{background:linear-gradient(#F5D237,#B8860B);color:#
 .barra i{border-radius:inherit;background:linear-gradient(90deg,color-mix(in srgb,var(--cor,var(--real)) 75%,#000),color-mix(in srgb,var(--cor,var(--real)) 70%,#fff));box-shadow:0 0 6px color-mix(in srgb,var(--cor,var(--real)) 85%,#fff),0 0 14px color-mix(in srgb,var(--cor,var(--real)) 60%,transparent);transform-origin:left;animation:enche .9s cubic-bezier(.2,.8,.2,1) both}
 .barra i::after{content:"";position:absolute;left:3px;right:3px;top:1px;height:35%;border-radius:999px;background:linear-gradient(rgba(255,255,255,.75),rgba(255,255,255,0))}
 .barra i.est{background:repeating-linear-gradient(-45deg,color-mix(in srgb,var(--amarelo) 85%,#fff) 0 6px,color-mix(in srgb,var(--amarelo) 60%,#000) 6px 12px);box-shadow:0 0 6px var(--amarelo),0 0 14px color-mix(in srgb,var(--amarelo) 55%,transparent)}
+/* tracejado da casa (May 07/11 11:48: "adorei"): toda barra é listrada; começa na cor do console e vai ficando dourada até o dourado da parede da vitória em 100% (Hermes) */
+.barra i,.barra i.est{--c1:var(--cor,var(--real));--ouro:#E3B341;--c2:color-mix(in srgb,var(--c1) calc((1 - var(--p,0)) * 100%),var(--ouro));background:repeating-linear-gradient(-45deg,rgba(255,255,255,.28) 0 6px,rgba(0,0,0,.18) 6px 12px),linear-gradient(90deg,var(--c1),var(--c2));box-shadow:0 0 6px var(--c2),0 0 14px color-mix(in srgb,var(--c2) 60%,transparent)}
+.barra:has(i.est){outline:1px dashed color-mix(in srgb,var(--amarelo) 80%,transparent);outline-offset:2px}
 @keyframes enche{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @media (prefers-reduced-motion:reduce){.barra i{animation:none}}
 .tile .barra{left:10px;right:10px;bottom:10px;height:8px;border-radius:999px;overflow:visible}
@@ -643,7 +646,7 @@ function capaAttr(u){const l=capaLeve(u);return l==u||!ehPriv(u)?srcAttr(u):`dat
 function capaHtml(j,cls){const u=capaUrl(j);return u?`<img class="borra" loading="lazy" ${capaAttr(u)} alt="" onerror="this.remove()"><img class="inteira" loading="lazy" ${capaAttr(u)} alt="" onerror="semCapa(this)">${LOGO_J2.replace('class="ini j2"','class="ini j2" style="z-index:-1"')}`:LOGO_J2}
 function pctN(j){if(j.status=="zerado")return 100;return j.pct==null?null:j.estimado?Math.round(j.pct/10)*10:j.pct}
 function pctTxt(j){const n=pctN(j);return n==null?"":n+"%"}
-function barra(j){return j.pct==null?'<div class="barra"></div>':`<div class="barra"><i class="${j.estimado?"est":""}" style="width:${Math.max(0,Math.min(100,j.pct))}%"></i></div>`}
+function barra(j){return j.pct==null?'<div class="barra"></div>':`<div class="barra"><i class="${j.estimado?"est":""}" style="--p:${Math.max(0,Math.min(100,j.pct))/100};width:${Math.max(0,Math.min(100,j.pct))}%"></i></div>`}
 function ultimoDia(j){let best=0;(j.historico||[]).concat(j.relatos||[]).forEach(h=>{if(!h.dia)return;const[d,m,a]=h.dia.split("/").map(Number);const v=a*10000+m*100+d;if(v>best)best=v});return best}
 let aba="jogando",jogExp=false
 let dirAnim=0
