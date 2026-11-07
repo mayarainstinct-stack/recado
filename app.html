@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.147">
-<meta name="app-novidade" content="Tarefas: o título das colunas fica parado em cima enquanto os post-its rolam">
+<meta name="app-versao" content="2026-11-07.148">
+<meta name="app-novidade" content="Obra: dia da semana em toda data, lançar um dia que passou, e quanto já foi pago ao Maicon e quanto falta">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -844,6 +844,8 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 .ob-folha ul { margin: 2px 0 0; padding-left: 18px; font-size: 13.5px; line-height: 1.35; } .ob-folha li + li { margin-top: 3px; } .ob-feito { list-style: '✓  '; } .ob-depois { list-style: '→  '; } .ob-decidido { list-style: '★  '; }
 .ob-folha li { position: relative; padding-right: 30px; } .ob-lapis { position: absolute; right: -4px; top: -3px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: transparent; color: #9A3412; opacity: .55; } .ob-lapis svg { width: 15px; height: 15px; } .ob-lapis:active { opacity: 1; }
 .ob-anot { margin: 3px 0 4px; font: 15px/1.3 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive; color: #1D4ED8; } .ob-dia-fim { margin-top: 8px; } .ob-anotar { width: auto !important; min-width: 0; white-space: nowrap; height: auto; padding: 7px 12px; border-radius: 999px; border: 1px dashed #C2410C; background: transparent; color: #9A3412; font: 700 12.5px 'Segoe UI', sans-serif; display: inline-flex; align-items: center; gap: 6px; } .ob-anotar svg { width: 14px; height: 14px; }
+.ob-lanca { margin: 0 0 4px; justify-self: start; } .ob-data-in { width: 100%; box-sizing: border-box; margin-top: 10px; font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); } .ob-data-sem { display: block; margin-top: 4px; font-weight: 700; color: #F97316; text-transform: capitalize; }
+.ob-anot-esp { display: block; font: 600 10.5px 'Segoe UI', sans-serif; color: #9A3412; opacity: .7; }
 .ob-pop textarea { width: 100%; box-sizing: border-box; margin: 10px 0 12px; font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); resize: vertical; }
 .ob-tira { display: flex; gap: 10px; overflow-x: auto; padding: 10px 2px 4px; scrollbar-width: none; } .ob-tira::-webkit-scrollbar { display: none; }
 .ob-pol { flex: none; width: 104px; padding: 5px 5px 14px; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,.35); cursor: zoom-in; } .ob-pol:nth-child(odd) { transform: rotate(-2deg); } .ob-pol:nth-child(even) { transform: rotate(1.5deg); } .ob-pol img { display: block; width: 100%; aspect-ratio: 3 / 4; object-fit: cover; background: #E7E5E4; }
@@ -3896,6 +3898,7 @@ function abreObra(m) {
         el.append(elD('p', 'ob-sub', ds.length ? veio + ' dia' + (veio === 1 ? '' : 's') + ' de obra em ' + ds.length + ' sábado' + (ds.length === 1 ? '' : 's') : 'Carregando os dias…'));
         const ul = elD('ul', 'ob-dias');
         ds.slice().reverse().forEach(z => { const li = elD('li', z.veio ? 'veio' : 'faltou'); li.append(elD('b', '', z.data.slice(0, 5)), elD('span', '', z.veio ? [z.chegou && z.saiu ? z.chegou + ' às ' + z.saiu : z.chegou ? 'desde ' + z.chegou : '', z.fez || ''].filter(Boolean).join(' · ') : 'não veio')); ul.append(li); });
+        if (vivo.pago) { const b = elD('div', 'ob-barra'), f = elD('i'); f.style.width = Math.min(100, vivo.pago.pago * 100 / (vivo.pago.total || 1)) + '%'; b.append(f); el.append(b, elD('small', 'ob-sub ob-pagofalta', 'pago ' + rs(vivo.pago.pago) + ' · falta ' + rs(vivo.pago.falta) + ' de ' + rs(vivo.pago.total))); }   // quanto já pagou e quanto falta (May 18:37), das Pendências
         el.append(ul, fonte(x.fonte));
       }
       return el;
@@ -3907,30 +3910,33 @@ function abreObra(m) {
       const a = abas.find(z => z.id === aba) || abas[0]; if (!a) return;
       if (a.fonte) {   // Diário da obra (May 14:29): uma folha por dia, a mais nova em cima, com as fotos daquele dia
         const g = elD('div', 'ob-diario'); parede.append(g);
-        const anota = (dd, dia, sobre, rot) => {   // o popup padrão do app, na cor da Obra: escreve e prega a anotação embaixo da coisa
+        const anota = (dd, dia, sobre, rot) => {   // dia null = ela escolhe a data (lançar um dia que passou)   // o popup padrão do app, na cor da Obra: escreve e prega a anotação embaixo da coisa
           const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card ob-pop'), x = elD('button', 'pp-x'), ta = elD('textarea'), b = elD('button', 'pp-op rec', 'Anotar'); card.style.setProperty('--quem', '#F97316');
-          x.type = b.type = 'button'; x.innerHTML = icone('close'); ta.rows = 3; ta.placeholder = 'Escreve aqui…';
+          x.type = b.type = 'button'; x.innerHTML = icone('close'); ta.rows = 3; ta.placeholder = dia ? 'Escreve aqui…' : 'O que teve nesse dia (quem veio, o que fez, o que comprou)…';
+          const dtIn = elD('input', 'ob-data-in'), sem = elD('small', 'ob-data-sem'); dtIn.type = 'date'; dtIn.max = new Date().toISOString().slice(0, 10); dtIn.value = dtIn.max; const mostraSem = () => { const v = dtIn.value; sem.textContent = v ? ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'][new Date(v + 'T12:00').getDay()] : ''; }; dtIn.oninput = mostraSem; mostraSem();
           const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); };
           b.onclick = async () => {
             const t = ta.value.trim().replace(/\s+/g, ' '); if (!t) { ta.focus(); return; }
             const dt = new Date(), quando = String(dt.getDate()).padStart(2, '0') + '/' + String(dt.getMonth() + 1).padStart(2, '0') + '/' + dt.getFullYear() + ' ' + String(dt.getHours()).padStart(2, '0') + ':' + String(dt.getMinutes()).padStart(2, '0');
-            const poe = x2 => { const di = (x2.dias || []).find(z => z.data === dia.data); if (di) (di.notas = di.notas || []).push({ sobre, texto: t, quando }); };
+            if (!dia && !dtIn.value) { dtIn.focus(); return; } const data = dia ? dia.data : dtIn.value.split('-').reverse().join('/');
+            const poe = x2 => { x2.dias = x2.dias || []; let di = x2.dias.find(z => z.data === data); if (!di) { di = { data, titulo: '', lancadoPelaMay: quando }; x2.dias.push(di); x2.dias.sort((p1, p2) => p2.data.split('/').reverse().join('').localeCompare(p1.data.split('/').reverse().join(''))); } (di.notas = di.notas || []).push({ sobre, texto: t, quando }); };
             b.disabled = true; b.textContent = 'Anotando…';
-            const ok = await gravaJson(a.fonte, poe, 'Diário da obra: anotação da May em ' + dia.data);
+            const ok = await gravaJson(a.fonte, poe, 'Diário da obra: anotação da May em ' + data);
             if (!ok) { b.disabled = false; b.textContent = 'Anotar'; showNote('Não anotou: confere a internet e tenta de novo.', true); return; }
-            cacheFonte[a.fonte] = ok; fecha(); monta(ok); showNote('Anotado no dia ' + dia.data.slice(0, 5));
+            cacheFonte[a.fonte] = ok; fecha(); monta(ok); showNote('Anotado no dia ' + data.slice(0, 5) + ': o Orfeu passa a limpo');
           };
-          card.append(x, elD('div', 'pp-perg', 'Anotar sobre ' + (rot.length > 60 ? rot.slice(0, 58) + '…' : rot)), ta, b); ov.append(card); document.body.append(ov); fechaPuxando(ov, fecha, () => card, () => card); ta.focus();
+          card.append(x, elD('div', 'pp-perg', dia ? 'Anotar sobre ' + (rot.length > 60 ? rot.slice(0, 58) + '…' : rot) : 'Lançar um dia da obra'), ...(dia ? [] : [dtIn, sem]), ta, b); ov.append(card); document.body.append(ov); fechaPuxando(ov, fecha, () => card, () => card); ta.focus();
         };
         const monta = dd => {
           g.replaceChildren();
           const veio = (dd.dias || []).filter(dia => dia.maicon || (dia.feito || []).length), ds = (dd.dias || []).map(x => x.data).sort((a, b) => a.split('/').reverse().join('') < b.split('/').reverse().join('') ? -1 : 1);
-          const cont = elD('div', 'ob-contador'); cont.append(elD('b', '', String(veio.length)), elD('span', '', 'dia' + (veio.length === 1 ? '' : 's') + ' de obra do Maicon' + (ds.length ? ' · de ' + ds[0].slice(0, 5) + ' a ' + ds[ds.length - 1].slice(0, 5) : ''))); g.append(cont);   // o que importa é quantos dias ele veio (May 15:33)
+          const cont = elD('div', 'ob-contador'); cont.append(elD('b', '', String(veio.length)), elD('span', '', 'dia' + (veio.length === 1 ? '' : 's') + ' de obra do Maicon' + (ds.length ? ' · de ' + ds[0].slice(0, 5) + ' a ' + ds[ds.length - 1].slice(0, 5) : ''))); g.append(cont);
+          const lanca = elD('button', 'ob-anotar ob-lanca'); lanca.type = 'button'; lanca.innerHTML = icone('calendar'); lanca.append(' Lançar um dia (pode ser passado)'); lanca.onclick = () => anota(dd, null, '', 'um dia da obra'); g.append(lanca);   // lançar retroativo (May 18:36)   // o que importa é quantos dias ele veio (May 15:33)
           const mostra = (dd.dias || []).filter(dia => dia.maicon || ['feito', 'depois', 'decidido', 'fotos', 'notas'].some(c => (dia[c] || []).length));   // dia só com combinado ou foto também aparece; o contador segue contando só os dias de obra
           mostra.forEach((dia, k) => {
             const f = elD('div', 'ob-c ob-folha'), gr = GIRO[k % GIRO.length] / 2; f.dataset.r = gr; f.style.setProperty('--r', gr + 'deg');
             const cab = elD('div', 'ob-folha-cab'); cab.append(elD('b', 'ob-folha-data', dia.data.slice(0, 5)), elD('span', 'ob-tit', dia.titulo || '')); if (dia.maicon) cab.append(elD('span', 'ob-chip ok', 'Maicon ' + dia.maicon)); else if (!['feito', 'decidido', 'fotos'].some(c => (dia[c] || []).length)) cab.append(elD('span', 'ob-chip', 'não veio')); f.append(cab);   // só diz que não veio quando não tem nada do dia (não inventa)
-            const notasDe = sobre => (dia.notas || []).filter(n => n.sobre === sobre).map(n => { const e = elD('p', 'ob-anot', n.texto); e.title = n.quando || ''; return e; });
+            const notasDe = sobre => (dia.notas || []).filter(n => n.sobre === sobre).map(n => { const e = elD('p', 'ob-anot', n.texto); e.title = n.quando || ''; e.append(elD('small', 'ob-anot-esp', 'o Orfeu passa a limpo')); return e; });   // a anotação dela fica até um robô passar pro texto do dia (May 18:35)
             const lapis = (sobre, rot) => { const b = elD('button', 'ob-lapis'); b.type = 'button'; b.innerHTML = icone('pen'); b.setAttribute('aria-label', 'Anotar sobre ' + rot); b.onclick = ev => { ev.stopPropagation(); anota(dd, dia, sobre, rot); }; return b; };   // um botão em cada coisa pra ela anotar (May 17:56)
             const lista = (rot, itens, cls) => { if (!(itens || []).length) return; f.append(elD('small', 'ob-folha-rot', rot)); const ul = elD('ul', cls); itens.forEach(t => { const li = elD('li', ''), tx = elD('span', '', t); li.append(tx, lapis(t, t), ...notasDe(t)); ul.append(li); }); f.append(ul); };
             lista('Feito', dia.feito, 'ob-feito'); lista('Depois', dia.depois, 'ob-depois'); lista('Decidido', dia.decidido, 'ob-decidido');
@@ -3950,6 +3956,13 @@ function abreObra(m) {
       if (dir) entraDoLado(parede, dir);
       if (dir !== 0 && !matchMedia('(prefers-reduced-motion: reduce)').matches) [...g.children].forEach((el, k) => { if (el.animate) el.animate([{ transform: 'translateY(-26px) rotate(' + (el.dataset.r * 4) + 'deg)', opacity: 0 }, { transform: 'translateY(3px) rotate(' + el.dataset.r + 'deg)', opacity: 1, offset: .7 }, { transform: 'rotate(' + el.dataset.r + 'deg)', opacity: 1 }], { duration: 380, delay: k * 45, easing: 'cubic-bezier(.3,.7,.3,1)', fill: 'backwards' }); });   // cada papel é pregado na parede, um depois do outro
     };
+    const SEM = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'], RE_DT = /(^|[^\d\/])(\d{2})\/(\d{2})(?:\/(\d{4}))?(?![\d\/])/g;
+    const diaSemana = raiz => {   // toda data da Obra ganha o dia da semana na frente (May 18:36: "pra me localizar e lançar retroativo")
+      const w = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement && !n.parentElement.closest('textarea, input, script, style, .ob-fonte') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT }), lst = [];
+      while (w.nextNode()) lst.push(w.currentNode);
+      lst.forEach(n => { const t = n.data, novo = t.replace(RE_DT, (m, a, dd, mm, aa, i) => { if (+mm < 1 || +mm > 12 || +dd < 1 || +dd > 31 || /(dom|seg|ter|qua|qui|sex|sáb)\.? ?$/i.test(t.slice(0, i + a.length))) return m; const dt = new Date(+(aa || 2026), +mm - 1, +dd); return dt.getDate() === +dd ? a + SEM[dt.getDay()] + ' ' + dd + '/' + mm + (aa ? '/' + aa : '') : m; }); if (novo !== t) n.data = novo; });
+    };
+    new MutationObserver(() => diaSemana(parede)).observe(parede, { childList: true, subtree: true });
     pinta(); arrastaAbas(parede, () => abas.findIndex(z => z.id === aba), i => { aba = abas[i].id; pinta(); }, abas.length);
   });
 }
