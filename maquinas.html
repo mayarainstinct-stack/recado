@@ -29,6 +29,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.45}.card img.rob{inset:auto 8px 8px auto;width:58px;height:58px;opacity:.95;object-fit:contain}
 .card .cur{position:absolute;top:10px;left:12px;font-weight:800;font-size:13px;letter-spacing:.1em}.card b{position:relative;font-size:16px;line-height:1.15;padding-right:44px;text-shadow:0 1px 8px rgba(0,0,0,.6)}.card small{position:relative;font-size:11.5px;opacity:.88}.card:has(img.rob) small,.card:has(img.rob) b{padding-right:60px}.card small{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .bloco-tit{grid-column:1/-1;margin:8px 2px -2px;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--texto2)}.card.diag-largo{grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center;justify-content:flex-start;gap:14px;background:linear-gradient(110deg,#7C3AED,#4C1D95);box-shadow:0 10px 24px rgba(139,92,246,.35)}.diag-ic{flex:none;width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:rgba(255,255,255,.14)}.diag-ic svg{width:30px;height:30px}.diag-tx{display:flex;flex-direction:column;gap:2px;min-width:0}.diag-tx b{padding-right:0}
+body.maq-inativa #fundo{filter:grayscale(1) brightness(.8)}body.maq-inativa .palco img,body.maq-inativa .robo-mora img{filter:grayscale(1)}
 .card.inativo{filter:grayscale(1) brightness(.75);opacity:.85}.selo-inativo{position:absolute;top:10px;right:10px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.45);color:#fff}
 .jg-tit{margin:12px 0 6px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--texto2)}.jg{list-style:none;display:grid;gap:4px}.jg li{display:flex;justify-content:space-between;gap:10px;padding:7px 10px;border-radius:10px;background:rgba(255,255,255,.05);font-size:14px}.jg li small{color:var(--texto3);font-weight:700}.jg-mais{color:var(--texto3);font-size:12px!important}
 .robo-mora{display:flex;align-items:center;gap:14px}.robo-mora img{width:96px;height:96px;border-radius:50%;object-fit:cover;box-shadow:0 0 24px var(--k1)}.robo-mora b{display:block;font-size:20px}.robo-mora small{color:var(--texto2)}
@@ -193,14 +194,15 @@ function grade(){
   app.append(g)
 }
 function monta(i){
-  atual=i;const ms=D.maquinas,m=ms[i],k=cor(m);try{sessionStorage.setItem("maq-atual",m.id)}catch(e){}
+  atual=i;const ms=D.maquinas,m=ms[i],k=m.ativo===false?"#8B8F98":cor(m);document.body.classList.toggle("maq-inativa",m.ativo===false);   // parada fica toda cinza por dentro também: fundo, selo, abas e voltar (May 19:36, Sigma 20:31)
+  try{sessionStorage.setItem("maq-atual",m.id)}catch(e){}
   document.documentElement.style.setProperty("--k1",k)
   {const w=wallpaper(m);fundo.classList.toggle("marca",!!w);fundo.style.backgroundImage="none";fundo.style.backgroundColor=w?w.cor:"";if(w)aplicaFundo(fundo,m,w,true)}   // fundo = o logo da marca repetido, não a foto (May 18:45); as fotos ficam na aba Fotos
   app.replaceChildren()
   const topo=el("div","topo"),vt=el("button","volta-col","← Coleção");vt.onclick=grade;const t=D.total||{}
   topo.append(vt,el("span","tot",(t.zerados??"–")+(t.zerados===1?" zerado":" zerados")));app.append(topo)
-  const fila=el("div","fila");ms.forEach((x,j)=>{const b=el("button","bloco"+(j===i?" ativo":""));b.style.setProperty("--c",cor(x));b.setAttribute("aria-label",x.nome)
-    if(x.robo&&ROBO[x.robo]){const im=el("img");im.alt="";im.src=ROBO[x.robo][2];b.append(im)}else b.append(el("span","",CURTO[x.console]||x.nome.slice(0,4)))
+  const fila=el("div","fila");ms.forEach((x,j)=>{const b=el("button","bloco"+(j===i?" ativo":""));b.style.setProperty("--c",x.ativo===false?"#8B8F98":cor(x));b.setAttribute("aria-label",x.nome)
+    if(x.robo&&ROBO[x.robo]){const im=el("img");if(x.ativo===false)im.style.filter="grayscale(1)";im.alt="";im.src=ROBO[x.robo][2];b.append(im)}else b.append(el("span","",CURTO[x.console]||x.nome.slice(0,4)))
     b.onclick=()=>{if(j!==atual)monta(j)};fila.append(b)});
   requestAnimationFrame(()=>{const a=fila.children[i];if(a)fila.scrollTo({left:Math.max(0,a.offsetLeft-20),behavior:"smooth"})})
   const p=el("div","palco"),se=el("div","selos")
