@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.190">
+<meta name="app-versao" content="2026-11-08.191">
 <meta name="app-novidade" content="Planta: o nome do cômodo vai num lugar livre, sem cobrir os móveis">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -492,6 +492,25 @@ button:disabled { opacity: .45; cursor: default; }
 .detalhe .manda { width: 100%; min-height: 48px; border-radius: 12px; background: var(--accent); color: var(--accent-fg); font-size: 16px; font-weight: 700; }
 .detalhe .manda:disabled { opacity: .45; }
 .p-lista { display: flex; flex-direction: column; gap: 10px; }
+/* Geral antiga (08/11): calendário chanfrado em cima, só os dias guardados acesos; embaixo a conversa do dia, que rola sozinha */
+.p-corpo > .tela.ga-tela { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 12px; }
+.ga-cal { flex: none; padding: 12px 12px 14px; background: #0A0A0B; box-shadow: inset 0 0 0 1px #5A5D63; clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px); }
+.ga-cab { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.ga-seta { all: unset; width: 36px; height: 36px; display: grid; place-items: center; font-size: 22px; color: var(--c); cursor: pointer; box-shadow: inset 0 0 0 1px #5A5D63; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); }
+.ga-seta:active { transform: scale(.94); }
+.ga-mes { flex: 1; text-align: center; } .ga-mes b { display: block; font: 900 16px 'Arial Black', Arial, sans-serif; letter-spacing: .04em; } .ga-mes span { font-size: 12px; color: #7D828C; }
+.ga-grade { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.ga-sem { text-align: center; font: 700 10px Consolas, monospace; color: #7D828C; padding-bottom: 2px; }
+.ga-d { all: unset; height: 34px; display: grid; place-items: center; font-size: 13px; color: #2A2A2E; font-variant-numeric: tabular-nums; }
+.ga-d.tem { color: #E4E4E8; cursor: pointer; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 70%, transparent); clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px); }
+.ga-d.tem:active { transform: scale(.92); }
+.ga-d.on { background: var(--c); color: #000; font: italic 16px Impact, 'Arial Narrow', sans-serif; box-shadow: 0 0 12px var(--c); }
+.ga-ler { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 8px; padding-bottom: 76px; }
+.ga-titulo { margin: 0; font: italic 22px Impact, 'Arial Narrow', sans-serif; color: var(--c); }
+.ga-ler .ga-m { font-size: 13.5px; line-height: 1.45; padding: 8px 12px; background: #0A0A0B; box-shadow: inset 2px 0 0 #5A5D63; }
+.ga-ler .ga-m.ela { box-shadow: inset 2px 0 0 var(--c); } .ga-ler .ga-m.tr { color: #7D828C; font-style: italic; }
+.ga-ler .ga-m b { display: block; font: 700 10px Consolas, monospace; letter-spacing: .12em; color: #7D828C; margin-bottom: 2px; } .ga-ler .ga-m.ela b { color: var(--c); }
+
 /* Catálogo (08/11): prateleira em grade, cada categoria um bloco chanfrado com a foto e o menor preço (ou o escolhido) em destaque */
 .p-corpo > .tela.cat-tela { display: flex; flex-direction: column; min-height: 0; }
 .cat-grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
@@ -4568,25 +4587,45 @@ function abreGeralAntiga(m) {   // os dias arquivados da Geral (_geral/recados/a
     let dias = [];
     try { const r = await apiOk('https://api.github.com/repos/' + REPO + '/contents/_geral/recados/arquivo'); dias = (await r.json()).map(f => f.name).filter(n => /^CAIXA-\d\d-\d\d-\d{4}\.md$/.test(n)).map(n => n.slice(6, 16)).sort((a, b) => b.split('-').reverse().join('').localeCompare(a.split('-').reverse().join(''))); }
     catch (e) { nota.textContent = msgErro(e, 'abrir os dias arquivados'); return; }
-    nota.textContent = 'O que tem mais de um dia sai da Geral e fica aqui, pra Geral carregar leve. Toca num dia.';
-    cabecalho({ icone: 'calendar', sub: dias.length + ' dias guardados' });
-    const lista = elD('div', 'ga-dias'); c.append(lista);
-    const abreDia = async (dia, bt) => {
-      const prox = bt.nextElementSibling; if (prox && prox.classList.contains('ga-msgs')) { prox.remove(); return; }
-      bt.disabled = true; const box = elD('div', 'ga-msgs'); bt.after(box); box.append(elD('p', 'p-nota', 'Carregando…'));
-      let md = ''; try { md = await lerArquivo('_geral/recados/arquivo/CAIXA-' + dia + '.md'); } catch (e) { box.replaceChildren(elD('p', 'p-nota', msgErro(e, 'abrir esse dia'))); bt.disabled = false; return; }
-      box.replaceChildren(); bt.disabled = false;
+    nota.remove(); cabecalho({ icone: 'calendar', sub: dias.length + ' dias guardados' });
+    c.classList.add('ga-tela');   // Geral antiga com cara própria (May 08/11 12:18): calendário dos dias guardados em cima, a conversa do dia embaixo
+    const tem = new Set(dias), MESES = ['JANEIRO', 'FEVEREIRO', 'MARÇO', 'ABRIL', 'MAIO', 'JUNHO', 'JULHO', 'AGOSTO', 'SETEMBRO', 'OUTUBRO', 'NOVEMBRO', 'DEZEMBRO'];
+    const cal = elD('div', 'ga-cal'), ler = elD('div', 'ga-ler'); c.append(cal, ler);
+    const pad = n => String(n).padStart(2, '0');
+    let [, mes, ano] = (dias[0] || '01-' + pad(new Date().getMonth() + 1) + '-' + new Date().getFullYear()).split('-').map(Number), sel = dias[0] || '';
+    const abreDia = async dia => {
+      sel = dia; desenha(); ler.replaceChildren(elD('p', 'ga-titulo', dia.replace(/-/g, '/')), elD('p', 'p-nota', 'Carregando…'));
+      let md = ''; try { md = await lerArquivo('_geral/recados/arquivo/CAIXA-' + dia + '.md'); } catch (e) { ler.lastChild.textContent = msgErro(e, 'abrir esse dia'); return; }
+      if (sel !== dia) return; ler.lastChild.remove();
       md.split(/\r?\n/).forEach(l => {
         const ela = l.match(/^- \[([^\]]+)\]\s*(.*)$/), robo = l.match(/^\s+↳ ([^\[]+?) \[([^\]]+)\]:\s*(.*)$/), tr = l.match(/^\s+↳ transcrição:\s*(.*)$/);
         if (!ela && !robo && !tr) return;
-        const b = elD('div', 'ga-m' + (ela ? ' ela' : ''));
-        if (tr) { b.className = 'ga-m tr'; b.textContent = '🎤 ' + tr[1]; box.append(b); return; }
-        b.append(elD('b', '', ela ? 'May · ' + ela[1].slice(-5) : robo[1].trim() + ' · ' + robo[2].slice(-5)), document.createTextNode((ela ? ela[2] : robo[3]).replace(/⟪[^⟫]*⟫/g, '').trim()));
-        box.append(b);
+        const m = elD('div', 'ga-m' + (ela ? ' ela' : ''));
+        if (tr) { m.className = 'ga-m tr'; m.append(elD('b', '', 'ÁUDIO'), document.createTextNode(tr[1])); ler.append(m); return; }
+        m.append(elD('b', '', ela ? 'MAY · ' + ela[1].slice(-5) : robo[1].trim().toUpperCase() + ' · ' + robo[2].slice(-5)), document.createTextNode((ela ? ela[2] : robo[3]).replace(/⟪[^⟫]*⟫/g, '').trim()));
+        ler.append(m);
       });
-      if (!box.children.length) box.append(elD('p', 'p-nota', 'Esse dia não tem recado.'));
+      if (ler.children.length < 2) ler.append(elD('p', 'p-nota', 'Esse dia não tem recado.'));
+      ler.scrollTop = 0;
     };
-    dias.forEach(dia => { const bt = elD('button', 'ga-dia', dia.replace(/-/g, '/')); bt.type = 'button'; bt.onclick = () => abreDia(dia, bt); lista.append(bt); });
+    const desenha = () => {
+      cal.replaceChildren();
+      const cab = elD('div', 'ga-cab'), ant = elD('button', 'ga-seta', '‹'), prx = elD('button', 'ga-seta', '›'); ant.type = prx.type = 'button';
+      ant.onclick = () => { mes--; if (!mes) { mes = 12; ano--; } desenha(); }; prx.onclick = () => { mes++; if (mes > 12) { mes = 1; ano++; } desenha(); };
+      const nMes = [...tem].filter(d => d.endsWith(pad(mes) + '-' + ano)).length;
+      const tt = elD('div', 'ga-mes'); tt.append(elD('b', '', MESES[mes - 1] + ' ' + ano), elD('span', '', nMes ? nMes + (nMes === 1 ? ' dia guardado' : ' dias guardados') : 'nada guardado'));
+      cab.append(ant, tt, prx); cal.append(cab);
+      const g = elD('div', 'ga-grade'); ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'].forEach(x => g.append(elD('span', 'ga-sem', x)));
+      const ini = (new Date(ano, mes - 1, 1).getDay() + 6) % 7, fim = new Date(ano, mes, 0).getDate();
+      for (let i = 0; i < ini; i++) g.append(elD('span', 'ga-vazio', ''));
+      for (let d = 1; d <= fim; d++) {
+        const k = pad(d) + '-' + pad(mes) + '-' + ano, bt = elD('button', 'ga-d' + (tem.has(k) ? ' tem' : '') + (k === sel ? ' on' : ''), String(d)); bt.type = 'button';
+        if (tem.has(k)) bt.onclick = () => abreDia(k); else bt.disabled = true;
+        g.append(bt);
+      }
+      cal.append(g);
+    };
+    desenha(); if (sel) abreDia(sel); else ler.append(elD('p', 'p-nota', 'Ainda não tem dia guardado.'));
   });
 }
 function abreItemMenu(m) {
