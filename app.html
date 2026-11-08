@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.176">
+<meta name="app-versao" content="2026-11-08.177">
 <meta name="app-novidade" content="Planta: o nome do cômodo vai num lugar livre, sem cobrir os móveis">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -4291,7 +4291,8 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
         const hor = pd.lado === 'cima' || pd.lado === 'baixo', w = pd.w || .8, x = hor ? k.x + pd.de : (pd.lado === 'esq' ? k.x : k.x + k.w), y = hor ? (pd.lado === 'cima' ? k.y : k.y + k.h) : k.y + pd.de;
         const vao = ns('rect', hor ? { x: x, y: y - .11, width: w, height: .22, class: 'cad-vao' } : { x: x - .11, y: y, width: .22, height: w, class: 'cad-vao' }); camadas[0].append(vao);
         const den = (pd.lado === 'baixo' || pd.lado === 'dir') ? -1 : 1, arco = hor ? 'M' + x + ' ' + y + ' L' + x + ' ' + (y + den * w) + ' A' + w + ' ' + w + ' 0 0 ' + (den > 0 ? 0 : 1) + ' ' + (x + w) + ' ' + y : 'M' + x + ' ' + y + ' L' + (x + den * w) + ' ' + y + ' A' + w + ' ' + w + ' 0 0 ' + (den > 0 ? 1 : 0) + ' ' + x + ' ' + (y + w);
-        camadas[0].append(ns('path', { d: arco, class: 'cad-porta' }));
+        const fo = 4, pf = .22, zz = Array.from({ length: fo + 1 }, (_, i) => { const a = i * w / fo, b = i % 2 ? den * pf : 0; return hor ? (x + a) + ' ' + (y + b) : (x + b) + ' ' + (y + a); });   // sanfona: folhas dobradas, não giro (foto da May 08/11 09:57)
+        camadas[0].append(ns('path', { d: pd.tipo === 'sanfona' ? 'M' + zz.join(' L') : arco, class: 'cad-porta' }));
       });
       k.coisas = arruma(k);
       const movs = k.coisas.filter(c => c.desenhar);
