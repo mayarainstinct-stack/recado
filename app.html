@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.183">
+<meta name="app-versao" content="2026-11-08.184">
 <meta name="app-novidade" content="Planta: o nome do cômodo vai num lugar livre, sem cobrir os móveis">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -4265,13 +4265,13 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
         if (ok) break;
       }
       cs.forEach(ci => { if (ci.fixo && ci.desenhar) Object.assign(ci, { x: ci.fixo.x, y: ci.fixo.y, ww: ci.fixo.w || ci.ww, hh: ci.fixo.h || ci.hh }); });
-      const P = .075; cs.forEach(ci => { if (!ci.fixo || !ci.desenhar || k.pts) return; const enc = (a, t, ini, tam) => { const i0 = Math.abs(a - ini) < .02, i1 = Math.abs(a + t - ini - tam) < .02; return i0 && i1 ? [ini + P, t - 2 * P] : i0 ? [ini + P, t] : i1 ? [ini + tam - P - t, t] : [a, t]; }; [ci.x, ci.ww] = enc(ci.x, ci.ww, k.x, k.w); [ci.y, ci.hh] = enc(ci.y, ci.hh, k.y, k.h); });   // a parede de 0,15 cobre 7,5 cm pra dentro: o móvel encostado começa na face dela, sem sumir embaixo (Sigma 11:08, o sofá parecia solto)
+      const P = 0; cs.forEach(ci => { if (!ci.fixo || !ci.desenhar || k.pts) return; const enc = (a, t, ini, tam) => { const i0 = Math.abs(a - ini) < .02, i1 = Math.abs(a + t - ini - tam) < .02; return i0 && i1 ? [ini + P, t - 2 * P] : i0 ? [ini + P, t] : i1 ? [ini + tam - P - t, t] : [a, t]; }; [ci.x, ci.ww] = enc(ci.x, ci.ww, k.x, k.w); [ci.y, ci.hh] = enc(ci.y, ci.hh, k.y, k.h); });   // a parede de 0,15 cobre 7,5 cm pra dentro: o móvel encostado começa na face dela, sem sumir embaixo (Sigma 11:08, o sofá parecia solto)
       return cs;
     };
     d.comodos.forEach(k => {
       const g = ns('g', { class: 'cad-c', 'data-nome': k.nome }); k.g = g;
       const forma = cls => k.pts ? ns('polygon', { points: k.pts.map(q => q.join(',')).join(' '), class: cls, pathLength: 1 }) : ns('rect', { x: k.x, y: k.y, width: k.w, height: k.h, class: cls, pathLength: 1 });   // cômodo em L (pts), como o quintal com o lado direito (May 17:58)
-      g.append(forma('cad-piso'), forma('cad-parede'));
+      g.append(forma('cad-piso'), k.pts ? forma('cad-parede') : ns('rect', { x: k.x - .075, y: k.y - .075, width: k.w + .15, height: k.h + .15, class: 'cad-parede', pathLength: 1 }));   // a parede fica do lado de fora do cômodo: entre dois cômodos é UMA parede de 0,15, não duas (May 11:29)
       camadas[0].append(g); g.addEventListener('click', () => toca(k));
       const kn = k.nome_xy ? { x: k.nome_xy[0] - (k.nome_w || k.w) / 2, y: k.nome_xy[1] - k.h / 2, w: k.nome_w || k.w, h: k.h } : k;   // cômodo de formato irregular: o dado diz onde cabe o nome (nome_xy e nome_w)
       const pal = k.nome.toUpperCase().split(' '), corte = pal.length > 1 ? pal.reduce((m, _, i) => i && Math.abs(pal.slice(0, i).join(' ').length - pal.slice(i).join(' ').length) < Math.abs(pal.slice(0, m).join(' ').length - pal.slice(m).join(' ').length) ? i : m, 1) : 0;
@@ -4289,12 +4289,12 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
           const tw = ns('text', { x: k.x + k.w / 2, y: yb + .14, 'font-size': Math.min(0.15, k.w / 9).toFixed(3), class: 'cad-cota-t' }); tw.textContent = num(k.w); camadas[0].append(tw); }
       }
       if ((k.aberto || []).includes('cima')) {   // sala e cozinha são um cômodo só: sem parede entre os dois, só um tracejado fino na divisa (Sigma 10:27)
-        camadas[0].append(ns('rect', { x: k.x + .075, y: k.y - .225, width: k.w - .15, height: .3, class: 'cad-vao' }));
-        linha(camadas[0], k.x + .075, k.y - .075, k.x + k.w - .075, k.y - .075, 'cad-divisa');
+        camadas[0].append(ns('rect', { x: k.x, y: k.y - .16, width: k.w, height: .17, class: 'cad-vao' }));
+        linha(camadas[0], k.x, k.y - .075, k.x + k.w, k.y - .075, 'cad-divisa');
       }
       (k.portas_d || []).forEach(pd => {   // porta desenhada: vão na parede + arco de abrir (Sigma 23:48: "é ela que diz de onde se entra")
         const hor = pd.lado === 'cima' || pd.lado === 'baixo', w = pd.w || .8, x = hor ? k.x + pd.de : (pd.lado === 'esq' ? k.x : k.x + k.w), y = hor ? (pd.lado === 'cima' ? k.y : k.y + k.h) : k.y + pd.de;
-        const fora = (pd.lado === 'cima' || pd.lado === 'esq') ? -1 : 1, vao = ns('rect', hor ? { x: x, y: y + (fora < 0 ? -.225 : -.075), width: w, height: .3, class: 'cad-vao' } : { x: x + (fora < 0 ? -.225 : -.075), y: y, width: .3, height: w, class: 'cad-vao' }); camadas[0].append(vao);   // o vão atravessa as duas paredes (a deste cômodo e a do vizinho), senão a passagem fica tapada
+        const fora = (pd.lado === 'cima' || pd.lado === 'esq') ? -1 : 1, vao = ns('rect', hor ? { x: x, y: y + (fora < 0 ? -.16 : -.01), width: w, height: .17, class: 'cad-vao' } : { x: x + (fora < 0 ? -.16 : -.01), y: y, width: .17, height: w, class: 'cad-vao' }); camadas[0].append(vao);   // o vão atravessa as duas paredes (a deste cômodo e a do vizinho), senão a passagem fica tapada
         const den = (pd.lado === 'baixo' || pd.lado === 'dir') ? -1 : 1, arco = hor ? 'M' + x + ' ' + y + ' L' + x + ' ' + (y + den * w) + ' A' + w + ' ' + w + ' 0 0 ' + (den > 0 ? 0 : 1) + ' ' + (x + w) + ' ' + y : 'M' + x + ' ' + y + ' L' + (x + den * w) + ' ' + y + ' A' + w + ' ' + w + ' 0 0 ' + (den > 0 ? 1 : 0) + ' ' + x + ' ' + (y + w);
         const fo = 4, pf = .22, zz = Array.from({ length: fo + 1 }, (_, i) => { const a = i * w / fo, b = i % 2 ? den * pf : 0; return hor ? (x + a) + ' ' + (y + b) : (x + b) + ' ' + (y + a); });   // sanfona: folhas dobradas, não giro (foto da May 08/11 09:57)
         if (pd.tipo !== 'vao' && pd.tipo !== 'sanfona') (k.ocupa = k.ocupa || []).push(hor ? { x: x, y: den > 0 ? y : y - w, ww: w, hh: w } : { x: den > 0 ? x : x - w, y: y, ww: w, hh: w });   // onde a porta abre: o nome do cômodo não vai ali
