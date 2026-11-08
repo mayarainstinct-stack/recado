@@ -66,4 +66,31 @@
   } else if (window.DeviceMotionEvent) liga();
   setInterval(reenvia, 60000); addEventListener('online', () => setTimeout(reenvia, 3000));
   window.Socorro = { dispara, reenvia };
+
+  // Modo de emergência (#174, May 21:28: "e quando não abrir nada?"): só no app. Se o script principal não ficar pronto em 8 s, ou der erro antes disso,
+  // abre uma tela simples por cima: a última Geral guardada no aparelho, uma caixa que manda direto pra Geral, e um aviso @todos com o erro.
+  if (/(^|\/)(app\.html)?$/.test(location.pathname)) {
+    let erro = '', aberto = false;
+    addEventListener('error', e => { if (window.appPronto || erro) return; erro = (e.message || 'erro de script') + (e.lineno ? ' (linha ' + e.lineno + ')' : ''); setTimeout(abre, 400); });
+    setTimeout(() => abre(), 8000);
+    function abre() {
+      if (aberto || window.appPronto || !document.body) return; aberto = true; estilo();
+      const css = document.createElement('style'); css.textContent = '.emerg{position:fixed;inset:0;z-index:2147482000;display:flex;flex-direction:column;background:#0E0F12;color:#F1F2F4;font-family:system-ui,sans-serif;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}.emerg .em-top{padding:16px;border-bottom:1px solid #2A2F3A;background:#16181E}.emerg .em-top b{display:block;font-size:20px}.emerg .em-top p{margin:6px 0 0;font-size:14px;color:#C5CAD3}.emerg .ms{flex:1;overflow:auto;padding:12px 16px;display:flex;flex-direction:column;gap:8px}.emerg .m{background:#1A1D24;border-radius:14px;padding:10px 12px;font-size:15px;line-height:1.35;white-space:pre-wrap;word-break:break-word}.emerg .m.ela{background:#1F3A2E;align-self:flex-end;max-width:88%}.emerg .m b{display:block;font-size:12px;color:#9AA3B2;margin-bottom:2px}.emerg .em-form{display:flex;gap:8px;padding:10px 12px;border-top:1px solid #2A2F3A;background:#0E0F12}.emerg textarea{flex:1;font:inherit;font-size:16px;border-radius:14px;border:1px solid #2A2F3A;background:#151820;color:#fff;padding:10px 12px;resize:none}.emerg .em-form button{flex:none;width:auto;height:auto;min-height:48px;border:0;border-radius:14px;padding:0 16px;background:#22C55E;color:#04130A;font:inherit;font-weight:800;font-size:16px}.emerg .st{font-size:13px;color:#9AA3B2;padding:0 16px 8px}';
+      document.head.append(css);
+      const el = document.createElement('div'); el.className = 'emerg';
+      el.innerHTML = '<div class="em-top"><b>Modo de emergência</b><p></p></div><div class="ms"></div><div class="st"></div><div class="em-form"><textarea rows="2" placeholder="Escreve pra gente aqui"></textarea><button type="button">Mandar</button></div>';
+      el.querySelector('.em-top p').textContent = 'O app não abriu direito' + (erro ? ' (' + erro + ')' : '') + '. Os robôs já foram avisados. Dá pra ler a última Geral e mandar recado por aqui.';
+      const ms = el.querySelector('.ms'), st = el.querySelector('.st'), md = ler('caixa-CAIXA-DE-ENTRADA.md');
+      const linhas = md.split(/\r?\n/).filter(l => /^- \[|^\s+↳ /.test(l)).slice(-40);
+      linhas.forEach(l => { const m = document.createElement('div'), ela = /^- \[/.test(l), mm = ela ? l.match(/^- \[([^\]]+)\]\s*(.*)$/) : l.match(/^\s+↳ ([^\[]+)\[([^\]]+)\]:\s*(.*)$/); if (!mm) return; m.className = 'm' + (ela ? ' ela' : ''); const b = document.createElement('b'); b.textContent = ela ? 'May · ' + mm[1] : mm[1].trim() + ' · ' + mm[2]; m.append(b, document.createTextNode(ela ? mm[2] : mm[3])); ms.append(m); });
+      if (!linhas.length) ms.append(Object.assign(document.createElement('div'), { className: 'm', textContent: 'Não tem Geral guardada neste aparelho ainda. Mesmo assim, o que tu escrever aqui chega na gente.' }));
+      document.body.append(el); ms.scrollTop = ms.scrollHeight;
+      const ta = el.querySelector('textarea');
+      el.querySelector('.em-form button').onclick = async () => { const t = ta.value.trim(); if (!t) return; st.textContent = 'Mandando…'; const l = '- [' + stamp(new Date()) + '] ' + t.replace(/\n+/g, ' ');
+        if (await gravaLinha(l)) { st.textContent = 'Foi. A gente responde na Geral.'; ta.value = ''; const m = document.createElement('div'); m.className = 'm ela'; m.textContent = t; ms.append(m); ms.scrollTop = ms.scrollHeight; }
+        else { st.textContent = 'NÃO foi: ' + (motivo || 'sem conexão') + '. Guardei e mando sozinho assim que der.'; grava(FILA, JSON.stringify(fila().concat(l).slice(-5))); } };
+      const chave = versao() + '|' + (erro || 'não abriu em 8 s');
+      if (ler('emerg-avisado') !== chave) gravaLinha('- [' + stamp(new Date()) + '] 🆘 @todos o app não abriu no celular dela e entrou no modo de emergência: ' + (erro || 'não ficou pronto em 8 s') + (versao() ? ' (app ' + versao() + ')' : '')).then(ok => { if (ok) grava('emerg-avisado', chave); });
+    }
+  }
 })();

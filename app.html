@@ -1,15 +1,15 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"><script src="socorro.js?v=1"></script>
+<meta charset="utf-8"><script src="socorro.js?v=2"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Recados">
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.164">
-<meta name="app-novidade" content="Agenda: cada tipo de compromisso na sua cor, o mês troca deslizando e a passagem aparece no compromisso">
+<meta name="app-versao" content="2026-11-07.165">
+<meta name="app-novidade" content="Modo de emergência: se o app não abrir, tu ainda lê a Geral e manda recado">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -923,8 +923,8 @@ body.na-geral form textarea:focus { border-color: #FACC15; box-shadow: 0 0 0 3px
 .ag .cx img { max-height: 240px; object-fit: cover; object-position: top; }   /* a passagem entra pequena; tocar abre inteira */
 .ag-fotos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .ag-fotos img { aspect-ratio: 3 / 4; object-fit: cover; object-position: top; }
 .ag[data-tipo] { box-shadow: inset 4px 0 0 var(--tc); } .ag[data-tipo] .dt { background: color-mix(in srgb, var(--tc) 22%, transparent); color: color-mix(in srgb, var(--tc) 70%, var(--fg)); }
-.ag-dia.tem::after { display: none; } .ag-pts { position: absolute; left: 0; right: 0; bottom: 4px; display: flex; justify-content: center; gap: 3px; } .ag-pts i { width: 6px; height: 6px; border-radius: 50%; }
-.ag-leg { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 10px; font-size: 12px; font-weight: 700; color: var(--muted); } .ag-leg span::before { content: ''; display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--tc); margin-right: 5px; vertical-align: 0; }
+.ag-dia.tem::after { display: none; } .ag-pts { position: absolute; left: 0; right: 0; bottom: 4px; display: flex; justify-content: center; gap: 3px; } .ag-pts i { width: 7px; height: 7px; border-radius: 50%; box-shadow: 0 0 0 1.5px #fff; }   /* anel branco: o verde não some no fundo verde-água (Sigma 22:30) */
+.ag-leg { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 10px; font-size: 12px; font-weight: 700; color: #fff; } .ag-leg span::before { content: ''; display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--tc);box-shadow: 0 0 0 1.5px #fff; margin-right: 5px; vertical-align: 0; }
 .pop { position: fixed; inset: 0; z-index: 55; background: rgba(0,0,0,.45); display: grid; place-items: center; padding: 16px; }
 .pop .caixa { width: 100%; max-width: 380px; background: var(--paper); color: var(--fg); border-radius: 18px; padding: 18px; display: grid; gap: 12px;
   box-shadow: 0 14px 40px rgba(0,0,0,.3); animation: entra .2s ease-out both; }
@@ -5231,6 +5231,7 @@ if (location.hash === '#menu' || (history.state && history.state.painel && !loca
   history.replaceState(null, '', location.pathname + location.search);
   const t0 = Date.now(), espera = setInterval(() => { if (FILE || Date.now() - t0 > 15000) { clearInterval(espera); if (FILE) document.getElementById('abre-menu').click(); } }, 100);
 }
+window.appPronto = true;   // o script inteiro rodou: o modo de emergência do socorro.js não precisa abrir (#174)
 </script>
 </body>
 </html>
