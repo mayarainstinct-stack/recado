@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.200">
-<meta name="app-novidade" content="Agenda clara, com cara de consultório; Pendências e Contas do mês numa tela só">
+<meta name="app-versao" content="2026-11-08.201">
+<meta name="app-novidade" content="Sem faixa vazia embaixo no iPhone; Lançar um dia da Obra legível">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -403,7 +403,7 @@ button:disabled { opacity: .45; cursor: default; }
 .msg .foto-x { padding: 14px 16px; margin-bottom: 4px; border-radius: 10px; background: rgba(0,0,0,.08); font-size: 14px; opacity: .8; }
 /* Menu e Catálogo: tela cheia, navegação por botões grandes (pensada pro celular) */
 .painel { position: fixed; inset: 0; z-index: 52; background: var(--bg); color: var(--fg); display: flex; flex-direction: column;
-  padding: 0 0 env(safe-area-inset-bottom, 0px); animation: entra .18s ease-out both; }
+  padding: 0; animation: entra .18s ease-out both; }   /* sem faixa vazia embaixo no iPhone (May 08/11 13:21): o miolo vai até o fim e a folga da barra do gesto fica dentro dele */
 .p-topo { flex: none; display: flex; align-items: center; gap: 10px; background: var(--head); color: var(--head-fg); border-bottom: 1px solid color-mix(in srgb, var(--head-fg) 14%, transparent);
   padding: calc(8px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 8px max(12px, env(safe-area-inset-left, 0px)); }
 .p-topo button { flex: none; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.18); color: inherit; font-size: 22px; line-height: 1; display: grid; place-items: center; }
@@ -412,7 +412,7 @@ button:disabled { opacity: .45; cursor: default; }
 .p-topo h2 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -.01em; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* Corpo rolável: coluna flex com filhos que NÃO encolhem (grid + overflow:hidden nos cartões os espremia a ~50px) */
 .p-corpo { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 12px;
-  padding: 16px max(16px, env(safe-area-inset-right, 0px)) 88px max(16px, env(safe-area-inset-left, 0px)); }   /* espaço pro voltar de baixo */
+  padding: 16px max(16px, env(safe-area-inset-right, 0px)) calc(88px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }   /* espaço pro voltar de baixo e pra barra do gesto */
 .p-corpo > * { flex: none; min-width: 0; }
 .p-corpo > .tela { display: contents; }
 .p-corpo > .tela > * { flex: none; min-width: 0; }
@@ -985,7 +985,7 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 .ob-folha ul { margin: 2px 0 0; padding-left: 18px; font-size: 13.5px; line-height: 1.35; } .ob-folha li + li { margin-top: 3px; } .ob-feito { list-style: '✓  '; } .ob-depois { list-style: '→  '; } .ob-decidido { list-style: '★  '; }
 .ob-folha li { position: relative; padding-right: 30px; } .ob-lapis { position: absolute; right: -4px; top: -3px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: transparent; color: #9A3412; opacity: .55; } .ob-lapis svg { width: 15px; height: 15px; } .ob-lapis:active { opacity: 1; }
 .ob-anot { margin: 3px 0 4px; font: 15px/1.3 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive; color: #1D4ED8; } .ob-dia-fim { margin-top: 8px; } .ob-anotar { width: auto !important; min-width: 0; white-space: nowrap; height: auto; padding: 7px 12px; border-radius: 999px; border: 1px dashed #C2410C; background: transparent; color: #9A3412; font: 700 12.5px 'Segoe UI', sans-serif; display: inline-flex; align-items: center; gap: 6px; } .ob-anotar svg { width: 14px; height: 14px; }
-.ob-lanca { margin: 0 0 4px; justify-self: start; } .ob-data-in { width: 100%; box-sizing: border-box; margin-top: 10px; font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); } .ob-data-sem { display: block; margin-top: 4px; font-weight: 700; color: #F97316; text-transform: capitalize; }
+.ob-lanca { margin: 0 0 4px; justify-self: start; } .ob-anotar.ob-lanca { background: #F97316; color: #1A0D02; border: 0; font-weight: 800; box-shadow: 0 4px 14px rgba(249,115,22,.35); } .ob-anotar.ob-lanca svg { color: #1A0D02; }   /* botão cheio, letra escura: lê de longe em cima do tijolo (May 08/11 13:21, contraste AA) */ .ob-data-in { width: 100%; box-sizing: border-box; margin-top: 10px; font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); } .ob-data-sem { display: block; margin-top: 4px; font-weight: 700; color: #F97316; text-transform: capitalize; }
 .ob-anot-esp { display: block; font: 600 10.5px 'Segoe UI', sans-serif; color: #9A3412; opacity: .7; }
 .ob-pop textarea { width: 100%; box-sizing: border-box; margin: 10px 0 12px; font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); resize: vertical; }
 .ob-tira { display: flex; gap: 10px; overflow-x: auto; padding: 10px 2px 4px; scrollbar-width: none; } .ob-tira::-webkit-scrollbar { display: none; }
