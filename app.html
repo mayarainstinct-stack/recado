@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.175">
+<meta name="app-versao" content="2026-11-08.176">
 <meta name="app-novidade" content="Planta: o nome do cômodo vai num lugar livre, sem cobrir os móveis">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -4274,8 +4274,8 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
       camadas[0].append(g); g.addEventListener('click', () => toca(k));
       const kn = k.nome_xy ? { x: k.nome_xy[0] - (k.nome_w || k.w) / 2, y: k.nome_xy[1] - k.h / 2, w: k.nome_w || k.w, h: k.h } : k;   // cômodo de formato irregular: o dado diz onde cabe o nome (nome_xy e nome_w)
       const pal = k.nome.toUpperCase().split(' '), corte = pal.length > 1 ? pal.reduce((m, _, i) => i && Math.abs(pal.slice(0, i).join(' ').length - pal.slice(i).join(' ').length) < Math.abs(pal.slice(0, m).join(' ').length - pal.slice(m).join(' ').length) ? i : m, 1) : 0;
-      const l2 = corte ? [pal.slice(0, corte).join(' '), pal.slice(corte).join(' ')] : null, fs1 = Math.min(0.36, kn.w * 1.6 / Math.max(6, k.nome.length), kn.h / 3.2), fs2 = l2 ? Math.min(0.36, kn.w * 1.6 / Math.max(5, ...l2.map(x => x.length)), kn.h / 4.4) : 0;
-      const duas = fs2 > fs1 * 1.15, cabe = (kn.w - .3) / (Math.max(...(duas ? l2 : [k.nome]).map(x => x.length)) * .68), fs = Math.min(Math.max(0.15, duas ? fs2 : fs1), cabe), t = ns('text', { x: kn.x + kn.w / 2, y: kn.y + kn.h / 2 - fs * (duas ? .9 : .35), 'font-size': fs.toFixed(3), class: 'cad-nome' });   // cômodo pequeno: o nome quebra em 2 linhas e nunca fica menor que dá pra ler (Sigma 17:44)
+      const l2 = corte ? [pal.slice(0, corte).join(' '), pal.slice(corte).join(' ')] : null, BASE = 0.22, fs1 = Math.min(BASE, (kn.w - .3) / (k.nome.length * .68), kn.h / 3.2), fs2 = l2 ? Math.min(BASE, (kn.w - .3) / (Math.max(...l2.map(x => x.length)) * .68), kn.h / 4.4) : 0;   // um tamanho só pra nome de cômodo (0,22), e só diminui quando não cabe (Sigma 09:27)
+      const duas = fs1 < BASE && fs2 > fs1 * 1.15, fs = Math.max(0.08, duas ? fs2 : fs1), t = ns('text', { x: kn.x + kn.w / 2, y: kn.y + kn.h / 2 - fs * (duas ? .9 : .35), 'font-size': fs.toFixed(3), class: 'cad-nome' });   // cômodo pequeno: o nome quebra em 2 linhas e nunca fica menor que dá pra ler (Sigma 17:44)
       (duas ? l2 : [k.nome.toUpperCase()]).forEach((tx, i) => { const sp = ns('tspan', { x: kn.x + kn.w / 2, dy: i ? (fs * 1.1).toFixed(3) : 0 }); sp.textContent = tx; t.append(sp); });
       const a = ns('text', { x: kn.x + kn.w / 2, y: kn.y + kn.h / 2 + fs * (duas ? 1.25 : .85), 'font-size': (fs * .7).toFixed(3), class: 'cad-area' }); a.textContent = num(areaDe(k)) + ' m²'; camadas[0].append(t, a); k.rot = [t, a];
       if (k.w > 0.8 && k.h > 0.8 && !k.pts) {   // cota por fora da parede (Sigma 23:48): o comprimento do lado de fora da casa, a largura embaixo só se embaixo for aberto
@@ -4313,7 +4313,7 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
           for (let y = k.y + .1 + th / 2; y < k.y + k.h - .1 - th / 2 + 1e-6; y += .05) for (let x = k.x + .1 + tw / 2; x < k.x + k.w - .1 - tw / 2 + 1e-6; x += .05) if (livre(x, y, tw, th)) { const dd = Math.hypot(x - k.x - k.w / 2, y - k.y - k.h / 2); if (dd < dm) { dm = dd; melhor = [x, y]; } }
           return melhor && { ls, fs, x: melhor[0], y: melhor[1] }; };
         const opcoes = [[nomeU + ' · ' + area], [nomeU], pal.length > 1 ? [pal.slice(0, meio).join(' '), pal.slice(meio).join(' ')] : [nomeU]];
-        let achou = null; for (const fs of [.16, .13, .11, .09, .08]) { for (const ls of opcoes) { achou = procura(ls, fs); if (achou) break; } if (achou) break; }
+        let achou = null; for (const fs of [.22, .18, .15, .12, .1, .08]) { for (const ls of opcoes) { achou = procura(ls, fs); if (achou) break; } if (achou) break; }
         if (!achou) { k.numerado = true; const nn = String(d.comodos.indexOf(k) + 1); for (const fs of [.13, .11, .09, .08]) { achou = procura([nn], fs); if (achou) break; } if (!achou) achou = { ls: [nn], fs: .08, x: k.x + .12, y: k.y + .12 }; }   // cômodo pequeno demais pro nome: vira número, e a lista de cômodos diz qual é (Sigma 00:27)
         t.replaceChildren(); t.setAttribute('font-size', achou.fs.toFixed(3)); t.setAttribute('x', achou.x.toFixed(3)); t.setAttribute('y', (achou.y - (achou.ls.length - 1) * achou.fs * .62).toFixed(3));
         achou.ls.forEach((tx, i) => { const sp = ns('tspan', { x: achou.x.toFixed(3), dy: i ? (achou.fs * 1.25).toFixed(3) : 0 }); sp.textContent = tx; t.append(sp); }); t.classList.add('pequeno'); ar.remove(); k.rot = [t];
