@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.181">
+<meta name="app-versao" content="2026-11-08.182">
 <meta name="app-novidade" content="Planta: o nome do cômodo vai num lugar livre, sem cobrir os móveis">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -4265,6 +4265,7 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
         if (ok) break;
       }
       cs.forEach(ci => { if (ci.fixo && ci.desenhar) Object.assign(ci, { x: ci.fixo.x, y: ci.fixo.y, ww: ci.fixo.w || ci.ww, hh: ci.fixo.h || ci.hh }); });
+      const P = .075; cs.forEach(ci => { if (!ci.fixo || !ci.desenhar || k.pts) return; const enc = (a, t, ini, tam) => { const i0 = Math.abs(a - ini) < .02, i1 = Math.abs(a + t - ini - tam) < .02; return i0 && i1 ? [ini + P, t - 2 * P] : i0 ? [ini + P, t] : i1 ? [ini + tam - P - t, t] : [a, t]; }; [ci.x, ci.ww] = enc(ci.x, ci.ww, k.x, k.w); [ci.y, ci.hh] = enc(ci.y, ci.hh, k.y, k.h); });   // a parede de 0,15 cobre 7,5 cm pra dentro: o móvel encostado começa na face dela, sem sumir embaixo (Sigma 11:08, o sofá parecia solto)
       return cs;
     };
     d.comodos.forEach(k => {
