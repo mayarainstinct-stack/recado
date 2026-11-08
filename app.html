@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.168">
-<meta name="app-novidade" content="Geral mais leve pros dados móveis: o que tem mais de um dia fica em Menu → Geral antiga">
+<meta name="app-versao" content="2026-11-07.169">
+<meta name="app-novidade" content="Planta: parede cheia entre os cômodos e o nome sempre dentro da caixa">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -735,8 +735,8 @@ img.esq { min-height: 140px; }
 .cad-status { bottom: 0; height: 28px; border-top: 1px solid #1E3A5F; } .cad-st { color: #64748B; letter-spacing: .08em; }
 .cad-nivel { width: 26px; height: 20px; border-radius: 2px; border: 1px solid #22D3EE; background: transparent; color: #22D3EE; font: 700 11px Consolas, monospace; } .cad-nivel.on { background: #22D3EE; color: #0B1220; }
 .cad-terreno { fill: none; stroke: #475569; stroke-width: .04; stroke-dasharray: .3 .18; }
-.cad-c { cursor: pointer; transition: transform .35s cubic-bezier(.2,.8,.2,1); } .cad-piso { fill: rgba(11,18,32,.001); } .cad-parede { fill: none; stroke: #F8FAFC; stroke-width: .06; }
-.cad-c.on { transform: translateY(-.14px); } .cad-c.on .cad-piso { fill: rgba(34,211,238,.14); } .cad-c.on .cad-parede { stroke: #22D3EE; stroke-width: .09; filter: drop-shadow(0 0 .12px #22D3EE); }
+.cad-c { cursor: pointer; transition: transform .35s cubic-bezier(.2,.8,.2,1); } .cad-piso { fill: rgba(11,18,32,.001); } .cad-parede { fill: none; stroke: #F8FAFC; stroke-width: .15; }   /* a parede tem 0,15: o traço cobre o vão entre um cômodo e outro e lê como parede cheia (Sigma 23:07) */
+.cad-c.on { transform: translateY(-.14px); } .cad-c.on .cad-piso { fill: rgba(34,211,238,.14); } .cad-c.on .cad-parede { stroke: #22D3EE; stroke-width: .15; filter: drop-shadow(0 0 .12px #22D3EE); }
 .cad-nome { fill: #E0F2FE; font-family: Consolas, monospace; font-weight: 700; text-anchor: middle; dominant-baseline: central; pointer-events: none; paint-order: stroke; stroke: #0B1220; stroke-width: .05px; } .cad-area { fill: #7DD3FC; font-family: Consolas, monospace; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
 .cad-cota { stroke: #FACC15; stroke-width: .022; } .cad-cota-t { fill: #FACC15; font-family: Consolas, monospace; text-anchor: middle; pointer-events: none; }
 .cad-coisa { fill: #67E8F9; font-family: Consolas, monospace; text-anchor: middle; dominant-baseline: hanging; pointer-events: none; }
@@ -4273,7 +4273,7 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
       camadas[0].append(g); g.addEventListener('click', () => toca(k));
       const pal = k.nome.toUpperCase().split(' '), corte = pal.length > 1 ? pal.reduce((m, _, i) => i && Math.abs(pal.slice(0, i).join(' ').length - pal.slice(i).join(' ').length) < Math.abs(pal.slice(0, m).join(' ').length - pal.slice(m).join(' ').length) ? i : m, 1) : 0;
       const l2 = corte ? [pal.slice(0, corte).join(' '), pal.slice(corte).join(' ')] : null, fs1 = Math.min(0.36, k.w * 1.6 / Math.max(6, k.nome.length), k.h / 3.2), fs2 = l2 ? Math.min(0.36, k.w * 1.6 / Math.max(5, ...l2.map(x => x.length)), k.h / 4.4) : 0;
-      const duas = fs2 > fs1 * 1.15, fs = Math.max(0.15, duas ? fs2 : fs1), t = ns('text', { x: k.x + k.w / 2, y: k.y + k.h / 2 - fs * (duas ? .9 : .35), 'font-size': fs.toFixed(3), class: 'cad-nome' });   // cômodo pequeno: o nome quebra em 2 linhas e nunca fica menor que dá pra ler (Sigma 17:44)
+      const duas = fs2 > fs1 * 1.15, cabe = (k.w - .3) / (Math.max(...(duas ? l2 : [k.nome]).map(x => x.length)) * .6), fs = Math.min(Math.max(0.15, duas ? fs2 : fs1), cabe), t = ns('text', { x: k.x + k.w / 2, y: k.y + k.h / 2 - fs * (duas ? .9 : .35), 'font-size': fs.toFixed(3), class: 'cad-nome' });   // cômodo pequeno: o nome quebra em 2 linhas e nunca fica menor que dá pra ler (Sigma 17:44)
       (duas ? l2 : [k.nome.toUpperCase()]).forEach((tx, i) => { const sp = ns('tspan', { x: k.x + k.w / 2, dy: i ? (fs * 1.1).toFixed(3) : 0 }); sp.textContent = tx; t.append(sp); });
       const a = ns('text', { x: k.x + k.w / 2, y: k.y + k.h / 2 + fs * (duas ? 1.25 : .85), 'font-size': (fs * .7).toFixed(3), class: 'cad-area' }); a.textContent = num(areaDe(k)) + ' m²'; camadas[0].append(t, a); k.rot = [t, a];
       if (k.w > 0.8 && k.h > 0.8) {   // cota de largura embaixo e de comprimento do lado
