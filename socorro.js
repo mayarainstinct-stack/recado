@@ -79,7 +79,7 @@
       document.head.append(css);
       const el = document.createElement('div'); el.className = 'emerg';
       el.innerHTML = '<div class="em-top"><b>Modo de emergência</b><p></p></div><div class="ms"></div><div class="st"></div><div class="em-form"><textarea rows="2" placeholder="Escreve pra gente aqui"></textarea><button type="button">Mandar</button></div>';
-      el.querySelector('.em-top p').textContent = 'O app não abriu direito' + (erro ? ' (' + erro + ')' : '') + '. Os robôs já foram avisados. Dá pra ler a última Geral e mandar recado por aqui.';
+      el.querySelector('.em-top p').textContent = 'O app não abriu direito. Os robôs já foram avisados e vão olhar. Dá pra ler a última Geral e mandar recado por aqui.';   // o erro técnico vai só no recado pros robôs (Sigma 22:50)
       const ms = el.querySelector('.ms'), st = el.querySelector('.st'), md = ler('caixa-CAIXA-DE-ENTRADA.md');
       const linhas = md.split(/\r?\n/).filter(l => /^- \[|^\s+↳ /.test(l)).slice(-40);
       linhas.forEach(l => { const m = document.createElement('div'), ela = /^- \[/.test(l), mm = ela ? l.match(/^- \[([^\]]+)\]\s*(.*)$/) : l.match(/^\s+↳ ([^\[]+)\[([^\]]+)\]:\s*(.*)$/); if (!mm) return; m.className = 'm' + (ela ? ' ela' : ''); const b = document.createElement('b'); b.textContent = ela ? 'May · ' + mm[1] : mm[1].trim() + ' · ' + mm[2]; m.append(b, document.createTextNode(ela ? mm[2] : mm[3])); ms.append(m); });
