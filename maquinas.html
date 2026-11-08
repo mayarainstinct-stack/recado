@@ -16,7 +16,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 #fundo{position:fixed;inset:0;z-index:0;background:var(--fundo) center/cover no-repeat;transition:background-image .01s}
 #fundo::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 70% at 85% 0%,color-mix(in srgb,var(--k1) 55%,transparent),transparent 60%),linear-gradient(180deg,rgba(7,10,20,.35),rgba(7,10,20,.88) 45%,#070A14 80%)}
 #fundo::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 4px)}
-#app{position:relative;z-index:1;height:100dvh;display:flex;flex-direction:column;padding:max(16px,env(safe-area-inset-top)) 0 calc(84px + env(safe-area-inset-bottom));overflow:hidden}   /* uma tela só, sem rolar pra baixo: o resto vai em abas que deslizam (May 07/11 11:27) */
+#app{position:relative;z-index:1;height:100dvh;display:flex;flex-direction:column;padding:max(16px,env(safe-area-inset-top)) 0 env(safe-area-inset-bottom);overflow:hidden}   /* uma tela só, sem rolar pra baixo: o resto vai em abas que deslizam (May 07/11 11:27) */
 .topo{flex:none;display:flex;align-items:center;gap:10px;padding:0 16px 12px}
 .topo .marca-sis{display:flex;align-items:center;gap:8px;font-weight:700;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--texto2)}
 .topo .marca-sis i{width:10px;height:10px;border-radius:3px;background:var(--k1);box-shadow:0 0 10px var(--k1);transform:rotate(45deg)}
@@ -24,7 +24,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* a fileira de máquinas, igual à tela inicial de um console */
 #fundo.marca{background-position:center}
 .card .logo{position:absolute;right:-14px;top:-10px;width:116px;height:116px;opacity:.26;object-fit:contain;transform:rotate(-8deg)}.card .logo-txt{position:absolute;right:6px;top:-4px;font-size:64px;font-weight:800;font-style:italic;opacity:.2;letter-spacing:-.04em}
-.grade{flex:1;min-height:0;overflow-y:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:6px 16px 24px;align-content:start;animation:entra .32s cubic-bezier(.2,.8,.2,1)}
+.grade{flex:1;min-height:0;overflow-y:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:6px 16px 96px;align-content:start;animation:entra .32s cubic-bezier(.2,.8,.2,1)}
 .card{position:relative;overflow:hidden;min-height:132px;border-radius:20px;padding:12px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;text-align:left;color:#fff;font:inherit;cursor:pointer;background:linear-gradient(150deg,color-mix(in srgb,var(--c) 85%,#000),color-mix(in srgb,var(--c) 35%,#000));border:1px solid rgba(255,255,255,.18);box-shadow:0 10px 24px color-mix(in srgb,var(--c) 30%,transparent)}
 .card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.45}.card img.rob{inset:auto 8px 8px auto;width:58px;height:58px;opacity:.95;object-fit:contain}
 .card .cur{position:absolute;top:10px;left:12px;font-weight:800;font-size:13px;letter-spacing:.1em}.card b{position:relative;font-size:16px;line-height:1.15;padding-right:44px;text-shadow:0 1px 8px rgba(0,0,0,.6)}.card small{position:relative;font-size:11.5px;opacity:.88}.card:has(img.rob) small,.card:has(img.rob) b{padding-right:60px}.card small{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -53,7 +53,7 @@ body.maq-inativa #fundo{filter:grayscale(1) brightness(.8)}body.maq-inativa .pal
 .abas button{flex:none;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:8px 12px;border-radius:999px;background:var(--vidro);border:1px solid var(--borda);color:var(--texto2);transition:background .2s,color .2s}
 .abas button.on{background:var(--k1);border-color:transparent;color:#fff;box-shadow:0 0 14px color-mix(in srgb,var(--k1) 60%,transparent)}
 .trilho{flex:1;min-height:0;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}.trilho::-webkit-scrollbar{display:none}
-.pag{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;overflow-y:auto;padding-bottom:8px}
+.pag{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;overflow-y:auto;padding-bottom:96px}   /* sem faixa vazia embaixo: o miolo vai até o fim da tela e termina acima do voltar (May 08/11 11:50) */
 .vidro{margin:0 16px;border-radius:20px;padding:14px;background:rgba(14,18,32,.62);border:1px solid var(--borda);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 10px 30px rgba(0,0,0,.3)}
 .vidro h2{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--texto2);margin-bottom:10px}
 .vidro h2::before{content:"";width:4px;height:14px;border-radius:2px;background:var(--k1);box-shadow:0 0 8px var(--k1)}
