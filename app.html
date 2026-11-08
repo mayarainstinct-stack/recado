@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.169">
-<meta name="app-novidade" content="Planta: parede cheia entre os cômodos e o nome sempre dentro da caixa">
+<meta name="app-versao" content="2026-11-07.170">
+<meta name="app-novidade" content="Planta: os móveis do teu quarto no lugar certo">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -4285,7 +4285,7 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
       }
       k.coisas = arruma(k);
       k.coisas.filter(ci => ci.desenhar).forEach(ci => {
-        const gc = ns('g', { class: 'cad-obj' + (ci.projeto ? ' projeto' : ''), transform: 'translate(' + ci.x.toFixed(3) + ' ' + ci.y.toFixed(3) + ') scale(' + ci.ww.toFixed(3) + ' ' + ci.hh.toFixed(3) + ')' }); ci.g = gc;
+        const vira = ci.fixo && +ci.fixo.gira === 180, gc = ns('g', { class: 'cad-obj' + (ci.projeto ? ' projeto' : ''), transform: vira ? 'translate(' + (ci.x + ci.ww).toFixed(3) + ' ' + (ci.y + ci.hh).toFixed(3) + ') scale(' + (-ci.ww).toFixed(3) + ' ' + (-ci.hh).toFixed(3) + ')' : 'translate(' + ci.x.toFixed(3) + ' ' + ci.y.toFixed(3) + ') scale(' + ci.ww.toFixed(3) + ' ' + ci.hh.toFixed(3) + ')' });   // gira 180: a cabeceira da cama na parede de baixo, por exemplo (piloto do quarto, May 21:17) ci.g = gc;
         gc.append(ns('rect', { x: 0, y: 0, width: 1, height: 1, class: 'cad-obj-toque' }));
         ci.tp[3].forEach(p => gc.append(ns('path', { d: p, class: 'cad-obj-l', 'vector-effect': 'non-scaling-stroke', pathLength: 1 })));
         gc.addEventListener('click', e => { e.stopPropagation(); tocaCoisa(ci); }); camadas[1].append(gc);
