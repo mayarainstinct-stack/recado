@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.173">
+<meta name="app-versao" content="2026-11-08.174">
 <meta name="app-novidade" content="Planta: o nome do cômodo vai num lugar livre, sem cobrir os móveis">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -4313,7 +4313,7 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
           return melhor && { ls, fs, x: melhor[0], y: melhor[1] }; };
         const opcoes = [[nomeU + ' · ' + area], [nomeU], pal.length > 1 ? [pal.slice(0, meio).join(' '), pal.slice(meio).join(' ')] : [nomeU]];
         let achou = null; for (const fs of [.16, .13, .11, .09, .08]) { for (const ls of opcoes) { achou = procura(ls, fs); if (achou) break; } if (achou) break; }
-        if (!achou) { const ls = opcoes[2], fs = Math.max(.08, Math.min(.12, (k.w - .16) / (Math.max(...ls.map(x => x.length)) * .68))); achou = { ls, fs, x: k.x + k.w / 2, y: k.y + k.h / 2 }; }   // nada livre: fica no meio, pequeno, sem a área
+        if (!achou) { k.numerado = true; const nn = String(d.comodos.indexOf(k) + 1); for (const fs of [.13, .11, .09, .08]) { achou = procura([nn], fs); if (achou) break; } if (!achou) achou = { ls: [nn], fs: .08, x: k.x + .12, y: k.y + .12 }; }   // cômodo pequeno demais pro nome: vira número, e a lista de cômodos diz qual é (Sigma 00:27)
         t.replaceChildren(); t.setAttribute('font-size', achou.fs.toFixed(3)); t.setAttribute('x', achou.x.toFixed(3)); t.setAttribute('y', (achou.y - (achou.ls.length - 1) * achou.fs * .62).toFixed(3));
         achou.ls.forEach((tx, i) => { const sp = ns('tspan', { x: achou.x.toFixed(3), dy: i ? (achou.fs * 1.25).toFixed(3) : 0 }); sp.textContent = tx; t.append(sp); }); t.classList.add('pequeno'); ar.remove(); k.rot = [t];
       }
@@ -4345,7 +4345,7 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
       if (sel) { sel.g.classList.remove('on'); sel.rot.forEach(t => t.classList.remove('apagado')); } if (selC) { if (selC.g) selC.g.classList.remove('on'); selC = null; } sel = k;
       if (!k) {
         voa(peLargura(-0.6)); nomeEl.textContent = 'Casa inteira'; sub.textContent = 'terreno ' + num(d.largura) + ' × ' + num(d.altura) + ' m · ' + d.comodos.length + ' cômodos'; coord.textContent = '↕ ARRASTA'; inteira.hidden = true; cabecalho({ icone: 'home', sub: 'toca num cômodo' });
-        pintaAbas([['Cômodos', cp => { const ul = elD('ul', 'pl-itens'); d.comodos.forEach(kk => { const li = elD('li', 'pl-toca', kk.nome); li.onclick = () => toca(kk); ul.append(li); }); cp.append(ul); }],
+        pintaAbas([['Cômodos', cp => { const ul = elD('ul', 'pl-itens'); d.comodos.forEach(kk => { const li = elD('li', 'pl-toca', (kk.numerado ? (d.comodos.indexOf(kk) + 1) + ' · ' : '') + kk.nome); li.onclick = () => toca(kk); ul.append(li); }); cp.append(ul); }],
           ['Medidas', cp => { const ul = elD('ul', 'pl-med'); d.comodos.forEach(kk => { const li = elD('li'); li.append(elD('span', '', kk.nome), elD('b', '', num(kk.w) + ' × ' + num(kk.h) + ' m · ' + num(areaDe(kk)) + ' m²')); li.onclick = () => toca(kk); ul.append(li); }); cp.append(ul); }]]);
         surge([nomeEl, sub]); return;
       }
