@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.187">
+<meta name="app-versao" content="2026-11-08.188">
 <meta name="app-novidade" content="Planta: o nome do cômodo vai num lugar livre, sem cobrir os móveis">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -4318,7 +4318,8 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
       });
       if (movs.length && k.rot) {   // com móvel desenhado, o nome grande do cômodo ia por cima da cama: vai pequeno num canto livre
         const [t, ar] = k.rot, nomeU = k.nome.toUpperCase(), pal = nomeU.split(' '), meio = Math.ceil(pal.length / 2), area = num(areaDe(k)) + ' m²';
-        const livre = (cx, cy, tw, th) => cx - tw / 2 > k.x + .08 && cx + tw / 2 < k.x + k.w - .08 && cy - th / 2 > k.y + .08 && cy + th / 2 < k.y + k.h - .08 && ![...movs, ...(k.ocupa || [])].some(c => cx - tw / 2 < c.x + c.ww && cx + tw / 2 > c.x && cy - th / 2 < c.y + c.hh && cy + th / 2 > c.y);
+        const dentro = (px, py) => { if (!k.pts) return true; let c = false; for (let i = 0, j = k.pts.length - 1; i < k.pts.length; j = i++) { const [xi, yi] = k.pts[i], [xj, yj] = k.pts[j]; if ((yi > py) !== (yj > py) && px < (xj - xi) * (py - yi) / (yj - yi) + xi) c = !c; } return c; };   // cômodo em L: o nome tem que cair dentro dele, não no recorte (a garagem tava escrevendo na porta da sala)
+        const livre = (cx, cy, tw, th) => [[cx - tw / 2, cy - th / 2], [cx + tw / 2, cy - th / 2], [cx - tw / 2, cy + th / 2], [cx + tw / 2, cy + th / 2]].every(([a, b]) => dentro(a, b)) && cx - tw / 2 > k.x + .08 && cx + tw / 2 < k.x + k.w - .08 && cy - th / 2 > k.y + .08 && cy + th / 2 < k.y + k.h - .08 && ![...movs, ...(k.ocupa || [])].some(c => cx - tw / 2 < c.x + c.ww && cx + tw / 2 > c.x && cy - th / 2 < c.y + c.hh && cy + th / 2 > c.y);
         const procura = (ls, fs) => { const tw = Math.max(...ls.map(x => x.length)) * .68 * fs, th = ls.length * fs * 1.25; let melhor = null, dm = 1e9;   // varre o chão do cômodo atrás de um lugar livre do tamanho do texto, o mais perto do meio
           for (let y = k.y + .1 + th / 2; y < k.y + k.h - .1 - th / 2 + 1e-6; y += .05) for (let x = k.x + .1 + tw / 2; x < k.x + k.w - .1 - tw / 2 + 1e-6; x += .05) if (livre(x, y, tw, th)) { const dd = Math.hypot(x - k.x - k.w / 2, y - k.y - k.h / 2); if (dd < dm) { dm = dd; melhor = [x, y]; } }
           return melhor && { ls, fs, x: melhor[0], y: melhor[1] }; };
