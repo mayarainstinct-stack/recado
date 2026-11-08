@@ -948,6 +948,27 @@ img.esq { min-height: 140px; }
 .gr-grade.gr-grade-cinema .gr-item .t { font-family: Georgia, 'Times New Roman', serif; font-size: 15px; font-weight: 900; letter-spacing: .3px; text-transform: uppercase; color: #B3261E; text-shadow: 1px 1px 0 #2B1A0E; text-align: center; }
 .gr-grade.gr-grade-cinema .gr-item .gr-sub { font-family: Georgia, serif; font-style: italic; font-size: 13px; color: #5A4127; text-align: center; line-height: 1.25; }
 @media (prefers-reduced-motion: reduce) { .gr-grade.gr-grade-cinema::after { animation: none; } }
+/* Pós-cirurgia: Outubro Rosa claro e delicado (branco, rosa e rosa-bebê), trilha de etapas com laço; diferente da Saúde (papel de eletro) e da Agenda (May 08/11 12:59). Hermes */
+.pos-tela { position: relative; flex-shrink: 0; box-sizing: border-box; margin: -6px -16px 0; padding: 22px 22px calc(96px + env(safe-area-inset-bottom)); min-height: calc(100dvh - env(safe-area-inset-top) - 66px); background: radial-gradient(60% 40% at 100% 0%, #FDE2EC, transparent 70%), radial-gradient(50% 35% at 0% 100%, #FCE4EE, transparent 70%), #FFF8FB; color: #6B1D3C; }
+.pos-tela .pos-intro { position: relative; margin: 0 0 22px; padding: 18px 18px 18px 64px; border-radius: 20px; background: #FFFFFF; border: 1.5px solid #F8C8DC; box-shadow: 0 8px 20px rgba(231,84,128,.10); color: #6B1D3C; font-size: 14px; line-height: 1.5; }
+.pos-tela .pos-intro::before { content: ''; position: absolute; left: 18px; top: 18px; width: 30px; height: 30px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23E75480' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3c-2 0-3.4 1.5-3.4 3.4 0 1.9 1.3 3.9 3.4 6.4 2.1-2.5 3.4-4.5 3.4-6.4C15.4 4.5 14 3 12 3Z'/%3E%3Cpath d='M10.3 12.4 6.5 21l2.8-1.1 1.6 2.4 2.2-6.3M13.7 12.4 17.5 21l-2.8-1.1-1.6 2.4-2.2-6.3'/%3E%3C/svg%3E") center / contain no-repeat; }
+.pos-trilha { position: relative; flex-shrink: 0; display: flex; flex-direction: column; gap: 14px; }
+.pos-trilha::before { content: ''; position: absolute; left: 21px; top: 24px; bottom: 24px; border-left: 3px dotted #F3A6C2; }
+.pos-etapa { position: relative; flex-shrink: 0; height: auto; max-height: none; min-height: 0; overflow: visible; display: flex; align-items: center; gap: 16px; width: 100%; padding: 0; border: 0; background: none; text-align: left; font: inherit; color: inherit; cursor: pointer; }
+.pos-no { position: relative; z-index: 1; flex: none; width: 45px; height: 45px; border-radius: 50%; display: grid; place-items: center; background: #FFFFFF; border: 3px solid #E75480; color: #C2185B; font-weight: 800; font-size: 17px; box-shadow: 0 0 0 5px #FFF8FB; }
+.pos-tx { flex: 1; min-width: 0; display: block; padding: 14px 16px; border-radius: 18px; background: #FFFFFF; border: 1.5px solid #F8C8DC; box-shadow: 0 6px 16px rgba(231,84,128,.10); }
+.pos-tx b { display: block; font-size: 16px; font-weight: 800; color: #6B1D3C; line-height: 1.25; }
+.pos-tx small { display: block; margin-top: 4px; font-size: 13px; font-weight: 600; color: #A3456B; line-height: 1.35; }
+.pos-barra { display: block; height: 6px; margin-top: 10px; border-radius: 6px; background: #FCE4EE; overflow: hidden; }
+.pos-barra i { display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg, #F8C8DC, #E75480); }
+.pos-etapa.feita .pos-no { background: #E75480; color: #FFFFFF; }
+.pos-etapa.feita .pos-tx { background: #FDEAF2; }
+.pos-etapa:active .pos-tx { transform: translateY(2px); }
+.painel.tema-rosa, body.na-geral .painel.tema-rosa { --c: #D61F69; --fg: #4A0F2B; --muted: #A3456B; --line: #F8C8DC; --paper: #FFFFFF; --bg: #FFF8FB; background: #FFF8FB; color: #4A0F2B; }
+body.na-geral .painel.tema-rosa .p-topo, .painel.tema-rosa .p-topo { background: #FFFFFF; color: #4A0F2B; box-shadow: 0 1px 0 #F8C8DC, 0 6px 18px rgba(214,31,105,.08); }
+body.na-geral .painel.tema-rosa .p-topo::after { background: #E75480; box-shadow: none; height: 2px; }
+.painel.tema-rosa .p-topo button, .painel.tema-rosa .p-voltar-baixo { background: #FDEAF2; color: #C2185B; box-shadow: none; border: 1px solid #F8C8DC; }
+.painel.tema-rosa .p-sub, .painel.tema-rosa .p-nota { color: #A3456B; }
 /* Saúde: tema claro próprio, papel de eletrocardiograma (quadriculado rosado, linha de batimento no topo) com fichas de prontuário de aba magenta; diferente da Agenda (consultório verde-água) e do Pós-cirurgia (Outubro Rosa delicado) (May 08/11 12:58). Hermes */
 .gr-grade.gr-grade-saude { position: relative; isolation: isolate; grid-template-columns: 1fr 1fr; gap: 18px 16px; padding: 64px 22px calc(96px + env(safe-area-inset-bottom)); margin: -6px -16px 0; min-height: calc(100dvh - env(safe-area-inset-top) - 66px); align-content: start; background: linear-gradient(rgba(214,31,105,.16) 1px, transparent 1px) 0 0 / 100% 25px, linear-gradient(90deg, rgba(214,31,105,.16) 1px, transparent 1px) 0 0 / 25px 100%, linear-gradient(rgba(214,31,105,.07) 1px, transparent 1px) 0 0 / 100% 5px, linear-gradient(90deg, rgba(214,31,105,.07) 1px, transparent 1px) 0 0 / 5px 100%, #FFF8F7; color: #4A0F2B; }
 .gr-grade.gr-grade-saude::before { content: ''; position: absolute; left: 0; right: 0; top: 10px; height: 44px; z-index: -1; pointer-events: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 44' preserveAspectRatio='none'%3E%3Cpath d='M0 26 H56 L62 22 L68 26 H78 L84 34 L92 4 L100 40 L106 26 H124 L132 18 L142 26 H200' fill='none' stroke='%23D61F69' stroke-width='2.4' stroke-linejoin='round' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat; }
@@ -3719,7 +3740,7 @@ function cabecalho({ icone: ic, sub, acao } = {}) {
 }
 function cabecalhoGenerico() { pTopo.classList.remove('proprio'); pTopo.querySelector('.p-ic')?.remove(); pTopo.querySelector('.p-acao')?.remove(); pSub.textContent = ''; pSub.hidden = true; pMais.hidden = false; }
 function desenhaTela() {
-  const [titulo, montar, rolou] = pilha[pilha.length - 1]; painel.classList.remove('tema-claro', 'tema-excel');   // o tema claro é só da tela que pedir (a Agenda, May 08/11 12:56)
+  const [titulo, montar, rolou] = pilha[pilha.length - 1]; painel.classList.remove('tema-claro', 'tema-excel', 'tema-rosa');   // o tema claro é só da tela que pedir (a Agenda, May 08/11 12:56)
   pTit.textContent = titulo; pCorpo.scrollTop = 0; pExtra.hidden = !pilha.length || pilha[pilha.length - 1][0] !== 'Menu';   /* só na raiz do Menu, também quando a tela abre direto pela notificação */ cabecalhoGenerico();
   pTopo.hidden = pilha.length === 1 && titulo === 'Menu'; painel.classList.toggle('sem-topo', pTopo.hidden);   // sem a barra, o Recados ganha respiro em cima (May 18:47: "colou em cima")   // o Menu começa direto em Recados, sem a barra de cima (May 18:40); voltar fica no botão de baixo e no deslize
   const t = document.createElement('div'); t.className = 'tela'; pCorpo.replaceChildren(t);   // carga atrasada de tela que já saiu cai no invólucro velho
@@ -4056,7 +4077,8 @@ function abreGrupo(m) {
   tela(m.nome, c => {
     const cor = (COR_ASSUNTO.find(([re]) => re.test(m.nome)) || [])[1] || 'var(--accent)'; painel.style.setProperty('--c', cor);
     cabecalho({ icone: m.icone, sub: m.sub || '' });   // o título aparece uma vez só, no cabeçalho do sistema (Sigma 12:19 item 1)
-    if (m.estilo) c.classList.add('gr-' + m.estilo);   // grupo com cara própria (ex.: Saúde rosa)
+    if (m.estilo) c.classList.add('gr-' + m.estilo);
+    if (m.estilo === 'saude') painel.classList.add('tema-rosa');   // Saúde e Pós-cirurgia com a barra de cima clara (Hermes, 08/11)   // grupo com cara própria (ex.: Saúde rosa)
     const g = elD('div', 'gr-grade' + (m.estilo ? ' gr-grade-' + m.estilo : '')); c.append(g);
     (m.itens || []).forEach(x => { const b = botaoGrade(x.icone, x.nome, x.sub, () => abreItemMenu(x)); b.classList.add('gr-item'); b.style.setProperty('--c', x.cor || cor); if (!m.estilo || m.estilo === 'cinema') { const sb = elD('small', 'gr-sub', x.sub || ''); b.append(sb); } g.append(b); });
   });
@@ -4851,9 +4873,23 @@ function abreViagens(m) {
     let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
     p.remove();
     if (m.arq === 'menu/treino.json') { d.viagens.forEach(v => { v._arq = m.arq; }); return montaTreino(c, d); }
+    if (m.arq === 'menu/pos-cirurgia.json' && d.viagens.length === 1) { d.viagens[0]._arq = m.arq; return montaPos(c, d.viagens[0]); }   // Pós-cirurgia direto na trilha, sem o botão único no meio (May 08/11 12:59)
     if (m.arq === 'menu/viagens.json') { d.viagens.forEach(v => { v._arq = m.arq; }); return montaViagens(c, d); }   // Treino (May, 29/10): os treinos já aparecem direto, sem passar pela lista de viagens
     const lista = document.createElement('div'); lista.className = 'p-lista'; c.append(lista);
     d.viagens.forEach(v => { v._arq = m.arq; lista.append(botao(v.icone || 'suitcase', v.nome, v.sub, () => abreViagem(v))); });
+  });
+}
+function montaPos(c, v) {   // Pós-cirurgia em Outubro Rosa (May 08/11 12:59: "branco, rosa e rosa-bebê"): trilha de etapas, cada lista é um passo com o quanto já foi feito. Hermes
+  painel.classList.add('tema-rosa'); const w = elD('div', 'pos-tela'); c.append(w);
+  if (v.resumo) w.append(elD('div', 'p-texto pos-intro', v.resumo));
+  const trilha = elD('div', 'pos-trilha'); w.append(trilha);
+  v.listas.forEach((l, k) => {
+    const feitos = marcados(v, l).size, total = totalItens(l), b = elD('button', 'pos-etapa' + (total && feitos === total ? ' feita' : ''));
+    b.type = 'button'; b.innerHTML = '<span class="pos-no"></span><span class="pos-tx"><b></b><small></small><span class="pos-barra"><i></i></span></span>';
+    b.querySelector('.pos-no').textContent = String(k + 1); b.querySelector('b').textContent = semHojeFalso(l.nome);
+    b.querySelector('small').textContent = feitos + ' de ' + total + ' feitos' + (l.sub ? ' · ' + semHojeFalso(l.sub) : '');
+    b.querySelector('.pos-barra i').style.width = (total ? Math.round(feitos / total * 100) : 0) + '%';
+    b.onclick = () => abreChecklist(v, l); trilha.append(b);
   });
 }
 function montaViagens(c, d) {   // Viagens com cara própria (May 08/11 12:18: "cada uma tem que ter seu layout"): em cima a linha do tempo das viagens, embaixo um cartão de embarque por página, deslizando pros lados (guia do Hermes: abas, não rolagem)
