@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.217">
-<meta name="app-novidade" content="Nova no Menu: a Garagem, a oficina do Gol, da Ninja e do Siena">
+<meta name="app-versao" content="2026-11-08.219">
+<meta name="app-novidade" content="Agenda marca o dia tocado; Finanças com o nome inteiro">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -497,10 +497,10 @@ button:disabled { opacity: .45; cursor: default; }
 body .painel.tema-excel { --fm: #1A6640; --fmd: #0F4A2C; --fbg: #F2F5F3; --fbo: #D8E6DE; --fred: #B82C1E; background: #F2F5F3; --bg: #F2F5F3; font-family: 'DM Sans', 'Segoe UI', sans-serif; }
 body .painel.tema-excel .xl-janela, body .painel.tema-excel .xl-ribbon, body .painel.tema-excel .xl-fx { display: none; }
 body.na-geral .painel.tema-excel .p-topo, body .painel.tema-excel .p-topo { background: #0F4A2C; }
-body .painel.tema-excel .p-topo h2 { font-family: 'Syne', 'DM Sans', sans-serif; font-weight: 800; letter-spacing: normal !important; }
+body .painel.tema-excel .p-topo h2 { font-family: 'DM Sans', 'Segoe UI', sans-serif; font-weight: 700; letter-spacing: normal !important; }   /* a Syne ficava larga demais e parecia erro (Sigma 16:54) */
 body .painel.tema-excel .p-ic { background: rgba(255,255,255,.12); color: #FFFFFF; border-radius: 10px; }
 body .painel.tema-excel .fin-kpis { gap: 8px; } body .painel.tema-excel .fin-kpi { background: #FFFFFF; border: 1px solid #D8E6DE; border-radius: 14px; box-shadow: 0 1px 2px rgba(15,74,44,.05); }
-body .painel.tema-excel .fin-kpi span { color: #5E8A72; font-size: 10.5px; letter-spacing: .08em; } body .painel.tema-excel .fin-kpi b { font-family: 'Syne', 'DM Sans', sans-serif; color: #10251A; }
+body .painel.tema-excel .fin-kpi span { color: #5E8A72; font-size: 10.5px; letter-spacing: .08em; } body .painel.tema-excel .fin-kpi b { font-family: 'DM Sans', 'Segoe UI', sans-serif; font-weight: 700; color: #10251A; }
 body .painel.tema-excel .fin-kpi:last-child { background: #0F4A2C; border-color: #0F4A2C; } body .painel.tema-excel .fin-kpi:last-child span { color: #A7D3B9; } body .painel.tema-excel .fin-kpi:last-child b { color: #FFFFFF; }
 body .painel.tema-excel .fin-abas { background: transparent; border: 0; border-bottom: 1px solid #D8E6DE; border-radius: 0; padding: 0; box-shadow: none; }
 body .painel.tema-excel .fin-abas button { border-radius: 0; color: #7FA592; background: none; font-weight: 600; } body .painel.tema-excel .fin-abas button.on { background: none; color: #1A6640; box-shadow: inset 0 -2px 0 #1A6640; }
@@ -510,7 +510,7 @@ body .painel.tema-excel .fin-abas button { border-radius: 0; color: #7FA592; bac
 .fm-grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .fm-card { all: unset; box-sizing: border-box; display: grid; gap: 4px; padding: 12px; background: #FFFFFF; border: 1px solid #D8E6DE; border-radius: 14px; box-shadow: 0 1px 2px rgba(15,74,44,.05); cursor: pointer; color: #10251A; font-family: 'DM Sans', 'Segoe UI', sans-serif; }
 .fm-card:active { transform: scale(.98); }
-.fm-nome { letter-spacing: normal; display: flex; align-items: center; gap: 6px; font-family: 'Syne', 'DM Sans', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .fm-nome svg { width: 14px; height: 14px; flex: none; }
+.fm-nome { letter-spacing: normal; display: flex; align-items: flex-start; gap: 6px; font-family: 'DM Sans', 'Segoe UI', sans-serif; font-weight: 700; font-size: 14px; line-height: 1.25; margin-bottom: 4px; white-space: normal; overflow-wrap: anywhere; } .fm-nome svg { margin-top: 2px; }   /* nome comprido quebra em 2 linhas (Sigma 16:54) */ .fm-nome svg { width: 14px; height: 14px; flex: none; }
 .fm-lin { display: flex; justify-content: space-between; gap: 6px; font-size: 12px; color: #3D5A49; } .fm-lin b { font-weight: 700; color: #10251A; font-variant-numeric: tabular-nums; } .fm-lin b.ok { color: #1A6640; } .fm-lin b.falta { color: #B82C1E; }
 .fm-barra { height: 5px; border-radius: 99px; background: #E6F5EC; overflow: hidden; margin-top: 6px; } .fm-barra i { display: block; height: 100%; background: #1A6640; border-radius: 99px; }
 .fm-pct { justify-self: end; font-size: 11px; font-weight: 700; color: #7FA592; }
@@ -5331,7 +5331,8 @@ function montaCalendario(cal, c) {   // mês em grade; dia com compromisso tem p
     for (let k = 0; k < primeiro; k++) g.append(elD('span'));
     for (let dd = 1; dd <= total; dd++) {
       const chave = ano + '-' + String(mes + 1).padStart(2, '0') + '-' + String(dd).padStart(2, '0'), b = elD('button', 'ag-dia', String(dd)); b.type = 'button';
-      if (dias.has(chave)) { b.classList.add('tem'); const pts = elD('span', 'ag-pts'); corDia[chave].slice(0, 3).forEach(cor => { const i = elD('i'); i.style.background = cor; pts.append(i); }); b.append(pts); }   // um pontinho por tipo, na cor dele if (chave === sel) b.classList.add('sel');
+      if (dias.has(chave)) { b.classList.add('tem'); const pts = elD('span', 'ag-pts'); corDia[chave].slice(0, 3).forEach(cor => { const i = elD('i'); i.style.background = cor; pts.append(i); }); b.append(pts); }   // um pontinho por tipo, na cor dele
+      if (chave === sel) b.classList.add('sel');
       if (dd === hoje.getDate() && mes === hoje.getMonth() && ano === hoje.getFullYear()) b.classList.add('hoje');
       b.onclick = () => { sel = sel === chave ? '' : chave; filtra(); desenhar(); };
       g.append(b);
