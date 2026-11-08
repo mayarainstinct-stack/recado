@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.156">
+<meta name="app-versao" content="2026-11-07.157">
 <meta name="app-novidade" content="Foto da Geral abre no preto, centrada, crescendo de onde tu tocou; Salvar e fechar embaixo à direita">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -4960,8 +4960,8 @@ document.getElementById('p-mais').onclick = e => { e.stopPropagation(); document
   irTrab.hidden = abreMenu.hidden = false; irGeral.hidden = escondeGeral(); menu.hidden = !menu.hidden; };
 // Foto em tela cheia: toca em qualquer lugar ou no ✕ pra fechar; arrastar pro lado (ou ← →) troca pela anterior/seguinte da conversa.
 function fotosDaConversa() { return lastItems.flatMap(x => x.fotos || []); }
-const ultimoToque = { x: 0, y: 0, t: 0 };
-document.addEventListener('pointerdown', e => { ultimoToque.x = e.clientX; ultimoToque.y = e.clientY; ultimoToque.t = Date.now(); }, { capture: true, passive: true });
+const toqueZoom = { x: 0, y: 0, t: 0 };
+document.addEventListener('pointerdown', e => { toqueZoom.x = e.clientX; toqueZoom.y = e.clientY; toqueZoom.t = Date.now(); }, { capture: true, passive: true });
 function abreZoom(src, path, listaFotos) {   // listaFotos: as fotos do álbum (sem ela, as da conversa)
   const z = document.createElement('div'); z.className = 'zoom';
   const im = document.createElement('img'); im.alt = 'Foto';
@@ -4972,7 +4972,7 @@ function abreZoom(src, path, listaFotos) {   // listaFotos: as fotos do álbum (
   const palco = document.createElement('div'); palco.className = 'zpalco'; palco.append(im);
   const barra = document.createElement('div'); barra.className = 'zbarra'; barra.append(cont, salvar, x); barra.onclick = e => e.stopPropagation();
   z.append(palco, barra); document.body.append(z);
-  const tq = ultimoToque.t > Date.now() - 1500 ? ultimoToque : { x: innerWidth / 2, y: innerHeight / 2 };   // de onde ela tocou
+  const tq = toqueZoom.t > Date.now() - 1500 ? toqueZoom : { x: innerWidth / 2, y: innerHeight / 2 };   // de onde ela tocou
   if (z.animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     z.animate([{ clipPath: 'circle(0px at ' + tq.x + 'px ' + tq.y + 'px)' }, { clipPath: 'circle(' + Math.hypot(innerWidth, innerHeight) + 'px at ' + tq.x + 'px ' + tq.y + 'px)' }], { duration: 320, easing: 'cubic-bezier(.2,.8,.2,1)' });   // o preto abre em círculo a partir do dedo
     const cresce = () => { const b = im.getBoundingClientRect(); if (!b.width) return; im.animate([{ transform: 'translate(' + (tq.x - b.left - b.width / 2) + 'px,' + (tq.y - b.top - Math.min(b.height, innerHeight) / 2) + 'px) scale(.12)' }, { transform: 'none' }], { duration: 340, easing: 'cubic-bezier(.2,.8,.2,1)' }); };
