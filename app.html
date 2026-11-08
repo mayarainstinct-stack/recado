@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.157">
-<meta name="app-novidade" content="Foto da Geral abre no preto, centrada, crescendo de onde tu tocou; Salvar e fechar embaixo à direita">
+<meta name="app-versao" content="2026-11-07.158">
+<meta name="app-novidade" content="Geral mais leve com o GitHub e nunca abre vazia: mostra a última cópia guardada enquanto busca">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -1357,6 +1357,7 @@ const b64encode = s => { let bin = ''; new TextEncoder().encode(s).forEach(b => 
 // ---- Rede (05/11/2026): todo pedido à API passa por aqui.
 // cache 'no-cache' sem "?t=": o navegador revalida com ETag (304 quando nada mudou, não gasta limite) e o preflight do CORS fica guardado.
 // Timeout: 20 s leitura, 90 s envio; o timer segue até o corpo ser lido, então r.json()/r.text() também não travam (abort depois de lido não faz nada).
+let ultimaMudanca = Date.now(), giroPoll = 0;
 let limiteAte = 0, chaveVencida = false, pausaPollAte = 0, limiteResta = '', ultimaLeituraOk = 0;
 const erroDe = (status, extra) => Object.assign(new Error('http ' + status), { status }, extra);
 async function api(url, op = {}) {
@@ -1371,6 +1372,7 @@ async function api(url, op = {}) {
   if (r.status === 429 || (r.status === 403 && (r.headers.get('x-ratelimit-remaining') === '0' || r.headers.get('retry-after')))) {
     const ra = +r.headers.get('retry-after'), reset = +r.headers.get('x-ratelimit-reset');
     limiteAte = ra ? Date.now() + ra * 1000 : reset ? reset * 1000 + 1000 : Date.now() + 60000;   // limite secundário sem cabeçalho: 1 min
+    try { const log = JSON.parse(store.get('limites-log') || '[]'); log.push({ quando: new Date().toISOString(), status: r.status, resta: r.headers.get('x-ratelimit-remaining'), reset: r.headers.get('x-ratelimit-reset'), retry: r.headers.get('retry-after'), recurso: r.headers.get('x-ratelimit-resource'), url: url.replace(/^https:\/\/api\.github\.com\/repos\/[^/]+\/[^/]+/, '').slice(0, 80) }); store.set('limites-log', JSON.stringify(log.slice(-20))); } catch (e) {}   // cada vez que o GitHub segurou, com hora e cabeçalhos (Sigma 21:16)
     throw erroDe(r.status, { limite: true });
   }
   if (r.status >= 500) pausaPollAte = Date.now() + 30000;   // GitHub fora: o polling dá um respiro de 30 s
@@ -1389,7 +1391,7 @@ const horaDe = t => pad(new Date(t).getHours()) + ':' + pad(new Date(t).getMinut
 function msgErro(e, acao) {
   if (e.inseguro) return AVISO_INSEGURO;
   if (e.status === 401) return MSG_CHAVE;
-  if (e.limite) return 'Limite do GitHub por agora. O app volta a buscar sozinho às ' + horaDe(limiteAte) + '.';
+  if (e.limite) return 'A conexão com o GitHub tá parada por excesso de leitura; volta sozinha às ' + horaDe(limiteAte) + '. Os robôs continuam trabalhando.';
   if (e.status === 403) return 'A chave não tem permissão pra ' + acao + '.';
   if (e.rede || navigator.onLine === false) return 'Sem internet. Não consegui ' + acao + '.';
   if (e.timeout) return 'O GitHub demorou demais. Não consegui ' + acao + ', tenta de novo.';
@@ -1397,7 +1399,7 @@ function msgErro(e, acao) {
   return 'Não consegui ' + acao + '. Confere a internet e tenta de novo.';
 }
 // versão curta pro selo de status no topo
-const statusFalha = e => e.status === 401 ? 'Chave vencida' : e.limite ? 'Limite do GitHub' : (e.rede || navigator.onLine === false) ? 'Sem internet' : 'Sem resposta do GitHub';
+const statusFalha = e => e.status === 401 ? 'Chave vencida' : e.limite ? 'GitHub segurou a conexão · volta às ' + horaDe(limiteAte) : (e.rede || navigator.onLine === false) ? 'Sem internet' : 'Sem resposta do GitHub';
 async function gh(method, body) {
   return (await apiOk(API, { method, body: body ? JSON.stringify(body) : undefined })).json();
 }
@@ -2422,6 +2424,20 @@ async function checaOnline() {
   atualizaOnlineGrupo();
 }
 
+const onlineCache = {};   // chave -> { sha, dado }: o arquivo do robô só é baixado de novo quando o sha muda (Sigma 21:16: cortar chamadas)
+async function lerOnlines(ks) {
+  const pasta = await (await apiOk('https://api.github.com/repos/' + REPO + '/contents/casa/online?ref=online')).json(), sha = {};
+  (Array.isArray(pasta) ? pasta : []).forEach(f => { const m = /^online-(.+)\.json$/.exec(f.name || ''); if (m) sha[m[1]] = f.sha; });
+  const out = [];
+  for (const k of ks) {   // um de cada vez: muita chamada junta é o que dispara o limite secundário do GitHub
+    const c = onlineCache[k];
+    if (!sha[k]) { out.push({ chave: k }); continue; }   // esse robô ainda não bateu: aparece como nunca visto
+    if (c && c.sha === sha[k]) { out.push(c.dado); continue; }
+    try { const t = await (await apiOk('https://api.github.com/repos/' + REPO + '/contents/casa/online/online-' + k + '.json?ref=online', RAW)).text(); let d; try { d = { chave: k, ...JSON.parse(t) }; } catch (e) { d = { chave: k }; } onlineCache[k] = { sha: sha[k], dado: d }; out.push(d); }
+    catch (e) { out.push(c ? c.dado : { chave: k, falhou: e }); }
+  }
+  return out;
+}
 // ---- "N agentes online agora" por conversa de grupo (ex. Casa (PCs)): um casa/online/online-<chave>.json por agente
 // (cada um só escreve o seu — sem risco de conflito), lido com o mesmo lerArquivo() da lista de conversas. 404 = esse
 // agente ainda não apareceu, sem erro na tela. Threshold de "online" ~15 min; depois disso mostra "offline · visto há…".
@@ -2452,7 +2468,7 @@ function mostraSemana(lista) {
 }
 async function semanaTrabalho() {   // Geral e Trabalho mostram o MESMO anel: é uma conta só (May, 06/11/2026 19:21)
   const ks = GERAL.participantes.filter(k => k !== 'may');
-  const lista = await Promise.all(ks.map(k => api('https://api.github.com/repos/' + REPO + '/contents/casa/online/online-' + k + '.json?ref=online', RAW).then(r => r.ok ? r.text() : null).then(t => t ? { chave: k, ...JSON.parse(t) } : null).catch(() => null)));
+  const lista = await lerOnlines(ks).then(l => l.map(p => p.falhou || !p.ultimaAtualizacao && Object.keys(p).length === 1 ? null : p), () => []);
   if (FILE === TRAB.arq) { const ok = lista.filter(Boolean); if (ok.length) { mostraSemana(ok); return; } }
   try { const r = await api('https://api.github.com/repos/' + REPO + '/contents/casa/online/online-lyra.json?ref=online', RAW); if (!r.ok) throw 0; if (FILE === TRAB.arq) mostraSemana([{ chave: 'lyra', ...JSON.parse(await r.text()) }]); } catch (e) { if (FILE === TRAB.arq) semanaEl.hidden = true; }
 }
@@ -2514,14 +2530,10 @@ async function atualizaOnlineGrupo(forcar) {
   syncEl.hidden = true;   // em grupo (ex. Casa) o selo "N agentes online agora" substitui o selo global único, não mostra os dois
   if (onlineGrupoCarregando || (!forcar && Date.now() - ultimaOnlineGrupo < 60000)) return onlineGrupoCarregando;   // 60 s (era 20 s): 6 arquivos por rodada; o agente bate de 5 em 5 min
   ultimaOnlineGrupo = Date.now();
-  onlineGrupoCarregando = Promise.all(conv.participantes.map(k => k === 'may'
-    ? Promise.resolve({ chave: 'may', nome: EU.nome, foto: EU.foto, ultimaAtualizacao: new Date().toISOString() })   // ela mesma: se o app está aberto, ela está online
-    :
-    // lido da branch "online" (igual o online.txt global), não da branch normal — é o heartbeat do status.sh, atualiza sem sujar o histórico
-    api('https://api.github.com/repos/' + REPO + '/contents/casa/online/online-' + k + '.json?ref=online', RAW)
-      .then(r => { if (!r.ok) throw erroDe(r.status); return r.text(); })
-      .then(txt => { try { return { chave: k, ...JSON.parse(txt) }; } catch (e) { return { chave: k }; } }, e => e.status === 404 ? { chave: k } : { chave: k, falhou: e })   // 404 = esse agente ainda não bateu heartbeat, aparece como "nunca visto"
-  )).then(lista => {
+  const euMesma = () => ({ chave: 'may', nome: EU.nome, foto: EU.foto, ultimaAtualizacao: new Date().toISOString() });   // ela mesma: se o app está aberto, ela está online
+  onlineGrupoCarregando = lerOnlines(conv.participantes.filter(k => k !== 'may'))   // lido da branch "online": o heartbeat de cada robô, 1 chamada pra pasta e só baixa quem mudou
+    .then(l => conv.participantes.map(k => k === 'may' ? euMesma() : l.find(p => p.chave === k) || { chave: k }), e => conv.participantes.map(k => k === 'may' ? euMesma() : { chave: k, falhou: e }))
+  .then(lista => {
     if (FILE !== conv.arq) return;
     // ninguém respondeu por rede/chave/limite: não é "0 online", é sem conexão; guarda a lista anterior
     const falha = lista.filter(p => p.chave !== 'may').every(p => p.falhou) && (lista.find(p => p.falhou) || {}).falhou;
@@ -2566,7 +2578,7 @@ async function carregar() {
     const same = items.length === lastItems.length && items.every((it, i) => { const o = lastItems[i]; return it._raw === o._raw && it._linha === o._linha && it.text === o.text && it.day === o.day && it.lida === o.lida && it.transcricao === o.transcricao; });
     ultimaLeituraOk = Date.now();
     if (!forcar && tocando()) { showNote(''); return f; }   // áudio tocando: redesenhar recriava o <audio> e cortava; ao pausar ele busca de novo
-    if (!same || forcar) { forcar = false; if (items.length < shown) shown = items.length; lastItems = items; render(items); }
+    if (!same || forcar) { forcar = false; if (items.length < shown) shown = items.length; lastItems = items; render(items); if (md) store.set('caixa-' + arq, md); if (!same) ultimaMudanca = Date.now(); }   // guarda a cópia no aparelho
     shaLido = md ? arq + '|' + f.sha : null;   // só depois de aplicar: com áudio tocando (return acima) a próxima leitura ainda redesenha
     showNote(''); return f;
   }
@@ -3361,6 +3373,7 @@ function abrir(c) {
   if (largo()) desenhaLista();
   voltar.hidden = !MODO_WEB || largo(); logoEl.hidden = !voltar.hidden ? true : false; tituloEl.textContent = c.nome;
   box.value = store.get(rascKey()); box.style.height = 'auto'; syncBtn();
+  { const guardada = store.get('caixa-' + c.arq); if (guardada) { try { const it = parse(guardada, c.arq); if (it.length) { lastItems = it; render(it); } } catch (e) {} } }   // a Geral nunca abre vazia: mostra a última cópia guardada no aparelho enquanto busca (Sigma 21:16)
   checaStatus(true);
   return load();
 }
@@ -3752,6 +3765,7 @@ function abreDiagnostico() {
     linha('Última leitura que deu certo', ultimaLeituraOk ? horaDe(ultimaLeituraOk) + ' (' + fmtVisto(new Date(ultimaLeituraOk).toISOString()).texto.replace(/^offline · visto /, '') + ')' : 'nenhuma ainda');
     linha('Limite do GitHub restante', limiteResta || 'ainda não sei');
     if (Date.now() < limiteAte) linha('Parado pelo limite até', horaDe(limiteAte));
+    { let log = []; try { log = JSON.parse(store.get('limites-log') || '[]'); } catch (e) {} linha('Vezes que o GitHub segurou', log.length ? log.slice(-5).reverse().map(l => horaDe(Date.parse(l.quando)) + ' ' + l.status + (l.recurso ? ' ' + l.recurso : '') + (l.retry ? ' espera ' + l.retry + ' s' : '') + ' (' + l.url + ')').join(' · ') : 'nenhuma neste aparelho'); }
     linha('Chave', chaveVencida ? 'vencida' : token ? 'ok' : 'sem chave');
     linha('Notificação', perm);
     linha('Internet', navigator.onLine === false ? 'sem conexão' : 'conectado');
@@ -5109,7 +5123,7 @@ function start() {
   clearInterval(poll);
   poll = setInterval(() => {
     if (document.visibilityState !== 'visible' || !token || sending || chaveVencida || Date.now() < Math.max(limiteAte, pausaPollAte)) return;
-    if (FILE) load().catch(() => {});
+    if (FILE && (Date.now() < rapidoAte || Date.now() - ultimaMudanca < 60000 || ++giroPoll % 3 === 0)) load().catch(() => {});   // parado: de 12 em 12 s; mexeu: 4 s (Sigma 21:16)
     if ((!FILE || largo()) && Date.now() - ultimaLista > 14000) carregaLista().catch(() => {});
     checaStatus();
   }, 4000);
