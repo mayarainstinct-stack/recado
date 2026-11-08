@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.199">
-<meta name="app-novidade" content="Planta: o nome do cômodo vai num lugar livre, sem cobrir os móveis">
+<meta name="app-versao" content="2026-11-08.200">
+<meta name="app-novidade" content="Agenda clara, com cara de consultório; Pendências e Contas do mês numa tela só">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -492,6 +492,30 @@ button:disabled { opacity: .45; cursor: default; }
 .detalhe .manda { width: 100%; min-height: 48px; border-radius: 12px; background: var(--accent); color: var(--accent-fg); font-size: 16px; font-weight: 700; }
 .detalhe .manda:disabled { opacity: .45; }
 .p-lista { display: flex; flex-direction: column; gap: 10px; }
+/* Agenda em tema claro, cara de consultório (May 08/11 12:49 e 12:56): branco e verde-água suave, superfícies lisas, cantos bem redondos, sombra leve, nada de neon */
+.painel.tema-claro, body.na-geral .painel.tema-claro { --c: #2A9D8F; --fg: #1E2B33; --muted: #6B7C85; --line: #E2ECEE; --paper: #FFFFFF; --bg: #F4F8F9; background: #F4F8F9; color: #1E2B33; }
+body.na-geral .painel.tema-claro .p-topo, .painel.tema-claro .p-topo { background: #FFFFFF; color: #1E2B33; box-shadow: 0 1px 0 #E2ECEE, 0 6px 18px rgba(30, 60, 70, .06); }
+body.na-geral .painel.tema-claro .p-topo::after { background: #8FD3C7; box-shadow: none; height: 2px; }
+.painel.tema-claro .p-topo button, .painel.tema-claro .p-voltar-baixo { background: #EEF6F5; color: #2A6F67; box-shadow: none; border: 1px solid #DCEBE9; }
+.painel.tema-claro .p-sub, .painel.tema-claro .p-nota { color: #6B7C85; }
+.painel.tema-claro .p-ic { background: #E3F4F1; color: #2A9D8F; box-shadow: none; }
+.painel.tema-claro .ag-cal { background: #FFFFFF; color: #1E2B33; border-radius: 26px; padding: 14px; box-shadow: 0 8px 24px rgba(30, 60, 70, .08); border: 1px solid #E2ECEE; }
+.painel.tema-claro .ag-seta { background: #EEF6F5; color: #2A9D8F; border-radius: 50%; }
+.painel.tema-claro .ag-sem { color: #8FA3AA; opacity: 1; }
+.painel.tema-claro .ag-dia { background: transparent; color: #33454E; border-radius: 50%; height: 38px; font-weight: 600; }
+.painel.tema-claro .ag-dia.hoje { outline: 2px solid #8FD3C7; outline-offset: -2px; }
+.painel.tema-claro .ag-dia.sel { background: #2A9D8F; color: #FFFFFF; }
+.painel.tema-claro .ag-pts i { box-shadow: none; }
+.painel.tema-claro .ag-tudo { background: #E3F4F1; color: #24786E; }
+.painel.tema-claro .ag-leg { color: #5D6F78; }
+.painel.tema-claro .ag, body .painel.tema-claro .ag { background: #FFFFFF; color: #1E2B33; border: 1px solid #E2ECEE; border-radius: 22px; box-shadow: 0 4px 14px rgba(30, 60, 70, .06); }
+.painel.tema-claro .ag[data-tipo] { box-shadow: inset 4px 0 0 var(--tc), 0 4px 14px rgba(30, 60, 70, .06); }
+.painel.tema-claro .ag .dt, .painel.tema-claro .ag[data-tipo] .dt { background: #EEF6F5; color: #24786E; border-radius: 18px; }
+.painel.tema-claro .ag .dt b { color: #1E2B33; } .painel.tema-claro .ag .dt small, .painel.tema-claro .ag .cx ul { color: #6B7C85; }
+.painel.tema-claro .ag .cx .tag { background: #E3F4F1; color: #24786E; text-shadow: none; }
+.painel.tema-claro .p-sec, .painel.tema-claro .cartao h3 { color: #2A9D8F; }
+@media (prefers-color-scheme: dark) { .painel.tema-claro .ag, body .painel.tema-claro .ag { background: #FFFFFF; color: #1E2B33; } .painel.tema-claro .ag .cx ul { color: #6B7C85; } }
+
 /* Geral antiga (08/11): fichário de arquivo, as abas dos dias na lateral esquerda (a mais nova em cima) e a conversa do dia ao lado, cada lado rola sozinho */
 .p-corpo > .tela.ga-tela { display: flex; flex-direction: column; flex: 1; min-height: 0; }
 .ga-fich { flex: 1; min-height: 0; display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 0; }
@@ -3613,7 +3637,7 @@ function cabecalho({ icone: ic, sub, acao } = {}) {
 }
 function cabecalhoGenerico() { pTopo.classList.remove('proprio'); pTopo.querySelector('.p-ic')?.remove(); pTopo.querySelector('.p-acao')?.remove(); pSub.textContent = ''; pSub.hidden = true; pMais.hidden = false; }
 function desenhaTela() {
-  const [titulo, montar, rolou] = pilha[pilha.length - 1];
+  const [titulo, montar, rolou] = pilha[pilha.length - 1]; painel.classList.remove('tema-claro');   // o tema claro é só da tela que pedir (a Agenda, May 08/11 12:56)
   pTit.textContent = titulo; pCorpo.scrollTop = 0; pExtra.hidden = !pilha.length || pilha[pilha.length - 1][0] !== 'Menu';   /* só na raiz do Menu, também quando a tela abre direto pela notificação */ cabecalhoGenerico();
   pTopo.hidden = pilha.length === 1 && titulo === 'Menu'; painel.classList.toggle('sem-topo', pTopo.hidden);   // sem a barra, o Recados ganha respiro em cima (May 18:47: "colou em cima")   // o Menu começa direto em Recados, sem a barra de cima (May 18:40); voltar fica no botão de baixo e no deslize
   const t = document.createElement('div'); t.className = 'tela'; pCorpo.replaceChildren(t);   // carga atrasada de tela que já saiu cai no invólucro velho
@@ -5090,6 +5114,7 @@ function abreAgenda(m) {
     const p = document.createElement('p'); p.className = 'p-nota'; p.textContent = 'Carregando…'; c.append(p);
     let md; try { md = await lerArquivo(m.arq); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
     p.remove();
+    painel.classList.add('tema-claro'); c.classList.add('ag-tela');   // Agenda clara, cara de consultório (May 08/11 12:49 e 12:56): branco, verde-água suave, cantos redondos, sem neon
     const cal = elD('div', 'ag-cal'); c.append(cal); setTimeout(() => montaCalendario(cal, c), 0);   // calendário do mês em cima (May, 07/11/2026 12:43 e 12:44: agenda de verdade, azul)
     const neg = (el, txt) => txt.split(/(\*\*[^*]+\*\*)/).forEach(parte => {
       if (/^\*\*[^*]+\*\*$/.test(parte)) { const b = document.createElement('b'); b.textContent = parte.slice(2, -2); el.append(b); }
