@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.216">
+<meta name="app-versao" content="2026-11-08.217">
 <meta name="app-novidade" content="Nova no Menu: a Garagem, a oficina do Gol, da Ninja e do Siena">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -504,6 +504,8 @@ body .painel.tema-excel .fin-kpi span { color: #5E8A72; font-size: 10.5px; lette
 body .painel.tema-excel .fin-kpi:last-child { background: #0F4A2C; border-color: #0F4A2C; } body .painel.tema-excel .fin-kpi:last-child span { color: #A7D3B9; } body .painel.tema-excel .fin-kpi:last-child b { color: #FFFFFF; }
 body .painel.tema-excel .fin-abas { background: transparent; border: 0; border-bottom: 1px solid #D8E6DE; border-radius: 0; padding: 0; box-shadow: none; }
 body .painel.tema-excel .fin-abas button { border-radius: 0; color: #7FA592; background: none; font-weight: 600; } body .painel.tema-excel .fin-abas button.on { background: none; color: #1A6640; box-shadow: inset 0 -2px 0 #1A6640; }
+.fm-acoes { flex: none; display: flex; gap: 8px; padding: 10px 76px 6px 0; } .fm-acoes .fin-lancar, .fm-acoes .fin-lancar.fin-nova { position: static; inset: auto; flex: 1; height: 46px; }
+.p-corpo > .tela:has(> .fin) { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; } .p-corpo > .tela > .fin { flex: 1 1 0; min-height: 0; } .p-corpo > .tela > .fin > .fin-trilho { flex: 1 1 0; min-height: 0; } .fin > .fin-trilho > .fin-pag { max-height: 100%; }   /* a Finanças ocupa a tela e cada aba rola por dentro; os botões ficam na barra de baixo */ body .painel .cm-pag, body .painel .fin-pag { padding-bottom: 16px; }
 .fm-sec { margin: 4px 2px 8px; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #7FA592; }
 .fm-grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .fm-card { all: unset; box-sizing: border-box; display: grid; gap: 4px; padding: 12px; background: #FFFFFF; border: 1px solid #D8E6DE; border-radius: 14px; box-shadow: 0 1px 2px rgba(15,74,44,.05); cursor: pointer; color: #10251A; font-family: 'DM Sans', 'Segoe UI', sans-serif; }
@@ -4785,7 +4787,7 @@ function abreFinancas(m) {
       box.append(nav, tr);
       const j0 = Math.max(0, abas.findIndex(a => a[0] === abaIni)); requestAnimationFrame(() => { tr.scrollLeft = j0 * tr.clientWidth; marca(); });
       const fab = elD('button', 'fin-lancar', '+ Lançar'); fab.type = 'button'; fab.onclick = () => lancar(); box.append(fab);
-      const fabN = elD('button', 'fin-lancar fin-nova', '+ Pessoa nova'); fabN.type = 'button'; fabN.onclick = () => novaPessoa(abaAtual()); box.append(fabN);   // gente ou dívida que ainda não tá na planilha (May 21:20)
+      const fabN = elD('button', 'fin-lancar fin-nova', '+ Pessoa nova'); fabN.type = 'button'; fabN.onclick = () => novaPessoa(abaAtual()); box.append(fabN); { const ac = elD('div', 'fm-acoes'); ac.append(fabN, fab); box.append(ac); }   // os dois botões numa barra própria embaixo, fora de cima das contas (Sigma 14:27 e 16:49)   // gente ou dívida que ainda não tá na planilha (May 21:20)
     };
     let abaAtual = () => 'pagar';
     const pop = (titulo, corpo) => { const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card fin-card'), x = elD('button', 'pp-x'); x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; card.append(x, elD('div', 'pp-perg', titulo), corpo); ov.append(card); document.body.append(ov); fechaPuxando(ov, fecha, () => card, () => card); return fecha; };
