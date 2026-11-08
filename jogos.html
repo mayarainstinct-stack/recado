@@ -14,7 +14,7 @@
 html,body{height:100%;background:var(--fundo);color:var(--texto);font-family:Inter,"Segoe UI",system-ui,sans-serif;overflow:hidden}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 svg{display:block}
-#app{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--fundo) var(--fundo-img,none) center/cover no-repeat}
+#app{position:fixed;inset:0;height:100vh;height:100lvh;bottom:auto;display:flex;flex-direction:column;background:var(--fundo) var(--fundo-img,none) center/cover no-repeat}
 #app::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,4,22,.55),rgba(10,4,22,.82) 40%,rgba(10,4,22,.92));pointer-events:none}
 header{position:relative;z-index:2;display:flex;align-items:center;gap:10px;padding:14px 16px 10px;padding-top:max(14px,env(safe-area-inset-top))}
 .voltar{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--vidro);border:1px solid var(--borda)}
@@ -234,6 +234,14 @@ html body #ficha.premium .bloco small,html body #ficha.premium .bloco .k,html bo
 .carta-capa{background:linear-gradient(180deg,rgba(255,250,214,.6),rgba(255,255,255,0) 32%,rgba(0,0,0,0) 62%,rgba(70,30,0,.5)) border-box,var(--ouro-metal) border-box;box-shadow:0 0 0 2.5px #1a0800,0 0 0 3.5px rgba(251,233,49,.35),0 12px 30px rgba(0,0,0,.6),0 0 22px rgba(250,215,3,.35)}
 .carta-capa::after{content:"";position:absolute;inset:0;z-index:3;border-radius:10px;pointer-events:none;box-shadow:inset 0 0 0 2.5px #1a0800,inset 0 2px 0 3px rgba(0,0,0,.35)}
 #app.dourado #sub,#app.dourado .parede-tt p,#app.dourado .deck-cont{color:#FBE931;text-shadow:0 1px 2px rgba(0,0,0,.7)}
+#app.dourado .parede-logo{width:min(62%,250px)}
+#app.dourado .parede-tt{padding:2px 16px 0}
+#app.dourado .parede-tt p{margin-top:0}
+#app.dourado .deck{padding:22px 0 4px}
+#app.dourado .carta{padding:10px 6px 6px}
+#app.dourado .carta-capa{height:clamp(220px,calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 440px),92vw)}
+#app.dourado .carta-tt{font-size:18px;margin:10px 4px 4px}
+#app.dourado .deck-cont{margin:4px 0 0}
 .carta-capa.leve{background:var(--fundo-leve) center/cover no-repeat padding-box,linear-gradient(180deg,rgba(255,250,214,.6),rgba(255,255,255,0) 32%,rgba(0,0,0,0) 62%,rgba(70,30,0,.5)) border-box,var(--ouro-metal) border-box}
 .carta-capa img.borra{position:absolute;inset:-8%;width:116%;height:116%;object-fit:cover;filter:blur(20px) brightness(.7) saturate(1.3);z-index:0;border-radius:0}
 .carta-num{position:absolute;left:10px;top:10px;font:800 13px system-ui,"Segoe UI";color:#FBE931;background:rgba(0,0,0,.72);padding:4px 9px;border-radius:8px;letter-spacing:.5px}
@@ -698,7 +706,7 @@ async function carregaCons(){const raw=p=>gh(p,{headers:{Accept:"application/vnd
 try{const cj=JSON.parse(await raw("marca/consoles/consoles.json"));const nomes=[...new Set([cj.padrao.icone,...cj.consoles.map(c=>c.icone)])];const svgs=await Promise.all(nomes.map(n=>raw("marca/consoles/"+n)));const SVG={};nomes.forEach((n,i)=>{SVG[n]=svgs[i].replace(/width="48" height="48"/,'width="16" height="16"').replace(/color="#ffffff"/,'color="#fff"')});window.CONS={padrao:cj.padrao,por:Object.fromEntries(cj.consoles.map(c=>[c.id,c])),svg:SVG}}catch(e){window.CONS=null}
 }
 const FUNDOS={jogando:"categorias/games/mock-tela-jogos/fundo.jpg",concluidos:"categorias/games/tela/parede-fundo.jpg"}
-function fundoDa(a){const p=FUNDOS[a]||FUNDOS.jogando,app=document.getElementById("app");app.classList.toggle("dourado",a=="concluidos");priv(p).then(u=>{if(FUNDOS[a]==p)app.style.setProperty("--fundo-img",`url("${u}")`)}).catch(()=>{})}
+function fundoDa(a){requestAnimationFrame(()=>window.posDqJ&&window.posDqJ());const p=FUNDOS[a]||FUNDOS.jogando,app=document.getElementById("app");app.classList.toggle("dourado",a=="concluidos");priv(p).then(u=>{if(FUNDOS[a]==p)app.style.setProperty("--fundo-img",`url("${u}")`)}).catch(()=>{})}
 if(TOKEN&&!new URLSearchParams(location.search).has("semabertura"))document.getElementById("abertura").classList.add("on")
 if(TOKEN)priv("categorias/games/tela/j2-selo.webp").then(u=>document.querySelectorAll("#app header .j2img,#abertura .j2img").forEach(i=>{i.src=u;i.removeAttribute("data-p")})).catch(()=>{})
 carrega().then(comeca).catch(e=>{document.getElementById("abertura").classList.remove("on");document.body.innerHTML='<p style="padding:24px;font:600 16px system-ui;color:#fff">Não consegui abrir os jogos. Confere a internet e tenta de novo.</p><p style="padding:0 24px"><a href="app.html" style="color:#8CE6C8;font:600 15px system-ui">Voltar pros recados</a></p>'})
@@ -938,6 +946,7 @@ voltaEPuxa(document.getElementById("lista"),()=>{location.href="app.html#menu"},
 document.addEventListener("keydown",e=>{if(e.key!="Escape"||document.getElementById("zoom").classList.contains("on"))return;for(const id of["pop","envio"]){const el=document.getElementById(id);if(el.classList.contains("on")){el.classList.remove("on");return}}if(document.getElementById("ficha").classList.contains("on"))fechaFicha()})
 const ABAS_L=["jogando","concluidos"]
 const posDq=()=>{const b=document.querySelector("nav button.on"),q=document.querySelector("nav .nav-dq");if(b&&q){q.classList.toggle("ouro",b.id=="tab-concluidos");q.style.width=b.offsetWidth+"px";q.style.transform=`translateX(${b.offsetLeft}px)`}}
+window.posDqJ=posDq
 let trocando=false
 function trocaAba(nova,d){if(nova==aba||!d||trocando)return;const L=document.getElementById("lista"),vai=()=>{L.classList.remove("sai-d","sai-e");aba=nova;dirAnim=d;history.replaceState(null,"","#"+aba);render();L.scrollTop=0;posDq();trocando=false};document.getElementById("tab-jogando").classList.toggle("on",nova=="jogando");document.getElementById("tab-concluidos").classList.toggle("on",nova=="concluidos");posDq();if(matchMedia("(prefers-reduced-motion: reduce)").matches)return vai();trocando=true;L.classList.add(d>0?"sai-d":"sai-e");setTimeout(vai,180)}
 addEventListener("resize",posDq);requestAnimationFrame(posDq)
