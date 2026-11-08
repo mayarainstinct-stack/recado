@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.203">
-<meta name="app-novidade" content="Pendências e Contas do mês agora são Finanças, numa tela só">
+<meta name="app-versao" content="2026-11-08.204">
+<meta name="app-novidade" content="Agenda com o calendário verde-água e a página branca">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -493,21 +493,21 @@ button:disabled { opacity: .45; cursor: default; }
 .detalhe .manda:disabled { opacity: .45; }
 .p-lista { display: flex; flex-direction: column; gap: 10px; }
 /* Agenda em tema claro, cara de consultório (May 08/11 12:49 e 12:56): branco e verde-água suave, superfícies lisas, cantos bem redondos, sombra leve, nada de neon */
-.painel.tema-claro, body.na-geral .painel.tema-claro { --c: #2A9D8F; --fg: #1E2B33; --muted: #6B7C85; --line: #E2ECEE; --paper: #FFFFFF; --bg: #F4F8F9; background: #F4F8F9; color: #1E2B33; }
+.painel.tema-claro, body.na-geral .painel.tema-claro { --c: #2A9D8F; --fg: #1E2B33; --muted: #6B7C85; --line: #E2ECEE; --paper: #FFFFFF; --bg: #FFFFFF; background: #FFFFFF; color: #1E2B33; }   /* fundo da página branco (May 08/11 14:36) */
 body.na-geral .painel.tema-claro .p-topo, .painel.tema-claro .p-topo { background: #FFFFFF; color: #1E2B33; box-shadow: 0 1px 0 #E2ECEE, 0 6px 18px rgba(30, 60, 70, .06); }
 body.na-geral .painel.tema-claro .p-topo::after { background: #8FD3C7; box-shadow: none; height: 2px; }
 .painel.tema-claro .p-topo button, .painel.tema-claro .p-voltar-baixo { background: #EEF6F5; color: #2A6F67; box-shadow: none; border: 1px solid #DCEBE9; }
 .painel.tema-claro .p-sub, .painel.tema-claro .p-nota { color: #6B7C85; }
 .painel.tema-claro .p-ic { background: #E3F4F1; color: #2A9D8F; box-shadow: none; }
-.painel.tema-claro .ag-cal { background: #FFFFFF; color: #1E2B33; border-radius: 26px; padding: 14px; box-shadow: 0 8px 24px rgba(30, 60, 70, .08); border: 1px solid #E2ECEE; }
-.painel.tema-claro .ag-seta { background: #EEF6F5; color: #2A9D8F; border-radius: 50%; }
-.painel.tema-claro .ag-sem { color: #8FA3AA; opacity: 1; }
-.painel.tema-claro .ag-dia { background: transparent; color: #33454E; border-radius: 50%; height: 38px; font-weight: 600; }
-.painel.tema-claro .ag-dia.hoje { outline: 2px solid #8FD3C7; outline-offset: -2px; }
-.painel.tema-claro .ag-dia.sel { background: #2A9D8F; color: #FFFFFF; }
-.painel.tema-claro .ag-pts i { box-shadow: none; }
-.painel.tema-claro .ag-tudo { background: #E3F4F1; color: #24786E; }
-.painel.tema-claro .ag-leg { color: #5D6F78; }
+.painel.tema-claro .ag-cal { background: linear-gradient(160deg, #5FD3C4, #2A9D8F 70%); color: #FFFFFF; border-radius: 26px; padding: 14px; box-shadow: 0 10px 24px rgba(42, 157, 143, .25); border: 0; }   /* o calendário verde-água (May 08/11 14:36), liso e sem brilho */
+.painel.tema-claro .ag-seta { background: rgba(255,255,255,.22); color: #FFFFFF; border-radius: 50%; }
+.painel.tema-claro .ag-sem { color: rgba(255,255,255,.8); opacity: 1; }
+.painel.tema-claro .ag-dia { background: transparent; color: #FFFFFF; border-radius: 50%; height: 38px; font-weight: 600; }
+.painel.tema-claro .ag-dia.hoje { outline: 2px solid #FFFFFF; outline-offset: -2px; }
+.painel.tema-claro .ag-dia.sel { background: #FFFFFF; color: #1F7A70; }
+.painel.tema-claro .ag-pts i { box-shadow: 0 0 0 1.5px #FFFFFF; }
+.painel.tema-claro .ag-tudo { background: #FFFFFF; color: #1F7A70; }
+.painel.tema-claro .ag-leg { color: #FFFFFF; }
 .painel.tema-claro .ag, body .painel.tema-claro .ag { background: #FFFFFF; color: #1E2B33; border: 1px solid #E2ECEE; border-radius: 22px; box-shadow: 0 4px 14px rgba(30, 60, 70, .06); }
 .painel.tema-claro .ag[data-tipo] { box-shadow: inset 4px 0 0 var(--tc), 0 4px 14px rgba(30, 60, 70, .06); }
 .painel.tema-claro .ag .dt, .painel.tema-claro .ag[data-tipo] .dt { background: #EEF6F5; color: #24786E; border-radius: 18px; }
