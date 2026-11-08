@@ -8,8 +8,9 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.208">
-<meta name="app-novidade" content="Finanças com cara de Office; Agenda fofinha; Lançar da Obra em branco">
+<meta name="app-versao" content="2026-11-08.210">
+<meta name="app-novidade" content="Finanças no visual do Financeiro May; calendário da Agenda com relevo">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -492,6 +493,31 @@ button:disabled { opacity: .45; cursor: default; }
 .detalhe .manda { width: 100%; min-height: 48px; border-radius: 12px; background: var(--accent); color: var(--accent-fg); font-size: 16px; font-weight: 700; }
 .detalhe .manda:disabled { opacity: .45; }
 .p-lista { display: flex; flex-direction: column; gap: 10px; }
+/* Finanças no visual do Financeiro May que ela fez (fincontrol-antigo/financeiro_may.html, 09/07): verde-escuro em cima, Syne e DM Sans, cartões brancos de canto 14, o saldo cheio, um cartão por pessoa com barra e % */
+body .painel.tema-excel { --fm: #1A6640; --fmd: #0F4A2C; --fbg: #F2F5F3; --fbo: #D8E6DE; --fred: #B82C1E; background: #F2F5F3; --bg: #F2F5F3; font-family: 'DM Sans', 'Segoe UI', sans-serif; }
+body .painel.tema-excel .xl-janela, body .painel.tema-excel .xl-ribbon, body .painel.tema-excel .xl-fx { display: none; }
+body.na-geral .painel.tema-excel .p-topo, body .painel.tema-excel .p-topo { background: #0F4A2C; }
+body .painel.tema-excel .p-topo h2 { font-family: 'Syne', 'DM Sans', sans-serif; font-weight: 800; letter-spacing: normal !important; }
+body .painel.tema-excel .p-ic { background: rgba(255,255,255,.12); color: #FFFFFF; border-radius: 10px; }
+body .painel.tema-excel .fin-kpis { gap: 8px; } body .painel.tema-excel .fin-kpi { background: #FFFFFF; border: 1px solid #D8E6DE; border-radius: 14px; box-shadow: 0 1px 2px rgba(15,74,44,.05); }
+body .painel.tema-excel .fin-kpi span { color: #5E8A72; font-size: 10.5px; letter-spacing: .08em; } body .painel.tema-excel .fin-kpi b { font-family: 'Syne', 'DM Sans', sans-serif; color: #10251A; }
+body .painel.tema-excel .fin-kpi:last-child { background: #0F4A2C; border-color: #0F4A2C; } body .painel.tema-excel .fin-kpi:last-child span { color: #A7D3B9; } body .painel.tema-excel .fin-kpi:last-child b { color: #FFFFFF; }
+body .painel.tema-excel .fin-abas { background: transparent; border: 0; border-bottom: 1px solid #D8E6DE; border-radius: 0; padding: 0; box-shadow: none; }
+body .painel.tema-excel .fin-abas button { border-radius: 0; color: #7FA592; background: none; font-weight: 600; } body .painel.tema-excel .fin-abas button.on { background: none; color: #1A6640; box-shadow: inset 0 -2px 0 #1A6640; }
+.fm-sec { margin: 4px 2px 8px; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #7FA592; }
+.fm-grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.fm-card { all: unset; box-sizing: border-box; display: grid; gap: 4px; padding: 12px; background: #FFFFFF; border: 1px solid #D8E6DE; border-radius: 14px; box-shadow: 0 1px 2px rgba(15,74,44,.05); cursor: pointer; color: #10251A; font-family: 'DM Sans', 'Segoe UI', sans-serif; }
+.fm-card:active { transform: scale(.98); }
+.fm-nome { letter-spacing: normal; display: flex; align-items: center; gap: 6px; font-family: 'Syne', 'DM Sans', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .fm-nome svg { width: 14px; height: 14px; flex: none; }
+.fm-lin { display: flex; justify-content: space-between; gap: 6px; font-size: 12px; color: #3D5A49; } .fm-lin b { font-weight: 700; color: #10251A; font-variant-numeric: tabular-nums; } .fm-lin b.ok { color: #1A6640; } .fm-lin b.falta { color: #B82C1E; }
+.fm-barra { height: 5px; border-radius: 99px; background: #E6F5EC; overflow: hidden; margin-top: 6px; } .fm-barra i { display: block; height: 100%; background: #1A6640; border-radius: 99px; }
+.fm-pct { justify-self: end; font-size: 11px; font-weight: 700; color: #7FA592; }
+body .painel.tema-excel .cm-topo { background: #FFFFFF; border: 1px solid #D8E6DE; border-left: 4px solid #1A6640; border-radius: 14px; } body .painel.tema-excel .cm-topo b { font-family: 'Syne', 'DM Sans', sans-serif; color: #10251A; }
+body .painel.tema-excel .cm-topo-parc { border-left-color: #9A6300; background: #FFFFFF; }
+body .painel.tema-excel .cm-item { border-color: #D8E6DE; border-radius: 14px; box-shadow: 0 1px 2px rgba(15,74,44,.05); } body .painel.tema-excel .cm-mes { color: #7FA592; }
+body .painel.tema-excel .cm-dia { background: #E6F5EC; border-radius: 10px; } body .painel.tema-excel .cm-item.cm-parcela .cm-dia { background: #FEF9E7; }
+body .painel.tema-excel .fin-lancar { background: #1A6640; border-radius: 12px; } body .painel.tema-excel .fin-lancar.fin-nova { background: #FFFFFF; color: #1A6640; border: 1px solid #1A6640; }
+
 /* Finanças com cara de Windows e Office (May 08/11 14:46): a janela do Excel (nome do arquivo e os botões —, ☐ e ✕), a faixa de abas da ribbon, cartões Fluent */
 .painel.tema-excel, body.na-geral .painel.tema-excel { font-family: 'Segoe UI Variable', 'Segoe UI', Calibri, Arial, sans-serif; background: #F3F3F3; --bg: #F3F3F3; }
 .painel:not(.tema-excel) .xl-janela, .painel:not(.tema-excel) .xl-ribbon { display: none; }
@@ -541,16 +567,16 @@ body.na-geral .painel.tema-claro .p-topo::after { background: #8FD3C7; box-shado
 .painel.tema-claro .p-topo button, .painel.tema-claro .p-voltar-baixo { background: #EEF6F5; color: #2A6F67; box-shadow: none; border: 1px solid #DCEBE9; }
 .painel.tema-claro .p-sub, .painel.tema-claro .p-nota { color: #6B7C85; }
 .painel.tema-claro .p-ic { background: #E3F4F1; color: #2A9D8F; box-shadow: none; }
-.painel.tema-claro .ag-cal { background: radial-gradient(120% 90% at 30% 0%, #9FE7DF 0%, #7FD3E0 45%, #7BBFEA 100%); color: #FFFFFF; border-radius: 34px; padding: 16px 14px; border: 0;
-  box-shadow: inset 0 6px 14px rgba(255,255,255,.55), inset 0 -10px 18px rgba(40,110,150,.22), 0 14px 30px rgba(92,184,230,.30), 0 4px 0 rgba(255,255,255,.6); }   /* nuvem fofinha, cara de marshmallow (May 08/11 14:44): volume macio por dentro, não só degradê */
-.painel.tema-claro .ag-seta { width: 42px; height: 42px; border-radius: 50%; color: #3C8FB8; background: radial-gradient(circle at 35% 30%, #FFFFFF, #E3F6F8 70%); box-shadow: inset 0 -3px 6px rgba(60,143,184,.18), 0 4px 10px rgba(30,80,110,.18); }
+.painel.tema-claro .ag-cal { background: #7CCBE2; color: #FFFFFF; border-radius: 34px; padding: 16px 14px; border: 0;
+  box-shadow: inset 5px 5px 10px rgba(255,255,255,.55), inset -6px -6px 12px rgba(30,95,130,.28), 0 10px 24px rgba(60,150,190,.25); }   /* relevo nas bordas em vez de degradê (May 08/11 14:49): cor lisa, borda de cima clara e a de baixo funda, tipo marshmallow */
+.painel.tema-claro .ag-seta { width: 42px; height: 42px; border-radius: 50%; color: #2F8FB8; background: #EAF7FB; box-shadow: inset 2px 2px 4px #FFFFFF, inset -3px -3px 5px rgba(47,143,184,.25), 0 3px 8px rgba(30,80,110,.18); }
 .painel.tema-claro .ag-sem { color: rgba(255,255,255,.9); opacity: 1; }
-.painel.tema-claro .ag-dia { color: #FFFFFF; border-radius: 50%; height: 38px; font-weight: 700; background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.32), rgba(255,255,255,.08) 70%); box-shadow: inset 0 -2px 4px rgba(30,90,120,.18), 0 2px 5px rgba(30,90,120,.10); transition: transform .15s; }
+.painel.tema-claro .ag-dia { color: #FFFFFF; border-radius: 50%; height: 38px; font-weight: 700; background: transparent; box-shadow: none; outline: 0; transition: transform .15s; }
 .painel.tema-claro .ag-dia:active { transform: scale(.9); }
-.painel.tema-claro .ag-dia.hoje { outline: 0; box-shadow: inset 0 0 0 2px #FFFFFF, inset 0 -2px 4px rgba(30,90,120,.18), 0 2px 5px rgba(30,90,120,.10); }
-.painel.tema-claro .ag-dia.sel { color: #2F8FB8; background: radial-gradient(circle at 35% 28%, #FFFFFF 0%, #F1FBFC 55%, #D9F1F6 100%); box-shadow: inset 0 -3px 6px rgba(47,143,184,.22), 0 6px 12px rgba(30,90,120,.25); }
+.painel.tema-claro .ag-dia.hoje { outline: 0; box-shadow: none; text-decoration: underline; text-underline-offset: 4px; }   /* só o dia tocado ganha destaque (May 14:49); o de hoje só sublinhado */
+.painel.tema-claro .ag-dia.sel { color: #2F8FB8; background: #F4FBFD; box-shadow: inset 2px 2px 4px #FFFFFF, inset -3px -3px 6px rgba(47,143,184,.30), 0 4px 10px rgba(30,90,120,.25); }
 .painel.tema-claro .ag-pts i { box-shadow: 0 0 0 1.5px #FFFFFF; }
-.painel.tema-claro .ag-tudo { background: radial-gradient(circle at 35% 30%, #FFFFFF, #E3F6F8 70%); color: #2F8FB8; border-radius: 999px; box-shadow: inset 0 -3px 6px rgba(60,143,184,.18), 0 4px 10px rgba(30,80,110,.18); }
+.painel.tema-claro .ag-tudo { background: #EAF7FB; color: #2F8FB8; border-radius: 999px; box-shadow: inset 2px 2px 4px #FFFFFF, inset -3px -3px 5px rgba(47,143,184,.25), 0 3px 8px rgba(30,80,110,.18); }
 .painel.tema-claro .ag-leg { color: #FFFFFF; }
 .painel.tema-claro .ag, body .painel.tema-claro .ag { background: #FFFFFF; color: #1E2B33; border: 1px solid #E2ECEE; border-radius: 22px; box-shadow: 0 4px 14px rgba(30, 60, 70, .06); }
 .painel.tema-claro .ag[data-tipo] { box-shadow: inset 4px 0 0 var(--tc), 0 4px 14px rgba(30, 60, 70, .06); }
@@ -829,6 +855,7 @@ img.esq { min-height: 140px; }
 .p-grade.apps .bt-maquinas::after { content: ''; position: absolute; top: 10px; right: 12px; width: 7px; height: 7px; border-radius: 50%; background: #34D399; box-shadow: 0 0 8px #34D399; } .p-grade.apps .bt-maquinas .ic { color: #C7D2FE; }
 .p-grade.apps .bt-pendencias { background: linear-gradient(#F59E0B 0 18px, transparent 18px), repeating-linear-gradient(90deg, transparent 0 25px, #FCD34D 25px 26px), repeating-linear-gradient(transparent 0 17px, #FCD34D 17px 18px), #FFFBEB; border: 1px solid #F59E0B; border-radius: 4px; text-shadow: none; padding-top: 22px; }
 .p-grade.apps .bt-pendencias .ic { color: #B45309; filter: none; } .p-grade.apps .bt-pendencias .t { color: #78350F; }
+.p-grade.apps .bt-pendencias { background: linear-gradient(#0F4A2C 0 18px, transparent 18px), #FFFFFF !important; border: 1px solid #D8E6DE !important; } .p-grade.apps .bt-pendencias .ic { color: #1A6640; } .p-grade.apps .bt-pendencias .t { color: #0F4A2C; font-family: 'Syne', 'DM Sans', sans-serif; font-weight: 800; letter-spacing: normal; text-transform: none; }   /* o azulejo da Finanças no verde do Financeiro May, simples, sem número (May 08/11 14:48) */
 .p-grade.apps .bt-saude { background: radial-gradient(110% 90% at 100% 0%, rgba(255,255,255,.35), transparent 60%), linear-gradient(150deg, #F472B6, #DB2777 55%, #9D174D); border: 0; border-radius: 28px; box-shadow: 0 8px 18px rgba(219,39,119,.35); }
 .p-grade.apps .bt-saude .ic { color: #fff; filter: none; }
 .p-grade.apps .bt-treino { background: #0A0A0A; border: 0; border-left: 7px solid #C6F432; border-radius: 3px; box-shadow: 0 6px 14px rgba(0,0,0,.4); }
@@ -3639,13 +3666,13 @@ const ICONE_LIMPO = {   // desenho de linha limpo, traço igual em todos (May 15
   ideias: '<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.9 10.6c.6.6.9 1.4.9 2.4h6c0-1 .3-1.8.9-2.4A6 6 0 0 0 12 3z"/>', maquinas: '<rect x="3" y="4" width="18" height="12" rx="1.6"/><path d="M8 20h8M12 16v4"/><path d="M7.5 10h3M9 8.5v3"/><circle cx="15.5" cy="10" r=".9"/>',
   obra: '<path d="M2.5 17.5h19"/><path d="M4.5 17.5a7.5 7.5 0 0 1 15 0"/><path d="M10 10.5V6h4v4.5"/>', saude: '<path d="M12 3c-2 0-3.5 1.6-3.5 3.5 0 2 1.4 4 3.5 6.5 2.1-2.5 3.5-4.5 3.5-6.5C15.5 4.6 14 3 12 3z"/><path d="M10.3 12.5 6 21l3-1.2 1.7 2.5 2.4-6.8M13.7 12.5 18 21l-3-1.2-1.7 2.5-2.4-6.8"/>',
   jogos: '<path d="M6.5 8.5h11a3.5 3.5 0 0 1 3.4 4.3l-.9 3.9a2 2 0 0 1-3.5.8L15 15.5H9l-1.5 2a2 2 0 0 1-3.5-.8l-.9-3.9a3.5 3.5 0 0 1 3.4-4.3z"/><path d="M8.5 11v3M7 12.5h3"/><circle cx="15.5" cy="12" r=".9"/><circle cx="17.3" cy="13.6" r=".9"/>',
-  treino: '<path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/>', casa: '<path d="M3 11l9-7 9 7"/><path d="M5 9.5V20h14V9.5"/>'
+  treino: '<path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/>', pendencias: '<rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M3.5 9h17M3.5 14h17M9 9v10.5"/><rect x="9" y="9" width="5.5" height="5" stroke-width="2.6"/>',   // Finanças: uma tabelinha com a célula marcada, sem número (May 08/11 14:48) casa: '<path d="M3 11l9-7 9 7"/><path d="M5 9.5V20h14V9.5"/>'
 };
 function vesteBotao(b, nome) {
   const k = (BOTAO_DE.find(([re]) => re.test(nome)) || [])[1]; if (!k) return;
   b.classList.add('bt-' + k);
   if (ICONE_LIMPO[k]) b.querySelector('.ic').innerHTML = '<svg class="lp" viewBox="0 0 24 24" aria-hidden="true">' + ICONE_LIMPO[k] + '</svg>';
-  if (k === 'pendencias' || k === 'contas') {   // no lugar do desenho, o número de verdade, que nem painel (lido da planilha dela)
+  if (k === 'contas') {   // no lugar do desenho, o número de verdade (a Finanças não: ícone simples, sem conta, May 08/11 14:48), que nem painel (lido da planilha dela)
     const ic = b.querySelector('.ic'); ic.className = 'ic mini'; ic.replaceChildren();
     lerArquivo('contas/pendencias.json').then(t => {
       const d = JSON.parse(t), n = v => Math.round(v).toLocaleString('pt-BR'), linha = (a, z, cls) => { const l = elD('div', 'mini-l ' + (cls || '')); l.append(elD('span', '', a), elD('b', '', z)); ic.append(l); };
@@ -4640,7 +4667,7 @@ function abreFinancas(m) {
       { const fx = elD('div', 'xl-fx'), cel = elD('i', 'xl-cel'), mes = contasDoMes(d, fx0()).itens.filter(x => x.quando < new Date(Date.now() + 30 * 864e5)).reduce((n, x) => n + (x.cat === 'fixa' ? x.valor / 2 : x.valor), 0); cel.innerHTML = '<svg viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="13" height="13" rx="1" fill="none" stroke="currentColor"/><path d="M1.5 6h13M6 1.5v13" stroke="currentColor"/><rect x="6" y="6" width="8.5" height="8.5" fill="none" stroke="#217346" stroke-width="2"/></svg>'; fx.append(cel, elD('b', '', 'fx'), elD('span', '', '=SOMA(mês)  ' + reaisFin(mes))); box.append(fx); }   // a barra de fórmula do Excel com a caixinha de célula e o total dos próximos 30 dias (Sigma 14:40)   // a barra de fórmula do Excel, só de enfeite (May 08/11 14:39: "referências ao Excel")
       const fr = d.receber.reduce((n, x) => n + x.falta, 0), fp = d.pagar.reduce((n, x) => n + x.falta, 0);
       const k = elD('div', 'fin-kpis'); [['A receber', fr, 'rec'], ['A pagar', fp, 'pag'], ['Saldo', fr - fp, fr - fp >= 0 ? 'rec' : 'neg']].forEach(([t, v, cl]) => { const b = elD('div', 'fin-kpi ' + cl); b.append(elD('span', '', t), elD('b', '', reaisFin(v))); k.append(b); }); box.append(k);
-      const abas = [['receber', 'A receber'], ['pagar', 'A pagar'], ['fixas', 'Contas fixas'], ['parcelas', 'Parcelas']], nav = elD('nav', 'fin-abas'), tr = elD('div', 'fin-trilho');   // Pendências e Contas do mês numa tela só (May 08/11 12:57; Sigma: A pagar, A receber, Contas fixas e Parcelas)
+      const abas = [['receber', '↑ A receber'], ['pagar', '↓ A pagar'], ['fixas', 'Contas fixas'], ['parcelas', 'Parcelas']], nav = elD('nav', 'fin-abas'), tr = elD('div', 'fin-trilho');   // Pendências e Contas do mês numa tela só (May 08/11 12:57; Sigma: A pagar, A receber, Contas fixas e Parcelas)
       const num = v => reaisFin(v).replace(/^R\$\s*/, ''), dia = x => ((x.pagamentos[x.pagamentos.length - 1] || {}).data || '').slice(0, 5);
       const celulas = (l, vs) => vs.forEach(([t, cl]) => l.append(elD('span', 'fin-c ' + (cl || ''), t)));
       const cabeca = cols => { const h = elD('div', 'fin-lin fin-cab'); celulas(h, cols.map((t, i) => [t, i ? '' : 'nome'])); return h; };
@@ -4649,7 +4676,14 @@ function abreFinancas(m) {
         celulas(r0, [[x.nome, 'nome'], [num(x.total)], [num(x.pago), 'ok'], [x.falta > 0 ? num(x.falta) : 'quitado', x.falta > 0 ? 'falta' : 'ok'], [dia(x), 'dia']]);
         r0.onclick = () => detalhe(x, lado); return r0;
       };
-      const pag = (lista, lado) => { const pg = elD('div', 'fin-pag'); const tb = elD('div', 'fin-tab'); { const le = elD('div', 'fin-lin xl-letras'); ['', 'A', 'B', 'C', 'D'].forEach(x => le.append(elD('span', 'fin-c', x))); tb.append(le); } tb.append(cabeca(['Quem', 'Total', lado === 'pagar' ? 'Pago' : 'Recebido', 'Falta', 'Último'])); lista.slice().sort((a, b) => b.falta - a.falta).forEach(x => tb.append(linhaDe(x, lado))); const tot = elD('div', 'fin-lin fin-tot'); celulas(tot, [['Total', 'nome'], [num(lista.reduce((n, x) => n + x.total, 0))], [num(lista.reduce((n, x) => n + x.pago, 0)), 'ok'], [num(lista.reduce((n, x) => n + x.falta, 0)), 'falta'], ['']]); tb.append(tot); pg.append(tb); return pg; };
+      const pag = (lista, lado) => { const pg = elD('div', 'fin-pag'); pg.append(elD('p', 'fm-sec', (lado === 'pagar' ? '↓ A pagar' : '↑ A receber') + ' · por pessoa')); const gr = elD('div', 'fm-grade');   // cartão por pessoa, como no Financeiro May dela
+        lista.slice().sort((a, b) => b.falta - a.falta).forEach(x => {
+          const c = elD('button', 'fm-card'); c.type = 'button'; c.onclick = () => detalhe(x, lado); const pct = x.total ? Math.round(x.pago / x.total * 100) : 0;
+          const h = elD('div', 'fm-nome'); h.innerHTML = '<svg viewBox="0 0 16 16"><circle cx="8" cy="5.5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M3 13.5c.6-2.6 2.6-3.8 5-3.8s4.4 1.2 5 3.8" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>'; h.append(document.createTextNode(x.nome)); c.append(h);
+          [['Total', reaisFin(x.total), ''], [lado === 'pagar' ? 'Pago' : 'Recebido', reaisFin(x.pago), 'ok'], ['Falta', reaisFin(x.falta), x.falta > 0 ? 'falta' : 'ok']].forEach(([t, v, cl]) => { const l = elD('div', 'fm-lin'); l.append(elD('span', '', t), elD('b', cl, v)); c.append(l); });
+          const bar = elD('div', 'fm-barra'), i = elD('i'); i.style.width = pct + '%'; bar.append(i); c.append(bar, elD('small', 'fm-pct', pct + '%')); gr.append(c);
+        });
+        pg.append(gr); return pg; };
       tr.append(pag(d.receber, 'receber'), pag(d.pagar, 'pagar'));
       const cm = contasDoMes(d, fx), fim = new Date(cm.hoje.getFullYear(), cm.hoje.getMonth() + 1, cm.hoje.getDate());
       const pgF = elD('div', 'fin-pag cm-pag'), fixas = cm.itens.filter(x => x.cat === 'fixa'), noMesF = fixas.filter(x => x.quando < fim);
