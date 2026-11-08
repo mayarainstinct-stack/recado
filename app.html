@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.206">
-<meta name="app-novidade" content="Finanças com cara de Excel: branco, verde e grade de planilha">
+<meta name="app-versao" content="2026-11-08.208">
+<meta name="app-novidade" content="Finanças com cara de Office; Agenda fofinha; Lançar da Obra em branco">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -492,6 +492,19 @@ button:disabled { opacity: .45; cursor: default; }
 .detalhe .manda { width: 100%; min-height: 48px; border-radius: 12px; background: var(--accent); color: var(--accent-fg); font-size: 16px; font-weight: 700; }
 .detalhe .manda:disabled { opacity: .45; }
 .p-lista { display: flex; flex-direction: column; gap: 10px; }
+/* Finanças com cara de Windows e Office (May 08/11 14:46): a janela do Excel (nome do arquivo e os botões —, ☐ e ✕), a faixa de abas da ribbon, cartões Fluent */
+.painel.tema-excel, body.na-geral .painel.tema-excel { font-family: 'Segoe UI Variable', 'Segoe UI', Calibri, Arial, sans-serif; background: #F3F3F3; --bg: #F3F3F3; }
+.painel:not(.tema-excel) .xl-janela, .painel:not(.tema-excel) .xl-ribbon { display: none; }
+.xl-janela { display: flex; align-items: center; gap: 2px; margin: -16px -16px 0; padding: 4px 6px 4px 14px; background: #217346; color: #FFFFFF; font-size: 12px; }
+.xl-arq { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: .92; } .xl-bt { flex: none; width: 34px; text-align: center; font-style: normal; font-size: 12px; opacity: .9; } .xl-x { opacity: 1; }
+.xl-ribbon { display: flex; gap: 14px; margin: 0 -16px; padding: 6px 14px 0; background: #217346; color: rgba(255,255,255,.85); font-size: 12.5px; overflow: hidden; white-space: nowrap; }
+.xl-ribbon span { padding: 4px 2px 6px; } .xl-ribbon span.on { color: #FFFFFF; font-weight: 700; box-shadow: inset 0 -3px 0 #FFFFFF; }
+.painel.tema-excel .xl-fx { background: #FFFFFF; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.painel.tema-excel .fin-kpi, .painel.tema-excel .fin-tab, .painel.tema-excel .cm-item { border-radius: 8px; border-color: #E5E5E5; box-shadow: 0 2px 4px rgba(0,0,0,.06), 0 0 1px rgba(0,0,0,.08); }
+.painel.tema-excel .fin-abas { background: #FFFFFF; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.painel.tema-excel .fin-abas button { border-radius: 4px; } .painel.tema-excel .fin-abas button.on { background: #E8F3EC; color: #185C37; box-shadow: inset 0 -3px 0 #217346; }
+.painel.tema-excel .fin-lancar { border-radius: 4px; } .painel.tema-excel .p-voltar-baixo { border-radius: 50%; }
+
 /* Finanças com referências ao Excel, sem grade de planilha (May 08/11 14:38 e 14:39): branco, a faixa verde do Excel, a barra de fórmula com fx, as letras das colunas, as abas de planilha embaixo da cor, cartões leves */
 .painel.tema-excel, body.na-geral .painel.tema-excel { --c: #217346; --fg: #1F1F1F; --muted: #605E5C; --line: #E1DFDD; --paper: #FFFFFF; --bg: #FFFFFF; background: #FFFFFF; color: #1F1F1F; font-family: Calibri, 'Segoe UI', Arial, sans-serif; }
 body.na-geral .painel.tema-excel .p-topo, .painel.tema-excel .p-topo { background: #217346; color: #FFFFFF; box-shadow: none; border-bottom: 0; }
@@ -528,14 +541,16 @@ body.na-geral .painel.tema-claro .p-topo::after { background: #8FD3C7; box-shado
 .painel.tema-claro .p-topo button, .painel.tema-claro .p-voltar-baixo { background: #EEF6F5; color: #2A6F67; box-shadow: none; border: 1px solid #DCEBE9; }
 .painel.tema-claro .p-sub, .painel.tema-claro .p-nota { color: #6B7C85; }
 .painel.tema-claro .p-ic { background: #E3F4F1; color: #2A9D8F; box-shadow: none; }
-.painel.tema-claro .ag-cal { background: linear-gradient(150deg, #6FD6CC, #5CB8E6 85%); color: #FFFFFF; border-radius: 30px; padding: 14px; box-shadow: 0 10px 26px rgba(92, 184, 230, .28); border: 0; }   /* mais fofinho, entre verde-água e azul-claro (May 08/11 14:38) */   /* o calendário verde-água (May 08/11 14:36), liso e sem brilho */
-.painel.tema-claro .ag-seta { background: rgba(255,255,255,.22); color: #FFFFFF; border-radius: 50%; }
-.painel.tema-claro .ag-sem { color: rgba(255,255,255,.8); opacity: 1; }
-.painel.tema-claro .ag-dia { background: transparent; color: #FFFFFF; border-radius: 50%; height: 38px; font-weight: 600; }
-.painel.tema-claro .ag-dia.hoje { outline: 2px solid #FFFFFF; outline-offset: -2px; }
-.painel.tema-claro .ag-dia.sel { background: #FFFFFF; color: #2F8FB8; }
+.painel.tema-claro .ag-cal { background: radial-gradient(120% 90% at 30% 0%, #9FE7DF 0%, #7FD3E0 45%, #7BBFEA 100%); color: #FFFFFF; border-radius: 34px; padding: 16px 14px; border: 0;
+  box-shadow: inset 0 6px 14px rgba(255,255,255,.55), inset 0 -10px 18px rgba(40,110,150,.22), 0 14px 30px rgba(92,184,230,.30), 0 4px 0 rgba(255,255,255,.6); }   /* nuvem fofinha, cara de marshmallow (May 08/11 14:44): volume macio por dentro, não só degradê */
+.painel.tema-claro .ag-seta { width: 42px; height: 42px; border-radius: 50%; color: #3C8FB8; background: radial-gradient(circle at 35% 30%, #FFFFFF, #E3F6F8 70%); box-shadow: inset 0 -3px 6px rgba(60,143,184,.18), 0 4px 10px rgba(30,80,110,.18); }
+.painel.tema-claro .ag-sem { color: rgba(255,255,255,.9); opacity: 1; }
+.painel.tema-claro .ag-dia { color: #FFFFFF; border-radius: 50%; height: 38px; font-weight: 700; background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.32), rgba(255,255,255,.08) 70%); box-shadow: inset 0 -2px 4px rgba(30,90,120,.18), 0 2px 5px rgba(30,90,120,.10); transition: transform .15s; }
+.painel.tema-claro .ag-dia:active { transform: scale(.9); }
+.painel.tema-claro .ag-dia.hoje { outline: 0; box-shadow: inset 0 0 0 2px #FFFFFF, inset 0 -2px 4px rgba(30,90,120,.18), 0 2px 5px rgba(30,90,120,.10); }
+.painel.tema-claro .ag-dia.sel { color: #2F8FB8; background: radial-gradient(circle at 35% 28%, #FFFFFF 0%, #F1FBFC 55%, #D9F1F6 100%); box-shadow: inset 0 -3px 6px rgba(47,143,184,.22), 0 6px 12px rgba(30,90,120,.25); }
 .painel.tema-claro .ag-pts i { box-shadow: 0 0 0 1.5px #FFFFFF; }
-.painel.tema-claro .ag-tudo { background: #FFFFFF; color: #1F7A70; }
+.painel.tema-claro .ag-tudo { background: radial-gradient(circle at 35% 30%, #FFFFFF, #E3F6F8 70%); color: #2F8FB8; border-radius: 999px; box-shadow: inset 0 -3px 6px rgba(60,143,184,.18), 0 4px 10px rgba(30,80,110,.18); }
 .painel.tema-claro .ag-leg { color: #FFFFFF; }
 .painel.tema-claro .ag, body .painel.tema-claro .ag { background: #FFFFFF; color: #1E2B33; border: 1px solid #E2ECEE; border-radius: 22px; box-shadow: 0 4px 14px rgba(30, 60, 70, .06); }
 .painel.tema-claro .ag[data-tipo] { box-shadow: inset 4px 0 0 var(--tc), 0 4px 14px rgba(30, 60, 70, .06); }
@@ -1014,7 +1029,7 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 .ob-folha ul { margin: 2px 0 0; padding-left: 18px; font-size: 13.5px; line-height: 1.35; } .ob-folha li + li { margin-top: 3px; } .ob-feito { list-style: '✓  '; } .ob-depois { list-style: '→  '; } .ob-decidido { list-style: '★  '; }
 .ob-folha li { position: relative; padding-right: 30px; } .ob-lapis { position: absolute; right: -4px; top: -3px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: transparent; color: #9A3412; opacity: .55; } .ob-lapis svg { width: 15px; height: 15px; } .ob-lapis:active { opacity: 1; }
 .ob-anot { margin: 3px 0 4px; font: 15px/1.3 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive; color: #1D4ED8; } .ob-dia-fim { margin-top: 8px; } .ob-anotar { width: auto !important; min-width: 0; white-space: nowrap; height: auto; padding: 7px 12px; border-radius: 999px; border: 1px dashed #C2410C; background: transparent; color: #9A3412; font: 700 12.5px 'Segoe UI', sans-serif; display: inline-flex; align-items: center; gap: 6px; } .ob-anotar svg { width: 14px; height: 14px; }
-.ob-lanca { margin: 0 0 4px; justify-self: start; } .ob-anotar.ob-lanca { background: #F97316; color: #1A0D02; border: 0; font-weight: 800; box-shadow: 0 4px 14px rgba(249,115,22,.35); } .ob-anotar.ob-lanca svg { color: #1A0D02; }   /* botão cheio, letra escura: lê de longe em cima do tijolo (May 08/11 13:21, contraste AA) */ .ob-data-in { width: 100%; box-sizing: border-box; margin-top: 10px; font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); } .ob-data-sem { display: block; margin-top: 4px; font-weight: 700; color: #F97316; text-transform: capitalize; }
+.ob-lanca { margin: 0 0 4px; justify-self: start; } .ob-anotar.ob-lanca { background: #EA580C; color: #FFFFFF; border: 0; font-weight: 800; box-shadow: 0 4px 14px rgba(234,88,12,.35); } .ob-anotar.ob-lanca svg { color: #FFFFFF; }   /* letra branca (May 08/11 14:46), laranja um tom mais escuro pra ler */   /* botão cheio, letra escura: lê de longe em cima do tijolo (May 08/11 13:21, contraste AA) */ .ob-data-in { width: 100%; box-sizing: border-box; margin-top: 10px; font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); } .ob-data-sem { display: block; margin-top: 4px; font-weight: 700; color: #F97316; text-transform: capitalize; }
 .ob-anot-esp { display: block; font: 600 10.5px 'Segoe UI', sans-serif; color: #9A3412; opacity: .7; }
 .ob-pop textarea { width: 100%; box-sizing: border-box; margin: 10px 0 12px; font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); resize: vertical; }
 .ob-tira { display: flex; gap: 10px; overflow-x: auto; padding: 10px 2px 4px; scrollbar-width: none; } .ob-tira::-webkit-scrollbar { display: none; }
@@ -4621,6 +4636,7 @@ function abreFinancas(m) {
     const box = elD('div', 'fin'); c.append(box);
     const pintaFin = abaIni => {
       box.replaceChildren();
+      { const jan = elD('div', 'xl-janela'); jan.append(elD('span', 'xl-arq', 'Finanças.xlsx · Salvo'), elD('i', 'xl-bt', '—'), elD('i', 'xl-bt', '☐'), elD('i', 'xl-bt xl-x', '✕')); const rib = elD('div', 'xl-ribbon'); ['Arquivo', 'Página Inicial', 'Inserir', 'Fórmulas', 'Dados'].forEach((t, i) => rib.append(elD('span', i === 1 ? 'on' : '', t))); box.append(jan, rib); }   // a janela do Excel, só de enfeite
       { const fx = elD('div', 'xl-fx'), cel = elD('i', 'xl-cel'), mes = contasDoMes(d, fx0()).itens.filter(x => x.quando < new Date(Date.now() + 30 * 864e5)).reduce((n, x) => n + (x.cat === 'fixa' ? x.valor / 2 : x.valor), 0); cel.innerHTML = '<svg viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="13" height="13" rx="1" fill="none" stroke="currentColor"/><path d="M1.5 6h13M6 1.5v13" stroke="currentColor"/><rect x="6" y="6" width="8.5" height="8.5" fill="none" stroke="#217346" stroke-width="2"/></svg>'; fx.append(cel, elD('b', '', 'fx'), elD('span', '', '=SOMA(mês)  ' + reaisFin(mes))); box.append(fx); }   // a barra de fórmula do Excel com a caixinha de célula e o total dos próximos 30 dias (Sigma 14:40)   // a barra de fórmula do Excel, só de enfeite (May 08/11 14:39: "referências ao Excel")
       const fr = d.receber.reduce((n, x) => n + x.falta, 0), fp = d.pagar.reduce((n, x) => n + x.falta, 0);
       const k = elD('div', 'fin-kpis'); [['A receber', fr, 'rec'], ['A pagar', fp, 'pag'], ['Saldo', fr - fp, fr - fp >= 0 ? 'rec' : 'neg']].forEach(([t, v, cl]) => { const b = elD('div', 'fin-kpi ' + cl); b.append(elD('span', '', t), elD('b', '', reaisFin(v))); k.append(b); }); box.append(k);
