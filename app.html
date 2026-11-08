@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.179">
+<meta name="app-versao" content="2026-11-08.180">
 <meta name="app-novidade" content="Planta: o nome do cômodo vai num lugar livre, sem cobrir os móveis">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -4192,7 +4192,7 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
     const svg = ns('svg', { class: 'pl-svg', preserveAspectRatio: 'xMidYMid meet' }), cx = elD('div', 'pl-caixa cad'), semMov = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const barra = elD('div', 'cad-barra'), camada = elD('span', '', ''), coord = elD('span', 'cad-coord', ''); barra.append(elD('b', '', 'PLANTA.DWG'), camada, coord);
     const status = elD('div', 'cad-status'), niveis = [];
-    const NOMES = ['CÔMODOS', 'COISAS', 'COTAS', 'NOMES'];
+    const NOMES = ['CÔMODOS', 'MÓVEIS', 'EM CIMA', 'COTAS', 'NOMES'];   // os níveis dela (08/11 10:52): cômodo, móvel de estrutura (rack), o que fica em cima dele (TV, videogame)
     const todo = [-0.6, -0.6, d.largura + 1.2, d.altura + 1.2]; let vb = todo.slice(), anim = 0, fimVoo = 0, nivel = 0, sel = null, selC = null;
     const poe = v => svg.setAttribute('viewBox', v.map(x => x.toFixed(3)).join(' '));
     const voa = alvo => { const de = vb.slice(), t0 = performance.now(), dur = semMov ? 1 : 560; cancelAnimationFrame(anim);
@@ -4219,7 +4219,7 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
     const num = v => String(Math.round(v * 100) / 100).replace('.', ',');
     const areaDe = k => k.pts ? Math.abs(k.pts.reduce((a, q, i) => { const o = k.pts[(i + 1) % k.pts.length]; return a + q[0] * o[1] - o[0] * q[1]; }, 0)) / 2 : k.w * k.h;   // em L a área é a do contorno, não a da caixa
     svg.append(ns('rect', { x: 0, y: 0, width: d.largura, height: d.altura, class: 'cad-terreno' }));
-    const camadas = [ns('g', { class: 'cad-l1' }), ns('g', { class: 'cad-l2' }), ns('g', { class: 'cad-l3' }), ns('g', { class: 'cad-l4' })]; camadas.forEach(g => { g.style.display = 'none'; svg.append(g); });
+    const camadas = [ns('g', { class: 'cad-l1' }), ns('g', { class: 'cad-l2' }), ns('g', { class: 'cad-l3' }), ns('g', { class: 'cad-l4' }), ns('g', { class: 'cad-l5' })]; camadas.forEach(g => { g.style.display = 'none'; svg.append(g); });
     const linha = (g, x1, y1, x2, y2, cls) => { const l = ns('line', { x1, y1, x2, y2, class: cls, pathLength: 1 }); g.append(l); return l; };
     // desenho de cada coisa numa caixa de 0 a 1 (traço de planta baixa); [palavra, largura, comprimento em metros, traços]
     const TIPOS = [
@@ -4281,11 +4281,11 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
       if (k.w > 0.8 && k.h > 0.8 && !k.pts) {   // cota por fora da parede (Sigma 23:48): o comprimento do lado de fora da casa, a largura embaixo só se embaixo for aberto
         const livreEm = x => !d.comodos.some(o => o !== k && !o.pts && x > o.x - .05 && x < o.x + o.w + .05 && o.y < k.y + k.h && o.y + o.h > k.y), lados = (k.x + k.w / 2 < d.largura / 2 ? [true, false] : [false, true]).filter(e => livreEm(e ? k.x - 0.11 : k.x + k.w + 0.11));
         const esq = lados[0], xr = esq ? k.x - 0.11 : k.x + k.w + 0.11, cf = Math.min(0.15, k.h / 9), dxt = esq ? -0.06 : 0.06;
-        if (lados.length) { linha(camadas[2], xr, k.y + .08, xr, k.y + k.h - .08, 'cad-cota'); linha(camadas[2], xr - .05, k.y + .08, xr + .05, k.y + .08, 'cad-cota'); linha(camadas[2], xr - .05, k.y + k.h - .08, xr + .05, k.y + k.h - .08, 'cad-cota');
-        const th = ns('text', { x: xr + dxt, y: k.y + k.h / 2, 'font-size': cf.toFixed(3), class: 'cad-cota-t', transform: 'rotate(-90 ' + (xr + dxt) + ' ' + (k.y + k.h / 2) + ')' }); th.textContent = num(k.h); camadas[2].append(th); }   // os dois lados com cômodo encostado: sem cota de comprimento ali (fica na aba Medidas)
+        if (lados.length) { linha(camadas[3], xr, k.y + .08, xr, k.y + k.h - .08, 'cad-cota'); linha(camadas[3], xr - .05, k.y + .08, xr + .05, k.y + .08, 'cad-cota'); linha(camadas[3], xr - .05, k.y + k.h - .08, xr + .05, k.y + k.h - .08, 'cad-cota');
+        const th = ns('text', { x: xr + dxt, y: k.y + k.h / 2, 'font-size': cf.toFixed(3), class: 'cad-cota-t', transform: 'rotate(-90 ' + (xr + dxt) + ' ' + (k.y + k.h / 2) + ')' }); th.textContent = num(k.h); camadas[3].append(th); }   // os dois lados com cômodo encostado: sem cota de comprimento ali (fica na aba Medidas)
         const yb = k.y + k.h + 0.13, aberto = !d.comodos.some(o => o !== k && !o.pts && o.y > k.y + k.h - .05 && o.y < yb + .3 && o.x < k.x + k.w && o.x + o.w > k.x);
-        if (aberto) { linha(camadas[2], k.x + .08, yb, k.x + k.w - .08, yb, 'cad-cota'); linha(camadas[2], k.x + .08, yb - .05, k.x + .08, yb + .05, 'cad-cota'); linha(camadas[2], k.x + k.w - .08, yb - .05, k.x + k.w - .08, yb + .05, 'cad-cota');
-          const tw = ns('text', { x: k.x + k.w / 2, y: yb + .14, 'font-size': Math.min(0.15, k.w / 9).toFixed(3), class: 'cad-cota-t' }); tw.textContent = num(k.w); camadas[2].append(tw); }
+        if (aberto) { linha(camadas[3], k.x + .08, yb, k.x + k.w - .08, yb, 'cad-cota'); linha(camadas[3], k.x + .08, yb - .05, k.x + .08, yb + .05, 'cad-cota'); linha(camadas[3], k.x + k.w - .08, yb - .05, k.x + k.w - .08, yb + .05, 'cad-cota');
+          const tw = ns('text', { x: k.x + k.w / 2, y: yb + .14, 'font-size': Math.min(0.15, k.w / 9).toFixed(3), class: 'cad-cota-t' }); tw.textContent = num(k.w); camadas[3].append(tw); }
       }
       if ((k.aberto || []).includes('cima')) {   // sala e cozinha são um cômodo só: sem parede entre os dois, só um tracejado fino na divisa (Sigma 10:27)
         camadas[0].append(ns('rect', { x: k.x + .075, y: k.y - .225, width: k.w - .15, height: .3, class: 'cad-vao' }));
@@ -4304,14 +4304,15 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
         const gi = ci.fixo ? (+ci.fixo.gira || 0) % 360 : 0, deLado = gi % 180 !== 0, gc = ns('g', { class: 'cad-obj' + (ci.projeto ? ' projeto' : ''), transform: gi ? 'translate(' + (ci.x + ci.ww / 2).toFixed(3) + ' ' + (ci.y + ci.hh / 2).toFixed(3) + ') rotate(' + gi + ') scale(' + (deLado ? ci.hh : ci.ww).toFixed(3) + ' ' + (deLado ? ci.ww : ci.hh).toFixed(3) + ') translate(-.5 -.5)' : 'translate(' + ci.x.toFixed(3) + ' ' + ci.y.toFixed(3) + ') scale(' + ci.ww.toFixed(3) + ' ' + ci.hh.toFixed(3) + ')' });   // gira 90, 180 ou 270: a cabeceira da cama na parede certa, a mesa em U de lado (móveis com posição, May 21:17) ci.g = gc;
         gc.append(ns('rect', { x: 0, y: 0, width: 1, height: 1, class: 'cad-obj-toque' }));
         ci.tp[3].forEach(p => gc.append(ns('path', { d: p, class: 'cad-obj-l', 'vector-effect': 'non-scaling-stroke', pathLength: 1 })));
-        gc.addEventListener('click', e => { e.stopPropagation(); tocaCoisa(ci); }); camadas[1].append(gc);
+        gc.addEventListener('click', e => { e.stopPropagation(); tocaCoisa(ci); }); const sobre = !!(ci.fixo && ci.fixo.sobre); camadas[sobre ? 2 : 1].append(gc);
         const lb = { x: ci.x, y: ci.y, w: ci.ww, h: ci.hh };   // móvel de chão (tapete) fica embaixo dos outros: o nome dele vai na parte que aparece (Sigma 10:07)
-        if (ci.fixo && ci.fixo.piso) movs.filter(o => o !== ci && !(o.fixo && o.fixo.piso) && o.x < lb.x + lb.w && o.x + o.ww > lb.x && o.y < lb.y + lb.h && o.y + o.hh > lb.y).forEach(o => Object.assign(lb, [{ x: lb.x, y: lb.y, w: o.x - lb.x, h: lb.h }, { x: o.x + o.ww, y: lb.y, w: lb.x + lb.w - o.x - o.ww, h: lb.h }, { x: lb.x, y: lb.y, w: lb.w, h: o.y - lb.y }, { x: lb.x, y: o.y + o.hh, w: lb.w, h: lb.y + lb.h - o.y - o.hh }].sort((p, q) => q.w * q.h - p.w * p.h)[0]));
+        const piso = !!(ci.fixo && ci.fixo.piso), cobre = o => piso ? !(o.fixo && o.fixo.piso) : !sobre && !!(o.fixo && o.fixo.sobre);   // o que fica em cima (a TV no rack) cobre o nome do móvel de baixo, igual o sofá cobre o tapete
+        if (piso || !sobre) movs.filter(o => o !== ci && cobre(o) && o.x < lb.x + lb.w && o.x + o.ww > lb.x && o.y < lb.y + lb.h && o.y + o.hh > lb.y).forEach(o => Object.assign(lb, [{ x: lb.x, y: lb.y, w: o.x - lb.x, h: lb.h }, { x: o.x + o.ww, y: lb.y, w: lb.x + lb.w - o.x - o.ww, h: lb.h }, { x: lb.x, y: lb.y, w: lb.w, h: o.y - lb.y }, { x: lb.x, y: o.y + o.hh, w: lb.w, h: lb.y + lb.h - o.y - o.hh }].sort((p, q) => q.w * q.h - p.w * p.h)[0]));
         const rot = ci.nome.split(/\s*[,(]|\s+com\s+|\s+que\s+/)[0].trim(), pal = rot.split(' '), meio = Math.ceil(pal.length / 2), ls = rot.length > 11 && pal.length > 1 ? [pal.slice(0, meio).join(' '), pal.slice(meio).join(' ')] : [rot];
         let lw = Math.max(...ls.map(x => x.length)), ft = Math.min(.13, (lb.w - .06) / (lw * .68), (lb.h - .04) / (ls.length * 1.25));
         if (ft < .08) { ci.numerado = true; ls.splice(0, ls.length, String(ci.n + 1)); lw = ls[0].length; ft = Math.max(.08, Math.min(.13, (lb.w - .02) / (lw * .68), lb.h - .02)); }   // menor que 9 px não lê: vira o número, e a lista diz qual é (Sigma 00:07)
         const et = ns('text', { x: lb.x + lb.w / 2, y: lb.y + lb.h / 2 - (ls.length - 1) * ft * .6, 'font-size': ft.toFixed(3), class: 'cad-coisa' + (ci.numerado ? ' num' : '') });
-        ls.forEach((tx, i) => { const sp = ns('tspan', { x: lb.x + lb.w / 2, dy: i ? (ft * 1.2).toFixed(3) : 0 }); sp.textContent = tx; et.append(sp); }); camadas[3].append(et);   // o nome do móvel inteiro, dentro dele, diminuindo até caber
+        ls.forEach((tx, i) => { const sp = ns('tspan', { x: lb.x + lb.w / 2, dy: i ? (ft * 1.2).toFixed(3) : 0 }); sp.textContent = tx; et.append(sp); }); camadas[sobre ? 2 : 4].append(et);   // o nome do móvel inteiro, dentro dele, diminuindo até caber
       });
       if (movs.length && k.rot) {   // com móvel desenhado, o nome grande do cômodo ia por cima da cama: vai pequeno num canto livre
         const [t, ar] = k.rot, nomeU = k.nome.toUpperCase(), pal = nomeU.split(' '), meio = Math.ceil(pal.length / 2), area = num(areaDe(k)) + ' m²';
