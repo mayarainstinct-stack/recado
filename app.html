@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.201">
-<meta name="app-novidade" content="Sem faixa vazia embaixo no iPhone; Lançar um dia da Obra legível">
+<meta name="app-versao" content="2026-11-08.202">
+<meta name="app-novidade" content="Abas da Obra numeradas; Dinheiro sem botão em cima da lista; planta com os nomes no canto">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -910,7 +910,7 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 .fin-abas button { flex: 1; width: auto; height: auto; padding: 9px 4px; border-radius: 10px; background: none; color: var(--muted); font: inherit; font-size: 13px; font-weight: 800; } .fin-abas button.on { background: #F59E0B; color: #1A1203; }
 .fin-trilho { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; flex: 1; } .fin-trilho::-webkit-scrollbar { display: none; }
 .fin-pag { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; scroll-snap-stop: always; }
-.cm-pag { overflow-y: auto; overscroll-behavior: contain; padding-bottom: 150px; } .cm-topo-parc { background: linear-gradient(135deg, #F59E0B, #92400E); }   /* as abas Contas fixas e Parcelas dentro de Pendências (08/11) */
+.cm-pag { overflow-y: auto; overscroll-behavior: contain; padding-bottom: calc(210px + env(safe-area-inset-bottom, 0px)); } .fin-pag { overflow-y: auto; overscroll-behavior: contain; padding-bottom: calc(210px + env(safe-area-inset-bottom, 0px)); box-sizing: border-box; } .cm-topo-parc { background: linear-gradient(135deg, #F59E0B, #92400E); }   /* as abas Contas fixas e Parcelas dentro de Pendências (08/11) */
 
 .fin-tab { border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: var(--paper); }
 .fin-lin { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; width: 100%; height: auto; border-radius: 0; padding: 10px 12px; background: none; color: var(--fg); text-align: left; border-top: 1px solid var(--line); font: inherit; }
@@ -4081,7 +4081,7 @@ function abreObra(m) {
     };
     const pinta = dir => {
       nav.replaceChildren(); parede.replaceChildren();
-      abas.forEach(a => { const b = elD('button', a.id === aba ? 'on' : '', a.nome); b.type = 'button'; b.onclick = () => { if (a.id === aba) return; const i0 = abas.findIndex(z => z.id === aba), i1 = abas.indexOf(a); aba = a.id; pinta(i1 > i0 ? 1 : -1); }; nav.append(b); });
+      abas.forEach((a, ia) => { const b = elD('button', a.id === aba ? 'on' : '', (ia + 1) + ' · ' + a.nome); b.type = 'button'; b.onclick = () => { if (a.id === aba) return; const i0 = abas.findIndex(z => z.id === aba), i1 = abas.indexOf(a); aba = a.id; pinta(i1 > i0 ? 1 : -1); }; nav.append(b); });
       requestAnimationFrame(() => { const on = nav.querySelector('.on'); if (on) nav.scrollTo({ left: on.offsetLeft - (nav.clientWidth - on.offsetWidth) / 2, behavior: dir ? 'smooth' : 'auto' }); });   // a aba escolhida nunca fica cortada na borda
       const a = abas.find(z => z.id === aba) || abas[0]; if (!a) return;
       if (a.fonte) {   // Diário da obra (May 14:29): uma folha por dia, a mais nova em cima, com as fotos daquele dia
@@ -4439,18 +4439,19 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
         const rot = ci.nome.split(/\s*[,(]|\s+com\s+|\s+que\s+/)[0].trim(), pal = rot.split(' '), meio = Math.ceil(pal.length / 2), ls = rot.length > 11 && pal.length > 1 ? [pal.slice(0, meio).join(' '), pal.slice(meio).join(' ')] : [rot];
         let lw = Math.max(...ls.map(x => x.length)), ft = Math.min(.13, (lb.w - .06) / (lw * .68), (lb.h - .04) / (ls.length * 1.25));
         if (ft < .08) { ci.numerado = true; ls.splice(0, ls.length, String(ci.n + 1)); lw = ls[0].length; ft = Math.max(.08, Math.min(.13, (lb.w - .02) / (lw * .68), lb.h - .02)); }   // menor que 9 px não lê: vira o número, e a lista diz qual é (Sigma 00:07)
-        const et = ns('text', { x: lb.x + lb.w / 2, y: lb.y + lb.h / 2 - (ls.length - 1) * ft * .6, 'font-size': ft.toFixed(3), class: 'cad-coisa' + (ci.numerado ? ' num' : '') });
-        ls.forEach((tx, i) => { const sp = ns('tspan', { x: lb.x + lb.w / 2, dy: i ? (ft * 1.2).toFixed(3) : 0 }); sp.textContent = tx; et.append(sp); }); camadas[sobre ? 2 : 1].append(et);   // o nome do móvel inteiro, dentro dele, diminuindo até caber
+        const nx = ci.numerado ? lb.x + ls[0].length * .34 * ft + .05 : lb.x + lb.w / 2, ny = ci.numerado ? lb.y + ft * .55 + .05 : lb.y + lb.h / 2 - (ls.length - 1) * ft * .6;   // o número no canto de cima à esquerda do móvel
+        const et = ns('text', { x: nx, y: ny, 'font-size': ft.toFixed(3), class: 'cad-coisa' + (ci.numerado ? ' num' : '') });
+        ls.forEach((tx, i) => { const sp = ns('tspan', { x: nx, dy: i ? (ft * 1.2).toFixed(3) : 0 }); sp.textContent = tx; et.append(sp); }); camadas[sobre ? 2 : 1].append(et);   // o nome do móvel inteiro, dentro dele, diminuindo até caber
       });
       if (movs.length && k.rot) {   // com móvel desenhado, o nome grande do cômodo ia por cima da cama: vai pequeno num canto livre
         const [t, ar] = k.rot, nomeU = k.nome.toUpperCase(), pal = nomeU.split(' '), meio = Math.ceil(pal.length / 2), area = num(areaDe(k)) + ' m²';
         const dentro = (px, py) => { if (!k.pts) return true; let c = false; for (let i = 0, j = k.pts.length - 1; i < k.pts.length; j = i++) { const [xi, yi] = k.pts[i], [xj, yj] = k.pts[j]; if ((yi > py) !== (yj > py) && px < (xj - xi) * (py - yi) / (yj - yi) + xi) c = !c; } return c; };   // cômodo em L: o nome tem que cair dentro dele, não no recorte (a garagem tava escrevendo na porta da sala)
         const livre = (cx, cy, tw, th) => [[cx - tw / 2, cy - th / 2], [cx + tw / 2, cy - th / 2], [cx - tw / 2, cy + th / 2], [cx + tw / 2, cy + th / 2]].every(([a, b]) => dentro(a, b)) && cx - tw / 2 > k.x + .08 && cx + tw / 2 < k.x + k.w - .08 && cy - th / 2 > k.y + .08 && cy + th / 2 < k.y + k.h - .08 && ![...movs, ...(k.ocupa || [])].some(c => cx - tw / 2 < c.x + c.ww && cx + tw / 2 > c.x && cy - th / 2 < c.y + c.hh && cy + th / 2 > c.y);
         const procura = (ls, fs) => { const tw = Math.max(...ls.map(x => x.length)) * .68 * fs, th = ls.length * fs * 1.25; let melhor = null, dm = 1e9;   // varre o chão do cômodo atrás de um lugar livre do tamanho do texto, o mais perto do meio
-          for (let y = k.y + .1 + th / 2; y < k.y + k.h - .1 - th / 2 + 1e-6; y += .05) for (let x = k.x + .1 + tw / 2; x < k.x + k.w - .1 - tw / 2 + 1e-6; x += .05) if (livre(x, y, tw, th)) { const dd = Math.hypot(x - k.x - k.w / 2, y - k.y - k.h / 2); if (dd < dm) { dm = dd; melhor = [x, y]; } }
+          for (let y = k.y + .1 + th / 2; y < k.y + k.h - .1 - th / 2 + 1e-6; y += .05) for (let x = k.x + .1 + tw / 2; x < k.x + k.w - .1 - tw / 2 + 1e-6; x += .05) if (livre(x, y, tw, th)) { const dd = Math.min(...[[k.x, k.y], [k.x + k.w, k.y], [k.x, k.y + k.h], [k.x + k.w, k.y + k.h]].map(([a, b]) => Math.hypot(x - a, y - b))); if (dd < dm) { dm = dd; melhor = [x, y]; } }
           return melhor && { ls, fs, x: melhor[0], y: melhor[1] }; };
         const opcoes = [[nomeU + ' · ' + area], [nomeU], pal.length > 1 ? [pal.slice(0, meio).join(' '), pal.slice(meio).join(' ')] : [nomeU]];
-        let achou = null; for (const fs of [.22, .18, .15, .12, .1, .08]) { for (const ls of opcoes) { achou = procura(ls, fs); if (achou) break; } if (achou) break; }
+        let achou = null; for (const fs of [.15, .12, .1, .08]) { for (const ls of opcoes) { achou = procura(ls, fs); if (achou) break; } if (achou) break; }
         if (!achou) { k.numerado = true; const nn = String(d.comodos.indexOf(k) + 1); for (const fs of [.13, .11, .09, .08]) { achou = procura([nn], fs); if (achou) break; } if (!achou) achou = { ls: [nn], fs: .08, x: k.x + .12, y: k.y + .12 }; }   // cômodo pequeno demais pro nome: vira número, e a lista de cômodos diz qual é (Sigma 00:27)
         t.replaceChildren(); t.setAttribute('font-size', achou.fs.toFixed(3)); t.setAttribute('x', achou.x.toFixed(3)); t.setAttribute('y', (achou.y - (achou.ls.length - 1) * achou.fs * .62).toFixed(3));
         achou.ls.forEach((tx, i) => { const sp = ns('tspan', { x: achou.x.toFixed(3), dy: i ? (achou.fs * 1.25).toFixed(3) : 0 }); sp.textContent = tx; t.append(sp); }); t.classList.add('pequeno'); ar.remove(); k.rot = [t];
@@ -4613,10 +4614,10 @@ function abreFinancas(m) {
       const pgP = elD('div', 'fin-pag cm-pag'), parc = cm.itens.filter(x => x.cat === 'parcela');
       const tq = elD('div', 'cm-topo cm-topo-parc'); tq.append(elD('span', '', 'Parcelas que faltam'), elD('b', '', reaisFin(d.pagar.reduce((n, x) => n + x.falta, 0))), elD('small', '', parc.length + (parc.length === 1 ? ' parcela na fila' : ' parcelas na fila') + ', na ordem do vencimento')); pgP.append(tq, listaContas(parc, cm.hoje));
       tr.append(pgF, pgP);
-      abas.forEach(([id, t], j) => { const b = elD('button', '', t); b.type = 'button'; b.onclick = () => tr.scrollTo({ left: j * tr.clientWidth, behavior: 'smooth' }); nav.append(b); });
+      abas.forEach(([id, t], j) => { const b = elD('button', '', t); b.type = 'button'; b.onclick = () => { [...nav.children].forEach((x, i) => x.classList.toggle('on', i === j)); tr.scrollTo({ left: j * tr.clientWidth, behavior: 'smooth' }); }; nav.append(b); });
       abaAtual = () => { const a = abas[Math.round(tr.scrollLeft / Math.max(1, tr.clientWidth))]; return a && (a[0] === 'receber' || a[0] === 'pagar') ? a[0] : 'pagar'; };
       const marca = () => { const j = Math.round(tr.scrollLeft / Math.max(1, tr.clientWidth)); [...nav.children].forEach((b, x) => b.classList.toggle('on', x === j)); };
-      tr.addEventListener('scroll', marca, { passive: true });
+      tr.addEventListener('scroll', marca, { passive: true }); tr.addEventListener('scrollend', marca);
       box.append(nav, tr);
       const j0 = Math.max(0, abas.findIndex(a => a[0] === abaIni)); requestAnimationFrame(() => { tr.scrollLeft = j0 * tr.clientWidth; marca(); });
       const fab = elD('button', 'fin-lancar', '+ Lançar'); fab.type = 'button'; fab.onclick = () => lancar(); box.append(fab);
