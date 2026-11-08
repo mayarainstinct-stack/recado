@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.189">
+<meta name="app-versao" content="2026-11-08.190">
 <meta name="app-novidade" content="Planta: o nome do cômodo vai num lugar livre, sem cobrir os móveis">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -492,6 +492,21 @@ button:disabled { opacity: .45; cursor: default; }
 .detalhe .manda { width: 100%; min-height: 48px; border-radius: 12px; background: var(--accent); color: var(--accent-fg); font-size: 16px; font-weight: 700; }
 .detalhe .manda:disabled { opacity: .45; }
 .p-lista { display: flex; flex-direction: column; gap: 10px; }
+/* Catálogo (08/11): prateleira em grade, cada categoria um bloco chanfrado com a foto e o menor preço (ou o escolhido) em destaque */
+.p-corpo > .tela.cat-tela { display: flex; flex-direction: column; min-height: 0; }
+.cat-grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.cat-bloco { all: unset; box-sizing: border-box; display: flex; flex-direction: column; position: relative; isolation: isolate; padding: 8px 10px 10px; cursor: pointer; color: #E4E4E8; background: color-mix(in srgb, var(--c) 70%, transparent);
+  clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px); transition: transform .12s; }
+.cat-bloco::before { content: ''; position: absolute; inset: 1px; z-index: -1; background: linear-gradient(#0A0A0B, color-mix(in srgb, var(--c) 10%, #0A0A0B));
+  clip-path: polygon(9.5px 0, calc(100% - 9.5px) 0, 100% 9.5px, 100% calc(100% - 9.5px), calc(100% - 9.5px) 100%, 9.5px 100%, 0 calc(100% - 9.5px), 0 9.5px); }
+.cat-bloco:active { transform: scale(.97); }
+.cat-bloco .ph { position: relative; overflow: hidden; display: grid; place-items: center; height: 92px; border-radius: 0; margin: -2px -4px 8px; background: #16171B; color: var(--c); font-size: 30px; clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%, 0 8px); }
+.cat-nome { font: 900 13.5px 'Arial Black', Arial, sans-serif; line-height: 1.2; text-transform: uppercase; min-height: 2.4em; }
+.cat-q { font-size: 12px; color: #7D828C; margin-top: 2px; }
+.cat-rot { font: 700 9px Consolas, monospace; letter-spacing: .18em; color: #7D828C; margin-top: 8px; }
+.cat-preco { font: italic 22px Impact, 'Arial Narrow', sans-serif; color: var(--c); line-height: 1.1; }
+.cat-bloco .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .2s; } .cat-bloco .ph img.ok { opacity: 1; }
+
 /* Viagens (08/11): a linha do tempo em cima e um cartão de embarque por página, deslizando pros lados; chanfrado, uma cor só (guia do Hermes) */
 .p-corpo > .tela.vg-tela { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 12px; }
 .vg-trilho { flex: none; display: flex; position: relative; padding: 2px 4px 0; }
@@ -5118,7 +5133,20 @@ async function abreCatalogo() {
     try { catalogo = JSON.parse(await lerArquivo('catalogo/catalogo.json')); }
     catch (e) { p.textContent = 'Não consegui abrir o catálogo. Confere a internet.'; return; }
     p.textContent = 'Atualizado em ' + catalogo.atualizado + ' · sempre do mais barato pro mais caro.';
-    catalogo.categorias.forEach(cat => c.append(botao(cat.icone, cat.nome, cat.itens.length + ' opções', () => abreCategoria(cat))));
+    c.classList.add('cat-tela'); const grade = document.createElement('div'); grade.className = 'cat-grade'; c.append(grade);   // Catálogo com cara própria (May 08/11 12:18): prateleira em grade, cada categoria um bloco com o menor preço em destaque
+    catalogo.categorias.forEach(cat => {
+      const com = cat.itens.filter(it => it.preco > 0), menor = com.reduce((a, b) => (!a || b.preco < a.preco) ? b : a, null), esc = cat.itens.find(it => it.escolhido);
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'cat-bloco'; b.onclick = () => abreCategoria(cat);
+      const destaque = esc || menor;
+      if (destaque) b.append(fotoDe(destaque, cat, false)); else { const ph = document.createElement('div'); ph.className = 'ph sem'; ph.innerHTML = icone(cat.icone || 'bag'); b.append(ph); }
+      const n = document.createElement('div'); n.className = 'cat-nome'; n.textContent = cat.nome; b.append(n);
+      const q = document.createElement('div'); q.className = 'cat-q'; q.textContent = cat.itens.length + ' opções'; b.append(q);
+      if (destaque) {
+        const rot = document.createElement('span'); rot.className = 'cat-rot'; rot.textContent = esc ? 'ESCOLHIDO' : 'A PARTIR DE'; b.append(rot);
+        const v = document.createElement('div'); v.className = 'cat-preco'; v.textContent = destaque.preco > 0 ? reais(destaque.preco) : 'sem preço'; b.append(v);
+      }
+      grade.append(b);
+    });
   });
 }
 const linkSeguro = u => /^https?:\/\//i.test(String(u || '').trim());
