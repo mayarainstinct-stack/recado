@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.159">
-<meta name="app-novidade" content="Pendências: + Pessoa nova, pra lançar gente ou dívida que não tá na planilha, com lembrete no dia">
+<meta name="app-versao" content="2026-11-07.160">
+<meta name="app-novidade" content="Aviso de erro numa faixa própria, mais fácil de ler">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -353,7 +353,7 @@ button:disabled { opacity: .45; cursor: default; }
 .digitando i:nth-child(2) { animation-delay: .15s; } .digitando i:nth-child(3) { animation-delay: .3s; }
 @keyframes pula { 0%, 60%, 100% { transform: none; opacity: .5; } 30% { transform: translateY(-4px); opacity: 1; } }
 .note { font-size: 12px; color: var(--muted); text-align: center; padding: 0 16px 8px; }
-.note.err { color: var(--err); }
+.note.err { color: #FECACA; background: #3B1518; border-top: 1px solid rgba(248,113,113,.5); padding: 10px 16px calc(10px + 2px); font-size: 13.5px; font-weight: 700; line-height: 1.35; }   /* aviso numa faixa própria com fundo, não encosta nos recados (Sigma 21:52) */
 .voltar { width: 40px; height: 40px; margin-left: -6px; background: none; color: var(--head-fg); font-size: 26px; line-height: 1; }
 #lista { flex: 1; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; position: relative; padding-bottom: 76px; }
 .conv { display: flex; align-items: center; gap: 12px; padding: 11px max(14px, env(safe-area-inset-right, 0px)) 11px max(14px, env(safe-area-inset-left, 0px));
