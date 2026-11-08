@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.182">
+<meta name="app-versao" content="2026-11-08.183">
 <meta name="app-novidade" content="Planta: o nome do cômodo vai num lugar livre, sem cobrir os móveis">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -4294,10 +4294,11 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
       }
       (k.portas_d || []).forEach(pd => {   // porta desenhada: vão na parede + arco de abrir (Sigma 23:48: "é ela que diz de onde se entra")
         const hor = pd.lado === 'cima' || pd.lado === 'baixo', w = pd.w || .8, x = hor ? k.x + pd.de : (pd.lado === 'esq' ? k.x : k.x + k.w), y = hor ? (pd.lado === 'cima' ? k.y : k.y + k.h) : k.y + pd.de;
-        const vao = ns('rect', hor ? { x: x, y: y - .11, width: w, height: .22, class: 'cad-vao' } : { x: x - .11, y: y, width: .22, height: w, class: 'cad-vao' }); camadas[0].append(vao);
+        const fora = (pd.lado === 'cima' || pd.lado === 'esq') ? -1 : 1, vao = ns('rect', hor ? { x: x, y: y + (fora < 0 ? -.225 : -.075), width: w, height: .3, class: 'cad-vao' } : { x: x + (fora < 0 ? -.225 : -.075), y: y, width: .3, height: w, class: 'cad-vao' }); camadas[0].append(vao);   // o vão atravessa as duas paredes (a deste cômodo e a do vizinho), senão a passagem fica tapada
         const den = (pd.lado === 'baixo' || pd.lado === 'dir') ? -1 : 1, arco = hor ? 'M' + x + ' ' + y + ' L' + x + ' ' + (y + den * w) + ' A' + w + ' ' + w + ' 0 0 ' + (den > 0 ? 0 : 1) + ' ' + (x + w) + ' ' + y : 'M' + x + ' ' + y + ' L' + (x + den * w) + ' ' + y + ' A' + w + ' ' + w + ' 0 0 ' + (den > 0 ? 1 : 0) + ' ' + x + ' ' + (y + w);
         const fo = 4, pf = .22, zz = Array.from({ length: fo + 1 }, (_, i) => { const a = i * w / fo, b = i % 2 ? den * pf : 0; return hor ? (x + a) + ' ' + (y + b) : (x + b) + ' ' + (y + a); });   // sanfona: folhas dobradas, não giro (foto da May 08/11 09:57)
-        camadas[0].append(ns('path', { d: pd.tipo === 'sanfona' ? 'M' + zz.join(' L') : arco, class: 'cad-porta' }));
+        if (pd.tipo !== 'vao' && pd.tipo !== 'sanfona') (k.ocupa = k.ocupa || []).push(hor ? { x: x, y: den > 0 ? y : y - w, ww: w, hh: w } : { x: den > 0 ? x : x - w, y: y, ww: w, hh: w });   // onde a porta abre: o nome do cômodo não vai ali
+        if (pd.tipo !== 'vao') camadas[0].append(ns('path', { d: pd.tipo === 'sanfona' ? 'M' + zz.join(' L') : arco, class: 'cad-porta' }));   // vão: passagem sem folha (a porta é do outro cômodo, ou não tem porta)
       });
       k.coisas = arruma(k);
       const movs = k.coisas.filter(c => c.desenhar);
@@ -4317,7 +4318,7 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
       });
       if (movs.length && k.rot) {   // com móvel desenhado, o nome grande do cômodo ia por cima da cama: vai pequeno num canto livre
         const [t, ar] = k.rot, nomeU = k.nome.toUpperCase(), pal = nomeU.split(' '), meio = Math.ceil(pal.length / 2), area = num(areaDe(k)) + ' m²';
-        const livre = (cx, cy, tw, th) => cx - tw / 2 > k.x + .08 && cx + tw / 2 < k.x + k.w - .08 && cy - th / 2 > k.y + .08 && cy + th / 2 < k.y + k.h - .08 && !movs.some(c => cx - tw / 2 < c.x + c.ww && cx + tw / 2 > c.x && cy - th / 2 < c.y + c.hh && cy + th / 2 > c.y);
+        const livre = (cx, cy, tw, th) => cx - tw / 2 > k.x + .08 && cx + tw / 2 < k.x + k.w - .08 && cy - th / 2 > k.y + .08 && cy + th / 2 < k.y + k.h - .08 && ![...movs, ...(k.ocupa || [])].some(c => cx - tw / 2 < c.x + c.ww && cx + tw / 2 > c.x && cy - th / 2 < c.y + c.hh && cy + th / 2 > c.y);
         const procura = (ls, fs) => { const tw = Math.max(...ls.map(x => x.length)) * .68 * fs, th = ls.length * fs * 1.25; let melhor = null, dm = 1e9;   // varre o chão do cômodo atrás de um lugar livre do tamanho do texto, o mais perto do meio
           for (let y = k.y + .1 + th / 2; y < k.y + k.h - .1 - th / 2 + 1e-6; y += .05) for (let x = k.x + .1 + tw / 2; x < k.x + k.w - .1 - tw / 2 + 1e-6; x += .05) if (livre(x, y, tw, th)) { const dd = Math.hypot(x - k.x - k.w / 2, y - k.y - k.h / 2); if (dd < dm) { dm = dd; melhor = [x, y]; } }
           return melhor && { ls, fs, x: melhor[0], y: melhor[1] }; };
