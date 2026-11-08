@@ -2829,7 +2829,7 @@ syncBtn();
 feed.addEventListener('scroll', () => {
   if (renderizando || carregandoAntigas) return;
   if (getSelection().toString()) return;   // selecionando texto pra copiar: um scroll momentâneo não pode trocar a lista debaixo do dedo
-  if (feed.scrollTop < 40 && !inicio && FILE === GERAL.arq && lastItems.length && !feed.dataset.avisouAntiga) { feed.dataset.avisouAntiga = '1'; showNote('O que tem mais de um dia tá em Menu → Geral antiga.'); }   // a Geral carrega só o recente (dados móveis, Sigma 22:57)
+  if (feed.scrollTop < 40 && !inicio && FILE === GERAL.arq && lastItems.length && !feed.dataset.avisouAntiga) { feed.dataset.avisouAntiga = '1'; showNote('O que é mais antigo tá em Menu → Listas → Geral antiga.'); }   // a Geral carrega só o recente (dados móveis, Sigma 22:57)
   if (feed.scrollTop < 40 && inicio > 0 && lastItems.length) {
     carregandoAntigas = true; janela = lastItems.length - inicio + 10; render(lastItems, true);   // a partir do que está na tela: com não vistas (ou a última dela) além da janela, "+10" não trazia nada
     setTimeout(() => { carregandoAntigas = false; }, 300);
