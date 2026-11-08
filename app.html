@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.172">
-<meta name="app-novidade" content="Planta: medida por fora da parede, nome do móvel inteiro e a porta de entrada do quarto">
+<meta name="app-versao" content="2026-11-08.173">
+<meta name="app-novidade" content="Planta: o nome do cômodo vai num lugar livre, sem cobrir os móveis">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -4274,7 +4274,7 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
       camadas[0].append(g); g.addEventListener('click', () => toca(k));
       const pal = k.nome.toUpperCase().split(' '), corte = pal.length > 1 ? pal.reduce((m, _, i) => i && Math.abs(pal.slice(0, i).join(' ').length - pal.slice(i).join(' ').length) < Math.abs(pal.slice(0, m).join(' ').length - pal.slice(m).join(' ').length) ? i : m, 1) : 0;
       const l2 = corte ? [pal.slice(0, corte).join(' '), pal.slice(corte).join(' ')] : null, fs1 = Math.min(0.36, k.w * 1.6 / Math.max(6, k.nome.length), k.h / 3.2), fs2 = l2 ? Math.min(0.36, k.w * 1.6 / Math.max(5, ...l2.map(x => x.length)), k.h / 4.4) : 0;
-      const duas = fs2 > fs1 * 1.15, cabe = (k.w - .3) / (Math.max(...(duas ? l2 : [k.nome]).map(x => x.length)) * .6), fs = Math.min(Math.max(0.15, duas ? fs2 : fs1), cabe), t = ns('text', { x: k.x + k.w / 2, y: k.y + k.h / 2 - fs * (duas ? .9 : .35), 'font-size': fs.toFixed(3), class: 'cad-nome' });   // cômodo pequeno: o nome quebra em 2 linhas e nunca fica menor que dá pra ler (Sigma 17:44)
+      const duas = fs2 > fs1 * 1.15, cabe = (k.w - .3) / (Math.max(...(duas ? l2 : [k.nome]).map(x => x.length)) * .68), fs = Math.min(Math.max(0.15, duas ? fs2 : fs1), cabe), t = ns('text', { x: k.x + k.w / 2, y: k.y + k.h / 2 - fs * (duas ? .9 : .35), 'font-size': fs.toFixed(3), class: 'cad-nome' });   // cômodo pequeno: o nome quebra em 2 linhas e nunca fica menor que dá pra ler (Sigma 17:44)
       (duas ? l2 : [k.nome.toUpperCase()]).forEach((tx, i) => { const sp = ns('tspan', { x: k.x + k.w / 2, dy: i ? (fs * 1.1).toFixed(3) : 0 }); sp.textContent = tx; t.append(sp); });
       const a = ns('text', { x: k.x + k.w / 2, y: k.y + k.h / 2 + fs * (duas ? 1.25 : .85), 'font-size': (fs * .7).toFixed(3), class: 'cad-area' }); a.textContent = num(areaDe(k)) + ' m²'; camadas[0].append(t, a); k.rot = [t, a];
       if (k.w > 0.8 && k.h > 0.8 && !k.pts) {   // cota por fora da parede (Sigma 23:48): o comprimento do lado de fora da casa, a largura embaixo só se embaixo for aberto
@@ -4293,15 +4293,30 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
         camadas[0].append(ns('path', { d: arco, class: 'cad-porta' }));
       });
       k.coisas = arruma(k);
+      const movs = k.coisas.filter(c => c.desenhar);
       k.coisas.filter(ci => ci.desenhar).forEach(ci => {
         const gi = ci.fixo ? (+ci.fixo.gira || 0) % 360 : 0, deLado = gi % 180 !== 0, gc = ns('g', { class: 'cad-obj' + (ci.projeto ? ' projeto' : ''), transform: gi ? 'translate(' + (ci.x + ci.ww / 2).toFixed(3) + ' ' + (ci.y + ci.hh / 2).toFixed(3) + ') rotate(' + gi + ') scale(' + (deLado ? ci.hh : ci.ww).toFixed(3) + ' ' + (deLado ? ci.ww : ci.hh).toFixed(3) + ') translate(-.5 -.5)' : 'translate(' + ci.x.toFixed(3) + ' ' + ci.y.toFixed(3) + ') scale(' + ci.ww.toFixed(3) + ' ' + ci.hh.toFixed(3) + ')' });   // gira 90, 180 ou 270: a cabeceira da cama na parede certa, a mesa em U de lado (móveis com posição, May 21:17) ci.g = gc;
         gc.append(ns('rect', { x: 0, y: 0, width: 1, height: 1, class: 'cad-obj-toque' }));
         ci.tp[3].forEach(p => gc.append(ns('path', { d: p, class: 'cad-obj-l', 'vector-effect': 'non-scaling-stroke', pathLength: 1 })));
         gc.addEventListener('click', e => { e.stopPropagation(); tocaCoisa(ci); }); camadas[1].append(gc);
         const rot = ci.nome.split(/\s*[,(]|\s+com\s+|\s+que\s+/)[0].trim(), pal = rot.split(' '), meio = Math.ceil(pal.length / 2), ls = rot.length > 11 && pal.length > 1 ? [pal.slice(0, meio).join(' '), pal.slice(meio).join(' ')] : [rot];
-        const lw = Math.max(...ls.map(x => x.length)), ft = Math.max(.045, Math.min(.13, (ci.ww - .06) / (lw * .6), (ci.hh - .04) / (ls.length * 1.25))), et = ns('text', { x: ci.x + ci.ww / 2, y: ci.y + ci.hh / 2 - (ls.length - 1) * ft * .6, 'font-size': ft.toFixed(3), class: 'cad-coisa' });
+        let lw = Math.max(...ls.map(x => x.length)), ft = Math.min(.13, (ci.ww - .06) / (lw * .68), (ci.hh - .04) / (ls.length * 1.25));
+        if (ft < .08) { ci.numerado = true; ls.splice(0, ls.length, String(ci.n + 1)); lw = ls[0].length; ft = Math.max(.08, Math.min(.13, (ci.ww - .02) / (lw * .68), ci.hh - .02)); }   // menor que 9 px não lê: vira o número, e a lista diz qual é (Sigma 00:07)
+        const et = ns('text', { x: ci.x + ci.ww / 2, y: ci.y + ci.hh / 2 - (ls.length - 1) * ft * .6, 'font-size': ft.toFixed(3), class: 'cad-coisa' + (ci.numerado ? ' num' : '') });
         ls.forEach((tx, i) => { const sp = ns('tspan', { x: ci.x + ci.ww / 2, dy: i ? (ft * 1.2).toFixed(3) : 0 }); sp.textContent = tx; et.append(sp); }); camadas[3].append(et);   // o nome do móvel inteiro, dentro dele, diminuindo até caber
       });
+      if (movs.length && k.rot) {   // com móvel desenhado, o nome grande do cômodo ia por cima da cama: vai pequeno num canto livre
+        const [t, ar] = k.rot, nomeU = k.nome.toUpperCase(), pal = nomeU.split(' '), meio = Math.ceil(pal.length / 2), area = num(areaDe(k)) + ' m²';
+        const livre = (cx, cy, tw, th) => cx - tw / 2 > k.x + .08 && cx + tw / 2 < k.x + k.w - .08 && cy - th / 2 > k.y + .08 && cy + th / 2 < k.y + k.h - .08 && !movs.some(c => cx - tw / 2 < c.x + c.ww && cx + tw / 2 > c.x && cy - th / 2 < c.y + c.hh && cy + th / 2 > c.y);
+        const procura = (ls, fs) => { const tw = Math.max(...ls.map(x => x.length)) * .68 * fs, th = ls.length * fs * 1.25; let melhor = null, dm = 1e9;   // varre o chão do cômodo atrás de um lugar livre do tamanho do texto, o mais perto do meio
+          for (let y = k.y + .1 + th / 2; y < k.y + k.h - .1 - th / 2 + 1e-6; y += .05) for (let x = k.x + .1 + tw / 2; x < k.x + k.w - .1 - tw / 2 + 1e-6; x += .05) if (livre(x, y, tw, th)) { const dd = Math.hypot(x - k.x - k.w / 2, y - k.y - k.h / 2); if (dd < dm) { dm = dd; melhor = [x, y]; } }
+          return melhor && { ls, fs, x: melhor[0], y: melhor[1] }; };
+        const opcoes = [[nomeU + ' · ' + area], [nomeU], pal.length > 1 ? [pal.slice(0, meio).join(' '), pal.slice(meio).join(' ')] : [nomeU]];
+        let achou = null; for (const fs of [.16, .13, .11, .09, .08]) { for (const ls of opcoes) { achou = procura(ls, fs); if (achou) break; } if (achou) break; }
+        if (!achou) { const ls = opcoes[2], fs = Math.max(.08, Math.min(.12, (k.w - .16) / (Math.max(...ls.map(x => x.length)) * .68))); achou = { ls, fs, x: k.x + k.w / 2, y: k.y + k.h / 2 }; }   // nada livre: fica no meio, pequeno, sem a área
+        t.replaceChildren(); t.setAttribute('font-size', achou.fs.toFixed(3)); t.setAttribute('x', achou.x.toFixed(3)); t.setAttribute('y', (achou.y - (achou.ls.length - 1) * achou.fs * .62).toFixed(3));
+        achou.ls.forEach((tx, i) => { const sp = ns('tspan', { x: achou.x.toFixed(3), dy: i ? (achou.fs * 1.25).toFixed(3) : 0 }); sp.textContent = tx; t.append(sp); }); t.classList.add('pequeno'); ar.remove(); k.rot = [t];
+      }
     });
     const liga = n => {   // liga as camadas até n; a nova vai sendo traçada (as linhas correm) e o texto aparece (fade liberado só aqui, May 12:49)
       camadas.forEach((g, k) => { g.style.display = k < n ? '' : 'none'; });
@@ -4339,7 +4354,7 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
       nomeEl.textContent = k.nome; sub.textContent = num(k.w) + ' × ' + num(k.h) + ' m · ' + num(areaDe(k)) + ' m²'; coord.textContent = 'X ' + num(k.x) + '  Y ' + num(k.y); cabecalho({ icone: 'home', sub: k.nome });
       const abas = [['Coisas · ' + k.coisas.length, cp => {
         if (!k.coisas.length) { cp.append(elD('p', 'p-nota', k.obs || 'Ainda não tem nada anotado daqui.')); return; }
-        const ul = elD('ul', 'pl-lista'); k.coisas.forEach(ci => { const li = elD('li', 'pl-toca'); li.dataset.n = ci.n; const ic = ns('svg', { viewBox: '-.1 -.1 1.2 1.2', class: 'pl-ic', preserveAspectRatio: 'xMidYMid meet' }); ci.tp[3].forEach(p => ic.append(ns('path', { d: p, 'vector-effect': 'non-scaling-stroke' }))); const tx = elD('span', '', ci.nome); if (ci.medida || ci.onde) tx.append(elD('small', 'pl-med-it', [ci.medida || 'sem medida no Inst', ci.onde].filter(Boolean).join(' · '))); if (!ci.desenhar) li.classList.add('fora'); if (ci.projeto) li.classList.add('projeto'); li.append(ic, tx); li.onclick = () => tocaCoisa(ci); ul.append(li); });
+        const ul = elD('ul', 'pl-lista'); k.coisas.forEach(ci => { const li = elD('li', 'pl-toca'); li.dataset.n = ci.n; const ic = ns('svg', { viewBox: '-.1 -.1 1.2 1.2', class: 'pl-ic', preserveAspectRatio: 'xMidYMid meet' }); ci.tp[3].forEach(p => ic.append(ns('path', { d: p, 'vector-effect': 'non-scaling-stroke' }))); const tx = elD('span', '', (ci.numerado ? (ci.n + 1) + ' · ' : '') + ci.nome); if (ci.medida || ci.onde) tx.append(elD('small', 'pl-med-it', [ci.medida || 'sem medida no Inst', ci.onde].filter(Boolean).join(' · '))); if (!ci.desenhar) li.classList.add('fora'); if (ci.projeto) li.classList.add('projeto'); li.append(ic, tx); li.onclick = () => tocaCoisa(ci); ul.append(li); });
         cp.append(ul, elD('p', 'p-nota', 'Medida e lugar tirados do Inst (' + (k.fontes || []).map(f => f.replace(/^casa\//, '')).join(', ') + '). O lugar no desenho é aproximado quando o arquivo só diz a parede; apagada = fica na parede ou em cima de outra coisa.')); marcaLista();
       }], ['Medidas', cp => { const ul = elD('ul', 'pl-med'); [['Largura', num(k.w) + ' m'], ['Comprimento', num(k.h) + ' m'], ['Área', num(areaDe(k)) + ' m²'], ['Perímetro', num(2 * (k.w + k.h)) + ' m'], ['Posição', 'X ' + num(k.x) + ' · Y ' + num(k.y)]].forEach(([a, b]) => { const li = elD('li'); li.append(elD('span', '', a), elD('b', '', b)); ul.append(li); }); cp.append(ul); }]];
       if ((k.tomadas || []).length) abas.splice(1, 0, ['Tomadas · ' + k.tomadas.length, cp => { const ul = elD('ul', 'pl-med'); k.tomadas.forEach(t => { const li = elD('li'); li.append(elD('span', '', t)); ul.append(li); }); cp.append(ul, elD('p', 'p-nota', 'Da May em 21/10 (casa/TOMADAS-DA-CASA-21-10-2026.md).')); }]);   // tomadas de cada cômodo, do levantamento dela
