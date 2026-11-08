@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.210">
-<meta name="app-novidade" content="Finanças no visual do Financeiro May; calendário da Agenda com relevo">
+<meta name="app-versao" content="2026-11-08.211">
+<meta name="app-novidade" content="Nova no Menu: a Garagem, a oficina do Gol, da Ninja e do Siena">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -854,6 +854,7 @@ img.esq { min-height: 140px; }
 .p-grade.apps .bt-maquinas { background: linear-gradient(165deg, #3730A3, #111033 70%); border: 1px solid #6366F1; border-radius: 18px 18px 8px 8px; box-shadow: inset 0 2px 0 rgba(255,255,255,.25), inset 0 -10px 0 #0B0A24, 0 6px 14px rgba(0,0,0,.35); }
 .p-grade.apps .bt-maquinas::after { content: ''; position: absolute; top: 10px; right: 12px; width: 7px; height: 7px; border-radius: 50%; background: #34D399; box-shadow: 0 0 8px #34D399; } .p-grade.apps .bt-maquinas .ic { color: #C7D2FE; }
 .p-grade.apps .bt-pendencias { background: linear-gradient(#F59E0B 0 18px, transparent 18px), repeating-linear-gradient(90deg, transparent 0 25px, #FCD34D 25px 26px), repeating-linear-gradient(transparent 0 17px, #FCD34D 17px 18px), #FFFBEB; border: 1px solid #F59E0B; border-radius: 4px; text-shadow: none; padding-top: 22px; }
+.p-grade.apps .bt-garagem { background: repeating-linear-gradient(0deg, #3A3D44 0 6px, #2A2C31 6px 8px) !important; border: 2px solid #F5C400 !important; } .p-grade.apps .bt-garagem .ic { color: #F5C400; } .p-grade.apps .bt-garagem .t { color: #F5C400; font-family: Impact, 'DIN Condensed', sans-serif; letter-spacing: .06em; text-transform: uppercase; }   /* a Garagem no Menu: portão de enrolar com a borda amarela de segurança */
 .p-grade.apps .bt-pendencias .ic { color: #B45309; filter: none; } .p-grade.apps .bt-pendencias .t { color: #78350F; }
 .p-grade.apps .bt-pendencias { background: linear-gradient(#0F4A2C 0 18px, transparent 18px), #FFFFFF !important; border: 1px solid #D8E6DE !important; } .p-grade.apps .bt-pendencias .ic { color: #1A6640; } .p-grade.apps .bt-pendencias .t { color: #0F4A2C; font-family: 'Syne', 'DM Sans', sans-serif; font-weight: 800; letter-spacing: normal; text-transform: none; }   /* o azulejo da Finanças no verde do Financeiro May, simples, sem número (May 08/11 14:48) */
 .p-grade.apps .bt-saude { background: radial-gradient(110% 90% at 100% 0%, rgba(255,255,255,.35), transparent 60%), linear-gradient(150deg, #F472B6, #DB2777 55%, #9D174D); border: 0; border-radius: 28px; box-shadow: 0 8px 18px rgba(219,39,119,.35); }
@@ -3659,14 +3660,14 @@ const ICONES_MENU = [
 function iconeMenu(nome) { const a = ICONES_MENU.find(([re]) => re.test(nome)); return a ? '<svg class="im" viewBox="0 0 48 48" aria-hidden="true">' + a[1] + '</svg>' : ''; }
 // Menu: cada botão com a cara da tela de dentro (May, 07/11/2026 15:08 e 15:16: "cara de botão, mas cada botão tem que ser o CSS separado;
 // o que eles têm de igual é largura e altura, o resto cada um pega do seu interior"). Classe bt-<assunto>; a Agenda mostra o dia de hoje
-const BOTAO_DE = [[/jogo/i, 'jogos'], [/m[aá]quina|console/i, 'maquinas'], [/pend[eê]ncia|finan[cç]/i, 'pendencias'], [/sa[uú]de|cirurgia/i, 'saude'], [/treino|academia/i, 'treino'], [/casa/i, 'casa'],
+const BOTAO_DE = [[/jogo/i, 'jogos'], [/m[aá]quina|console/i, 'maquinas'], [/pend[eê]ncia|finan[cç]/i, 'pendencias'], [/garag/i, 'garagem'], [/sa[uú]de|cirurgia/i, 'saude'], [/treino|academia/i, 'treino'], [/casa/i, 'casa'],
   [/obra|piscina/i, 'obra'], [/m[ií]dia|imagen|v[ií]deo|anima/i, 'midia'], [/lista/i, 'listas'], [/ideia|tarefa/i, 'ideias'], [/conta|comida/i, 'contas'], [/agenda/i, 'agenda']];
 const ICONE_LIMPO = {   // desenho de linha limpo, traço igual em todos (May 15:33: "tá parecendo uma criança desenhando, tem que ser mais profissional")
   midia: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9.2l5 2.8-5 2.8z"/>', listas: '<path d="M10 6.5h10M10 12h10M10 17.5h10"/><path d="M4 6.5l1.3 1.3L7.6 5.5M4 12l1.3 1.3L7.6 11M4 17.5l1.3 1.3 2.3-2.3"/>',
   ideias: '<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.9 10.6c.6.6.9 1.4.9 2.4h6c0-1 .3-1.8.9-2.4A6 6 0 0 0 12 3z"/>', maquinas: '<rect x="3" y="4" width="18" height="12" rx="1.6"/><path d="M8 20h8M12 16v4"/><path d="M7.5 10h3M9 8.5v3"/><circle cx="15.5" cy="10" r=".9"/>',
   obra: '<path d="M2.5 17.5h19"/><path d="M4.5 17.5a7.5 7.5 0 0 1 15 0"/><path d="M10 10.5V6h4v4.5"/>', saude: '<path d="M12 3c-2 0-3.5 1.6-3.5 3.5 0 2 1.4 4 3.5 6.5 2.1-2.5 3.5-4.5 3.5-6.5C15.5 4.6 14 3 12 3z"/><path d="M10.3 12.5 6 21l3-1.2 1.7 2.5 2.4-6.8M13.7 12.5 18 21l-3-1.2-1.7 2.5-2.4-6.8"/>',
   jogos: '<path d="M6.5 8.5h11a3.5 3.5 0 0 1 3.4 4.3l-.9 3.9a2 2 0 0 1-3.5.8L15 15.5H9l-1.5 2a2 2 0 0 1-3.5-.8l-.9-3.9a3.5 3.5 0 0 1 3.4-4.3z"/><path d="M8.5 11v3M7 12.5h3"/><circle cx="15.5" cy="12" r=".9"/><circle cx="17.3" cy="13.6" r=".9"/>',
-  treino: '<path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/>', pendencias: '<rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M3.5 9h17M3.5 14h17M9 9v10.5"/><rect x="9" y="9" width="5.5" height="5" stroke-width="2.6"/>',   // Finanças: uma tabelinha com a célula marcada, sem número (May 08/11 14:48) casa: '<path d="M3 11l9-7 9 7"/><path d="M5 9.5V20h14V9.5"/>'
+  treino: '<path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/>', garagem: '<path d="M3 10l9-6 9 6v10H3z"/><path d="M6 20v-7h12v7M6 15.5h12M6 18h12"/>', pendencias: '<rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M3.5 9h17M3.5 14h17M9 9v10.5"/><rect x="9" y="9" width="5.5" height="5" stroke-width="2.6"/>',   // Finanças: uma tabelinha com a célula marcada, sem número (May 08/11 14:48) casa: '<path d="M3 11l9-7 9 7"/><path d="M5 9.5V20h14V9.5"/>'
 };
 function vesteBotao(b, nome) {
   const k = (BOTAO_DE.find(([re]) => re.test(nome)) || [])[1]; if (!k) return;
@@ -4792,6 +4793,7 @@ function abreItemMenu(m) {
   if (m.tipo === 'geral-antiga') return abreGeralAntiga(m);
   if (m.tipo === 'pagina') { location.href = m.arq + (m.arq.includes('?') ? '&' : '?') + 'v=' + encodeURIComponent(VERSAO); return; }   // ?v= da versão: o iPhone não reaproveita a página velha do cache (May 20:23, Parede de 05/11 aparecendo)   // página própria do app (ex.: jogos.html), volta pelo botão dela
   if (m.tipo === 'catalogo') return abreCatalogo();
+  if (m.tipo === 'garagem' && window.abreGaragem) return abreGaragem(m);   // a Garagem, a oficina dos 3 veículos (vaga do Menu, May 08/11 14:41)
   if (m.tipo === 'grupo') return abreGrupo(m);
   if (m.tipo === 'ideias') return abreIdeias(m);
   if (m.tipo === 'planta') return abrePlanta(m);
@@ -5610,5 +5612,6 @@ if (location.hash === '#menu' || (history.state && history.state.painel && !loca
 }
 window.appPronto = true;   // o script inteiro rodou: o modo de emergência do socorro.js não precisa abrir (#174)
 </script>
+<script src="garagem.js?v=1"></script>
 </body>
 </html>
