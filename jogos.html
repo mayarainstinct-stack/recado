@@ -146,6 +146,7 @@ nav button.on{background:rgba(0,255,140,.12);color:var(--verde);box-shadow:inset
 #envio .acoes button.ic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:var(--vidro);border:1px solid var(--borda)}
 #envio .acoes .env{flex:1;height:48px;border-radius:14px;background:var(--verde);color:#062012;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}
 #aviso{position:fixed;z-index:14;left:16px;right:16px;bottom:96px;padding:14px 16px;border-radius:16px;background:#0E2A1C;border:1px solid #00FF8C;color:#fff;font-size:14px;font-weight:700;display:none;box-shadow:0 10px 30px rgba(0,0,0,.5);animation:sobeP .3s ease-out}
+header .anotar{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.35);margin-left:auto;margin-right:8px}
 #e-pra{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}#e-pra button{padding:7px 11px;border-radius:999px;font-size:12px;font-weight:700;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22)}#e-pra button.on{background:color-mix(in srgb,var(--cor) 55%,#0a0a0a);border-color:color-mix(in srgb,var(--cor) 80%,#fff)}
 .tile.pc{border-color:#B09B71}.tile.pc .tarja{background:linear-gradient(90deg,#4A4E52,#1A1B1D);box-shadow:inset 0 -2px 0 #B09B71;color:#fff}.tile.pc .tarja svg{color:#B09B71;stroke:#B09B71}
 .tile.t-claro .tarja{color:#151515;text-shadow:none}.tile.t-claro .tarja svg{color:#151515;stroke:#151515}
@@ -610,6 +611,7 @@ nav button{position:relative;z-index:1}nav button.on{background:none!important;b
 <header>
 <button class="voltar" id="voltar-app" aria-label="Voltar pros recados"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
 <h1>Jogos<small id="sub"></small></h1>
+<button class="anotar" id="j-anotar" aria-label="Escrever sobre esta tela"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
 <div class="selo-j2" aria-label="Jogando A2"><img class="j2img" data-p="categorias/games/tela/j2-selo.webp" alt="J2"></div>
 </header>
 <main id="lista"></main>
@@ -635,7 +637,7 @@ nav button{position:relative;z-index:1}nav button.on{background:none!important;b
 <button class="e-x" id="e-x" aria-label="Fechar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
 <h4 id="e-tt">Mandar algo sobre este jogo</h4>
 <p>Vai pra Geral. Escolhe quem precisa ver:</p>
-<div class="pra" id="e-pra"><button data-q="Vega" class="on">Tela (Vega)</button><button data-q="Orfeu" class="on">História e dados (Orfeu)</button><button data-q="Nyx">Capa e imagens (Nyx)</button></div>
+<div class="pra" id="e-pra"><button data-q="Hermes" class="on">Tela (Hermes)</button><button data-q="Orfeu" class="on">História e dados (Orfeu)</button><button data-q="Nyx">Capa e imagens (Nyx)</button></div>
 <textarea id="e-txt" placeholder="vai q lembra de algo..."></textarea>
 <div class="acoes">
 <button class="env" id="e-env"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l16-8-6 16-2.5-6.5z"/></svg>Enviar</button>
@@ -955,14 +957,16 @@ document.getElementById("f-voltar").onclick=fechaFicha
 document.getElementById("ficha").addEventListener("click",e=>{const b=e.target.closest("[data-ir]");if(b&&POR[b.dataset.ir]){e.stopPropagation();abrir(b.dataset.ir);document.getElementById("f-corpo").scrollTop=0}})
 document.getElementById("f-corpo").addEventListener("scroll",e=>document.getElementById("f-msg").classList.toggle("mini",e.target.scrollTop>60),{passive:true})
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>trocaAba(b.dataset.aba,Math.sign(ABAS_L.indexOf(b.dataset.aba)-ABAS_L.indexOf(aba))))
-document.getElementById("f-msg").onclick=()=>{document.getElementById("envio").classList.add("on");setTimeout(()=>document.getElementById("e-txt").focus(),50)}
+let envioTela=""
+document.getElementById("j-anotar").onclick=()=>{envioTela=aba=="concluidos"?"Parede da Vitória":"Jogos";document.getElementById("envio").style.setProperty("--cor",aba=="concluidos"?"#CF8002":"#12a05f");document.getElementById("e-tt").textContent="Escrever sobre esta tela";document.getElementById("envio").classList.add("on");setTimeout(()=>document.getElementById("e-txt").focus(),50)}   // o mesmo lápis do app, no mesmo lugar, manda sem sair da tela (May 08/11 12:50)
+document.getElementById("f-msg").onclick=()=>{envioTela="";if(fichaAtual)document.getElementById("e-tt").textContent="Mandar algo sobre "+fichaAtual.titulo;document.getElementById("envio").classList.add("on");setTimeout(()=>document.getElementById("e-txt").focus(),50)}
 document.getElementById("envio").onclick=e=>{if(e.target.id=="envio")e.currentTarget.classList.remove("on")}
 document.getElementById("e-x").onclick=()=>document.getElementById("envio").classList.remove("on")
 let enviando=false
 document.querySelectorAll("#e-pra button").forEach(x=>x.onclick=e=>{e.stopPropagation();x.classList.toggle("on")})
 document.getElementById("e-env").onclick=async()=>{const t=document.getElementById("e-txt").value.trim();if(!t||enviando)return;enviando=true;const b=document.getElementById("e-env"),a=document.getElementById("aviso"),n=new Date(),p=x=>String(x).padStart(2,"0"),rot=b.innerHTML;b.disabled=true;b.classList.add("indo");b.innerHTML='<span class="giro"></span>Enviando…';document.getElementById("e-txt").readOnly=true
-const pra=[...document.querySelectorAll("#e-pra button.on")].map(x=>"@"+x.dataset.q).join(" ")||"@Vega"
-const linha=`- [${p(n.getDate())}/${p(n.getMonth()+1)}/${n.getFullYear()} ${p(n.getHours())}:${p(n.getMinutes())}] ${pra} sobre o jogo ${fichaAtual.titulo}: ${t.replace(/\r?\n/g,"\\n")}`
+const pra=[...document.querySelectorAll("#e-pra button.on")].map(x=>"@"+x.dataset.q).join(" ")||"@Hermes"
+const linha=`- [${p(n.getDate())}/${p(n.getMonth()+1)}/${n.getFullYear()} ${p(n.getHours())}:${p(n.getMinutes())}] ${envioTela?`📝 ${envioTela}: ${pra}`:`${pra} sobre o jogo ${fichaAtual.titulo}:`} ${t.replace(/\r?\n/g,"\\n")}`
 let ok=false;for(let k=0;k<4&&!ok;k++){try{const f=await(await gh("CAIXA-DE-ENTRADA.md")).json();const md=decodeURIComponent(escape(atob(f.content.replace(/\n/g,""))));if(!md.includes("## Recados")||md.length<200)break;const novo=md.replace(/\s*$/,"")+"\n"+linha+"\n";const r=await gh("CAIXA-DE-ENTRADA.md",{method:"PUT",body:JSON.stringify({message:"recado do iPhone (jogos)",content:btoa(unescape(encodeURIComponent(novo))),sha:f.sha})});if(r.ok)ok=true;else if(r.status!==409)break;else await new Promise(z=>setTimeout(z,600))}catch(e){break}}
 enviando=false;b.disabled=false;b.classList.remove("indo");b.innerHTML=rot;document.getElementById("e-txt").readOnly=false;a.classList.toggle("erro",!ok);if(ok){document.getElementById("e-txt").value="";document.getElementById("envio").classList.remove("on");a.textContent="Mandado pra Geral."}else a.textContent="Não foi. Toca em Enviar pra tentar de novo (o texto continua aí).";a.style.display="block";setTimeout(()=>a.style.display="none",3200)}
 function aberturaJogos(pronto,parar){const el=document.getElementById("abertura"),rm=matchMedia("(prefers-reduced-motion: reduce)").matches;if(rm){el.classList.remove("on","j2","v6");pronto();return}el.classList.add("on");let fim=false,ab=null;const sai=()=>{if(fim)return;fim=true;window.J2FIM=true;el.classList.add("sai");setTimeout(()=>{el.classList.remove("on","sai","j2","v6");const t=document.getElementById("troca");t.classList.remove("on");void t.offsetWidth;t.classList.add("on");pronto()},300)};const pula=()=>window.J2AB&&!window.J2PULOU?(window.J2PULOU=true,window.J2AB.pular()):sai();el.onclick=pula;el.onkeydown=e=>{if(e.key=="Enter"||e.key==" "||e.key=="Escape")pula()}
