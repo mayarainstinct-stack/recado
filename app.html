@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.220">
-<meta name="app-novidade" content="Geral antiga agora tá na Agenda: toca num dia que já passou e abre os recados dele">
+<meta name="app-versao" content="2026-11-08.221">
+<meta name="app-novidade" content="Geral antiga agora mora no topo da Geral: ver dias anteriores">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -1056,7 +1056,7 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 .ag-grade { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; } .ag-sem { font-size: 11px; font-weight: 800; opacity: .7; padding-bottom: 2px; }
 .ag-dia { position: relative; width: auto; height: 36px; border-radius: 10px; background: rgba(255,255,255,.08); color: #fff; font: inherit; font-size: 14px; font-weight: 700; }
 .ag-dia.tem::after { content: ''; position: absolute; left: 50%; bottom: 4px; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: #FDE047; box-shadow: 0 0 6px #FDE047; }
-.ag-dia.hoje { outline: 2px solid #fff; outline-offset: -2px; } .ag-tudo.ag-geral { display: block; margin: 8px 0 0; } .ag-dia.sel { background: #fff; color: #0F766E; }
+.ag-dia.hoje { outline: 2px solid #fff; outline-offset: -2px; } .ag-tudo.ag-geral { display: block; margin: 8px 0 0; } #feed .ver-antes { display: block; width: auto; height: auto; margin: 8px auto 12px; padding: 8px 16px; border: 1px solid rgba(255,255,255,.22); border-radius: 99px; background: rgba(255,255,255,.06); color: var(--muted, #A0A8B8); font: 600 13px/1.2 inherit; font-family: inherit; } .ag-dia.sel { background: #fff; color: #0F766E; }
 .ag-tudo { margin-top: 10px; width: auto; height: auto; border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 13px; font-weight: 800; background: #fff; color: #0F766E; }
 .fin { display: flex; flex-direction: column; gap: 12px; min-height: calc(100dvh - 190px); }
 .fin-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
@@ -2322,6 +2322,7 @@ function render(items, manterPosicao) {
     feed.append(e); recolocaPendentes(); return;
   }
   if (inicio > 0) { const mais = document.createElement('div'); mais.className = 'day'; mais.textContent = '↑ role pra ver as antigas'; feed.append(mais); }
+  else if (/CAIXA-DE-ENTRADA/.test(FILE || '')) { const b = document.createElement('button'); b.type = 'button'; b.className = 'ver-antes'; b.textContent = '↑ ver dias anteriores'; b.onclick = () => { menu.hidden = true; painel.hidden = false; abreGeralAntiga({ nome: 'Dias anteriores' }); }; feed.append(b); }   // a Geral antiga mora aqui, no topo da conversa (May 16:55 "dilui ela", Sigma 17:03): abre o fichário e o voltar traz de volta pra Geral
   let ultDia = 0;   // separador de dia só avança: agente com relógio em UTC não faz "05/11 → 04/11 → 05/11"
   items.forEach((it, i) => {
     if (i < inicio && !fixasI.includes(i)) return;
@@ -3111,7 +3112,7 @@ syncBtn();
 feed.addEventListener('scroll', () => {
   if (renderizando || carregandoAntigas) return;
   if (getSelection().toString()) return;   // selecionando texto pra copiar: um scroll momentâneo não pode trocar a lista debaixo do dedo
-  if (feed.scrollTop < 40 && !inicio && FILE === GERAL.arq && lastItems.length && !feed.dataset.avisouAntiga) { feed.dataset.avisouAntiga = '1'; showNote('O que é mais antigo tá em Menu → Listas → Geral antiga.'); }   // a Geral carrega só o recente (dados móveis, Sigma 22:57)
+  if (feed.scrollTop < 40 && !inicio && FILE === GERAL.arq && lastItems.length && !feed.dataset.avisouAntiga) { feed.dataset.avisouAntiga = '1'; showNote('O que é mais antigo: toca em ↑ ver dias anteriores, aqui em cima.'); }   // a Geral carrega só o recente (dados móveis, Sigma 22:57)
   if (feed.scrollTop < 40 && inicio > 0 && lastItems.length) {
     carregandoAntigas = true; janela = lastItems.length - inicio + 10; render(lastItems, true);   // a partir do que está na tela: com não vistas (ou a última dela) além da janela, "+10" não trazia nada
     setTimeout(() => { carregandoAntigas = false; }, 300);
