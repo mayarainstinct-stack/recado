@@ -948,6 +948,28 @@ img.esq { min-height: 140px; }
 .gr-grade.gr-grade-cinema .gr-item .t { font-family: Georgia, 'Times New Roman', serif; font-size: 15px; font-weight: 900; letter-spacing: .3px; text-transform: uppercase; color: #B3261E; text-shadow: 1px 1px 0 #2B1A0E; text-align: center; }
 .gr-grade.gr-grade-cinema .gr-item .gr-sub { font-family: Georgia, serif; font-style: italic; font-size: 13px; color: #5A4127; text-align: center; line-height: 1.25; }
 @media (prefers-reduced-motion: reduce) { .gr-grade.gr-grade-cinema::after { animation: none; } }
+/* Ateliê: estúdio antigo (anos 30 a 60) igual à Mídia; letreiro de filme mudo, cartão de produção com carimbo e tira de filme de 4 quadros pra etapa (May 08/11 14:52, Sigma 15:18). Hermes */
+.at-tela { position: relative; flex-shrink: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; margin: -6px -16px 0; padding: 22px 34px calc(96px + env(safe-area-inset-bottom)); min-height: calc(100dvh - env(safe-area-inset-top) - 66px); background: repeating-linear-gradient(180deg, transparent 0 9px, #F3E6C8 9px 19px, transparent 19px 28px) 6px 0 / 9px 100% no-repeat, repeating-linear-gradient(180deg, transparent 0 9px, #F3E6C8 9px 19px, transparent 19px 28px) calc(100% - 6px) 0 / 9px 100% no-repeat, linear-gradient(90deg, #2B1A0E 0 20px, transparent 20px calc(100% - 20px), #2B1A0E calc(100% - 20px)), radial-gradient(120% 90% at 50% 30%, #F3E6C8 55%, #D2B88C 100%); color: #2B1A0E; }
+.at-letreiro { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 18px 16px 16px; border-radius: 6px; background: #2B1A0E; color: #F7EEDB; text-align: center; box-shadow: inset 0 0 0 4px #2B1A0E, inset 0 0 0 6px #E8D2A6, inset 0 0 0 9px #2B1A0E, 6px 7px 0 #B3261E; }
+.at-letreiro small { font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: #E8D2A6; }
+.at-letreiro b { font-family: Impact, 'Arial Narrow Bold', 'Arial Black', sans-serif; font-weight: 400; font-size: 40px; letter-spacing: 6px; line-height: 1; color: #F7EEDB; text-shadow: 3px 3px 0 #B3261E; }
+.at-letreiro span { font-size: 13px; font-weight: 700; font-style: italic; color: #E8D2A6; }
+.at-obra { position: relative; flex-shrink: 0; padding: 14px 16px 16px; border-radius: 6px; background: #F7EEDB; border: 4px solid #2B1A0E; box-shadow: inset 0 0 0 6px #F7EEDB, inset 0 0 0 8.5px #2B1A0E, 6px 7px 0 #2B1A0E; }
+.at-topo { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.at-carimbo { padding: 3px 8px 2px; border: 2.5px solid #B3261E; border-radius: 4px; color: #B3261E; font-family: Impact, 'Arial Narrow Bold', 'Arial Black', sans-serif; font-size: 13px; letter-spacing: 1.5px; transform: rotate(-4deg); }
+.at-take { font-family: 'Courier New', Courier, monospace; font-size: 12px; font-weight: 700; color: #6B4A2B; }
+.at-nome { margin: 10px 0 12px; font-family: Impact, 'Arial Narrow Bold', 'Arial Black', sans-serif; font-weight: 400; font-size: 21px; line-height: 1.15; letter-spacing: .4px; color: #2B1A0E; }
+.at-fita { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 9px 4px; border-radius: 3px; background: repeating-linear-gradient(90deg, #F7EEDB 0 5px, transparent 5px 10px) 0 2px / 100% 4px no-repeat, repeating-linear-gradient(90deg, #F7EEDB 0 5px, transparent 5px 10px) 0 calc(100% - 2px) / 100% 4px no-repeat, #2B1A0E; }
+.at-quadro { min-height: 50px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 4px 2px; border-radius: 2px; background: #4A3320; color: #A88A66; text-align: center; }
+.at-quadro b { font-family: Impact, 'Arial Narrow Bold', 'Arial Black', sans-serif; font-weight: 400; font-size: 17px; line-height: 1; }
+.at-quadro small { font-size: 9.5px; font-weight: 700; line-height: 1.15; }
+.at-quadro.feito { background: #E8D2A6; color: #2B1A0E; }
+.at-quadro.agora { background: #B3261E; color: #FFF6E6; box-shadow: 0 0 0 2px #F7EEDB; }
+.at-falta { margin: 12px 0 0; font-size: 14px; font-weight: 600; line-height: 1.4; color: #3A2614; }
+.at-falta b { color: #B3261E; font-weight: 800; }
+.at-com { margin: 6px 0 0; font-family: 'Courier New', Courier, monospace; font-size: 12px; font-weight: 700; color: #6B4A2B; }
+.gr-grade.gr-grade-cinema .gr-item:nth-child(5) { grid-column: 1 / -1; }
+.gr-grade.gr-grade-cinema .gr-item:nth-child(5) .ic { background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Cpath%20d='M50%2012%20C26%2012%2010%2028%2010%2048%20C10%2066%2022%2080%2040%2080%20C48%2080%2050%2074%2046%2068%20C42%2062%2046%2056%2054%2056%20L66%2056%20C80%2056%2090%2046%2090%2034%20C90%2020%2072%2012%2050%2012%20Z'%20fill='%23F7EEDB'%20stroke='%232B1A0E'%20stroke-width='5'%20stroke-linejoin='miter'/%3E%3Ccircle%20cx='30'%20cy='42'%20r='6'%20fill='%23B3261E'%20stroke='%232B1A0E'%20stroke-width='3.5'/%3E%3Ccircle%20cx='44'%20cy='28'%20r='6'%20fill='%23E8D2A6'%20stroke='%232B1A0E'%20stroke-width='3.5'/%3E%3Ccircle%20cx='62'%20cy='28'%20r='6'%20fill='%232B1A0E'/%3E%3Cpath%20d='M74%2064%20L74%2090%20M74%2064%20L92%2060%20L92%2084'%20fill='none'%20stroke='%232B1A0E'%20stroke-width='5'%20stroke-linecap='square'%20stroke-linejoin='miter'/%3E%3Ccircle%20cx='68'%20cy='90'%20r='6'%20fill='%232B1A0E'/%3E%3Ccircle%20cx='86'%20cy='84'%20r='6'%20fill='%232B1A0E'/%3E%3C/svg%3E"); }
 /* Pós-cirurgia: Outubro Rosa claro e delicado (branco, rosa e rosa-bebê), trilha de etapas com laço; diferente da Saúde (papel de eletro) e da Agenda (May 08/11 12:59). Hermes */
 .pos-tela { position: relative; flex-shrink: 0; box-sizing: border-box; margin: -6px -16px 0; padding: 22px 22px calc(96px + env(safe-area-inset-bottom)); min-height: calc(100dvh - env(safe-area-inset-top) - 66px); background: radial-gradient(60% 40% at 100% 0%, #FDE2EC, transparent 70%), radial-gradient(50% 35% at 0% 100%, #FCE4EE, transparent 70%), #FFF8FB; color: #6B1D3C; }
 .pos-tela .pos-intro { position: relative; margin: 0 0 22px; padding: 18px 18px 18px 64px; border-radius: 20px; background: #FFFFFF; border: 1.5px solid #F8C8DC; box-shadow: 0 8px 20px rgba(231,84,128,.10); color: #6B1D3C; font-size: 14px; line-height: 1.5; }
@@ -3675,7 +3697,7 @@ const irGeral = document.getElementById('ir-geral'), irTrab = document.getElemen
 const painel = document.getElementById('painel'), pCorpo = document.getElementById('p-corpo'), pTit = document.getElementById('p-tit'), pExtra = document.getElementById('p-extra');
 let pilha = [], catalogo = null;
 const reais = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
-const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#3BD13B'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#B3261E'], [/^listas/i, '#F59E0B'], [/ideia|tarefa/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia|contas/i, '#F59E0B']];
+const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#3BD13B'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#B3261E'], [/ateli/i, '#B3261E'], [/^listas/i, '#F59E0B'], [/ideia|tarefa/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia|contas/i, '#F59E0B']];
 // Arrumar o Menu arrastando (May, 07/11/2026 12:03: "dar pra eu clicar e arrastar, aí eu mesma organizava"): segura o azulejo até ele levantar,
 // arrasta pro lugar do outro e solta; a ordem fica guardada neste aparelho
 function arrumaArrastando(grade) {
@@ -4868,6 +4890,7 @@ function abreItemMenu(m) {
   if (m.tipo === 'texto') return abreTexto(m);
   if (m.tipo === 'agenda') return abreAgenda(m);
   if (m.tipo === 'checklist') return abreCheck(m);
+  if (m.tipo === 'atelie') return abreAtelie(m);
   if (m.tipo === 'viagens') return abreViagens(m);
 }
 // ---- Viagens: menu/viagens.json = { viagens: [{ id, nome, resumo, listas: [{ id, nome, grupos: [{ nome, itens: [[id, texto]] }] }] }] }
@@ -4926,6 +4949,28 @@ function abreCheck(m) {
         b.onclick = () => { mede(); if (feitos[x.id]) delete feitos[x.id]; else feitos[x.id] = hoje; store.set('check-feitos', JSON.stringify(feitos)); b.classList.toggle('feito', !!feitos[x.id]); };
         w.append(b); if (feitos[x.id]) requestAnimationFrame(mede);
       });
+    });
+  });
+}
+// Ateliê (aba nova da Mídia, May 08/11 14:52 e 15:09, Sigma 15:18): as obras em andamento (música, desenho, animação), cada uma com a etapa numa tira de filme e o que falta; estúdio antigo, igual à Mídia. Dados: menu/atelie.json = { obras: [{ id, nome, tipo, etapa 1-4, falta, com }] }. Hermes
+function abreAtelie(m) {
+  tela(m.nome, async c => {
+    const p = elD('p', 'p-nota', 'Carregando…'); c.append(p);
+    let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    p.remove();
+    const w = elD('div', 'at-tela'); c.append(w);
+    const ltr = elD('div', 'at-letreiro'); ltr.append(elD('small', '', 'o estúdio da May apresenta'), elD('b', '', 'ATELIÊ'), elD('span', '', (d.obras || []).length + ' obras no forno')); w.append(ltr);
+    const ETAPAS = ['ideia', 'rascunho', 'gravar · colorir', 'mixar · finalizar'];
+    (d.obras || []).slice().sort((a, b) => (b.etapa || 0) - (a.etapa || 0)).forEach((o, k) => {
+      const cd = elD('article', 'at-obra'); cd.style.setProperty('--i', k);
+      const topo = elD('div', 'at-topo'); topo.append(elD('span', 'at-carimbo', (o.tipo || 'Obra').toUpperCase()), elD('span', 'at-take', 'TAKE ' + String(k + 1).padStart(2, '0')));
+      cd.append(topo, elD('h3', 'at-nome', o.nome));
+      const fita = elD('div', 'at-fita');
+      ETAPAS.forEach((e, i) => { const q = elD('div', 'at-quadro' + (i + 1 < o.etapa ? ' feito' : i + 1 === o.etapa ? ' agora' : '')); q.append(elD('b', '', String(i + 1)), elD('small', '', e)); fita.append(q); });
+      cd.append(fita);
+      const f = elD('p', 'at-falta'); f.append(elD('b', '', 'falta: '), document.createTextNode(o.falta || 'nada')); cd.append(f);
+      if (o.com) cd.append(elD('p', 'at-com', 'na mão de: ' + o.com));
+      w.append(cd);
     });
   });
 }
