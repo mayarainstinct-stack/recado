@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.219">
-<meta name="app-novidade" content="Agenda marca o dia tocado; Finanças com o nome inteiro">
+<meta name="app-versao" content="2026-11-08.220">
+<meta name="app-novidade" content="Geral antiga agora tá na Agenda: toca num dia que já passou e abre os recados dele">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -1056,7 +1056,7 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 .ag-grade { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; } .ag-sem { font-size: 11px; font-weight: 800; opacity: .7; padding-bottom: 2px; }
 .ag-dia { position: relative; width: auto; height: 36px; border-radius: 10px; background: rgba(255,255,255,.08); color: #fff; font: inherit; font-size: 14px; font-weight: 700; }
 .ag-dia.tem::after { content: ''; position: absolute; left: 50%; bottom: 4px; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: #FDE047; box-shadow: 0 0 6px #FDE047; }
-.ag-dia.hoje { outline: 2px solid #fff; outline-offset: -2px; } .ag-dia.sel { background: #fff; color: #0F766E; }
+.ag-dia.hoje { outline: 2px solid #fff; outline-offset: -2px; } .ag-tudo.ag-geral { display: block; margin: 8px 0 0; } .ag-dia.sel { background: #fff; color: #0F766E; }
 .ag-tudo { margin-top: 10px; width: auto; height: auto; border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 13px; font-weight: 800; background: #fff; color: #0F766E; }
 .fin { display: flex; flex-direction: column; gap: 12px; min-height: calc(100dvh - 190px); }
 .fin-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
@@ -4869,7 +4869,7 @@ function abreGeralAntiga(m) {   // os dias arquivados da Geral (_geral/recados/a
       if (ler.children.length < 2) ler.append(elD('p', 'p-nota', 'Esse dia não tem recado.'));
       ler.scrollTop = 0;
     };
-    if (dias.length) abreDia(dias[0]); else ler.append(elD('p', 'p-nota', 'Ainda não tem dia guardado.'));
+    if (dias.length) abreDia(dias.includes(m.dia) ? m.dia : dias[0]); else ler.append(elD('p', 'p-nota', 'Ainda não tem dia guardado.'));
   });
 }
 function abreItemMenu(m) {
@@ -5340,7 +5340,9 @@ function montaCalendario(cal, c) {   // mês em grade; dia com compromisso tem p
     cal.append(g);
     const usados = TIPOS_AG.concat([['outro', 'Outros', '#94A3B8']]).filter(t => els.some(e => e.dataset.tipo === t[0])), leg = elD('div', 'ag-leg');   // a legenda das cores
     usados.forEach(t => { const x = elD('span', '', t[1]); x.style.setProperty('--tc', t[2]); leg.append(x); }); if (usados.length) cal.append(leg);
-    if (sel) { const v = elD('button', 'ag-tudo', 'Ver tudo'); v.type = 'button'; v.onclick = () => { sel = ''; filtra(); desenhar(); }; cal.append(v); }
+    if (sel) { const v = elD('button', 'ag-tudo', 'Ver tudo'); v.type = 'button'; v.onclick = () => { sel = ''; filtra(); desenhar(); }; cal.append(v);
+      const hk = hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0') + '-' + String(hoje.getDate()).padStart(2, '0');
+      if (sel <= hk) { const [a, mm, d] = sel.split('-'), g2 = elD('button', 'ag-tudo ag-geral', 'Recados da Geral desse dia'); g2.type = 'button'; g2.onclick = () => abreGeralAntiga({ nome: 'Geral de ' + d + '/' + mm, dia: d + '-' + mm + '-' + a }); cal.append(g2); } }   // a Geral antiga mora aqui agora (May 08/11 16:55: "tira geral antiga, dilui ela em algo", menu de 12)
   };
   let x0 = null, y0 = 0;
   cal.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
