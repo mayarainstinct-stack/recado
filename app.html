@@ -4905,7 +4905,7 @@ function abreCheck(m) {
     let feitos = {}; try { feitos = JSON.parse(store.get('check-feitos') || '{}'); } catch (e) {}
     const hoje = diaLocal(), soma = n => { const x = new Date(hoje + 'T12:00'); x.setDate(x.getDate() + n); return x.toLocaleDateString('sv'); };
     Object.keys(feitos).forEach(k => { if (feitos[k] < hoje) delete feitos[k]; });
-    const itens = (d.itens || []).filter(x => !feitos[x.id] || feitos[x.id] === hoje);
+    const itens = (d.itens || []).map(x => ({ ...x, data: x.data || x.quando || '', saude: !!x.saude || x.de === 'Saúde' })).filter(x => !feitos[x.id] || feitos[x.id] === hoje);
     const w = elD('div', 'ck-bloco'); c.append(w);
     w.append(elD('div', 'ck-espiral'));
     const cab = elD('div', 'ck-cab'); cab.append(elD('b', '', 'pra fazer'), elD('span', '', new Date(hoje + 'T12:00').toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }))); w.append(cab);
@@ -4919,7 +4919,7 @@ function abreCheck(m) {
       lista.forEach(x => {
         const b = elD('button', 'ck-item' + (feitos[x.id] ? ' feito' : '')); b.type = 'button';
         b.innerHTML = '<span class="ck-caixa"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg></span><span class="ck-tx"><span class="ck-t"></span><span class="ck-risco"><svg viewBox="0 0 100 12" preserveAspectRatio="none"><path d="M1 7 C 18 4, 30 9, 48 6 S 80 4, 99 7"/></svg></span><small></small></span>';
-        b.querySelector('.ck-t').textContent = x.de === 'Saúde' ? (x.texto || 'Um item de saúde') + ' · ver em Saúde' : x.texto;
+        b.querySelector('.ck-t').textContent = x.saude && !/ver em Saúde/i.test(x.texto || '') ? (x.texto || 'Um item de saúde') + ' · ver em Saúde' : x.texto;
         b.querySelector('small').textContent = [x.data && nome !== 'Hoje' && nome !== 'Amanhã' ? dm(x.data) : '', x.de].filter(Boolean).join(' · ');
         const mede = () => { const q = b.querySelector('.ck-t').getClientRects()[0]; if (q) b.style.setProperty('--rw', Math.round(q.width + 8) + 'px'); };
         b.onclick = () => { mede(); if (feitos[x.id]) delete feitos[x.id]; else feitos[x.id] = hoje; store.set('check-feitos', JSON.stringify(feitos)); b.classList.toggle('feito', !!feitos[x.id]); };
