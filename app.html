@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.204">
-<meta name="app-novidade" content="Agenda com o calendário verde-água e a página branca">
+<meta name="app-versao" content="2026-11-08.205">
+<meta name="app-novidade" content="Finanças com cara de Excel: branco, verde e grade de planilha">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -492,6 +492,34 @@ button:disabled { opacity: .45; cursor: default; }
 .detalhe .manda { width: 100%; min-height: 48px; border-radius: 12px; background: var(--accent); color: var(--accent-fg); font-size: 16px; font-weight: 700; }
 .detalhe .manda:disabled { opacity: .45; }
 .p-lista { display: flex; flex-direction: column; gap: 10px; }
+/* Finanças com cara de Excel (May 08/11 14:38): branco, a barra verde do Excel, grade fina cinza, cabeçalho cinza-claro, número alinhado à direita, abas de planilha */
+.painel.tema-excel, body.na-geral .painel.tema-excel { --c: #217346; --fg: #1F1F1F; --muted: #605E5C; --line: #D4D4D4; --paper: #FFFFFF; --bg: #FFFFFF; background: #FFFFFF; color: #1F1F1F; font-family: Calibri, 'Segoe UI', Arial, sans-serif; }
+body.na-geral .painel.tema-excel .p-topo, .painel.tema-excel .p-topo { background: #217346; color: #FFFFFF; box-shadow: none; border-bottom: 0; }
+body.na-geral .painel.tema-excel .p-topo::after { display: none; }
+.painel.tema-excel .p-topo button { background: rgba(255,255,255,.16); color: #FFFFFF; } .painel.tema-excel .p-ic { background: #FFFFFF; color: #217346; box-shadow: none; border-radius: 4px; }
+.painel.tema-excel .p-voltar-baixo { background: #FFFFFF; color: #217346; border: 1px solid #C8C6C4; box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+.painel.tema-excel .fin-kpis { gap: 0; border: 1px solid #D4D4D4; }
+.painel.tema-excel .fin-kpi { background: #FFFFFF; border: 0; border-right: 1px solid #D4D4D4; border-radius: 0; box-shadow: none; } .painel.tema-excel .fin-kpi:last-child { border-right: 0; }
+.painel.tema-excel .fin-kpi span { color: #605E5C; font-weight: 700; }
+.painel.tema-excel .fin-kpi.rec b { color: #107C10; } .painel.tema-excel .fin-kpi.pag b { color: #A4262C; } .painel.tema-excel .fin-kpi.neg b { color: #A4262C; }
+.painel.tema-excel .fin-abas { background: #F3F2F1; border: 1px solid #D4D4D4; border-radius: 0; padding: 0; gap: 0; }
+.painel.tema-excel .fin-abas button { border-radius: 0; color: #605E5C; border-right: 1px solid #D4D4D4; font-weight: 700; } .painel.tema-excel .fin-abas button:last-child { border-right: 0; }
+.painel.tema-excel .fin-abas button.on { background: #FFFFFF; color: #217346; box-shadow: inset 0 -3px 0 #217346; }
+.painel.tema-excel .fin-tab { background: #FFFFFF; border: 1px solid #D4D4D4; border-radius: 0; box-shadow: none; }
+.painel.tema-excel .fin-lin { background: #FFFFFF; color: #1F1F1F; border-bottom: 1px solid #E1DFDD; border-radius: 0; }
+.painel.tema-excel .fin-lin .fin-c { border-right: 1px solid #E1DFDD; font-variant-numeric: tabular-nums; } .painel.tema-excel .fin-lin .fin-c:last-child { border-right: 0; }
+.painel.tema-excel .fin-cab { background: #F3F2F1; color: #605E5C; } .painel.tema-excel .fin-c.ok { color: #107C10; } .painel.tema-excel .fin-c.falta { color: #A4262C; }
+.painel.tema-excel .cm-topo, .painel.tema-excel .cm-topo-parc { background: #E2EFDA; color: #1F1F1F; border: 1px solid #A9D08E; border-radius: 0; box-shadow: none; }
+.painel.tema-excel .cm-topo-parc { background: #FCE4D6; border-color: #F4B183; } .painel.tema-excel .cm-topo span, .painel.tema-excel .cm-topo small { color: #3B3A39; }
+.painel.tema-excel .cm-lista { gap: 0; border: 1px solid #D4D4D4; } .painel.tema-excel .cm-mes { margin: 0; padding: 6px 10px; background: #F3F2F1; color: #605E5C; border-bottom: 1px solid #D4D4D4; }
+.painel.tema-excel .cm-item { background: #FFFFFF; color: #1F1F1F; border: 0; border-bottom: 1px solid #E1DFDD; border-radius: 0; box-shadow: none; }
+.painel.tema-excel .cm-item.perto { background: #FFF4CE; }
+.painel.tema-excel .cm-dia, .painel.tema-excel .cm-item.cm-parcela .cm-dia { background: #F3F2F1; color: #1F1F1F; border-radius: 0; border: 1px solid #E1DFDD; }
+.painel.tema-excel .cm-meio small { color: #605E5C; } .painel.tema-excel .cm-val { color: #1F1F1F; font-variant-numeric: tabular-nums; }
+.painel.tema-excel .cm-chip { border-radius: 2px; background: #E2EFDA; color: #375623; } .painel.tema-excel .cm-parcela .cm-chip { background: #FCE4D6; color: #843C0C; }
+.painel.tema-excel .cm-bloco, .painel.tema-excel .cm-mini { background: #FFFFFF; color: #1F1F1F; border-radius: 0; }
+.painel.tema-excel .fin-lancar { background: #217346; color: #FFFFFF; box-shadow: 0 4px 12px rgba(33,115,70,.3); border-radius: 4px; } .painel.tema-excel .fin-lancar.fin-nova { background: #FFFFFF; color: #217346; border: 1px solid #217346; }
+
 /* Agenda em tema claro, cara de consultório (May 08/11 12:49 e 12:56): branco e verde-água suave, superfícies lisas, cantos bem redondos, sombra leve, nada de neon */
 .painel.tema-claro, body.na-geral .painel.tema-claro { --c: #2A9D8F; --fg: #1E2B33; --muted: #6B7C85; --line: #E2ECEE; --paper: #FFFFFF; --bg: #FFFFFF; background: #FFFFFF; color: #1E2B33; }   /* fundo da página branco (May 08/11 14:36) */
 body.na-geral .painel.tema-claro .p-topo, .painel.tema-claro .p-topo { background: #FFFFFF; color: #1E2B33; box-shadow: 0 1px 0 #E2ECEE, 0 6px 18px rgba(30, 60, 70, .06); }
@@ -499,12 +527,12 @@ body.na-geral .painel.tema-claro .p-topo::after { background: #8FD3C7; box-shado
 .painel.tema-claro .p-topo button, .painel.tema-claro .p-voltar-baixo { background: #EEF6F5; color: #2A6F67; box-shadow: none; border: 1px solid #DCEBE9; }
 .painel.tema-claro .p-sub, .painel.tema-claro .p-nota { color: #6B7C85; }
 .painel.tema-claro .p-ic { background: #E3F4F1; color: #2A9D8F; box-shadow: none; }
-.painel.tema-claro .ag-cal { background: linear-gradient(160deg, #5FD3C4, #2A9D8F 70%); color: #FFFFFF; border-radius: 26px; padding: 14px; box-shadow: 0 10px 24px rgba(42, 157, 143, .25); border: 0; }   /* o calendário verde-água (May 08/11 14:36), liso e sem brilho */
+.painel.tema-claro .ag-cal { background: linear-gradient(150deg, #6FD6CC, #5CB8E6 85%); color: #FFFFFF; border-radius: 30px; padding: 14px; box-shadow: 0 10px 26px rgba(92, 184, 230, .28); border: 0; }   /* mais fofinho, entre verde-água e azul-claro (May 08/11 14:38) */   /* o calendário verde-água (May 08/11 14:36), liso e sem brilho */
 .painel.tema-claro .ag-seta { background: rgba(255,255,255,.22); color: #FFFFFF; border-radius: 50%; }
 .painel.tema-claro .ag-sem { color: rgba(255,255,255,.8); opacity: 1; }
 .painel.tema-claro .ag-dia { background: transparent; color: #FFFFFF; border-radius: 50%; height: 38px; font-weight: 600; }
 .painel.tema-claro .ag-dia.hoje { outline: 2px solid #FFFFFF; outline-offset: -2px; }
-.painel.tema-claro .ag-dia.sel { background: #FFFFFF; color: #1F7A70; }
+.painel.tema-claro .ag-dia.sel { background: #FFFFFF; color: #2F8FB8; }
 .painel.tema-claro .ag-pts i { box-shadow: 0 0 0 1.5px #FFFFFF; }
 .painel.tema-claro .ag-tudo { background: #FFFFFF; color: #1F7A70; }
 .painel.tema-claro .ag-leg { color: #FFFFFF; }
@@ -3637,7 +3665,7 @@ function cabecalho({ icone: ic, sub, acao } = {}) {
 }
 function cabecalhoGenerico() { pTopo.classList.remove('proprio'); pTopo.querySelector('.p-ic')?.remove(); pTopo.querySelector('.p-acao')?.remove(); pSub.textContent = ''; pSub.hidden = true; pMais.hidden = false; }
 function desenhaTela() {
-  const [titulo, montar, rolou] = pilha[pilha.length - 1]; painel.classList.remove('tema-claro');   // o tema claro é só da tela que pedir (a Agenda, May 08/11 12:56)
+  const [titulo, montar, rolou] = pilha[pilha.length - 1]; painel.classList.remove('tema-claro', 'tema-excel');   // o tema claro é só da tela que pedir (a Agenda, May 08/11 12:56)
   pTit.textContent = titulo; pCorpo.scrollTop = 0; pExtra.hidden = !pilha.length || pilha[pilha.length - 1][0] !== 'Menu';   /* só na raiz do Menu, também quando a tela abre direto pela notificação */ cabecalhoGenerico();
   pTopo.hidden = pilha.length === 1 && titulo === 'Menu'; painel.classList.toggle('sem-topo', pTopo.hidden);   // sem a barra, o Recados ganha respiro em cima (May 18:47: "colou em cima")   // o Menu começa direto em Recados, sem a barra de cima (May 18:40); voltar fica no botão de baixo e no deslize
   const t = document.createElement('div'); t.className = 'tela'; pCorpo.replaceChildren(t);   // carga atrasada de tela que já saiu cai no invólucro velho
@@ -4578,7 +4606,7 @@ function abreContasMes(m) {
 }
 function abreFinancas(m) {
   tela(m.nome, async c => {
-    painel.style.setProperty('--c', '#F59E0B');
+    painel.style.setProperty('--c', '#217346'); painel.classList.add('tema-excel');   // Finanças em tema claro com cara de Excel (May 08/11 14:38)
     const nota = elD('p', 'p-nota', 'Carregando…'); c.append(nota);
     let d, lmd = ''; try { d = JSON.parse(await lerArquivo('contas/pendencias.json')); } catch (e) { nota.textContent = 'Não consegui abrir as contas. Confere a internet.'; return; }
     try { lmd = await lerArquivo('contas/LANCAMENTOS.md'); } catch (e) {}
