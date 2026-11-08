@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.162">
-<meta name="app-novidade" content="Chacoalha o celular em qualquer tela pra pedir ajuda aos robôs">
+<meta name="app-versao" content="2026-11-07.163">
+<meta name="app-novidade" content="Tarefas: mover um post-it avisa o dono na Geral">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -3859,6 +3859,14 @@ async function gravaLinha(arq, linha) {   // acrescenta 1 linha no fim do arquiv
 }
 window.socorroOnde = () => !painel.hidden && pilha.length ? pilha[pilha.length - 1][0] : FILE ? convPorArq(FILE).nome : 'lista de conversas';   // o chacoalhar (socorro.js) diz em que tela ela tava
 window.socorroFoi = () => { if (FILE === GERAL.arq) buscaRapido(); };
+const avisosQuadro = new Map(); let avisoQuadroT = null;   // os movimentos de post-it dos últimos 10 s, por id (o último vale)
+async function mandaAvisosQuadro() {   // um recado por dono, com tudo que mudou dele
+  const porDono = {}; avisosQuadro.forEach(a => (porDono[a.dono] = porDono[a.dono] || []).push(a.txt)); avisosQuadro.clear();
+  for (const [dono, txts] of Object.entries(porDono)) {
+    const nome = dono.charAt(0).toUpperCase() + dono.slice(1), linha = '- [' + stamp(new Date()) + '] 🗂️ @' + nome + ' a May moveu ' + txts.join('; ') + ' (Tarefas)';
+    if (!(await gravaLinha(GERAL.arq, linha))) showNote('O aviso pro ' + nome + ' não foi; confere a internet.', true);
+  }
+}
 async function gravaJson(arq, muda, msg) {   // lê o JSON mais novo com o sha, aplica a mudança e grava; 409 = alguém gravou junto, refaz em cima do novo
   for (let t = 0; t < 4; t++) {
     try {
@@ -4051,13 +4059,25 @@ function abreIdeias(m) {
     };
     const agoraBr = () => { const dt = new Date(); return String(dt.getDate()).padStart(2, '0') + '/' + String(dt.getMonth() + 1).padStart(2, '0') + '/' + dt.getFullYear() + ' ' + String(dt.getHours()).padStart(2, '0') + ':' + String(dt.getMinutes()).padStart(2, '0'); };
     const colsDe = t => { const cols = {}; TELAS[t].forEach(([e]) => { cols[e] = daTela(t).filter(x => x.estado === e).map(x => x.id); }); return cols; };
+    const NOME_E = { esperando: 'Esperando', fazendo: 'Fazendo', aguardando: 'Revisão aguardando', revisando: 'Revisando', concluido: 'Concluído' }, NOME_P = { 1: 'altíssima', 2: 'alta', 3: 'normal', 4: 'baixa', 5: 'sem pressa' };
+    const avisa = (x, antes) => {   // antes = { estado, prioridade } de antes do movimento
+      if (!x || !x.dono || x.dono === 'may') return; const ch = [];
+      if (antes.estado !== x.estado) ch.push('de ' + (NOME_E[antes.estado] || antes.estado) + ' pra ' + (NOME_E[x.estado] || x.estado));
+      if ((antes.prioridade || 3) !== (x.prioridade || 3)) ch.push('prioridade ' + (NOME_P[antes.prioridade || 3] || antes.prioridade) + ' pra ' + (NOME_P[x.prioridade || 3] || x.prioridade));
+      if (!ch.length) return;   // soltou no mesmo lugar: não avisa
+      avisosQuadro.set(x.id, { dono: x.dono, txt: '#' + x.id + (x.assunto ? ' (' + String(x.assunto).replace(/[\[\]]/g, '') + ')' : '') + ' ' + ch.join(', ') });
+      clearTimeout(avisoQuadroT); avisoQuadroT = setTimeout(mandaAvisosQuadro, 10000);
+    };
     const muda = async (p, para, extra) => {   // troca o estado com um toque; vai pro topo da coluna nova
+      const antesM = { estado: p.estado, prioridade: p.prioridade };
       const aplica = dd => { const x = dd.postits.find(y => y.id === p.id); if (!x) return; x.estado = para; Object.assign(x, extra || {}); x.ordem = Math.min(0, ...dd.postits.map(y => y.ordem)) - 1; };
       aplica(d); const dest = Object.keys(TELAS).find(t => TELAS[t].some(([e]) => e === para)) || 'feitos'; if (dest !== aba) { const dir = abas.findIndex(a => a[0] === dest) > abas.findIndex(a => a[0] === aba) ? 1 : -1; aba = dest; pinta(); entraDoLado(tr, dir); } else pinta();
       showNote({ fazendo: 'Foi pra Fazendo', aguardando: 'Entregue: aguardando o Sigma', revisando: 'Sigma revisando', concluido: 'Aprovado: concluído', esperando: extra && extra.nota ? 'Reprovado: voltou pro dono' : 'Voltou pra Esperando' }[para] || 'Mudou');
       if (!(await gravaJson(arq, aplica, 'Quadro: #' + p.id + ' foi pra ' + para + ' pelo app'))) showNote('Não guardou: confere a internet.', true);
+      else avisa(d.postits.find(y => y.id === p.id), antesM);
     };
-    const salvaOrdem = async (cols, movido) => {   // cols = { esperando: [ids], fazendo: [ids] }: a ordem de cima pra baixo é a urgência; mudar de coluna muda o estado (May 15:26)
+    const salvaOrdem = async (cols, movido) => {
+      const xa = movido && d.postits.find(y => y.id === movido), antesO = xa ? { estado: xa.estado, prioridade: xa.prioridade } : null;   // cols = { esperando: [ids], fazendo: [ids] }: a ordem de cima pra baixo é a urgência; mudar de coluna muda o estado (May 15:26)
       const NOMEP = { 1: 'altíssima', 2: 'alta', 3: 'normal', 4: 'baixa', 5: 'sem pressa' };
       const aplica = dd => {
         let k = Math.min(...dd.postits.filter(x => x.estado !== 'concluido').map(x => x.ordem), 1);
@@ -4066,6 +4086,7 @@ function abreIdeias(m) {
       };
       aplica(d);
       if (!(await gravaJson(arq, aplica, 'Quadro: May mudou a ordem ou a coluna pelo app'))) showNote('Não guardou: confere a internet.', true);
+      else if (antesO) avisa(d.postits.find(y => y.id === movido), antesO);
     };
     const pinta = () => {
       cabecalho({ icone: 'pin', sub: abertos().length + ' planejadas · ' + daTela('revisao').length + ' na revisão' });
