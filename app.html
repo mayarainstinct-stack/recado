@@ -1031,21 +1031,28 @@ body.na-geral .painel.tema-saude .p-topo::after { background: #D61F69; box-shado
 body.na-geral .painel.tema-rosa .p-voltar-baixo, .painel.tema-rosa .p-voltar-baixo, body.na-geral .painel.tema-saude .p-voltar-baixo, .painel.tema-saude .p-voltar-baixo { background: #D61F69; color: #FFFFFF; border: 0; opacity: 1; backdrop-filter: none; -webkit-backdrop-filter: none; box-shadow: 0 6px 16px rgba(214,31,105,.35); }   /* voltar sólido no rosa (Sigma 15:27). Hermes */
 .painel.tema-saude .p-sub, .painel.tema-saude .p-nota { color: #A3456B; }
 .painel.tema-saude .gr-hero-saude, .painel.tema-saude .p-ic { background: #D61F69; box-shadow: none; }
-/* Treino: neon do House Bridge (moldura chanfrada com entalhe e listras, guia do Hermes) em verde-limão da logo da Corpus #3BD13B, preto de academia (May 08/11 13:00 e 13:19). Hermes */
-.treino-tela { position: relative; margin: -6px -16px 0; padding: 24px 24px calc(96px + env(safe-area-inset-bottom)); min-height: calc(100dvh - env(safe-area-inset-top) - 66px); background: linear-gradient(rgba(59,209,59,.05) 1px, transparent 1px) 0 0 / 100% 22px, linear-gradient(90deg, rgba(59,209,59,.05) 1px, transparent 1px) 0 0 / 22px 100%, #050805; color: #F2FFF2; }
+/* Treino: cara das artes da Corpus que ela mandou (13:15): verde do logo #62B02A, título branco grosso condensado, destaque cursivo, X nos cantos, canto chanfrado verde e haltere em preto e branco atrás do cabeçalho; molduras do guia do Hermes (May 08/11 13:00, 13:19; Sigma 16:27). Hermes */
+.treino-tela { position: relative; margin: -6px -16px 0; padding: 24px 24px calc(96px + env(safe-area-inset-bottom)); min-height: calc(100dvh - env(safe-area-inset-top) - 66px); background: linear-gradient(rgba(98,176,42,.05) 1px, transparent 1px) 0 0 / 100% 22px, linear-gradient(90deg, rgba(98,176,42,.05) 1px, transparent 1px) 0 0 / 22px 100%, #050805; color: #F2FFF2; }
 .treino-tela .p-lista { gap: 18px; margin-bottom: 18px; }
 .treino-tela > * + * { margin-top: 18px; }
-.treino-tela .p-botao, .treino-tela .p-texto { position: relative; isolation: isolate; border: 0; border-radius: 0; background: #3BD13B; color: #F2FFF2; clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px); box-shadow: none; padding: 22px 18px 16px; filter: drop-shadow(0 0 6px rgba(59,209,59,.45)); }
-.treino-tela .p-botao .ic { background: #0B1207; border: 2px solid #3BD13B; border-radius: 4px; box-shadow: inset 0 0 8px rgba(59,209,59,.25); }
+.treino-tela .p-botao, .treino-tela .p-texto { position: relative; isolation: isolate; border: 0; border-radius: 0; background: #62B02A; color: #F2FFF2; clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px); box-shadow: none; padding: 22px 18px 16px; filter: drop-shadow(0 0 6px rgba(98,176,42,.45)); }
+.treino-tela .p-botao .ic { background: #0B1207; border: 2px solid #62B02A; border-radius: 4px; box-shadow: inset 0 0 8px rgba(98,176,42,.25); }
 .treino-tela .p-botao::before, .treino-tela .p-texto::before { content: ''; position: absolute; inset: 2px; z-index: -1; background: linear-gradient(180deg, #0E140A, #070A05); clip-path: polygon(13px 0, calc(100% - 13px) 0, 100% 13px, 100% calc(100% - 13px), calc(100% - 13px) 100%, 13px 100%, 0 calc(100% - 13px), 0 13px); }
-.treino-tela .p-botao::after { content: ''; position: absolute; top: 2px; left: 50%; width: 34%; height: 9px; transform: translateX(-50%); background: #3BD13B; clip-path: polygon(0 0, 100% 0, calc(100% - 9px) 100%, 9px 100%); }
-.treino-tela .p-botao .tx::after { content: ''; position: absolute; right: 10px; bottom: 8px; width: 34px; height: 8px; background: repeating-linear-gradient(-45deg, #3BD13B 0 3px, transparent 3px 7px); opacity: .9; }
+.treino-tela .p-botao::after { content: ''; position: absolute; top: 2px; left: 50%; width: 34%; height: 9px; transform: translateX(-50%); background: #62B02A; clip-path: polygon(0 0, 100% 0, calc(100% - 9px) 100%, 9px 100%); }
+.treino-tela .p-botao .tx::after { content: ''; position: absolute; right: 10px; bottom: 8px; width: 34px; height: 8px; background: repeating-linear-gradient(-45deg, #62B02A 0 3px, transparent 3px 7px); opacity: .9; }
 .treino-tela .p-botao .t { font-family: Impact, 'Arial Narrow Bold', 'Arial Black', sans-serif; font-weight: 400; font-size: 19px; letter-spacing: .6px; text-transform: uppercase; color: #FFFFFF; }
-.treino-tela .p-botao small { color: #3BD13B; font-weight: 700; }
-.treino-tela .p-botao .ic, .treino-tela .p-botao .ic svg, .treino-tela .p-botao .chev { color: #3BD13B; stroke: #3BD13B; filter: drop-shadow(0 0 4px rgba(59,209,59,.7)); }
+.treino-tela .p-botao small { color: #62B02A; font-weight: 700; }
+.treino-tela .p-botao .ic, .treino-tela .p-botao .ic svg, .treino-tela .p-botao .chev { color: #62B02A; stroke: #62B02A; filter: drop-shadow(0 0 4px rgba(98,176,42,.7)); }
 .treino-tela .p-botao:active { transform: translateY(2px); }
 .treino-tela .p-botao, .treino-tela .p-texto { flex-shrink: 0; height: auto; }
 .treino-tela .p-texto { font-size: 14px; color: #D6F5D6; }
+.treino-tela .tr-cab { position: relative; flex-shrink: 0; overflow: hidden; min-height: 206px; margin: 0 0 4px; padding: 22px 20px 18px; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; border-radius: 6px; background: linear-gradient(180deg, rgba(10,12,10,.35), rgba(10,12,10,.88)), url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20400%20200'%3E%3Cg%20transform='rotate%28-14%20200%20100%29'%3E%3Crect%20x='70'%20y='92'%20width='260'%20height='16'%20rx='3'%20fill='%238A8A8A'/%3E%3Crect%20x='40'%20y='40'%20width='34'%20height='120'%20rx='6'%20fill='%235E5E5E'/%3E%3Crect%20x='78'%20y='56'%20width='22'%20height='88'%20rx='5'%20fill='%23747474'/%3E%3Crect%20x='18'%20y='70'%20width='22'%20height='60'%20rx='4'%20fill='%234A4A4A'/%3E%3Crect%20x='326'%20y='40'%20width='34'%20height='120'%20rx='6'%20fill='%235E5E5E'/%3E%3Crect%20x='300'%20y='56'%20width='22'%20height='88'%20rx='5'%20fill='%23747474'/%3E%3Crect%20x='360'%20y='70'%20width='22'%20height='60'%20rx='4'%20fill='%234A4A4A'/%3E%3Crect%20x='140'%20y='88'%20width='120'%20height='24'%20rx='4'%20fill='%236A6A6A'/%3E%3Cpath%20d='M150%2088v24M162%2088v24M174%2088v24M186%2088v24M198%2088v24M210%2088v24M222%2088v24M234%2088v24M246%2088v24'%20stroke='%23555'%20stroke-width='3'/%3E%3C/g%3E%3C/svg%3E") 62% 30% / 118% auto no-repeat, linear-gradient(160deg, #3A3A3A, #151515); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.06); }
+.treino-tela .tr-cab::before { content: ""; position: absolute; top: 0; right: 0; width: 86px; height: 86px; background: #62B02A; clip-path: polygon(0 0, 100% 0, 100% 100%); }
+.treino-tela .tr-cab::after { content: ""; position: absolute; top: 14px; right: 12px; bottom: 14px; width: 3px; background: #62B02A; }
+.treino-tela .tr-x { position: absolute; top: 14px; left: 16px; width: 54px; height: 54px; background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2018%2018'%3E%3Cpath%20d='M4%204l10%2010M14%204L4%2014'%20stroke='%2362B02A'%20stroke-width='2.6'%20stroke-linecap='round'/%3E%3C/svg%3E") 0 0 / 18px 18px repeat; }
+.treino-tela .tr-cab b { position: relative; font-family: Impact, 'Arial Narrow Bold', 'Arial Black', sans-serif; font-weight: 400; font-size: 44px; line-height: .95; letter-spacing: 1px; color: #FFFFFF; text-transform: uppercase; }
+.treino-tela .tr-cab i { position: relative; font-family: 'Segoe Script', 'Brush Script MT', 'Snell Roundhand', cursive; font-style: normal; font-weight: 700; font-size: 26px; line-height: 1.1; color: #62B02A; transform: rotate(-3deg); transform-origin: left; }
+.treino-tela .tr-cab small { position: relative; margin-top: 6px; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #CFCFCF; }
 
 ul.marcavel { list-style: none; padding-left: 0; } ul.marcavel li { display: flex; gap: 10px; align-items: flex-start; padding: 7px 4px; border-radius: 10px; cursor: pointer; }
 ul.marcavel li::before { content: ''; flex: none; width: 20px; height: 20px; margin-top: 1px; border-radius: 6px; border: 2px solid #EC4899; }
@@ -3700,7 +3707,7 @@ const irGeral = document.getElementById('ir-geral'), irTrab = document.getElemen
 const painel = document.getElementById('painel'), pCorpo = document.getElementById('p-corpo'), pTit = document.getElementById('p-tit'), pExtra = document.getElementById('p-extra');
 let pilha = [], catalogo = null;
 const reais = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
-const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#3BD13B'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#B3261E'], [/ateli/i, '#B3261E'], [/^listas/i, '#F59E0B'], [/ideia|tarefa/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia|contas/i, '#F59E0B']];
+const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#62B02A'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#B3261E'], [/ateli/i, '#B3261E'], [/^listas/i, '#F59E0B'], [/ideia|tarefa/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia|contas/i, '#F59E0B']];
 // Arrumar o Menu arrastando (May, 07/11/2026 12:03: "dar pra eu clicar e arrastar, aí eu mesma organizava"): segura o azulejo até ele levantar,
 // arrasta pro lugar do outro e solta; a ordem fica guardada neste aparelho
 function arrumaArrastando(grade) {
@@ -5044,7 +5051,8 @@ function montaViagens(c, d) {   // Viagens com cara própria (May 08/11 12:18: "
   requestAnimationFrame(marca);
 }
 function montaTreino(c, d) {
-  c.classList.add('treino-tela');   // cara de academia: o neon do House Bridge em verde-limão (May 08/11 13:00, layout do Hermes)
+  c.classList.add('treino-tela');   // cara das artes da Corpus (May 08/11 13:00 e 13:15, Sigma 16:27, layout do Hermes)
+  const cab = elD('div', 'tr-cab'); cab.append(elD('span', 'tr-x'), elD('b', '', 'Treino'), elD('i', '', 'bora pra cima'), elD('small', '', 'a semana de treino da May')); c.append(cab);
   zeraSemanaTreino(d.viagens);
   const b = botao('chart', 'Estatística', 'semana, cargas, comparação com a base', () => abreEstatistica(d.historico || [])); b.classList.add('treino-est'); c.append(b);
   const folga = () => store.get('treino-folga') === diaLocal() || (d.folgas || []).includes(diaLocal());
