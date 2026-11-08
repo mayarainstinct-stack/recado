@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.163">
-<meta name="app-novidade" content="Tarefas: mover um post-it avisa o dono na Geral">
+<meta name="app-versao" content="2026-11-07.164">
+<meta name="app-novidade" content="Agenda: cada tipo de compromisso na sua cor, o mês troca deslizando e a passagem aparece no compromisso">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -920,6 +920,11 @@ body.na-geral form textarea:focus { border-color: #FACC15; box-shadow: 0 0 0 3px
 .ag .cx .tag { font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--accent); color: var(--accent-fg); }
 .ag .cx ul { margin: 4px 0 0; padding-left: 18px; color: var(--muted); font-size: 14px; }
 .ag .cx img { display: block; width: 100%; margin-top: 8px; border-radius: 10px; cursor: zoom-in; }
+.ag .cx img { max-height: 240px; object-fit: cover; object-position: top; }   /* a passagem entra pequena; tocar abre inteira */
+.ag-fotos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .ag-fotos img { aspect-ratio: 3 / 4; object-fit: cover; object-position: top; }
+.ag[data-tipo] { box-shadow: inset 4px 0 0 var(--tc); } .ag[data-tipo] .dt { background: color-mix(in srgb, var(--tc) 22%, transparent); color: color-mix(in srgb, var(--tc) 70%, var(--fg)); }
+.ag-dia.tem::after { display: none; } .ag-pts { position: absolute; left: 0; right: 0; bottom: 4px; display: flex; justify-content: center; gap: 3px; } .ag-pts i { width: 6px; height: 6px; border-radius: 50%; }
+.ag-leg { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 10px; font-size: 12px; font-weight: 700; color: var(--muted); } .ag-leg span::before { content: ''; display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--tc); margin-right: 5px; vertical-align: 0; }
 .pop { position: fixed; inset: 0; z-index: 55; background: rgba(0,0,0,.45); display: grid; place-items: center; padding: 16px; }
 .pop .caixa { width: 100%; max-width: 380px; background: var(--paper); color: var(--fg); border-radius: 18px; padding: 18px; display: grid; gap: 12px;
   box-shadow: 0 14px 40px rgba(0,0,0,.3); animation: entra .2s ease-out both; }
@@ -4783,8 +4788,11 @@ function dataDe(rot) {   // "04/11", "~29/10", "13/02/2027", "05/11 (qui) 10h" �
   const m = rot.match(/(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?/); if (!m) return null;
   const hoje = new Date(); return new Date(+(m[3] || hoje.getFullYear()), +m[2] - 1, +m[1]);
 }
+const TIPOS_AG = [['saude', 'Saúde', '#F43F5E', /consulta|m[ée]dic|psiquiatra|postinho|exame|guia|laudo|unimed|cirurgia|pesar|barriga|rem[ée]dio|dentista/i], ['viagem', 'Viagem', '#3B82F6', /[ôo]nibus|rodovi[áa]ria|passage|embarque|viagem|uber|voo/i], ['trabalho', 'Trabalho', '#8B5CF6', /adriano|empresa|hora extra|f[ée]rias|servi[çc]o|trabalh/i], ['dinheiro', 'Dinheiro', '#F59E0B', /pagamento|reembolso|pix|\bc6\b|vence|boleto|parcela/i], ['familia', 'Família e casa', '#10B981', /anivers[áa]rio|ch[áa] de|churrasco|festa|visita|m[ãa]e|pai\b/i]];
+const tipoAg = t => TIPOS_AG.find(x => x[3].test(t)) || ['outro', 'Outros', '#94A3B8'];   // a cor de cada compromisso (May 21:37)
 function montaCalendario(cal, c) {   // mês em grade; dia com compromisso tem ponto; tocar no dia mostra só os dele; setas trocam o mês
-  const els = [...c.querySelectorAll('.ag[data-dia]')], dias = new Set(els.map(e => e.dataset.dia)), hoje = new Date();
+  const els = [...c.querySelectorAll('.ag[data-dia]')], dias = new Set(els.map(e => e.dataset.dia)), hoje = new Date(), corDia = {};
+  els.forEach(e => { (corDia[e.dataset.dia] = corDia[e.dataset.dia] || []).includes(e.dataset.cor) || corDia[e.dataset.dia].push(e.dataset.cor); });
   let ano = hoje.getFullYear(), mes = hoje.getMonth(), sel = '';
   const NOMES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
   const filtra = () => {   // sem dia escolhido: só os próximos (o que já passou some); com dia: só os dele (May 12:54)
@@ -4803,14 +4811,20 @@ function montaCalendario(cal, c) {   // mês em grade; dia com compromisso tem p
     for (let k = 0; k < primeiro; k++) g.append(elD('span'));
     for (let dd = 1; dd <= total; dd++) {
       const chave = ano + '-' + String(mes + 1).padStart(2, '0') + '-' + String(dd).padStart(2, '0'), b = elD('button', 'ag-dia', String(dd)); b.type = 'button';
-      if (dias.has(chave)) b.classList.add('tem'); if (chave === sel) b.classList.add('sel');
+      if (dias.has(chave)) { b.classList.add('tem'); const pts = elD('span', 'ag-pts'); corDia[chave].slice(0, 3).forEach(cor => { const i = elD('i'); i.style.background = cor; pts.append(i); }); b.append(pts); }   // um pontinho por tipo, na cor dele if (chave === sel) b.classList.add('sel');
       if (dd === hoje.getDate() && mes === hoje.getMonth() && ano === hoje.getFullYear()) b.classList.add('hoje');
       b.onclick = () => { sel = sel === chave ? '' : chave; filtra(); desenhar(); };
       g.append(b);
     }
     cal.append(g);
+    const usados = TIPOS_AG.concat([['outro', 'Outros', '#94A3B8']]).filter(t => els.some(e => e.dataset.tipo === t[0])), leg = elD('div', 'ag-leg');   // a legenda das cores
+    usados.forEach(t => { const x = elD('span', '', t[1]); x.style.setProperty('--tc', t[2]); leg.append(x); }); if (usados.length) cal.append(leg);
     if (sel) { const v = elD('button', 'ag-tudo', 'Ver tudo'); v.type = 'button'; v.onclick = () => { sel = ''; filtra(); desenhar(); }; cal.append(v); }
   };
+  let x0 = null, y0 = 0;
+  cal.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+  cal.addEventListener('touchend', e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null;
+    if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return; e.stopPropagation(); const dir = dx < 0 ? 1 : -1; mes += dir; if (mes < 0) { mes = 11; ano--; } if (mes > 11) { mes = 0; ano++; } desenhar(); entraDoLado(cal.querySelector('.ag-grade'), dir); }, { passive: true });
   desenhar(); filtra();
 }
 function abreAgenda(m) {
@@ -4834,11 +4848,11 @@ function abreAgenda(m) {
       const it = l.match(/^\s*[-*] (.*)$/);
       if (!it) { if (/^Atualizada/i.test(l)) { const n = document.createElement('p'); n.className = 'p-nota'; n.textContent = l; c.append(n); api('https://api.github.com/repos/' + REPO + '/commits?path=' + encodeURIComponent(m.arq) + '&per_page=1').then(r => r.ok ? r.json() : []).then(j => { const q = j && j[0] && new Date(j[0].commit.committer.date); if (q && isFinite(q)) n.textContent = 'Última mudança: ' + q.toLocaleDateString('pt-BR') + ' às ' + q.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); }).catch(() => {}); return; } const n = document.createElement('p'); n.className = 'p-nota'; neg(n, l.replace(/^>\s?/, '')); c.append(n); ult = null; return; }
       let txt = it[1], foto = '';
-      const f = txt.match(/📷\s*(\S+)/); if (f) { foto = f[1]; txt = txt.replace(f[0], '').trim(); }
+      const fotos = [...txt.matchAll(/📷\s*(\S+)/g)].map(f => f[1]); foto = fotos[0] || ''; txt = txt.replace(/📷\s*\S+/g, '').trim();
       const rot = (txt.match(/^\*\*([^*]+?):?\*\*:?\s*/) || [])[1] || '';
       const corpo = rot ? txt.replace(/^\*\*[^*]+\*\*:?\s*/, '') : txt;
       const d = dataDe(rot);
-      const el = document.createElement('div'); el.className = 'ag'; if (d) el.dataset.dia = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      const el = document.createElement('div'), tipo = tipoAg(txt); el.className = 'ag'; el.dataset.tipo = tipo[0]; el.dataset.cor = tipo[2]; el.style.setProperty('--tc', tipo[2]); if (d) el.dataset.dia = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
       const dt = document.createElement('div'); dt.className = 'dt';
       if (d) { dt.innerHTML = '<b></b><small></small>'; dt.querySelector('b').textContent = d.getDate(); dt.querySelector('small').textContent = MESES[d.getMonth()]; }
       else { dt.classList.add('ic'); dt.innerHTML = icone(iconeDe(txt)); }
@@ -4854,7 +4868,7 @@ function abreAgenda(m) {
       }
       if (tp.textContent.trim()) cx.append(tp);
       const corpoEl = document.createElement('div'); neg(corpoEl, corpo); cx.append(corpoEl);
-      if (foto) { const im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; im.decoding = 'async'; cx.append(im); fotoUrl(foto).then(u => { im.src = u; im.onclick = () => abreZoom(u); }).catch(() => im.remove()); }
+      if (fotos.length) { const box = elD('div', fotos.length > 1 ? 'ag-fotos' : ''); fotos.forEach(fp => { const im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; im.decoding = 'async'; box.append(im); fotoUrl(fp).then(u => { im.src = u; im.onclick = e => { e.stopPropagation(); abreZoom(u, fp, fotos); }; }).catch(() => im.remove()); }); cx.append(box); }
       el.append(dt, cx); if (el.classList.contains('passou')) passados.push(el); else c.append(el); ult = el;
       el.onclick = () => abreFicha({ titulo: rot || 'Agenda', foto, corpo: el.cloneNode(true), contexto: 'Agenda (' + (rot || corpo.slice(0, 40)) + ')' });
     });
