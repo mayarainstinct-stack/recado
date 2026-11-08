@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.167">
-<meta name="app-novidade" content="Obra vai até embaixo da tela, sem a faixa vazia">
+<meta name="app-versao" content="2026-11-07.168">
+<meta name="app-novidade" content="Geral mais leve pros dados móveis: o que tem mais de um dia fica em Menu → Geral antiga">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -353,7 +353,9 @@ button:disabled { opacity: .45; cursor: default; }
 .digitando i:nth-child(2) { animation-delay: .15s; } .digitando i:nth-child(3) { animation-delay: .3s; }
 @keyframes pula { 0%, 60%, 100% { transform: none; opacity: .5; } 30% { transform: translateY(-4px); opacity: 1; } }
 .note { font-size: 12px; color: var(--muted); text-align: center; padding: 0 16px 8px; }
-.fixa-pop { color: #FECACA; background: #3B1518; border-top: 1px solid rgba(248,113,113,.5); padding: 10px 16px calc(10px + 2px); font-size: 13.5px; font-weight: 700; line-height: 1.35; }   /* aviso numa faixa própria com fundo, não encosta nos recados (Sigma 21:52) */
+.ga-dias { display: grid; gap: 8px; margin-top: 10px; } .ga-dia { width: 100%; height: 48px; border-radius: 14px; background: var(--paper); border: 1px solid var(--line); color: var(--fg); font: inherit; font-weight: 800; font-size: 16px; text-align: left; padding: 0 16px; }
+.ga-msgs { display: flex; flex-direction: column; gap: 6px; margin: 2px 0 8px; } .ga-m { background: var(--paper); border-radius: 12px; padding: 8px 11px; font-size: 14px; line-height: 1.35; white-space: pre-wrap; overflow-wrap: anywhere; } .ga-m.ela { background: color-mix(in srgb, #22C55E 16%, var(--paper)); } .ga-m.tr { font-style: italic; color: var(--muted); } .ga-m b { display: block; font-size: 11.5px; color: var(--muted); margin-bottom: 2px; }
+.note.err { color: #FECACA; background: #3B1518; border-top: 1px solid rgba(248,113,113,.5); padding: 10px 16px calc(10px + 2px); font-size: 13.5px; font-weight: 700; line-height: 1.35; }   /* aviso numa faixa própria com fundo, não encosta nos recados (Sigma 21:52) */
 .voltar { width: 40px; height: 40px; margin-left: -6px; background: none; color: var(--head-fg); font-size: 26px; line-height: 1; }
 #lista { flex: 1; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; position: relative; padding-bottom: 76px; }
 .conv { display: flex; align-items: center; gap: 12px; padding: 11px max(14px, env(safe-area-inset-right, 0px)) 11px max(14px, env(safe-area-inset-left, 0px));
@@ -1365,7 +1367,7 @@ const b64encode = s => { let bin = ''; new TextEncoder().encode(s).forEach(b => 
 // ---- Rede (05/11/2026): todo pedido à API passa por aqui.
 // cache 'no-cache' sem "?t=": o navegador revalida com ETag (304 quando nada mudou, não gasta limite) e o preflight do CORS fica guardado.
 // Timeout: 20 s leitura, 90 s envio; o timer segue até o corpo ser lido, então r.json()/r.text() também não travam (abort depois de lido não faz nada).
-let ultimaMudanca = Date.now(), giroPoll = 0;
+let ultimaMudanca = Date.now(), giroPoll = 0; const baixado = [];
 let limiteAte = 0, chaveVencida = false, pausaPollAte = 0, limiteResta = '', ultimaLeituraOk = 0;
 const erroDe = (status, extra) => Object.assign(new Error('http ' + status), { status }, extra);
 async function api(url, op = {}) {
@@ -1375,6 +1377,7 @@ async function api(url, op = {}) {
   let r;
   try { r = await fetch(url, { cache: 'no-cache', ...op, headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json', ...(op.headers || {}) }, signal: ctl.signal }); }
   catch (e) { throw Object.assign(new Error(e.name === 'AbortError' ? 'timeout' : 'rede'), e.name === 'AbortError' ? { timeout: true } : { rede: true }); }
+  { const tam = +r.headers.get('content-length') || 0; if (tam) { baixado.push([Date.now(), tam]); while (baixado.length && baixado[0][0] < Date.now() - 3600000) baixado.shift(); } }   // quanto a Geral baixou (dados móveis, Sigma 22:57)
   const resta = r.headers.get('x-ratelimit-remaining'); if (resta !== null) limiteResta = resta + ' de ' + (r.headers.get('x-ratelimit-limit') || '?');   // pro Diagnóstico
   if (r.status === 401) chaveVenceu();
   if (r.status === 429 || (r.status === 403 && (r.headers.get('x-ratelimit-remaining') === '0' || r.headers.get('retry-after')))) {
@@ -2826,6 +2829,7 @@ syncBtn();
 feed.addEventListener('scroll', () => {
   if (renderizando || carregandoAntigas) return;
   if (getSelection().toString()) return;   // selecionando texto pra copiar: um scroll momentâneo não pode trocar a lista debaixo do dedo
+  if (feed.scrollTop < 40 && !inicio && FILE === GERAL.arq && lastItems.length && !feed.dataset.avisouAntiga) { feed.dataset.avisouAntiga = '1'; showNote('O que tem mais de um dia tá em Menu → Geral antiga.'); }   // a Geral carrega só o recente (dados móveis, Sigma 22:57)
   if (feed.scrollTop < 40 && inicio > 0 && lastItems.length) {
     carregandoAntigas = true; janela = lastItems.length - inicio + 10; render(lastItems, true);   // a partir do que está na tela: com não vistas (ou a última dela) além da janela, "+10" não trazia nada
     setTimeout(() => { carregandoAntigas = false; }, 300);
@@ -3771,6 +3775,7 @@ function abreDiagnostico() {
     const perm = window.Notification ? { granted: 'ligada', denied: 'bloqueada (Ajustes → Notificações)', default: 'ainda não pedida' }[Notification.permission] || Notification.permission : 'este navegador não tem';
     linha('Versão do app', VERSAO || 'sem versão');
     linha('Última leitura que deu certo', ultimaLeituraOk ? horaDe(ultimaLeituraOk) + ' (' + fmtVisto(new Date(ultimaLeituraOk).toISOString()).texto.replace(/^offline · visto /, '') + ')' : 'nenhuma ainda');
+    linha('Baixado do GitHub na última hora', Math.round(baixado.reduce((n, b) => n + b[1], 0) / 1024) + ' KB (' + baixado.length + ' respostas com corpo)');
     linha('Limite do GitHub restante', limiteResta || 'ainda não sei');
     if (Date.now() < limiteAte) linha('Parado pelo limite até', horaDe(limiteAte));
     { let log = []; try { log = JSON.parse(store.get('limites-log') || '[]'); } catch (e) {} linha('Vezes que o GitHub segurou', log.length ? log.slice(-5).reverse().map(l => horaDe(Date.parse(l.quando)) + ' ' + l.status + (l.recurso ? ' ' + l.recurso : '') + (l.retry ? ' espera ' + l.retry + ' s' : '') + ' (' + l.url + ')').join(' · ') : 'nenhuma neste aparelho'); }
@@ -4468,9 +4473,37 @@ function abreFinancas(m) {
     pintaFin(m.aba || 'receber');
   });
 }
+function abreGeralAntiga(m) {   // os dias arquivados da Geral (_geral/recados/arquivo/CAIXA-DD-MM-AAAA.md), só leitura, um dia por vez: nos dados móveis só baixa o dia que ela abrir
+  tela(m.nome || 'Geral antiga', async c => {
+    const nota = elD('p', 'p-nota', 'Carregando os dias…'); c.append(nota);
+    let dias = [];
+    try { const r = await apiOk('https://api.github.com/repos/' + REPO + '/contents/_geral/recados/arquivo'); dias = (await r.json()).map(f => f.name).filter(n => /^CAIXA-\d\d-\d\d-\d{4}\.md$/.test(n)).map(n => n.slice(6, 16)).sort((a, b) => b.split('-').reverse().join('').localeCompare(a.split('-').reverse().join(''))); }
+    catch (e) { nota.textContent = msgErro(e, 'abrir os dias arquivados'); return; }
+    nota.textContent = 'O que tem mais de um dia sai da Geral e fica aqui, pra Geral carregar leve. Toca num dia.';
+    cabecalho({ icone: 'calendar', sub: dias.length + ' dias guardados' });
+    const lista = elD('div', 'ga-dias'); c.append(lista);
+    const abreDia = async (dia, bt) => {
+      const prox = bt.nextElementSibling; if (prox && prox.classList.contains('ga-msgs')) { prox.remove(); return; }
+      bt.disabled = true; const box = elD('div', 'ga-msgs'); bt.after(box); box.append(elD('p', 'p-nota', 'Carregando…'));
+      let md = ''; try { md = await lerArquivo('_geral/recados/arquivo/CAIXA-' + dia + '.md'); } catch (e) { box.replaceChildren(elD('p', 'p-nota', msgErro(e, 'abrir esse dia'))); bt.disabled = false; return; }
+      box.replaceChildren(); bt.disabled = false;
+      md.split(/\r?\n/).forEach(l => {
+        const ela = l.match(/^- \[([^\]]+)\]\s*(.*)$/), robo = l.match(/^\s+↳ ([^\[]+?) \[([^\]]+)\]:\s*(.*)$/), tr = l.match(/^\s+↳ transcrição:\s*(.*)$/);
+        if (!ela && !robo && !tr) return;
+        const b = elD('div', 'ga-m' + (ela ? ' ela' : ''));
+        if (tr) { b.className = 'ga-m tr'; b.textContent = '🎤 ' + tr[1]; box.append(b); return; }
+        b.append(elD('b', '', ela ? 'May · ' + ela[1].slice(-5) : robo[1].trim() + ' · ' + robo[2].slice(-5)), document.createTextNode((ela ? ela[2] : robo[3]).replace(/⟪[^⟫]*⟫/g, '').trim()));
+        box.append(b);
+      });
+      if (!box.children.length) box.append(elD('p', 'p-nota', 'Esse dia não tem recado.'));
+    };
+    dias.forEach(dia => { const bt = elD('button', 'ga-dia', dia.replace(/-/g, '/')); bt.type = 'button'; bt.onclick = () => abreDia(dia, bt); lista.append(bt); });
+  });
+}
 function abreItemMenu(m) {
   if (m.donos && m.donos.length) donosTela = m.donos;   // dono da tela (e o item de dentro herda do grupo se não tiver o seu)
   painel.style.setProperty('--c', (COR_ASSUNTO.find(([re]) => re.test(m.nome)) || [])[1] || 'var(--accent)');   // a tela fica na cor do assunto, igual o azulejo dela
+  if (m.tipo === 'geral-antiga') return abreGeralAntiga(m);
   if (m.tipo === 'pagina') { location.href = m.arq + (m.arq.includes('?') ? '&' : '?') + 'v=' + encodeURIComponent(VERSAO); return; }   // ?v= da versão: o iPhone não reaproveita a página velha do cache (May 20:23, Parede de 05/11 aparecendo)   // página própria do app (ex.: jogos.html), volta pelo botão dela
   if (m.tipo === 'catalogo') return abreCatalogo();
   if (m.tipo === 'grupo') return abreGrupo(m);
