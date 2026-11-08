@@ -1,14 +1,14 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
+<meta charset="utf-8"><script src="socorro.js?v=1"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Recados">
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.161">
+<meta name="app-versao" content="2026-11-07.162">
 <meta name="app-novidade" content="Chacoalha o celular em qualquer tela pra pedir ajuda aos robôs">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -353,7 +353,6 @@ button:disabled { opacity: .45; cursor: default; }
 .digitando i:nth-child(2) { animation-delay: .15s; } .digitando i:nth-child(3) { animation-delay: .3s; }
 @keyframes pula { 0%, 60%, 100% { transform: none; opacity: .5; } 30% { transform: translateY(-4px); opacity: 1; } }
 .note { font-size: 12px; color: var(--muted); text-align: center; padding: 0 16px 8px; }
-.socorro-pop .pp-perg { font-size: 17px; line-height: 1.4; text-align: center; margin: 8px 4px 14px; }
 .fixa-pop { color: #FECACA; background: #3B1518; border-top: 1px solid rgba(248,113,113,.5); padding: 10px 16px calc(10px + 2px); font-size: 13.5px; font-weight: 700; line-height: 1.35; }   /* aviso numa faixa própria com fundo, não encosta nos recados (Sigma 21:52) */
 .voltar { width: 40px; height: 40px; margin-left: -6px; background: none; color: var(--head-fg); font-size: 26px; line-height: 1; }
 #lista { flex: 1; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; position: relative; padding-bottom: 76px; }
@@ -3858,46 +3857,8 @@ async function gravaLinha(arq, linha) {   // acrescenta 1 linha no fim do arquiv
   }
   return false;
 }
-// Chacoalhar pede ajuda (May 21:09 e 21:10): chacoalhou o celular em qualquer tela, sai um recado na Geral pra todos os robôs.
-// O popup só diz que foi quando foi de verdade; sem rede ou com o GitHub travado, diz que NÃO foi e guarda pra mandar sozinho depois (Sigma 21:37).
-const Socorro = (() => {
-  const FILA = 'socorro-fila'; let picos = [], ultimo = 0, ligado = false;
-  const onde = () => !painel.hidden && pilha.length ? pilha[pilha.length - 1][0] : FILE ? convPorArq(FILE).nome : 'lista de conversas';
-  const fila = () => { try { return JSON.parse(store.get(FILA) || '[]'); } catch (e) { return []; } };
-  const mostra = (foi, depois) => {
-    const ov = document.createElement('div'), card = document.createElement('div'), t = document.createElement('div'), ok = document.createElement('button');
-    ov.className = 'fixa-pop socorro-pop'; card.className = 'pp-card'; t.className = 'pp-perg'; ok.type = 'button'; ok.className = 'pp-op rec'; ok.textContent = 'Ok';
-    t.textContent = foi ? (depois ? 'O pedido de ajuda que tinha ficado guardado foi agora. Os robôs já vão olhar o que foi.' : 'Recebemos teu pedido de ajuda. Já vamos olhar o que foi.') : 'O pedido de ajuda NÃO foi: ' + (navigator.onLine === false ? 'tá sem internet' : Date.now() < limiteAte ? 'o GitHub segurou a conexão até ' + horaDe(limiteAte) : 'o GitHub não respondeu') + '. Guardei e mando sozinho assim que der.';
-    const fecha = () => ov.remove(); ok.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); };
-    card.append(t, ok); ov.append(card); document.body.append(ov); if (navigator.vibrate) navigator.vibrate(foi ? 60 : [60, 80, 60]);
-  };
-  const manda = async l => !!token && await gravaLinha(GERAL.arq, l);
-  async function dispara() {
-    if (Date.now() - ultimo < 20000) return; ultimo = Date.now();   // um chacoalhão manda um pedido só
-    const l = '- [' + stamp(new Date()) + '] 🆘 @todos chacoalhei o celular: tem algo errado aqui (tela: ' + String(onde()).replace(/[\[\]]/g, '') + ', app ' + VERSAO + ')';
-    const foi = await manda(l);
-    if (!foi) store.set(FILA, JSON.stringify(fila().concat(l).slice(-5))); else if (FILE === GERAL.arq) buscaRapido();
-    mostra(foi);
-  }
-  async function reenvia() {
-    const f = fila(); if (!f.length || !token || navigator.onLine === false || Date.now() < limiteAte) return;
-    const resto = []; for (const l of f) if (!(await manda(l))) resto.push(l);
-    store.set(FILA, resto.length ? JSON.stringify(resto) : ''); if (!resto.length) mostra(true, true);
-  }
-  const mov = e => {   // chacoalhão = 4 trancos fortes em pouco mais de 1 s (andar e guardar no bolso não chegam nisso)
-    const a = e.accelerationIncludingGravity || e.acceleration; if (!a) return;
-    const g = Math.hypot(a.x || 0, a.y || 0, a.z || 0), t = Date.now(); if (g < 24) return;
-    picos = picos.filter(x => t - x < 1300); if (!picos.length || t - picos[picos.length - 1] > 110) picos.push(t);
-    if (picos.length >= 4) { picos = []; dispara(); }
-  };
-  const liga = () => { if (!ligado) { ligado = true; addEventListener('devicemotion', mov); } };
-  if (window.DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {   // iPhone: o sensor pede licença, e só dentro de um toque; vai no primeiro toque do app
-    const pede = () => { document.removeEventListener('touchend', pede, true); DeviceMotionEvent.requestPermission().then(st => { if (st === 'granted') liga(); }).catch(() => {}); };
-    document.addEventListener('touchend', pede, true);
-  } else if (window.DeviceMotionEvent) liga();
-  setInterval(reenvia, 60000); addEventListener('online', () => setTimeout(reenvia, 3000));
-  return { dispara, reenvia };
-})();
+window.socorroOnde = () => !painel.hidden && pilha.length ? pilha[pilha.length - 1][0] : FILE ? convPorArq(FILE).nome : 'lista de conversas';   // o chacoalhar (socorro.js) diz em que tela ela tava
+window.socorroFoi = () => { if (FILE === GERAL.arq) buscaRapido(); };
 async function gravaJson(arq, muda, msg) {   // lê o JSON mais novo com o sha, aplica a mudança e grava; 409 = alguém gravou junto, refaz em cima do novo
   for (let t = 0; t < 4; t++) {
     try {
