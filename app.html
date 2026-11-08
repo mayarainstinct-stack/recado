@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.202">
-<meta name="app-novidade" content="Abas da Obra numeradas; Dinheiro sem botão em cima da lista; planta com os nomes no canto">
+<meta name="app-versao" content="2026-11-08.203">
+<meta name="app-novidade" content="Pendências e Contas do mês agora são Finanças, numa tela só">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -3575,7 +3575,7 @@ const ICONES_MENU = [
   [/jogo/i, '<path class="f1" d="M11 14h26a8 8 0 0 1 7.7 10.2l-2.6 8.6a4 4 0 0 1-6.9 1.4L30.5 29h-13l-4.7 5.2a4 4 0 0 1-6.9-1.4l-2.6-8.6A8 8 0 0 1 11 14z"/><path d="M13 19v8M9 23h8"/><circle class="f2" cx="33" cy="21" r="2"/><circle class="f2" cx="37" cy="25" r="2"/><rect class="ouro" x="10" y="39" width="28" height="5" rx="2.5"/>'],
   [/m[aá]quina|console/i, '<rect class="f1" x="5" y="8" width="14" height="32" rx="2"/><path d="M8 14h8M8 19h8"/><circle class="f2" cx="12" cy="33" r="2"/><path class="f1" d="M24 26h16a5 5 0 0 1 4.8 6.4l-1.4 4.6a3 3 0 0 1-5.1 1L35.5 35h-7l-2.8 3a3 3 0 0 1-5.1-1l-1.4-4.6A5 5 0 0 1 24 26z"/><path d="M27 30v4M25 32h4"/><path d="M28 10l6 6 6-6"/>'],
   [/agenda/i, '<rect class="f1" x="6" y="9" width="36" height="33" rx="4"/><path d="M6 18h36M15 5v8M33 5v8"/><circle cx="14" cy="26" r="1.6"/><circle cx="24" cy="26" r="1.6"/><circle cx="34" cy="26" r="1.6"/><circle cx="14" cy="34" r="1.6"/><rect class="f2" x="20" y="30" width="8" height="8" rx="2"/><circle cx="34" cy="34" r="1.6"/>'],
-  [/pend[eê]ncia/i, '<rect class="f1" x="5" y="6" width="28" height="34" rx="3"/><path d="M5 15h28M5 24h28M5 33h28M16 6v34"/><circle class="f2" cx="35" cy="34" r="9"/><path d="M35 29v10M38 31.5c-.6-1-1.7-1.5-3-1.5-1.7 0-3 .9-3 2.2 0 3.1 6 1.6 6 4.6 0 1.3-1.3 2.2-3 2.2-1.4 0-2.6-.6-3.2-1.6"/>'],
+  [/pend[eê]ncia|finan[cç]/i, '<rect class="f1" x="5" y="6" width="28" height="34" rx="3"/><path d="M5 15h28M5 24h28M5 33h28M16 6v34"/><circle class="f2" cx="35" cy="34" r="9"/><path d="M35 29v10M38 31.5c-.6-1-1.7-1.5-3-1.5-1.7 0-3 .9-3 2.2 0 3.1 6 1.6 6 4.6 0 1.3-1.3 2.2-3 2.2-1.4 0-2.6-.6-3.2-1.6"/>'],
   [/sa[uú]de|cirurgia/i, '<path class="f2" d="M24 22c-4-6-12-12-12-4 0 5 6 8 12 12 6-4 12-7 12-12 0-8-8-2-12 4z"/><path d="M19 30l-7 13 5-1 3 4 6-12M29 30l7 13-5-1-3 4-6-12"/><path class="f1" d="M30 4h12v14H30z"/><path d="M33 9l2 2 4-4"/>'],
   [/treino|academia/i, '<rect class="f2" x="4" y="16" width="6" height="16" rx="2"/><rect class="f1" x="10" y="12" width="6" height="24" rx="2"/><rect class="f2" x="38" y="16" width="6" height="16" rx="2"/><rect class="f1" x="32" y="12" width="6" height="24" rx="2"/><path d="M16 24h16"/>'],
   [/casa/i, '<rect class="f1" x="5" y="6" width="38" height="36" rx="2"/><path d="M5 22h18M23 6v36M23 28h20M33 28v14"/><path d="M14 22a6 6 0 0 0-6-6" stroke-dasharray="2 2"/><rect class="f2" x="27" y="10" width="11" height="8" rx="1.5"/>'],
@@ -3588,7 +3588,7 @@ const ICONES_MENU = [
 function iconeMenu(nome) { const a = ICONES_MENU.find(([re]) => re.test(nome)); return a ? '<svg class="im" viewBox="0 0 48 48" aria-hidden="true">' + a[1] + '</svg>' : ''; }
 // Menu: cada botão com a cara da tela de dentro (May, 07/11/2026 15:08 e 15:16: "cara de botão, mas cada botão tem que ser o CSS separado;
 // o que eles têm de igual é largura e altura, o resto cada um pega do seu interior"). Classe bt-<assunto>; a Agenda mostra o dia de hoje
-const BOTAO_DE = [[/jogo/i, 'jogos'], [/m[aá]quina|console/i, 'maquinas'], [/pend[eê]ncia/i, 'pendencias'], [/sa[uú]de|cirurgia/i, 'saude'], [/treino|academia/i, 'treino'], [/casa/i, 'casa'],
+const BOTAO_DE = [[/jogo/i, 'jogos'], [/m[aá]quina|console/i, 'maquinas'], [/pend[eê]ncia|finan[cç]/i, 'pendencias'], [/sa[uú]de|cirurgia/i, 'saude'], [/treino|academia/i, 'treino'], [/casa/i, 'casa'],
   [/obra|piscina/i, 'obra'], [/m[ií]dia|imagen|v[ií]deo|anima/i, 'midia'], [/lista/i, 'listas'], [/ideia|tarefa/i, 'ideias'], [/conta|comida/i, 'contas'], [/agenda/i, 'agenda']];
 const ICONE_LIMPO = {   // desenho de linha limpo, traço igual em todos (May 15:33: "tá parecendo uma criança desenhando, tem que ser mais profissional")
   midia: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9.2l5 2.8-5 2.8z"/>', listas: '<path d="M10 6.5h10M10 12h10M10 17.5h10"/><path d="M4 6.5l1.3 1.3L7.6 5.5M4 12l1.3 1.3L7.6 11M4 17.5l1.3 1.3 2.3-2.3"/>',
