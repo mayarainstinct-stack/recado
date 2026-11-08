@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-07.158">
-<meta name="app-novidade" content="Geral mais leve com o GitHub e nunca abre vazia: mostra a última cópia guardada enquanto busca">
+<meta name="app-versao" content="2026-11-07.159">
+<meta name="app-novidade" content="Pendências: + Pessoa nova, pra lançar gente ou dívida que não tá na planilha, com lembrete no dia">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -807,6 +807,8 @@ ul.marcavel li.feito { opacity: .55; text-decoration: line-through; } ul.marcave
 .fin-lancar { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(84px + env(safe-area-inset-bottom, 0px)); z-index: 6; width: auto; height: 48px; border-radius: 999px; padding: 0 18px; background: #F59E0B; color: #1A1203; font: inherit; font-weight: 900; box-shadow: 0 8px 22px rgba(245,158,11,.4); }
 .fin-hist { display: grid; gap: 6px; margin: 8px 0 12px; max-height: 40vh; overflow-y: auto; } .fin-hist div { display: grid; grid-template-columns: 84px auto 1fr; gap: 8px; font-size: 13px; text-align: left; } .fin-hist small { color: var(--muted); }
 .fin-form { display: grid; gap: 10px; } .fin-form select, .fin-form input { font: inherit; font-size: 16px; padding: 11px 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+.fin-lancar.fin-nova { bottom: calc(140px + env(safe-area-inset-bottom, 0px)); background: var(--paper); color: var(--fg); border: 1px solid #F59E0B; }
+.fin-rot { font-size: 13px; font-weight: 700; color: var(--muted); margin: 2px 4px -4px; } .fin-lembra { font-size: 14px; font-weight: 700; color: #F59E0B; margin: 6px 0; }
 .fin-tipo { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .fin-tipo button { width: auto; height: 44px; border-radius: 999px; background: var(--paper); color: var(--fg); border: 1px solid var(--line); font: inherit; font-weight: 800; } .fin-tipo button.on { background: #F59E0B; color: #1A1203; border-color: transparent; }
 .gr-hero { display: flex; align-items: center; gap: 14px; padding: 16px; border-radius: 22px; color: #fff; background: radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--k1) 75%, transparent), transparent 65%), linear-gradient(160deg, color-mix(in srgb, var(--k1) 45%, #0B0B10), #0B0B10); box-shadow: 0 10px 30px color-mix(in srgb, var(--k1) 30%, transparent); }
 .gr-hero .gr-ic { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); flex: none; } .gr-hero .gr-ic svg { width: 30px; height: 30px; }
@@ -4309,7 +4311,7 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
 // Dados: contas/pendencias.json (gerado da planilha dela por contas/gerar_pendencias.py) + contas/LANCAMENTOS.md (o que ela lança aqui; vale na hora)
 const reaisFin = v => 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
 function lancamentosDe(md, depois) {
-  return String(md || '').split(/\r?\n/).map(l => l.trim().match(/^- \[(\d\d)\/(\d\d)\/(\d{4}) (\d\d):(\d\d)\]\s*(pagar|receber)\s*·\s*([^·]+?)\s*·\s*([\d.,]+)\s*(?:·\s*(.*))?$/)).filter(Boolean)
+  return String(md || '').split(/\r?\n/).map(l => l.trim().match(/^- \[(\d\d)\/(\d\d)\/(\d{4}) (\d\d):(\d\d)\]\s*(pagar|receber|nova-pagar|nova-receber)\s*·\s*([^·]+?)\s*·\s*([\d.,]+)\s*(?:·\s*(.*))?$/)).filter(Boolean)
     .map(x => ({ quando: new Date(+x[3], x[2] - 1, +x[1], +x[4], +x[5]).getTime(), data: x[1] + '/' + x[2] + '/' + x[3], tipo: x[6], nome: x[7], valor: parseFloat(x[8].replace(/\./g, '').replace(',', '.')), nota: x[9] || '' }))
     .filter(l => l.quando > depois);
 }
@@ -4326,7 +4328,7 @@ function abreContasMes(m) {
     const hoje = new Date(); hoje.setHours(0, 0, 0, 0); const SEM = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'], MES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
     const proxDia = n => { const d = new Date(hoje.getFullYear(), hoje.getMonth(), n); if (d < hoje) d.setMonth(d.getMonth() + 1); return d; };
     const itens = [];
-    (pd.pagar || []).filter(x => x.falta > 0).forEach(x => { const ult = ((x.pagamentos || [])[(x.pagamentos || []).length - 1] || {}).valor || x.falta; itens.push({ quando: proxDia(x.dia || 6), nome: x.nome, cat: 'parcela', valor: Math.min(ult, x.falta), sub: 'falta ' + reaisFin(x.falta) + (x.dia ? '' : ' · dia 6, o padrão dela') }); });
+    (pd.pagar || []).filter(x => x.falta > 0).forEach(x => { const ult = ((x.pagamentos || [])[(x.pagamentos || []).length - 1] || {}).valor || x.falta, lemD = x.lembrar ? new Date(+x.lembrar.slice(6), +x.lembrar.slice(3, 5) - 1, +x.lembrar.slice(0, 2)) : null; itens.push({ quando: lemD || proxDia(x.dia || 6), nome: x.nome, cat: 'parcela', valor: Math.min(ult, x.falta), sub: 'falta ' + reaisFin(x.falta) + (x.lembrar ? ' · lembrete ' + x.lembrar.slice(0, 5) : x.dia ? '' : ' · dia 6, o padrão dela') }); });
     (fx.mensais || []).filter(x => x.dia).forEach(x => itens.push({ quando: proxDia(x.dia), nome: x.nome, cat: 'fixa', valor: x.valor, sub: (x.metade ? 'tua metade ' + reaisFin(x.valor / 2) + ' · ' : '') + 'última: ' + (x.de || '') + (x.nota ? ' · ' + x.nota : '') }));
     itens.sort((a, b) => a.quando - b.quando);
     const fim = new Date(hoje.getFullYear(), hoje.getMonth() + 1, hoje.getDate()), noMes = itens.filter(x => x.quando < fim), tua = noMes.reduce((n, x) => n + (x.cat === 'fixa' ? x.valor / 2 : x.valor), 0);
@@ -4360,7 +4362,8 @@ function abreFinancas(m) {
     nota.remove();
     cabecalho({ icone: 'money', sub: 'da planilha · ' + String(d.atualizado || '').replace(/\/\d{4}/, ''), acao: { icone: 'retry', rotulo: 'Ler a planilha de novo', fn: () => desenhaTela() } });
     const [dd, mm, aa, hh, mi] = (String(d.atualizado).match(/\d+/g) || []).map(Number), base = dd ? new Date(aa, mm - 1, dd, hh || 0, mi || 0).getTime() : 0;
-    const aplica = l => { const lado = l.tipo === 'pagar' ? d.pagar : d.receber, x = lado.find(y => [y.nome, y.chave].some(n => n && n.toLowerCase() === l.nome.toLowerCase())); if (!x) return; x.pagamentos.push({ data: l.data, valor: l.valor, nota: (l.nota ? l.nota + ' · ' : '') + 'lançado no app' }); x.falta = Math.max(0, x.falta - l.valor); x.pago += l.valor; };
+    const aplica = l => { if (/^nova-/.test(l.tipo)) { const ld = l.tipo === 'nova-pagar' ? d.pagar : d.receber; if (!ld.some(y => [y.nome, y.chave].some(n => n && n.toLowerCase() === l.nome.toLowerCase()))) { const lem = (l.nota.match(/lembrar (\d\d\/\d\d\/\d{4})/) || [])[1] || null; ld.push({ nome: l.nome, chave: l.nome, dia: null, total: l.valor, pago: 0, falta: l.valor, como: l.nota.replace(/\s*lembrar \d\d\/\d\d\/\d{4}\s*·?\s*/, '').trim(), pagamentos: [], lembrar: lem, desde: l.data }); } return; }   // pessoa nova lançada no app (May 21:20)
+      const lado = l.tipo === 'pagar' ? d.pagar : d.receber, x = lado.find(y => [y.nome, y.chave].some(n => n && n.toLowerCase() === l.nome.toLowerCase())); if (!x) return; x.pagamentos.push({ data: l.data, valor: l.valor, nota: (l.nota ? l.nota + ' · ' : '') + 'lançado no app' }); x.falta = Math.max(0, x.falta - l.valor); x.pago += l.valor; };
     lancamentosDe(lmd, base).forEach(aplica);
     const box = elD('div', 'fin'); c.append(box);
     const pintaFin = abaIni => {
@@ -4379,15 +4382,19 @@ function abreFinancas(m) {
       const pag = (lista, lado) => { const pg = elD('div', 'fin-pag'); const tb = elD('div', 'fin-tab'); tb.append(cabeca(['Quem', 'Total', lado === 'pagar' ? 'Pago' : 'Recebido', 'Falta', 'Último'])); lista.slice().sort((a, b) => b.falta - a.falta).forEach(x => tb.append(linhaDe(x, lado))); const tot = elD('div', 'fin-lin fin-tot'); celulas(tot, [['Total', 'nome'], [num(lista.reduce((n, x) => n + x.total, 0))], [num(lista.reduce((n, x) => n + x.pago, 0)), 'ok'], [num(lista.reduce((n, x) => n + x.falta, 0)), 'falta'], ['']]); tb.append(tot); pg.append(tb); return pg; };
       tr.append(pag(d.receber, 'receber'), pag(d.pagar, 'pagar'));
       abas.forEach(([id, t], j) => { const b = elD('button', '', t); b.type = 'button'; b.onclick = () => tr.scrollTo({ left: j * tr.clientWidth, behavior: 'smooth' }); nav.append(b); });
+      abaAtual = () => abas[Math.round(tr.scrollLeft / Math.max(1, tr.clientWidth))] ? abas[Math.round(tr.scrollLeft / Math.max(1, tr.clientWidth))][0] : 'pagar';
       const marca = () => { const j = Math.round(tr.scrollLeft / Math.max(1, tr.clientWidth)); [...nav.children].forEach((b, x) => b.classList.toggle('on', x === j)); };
       tr.addEventListener('scroll', marca, { passive: true });
       box.append(nav, tr);
       const j0 = Math.max(0, abas.findIndex(a => a[0] === abaIni)); requestAnimationFrame(() => { tr.scrollLeft = j0 * tr.clientWidth; marca(); });
       const fab = elD('button', 'fin-lancar', '+ Lançar'); fab.type = 'button'; fab.onclick = () => lancar(); box.append(fab);
+      const fabN = elD('button', 'fin-lancar fin-nova', '+ Pessoa nova'); fabN.type = 'button'; fabN.onclick = () => novaPessoa(abaAtual()); box.append(fabN);   // gente ou dívida que ainda não tá na planilha (May 21:20)
     };
+    let abaAtual = () => 'pagar';
     const pop = (titulo, corpo) => { const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card fin-card'), x = elD('button', 'pp-x'); x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; card.append(x, elD('div', 'pp-perg', titulo), corpo); ov.append(card); document.body.append(ov); fechaPuxando(ov, fecha, () => card, () => card); return fecha; };
     const detalhe = (x, lado, sugerido) => {
       const cp = elD('div', 'fin-det'); cp.append(elD('p', 'p-nota', (lado === 'pagar' ? 'Pago ' : 'Recebido ') + reaisFin(x.pago) + ' de ' + reaisFin(x.total) + ' · falta ' + reaisFin(x.falta)));
+      if (x.lembrar && x.falta > 0) cp.append(elD('p', 'fin-lembra', '🔔 Lembrete no dia ' + x.lembrar.slice(0, 5) + (x.como ? ' · ' + x.como : '')));
       const ul = elD('div', 'fin-hist'); x.pagamentos.slice().reverse().forEach(y => { const l = elD('div'); l.append(elD('span', '', y.data), elD('b', '', reaisFin(y.valor)), elD('small', '', y.nota || '')); ul.append(l); }); cp.append(ul);
       const bt = elD('button', 'pp-op rec', lado === 'pagar' ? 'Lançar pagamento' : 'Lançar recebimento'); bt.type = 'button'; cp.append(bt);
       const fecha = pop(x.nome, cp); bt.onclick = () => { fecha(); lancar(lado, x.nome, sugerido); };
@@ -4408,6 +4415,25 @@ function abreFinancas(m) {
         ok.disabled = true; ok.textContent = 'Lançando…';
         if (await gravaLinha('contas/LANCAMENTOS.md', linha)) { aplica({ tipo: t, nome: quem.value, valor: v, nota: obs.value.trim(), data: stamp(dt).slice(0, 10) }); fecha(); pintaFin(t); showNote('Lançado: ' + reaisFin(v) + ' · ' + quem.value); }
         else { ok.disabled = false; ok.textContent = 'Lançar'; showNote('Não lançou: confere a internet.', true); }
+      };
+    };
+    const novaPessoa = (lado = 'pagar') => {   // pessoa ou dívida nova: vira linha nova-pagar/nova-receber no LANCAMENTOS.md, e o gerador da planilha soma junto
+      const f = elD('div', 'fin-form'), tipo = elD('div', 'fin-tipo'); let t = lado === 'receber' ? 'receber' : 'pagar';
+      const bt = (v, txt) => { const b = elD('button', v === t ? 'on' : '', txt); b.type = 'button'; b.onclick = () => { t = v; [...tipo.children].forEach(x => x.classList.toggle('on', x === b)); }; return b; };
+      tipo.append(bt('pagar', 'Eu devo'), bt('receber', 'Me devem'));
+      const nome = elD('input'), valor = elD('input'), lem = elD('input'), obs = elD('input'), rot = elD('label', 'fin-rot', 'Me lembrar no dia (push)');
+      nome.placeholder = 'Quem (ex.: Josy, minha sogra)'; nome.autocapitalize = 'words'; valor.inputMode = 'decimal'; valor.placeholder = 'Valor (R$)'; lem.type = 'date'; obs.placeholder = 'Nota (opcional)';
+      const ok = elD('button', 'pp-op rec', 'Lançar'); ok.type = 'button';
+      f.append(tipo, nome, valor, rot, lem, obs, ok);
+      const fecha = pop('Pessoa nova', f);
+      ok.onclick = async () => {
+        const n = nome.value.trim().replace(/·/g, '-'), v = parseFloat(String(valor.value).replace(/\./g, '').replace(',', '.'));
+        if (!n) { nome.focus(); return; } if (!(v > 0)) { valor.focus(); return; }
+        const lemBr = lem.value ? lem.value.split('-').reverse().join('/') : '', notas = [lemBr ? 'lembrar ' + lemBr : '', obs.value.trim().replace(/·/g, '-')].filter(Boolean).join(' · ');
+        const dt = new Date(), linha = '- [' + stamp(dt) + '] nova-' + t + ' · ' + n + ' · ' + String(v).replace('.', ',') + (notas ? ' · ' + notas : '');
+        ok.disabled = true; ok.textContent = 'Lançando…';
+        if (await gravaLinha('contas/LANCAMENTOS.md', linha)) { aplica({ tipo: 'nova-' + t, nome: n, valor: v, nota: notas, data: stamp(dt).slice(0, 10) }); fecha(); pintaFin(t); showNote('Lançado: ' + n + (lemBr ? ' · lembrete no dia ' + lemBr.slice(0, 5) : '')); }
+        else { ok.disabled = false; ok.textContent = 'Lançar'; showNote('Não lançou: confere a internet. Nada foi gravado.', true); }
       };
     };
     pintaFin(m.aba || 'receber');
