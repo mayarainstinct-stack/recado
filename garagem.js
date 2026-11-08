@@ -59,7 +59,7 @@ const CSS = `
 .gr-tela .gr-cartao { position: relative; background: #2A2C31; border: 1px solid #3B3E45; padding: 12px; clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px); }
 .gr-tela .gr-tit { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font: 700 17px/1 var(--gr-imp); font-synthesis: none; letter-spacing: .1em; text-transform: uppercase; color: #F2F2F0; }
 .gr-tela .gr-tit::before { content: ''; width: 6px; height: 16px; background: var(--gr-am); transform: skewX(-14deg); }
-.gr-tela .gr-tit small { margin-left: auto; font: 700 12px/1 var(--gr-mono); letter-spacing: 0; color: #C9CCD2; text-transform: none; }
+.gr-tela .gr-tit small { margin-left: 4px; padding: 3px 7px; border-radius: 3px; background: #F5C400; color: #1E1F23 !important; font: 700 12px/1 var(--gr-mono); letter-spacing: 0; color: #C9CCD2; text-transform: none; }
 .gr-tela .gr-ad { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: #141518; touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: ew-resize; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
 .gr-tela .gr-ad img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; -webkit-user-drag: none; }
 .gr-tela .gr-ad .gr-dep { clip-path: inset(0 0 0 var(--x, 50%)); }
