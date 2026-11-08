@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.177">
+<meta name="app-versao" content="2026-11-08.178">
 <meta name="app-novidade" content="Planta: o nome do cômodo vai num lugar livre, sem cobrir os móveis">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -4301,11 +4301,13 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
         gc.append(ns('rect', { x: 0, y: 0, width: 1, height: 1, class: 'cad-obj-toque' }));
         ci.tp[3].forEach(p => gc.append(ns('path', { d: p, class: 'cad-obj-l', 'vector-effect': 'non-scaling-stroke', pathLength: 1 })));
         gc.addEventListener('click', e => { e.stopPropagation(); tocaCoisa(ci); }); camadas[1].append(gc);
+        const lb = { x: ci.x, y: ci.y, w: ci.ww, h: ci.hh };   // móvel de chão (tapete) fica embaixo dos outros: o nome dele vai na parte que aparece (Sigma 10:07)
+        if (ci.fixo && ci.fixo.piso) movs.filter(o => o !== ci && !(o.fixo && o.fixo.piso) && o.x < lb.x + lb.w && o.x + o.ww > lb.x && o.y < lb.y + lb.h && o.y + o.hh > lb.y).forEach(o => Object.assign(lb, [{ x: lb.x, y: lb.y, w: o.x - lb.x, h: lb.h }, { x: o.x + o.ww, y: lb.y, w: lb.x + lb.w - o.x - o.ww, h: lb.h }, { x: lb.x, y: lb.y, w: lb.w, h: o.y - lb.y }, { x: lb.x, y: o.y + o.hh, w: lb.w, h: lb.y + lb.h - o.y - o.hh }].sort((p, q) => q.w * q.h - p.w * p.h)[0]));
         const rot = ci.nome.split(/\s*[,(]|\s+com\s+|\s+que\s+/)[0].trim(), pal = rot.split(' '), meio = Math.ceil(pal.length / 2), ls = rot.length > 11 && pal.length > 1 ? [pal.slice(0, meio).join(' '), pal.slice(meio).join(' ')] : [rot];
-        let lw = Math.max(...ls.map(x => x.length)), ft = Math.min(.13, (ci.ww - .06) / (lw * .68), (ci.hh - .04) / (ls.length * 1.25));
-        if (ft < .08) { ci.numerado = true; ls.splice(0, ls.length, String(ci.n + 1)); lw = ls[0].length; ft = Math.max(.08, Math.min(.13, (ci.ww - .02) / (lw * .68), ci.hh - .02)); }   // menor que 9 px não lê: vira o número, e a lista diz qual é (Sigma 00:07)
-        const et = ns('text', { x: ci.x + ci.ww / 2, y: ci.y + ci.hh / 2 - (ls.length - 1) * ft * .6, 'font-size': ft.toFixed(3), class: 'cad-coisa' + (ci.numerado ? ' num' : '') });
-        ls.forEach((tx, i) => { const sp = ns('tspan', { x: ci.x + ci.ww / 2, dy: i ? (ft * 1.2).toFixed(3) : 0 }); sp.textContent = tx; et.append(sp); }); camadas[3].append(et);   // o nome do móvel inteiro, dentro dele, diminuindo até caber
+        let lw = Math.max(...ls.map(x => x.length)), ft = Math.min(.13, (lb.w - .06) / (lw * .68), (lb.h - .04) / (ls.length * 1.25));
+        if (ft < .08) { ci.numerado = true; ls.splice(0, ls.length, String(ci.n + 1)); lw = ls[0].length; ft = Math.max(.08, Math.min(.13, (lb.w - .02) / (lw * .68), lb.h - .02)); }   // menor que 9 px não lê: vira o número, e a lista diz qual é (Sigma 00:07)
+        const et = ns('text', { x: lb.x + lb.w / 2, y: lb.y + lb.h / 2 - (ls.length - 1) * ft * .6, 'font-size': ft.toFixed(3), class: 'cad-coisa' + (ci.numerado ? ' num' : '') });
+        ls.forEach((tx, i) => { const sp = ns('tspan', { x: lb.x + lb.w / 2, dy: i ? (ft * 1.2).toFixed(3) : 0 }); sp.textContent = tx; et.append(sp); }); camadas[3].append(et);   // o nome do móvel inteiro, dentro dele, diminuindo até caber
       });
       if (movs.length && k.rot) {   // com móvel desenhado, o nome grande do cômodo ia por cima da cama: vai pequeno num canto livre
         const [t, ar] = k.rot, nomeU = k.nome.toUpperCase(), pal = nomeU.split(' '), meio = Math.ceil(pal.length / 2), area = num(areaDe(k)) + ' m²';
