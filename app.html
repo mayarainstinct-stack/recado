@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-08.223">
+<meta name="app-versao" content="2026-11-09.224">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1441,6 +1441,21 @@ body.na-geral form textarea:focus { border-color: #FACC15; box-shadow: 0 0 0 3px
 body.web.lado .anexos { grid-column: 2; grid-row: 5; }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* Trabalho = padrão Simplificação (simp-ui claro), May 09/11/2026: "mais profissional", "cara de padrão simplificação". body.modo-trab vale pra toda tela filha. */
+body.modo-trab .painel, body.modo-trab .painel.tema-claro { --c: #059669; --accent: #059669; --fg: #1E293B; --muted: #64748B; --line: #E2E8F0; --paper: #FFFFFF; --bg: #F8FAFC; background: #F8FAFC; color: #1E293B; font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif; }
+body.modo-trab .painel .p-topo { background: #FFFFFF; color: #1E293B; box-shadow: 0 1px 0 #E2E8F0; }
+body.modo-trab .painel .p-topo::after { background: #059669; height: 2px; box-shadow: none; }
+body.modo-trab .painel .p-topo button, body.modo-trab .painel .p-voltar-baixo { background: #F1F5F9; color: #1E293B; border: 1px solid #E2E8F0; box-shadow: none; }
+body.modo-trab .painel .p-sec { color: #059669; letter-spacing: .04em; }
+body.modo-trab .painel .p-sub, body.modo-trab .painel .p-nota { color: #64748B; }
+body.modo-trab .painel .p-hero .logo { background-color: #0F1825 !important; }
+body.modo-trab .painel .p-grade.apps > *, body.modo-trab .painel .p-botao, body.modo-trab .painel .cartao, body.modo-trab .painel .ag { background: #FFFFFF; color: #1E293B; border: 1px solid #E2E8F0; border-radius: 8px; box-shadow: 0 1px 2px rgba(15, 23, 42, .05); text-shadow: none; }
+body.modo-trab .painel .p-ic { background: #ECFDF5; color: #059669; box-shadow: none; }
+body.modo-trab .painel .ag-cal { background: #0F1825; color: #FFFFFF; border-radius: 8px; }
+body.modo-trab .painel .ag-dia.sel, body.modo-trab .painel .ag-tudo { background: #ECFDF5; color: #059669; }
+body.modo-trab .painel .ag-seta { background: #1A2D42; color: #FFFFFF; box-shadow: none; }
+body.modo-trab .painel .ag .cx .tag { background: #F1F5F9; color: #475569; }
 </style>
 </head>
 <body>
@@ -3660,7 +3675,7 @@ function abrir(c) {
   if (c.arq === TRAB.arq) geralLiberada = false;
   mais.innerHTML = icone(c.arq === GERAL.arq ? 'grade' : 'more'); mais.setAttribute('aria-label', c.arq === GERAL.arq ? 'Menu' : 'Mais opções');
   mais.hidden = c.arq === TRAB.arq;   // no Trabalho NUNCA aparece o ⋮ (May 16:36 e 16:40: "nunca é pra aparecer os pontinhos no trabalho"); pra Geral, dois toques no anel da semana
-  irGeral.hidden = c.arq === GERAL.arq || escondeGeral(); irTrab.hidden = c.arq === TRAB.arq; abreMenu.hidden = c.arq !== GERAL.arq;   // Trabalho é só trabalho; Casa juntada na Geral (pedido dela, 02/11/2026)
+  irGeral.hidden = c.arq === GERAL.arq || escondeGeral(); irTrab.hidden = c.arq === TRAB.arq; abreMenu.hidden = c.arq !== GERAL.arq && c.arq !== TRAB.arq; document.body.classList.toggle('modo-trab', c.arq === TRAB.arq);   // Trabalho é só trabalho; Casa juntada na Geral (pedido dela, 02/11/2026)
   if (typeof ocultosConversa !== 'undefined') ocultosConversa = null;
   document.body.classList.toggle('na-geral', c.arq === GERAL.arq);   // a Geral tem cara de casa (grafite, gamer); o Trabalho fica simples e sério (May, 07/11/2026 12:00)
   FILE = c.arq; API = apiDe(c.arq); nomeConv = c.nome; fotoConv = c.foto || (conversas.find(x => x.arq === c.arq) || {}).foto || '';
@@ -3713,7 +3728,7 @@ const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], 
 // arrasta pro lugar do outro e solta; a ordem fica guardada neste aparelho
 function arrumaArrastando(grade) {
   let seg = null, arr = null, ox = 0, oy = 0, fantasma = null, mexeu = false;
-  const salva = () => { try { store.set('menu-ordem', JSON.stringify([...grade.children].map(b => b.dataset.nome).filter(Boolean))); } catch (e) {} };
+  const salva = () => { try { store.set(FILE === TRAB.arq ? 'menu-ordem-trab' : 'menu-ordem', JSON.stringify([...grade.children].map(b => b.dataset.nome).filter(Boolean))); } catch (e) {} };
   grade.addEventListener('pointerdown', e => {
     const b = e.target.closest('.p-azulejo'); if (!b || !b.dataset.nome) return;
     ox = e.clientX; oy = e.clientY; mexeu = false;
@@ -3940,16 +3955,16 @@ function abreInfoConversa() {
 abreMenu.onclick = () => {
   menu.hidden = true; painel.hidden = false; pilha = []; painel.style.removeProperty('--c'); Som.pagina();
   tela('Menu', c => {
-    const h = document.createElement('div'); h.className = 'p-hero'; h.innerHTML = '<div class="logo" aria-hidden="true" style="background-image:url(' + FOTO_GERAL + ');background-color:#0E0F12"></div><div><b>Recados</b><span>Atalhos da casa</span></div>'; c.append(h);
+    const h = document.createElement('div'); h.className = 'p-hero'; h.innerHTML = '<div class="logo" aria-hidden="true" style="background-image:url(' + FOTO_GERAL + ');background-color:#0E0F12"></div><div><b>' + (FILE === TRAB.arq ? 'Trabalho' : 'Recados') + '</b><span>' + (FILE === TRAB.arq ? 'Simplificação · o dia de trabalho' : 'Atalhos da casa') + '</span></div>'; c.append(h);
     const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = 'Atalhos'; c.append(t);
     // Os botões do Menu vêm de menu/menu.json (a Lyra acrescenta páginas sem mexer no app); sem ele, só o Catálogo.
     // grade de ícones em 3 colunas, o mais usado em cima (May, 06/11/2026: "lista muito grande")
     const lista = document.createElement('div'); lista.className = 'p-grade apps'; c.append(lista);
     let uso = {}; try { uso = JSON.parse(store.get('menu-uso') || '{}'); } catch (e) {}
     const conta = n => { uso[n] = (uso[n] || 0) + 1; try { store.set('menu-uso', JSON.stringify(uso)); } catch (e) {} };
-    lerArquivo('menu/menu.json').then(t => JSON.parse(t).itens).catch(() => [{ tipo: 'catalogo', icone: 'bag', nome: 'Catálogo', sub: 'piscina, piso, borda, churrasqueira…' }])
+    lerArquivo(FILE === TRAB.arq ? 'menu/menu-trabalho.json' : 'menu/menu.json').then(t => JSON.parse(t).itens).catch(() => [{ tipo: 'catalogo', icone: 'bag', nome: 'Catálogo', sub: 'piscina, piso, borda, churrasqueira…' }])
       .then(itens => {   // ordem: a que ela arrumou arrastando (fica neste aparelho); sem isso, a do menu.json (mão direita)
-        let ordem = []; try { ordem = JSON.parse(store.get('menu-ordem') || '[]').map(n => n === 'Ideias' ? 'Tarefas' : n); } catch (e) {}   // Ideias virou Tarefas (May 16:16): a ordem que ela arrumou continua valendo
+        let ordem = []; try { ordem = JSON.parse(store.get(FILE === TRAB.arq ? 'menu-ordem-trab' : 'menu-ordem') || '[]').map(n => n === 'Ideias' ? 'Tarefas' : n); } catch (e) {}   // Ideias virou Tarefas (May 16:16): a ordem que ela arrumou continua valendo
         const pos = n => { const i = ordem.indexOf(n); return i < 0 ? 999 : i; };
         itens.map((m, i) => [m, i]).sort((a, b) => pos(a[0].nome) - pos(b[0].nome) || a[1] - b[1]).forEach(([m]) => { const b = botaoGrade(m.icone, m.nome, m.sub, () => { conta(m.nome); abreItemMenu(m); }); b.dataset.nome = m.nome; vesteBotao(b, m.nome); lista.append(b); });
         arrumaArrastando(lista);
@@ -4052,16 +4067,16 @@ function montaDiaPcs(caixa, dia) {
   trilho.addEventListener('scroll', () => marca(Math.round(trilho.scrollLeft / Math.max(1, trilho.clientWidth))), { passive: true });
   nav.classList.add('embaixo'); caixa.replaceChildren(trilho, nav); requestAnimationFrame(() => marca(0));
 }
-function abreDiagnostico() {
-  tela('Diagnóstico', async c => {
+function abreDiagnostico(m) {
+  const arqD = (m && m.arq) || 'casa/diagnostico-pcs.json', soDados = !!(m && m.arq);   // Diagnóstico dos projetos (Trabalho, May 09/11/2026): mesma tela dos PCs, outro arquivo
+  tela((m && m.nome) || 'Diagnóstico', async c => {
     const sp = elD('div', 'p-lista'), datas = elD('div', 'pcd-datas'), nota = elD('p', 'p-nota', 'Carregando…'), caixa = elD('div', 'p-lista'); c.append(sp);
-    sp.append(elD('div', 'p-sec', 'Saúde dos PCs'), datas, nota, caixa);
-    const t2 = document.createElement('div'); t2.className = 'p-sec'; t2.textContent = 'Este app'; c.append(t2);
-    const x = document.createElement('div'); x.className = 'p-texto'; c.append(x);
-    lerArquivo('casa/diagnostico-pcs.json').then(t => JSON.parse(t)).then(dg => {
+    sp.append(elD('div', 'p-sec', (m && m.secao) || 'Saúde dos PCs'), datas, nota, caixa);
+    const t2 = document.createElement('div'); t2.className = 'p-sec'; t2.textContent = 'Este app'; const x = document.createElement('div'); x.className = 'p-texto'; if (!soDados) c.append(t2, x);
+    lerArquivo(arqD).then(t => JSON.parse(t)).then(dg => {
       const dias = dg.dias || [dg], escolhe = i => { datas.querySelectorAll('button').forEach((b, j) => b.classList.toggle('ativa', j === i)); nota.textContent = dias[i].quem || ''; nota.hidden = !dias[i].quem; montaDiaPcs(caixa, dias[i]); };
       dias.forEach((d, i) => { const b = elD('button', '', d.data); b.type = 'button'; b.onclick = () => escolhe(i); datas.append(b); }); escolhe(0);
-    }).catch(() => { nota.textContent = 'Não consegui abrir o diagnóstico dos PCs. Confere a internet.'; });
+    }).catch(() => { nota.textContent = soDados ? 'Ainda sem relatório dos projetos.' : 'Não consegui abrir o diagnóstico dos PCs. Confere a internet.'; });
     const linha = (t, v) => { const p = document.createElement('p'), b = document.createElement('b'); b.textContent = t + ': '; p.append(b, v); x.append(p); };
     const perm = window.Notification ? { granted: 'ligada', denied: 'bloqueada (Ajustes → Notificações)', default: 'ainda não pedida' }[Notification.permission] || Notification.permission : 'este navegador não tem';
     linha('Versão do app', VERSAO || 'sem versão');
@@ -4893,7 +4908,7 @@ function abreItemMenu(m) {
   if (m.tipo === 'planta') return abrePlanta(m);
   if (m.tipo === 'obra') return abreObra(m);
   if (m.tipo === 'financas') return m.aba === 'contas' ? abreContasMes(m) : abreFinancas(m);
-  if (m.tipo === 'diagnostico') return abreDiagnostico();
+  if (m.tipo === 'diagnostico') return abreDiagnostico(m);
   if (m.tipo === 'maquinas') return abreMaquinas(m);
   if (m.tipo === 'imagens') return abreImagens(m);
   if (m.tipo === 'videos') return abreVideos(m);
