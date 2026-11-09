@@ -60,9 +60,9 @@ const CSS = `
 .gr-tela .gr-tit { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font: 700 17px/1 var(--gr-imp); font-synthesis: none; letter-spacing: .1em; text-transform: uppercase; color: #F2F2F0; }
 .gr-tela .gr-tit::before { content: ''; width: 6px; height: 16px; background: var(--gr-am); transform: skewX(-14deg); }
 .gr-tela .gr-tit small { margin-left: 4px; padding: 3px 7px; border-radius: 3px; background: #F5C400; color: #1E1F23 !important; font: 700 12px/1 var(--gr-mono); letter-spacing: 0; color: #C9CCD2; text-transform: none; }
-.gr-tela .gr-ad { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: #141518; touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: ew-resize; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+.gr-tela .gr-ad { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: #141518; touch-action: none; user-select: none; -webkit-user-select: none; cursor: ew-resize; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
 .gr-tela .gr-ad img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; -webkit-user-drag: none; }
-.gr-tela .gr-ad .gr-dep { clip-path: inset(0 0 0 var(--x, 50%)); }
+.gr-tela .gr-ad .gr-dep { clip-path: inset(0 0 0 var(--x, 50%)); will-change: clip-path; }
 .gr-tela .gr-ad-sem { position: absolute; inset: 0; display: grid; place-items: center; color: #8A8F98; font-weight: 700; font-size: 13px; }
 .gr-tela .gr-div { position: absolute; top: 0; bottom: 0; left: var(--x, 50%); width: 4px; margin-left: -2px; background: var(--gr-am); box-shadow: 0 0 0 1px #111; pointer-events: none; }
 .gr-tela .gr-div::after { content: ''; position: absolute; top: 50%; left: 50%; width: 38px; height: 38px; margin: -19px 0 0 -19px; background: var(--gr-am) no-repeat center / 22px 22px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6 3 12l6 6M15 6l6 6-6 6'/%3E%3C/svg%3E"); border: 2px solid #111; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); }
@@ -125,9 +125,9 @@ const CSS = `
 .gr-tela .gr-chip, .gr-tela .gr-aba, .gr-tela .gr-ang { border-radius: 0; }
 .gr-tela .gr-chip { flex: 1 1 auto; padding: 8px 4px 6px; white-space: nowrap; border: 2px solid #4C5058; background: #1E1F23; color: #C9CCD2; font: 700 13px/1 var(--gr-imp); font-synthesis: none; letter-spacing: .04em; text-transform: uppercase; clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%); }
 .gr-tela .gr-chip.on { background: var(--gr-am); border-color: #111; color: #111; }
-.gr-tela .gr-angs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin: 0 0 10px; }
+.gr-tela .gr-angs { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 4px; margin: 0 0 10px; }
 .gr-tela .gr-angs::-webkit-scrollbar { display: none; }
-.gr-tela .gr-ang { min-width: 0; text-align: center; white-space: nowrap; padding: 9px 2px 8px; border: 1px solid #4C5058; background: #1E1F23; color: #C9CCD2; font: 600 12px/1 var(--gr-mono); }
+.gr-tela .gr-ang { min-width: 0; text-align: center; white-space: nowrap; padding: 9px 0 8px; overflow: hidden; border: 1px solid #4C5058; background: #1E1F23; color: #C9CCD2; font: 600 10.5px/1 system-ui, -apple-system, 'Segoe UI', sans-serif; letter-spacing: -.01em; }
 .gr-tela .gr-ang.on { border-color: var(--gr-am); color: var(--gr-am); background: #26282C; }
 .gr-tela .gr-olho { flex: none; width: 40px; height: 32px; border-radius: 0; display: grid; place-items: center; border: 2px solid #111; background: var(--gr-am); color: #111; padding: 0; margin-left: 2px; }
 .gr-tela .gr-olho svg { width: 22px; height: 22px; }
@@ -141,8 +141,8 @@ const CSS = `
 .gr-tela .gr-reg .gr-rs { flex: none; font: 700 13px/1.2 var(--gr-mono); color: var(--gr-am); }
 .gr-tela .gr-reg .gr-nt { flex: 1; min-width: 0; color: #C9CCD2; font-weight: 500; }
 .gr-tela .gr-sub { margin: 14px 0 6px; font: 700 13px/1 var(--gr-mono); letter-spacing: .08em; text-transform: uppercase; color: #9EA2AA; }
-.gr-tela .gr-vet { position: relative; height: 138px; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
-.gr-tela .gr-vet.cmp { cursor: ew-resize; touch-action: pan-y; }
+.gr-tela .gr-vet { position: relative; height: 138px; touch-action: pan-y; contain: layout paint; user-select: none; -webkit-user-select: none; }
+.gr-tela .gr-vet.cmp { cursor: ew-resize; touch-action: none; } .gr-tela .gr-vet .gr-dep { position: absolute; inset: 0; will-change: clip-path; } .gr-tela .gr-vet .gr-dep img { position: absolute; inset: 0; }
 .gr-tela .gr-vet img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; pointer-events: none; -webkit-user-drag: none; filter: drop-shadow(0 6px 5px rgba(0,0,0,.45)); }
 .gr-tela .gr-vet .gr-dep { clip-path: inset(0 0 0 var(--x, 50%)); }
 .gr-tela .gr-vet .gr-div { top: -8px; bottom: -4px; }
@@ -270,6 +270,15 @@ const SVG = { hatch: svgGol, sedan: svgSiena, moto: svgNinja };
 const dataBr = s => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s || ''); return m ? m[3] + '/' + m[2] + '/' + m[1] : s; };
 const parteDe = t => { const m = /^(.*?)\s*\((.*)\)\s*$/.exec(t || ''); return m ? [m[1], m[2]] : [t, '']; };
 function cartao(titulo, extra) { const k = elD('section', 'gr-cartao'), h = elD('h4', 'gr-tit', titulo); if (extra) h.append(elD('small', null, extra)); k.append(h); return k; }
+// arrastar liso (May 09/11 12:43): pointer capture, 1 atualização por quadro (rAF), só o recorte (clip-path) se mexe; as duas camadas ficam desenhadas
+function arrasta(el, poe, ativo) {
+  let arr = false, px = 0, quadro = 0, w = 1, l = 0;
+  const roda = () => { quadro = 0; poe(px); };
+  const daX = e => { px = (e.clientX - l) / w * 100; if (!quadro) quadro = requestAnimationFrame(roda); };
+  el.addEventListener('pointerdown', e => { if (ativo && !ativo()) return; arr = true; const r = el.getBoundingClientRect(); l = r.left; w = Math.max(1, r.width); try { el.setPointerCapture(e.pointerId); } catch (x) {} daX(e); e.stopPropagation(); e.preventDefault(); });
+  el.addEventListener('pointermove', e => { if (arr) { daX(e); e.preventDefault(); } });
+  const solta = e => { arr = false; try { el.releasePointerCapture(e.pointerId); } catch (x) {} }; el.addEventListener('pointerup', solta); el.addEventListener('pointercancel', solta); el.addEventListener('lostpointercapture', () => { arr = false; });
+}
 function antesDepois(v) {
   const k = cartao('Antes × depois'), ad = elD('div', 'gr-ad');
   const ia = elD('img'), idp = elD('img', 'gr-dep'); ia.alt = 'Antes'; idp.alt = 'Depois'; ia.decoding = idp.decoding = 'async';
@@ -277,11 +286,7 @@ function antesDepois(v) {
   const inp = elD('input'); inp.type = 'range'; inp.min = 0; inp.max = 100; inp.value = 50; inp.setAttribute('aria-label', 'Divisor entre antes e depois');
   ad.append(sem, ia, idp, dv, ra, rd, inp); k.append(ad);
   const poe = p => { p = Math.max(0, Math.min(100, p)); ad.style.setProperty('--x', p + '%'); inp.value = Math.round(p); };
-  const daX = e => { const r = ad.getBoundingClientRect(); poe((e.clientX - r.left) / r.width * 100); };
-  let arr = false;
-  ad.addEventListener('pointerdown', e => { arr = true; try { ad.setPointerCapture(e.pointerId); } catch (x) {} daX(e); e.stopPropagation(); });
-  ad.addEventListener('pointermove', e => { if (arr) { daX(e); e.preventDefault(); } });
-  const solta = () => { arr = false; }; ad.addEventListener('pointerup', solta); ad.addEventListener('pointercancel', solta);
+  arrasta(ad, poe);
   inp.addEventListener('input', () => poe(+inp.value));
   const carrega = (img, cam) => cam ? fotoUrl(cam).then(u => new Promise((ok, erro) => { img.onload = ok; img.onerror = erro; img.src = u; })) : Promise.reject();
   Promise.allSettled([carrega(ia, v.antes), carrega(idp, v.depois)]).then(r => { const f = r.filter(x => x.status === 'rejected').length; if (!f) sem.remove(); else sem.textContent = f === 2 ? 'As fotos não abriram. Confere a internet.' : 'Uma das fotos não abriu.'; });
@@ -363,11 +368,7 @@ function elevador(v, vet) {
   const abas = angs.map(([a, t]) => { const b = elD('button', 'gr-ang', t); b.type = 'button'; b.onclick = () => { ang = a; desenha(); }; ags.append(b); return [a, b]; });
   olho.onclick = e => { e.stopPropagation(); placa = !placa; gravaPlaca(placa); desenha(); };
   const poe = p => { p = Math.max(0, Math.min(100, p)); vet.style.setProperty('--x', p + '%'); };
-  const daX = e => { const r = vet.getBoundingClientRect(); poe((e.clientX - r.left) / r.width * 100); };
-  let arr = false;
-  vet.addEventListener('pointerdown', e => { if (!vet.classList.contains('cmp')) return; arr = true; try { vet.setPointerCapture(e.pointerId); } catch (x) {} daX(e); e.stopPropagation(); });
-  vet.addEventListener('pointermove', e => { if (arr) { daX(e); e.preventDefault(); } });
-  const solta = () => { arr = false; }; vet.addEventListener('pointerup', solta); vet.addEventListener('pointercancel', solta);
+  arrasta(vet, poe, () => vet.classList.contains('cmp'));
   const img = (url, cls, alt) => { const i = elD('img', cls); i.alt = alt; i.decoding = 'async'; i.src = url; return i; };
   const velho = vet.innerHTML;   // o desenho antigo do veículo fica de reserva se o vetor não abrir
   function desenha() {
@@ -381,7 +382,7 @@ function elevador(v, vet) {
       if (meu !== tok) return;
       if (r.some(x => x.status === 'rejected')) { const falta = pedidos.filter((f, i) => r[i].status === 'rejected').map(f => FASES[f][0]); vet.innerHTML = velho; vet.append(elD('div', 'gr-vet-msg', 'desenho chegando' + (cmp ? ' (' + falta.join(' e ') + ')' : ''))); return; }
       if (!cmp) { vet.replaceChildren(img(r[0].value, '', FASES[fase][0])); return; }
-      vet.replaceChildren(img(r[0].value, '', 'Agora'), img(r[1].value, 'gr-dep', 'Meta'), elD('div', 'gr-div'), elD('span', 'gr-rot a', 'AGORA'), elD('span', 'gr-rot d', 'META'));
+      const cam = elD('div', 'gr-dep'); cam.append(img(r[1].value, '', 'Meta')); vet.replaceChildren(img(r[0].value, '', 'Agora'), cam, elD('div', 'gr-div'), elD('span', 'gr-rot a', 'AGORA'), elD('span', 'gr-rot d', 'META'));
     });
   }
   ctl.append(fases, ags, leg); desenha(); return ctl;

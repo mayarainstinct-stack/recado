@@ -53,7 +53,7 @@ body.maq-inativa #fundo{filter:grayscale(1) brightness(.8)}body.maq-inativa .pal
 .abas button{flex:none;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:8px 12px;border-radius:999px;background:var(--vidro);border:1px solid var(--borda);color:var(--texto2);transition:background .2s,color .2s}
 .abas button.on{background:var(--k1);border-color:transparent;color:#fff;box-shadow:0 0 14px color-mix(in srgb,var(--k1) 60%,transparent)}
 .trilho{flex:1;min-height:0;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}.trilho::-webkit-scrollbar{display:none}
-.pag{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;overflow-y:auto;padding-bottom:96px}   /* sem faixa vazia embaixo: o miolo vai até o fim da tela e termina acima do voltar (May 08/11 11:50) */
+.pag{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;overflow-y:auto;padding-bottom:0}   /* sem faixa vazia embaixo: o miolo vai até o fim da tela e termina acima do voltar (May 08/11 11:50) */
 .vidro{margin:0 16px;border-radius:20px;padding:14px;background:rgba(14,18,32,.62);border:1px solid var(--borda);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 10px 30px rgba(0,0,0,.3)}
 .vidro h2{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--texto2);margin-bottom:10px}
 .vidro h2::before{content:"";width:4px;height:14px;border-radius:2px;background:var(--k1);box-shadow:0 0 8px var(--k1)}
@@ -78,7 +78,7 @@ body.maq-inativa #fundo{filter:grayscale(1) brightness(.8)}body.maq-inativa .pal
 .fotos{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}.fotos::-webkit-scrollbar{display:none}
 .fotos button{flex:none;width:120px;height:120px;border-radius:14px;background:#111 center/cover;border:1px solid var(--borda)}
 .falta li{margin:4px 0 4px 18px;color:var(--texto2);font-size:14px}
-.voltar{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom));z-index:5;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:rgba(14,18,32,.8);border:1px solid var(--borda);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 8px 24px rgba(0,0,0,.5),0 0 0 2px color-mix(in srgb,var(--k1) 60%,transparent)}
+.voltar{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(14,18,32,.8);border:1px solid var(--borda);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 8px 24px rgba(0,0,0,.5),0 0 0 2px color-mix(in srgb,var(--k1) 60%,transparent)}
 .zoom{position:fixed;inset:0;z-index:9;background:rgba(0,0,0,.92);display:grid;place-items:center;padding:16px}.zoom img{max-width:100%;max-height:100%;border-radius:12px}
 .aviso{padding:40px 16px;color:var(--texto2);font-size:15px}
 @media (prefers-reduced-motion:reduce){.palco{animation:none}.bloco{transition:none}}
@@ -167,7 +167,8 @@ function logo(x){const k=x.robo?"pc":MARCA_SVG[x.console];if(!k)return Promise.r
 function foto(p){if(!p)return Promise.reject();if(fotos[p])return fotos[p];return fotos[p]=gh(p,true).then(r=>{if(!r.ok)throw 0;return r.blob()}).then(b=>URL.createObjectURL(b))}
 const cor=m=>m.robo&&ROBO[m.robo]?ROBO[m.robo][1]:(m.cor||"#4F46E5")
 const app=document.getElementById("app"),fundo=document.getElementById("fundo")
-const volta=()=>{if(history.length>1&&/app\.html/.test(document.referrer))history.back();else location.replace("app.html#menu")}   // volta pelo histórico: o botão e o deslizar fazem a mesma rota (May 12:37);document.getElementById("voltar").onclick=volta
+const volta=()=>{if(history.length>1&&/app\.html/.test(document.referrer))history.back();else location.replace("app.html#menu")}   // volta pelo histórico: o botão e o deslizar fazem a mesma rota (May 12:37)
+const VB=document.getElementById("voltar");VB.onclick=volta   // voltar SÓ na barra de cima, canto esquerdo (May 09/11 12:31)
 {let bx=null,by=0;addEventListener("touchstart",e=>{const t=e.touches[0];bx=t.clientX<28?t.clientX:null;by=t.clientY},{passive:true});addEventListener("touchend",e=>{if(bx===null)return;const t=e.changedTouches[0],dx=t.clientX-bx,dy=t.clientY-by;bx=null;if(dx>70&&Math.abs(dy)<dx*.7)volta()},{passive:true})}   // arrastar da borda esquerda pra direita = voltar, igual o resto do app (May 07/11 11:28)
 let D=null,atual=0
 async function inicio(){
@@ -180,7 +181,7 @@ function anota(tela){const b=el("button","anota");b.type="button";b.setAttribute
 function grade(){
   document.documentElement.style.setProperty("--k1","#4F46E5");fundo.style.backgroundImage="none";app.replaceChildren()
   const topo=el("div","topo"),ms2=el("div","marca-sis");ms2.append(el("i"),"Minha coleção");const t=D.total||{}
-  topo.append(ms2,el("span","tot",D.maquinas.length+" máquinas · "+(t.zerados??"–")+(t.zerados===1?" zerado":" zerados")),anota("Máquinas"));app.append(topo)
+  topo.append(VB,ms2,el("span","tot",D.maquinas.length+" máquinas · "+(t.zerados??"–")+(t.zerados===1?" zerado":" zerados")),anota("Máquinas"));app.append(topo)
   const g=el("div","grade")
   {const b=el("button","card diag-largo"),ic=el("span","diag-ic"),tx=el("span","diag-tx"),res=el("small","","a saúde dos PCs");b.style.setProperty("--c","#8B5CF6")
     ic.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="19" height="13" rx="2"/><path d="M8 20.5h8M12 16.5v4"/><path d="M5.5 10h3l1.5-3 2.5 6 1.5-3h4.5"/></svg>'
@@ -202,7 +203,7 @@ function monta(i){
   {const w=wallpaper(m);fundo.classList.toggle("marca",!!w);fundo.style.backgroundImage="none";fundo.style.backgroundColor=w?w.cor:"";if(w)aplicaFundo(fundo,m,w,true)}   // fundo = o logo da marca repetido, não a foto (May 18:45); as fotos ficam na aba Fotos
   app.replaceChildren()
   const topo=el("div","topo"),vt=el("button","volta-col","← Coleção");vt.onclick=grade;const t=D.total||{}
-  topo.append(vt,el("span","tot",(t.zerados??"–")+(t.zerados===1?" zerado":" zerados")),anota("Máquinas · "+m.nome));app.append(topo)
+  topo.append(VB,vt,el("span","tot",(t.zerados??"–")+(t.zerados===1?" zerado":" zerados")),anota("Máquinas · "+m.nome));app.append(topo)
   const fila=el("div","fila");ms.forEach((x,j)=>{const b=el("button","bloco"+(j===i?" ativo":""));b.style.setProperty("--c",x.ativo===false?"#8B8F98":cor(x));b.setAttribute("aria-label",x.nome)
     if(x.robo&&ROBO[x.robo]){const im=el("img");if(x.ativo===false)im.style.filter="grayscale(1)";im.alt="";im.src=ROBO[x.robo][2];b.append(im)}else b.append(el("span","",CURTO[x.console]||x.nome.slice(0,4)))
     b.onclick=()=>{if(j!==atual)monta(j)};fila.append(b)});

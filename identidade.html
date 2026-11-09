@@ -348,14 +348,13 @@ table.tb { width: 100%; border-collapse: collapse; font-size: 13px; } .tb th { f
 <div class="sec"><div class="tit"><span class="n">06</span><h2>Onde fica cada coisa</h2><span class="listras h"><i></i><i></i><i></i></span></div>
 <p class="txt">O <b>layout muda</b> em cada tela. O <b>lugar das funções padrão não</b>. Igual no app inteiro:</p>
 <div class="celular">
-  <div class="zona" style="left:0;right:0;top:0;height:56px;background:#2a2a2e;color:#ccc">TÍTULO DA TELA · cor do assunto</div>
+  <div class="zona" style="left:0;right:0;top:0;height:56px;background:#2a2a2e;color:#ccc">&#8592; VOLTAR (só aqui, canto esquerdo) · TÍTULO DA TELA</div>
   <div class="zona" style="left:0;right:0;top:56px;height:34px;background:#1a1a1d;color:#aaa">ABAS (deslizam pros lados)</div>
   <div class="zona" style="left:0;right:0;top:90px;bottom:70px;background:#0a0a0b;color:#777">CONTEÚDO<br>arrasta pros lados = troca de aba<br>da borda esquerda pra direita = VOLTAR</div>
   <div class="zona" style="left:12px;bottom:14px;width:90px;height:42px;background:#333;color:#ccc">menos usado</div>
-  <div class="zona" style="right:76px;bottom:14px;width:52px;height:42px;background:var(--cor)">VOLTAR</div>
   <div class="zona" style="right:12px;bottom:14px;width:56px;height:42px;background:var(--cor)">AÇÃO</div>
 </div>
-<ul class="reg"><li><b>Voltar e ação principal embaixo à direita</b> (polegar direito), sempre no mesmo lugar.</li><li><b>Deslizar da borda esquerda pra direita = voltar</b>, em toda tela.</li><li>O que ela usa menos fica à esquerda.</li></ul>
+<ul class="reg"><li><b>Voltar SÓ na barra de cima, canto esquerdo</b>, em toda tela e ficha; nenhum voltar flutuante. A ação principal fica embaixo à direita.</li><li><b>Deslizar da borda esquerda pra direita = voltar</b>, em toda tela.</li><li>O que ela usa menos fica à esquerda.</li></ul>
 </div>
 <div class="sep"></div>
 
@@ -451,6 +450,6 @@ table.tb { width: 100%; border-collapse: collapse; font-size: 13px; } .tb th { f
   <li>Peça nova sai daqui. Se não está no guia, entra no guia primeiro (com o ok da May), depois na tela.</li>
 </ul>
 </div>
-<a id="voltar" href="app.html#menu" aria-label="Voltar" style="position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));width:56px;height:56px;display:grid;place-items:center;background:var(--cor);clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);z-index:9"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:#000;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round"><path d="M15 5l-7 7 7 7"/></svg></a>
+<a id="voltar" href="app.html#menu" aria-label="Voltar" style="position:fixed;left:max(12px,env(safe-area-inset-left));top:max(10px,env(safe-area-inset-top));width:40px;height:40px;display:grid;place-items:center;background:var(--cor);clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);z-index:9"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:#000;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round"><path d="M15 5l-7 7 7 7"/></svg></a>
 <script>let x0=null;addEventListener('touchstart',e=>{x0=e.touches[0].clientX<30?e.touches[0].clientX:null},{passive:true});addEventListener('touchend',e=>{if(x0!=null&&e.changedTouches[0].clientX-x0>80)location.href='app.html#menu';x0=null})</script>
 <style>@media print{#voltar{display:none!important}}</style></body></html>
