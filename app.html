@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-09.241">
+<meta name="app-versao" content="2026-11-09.242">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1507,6 +1507,15 @@ body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px
 .ed-erro { color: var(--err); font-size: 13px; margin: 0 0 8px; } .ed-acoes { display: flex; align-items: center; gap: 12px; margin-top: 4px; } .ed-acoes .pp-op { flex: 1; }
 .ed-link { background: none; border: 0; color: var(--muted); font: inherit; font-size: 13px; font-weight: 600; text-decoration: underline; padding: 8px 6px; cursor: pointer; }
 .ed-links { display: flex; justify-content: center; gap: 6px; margin-top: 6px; }
+.sl-abas { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 12px; scrollbar-width: none; } .sl-abas::-webkit-scrollbar { display: none; } .sl-abas[hidden] { display: none; }
+.sl-aba { flex: none; width: auto; height: auto; min-width: 0; max-width: 62vw; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; padding: 9px 14px; border-radius: 999px; border: 1px solid #F5C6D6; background: #FFFFFF; color: #D61F69; font: inherit; font-size: 13px; font-weight: 800; white-space: nowrap; } .sl-aba.on { background: #D61F69; border-color: #D61F69; color: #FFFFFF; }
+.sl-corpo { display: grid; gap: 12px; padding-bottom: 28px; } .sl-card { background: #FFFFFF; color: #4A0F2B; border: 1px solid #F5C6D6; border-left: 4px solid #D61F69; border-radius: 16px; padding: 6px 8px 6px 12px; box-shadow: 0 2px 8px rgba(214,31,105,.10); }
+.sl-sub { margin: 10px 0 2px; color: #D61F69; font-size: 13px; font-weight: 800; }
+.sl-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-top: 1px dashed #F0C9D6; } .sl-item:first-child, .sl-sub + .sl-item { border-top: 0; }
+.sl-item .li-ck { --c: #D61F69; margin-top: 1px; } .sl-item.feito .li-ck { background: #D61F69; border-color: #D61F69; } .sl-item.feito .li-ck svg { opacity: 1; }
+.sl-ponto { flex: none; width: 7px; height: 7px; border-radius: 50%; background: #D61F69; margin: 8px 10px 0 4px; } .sl-tx { flex: 1; min-width: 0; display: grid; gap: 2px; } .sl-t { font-size: 15px; line-height: 1.35; overflow-wrap: anywhere; } .sl-t b { color: #4A0F2B; } .sl-item.feito .sl-t { text-decoration: line-through; opacity: .6; } .sl-feito { font-size: 12px; font-weight: 700; color: #D61F69; }
+.sl-item.nota .sl-t { font-size: 14px; color: #A3456B; } .sl-item .ed-mini { color: #A3456B; }
+.ag-ed { position: absolute; top: 6px; right: 6px; display: flex; align-items: center; gap: 2px; } .ag.tem-ed { position: relative; padding-right: 76px; } .ag.tem-ed .li-ck { --c: var(--tc, #0D9488); width: 26px; height: 26px; } .ag.feito .li-ck { background: var(--tc, #0D9488); border-color: var(--tc, #0D9488); } .ag.feito .li-ck svg { opacity: 1; } .ag.feito .cx > div:not(.tp):not(.ag-fotos) { text-decoration: line-through; opacity: .6; } .ag .li-feito { display: block; font-size: 12px; font-weight: 700; color: var(--tc, #0D9488); margin-top: 3px; } .ficha .ag-ed { display: none; }
 .ed-faixa { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 1100; display: flex; align-items: center; gap: 14px; padding: 10px 10px 10px 16px; border-radius: 999px; background: #1F2937; color: #fff; font-size: 14px; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,.35); white-space: nowrap; }
 .ed-faixa button { background: none; border: 0; color: #FACC15; font: inherit; font-weight: 800; padding: 6px 10px; cursor: pointer; }
 .ck-item .ed-mini { align-self: center; margin-left: auto; } .ck-item { cursor: pointer; }
@@ -4477,6 +4486,52 @@ function abreLista(m) {
     pinta();
   });
 }
+// ===== Listas da Saúde em JSON (May, 09/11/2026): Perguntas, O que levar, Quem passou cada laudo, Autocuidado, Transição. Mesmo editor único; abas no lugar de rolagem; feito grava no JSON.
+// Formato: { sobre, titulo, marcavel, migrar_marcas_de, campos, itens: [{ id, grupo (vira aba), subgrupo, tipo: item|nota, texto, feito, apagado }] }
+const slNeg = (el, txt) => String(txt || '').split(/(\*\*[^*]+\*\*)/).forEach(p => { if (/^\*\*[^*]+\*\*$/.test(p)) el.append(elD('b', '', p.slice(2, -2))); else if (p) el.append(document.createTextNode(p)); });
+function abreSaudeLista(m) {
+  tela(m.nome, async c => {
+    c.classList.add('sl-tela');
+    const nota = elD('p', 'p-nota', 'Carregando…'); c.append(nota); let E;
+    try { E = await edAbre({ arq: m.arq }); } catch (e) { nota.textContent = 'Não abriu. Confere a internet.'; return; }
+    nota.remove();
+    const campos = E.campos, marcavel = !!E.base.marcavel; let aba = '';
+    const velho = E.base.migrar_marcas_de;   // marcas antigas (neste aparelho) passam uma vez pro arquivo
+    if (velho && marcavel && !store.get('sl-migrado:' + m.arq)) {
+      const ops = []; E.itens.forEach(x => { if (x.tipo !== 'nota' && !x.feito && !x.apagado && store.get('marca:' + velho + ':' + String(x.texto).replace(/\*\*/g, ''))) ops.push({ tipo: 'feito', id: x.id, on: true, quando: edAgora() }); });
+      if (!ops.length) store.set('sl-migrado:' + m.arq, '1');
+      else { ops.forEach(op => edAplica(E.itens, op, false)); gravaJson(m.arq, d => ops.forEach(op => edAplica(d.itens, op, false)), 'Marcas antigas do celular passadas pro arquivo', null).then(ok => { if (ok) store.set('sl-migrado:' + m.arq, '1'); }); }
+    }
+    const abasEl = elD('div', 'sl-abas'); abasEl.setAttribute('role', 'tablist'); const w = elD('div', 'sl-corpo'); c.append(abasEl, w);
+    const lanca = () => edFormulario({ titulo: 'Novo item', campos, v: { grupo: aba, tipo: 'item' }, aoSalvar: async v => { if (!v.tipo) v.tipo = 'item'; aba = v.grupo; await E.lanca(v); pinta(); } });
+    const apaga = async x => { await E.apaga(x.id, true); pinta(); edFaixaDesfazer('Item apagado', async () => { await E.apaga(x.id, false); pinta(); }); };
+    const edita = x => edFormulario({ titulo: 'Editar', campos, v: x, aoSalvar: async v => { if (!v.tipo) v.tipo = 'item'; await E.edita(x.id, v); pinta(); }, aoApagar: () => apaga(x) });
+    const pinta = () => {
+      const vis = E.itens.filter(x => !x.apagado), grupos = [...new Set(vis.map(x => x.grupo || ''))], itensM = vis.filter(x => x.tipo !== 'nota');
+      cabecalho({ sub: marcavel ? itensM.filter(x => x.feito).length + ' de ' + itensM.length + ' feitos' : vis.length + ' itens', acao: { icone: 'plus', rotulo: 'Novo', fn: lanca } });
+      if (!grupos.includes(aba)) aba = grupos[0] || '';
+      abasEl.replaceChildren(); abasEl.hidden = grupos.length < 2;
+      grupos.forEach(g => { const b = elD('button', 'sl-aba' + (g === aba ? ' on' : ''), g); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(g === aba)); b.onclick = () => { aba = g; pinta(); pCorpo.scrollTop = 0; }; abasEl.append(b); });
+      w.replaceChildren();
+      if (!vis.length) { w.append(elD('p', 'p-nota', 'Nada por aqui ainda. Toca no + pra acrescentar.')); return; }
+      const subs = []; vis.filter(x => (x.grupo || '') === aba).forEach(x => { let s = subs.find(y => y[0] === (x.subgrupo || '')); if (!s) { s = [x.subgrupo || '', []]; subs.push(s); } s[1].push(x); });
+      subs.forEach(([nomeSub, lista]) => {
+        const card = elD('section', 'sl-card'); if (nomeSub) card.append(elD('h4', 'sl-sub', nomeSub));
+        lista.forEach(x => {
+          const linha = elD('div', 'sl-item' + (x.tipo === 'nota' ? ' nota' : '') + (x.feito ? ' feito' : '')), tx = elD('div', 'sl-tx'), t = elD('span', 'sl-t'); slNeg(t, x.texto); tx.append(t);
+          if (x.feito) tx.append(elD('small', 'sl-feito', edRotuloFeito(x)));
+          if (x.tipo !== 'nota') {
+            if (marcavel) { const ck = elD('button', 'li-ck'); ck.type = 'button'; ck.setAttribute('aria-label', x.feito ? 'Desmarcar' : 'Marcar como feito'); ck.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg>'; ck.onclick = async () => { await E.feito(x.id, !x.feito); pinta(); }; linha.append(ck); }
+            else linha.append(elD('i', 'sl-ponto'));
+          }
+          linha.append(tx, edMini('note', 'Editar', () => edita(x))); card.append(linha);
+        });
+        w.append(card);
+      });
+    };
+    pinta();
+  });
+}
 // Contraste Artes Gráficas (tela filha de Artes): preto + faixas CMYK da marca (marca/contraste/IDENTIDADE.md e ESTILO.md)
 function abreContraste(m) {
   tela(m.nome, async c => {
@@ -4494,7 +4549,7 @@ function abreContraste(m) {
 const CFG_PADRAO = { nomeApp: 'Recados', telaInicial: 'geral', trabalhaAtivo: true, diasDeTrabalho: [1, 2, 3, 4, 5], horaTrabalhoInicio: 8, horaTrabalhoFim: 18, almocoInicio: 12, almocoFim: 13, treinoAbrirSozinho: true, vibracao: true };
 const CFG_CAMPOS = [   // o que aparece na tela de Configurações, na ordem
   { nome: 'nomeApp', rotulo: 'Nome do app', tipo: 'texto' },
-  { nome: 'telaInicial', rotulo: 'Ao abrir o app, ir pra', tipo: 'escolha', opcoes: [['geral', 'A conversa'], ['menu', 'O Menu']] },
+  { nome: 'telaInicial', rotulo: 'Ao abrir o app, ir pra', tipo: 'escolha', opcoes: [['geral', 'A conversa'], ['menu', 'O Menu']], ajuda: 'Toque duplo no nome da conversa (ou no título do Menu) troca entre os dois.' },
   { nome: 'trabalhaAtivo', rotulo: 'Trabalho no horário do serviço', tipo: 'sim_nao', ajuda: 'Desligado, o app não troca sozinho pro Trabalho.' },
   { nome: 'diasDeTrabalho', rotulo: 'Dias de trabalho', tipo: 'dias' },
   { nome: 'horaTrabalhoInicio', rotulo: 'Começa às (hora)', tipo: 'numero' },
@@ -5379,6 +5434,7 @@ function abreItemMenu(m) {
   if (m.tipo === 'grupo') return abreGrupo(m);
   if (m.tipo === 'ideias') return abreIdeias(m);
   if (m.tipo === 'lista') return abreLista(m);
+  if (m.tipo === 'saudelista') return abreSaudeLista(m);
   if (m.tipo === 'contraste') return abreContraste(m);
   if (m.tipo === 'planta') return abrePlanta(m);
   if (m.tipo === 'obra') return abreObra(m);
@@ -5396,9 +5452,18 @@ function abreItemMenu(m) {
 }
 // ---- Viagens: menu/viagens.json = { viagens: [{ id, nome, resumo, listas: [{ id, nome, grupos: [{ nome, itens: [[id, texto]] }] }] }] }
 // O que ela marca fica no próprio celular (localStorage), por viagem e por lista.
-const marcados = (v, l) => { try { return new Set(JSON.parse(store.get('viagem:' + v.id + ':' + l.id) || '[]')); } catch (e) { return new Set(); } };
+const marcados = (v, l) => { if (v._json) { const s = new Set(), pre = v.id + ':' + l.id + ':'; Object.keys(v._feitos || {}).forEach(k => { if (k.startsWith(pre)) s.add(k.slice(pre.length)); }); return s; }   // Pós-cirurgia: o feito mora no JSON (feitos: viagem:lista:item = DD/MM/AAAA HH:MM)
+  try { return new Set(JSON.parse(store.get('viagem:' + v.id + ':' + l.id) || '[]')); } catch (e) { return new Set(); } };
 const diaLocal = () => new Date().toLocaleDateString('sv');   // AAAA-MM-DD no fuso dela (toISOString virava o dia às 21h)
 const guardaMarcados = (v, l, s) => {
+  if (v._json) {
+    const pre = v.id + ':' + l.id + ':', antes = marcados(v, l), agora = edAgora(), mud = [];
+    l.grupos.forEach(g => g.itens.forEach(([id]) => { const t = s.has(id), era = antes.has(id); if (t && !era) mud.push([id, agora]); else if (!t && era) mud.push([id, null]); }));
+    if (!mud.length) return;
+    mud.forEach(([id, q]) => { if (q) v._feitos[pre + id] = q; else delete v._feitos[pre + id]; });
+    gravaJson(v._arq, d => { d.feitos = d.feitos || {}; mud.forEach(([id, q]) => { if (q) d.feitos[pre + id] = q; else delete d.feitos[pre + id]; }); }, 'Marcado pelo app', null).then(ok => { if (!ok) showNote('Não guardou: confere a internet e tenta de novo.', true); });
+    return;
+  }
   store.set('viagem:' + v.id + ':' + l.id, s.size ? JSON.stringify([...s]) : '');
   if (v._arq !== 'menu/treino.json') return;
   if (s.size) { const m = diasMarcados(); m[diaLocal()] = l.nome; store.set('treino-dias', JSON.stringify(m)); }
@@ -5427,6 +5492,9 @@ function abreCheck(m) {
     const p = elD('p', 'p-nota', 'Carregando…'); c.append(p);
     let E; try { E = await edAbre({ arq: m.arq, edicoes: m.edicoes }); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
     p.remove();
+    let velhos = {}; try { velhos = JSON.parse(store.get('check-feitos') || '{}'); } catch (e) {}   // marcas antigas deste aparelho (check-feitos): passam uma vez pro arquivo
+    const opsV = Object.keys(velhos).filter(id => E.itens.some(x => x.id === id && !x.feito && !x.apagado)).map(id => ({ tipo: 'feito', id, on: true, quando: (/^\d{4}-\d\d-\d\d$/.test(velhos[id]) ? edDataBr(velhos[id]) : edAgora().slice(0, 10)) + ' 12:00' }));
+    if (Object.keys(velhos).length && !opsV.length) store.set('check-feitos', '');
     const campos = [{ nome: 'texto', rotulo: 'O que fazer', tipo: 'texto', obrigatorio: true }, { nome: 'data', rotulo: 'Até quando', tipo: 'data' }, { nome: 'de', rotulo: 'De onde vem', tipo: 'texto', padrao: 'Eu' }];
     const hoje = diaLocal(), soma = n => { const x = new Date(hoje + 'T12:00'); x.setDate(x.getDate() + n); return x.toLocaleDateString('sv'); };
     const w = elD('div', 'ck-bloco'); c.append(w);
@@ -5459,6 +5527,7 @@ function abreCheck(m) {
       if (feitos.length) { w.append(elD('div', 'ck-sec', 'Feitos')); feitos.sort((a, b) => String(b.feito).slice(6, 10).concat(String(b.feito).slice(3, 5), String(b.feito).slice(0, 2), String(b.feito).slice(11)).localeCompare(String(a.feito).slice(6, 10).concat(String(a.feito).slice(3, 5), String(a.feito).slice(0, 2), String(a.feito).slice(11)))).forEach(x => linha(x, 'Feitos')); }
     };
     pinta();
+    if (opsV.length) { opsV.forEach(op => edAplica(E.itens, op, false)); gravaJson(m.edicoes || m.arq, d => { d.itens = d.itens || []; opsV.forEach(op => edAplica(d.itens, op, !!m.edicoes)); }, 'Marcas antigas do Checklist passadas pro arquivo', { itens: [] }).then(ok => { if (ok) store.set('check-feitos', ''); pinta(); }); }
   });
 }
 // Ateliê (aba nova da Mídia, May 08/11 14:52 e 15:09, Sigma 15:18): as obras em andamento (música, desenho, animação), cada uma com a etapa numa tira de filme e o que falta; estúdio antigo, igual à Mídia. Dados: menu/atelie.json = { obras: [{ id, nome, tipo, etapa 1-4, falta, com }] }. Hermes
@@ -5489,6 +5558,11 @@ function abreViagens(m) {
     let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
     p.remove();
     if (m.arq === 'menu/treino.json') { d.viagens.forEach(v => { v._arq = m.arq; }); return montaTreino(c, d); }
+    if (d.feito_no_json) {   // feito no JSON (sai do localStorage): liga as viagens ao objeto feitos e passa as marcas antigas deste aparelho uma vez
+      d.feitos = d.feitos || {}; const novos = {};
+      d.viagens.forEach(v => { v._json = true; v._feitos = d.feitos; v._arq = m.arq; v.listas.forEach(l => { const ant = store.get('viagem:' + v.id + ':' + l.id); if (!ant) return; try { JSON.parse(ant).forEach(id => { const k = v.id + ':' + l.id + ':' + id; if (!d.feitos[k]) { d.feitos[k] = edAgora(); novos[k] = d.feitos[k]; } }); } catch (e) {} }); });
+      if (Object.keys(novos).length) gravaJson(m.arq, dd => { dd.feitos = dd.feitos || {}; Object.assign(dd.feitos, novos); }, 'Marcas antigas do celular passadas pro arquivo', null).then(ok => { if (ok) d.viagens.forEach(v => v.listas.forEach(l => store.set('viagem:' + v.id + ':' + l.id, ''))); });
+    }
     if (m.arq === 'menu/pos-cirurgia.json' && d.viagens.length === 1) { d.viagens[0]._arq = m.arq; return montaPos(c, d.viagens[0]); }   // Pós-cirurgia direto na trilha, sem o botão único no meio (May 08/11 12:59)
     if (m.arq === 'menu/viagens.json') { d.viagens.forEach(v => { v._arq = m.arq; }); return montaViagens(c, d); }   // Treino (May, 29/10): os treinos já aparecem direto, sem passar pela lista de viagens
     const lista = document.createElement('div'); lista.className = 'p-lista'; c.append(lista);
@@ -5861,8 +5935,32 @@ function montaCalendario(cal, c) {   // mês em grade; dia com compromisso tem p
 function abreAgenda(m) {
   tela(m.nome, async c => {
     const p = document.createElement('p'); p.className = 'p-nota'; p.textContent = 'Carregando…'; c.append(p);
-    let md; try { md = await lerArquivo(m.arq); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    let md, FONTE = null; try { const bruto = await lerArquivo(m.arq); if (/\.json$/i.test(m.arq || '')) FONTE = JSON.parse(bruto); else md = bruto; } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
     p.remove();
+    // Agenda lê a FONTE (menu/agenda.json, May 09/11/2026): sem depender do .md gerado. Lançar, editar, feito e apagar gravam no próprio JSON (editor único).
+    const itensAg = () => (FONTE.secoes || []).flatMap(s => s.itens || []);
+    const idDe = new Map(), linhasAg = [];
+    const agOp = async (op, msg) => {
+      if (op.tipo === 'lanca') { const sec = (FONTE.secoes || []).find(s => s.titulo === op.secao) || FONTE.secoes[0]; sec.itens = sec.itens || []; sec.itens.push({ ...op.item }); } else edAplica(itensAg(), op, false);
+      monta();
+      const ok = await gravaJson(m.arq, d => { const arr = (d.secoes || []).flatMap(s => s.itens || []); if (op.tipo === 'lanca') { const sec = (d.secoes || []).find(s => s.titulo === op.secao) || d.secoes[0]; sec.itens = sec.itens || []; if (!arr.some(y => y.id === op.item.id)) sec.itens.push({ ...op.item }); } else edAplica(arr, op, false); }, msg, null);
+      if (!ok) showNote('Não guardou: confere a internet e tenta de novo.', true);
+      return !!ok;
+    };
+    const AG_CAMPOS = [{ nome: 'rotulo', rotulo: 'Quando (ex.: 12/11 (qui) 9h)', tipo: 'texto' }, { nome: 'texto', rotulo: 'O que é', tipo: 'texto_longo', obrigatorio: true }];
+    const agLanca = () => edFormulario({ titulo: 'Novo compromisso', campos: [...AG_CAMPOS, { nome: 'secao', rotulo: 'Em qual parte', tipo: 'escolha', opcoes: (FONTE.secoes || []).map(s => s.titulo), padrao: (FONTE.secoes || [])[0] && FONTE.secoes[0].titulo }],
+      aoSalvar: async v => { const { secao, ...resto } = v; await agOp({ tipo: 'lanca', secao, item: { id: edNovoId(resto.texto).replace(/^/, 'ag-'), data: '', hora: '', ...resto, tipo: 'outro', fotos: [], criado: edAgora() } }, 'Compromisso novo pelo app'); } });
+    const agApaga = async it => { await agOp({ tipo: 'apaga', id: it.id, on: true, quando: edAgora() }, 'Compromisso apagado pelo app (fica guardado)'); edFaixaDesfazer('Compromisso apagado', () => agOp({ tipo: 'apaga', id: it.id, on: false, quando: edAgora() }, 'Apagado desfeito pelo app')); };
+    const agEdita = it => edFormulario({ titulo: 'Editar compromisso', campos: AG_CAMPOS, v: it, aoSalvar: async v => { await agOp({ tipo: 'edita', id: it.id, v, quando: edAgora() }, 'Compromisso editado pelo app'); }, aoApagar: () => agApaga(it) });
+    const agMarca = async it => { await agOp({ tipo: 'feito', id: it.id, on: !it.feito, quando: edAgora() }, it.feito ? 'Desmarcado pelo app' : 'Marcado como feito pelo app'); };
+    const monta = () => {
+    const rolou = pCorpo.scrollTop; c.replaceChildren(); idDe.clear(); linhasAg.length = 0;
+    if (FONTE) {
+      cabecalho({ acao: { icone: 'plus', rotulo: 'Novo compromisso', fn: agLanca } });
+      linhasAg.push('# ' + (FONTE.titulo || 'Agenda')); if (FONTE.atualizada) linhasAg.push(FONTE.atualizada);
+      (FONTE.secoes || []).forEach(sec => { linhasAg.push('', '## ' + sec.titulo); (sec.itens || []).filter(i => !i.apagado).forEach(i => { let t = i.texto || ''; if (i.rotulo) t = '**' + i.rotulo + ':** ' + t; (i.fotos || []).forEach(f => { t += ' 📷 ' + f; }); idDe.set(linhasAg.length, i); linhasAg.push('- ' + t); }); });
+      if (FONTE.rodape) linhasAg.push('', FONTE.rodape);
+    }
     painel.classList.add('tema-claro'); c.classList.add('ag-tela');   // Agenda clara, cara de consultório (May 08/11 12:49 e 12:56): branco, verde-água suave, cantos redondos, sem neon
     if (!/agenda-trabalho/.test(m.arq || '')) { const rl = elD('button', 'ag-relat'); rl.type = 'button'; rl.append(elD('b', '', 'Relatório da semana'), elD('small', '', 'o que cada robô acertou e errou, 06 a 08/11')); rl.onclick = () => abreTexto({ nome: 'Relatório da semana', arq: 'casa/relatorios/semana-06-08-11-2026.md' }); c.append(rl); }   // o relatório que ela pediu na Agenda (May 08/11 18:30)
     const cal = elD('div', 'ag-cal'); c.append(cal); setTimeout(() => montaCalendario(cal, c), 0);   // calendário do mês em cima (May, 07/11/2026 12:43 e 12:44: agenda de verdade, azul)
@@ -5873,7 +5971,7 @@ function abreAgenda(m) {
     const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
     let ult = null;
     const passados = [];   // vão pro fim, numa seção "Anteriores" (Sigma, 06/11/2026: data velha com cara de atual é mentira na tela)
-    md.split(/\r?\n/).forEach(l => {
+    (FONTE ? linhasAg : md.split(/\r?\n/)).forEach((l, li) => {
       if (/^# /.test(l) || /^\s*<!--/.test(l) || !l.trim()) return;
       if (/^##+ /.test(l)) { const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = l.replace(/^#+ /, ''); c.append(t); ult = null; return; }
       const sub = l.match(/^\s{2,}[-*] (.*)$/);
@@ -5906,11 +6004,20 @@ function abreAgenda(m) {
       if (tp.textContent.trim()) cx.append(tp);
       const corpoEl = document.createElement('div'); neg(corpoEl, corpo); cx.append(corpoEl);
       if (fotos.length) { const box = elD('div', fotos.length > 1 ? 'ag-fotos' : ''); fotos.forEach(fp => { const im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; im.decoding = 'async'; box.append(im); fotoUrl(fp).then(u => { im.src = u; im.onclick = e => { e.stopPropagation(); abreZoom(u, fp, fotos); }; }).catch(() => im.remove()); }); cx.append(box); }
+      const itFonte = idDe.get(li);
+      if (itFonte) {   // controles de edição (só quando a Agenda vem do JSON): bolinha de feito + lápis
+        el.classList.add('tem-ed'); const bar = elD('div', 'ag-ed'), ck = elD('button', 'li-ck'); ck.type = 'button'; ck.setAttribute('aria-label', itFonte.feito ? 'Desmarcar' : 'Marcar como feito'); ck.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg>'; ck.onclick = e => { e.stopPropagation(); agMarca(itFonte); };
+        bar.append(ck, edMini('note', 'Editar', () => agEdita(itFonte))); el.append(bar);
+        if (itFonte.feito) { el.classList.add('feito'); cx.append(elD('small', 'li-feito', edRotuloFeito(itFonte))); }
+      }
       el.append(dt, cx); if (el.classList.contains('passou')) passados.push(el); else c.append(el); ult = el;
       el.onclick = () => abreFicha({ titulo: rot || 'Agenda', foto, corpo: el.cloneNode(true), contexto: 'Agenda (' + (rot || corpo.slice(0, 40)) + ')' });
     });
     c.querySelectorAll('.p-sec').forEach(sec => { const prox = sec.nextElementSibling; if (!prox || prox.classList.contains('p-sec')) sec.remove(); });
     if (passados.length) { const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = 'Anteriores'; c.append(t); passados.reverse().forEach(e => c.append(e)); }
+    pCorpo.scrollTop = rolou;
+    };
+    monta();
   });
 }
 function avisoCurto(txt, ico = 'check') {
@@ -6085,6 +6192,14 @@ let ocultosConversa = null;   // dentro do Menu mostra as 3 opções; ao voltar 
 document.getElementById('p-mais').onclick = e => { e.stopPropagation(); document.body.append(menu); menu.classList.add('no-painel');
   if (!ocultosConversa) ocultosConversa = [irGeral.hidden, irTrab.hidden, abreMenu.hidden];
   irTrab.hidden = abreMenu.hidden = false; irGeral.hidden = escondeGeral(); menu.hidden = !menu.hidden; };
+// Toque duplo (May, 09/11/2026): troca entre o Menu e a conversa. Na conversa, toque duplo no nome ou no logo abre o Menu; no Menu, toque duplo no título ou na faixa de cima volta pra conversa.
+function toqueDuplo(el, fn) {
+  if (!el) return; let t0 = 0, x0 = 0, y0 = 0;
+  el.addEventListener('touchend', e => { if (e.target.closest('button, a, input, textarea')) { t0 = 0; return; } const t = e.changedTouches[0], agora = Date.now(); if (agora - t0 < 380 && Math.abs(t.clientX - x0) < 40 && Math.abs(t.clientY - y0) < 40) { t0 = 0; e.preventDefault(); fn(); } else { t0 = agora; x0 = t.clientX; y0 = t.clientY; } });
+  el.addEventListener('dblclick', e => { if (!e.target.closest('button, a, input, textarea')) fn(); });
+}
+const alternaMenu = () => { if (painel.hidden) { if ((FILE === GERAL.arq || FILE === TRAB.arq) && !abreMenu.hidden && !document.querySelector('.fixa-pop')) abreMenu.click(); } else if (pilha.length === 1 && !document.querySelector('.fixa-pop, .ficha, .zoom')) fechaPainel(); };
+toqueDuplo(document.querySelector('header .who'), alternaMenu); toqueDuplo(document.getElementById('logo'), alternaMenu); toqueDuplo(document.querySelector('#painel .p-topo'), alternaMenu);
 // Foto em tela cheia: toca em qualquer lugar ou no ✕ pra fechar; arrastar pro lado (ou ← →) troca pela anterior/seguinte da conversa.
 function fotosDaConversa() { return lastItems.flatMap(x => x.fotos || []); }
 const toqueZoom = { x: 0, y: 0, t: 0 };

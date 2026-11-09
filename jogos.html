@@ -595,6 +595,18 @@ nav button{position:relative;z-index:1}nav button.on{background:none!important;b
 #ficha.cromo .bloco,#ficha.cromo .painel .bloco{background:linear-gradient(#141518,#0b0b0d) padding-box,var(--metal) border-box}
 #ficha::after{content:"";position:fixed;left:0;right:0;bottom:0;height:104px;background:linear-gradient(transparent,var(--fundo) 72%);pointer-events:none;z-index:5}
 #pop .folha{background:linear-gradient(165deg,color-mix(in srgb,var(--cor,#3C3C5A) 80%,#0a0a0a) 0%,color-mix(in srgb,var(--cor,#3C3C5A) 52%,#0a0a0a) 45%,color-mix(in srgb,var(--cor,#3C3C5A) 30%,#0a0a0a) 100%)}
+#f-edit{margin-left:auto;margin-right:8px}
+#edj{position:fixed;inset:0;z-index:9;display:none;align-items:center;justify-content:center;background:rgba(4,2,12,.6);padding:calc(env(safe-area-inset-top) + 24px) 20px calc(env(safe-area-inset-bottom) + 24px)}
+#edj.on{display:flex}
+#edj .folha{position:relative;width:100%;max-height:100%;overflow:auto;padding:22px 16px 16px;border-radius:22px;background:#1A0D33;border:2px solid color-mix(in srgb,var(--cor,#3C3C5A) 70%,transparent)}
+#edj h4{font-size:16px;padding:0 44px 6px 0}
+#edj label{display:block;font-size:12px;font-weight:700;color:var(--texto3);margin:10px 2px 0}
+#edj input,#edj select,#edj textarea{display:block;width:100%;box-sizing:border-box;margin-top:4px;border-radius:12px;padding:10px 12px;background:rgba(0,0,0,.4);border:1px solid var(--borda);color:var(--texto);font:inherit;font-size:16px;outline:none;resize:none}
+#edj #edj-x{position:absolute;right:12px;top:12px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(255,255,255,.12);border:0}
+#edj #edj-prev{display:block;margin:10px auto 0;max-height:120px;max-width:100%;border-radius:10px}
+#edj #edj-prev[hidden],#edj #edj-erro[hidden]{display:none}
+#edj #edj-erro{color:#ff9aa8;font-size:13px;margin:8px 2px 0}
+#edj .env{width:100%;height:48px;margin-top:14px;border-radius:14px;background:var(--verde);color:#062012;font-weight:700}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -629,6 +641,7 @@ nav button{position:relative;z-index:1}nav button.on{background:none!important;b
 <header>
 <button class="voltar" id="f-voltar" aria-label="Fechar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
 <h1 style="font-size:14px;color:rgba(255,255,255,.82);font-weight:700;letter-spacing:1.4px;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.5)">Ficha do jogo</h1>
+<button class="voltar" id="f-edit" aria-label="Editar este jogo" style="margin-left:auto"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
 <div class="selo-cons" id="f-selo" aria-hidden="true"></div>
 </header>
 <main id="f-corpo"></main>
@@ -646,6 +659,17 @@ nav button{position:relative;z-index:1}nav button.on{background:none!important;b
 </div>
 </div>
 </div>
+<div id="edj" role="dialog" aria-modal="true" aria-label="Editar jogo"><div class="folha">
+<button id="edj-x" aria-label="Fechar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+<h4 id="edj-tt">Editar jogo</h4>
+<label>Situação<select id="edj-st"></select></label>
+<label>Onde parei<input id="edj-parei" type="text" autocomplete="off"></label>
+<label>Minha nota<textarea id="edj-obs" rows="3"></textarea></label>
+<label>Capa (link da imagem)<input id="edj-capa" type="url" inputmode="url" placeholder="https://..." autocomplete="off"></label>
+<img id="edj-prev" alt="" hidden>
+<p id="edj-erro" hidden></p>
+<button class="env" id="edj-ok">Guardar</button>
+</div></div>
 <div id="aviso"></div>
 <div id="pop" role="dialog" aria-modal="true"><div class="folha"><div class="alca"></div><button class="pop-x" id="pop-x" aria-label="Fechar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><h4></h4><div class="pc"></div></div></div>
 <div id="zoom" role="dialog" aria-modal="true" aria-label="Imagem em tela cheia"><img id="z-img" alt=""><button class="za" id="z-ant" aria-label="Anterior"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><button class="zs" id="z-seg" aria-label="Seguinte"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button><button class="zx" id="z-x" aria-label="Fechar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div class="zc" id="z-c"></div></div>
@@ -702,13 +726,15 @@ let J2JA=false;try{J2JA=sessionStorage.getItem("j2-tocou")=="1";sessionStorage.s
 window.J2PROMESSA=TOKEN&&!J2JA&&!new URLSearchParams(location.search).has("semabertura")?carregaJ2():Promise.resolve(null)
 // a J2 já toca enquanto a lista baixa (antes só começava depois dos dados); quando acaba fica parada no logo até a lista chegar (Hermes, 07/11/2026)
 window.J2TOCA=window.J2PROMESSA.then(A=>{const el=document.getElementById("abertura");if(!A||window.J2FIM||!el.classList.contains("on")||matchMedia("(prefers-reduced-motion: reduce)").matches)return null;return new Promise(fim=>{try{const cv=document.createElement("canvas");cv.className="j2-canvas";el.append(cv);el.classList.add("v6");const ab=A.criar(cv,{src:n=>window.J2SRC&&window.J2SRC(n),transparente:true,duracao:4});window.J2AB=ab;el.onclick=()=>ab.pular();ab.tocar(()=>{window.J2ACABOU=true;fim(ab)})}catch(e){fim(null)}})})
+function aplicaEdj1(j,e){if(!e||e.aplicado)return;if(e.status){j.status=e.status;if(e.status=="zerado"){j.pct=100;j.estimado=false}}if(e.quero!=null)j.desejo=e.quero?{...(j.desejo||{}),quero:true,motivo:(j.desejo&&j.desejo.motivo)||"Quero jogar"}:(j.desejo&&j.desejo.quero?null:j.desejo);if("parei" in e)j.parei=e.parei;if(e.observacao!=null)j.observacao=e.observacao;if(e.capa_url)j.capa=e.capa_url}
+function aplicaEdj(D,ed){const por={};D.jogos.forEach(j=>por[j.id]=j);Object.keys(ed||{}).forEach(id=>{if(por[id])aplicaEdj1(por[id],ed[id])})}
 async function carrega(){
 if(!TOKEN){location.replace("app.html");return}
 // tudo em paralelo: no 4G cada ida e volta pesa, e antes eram 5 em fila (Vega, 06/11/2026)
 const js=p=>gh(p,{headers:{Accept:"application/vnd.github.raw"}}).then(r=>r.ok?r.json().catch(()=>({})):{}).catch(()=>({}))
-const [r,cort,inv,ext,spt]=await Promise.all([gh("categorias/games/tela-jogos.json",{headers:{Accept:"application/vnd.github.raw"}}),...["categorias/games/prints-cortados/indice.json","categorias/games/tela/inventario.json","categorias/games/tela/extras.json","categorias/games/tela/sobre-pt.json"].map(js),carregaCons()])
+const [r,cort,inv,ext,spt,_cons,edj]=await Promise.all([gh("categorias/games/tela-jogos.json",{headers:{Accept:"application/vnd.github.raw"}}),...["categorias/games/prints-cortados/indice.json","categorias/games/tela/inventario.json","categorias/games/tela/extras.json","categorias/games/tela/sobre-pt.json"].map(js),carregaCons(),js("categorias/games/edicoes-jogos.json")])
 if(!r.ok)throw new Error("dados "+r.status)
-window.JOGOS=await r.json();try{const J0=window.JOGOS;if(Array.isArray(J0.consoles)&&J0.consoles.length)localStorage.setItem("jogos-consoles",JSON.stringify(J0.consoles));else{const g=JSON.parse(localStorage.getItem("jogos-consoles")||"null");if(Array.isArray(g)&&g.length)J0.consoles=g}}catch(e){}window.CORTE=cort;window.INV=inv;window.EXT=ext;window.SOBREPT=spt
+window.JOGOS=await r.json();window.EDJ=(edj&&edj.edicoes)||{};aplicaEdj(window.JOGOS,window.EDJ);try{const J0=window.JOGOS;if(Array.isArray(J0.consoles)&&J0.consoles.length)localStorage.setItem("jogos-consoles",JSON.stringify(J0.consoles));else{const g=JSON.parse(localStorage.getItem("jogos-consoles")||"null");if(Array.isArray(g)&&g.length)J0.consoles=g}}catch(e){}window.CORTE=cort;window.INV=inv;window.EXT=ext;window.SOBREPT=spt
 if(new URLSearchParams(location.search).get("paleta")=="proposta")window.PALETA3=await js("_geral/recados/cores-consoles-proposta-sigma.json")
 }
 async function carregaCons(){const raw=p=>gh(p,{headers:{Accept:"application/vnd.github.raw"}}).then(r=>r.ok?r.text():"").catch(()=>"")
@@ -861,6 +887,7 @@ if(posts.length)A.eu+=`<div class="bloco"><h3>${IC.img}Apareceu no Instagram</h3
 if(minhas.length)A.eu+=`<div class="bloco"><h3>${IC.tempo}O que eu falei</h3><div class="tempo">${minhas.map(e=>`<div class="ev toca" ${pk(()=>popEv(j,{dia:e.dia,hora:e.hora,onde:e.onde,texto:e.fala,quem:"May"}))}><div class="m"><b>${esc(e.dia||"sem data")}${e.hora?" "+esc(e.hora):""}</b>${e.onde?`<span>${esc(e.onde)}</span>`:""}</div><div class="q ela">${esc(e.fala)}</div></div>`).join("")}</div></div>`
 {const oj=ondeJoga(j);if(oj)A.resumo+=`<div class="bloco"><h3>${IC.alerta}Onde jogar</h3><div style="font-size:14px;line-height:1.45">${esc(oj)}</div></div>`}
 A.resumo+=`<div class="bloco toca" ${pk(()=>popParei(j))}><h3>${IC.pin}Onde parei</h3><div class="parei">${esc(j.parei||"Ainda não anotado")}</div>${(j.pendencias||[]).filter(p=>/divergente/.test(p)).map(p=>`<div class="pend">${esc(p)}</div>`).join("")}</div>`
+if(j.observacao)A.resumo+=`<div class="bloco"><h3>${IC.estrela}Minha nota</h3><div class="parei">${esc(j.observacao)}</div></div>`
 if((j.o_que_me_marcou||[]).length)A.eu+=`<div class="bloco" style="border-color:rgba(245,210,55,.45)"><h3 style="color:var(--ouro)">${IC.estrela}O que me marcou</h3><div class="marcou">${j.o_que_me_marcou.map(m=>`<div class="cartao toca" ${pk(()=>popMarcou(j,m))}><q>${esc(m.fala)}</q><div class="dia">${esc(m.dia||"")}${m.nota?" · "+esc(m.nota):""}</div></div>`).join("")}</div></div>`
 if((j.conquistas||[]).length)A.eu+=`<div class="bloco"><h3>${IC.selo}Conquistas e feitos</h3><div class="selos">${j.conquistas.map(s=>`<div class="selo toca" ${pk(()=>popSelo(j,s))}>${SELO_IC.zerado}${esc(s.selo)}${s.dia?`<span>${esc(s.dia)}</span>`:""}</div>`).join("")}</div>${j.parede&&j.parede.lembranca?`<div class="parei-sub" style="margin-top:12px">Plaquinha nº ${String(j.parede.numero).padStart(2,"0")} da parede: ${esc(j.parede.lembranca)}</div>`:""}</div>`
 const time=(des.pokemons||[]).filter(p=>!p.onde||/time/i.test(p.onde)),incerto=n=>/^\s*\?|talvez|\(pelo|n[aã]o sei/i.test(n||""),nomeP=n=>incerto(n)?"Não identificado":n
@@ -970,6 +997,19 @@ document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>trocaAba(b.data
 let envioTela=""
 document.getElementById("j-anotar").onclick=()=>{envioTela=aba=="concluidos"?"Parede da Vitória":"Jogos";document.getElementById("envio").style.setProperty("--cor",aba=="concluidos"?"#CF8002":"#12a05f");document.getElementById("e-tt").textContent="Escrever sobre esta tela";document.getElementById("envio").classList.add("on");setTimeout(()=>document.getElementById("e-txt").focus(),50)}   // o mesmo lápis do app, no mesmo lugar, manda sem sair da tela (May 08/11 12:50)
 document.getElementById("f-msg").onclick=()=>{envioTela="";if(fichaAtual)document.getElementById("e-tt").textContent="Mandar algo sobre "+fichaAtual.titulo;document.getElementById("envio").classList.add("on");setTimeout(()=>document.getElementById("e-txt").focus(),50)}
+// Edição dos jogos pelo app (May, 09/11/2026: "tudo editável, até jogos"): a situação, a nota e a capa por link. Grava num arquivo pequeno à parte (categorias/games/edicoes-jogos.json = { edicoes: { <id jogo>: {status, quero, parei, observacao, capa_url, quando, aplicado} } }), que a tela soma por cima do tela-jogos.json; o Orfeu passa pro jogos.json com aplicar_edicoes.py (o jogos.json tem 3 MB, passa do limite de leitura da API e o Orfeu mexe nele por script).
+const EDJ_ARQ="categorias/games/edicoes-jogos.json",STAT_OP=[["jogando","Jogando"],["zerado","Zerado"],["quer_terminar","Quero terminar"],["parado","Parado"],["nao_comecou","Ainda não comecei"],["quero","Quero jogar"]]
+const b64u=t=>btoa(unescape(encodeURIComponent(t))),ub64=t=>decodeURIComponent(escape(atob(t.replace(/\s/g,""))))
+const agoraBr=()=>{const n=new Date(),p=x=>String(x).padStart(2,"0");return`${p(n.getDate())}/${p(n.getMonth()+1)}/${n.getFullYear()} ${p(n.getHours())}:${p(n.getMinutes())}`}
+async function gravaEdj(id,v){for(let t=0;t<4;t++){try{const r=await gh(EDJ_ARQ);let sha,d={sobre:"Edições feitas pelo app nos jogos (situação, onde parei, nota, capa por link). O app soma isto por cima do tela-jogos.json. O Orfeu passa pro jogos.json com aplicar_edicoes.py e marca aplicado. Um Claude pode escrever aqui direto: chave = id do jogo.",edicoes:{}};if(r.ok){const jj=await r.json();sha=jj.sha;d=JSON.parse(ub64(jj.content))}else if(r.status!=404)throw r.status;d.edicoes=d.edicoes||{};const ant=d.edicoes[id]||{};delete ant.aplicado;d.edicoes[id]={...ant,...v,quando:agoraBr()};const body={message:"Jogo editado pelo app",content:b64u(JSON.stringify(d,null,1)+"\n")};if(sha)body.sha=sha;const w=await gh(EDJ_ARQ,{method:"PUT",body:JSON.stringify(body)});if(w.ok)return true;if(w.status!=409&&w.status!=422)return false}catch(e){if(t==3)return false}await new Promise(o=>setTimeout(o,600))}return false}
+const statusAtual=j=>j.status=="nao_comecou"&&j.desejo&&j.desejo.quero?"quero":(j.status||"nao_comecou")
+{const ed=document.getElementById("edj"),st=document.getElementById("edj-st"),pa=document.getElementById("edj-parei"),ob=document.getElementById("edj-obs"),cp=document.getElementById("edj-capa"),pv=document.getElementById("edj-prev"),er=document.getElementById("edj-erro"),ok=document.getElementById("edj-ok")
+st.innerHTML=STAT_OP.map(([k,t])=>`<option value="${k}">${t}</option>`).join("")
+const previa=()=>{const u=cp.value.trim();if(/^https?:\/\//i.test(u)){pv.src=u;pv.hidden=false}else pv.hidden=true};pv.onerror=()=>{pv.hidden=true};cp.addEventListener("input",previa);cp.addEventListener("change",previa)
+document.getElementById("edj-x").onclick=()=>ed.classList.remove("on");ed.onclick=e=>{if(e.target===ed)ed.classList.remove("on")}
+document.getElementById("f-edit").onclick=()=>{const j=fichaAtual;if(!j)return;document.getElementById("edj-tt").textContent="Editar · "+j.titulo;const ant=statusAtual(j);if(![...st.options].some(o=>o.value==ant)){const o=document.createElement("option");o.value=ant;o.textContent=ant.replace(/_/g," ");st.append(o)}st.value=ant;pa.value=j.parei||"";ob.value=j.observacao||"";const cu=j.capa&&/^https?:/i.test(j.capa)?j.capa:"";cp.value=cu;er.hidden=true;ok.disabled=false;ok.textContent="Guardar";previa();ed.style.setProperty("--cor",paleta(j.console).base);ed.classList.add("on")}
+ok.onclick=async()=>{const j=fichaAtual;if(!j)return;const sel=st.value,v={status:sel=="quero"?"nao_comecou":sel,quero:sel=="quero",parei:pa.value.trim(),observacao:ob.value.trim()};const u=cp.value.trim();if(u&&!/^https?:\/\//i.test(u)){er.textContent="O link da capa precisa começar com https://";er.hidden=false;return}if(u)v.capa_url=u;ok.disabled=true;ok.textContent="Guardando…";const bom=await gravaEdj(j.id,v);if(!bom){er.textContent="Não guardou: confere a internet e toca de novo.";er.hidden=false;ok.disabled=false;ok.textContent="Guardar";return}
+window.EDJ=window.EDJ||{};window.EDJ[j.id]={...(window.EDJ[j.id]||{}),...v};aplicaEdj1(j,v);ed.classList.remove("on");Object.keys(PAINEIS).forEach(k=>delete PAINEIS[k]);chaveL=null;render();desenhaFicha()}}
 document.getElementById("envio").onclick=e=>{if(e.target.id=="envio")e.currentTarget.classList.remove("on")}
 document.getElementById("e-x").onclick=()=>document.getElementById("envio").classList.remove("on")
 let enviando=false
