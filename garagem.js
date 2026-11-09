@@ -37,7 +37,7 @@ const CSS = `
 .gr-tela .gr-coluna.e { left: 14px; } .gr-tela .gr-coluna.d { right: 14px; }
 .gr-tela .gr-carga { position: absolute; left: 30px; right: 30px; bottom: 26px; transform: translateY(0); transition: transform 1.25s cubic-bezier(.5,0,.3,1); }
 .gr-tela .gr-pag.gr-no-ar .gr-carga { transform: translateY(-46px); }
-.gr-tela .gr-carga svg { display: block; width: 100%; height: auto; overflow: visible; }
+.gr-tela .gr-vet > svg { position: absolute; left: 0; bottom: 0; display: block; width: 100%; height: auto; overflow: visible; }
 .gr-tela .gr-rampa { position: relative; height: 10px; margin: -1px 0 0; background: linear-gradient(#8A9098, #50545B); border-top: 2px solid #C9CED5; }
 .gr-tela .gr-rampa::before { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: repeating-linear-gradient(-45deg, #F5C400 0 6px, #141414 6px 12px); }
 .gr-tela .gr-carro { position: absolute; bottom: -2px; width: 22px; height: 26px; background: linear-gradient(90deg, #3C3F45, #70757D); border: 2px solid #23252A; }
@@ -116,7 +116,7 @@ const CSS = `
 .gr-tela .gr-fonte { margin: 2px 2px 0; font: 500 11px/1.35 var(--gr-mono); color: #7D828B; }
 .gr-tela .gr-cornota { display: inline-block; margin-top: 8px; padding: 3px 7px; font: 600 11px/1.2 var(--gr-mono); color: #111; background: #E9E5D8; }
 .gr-tela .gr-abas { display: flex; gap: 0; border: 2px solid #111; background: #141518; }
-.gr-tela .gr-aba { flex: 1; padding: 11px 4px 9px; border: 0; background: transparent; color: #9EA2AA; font: 700 16px/1 var(--gr-imp); font-synthesis: none; letter-spacing: .1em; text-transform: uppercase; }
+.gr-tela .gr-aba { flex: 1; padding: 11px 2px 9px; border: 0; background: transparent; color: #9EA2AA; font: 700 14px/1 var(--gr-imp); font-synthesis: none; letter-spacing: .05em; text-transform: uppercase; }
 .gr-tela .gr-aba + .gr-aba { border-left: 2px solid #111; }
 .gr-tela .gr-aba.on { background: repeating-linear-gradient(-45deg, #F5C400 0 9px, #E0B300 9px 18px); color: #111; }
 .gr-tela .gr-corpo { display: flex; flex-direction: column; gap: 12px; }
@@ -129,12 +129,7 @@ const CSS = `
 .gr-tela .gr-angs::-webkit-scrollbar { display: none; }
 .gr-tela .gr-ang { flex: none; padding: 6px 9px 5px; border: 1px solid #4C5058; background: #1E1F23; color: #C9CCD2; font: 600 12px/1 var(--gr-mono); }
 .gr-tela .gr-ang.on { border-color: var(--gr-am); color: var(--gr-am); background: #26282C; }
-.gr-tela .gr-des { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: repeating-linear-gradient(0deg, #17181B 0 22px, #1A1B1E 22px 23px); touch-action: pan-y; user-select: none; -webkit-user-select: none; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
-.gr-tela .gr-des img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; -webkit-user-drag: none; }
-.gr-tela .gr-des.cmp { cursor: ew-resize; }
-.gr-tela .gr-des .gr-dep { clip-path: inset(0 0 0 var(--x, 50%)); }
-.gr-tela .gr-des-sem { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; color: #8A8F98; font: 700 13px/1.3 var(--gr-mono); }
-.gr-tela .gr-olho { position: absolute; right: 10px; top: 8px; width: 40px; height: 34px; border-radius: 0; display: grid; place-items: center; border: 2px solid #111; background: var(--gr-am); color: #111; z-index: 2; padding: 0; }
+.gr-tela .gr-olho { flex: none; width: 40px; height: 32px; border-radius: 0; display: grid; place-items: center; border: 2px solid #111; background: var(--gr-am); color: #111; padding: 0; margin-left: 2px; }
 .gr-tela .gr-olho svg { width: 22px; height: 22px; }
 .gr-tela .gr-olho.off { background: #3A3D43; color: #C9CCD2; border-color: #4C5058; }
 .gr-tela .gr-legenda { margin: 8px 0 0; font: 500 12px/1.35 var(--gr-mono); color: #C9CCD2; }
@@ -146,6 +141,34 @@ const CSS = `
 .gr-tela .gr-reg .gr-rs { flex: none; font: 700 13px/1.2 var(--gr-mono); color: var(--gr-am); }
 .gr-tela .gr-reg .gr-nt { flex: 1; min-width: 0; color: #C9CCD2; font-weight: 500; }
 .gr-tela .gr-sub { margin: 14px 0 6px; font: 700 13px/1 var(--gr-mono); letter-spacing: .08em; text-transform: uppercase; color: #9EA2AA; }
+.gr-tela .gr-vet { position: relative; height: 138px; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.gr-tela .gr-vet.cmp { cursor: ew-resize; touch-action: pan-y; }
+.gr-tela .gr-vet img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; pointer-events: none; -webkit-user-drag: none; filter: drop-shadow(0 6px 5px rgba(0,0,0,.45)); }
+.gr-tela .gr-vet .gr-dep { clip-path: inset(0 0 0 var(--x, 50%)); }
+.gr-tela .gr-vet .gr-div { top: -8px; bottom: -4px; }
+.gr-tela .gr-vet .gr-rot { top: auto; bottom: -38px; }
+.gr-tela .gr-vet-msg { position: absolute; left: 0; right: 0; bottom: 48%; text-align: center; font: 700 12px/1.3 var(--gr-mono); color: #9EA2AA; }
+.gr-tela .gr-ctl { padding: 12px 16px 0; background: #18191C; }
+.gr-tela .gr-ctl .gr-fases { align-items: center; flex-wrap: nowrap; }
+.gr-tela .gr-ctl .gr-chip { padding-left: 2px; padding-right: 2px; }
+.gr-tela .gr-ctl .gr-angs { margin: 0; }
+.gr-tela .gr-ctl .gr-legenda { margin: 6px 0 0; font-size: 11px; }
+.gr-tela .gr-mais { flex: none; width: 34px; height: 30px; min-width: 0; border-radius: 0; margin-left: auto; padding: 0; border: 2px solid #111; background: var(--gr-am); color: #111; font: 700 24px/1 var(--gr-imp); font-synthesis: none; display: grid; place-items: center; clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px); }
+.gr-tela .gr-tit .gr-mais { margin-left: auto; }
+.gr-tela .gr-tit small:empty { display: none; }
+.gr-tela .gr-man-g { margin: 12px 0 6px; font: 700 13px/1 var(--gr-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--e); }
+.gr-tela .gr-man-g:first-of-type { margin-top: 0; }
+.gr-tela .gr-man-dt { flex: none; font: 600 11px/1.2 var(--gr-mono); color: #C9CCD2; text-align: right; }
+.gr-tela .gr-feito-bt { flex: none; width: auto; height: auto; min-width: 0; border-radius: 0; padding: 6px 8px 5px; border: 2px solid #111; background: var(--gr-am); color: #111; font: 700 12px/1 var(--gr-imp); font-synthesis: none; letter-spacing: .06em; text-transform: uppercase; }
+.gr-tela .gr-folha { position: absolute; inset: 0; z-index: 8; display: flex; flex-direction: column; justify-content: flex-end; background: rgba(0,0,0,.6); }
+.gr-tela .gr-form { background: #2A2C31; border-top: 4px solid var(--gr-am); padding: 14px 16px calc(84px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 10px; max-height: 92%; overflow-y: auto; }
+.gr-tela .gr-form h4 { margin: 0; display: flex; align-items: center; gap: 8px; font: 700 18px/1 var(--gr-imp); font-synthesis: none; letter-spacing: .1em; text-transform: uppercase; }
+.gr-tela .gr-form h4 button { margin-left: auto; width: 34px; height: 30px; border: 2px solid #4C5058; background: #1E1F23; color: #F2F2F0; font-size: 18px; padding: 0; }
+.gr-tela .gr-form label { display: flex; flex-direction: column; gap: 4px; font: 600 11px/1 var(--gr-mono); letter-spacing: .06em; text-transform: uppercase; color: #9EA2AA; }
+.gr-tela .gr-form input, .gr-tela .gr-form select { width: 100%; box-sizing: border-box; padding: 10px; border: 2px solid #4C5058; border-radius: 0; background: #141518; color: #F2F2F0; font: 600 16px/1.2 var(--gr-mono); }
+.gr-tela .gr-form .gr-ok { align-self: stretch; width: 100%; height: auto; border-radius: 0; padding: 13px; border: 2px solid #111; background: var(--gr-am); color: #111; font: 700 18px/1 var(--gr-imp); font-synthesis: none; letter-spacing: .1em; text-transform: uppercase; }
+.gr-tela .gr-form .gr-ok:disabled { opacity: .6; }
+.gr-tela .gr-form .gr-erro { margin: 0; font: 600 12px/1.3 var(--gr-mono); color: #F08A24; }
 @media (prefers-reduced-motion: reduce) { .gr-tela .gr-portao.gr-sobe { animation-duration: 1ms; } .gr-tela .gr-carga, .gr-tela .gr-sombra, .gr-tela .gr-barra i, .gr-tela .gr-rolo span { transition-duration: 1ms; } .gr-tela .gr-pag.gr-entra .gr-item, .gr-tela .gr-pag.gr-entra .gr-tag, .gr-tela .gr-pag.gr-entra .gr-chave, .gr-tela .gr-pag.gr-no-ar .gr-ferr { animation: none; } }
 `;
 function injetaCss() { if (document.getElementById('garagem-css')) return; const s = document.createElement('style'); s.id = 'garagem-css'; s.textContent = CSS; document.head.append(s); }
@@ -330,44 +353,86 @@ function desenho(id, fase, ang, placa) {
 }
 const OLHO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
 const OLHO_X = OLHO.replace('</svg>', '<path d="M4 4l16 16"/></svg>');
-function desenhos(v) {
-  const k = cartao('Desenhos'), id = v.id, angs = ANGS.filter(a => a[0] !== 'farol' || id === 'gol');
-  let fase = 'comparar', ang = angs[0][0], placa = lePlaca(), tok = 0;
-  const fases = elD('div', 'gr-fases'), ags = elD('div', 'gr-angs'), pal = elD('div', 'gr-des'), leg = elD('p', 'gr-legenda');
+function elevador(v, vet) {
+  const id = v.id, angs = ANGS.filter(a => a[0] !== 'farol' || id === 'gol');
+  let fase = 'agora', ang = angs[0][0], placa = lePlaca(), tok = 0;
+  const ctl = elD('div', 'gr-ctl'), fases = elD('div', 'gr-fases'), ags = elD('div', 'gr-angs'), leg = elD('p', 'gr-legenda');
   const olho = elD('button', 'gr-olho'); olho.type = 'button';
   const chips = [['original', 'Original'], ['agora', 'Agora'], ['meta', 'Meta'], ['comparar', 'Comparar']].map(([f, t]) => { const b = elD('button', 'gr-chip', t); b.type = 'button'; b.onclick = () => { fase = f; desenha(); }; fases.append(b); return [f, b]; });
+  fases.append(olho);
   const abas = angs.map(([a, t]) => { const b = elD('button', 'gr-ang', t); b.type = 'button'; b.onclick = () => { ang = a; desenha(); }; ags.append(b); return [a, b]; });
   olho.onclick = e => { e.stopPropagation(); placa = !placa; gravaPlaca(placa); desenha(); };
-  const poe = p => { p = Math.max(0, Math.min(100, p)); pal.style.setProperty('--x', p + '%'); };
-  const daX = e => { const r = pal.getBoundingClientRect(); poe((e.clientX - r.left) / r.width * 100); };
+  const poe = p => { p = Math.max(0, Math.min(100, p)); vet.style.setProperty('--x', p + '%'); };
+  const daX = e => { const r = vet.getBoundingClientRect(); poe((e.clientX - r.left) / r.width * 100); };
   let arr = false;
-  pal.addEventListener('pointerdown', e => { if (!pal.classList.contains('cmp') || e.target.closest('.gr-olho')) return; arr = true; try { pal.setPointerCapture(e.pointerId); } catch (x) {} daX(e); e.stopPropagation(); });
-  pal.addEventListener('pointermove', e => { if (arr) { daX(e); e.preventDefault(); } });
-  const solta = () => { arr = false; }; pal.addEventListener('pointerup', solta); pal.addEventListener('pointercancel', solta);
+  vet.addEventListener('pointerdown', e => { if (!vet.classList.contains('cmp')) return; arr = true; try { vet.setPointerCapture(e.pointerId); } catch (x) {} daX(e); e.stopPropagation(); });
+  vet.addEventListener('pointermove', e => { if (arr) { daX(e); e.preventDefault(); } });
+  const solta = () => { arr = false; }; vet.addEventListener('pointerup', solta); vet.addEventListener('pointercancel', solta);
   const img = (url, cls, alt) => { const i = elD('img', cls); i.alt = alt; i.decoding = 'async'; i.src = url; return i; };
+  const velho = vet.innerHTML;   // o desenho antigo do veículo fica de reserva se o vetor não abrir
   function desenha() {
     const meu = ++tok;
     chips.forEach(([f, b]) => b.classList.toggle('on', f === fase)); abas.forEach(([a, b]) => b.classList.toggle('on', a === ang));
     olho.classList.toggle('off', !placa); olho.innerHTML = placa ? OLHO : OLHO_X; olho.setAttribute('aria-label', placa ? 'Esconder a placa' : 'Mostrar a placa'); olho.setAttribute('aria-pressed', String(placa));
-    const cmp = fase === 'comparar'; pal.classList.toggle('cmp', cmp);
+    const cmp = fase === 'comparar'; vet.classList.toggle('cmp', cmp);
     const pedidos = cmp ? ['agora', 'meta'] : [fase], o = v.original && v.original.descricao;
-    pal.replaceChildren(elD('div', 'gr-des-sem', 'Abrindo o desenho…'));
     leg.textContent = fase === 'original' ? (o ? 'Original: ' + o : 'Como saiu de fábrica.') : fase === 'meta' ? 'Meta: como ela quer deixar.' : fase === 'agora' ? 'Agora: como está hoje.' : 'Arraste a linha: de um lado o Agora, do outro a Meta.';
     Promise.allSettled(pedidos.map(f => desenho(id, f, ang, placa))).then(r => {
       if (meu !== tok) return;
-      if (r.some(x => x.status === 'rejected')) { const falta = pedidos.filter((f, i) => r[i].status === 'rejected').map(f => FASES[f][0]); pal.replaceChildren(elD('div', 'gr-des-sem', 'desenho chegando' + (cmp ? ' (' + falta.join(' e ') + ')' : ''))); return; }
-      if (!cmp) { pal.replaceChildren(img(r[0].value, '', FASES[fase][0])); return; }
-      pal.replaceChildren(img(r[0].value, '', 'Agora'), img(r[1].value, 'gr-dep', 'Meta'), elD('div', 'gr-div'), elD('span', 'gr-rot a', 'AGORA'), elD('span', 'gr-rot d', 'META'));
+      if (r.some(x => x.status === 'rejected')) { const falta = pedidos.filter((f, i) => r[i].status === 'rejected').map(f => FASES[f][0]); vet.innerHTML = velho; vet.append(elD('div', 'gr-vet-msg', 'desenho chegando' + (cmp ? ' (' + falta.join(' e ') + ')' : ''))); return; }
+      if (!cmp) { vet.replaceChildren(img(r[0].value, '', FASES[fase][0])); return; }
+      vet.replaceChildren(img(r[0].value, '', 'Agora'), img(r[1].value, 'gr-dep', 'Meta'), elD('div', 'gr-div'), elD('span', 'gr-rot a', 'AGORA'), elD('span', 'gr-rot d', 'META'));
     });
   }
-  k.append(olho, fases, ags, pal, leg); desenha(); return k;
+  ctl.append(fases, ags, leg); desenha(); return ctl;
 }
 const moeda = n => 'R$ ' + (Number(n) || 0).toFixed(2).replace('.', ',');
 const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
 function chaveData(s) { const m = [...String(s || '').matchAll(/(\d{1,2})\/(\d{1,2})\/(\d{4})/g)].pop(); if (m) return [+m[3], +m[2], +m[1]]; const q = /^(\d{4})-(\d{2})-(\d{2})/.exec(s || ''); return q ? [+q[1], +q[2], +q[3]] : null; }
 const ord = (a, b) => { const x = chaveData(a.data), y = chaveData(b.data); if (!x || !y) return x ? -1 : y ? 1 : 0; return (y[0] - x[0]) || (y[1] - x[1]) || (y[2] - x[2]); };
-function diario(v) {
+const ARQ_LANC = 'categorias/carros-moto/LANCAMENTOS.md';
+const numBr = t => { const n = parseFloat(String(t || '').replace(/[^\d,.-]/g, '').replace(/\.(?=\d{3}\b)/g, '').replace(',', '.')); return isNaN(n) ? 0 : n; };
+const chaveItem = t => String(t || '').trim().toLowerCase();
+function somaLancamentos(vs, texto) {   // soma as linhas do LANCAMENTOS.md por cima do garagem.json (a última linha de um item vale)
+  String(texto || '').split(/\r?\n/).forEach(ln => {
+    const m = /^\s*-\s*\[(\d{2}\/\d{2}\/\d{4})[^\]]*\]\s*(.+)$/.exec(ln); if (!m) return;
+    const c = m[2].split(' · ').map(x => x.trim()), v = vs.find(x => x.id === c[1]); if (!v) return;
+    aplicaLanc(v, c[0], c.slice(2), m[1]);
+  });
+}
+function aplicaLanc(v, tipo, c, quando) {
+  if (tipo === 'abastecimento') (v.abastecimentos = v.abastecimentos || []).push({ data: c[0] || quando, valor: numBr(c[1]), nota: c[2] || '' });
+  else if (tipo === 'oleo') (v.trocas_oleo = v.trocas_oleo || []).push({ data: c[0] || quando, km: c[1] || '', nota: c[2] || '' });
+  else if (tipo === 'manutencao') {
+    const l = v.manutencao = v.manutencao || [], k = chaveItem(c[0]), n = { id: 'lanc-' + k, item: c[0], estado: c[1] || 'a fazer', desde: quando, data: c[2] || '' }, i = l.findIndex(x => chaveItem(x.item) === k);
+    if (i >= 0) l[i] = Object.assign({}, l[i], n, { id: l[i].id, desde: l[i].desde || quando }); else l.push(n);
+  }
+}
+const ESTMAN = [['a fazer', '#F08A24'], ['agendado', '#4EA8DE'], ['feito', '#3FBF5F']];
+function botaoMais(rot, fn) { const b = elD('button', 'gr-mais', '+'); b.type = 'button'; b.setAttribute('aria-label', rot); b.onclick = fn; return b; }
+function manutencao(v, lanca) {
+  const l = v.manutencao || [], k = cartao('Manutenção', l.length ? String(l.length) : '');
+  k.firstChild.append(botaoMais('Lançar manutenção, abastecimento ou óleo', () => lanca('manutencao')));
+  if (!l.length) k.append(elD('p', 'gr-vazio', 'nada anotado ainda'));
+  ESTMAN.forEach(([est, cor]) => {
+    const g = l.filter(x => (x.estado || 'a fazer') === est).sort((a, b) => ord({ data: b.data || b.desde }, { data: a.data || a.desde })); if (!g.length) return;
+    const h = elD('div', 'gr-man-g', est + ' · ' + g.length); h.style.setProperty('--e', cor); k.append(h);
+    const ul = elD('ul', 'gr-lista');
+    g.forEach(x => {
+      const li = elD('li', 'gr-item ' + (est === 'feito' ? 'feito' : '')); li.style.setProperty('--e', cor);
+      const cx = elD('span', 'gr-caixa'); if (est === 'feito') cx.innerHTML = CHAVE;
+      const dt = est === 'agendado' ? 'para ' + dataBr(x.data || '') : est === 'feito' ? 'feito em ' + dataBr(x.data || x.desde || '') : 'desde ' + dataBr(x.desde || '');
+      li.append(cx, elD('span', 'gr-peca', x.item), elD('span', 'gr-man-dt', dt));
+      if (est !== 'feito') { const bt = elD('button', 'gr-feito-bt', 'Feito'); bt.type = 'button'; bt.onclick = () => lanca('feito', x); li.append(bt); }
+      ul.append(li);
+    });
+    k.append(ul);
+  });
+  return k;
+}
+function diario(v, lanca) {
   const k = cartao('Diário'), ab = (v.abastecimentos || []).slice().sort(ord);
+  k.firstChild.append(botaoMais('Lançar abastecimento ou troca de óleo', () => lanca('abastecimento')));
   k.append(elD('div', 'gr-sub', 'Abastecimentos'));
   if (!ab.length) k.append(elD('p', 'gr-vazio', 'nada anotado ainda'));
   else {
@@ -383,13 +448,50 @@ function diario(v) {
   lista('Usos', (v.usos || []).slice().sort(ord), x => x.nota || '');
   return k;
 }
-function pagina(v, i, tot) {
+const hojeBr = () => stamp(new Date()).slice(0, 10);
+function folhaLancar(raiz, v, tipo0, item0, grava, depois) {   // o formulário do "+": manutenção, abastecimento ou troca de óleo
+  const fo = elD('div', 'gr-folha'), f = elD('div', 'gr-form'), h = elD('h4', null, 'Lançar · ' + v.nome), x = elD('button', null, '×'); x.type = 'button'; x.setAttribute('aria-label', 'Fechar'); h.append(x);
+  const fecha = () => fo.remove(); x.onclick = fecha; fo.addEventListener('click', e => { if (e.target === fo) fecha(); });
+  const tipos = elD('div', 'gr-fases'); let t = tipo0 === 'feito' ? 'manutencao' : tipo0;
+  const campos = elD('div'); campos.style.cssText = 'display:flex;flex-direction:column;gap:10px';
+  const campo = (rot, el) => { const lb = elD('label', null, rot); lb.append(el); return lb; };
+  const inp = (ph, val, modo) => { const i = elD('input'); i.type = 'text'; i.placeholder = ph; if (val) i.value = val; if (modo) i.inputMode = modo; i.autocomplete = 'off'; return i; };
+  const erro = elD('p', 'gr-erro'), ok = elD('button', 'gr-ok', 'Lançar'); ok.type = 'button';
+  let F = {};
+  const monta = () => {
+    [...tipos.children].forEach((b, i) => b.classList.toggle('on', ['manutencao', 'abastecimento', 'oleo'][i] === t));
+    F = {}; campos.replaceChildren(); erro.textContent = '';
+    if (t === 'manutencao') {
+      F.item = inp('ex.: trocar pastilha de freio', item0 ? item0.item : ''); F.estado = elD('select'); ESTMAN.forEach(([e]) => { const o = elD('option', null, e); o.value = e; F.estado.append(o); }); F.estado.value = item0 ? 'feito' : 'a fazer';
+      F.data = inp('DD/MM/AAAA', item0 ? hojeBr() : '', 'numeric');
+      campos.append(campo('O que', F.item), campo('Estado', F.estado), campo('Data (agendado ou feito)', F.data));
+    } else if (t === 'abastecimento') { F.data = inp('DD/MM/AAAA', hojeBr(), 'numeric'); F.valor = inp('0,00', '', 'decimal'); F.nota = inp('posto, litros, km (opcional)', ''); campos.append(campo('Data', F.data), campo('Valor (R$)', F.valor), campo('Nota', F.nota)); }
+    else { F.data = inp('DD/MM/AAAA', hojeBr(), 'numeric'); F.km = inp('km (opcional)', '', 'numeric'); F.nota = inp('óleo, filtro (opcional)', ''); campos.append(campo('Data', F.data), campo('Km', F.km), campo('Nota', F.nota)); }
+  };
+  [['manutencao', 'Manutenção'], ['abastecimento', 'Abastecimento'], ['oleo', 'Troca de óleo']].forEach(([q, n]) => { const b = elD('button', 'gr-chip', n); b.type = 'button'; b.onclick = () => { t = q; item0 = null; monta(); }; tipos.append(b); });
+  monta();
+  const lim = s => String(s || '').trim().replace(/\s*·\s*/g, ' - ');
+  ok.onclick = async () => {
+    const dt = (F.data.value || '').trim();
+    if (dt && !/^\d{2}\/\d{2}\/\d{4}$/.test(dt)) { erro.textContent = 'Data no formato DD/MM/AAAA.'; return; }
+    let c2;
+    if (t === 'manutencao') { const it = lim(F.item.value), es = F.estado.value; if (!it) { erro.textContent = 'Diz o que é a manutenção.'; return; } if (es === 'agendado' && !dt) { erro.textContent = 'Agendado precisa da data.'; return; } c2 = [it, es, es === 'feito' ? (dt || hojeBr()) : dt]; if (!c2[2]) c2.pop(); }
+    else if (t === 'abastecimento') { const n = numBr(F.valor.value); if (!(n > 0)) { erro.textContent = 'Põe o valor em R$.'; return; } c2 = [dt || hojeBr(), n.toFixed(2).replace('.', ','), lim(F.nota.value)]; if (!c2[2]) c2.pop(); }
+    else { c2 = [dt || hojeBr(), lim(F.km.value), lim(F.nota.value)]; while (c2.length > 1 && !c2[c2.length - 1]) c2.pop(); }
+    const agora = new Date(), linha = '- [' + stamp(agora) + '] ' + t + ' · ' + v.id + ' · ' + c2.join(' · ');
+    ok.disabled = true; ok.textContent = 'Lançando…';
+    if (await grava(linha)) { aplicaLanc(v, t, c2, stamp(agora).slice(0, 10)); fecha(); depois(t); }
+    else { ok.disabled = false; ok.textContent = 'Lançar'; erro.textContent = 'Não lançou: confere a internet.'; }
+  };
+  f.append(h, tipos, campos, erro, ok); fo.append(f); raiz.append(fo);
+}
+function pagina(v, i, tot, raiz) {
   const cor = corOk(v.cor), pg = elD('article', 'gr-pag'); pg.style.setProperty('--v', cor); pg.setAttribute('aria-label', v.nome);
   const pal = elD('div', 'gr-palco'), par = elD('div', 'gr-parede'), pf = elD('div', 'gr-painel-f'), box = elD('div', 'gr-box', 'BOX');
   pf.innerHTML = FERRAMENTAS; box.append(elD('b', null, String(i + 1).padStart(2, '0'))); box.setAttribute('aria-label', 'Vaga ' + (i + 1) + ' de ' + tot);
   par.append(elD('div', 'gr-lampada'), pf, box);
   const carga = elD('div', 'gr-carga'), id = (v.id || 'v' + i).replace(/[^a-z0-9]/gi, '');
-  carga.innerHTML = (SVG[v.tipo] || svgSiena)(id, cor);
+  const vet = elD('div', 'gr-vet'); vet.innerHTML = (SVG[v.tipo] || svgSiena)(id, cor); carga.append(vet);
   const rampa = elD('div', 'gr-rampa'); rampa.append(elD('span', 'gr-carro e'), elD('span', 'gr-carro d')); carga.append(rampa);
   pal.append(par, elD('div', 'gr-faixa'), elD('div', 'gr-chao'), elD('div', 'gr-sombra'), elD('div', 'gr-coluna e'), elD('div', 'gr-coluna d'), carga);
   const nm = elD('div', 'gr-nome'); nm.append(elD('h3', null, v.nome), elD('div', 'gr-modelo', v.modelo));
@@ -397,14 +499,15 @@ function pagina(v, i, tot) {
   if (v.medida) { const tr = elD('span', 'gr-trena'); tr.setAttribute('aria-label', 'Medida ' + v.medida); tr.append(elD('i'), elD('span', null, v.medida)); ln.append(tr); }
   if (ln.children.length) nm.append(ln);
   const ro = elD('div', 'gr-rola');
-  ro.append(desenhos(v));
+  const ctl = elevador(v, vet);
   const abas = elD('div', 'gr-abas'), corpo = elD('div', 'gr-corpo');
   const ficha = () => { const l = []; if (v.antes || v.depois) l.push(antesDepois(v)); if (v.odometro) l.push(odometro(v)); l.push(datas(v), pendentes(v)); if (v.cor_nota) l.push(elD('span', 'gr-cornota', v.cor_nota)); if (v.fonte) l.push(elD('p', 'gr-fonte', 'fonte: ' + v.fonte)); return l; };
   const tunar = () => { if (v.projeto && v.projeto.length) return [projeto(v)]; const k = cartao('Tunar'); k.append(elD('p', 'gr-vazio', 'nada anotado ainda')); return [k]; };
-  const AB = [['Ficha', ficha], ['Tunar', tunar], ['Diário', () => [diario(v)]]];
+  const lanca = (t, it) => folhaLancar(raiz, v, t, it, linha => gravaLinha(ARQ_LANC, linha), tp => { bs[tp === 'manutencao' ? 2 : 3].click(); showNote('Lançado.'); });
+  const AB = [['Ficha', ficha], ['Tunar', tunar], ['Manutenção', () => [manutencao(v, lanca)]], ['Diário', () => [diario(v, lanca)]]];
   const bs = AB.map(([t, f], n) => { const b = elD('button', 'gr-aba', t); b.type = 'button'; b.onclick = () => { bs.forEach((x, q) => x.classList.toggle('on', q === n)); corpo.replaceChildren(...f()); }; abas.append(b); return b; });
   bs[0].click(); ro.append(abas, corpo);
-  pg.append(pal, nm, ro); return pg;
+  pg.append(pal, ctl, nm, ro); return pg;
 }
 window.abreGaragem = function (m) {
   m = m || {}; const arq = m.arq || 'categorias/carros-moto/garagem.json';
@@ -414,12 +517,14 @@ window.abreGaragem = function (m) {
     const portao = elD('div', 'gr-portao'), pl = elD('div', 'gr-portao-placa', 'Garagem'); portao.append(pl, elD('span', 'gr-portao-puxa')); c.append(portao);
     const t0 = Date.now(); let d;
     try { d = JSON.parse(await lerArquivo(arq)); } catch (e) { d = null; }
+    let lanc = ''; try { lanc = await lerArquivo(ARQ_LANC); } catch (e) { lanc = ''; }
     if (!c.isConnected) return;
     const vs = d && Array.isArray(d.veiculos) ? d.veiculos : [];
+    if (vs.length) somaLancamentos(vs, lanc);
     if (!vs.length) { c.prepend(elD('p', 'gr-msg', d ? 'A garagem tá vazia.' : 'Não consegui abrir a garagem. Confere a internet.')); }
     else {
       cabecalho({ icone: 'car', sub: vs.length + (vs.length === 1 ? ' veículo' : ' veículos') + ' na oficina' });
-      const pager = elD('div', 'gr-pager'), pts = elD('div', 'gr-pontos'), pgs = vs.map((v, i) => pagina(v, i, vs.length));
+      const pager = elD('div', 'gr-pager'), pts = elD('div', 'gr-pontos'), pgs = vs.map((v, i) => pagina(v, i, vs.length, c));
       pager.append(...pgs);
       pgs.forEach((p, i) => { const b = elD('button', 'gr-ponto' + (i ? '' : ' on')); b.type = 'button'; b.setAttribute('aria-label', vs[i].nome); b.onclick = () => pager.scrollTo({ left: i * pager.clientWidth, behavior: 'smooth' }); pts.append(b); });
       c.prepend(pager, pts);
