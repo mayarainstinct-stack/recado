@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-09.243">
+<meta name="app-versao" content="2026-11-09.244">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1231,6 +1231,16 @@ body.na-geral form textarea:focus { border-color: #FACC15; box-shadow: 0 0 0 3px
 .fixa { display: flex; flex-direction: column; gap: 6px; } .fixa > .msg { align-self: flex-start; max-width: 100%; margin: 0; }
 .fixa-barra { display: flex; align-items: center; gap: 8px; } .fixa-barra { flex-wrap: wrap; } .fixa-barra span { flex: 1 1 100%; font-size: 12.5px; color: var(--muted); }
 .treino-naovou { margin: 0 0 12px; }
+.treino-tela .tr-abas { display: flex; gap: 8px; } .treino-tela .tr-aba { flex: 1; height: 42px; border: 2px solid #62B02A; background: #0B1207; color: #62B02A; font: 800 14px/1 Impact, 'Arial Narrow Bold', 'Arial Black', sans-serif; letter-spacing: 1px; text-transform: uppercase; border-radius: 4px; cursor: pointer; } .treino-tela .tr-aba.on { background: #62B02A; color: #fff; }
+.treino-tela .tr-corpo > * + * { margin-top: 18px; } .treino-tela .tr-corpo .p-lista { margin-bottom: 0; }
+.mu-quadro { display: flex; flex-direction: column; gap: 12px; } .mu-foto { margin: 0; border: 2px solid #62B02A; border-radius: 6px; overflow: hidden; background: #0B1207; } .mu-foto img { display: block; width: 100%; max-height: 32dvh; object-fit: contain; background: #000; } .mu-foto figcaption { padding: 8px 12px; font-weight: 800; color: #62B02A; letter-spacing: .5px; text-transform: uppercase; font-size: 12px; }
+.mu-leg { margin: 0; padding: 10px 12px; border-left: 3px solid #62B02A; color: #F2FFF2; white-space: pre-wrap; font-size: 15px; line-height: 1.35; } .mu-leg.vazia { color: #9aa; font-style: italic; }
+.mu-acoes { display: flex; gap: 8px; } .mu-bt { flex: 1; height: 44px; border-radius: 4px; border: 2px solid #62B02A; background: #0B1207; color: #62B02A; font-weight: 800; font-size: 14px; cursor: pointer; } .mu-bt.on { background: #62B02A; color: #fff; } .mu-bt:disabled { opacity: .4; } .mu-quadro > .mu-bt { flex: none; width: 100%; }
+.mu-grade { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; } .mu-mini { position: relative; aspect-ratio: 1; border: 2px solid #1d2a14; border-radius: 4px; background: #0B1207 center/cover; cursor: pointer; padding: 0; } .mu-mini.on { border-color: #62B02A; } .mu-mini small { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.65); color: #fff; font-size: 10px; padding: 2px 0; text-align: center; }
+.at-conclui { margin-top: 10px; width: 100%; padding: 9px; border-radius: 8px; border: 1px dashed currentColor; background: none; color: inherit; font: inherit; font-size: 13px; opacity: .8; cursor: pointer; } .at-obra.concluida { opacity: .75; } .at-topo .ed-mini { margin-left: auto; color: inherit; }
+.ob-c > .ed-mini { position: absolute; top: 2px; right: 2px; color: #22190A; opacity: .6; } .ob-folha .ed-mini { display: none; } .pl-lista li .ed-mini { margin-left: auto; }
+.cine-wrap { position: relative; } .cine-wrap .ed-mini { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,.55); color: #fff; opacity: 1; }
+.tr-ed { display: flex; align-items: center; gap: 4px; } .tr-ed > label.check { flex: 1; } .tr-novo { margin: 6px 0 0; width: 100%; } .check-lista .ed-mini { color: #62B02A; }
 .novo-ver { position: fixed; z-index: 1200; top: calc(env(safe-area-inset-top, 0px) + 10px); left: 50%; width: min(420px, calc(100vw - 32px)); height: auto; display: grid; justify-items: start; gap: 2px; padding: 12px 16px; border-radius: 16px; background: var(--paper); color: var(--fg); border: 1.5px solid var(--accent); box-shadow: 0 14px 34px rgba(0,0,0,.35); text-align: left; font: inherit; transform: translateX(-50%); animation: nv-desce .42s cubic-bezier(.2,.9,.3,1.2) both; }
 .novo-ver b { font-size: 13px; font-weight: 900; color: var(--accent); } .novo-ver span { font-size: 14px; line-height: 1.35; } .novo-ver.sai { animation: nv-sobe .3s cubic-bezier(.5,0,.8,.4) forwards; }
 @keyframes nv-desce { from { transform: translate(-50%, calc(-100% - 30px)); } to { transform: translateX(-50%); } } @keyframes nv-sobe { to { transform: translate(-50%, calc(-100% - 30px)); } }   /* entra descendo e sai subindo pelo topo, sem fade */
@@ -3212,13 +3222,15 @@ micBtn.addEventListener('pointerup', soltaMic);
 micBtn.addEventListener('pointercancel', soltaMic);
 micBtn.addEventListener('contextmenu', e => e.preventDefault());
 let pararAoIniciar = false;
-// microfone: pede uma vez e reaproveita o mesmo stream na sessão (no app da tela de início o iOS pergunta a cada getUserMedia);
+// microfone: só pede no toque do botão e solta logo depois de gravar (May 09/11 15:41: não quer permissão aparecendo sozinha); nunca pede ao abrir, trocar de conversa ou voltar do segundo plano;
 // fica aberto enquanto a conversa estiver aberta (o iPhone pedia permissão toda hora); solta ao sair da conversa ou após 15 min parado (May, 09/11/2026)
 let micStream = null, micSolta = null;
-function soltaMicStream() { clearTimeout(micSolta); if (micStream) micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+const sessaoAudio = t => { try { if (navigator.audioSession) navigator.audioSession.type = t; } catch (e) {} };   // 'ambient' respeita o volume zero mas NÃO grava no iOS: pra gravar vira 'play-and-record' e volta pra 'ambient' ao soltar o microfone
+function soltaMicStream() { clearTimeout(micSolta); if (micStream) micStream.getTracks().forEach(t => t.stop()); micStream = null; sessaoAudio('ambient'); }
 async function pegaMic() {
   clearTimeout(micSolta);
   if (micStream && micStream.getAudioTracks().some(t => t.readyState === 'live')) return micStream;
+  sessaoAudio('play-and-record');   // direto no toque, antes do getUserMedia e sem await no meio
   micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
   return micStream;
 }
@@ -3247,11 +3259,11 @@ async function comecaGravar() {
     gravador = new MediaRecorder(stream, tipo ? { mimeType: tipo } : undefined);
     pedacos = []; cancelado = false;
     gravador.ondataavailable = e => { if (e.data.size) pedacos.push(e.data); };
-    gravador.onstop = () => { clearTimeout(micSolta); micSolta = setTimeout(soltaMicStream, 900000); const g = gravador; gravador = null; mostraGravando(false); if (!cancelado) enviaAudio(new Blob(pedacos, { type: g.mimeType || tipo || 'audio/mp4' })); };
+    gravador.onstop = () => { soltaMicStream(); const g = gravador; gravador = null; mostraGravando(false); if (!cancelado) enviaAudio(new Blob(pedacos, { type: g.mimeType || tipo || 'audio/mp4' })); };
     gravador.start(); mostraGravando(true);
     if (CFG.vibracao !== false && navigator.vibrate) navigator.vibrate(20);
     if (pararAoIniciar) { cancelado = true; gravador.stop(); showNote('Segura o microfone enquanto fala'); }
-  } catch (e) { gravador = null; soltaMicStream(); showNote('Sem acesso ao microfone. Libera em Ajustes → Apps → Safari → Microfone (Permitir) e, no site, toca em aA → Ajustes do Site → Microfone → Permitir.', true); }
+  } catch (e) { gravador = null; soltaMicStream(); showNote(e && e.name === 'NotAllowedError' ? 'Sem acesso ao microfone. Libera em Ajustes → Apps → Safari → Microfone (Permitir) e, no site, toca em aA → Ajustes do Site → Microfone → Permitir.' : 'Microfone não abriu (' + ((e && e.name) || 'erro') + (e && e.message ? ': ' + e.message : '') + ').', true); }
 }
 recX.onclick = () => { if (gravador) { cancelado = true; gravador.stop(); } };
 // O áudio vai no pendente (nome fixo + gravação na memória e no IndexedDB): falhou o upload = "não foi" com reenvio, até depois
@@ -4495,13 +4507,14 @@ function edAplica(arr, op, criaSeFalta) {
 // cfg = { arq, lista: 'itens', edicoes: arquivo à parte ou '' }; devolve a lista junta (base + edicoes) e as funções
 async function edAbre(cfg) {
   const lista = cfg.lista || 'itens';
-  const base = JSON.parse(await lerArquivo(cfg.arq)); let sobre = { itens: [] };
+  let base; try { base = JSON.parse(await lerArquivo(cfg.arq)); } catch (e) { if (!cfg.vazio) throw e; base = { itens: [] }; }   // cfg.vazio: arquivo de edições que ainda não existe
+  let sobre = { itens: [] };
   if (cfg.edicoes) { try { sobre = JSON.parse(await lerArquivo(cfg.edicoes)); } catch (e) {} }
   const itens = (base[lista] || []).map(x => ({ ...x }));
   (sobre.itens || []).forEach(o => { const x = itens.find(y => y.id === o.id); if (x) Object.assign(x, o); else itens.push({ ...o }); });
   const cs = base.campos, m = { base, itens, campos: Array.isArray(cs) ? cs : (cs && cs[lista]) || cfg.campos || [] };   // campos pode ser uma lista só ou { <lista>: [...] } quando o arquivo tem mais de uma lista (Finanças)
   m.op = async (op, msg) => {
-    edAplica(m.itens, op, false);
+    edAplica(m.itens, op, !!cfg.edicoes);
     const alvo = cfg.edicoes || cfg.arq, ok = await gravaJson(alvo, d => { d[lista] = d[lista] || []; edAplica(d[lista], op, !!cfg.edicoes); }, msg || 'Edição pelo app', { itens: [] });
     if (!ok) showNote('Não guardou: confere a internet e tenta de novo.', true);
     return !!ok;
@@ -4511,6 +4524,18 @@ async function edAbre(cfg) {
   m.feito = (id, on, valor) => m.op({ tipo: 'feito', id, on, valor, quando: edAgora() }, on ? 'Marcado como feito pelo app' : 'Desmarcado pelo app');
   m.apaga = (id, on) => m.op({ tipo: 'apaga', id, on, quando: edAgora() }, on ? 'Item apagado pelo app (fica guardado)' : 'Apagado desfeito pelo app');
   return m;
+}
+// edições por cima de telas cujo JSON é gerado (Mídia, Obra, Casa): um arquivo à parte { itens: [{ id, ...campos, apagado }] } que o app junta; o gerador lê antes de regerar. Aberto uma vez por sessão (a tela refaz a partir da memória)
+const OV = {};
+const ovAbre = async arq => OV[arq] || (OV[arq] = await edAbre({ arq, edicoes: arq, vazio: true, campos: [] }));
+// escolhe 1 entre poucas opções (popup): devolve o valor ou null
+function edEscolhe(titulo, ops) {
+  return new Promise(ok => {
+    const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card ed-card'), x = elD('button', 'pp-x'), l = elD('div', 'pp-ops lista');
+    x.type = 'button'; x.innerHTML = icone('close'); const fecha = v => { ov.remove(); ok(v); }; x.onclick = () => fecha(null); ov.onclick = e => { if (e.target === ov) fecha(null); };
+    ops.forEach(([v, t]) => { const b = elD('button', 'pp-op', t); b.type = 'button'; b.onclick = () => fecha(v); l.append(b); });
+    card.append(x, elD('div', 'pp-perg', titulo), l); ov.append(card); document.body.append(ov);
+  });
 }
 // faixa "Item apagado · Desfazer" por 8 segundos
 function edFaixaDesfazer(txt, desfaz) {
@@ -4530,6 +4555,8 @@ function edPedeValor(titulo, sugestao) {
     card.append(x, elD('div', 'pp-perg', titulo), inp, bt); ov.append(card); document.body.append(ov); setTimeout(() => inp.focus(), 50);
   });
 }
+// foto escolhida no celular: reduz, sobe pra recados-fotos/ (o mesmo envio da conversa) e devolve o caminho
+async function edSobeFoto(file) { const rd = await reduzir(file), nome = nomeArq('recados-fotos', new Date(), 0, rd.ext || 'jpg'); await apiOk(apiDe(nome), { method: 'PUT', body: JSON.stringify({ message: 'foto pelo app', content: rd.b64 }) }); return nome; }
 // formulário pelos campos: v = valores atuais (editar) ou {} (lançar); aoSalvar(valores); aoApagar opcional
 function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar }) {
   const ov = elD('div', 'fixa-pop ed-pop'), card = elD('div', 'pp-card ed-card'), x = elD('button', 'pp-x'), form = elD('form', 'ed-form'), els = {};
@@ -4540,8 +4567,9 @@ function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar }) {
     let el;
     if (c.tipo === 'texto_longo') { el = elD('textarea'); el.rows = 3; }
     else if (c.tipo === 'escolha') { el = elD('select'); (c.opcoes || []).forEach(o => { const [val, tx] = Array.isArray(o) ? o : [o, o]; const op = elD('option', '', tx); op.value = val; el.append(op); }); }
+    else if (c.tipo === 'foto') { el = elD('input'); el.type = 'file'; el.accept = 'image/*'; el.dataset.atual = v[c.nome] || ''; const im = elD('img', 'ed-previa'); im.alt = ''; im.hidden = true; if (v[c.nome]) fotoUrl(v[c.nome]).then(u => { im.src = u; im.hidden = false; }).catch(() => {}); el.addEventListener('change', () => { const f = el.files && el.files[0]; if (f) { im.src = URL.createObjectURL(f); im.hidden = false; } }); lb.append(im); }
     else { el = elD('input'); el.type = c.tipo === 'data' ? 'date' : c.tipo === 'url_imagem' ? 'url' : 'text'; if (c.tipo === 'numero' || c.tipo === 'valor') el.inputMode = 'decimal'; }
-    el.value = v[c.nome] != null ? v[c.nome] : (c.padrao != null ? c.padrao : ''); els[c.nome] = el; lb.append(el);
+    if (c.tipo !== 'foto') el.value = v[c.nome] != null ? v[c.nome] : (c.padrao != null ? c.padrao : ''); els[c.nome] = el; lb.append(el);
     if (c.tipo === 'url_imagem') { const im = elD('img', 'ed-previa'); im.alt = ''; im.hidden = true; const mostra = () => { im.hidden = !/^https?:/i.test(el.value); if (!im.hidden) im.src = el.value; }; im.onerror = () => { im.hidden = true; }; el.addEventListener('change', mostra); mostra(); lb.append(im); }
     form.append(lb);
   });
@@ -4551,7 +4579,7 @@ function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar }) {
   form.append(erro, ops);
   form.onsubmit = async e => {
     e.preventDefault(); const out = {};
-    for (const c of campos) { if (!els[c.nome]) continue; let val = els[c.nome].value.trim(); if (c.tipo === 'numero' || c.tipo === 'valor') { const n = +val.replace(/\./g, '').replace(',', '.'); val = val === '' ? '' : (isNaN(n) ? val : n); } if (c.obrigatorio && val === '') { erro.textContent = 'Falta preencher: ' + edRotulo(c); erro.hidden = false; return; } out[c.nome] = val; }
+    for (const c of campos) { if (!els[c.nome]) continue; if (c.tipo === 'foto') { const f = els[c.nome].files && els[c.nome].files[0]; if (!f && c.obrigatorio && !els[c.nome].dataset.atual) { erro.textContent = 'Falta escolher a foto.'; erro.hidden = false; return; } out[c.nome] = els[c.nome].dataset.atual || ''; if (f) { try { ok.disabled = true; ok.textContent = 'Subindo a foto…'; out[c.nome] = await edSobeFoto(f); } catch (er) { ok.disabled = false; ok.textContent = 'Guardar'; erro.textContent = 'A foto não subiu. Confere a internet e tenta de novo.'; erro.hidden = false; return; } } continue; } let val = els[c.nome].value.trim(); if (c.tipo === 'numero' || c.tipo === 'valor') { const n = +val.replace(/\./g, '').replace(',', '.'); val = val === '' ? '' : (isNaN(n) ? val : n); } if (c.obrigatorio && val === '') { erro.textContent = 'Falta preencher: ' + edRotulo(c); erro.hidden = false; return; } out[c.nome] = val; }
     ok.disabled = true; await aoSalvar(out); fecha();
   };
   card.append(form); ov.append(card); document.body.append(ov);
@@ -4726,8 +4754,18 @@ function abreObra(m) {
     const nota = elD('p', 'p-nota', 'Carregando o mural…'); c.append(nota);
     let d; try { d = JSON.parse(await lerArquivo(m.arq || 'casa/obra-mural.json')); } catch (e) { nota.textContent = 'Não consegui abrir o mural. Confere a internet.'; return; }
     nota.remove();
+    // Edição pelo app (May, 09/11/2026): cartão editado/apagado/novo mora em casa/edicoes/obra.json (chave = id ou arq), somado por cima do mural
+    let O = null; try { O = await ovAbre('casa/edicoes/obra.json'); } catch (e) {}
+    const chaveC = x => x.id || x.arq;
+    if (O) { const por = {}; O.itens.forEach(x => { por[x.id] = x; }); (d.abas || []).forEach(a => { if (!a.cartoes) return; a.cartoes = a.cartoes.filter(x => !(por[chaveC(x)] && por[chaveC(x)].apagado)).map(x => { const o = por[chaveC(x)]; return o ? { ...x, ...o, id: x.id, apagado: undefined } : x; }); O.itens.filter(x => x.novo && !x.apagado && x.aba === a.id).forEach(x => { if (!a.cartoes.some(y => chaveC(y) === x.id)) a.cartoes.push({ ...x }); }); }); }
+    const CAMPOS_OB = { nota: [{ nome: 'titulo', rotulo: 'Título', tipo: 'texto', obrigatorio: true }, { nome: 'linhas', rotulo: 'Texto (uma linha por item)', tipo: 'texto_longo' }, { nome: 'cor', rotulo: 'Cor do papel', tipo: 'escolha', opcoes: [['amarelo', 'Amarelo'], ['rosa', 'Rosa'], ['azul', 'Azul'], ['verde', 'Verde'], ['branco', 'Branco']], padrao: 'amarelo' }],
+      valor: [{ nome: 'titulo', rotulo: 'Título', tipo: 'texto', obrigatorio: true }, { nome: 'valor', rotulo: 'Valor', tipo: 'texto' }, { nome: 'sub', rotulo: 'Detalhe', tipo: 'texto' }],
+      peca: [{ nome: 'titulo', rotulo: 'Peça', tipo: 'texto', obrigatorio: true }, { nome: 'modelo', rotulo: 'Modelo', tipo: 'texto' }, { nome: 'preco', rotulo: 'Preço', tipo: 'texto' }, { nome: 'estado', rotulo: 'Estado (escolhida, a comprar…)', tipo: 'texto' }, { nome: 'foto', rotulo: 'Foto', tipo: 'foto' }],
+      foto: [{ nome: 'legenda', rotulo: 'Legenda', tipo: 'texto' }] };
+    const paraForm = x => ({ ...x, linhas: Array.isArray(x.linhas) ? x.linhas.join('\n') : x.linhas }), deForm = v => { const o = { ...v }; if ('linhas' in o) o.linhas = String(o.linhas || '').split(/\r?\n/).map(t => t.trim()).filter(Boolean); return o; };
+    const editaC = x => edFormulario({ titulo: 'Editar cartão', campos: CAMPOS_OB[x.tipo] || [], v: paraForm(x), aoSalvar: async v => { v = deForm(v); Object.assign(x, v); if (O) await O.op({ tipo: 'edita', id: chaveC(x), v, quando: edAgora() }, 'Cartão da obra editado pelo app'); pinta(0); }, aoApagar: async () => { const a = abas.find(z => (z.cartoes || []).includes(x)), i = a.cartoes.indexOf(x); a.cartoes.splice(i, 1); if (O) await O.op({ tipo: 'apaga', id: chaveC(x), on: true, quando: edAgora() }, 'Cartão da obra apagado pelo app (fica guardado)'); pinta(0); edFaixaDesfazer('Cartão apagado', async () => { a.cartoes.splice(i, 0, x); if (O) await O.op({ tipo: 'apaga', id: chaveC(x), on: false, quando: edAgora() }, 'Apagado desfeito pelo app'); pinta(0); }); } });
     const vivo = {}; Promise.all([lerArquivo('casa/fundo/maicon-dias.json').then(t => { vivo.dias = JSON.parse(t).dias || []; }).catch(() => {}), lerArquivo('contas/pendencias.json').then(t => { vivo.pago = (JSON.parse(t).pagar || []).find(x => /maicon/i.test(x.nome)); }).catch(() => {})]).then(() => { if (aba === 'agora' || aba === 'dinheiro') pinta(0); });
-    cabecalho({ icone: 'ruler', sub: 'piscina e fundo · mural' });
+    cabecalho({ icone: 'ruler', sub: 'piscina e fundo · mural', acao: { icone: 'plus', rotulo: 'Cartão novo', fn: async () => { const a = abas.find(z => z.id === aba); if (!a || a.fonte) { showNote('Esta aba é o diário: usa Lançar um dia.'); return; } const t = await edEscolhe('Cartão novo', [['nota', 'Nota (papel colorido)'], ['valor', 'Valor (orçamento)'], ['peca', 'Peça (com foto)']]); if (!t) return; edFormulario({ titulo: 'Cartão novo', campos: CAMPOS_OB[t], v: { cor: 'amarelo' }, aoSalvar: async v => { v = deForm(v); const item = { id: edNovoId(v.titulo), tipo: t, ...v, aba: a.id, novo: true, criado: edAgora() }; a.cartoes.push({ ...item }); if (O) await O.op({ tipo: 'lanca', item }, 'Cartão novo da obra pelo app'); pinta(0); } }); } } });
     const nav = elD('nav', 'ob-abas'), parede = elD('div', 'ob-parede'), cacheFonte = {}; c.append(nav, parede);
     const abas = d.abas || []; let aba = (abas[0] || {}).id;
     const rs = v => 'R$ ' + Math.round(v).toLocaleString('pt-BR');
@@ -4757,6 +4795,7 @@ function abreObra(m) {
         if (vivo.pago) { const b = elD('div', 'ob-barra'), f = elD('i'); f.style.width = Math.min(100, vivo.pago.pago * 100 / (vivo.pago.total || 1)) + '%'; b.append(f); el.append(b, elD('small', 'ob-sub ob-pagofalta', 'pago ' + rs(vivo.pago.pago) + ' · falta ' + rs(vivo.pago.falta) + ' de ' + rs(vivo.pago.total))); }   // quanto já pagou e quanto falta (May 18:37), das Pendências
         el.append(ul, fonte(x.fonte));
       }
+      if (x.tipo !== 'maicon' && CAMPOS_OB[x.tipo]) el.append(edMini('note', 'Editar cartão', () => editaC(x)));
       return el;
     };
     const pinta = dir => {
@@ -4997,6 +5036,7 @@ function arrastaPostits(q, salva) {
 // tocou no cômodo, a planta voa até ele (zoom) e embaixo aparece o que tem ali; "Casa inteira" volta
 // Planta da casa (May, 07/11/2026 12:40 e 12:49): mapa de verdade, com o piso de cada cômodo; tocou, a planta voa até ele e as coisas de lá vão surgindo
 // (fade liberado aqui, exceção dela só pra este mapa). Dados: casa/planta-mapa.json (cômodos em metros; itens = o que tem, tirado do inventário)
+let plantaSel = '';   // cômodo aberto antes de uma edição: a planta refaz e volta nele
 function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de cima sempre a casa, metade de baixo as abas de informação (May 16:50); cômodos já na 1ª etapa, cada coisa desenhada no lugar e tocar nela na lista voa até ela (May 16:51)
   tela(m.nome, async c => {
     const cor = (COR_ASSUNTO.find(([re]) => re.test('Casa')) || [])[1] || 'var(--accent)'; painel.style.setProperty('--c', cor); c.classList.add('pl-tela');
@@ -5004,6 +5044,16 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
     const nota = elD('p', 'p-nota', 'Carregando a planta…'); c.append(nota);
     let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { nota.textContent = 'Não consegui abrir a planta. Confere a internet.'; return; }
     nota.remove();
+    // Edição pelo app (May, 09/11/2026): coisa de cômodo editada/apagada/nova mora em casa/edicoes/planta.json (chave = cômodo|nome original), somada por cima da planta
+    let OP = null; try { OP = await ovAbre('casa/edicoes/planta.json'); } catch (e) {}
+    if (OP) { const por = {}; OP.itens.forEach(x => { por[x.id] = x; });
+      d.comodos.forEach(k => { const ch = it => k.nome + '|' + (typeof it === 'string' ? it : it.nome);
+        k.itens = (k.itens || []).map(it => { const ob = typeof it === 'string' ? { nome: it } : { ...it }; ob._chave = ch(it); const o = por[ob._chave]; if (o && o.apagado) return null; if (o) ['nome', 'medida', 'onde'].forEach(f => { if (o[f] != null) ob[f] = o[f]; }); return ob; }).filter(Boolean);
+        OP.itens.filter(x => x.novo && !x.apagado && x.comodo === k.nome).forEach(x => k.itens.push({ nome: x.nome, medida: x.medida || '', onde: x.onde || '', _chave: x.id })); }); }
+    const CAMPOS_CO = [{ nome: 'nome', rotulo: 'Nome', tipo: 'texto', obrigatorio: true }, { nome: 'medida', rotulo: 'Medida', tipo: 'texto' }, { nome: 'onde', rotulo: 'Onde fica', tipo: 'texto' }];
+    const recarrega = k => { plantaSel = k.nome; desenhaTela(); };
+    const lancaCoisa = k => edFormulario({ titulo: 'Coisa nova em ' + k.nome, campos: CAMPOS_CO, aoSalvar: async v => { const id = k.nome + '|' + v.nome; if (OP) await OP.op({ tipo: 'lanca', item: { id: id + '|' + Date.now().toString(36), novo: true, comodo: k.nome, ...v, criado: edAgora() } }, 'Coisa nova na planta pelo app'); recarrega(k); } });
+    const editaCoisa = (k, ci) => edFormulario({ titulo: 'Editar', campos: CAMPOS_CO, v: ci, aoSalvar: async v => { if (OP) await OP.op({ tipo: 'edita', id: ci.chave, v, quando: edAgora() }, 'Coisa da planta editada pelo app'); recarrega(k); }, aoApagar: async () => { if (OP) await OP.op({ tipo: 'apaga', id: ci.chave, on: true, quando: edAgora() }, 'Coisa da planta apagada pelo app (fica guardada)'); recarrega(k); edFaixaDesfazer('Coisa apagada', async () => { if (OP) await OP.op({ tipo: 'apaga', id: ci.chave, on: false, quando: edAgora() }, 'Apagado desfeito pelo app'); recarrega(k); }); } });
     const NS = 'http://www.w3.org/2000/svg', ns = (t, at) => { const e = document.createElementNS(NS, t); Object.entries(at || {}).forEach(([a, v]) => e.setAttribute(a, v)); return e; };
     const svg = ns('svg', { class: 'pl-svg', preserveAspectRatio: 'xMidYMid meet' }), cx = elD('div', 'pl-caixa cad'), semMov = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const barra = elD('div', 'cad-barra'), camada = elD('span', '', ''), coord = elD('span', 'cad-coord', ''); barra.append(elD('b', '', 'PLANTA.DWG'), camada, coord);
@@ -5069,7 +5119,7 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
     ];
     const tipoDe = t => TIPOS.find(([re]) => re.test(t)) || [null, .55, .55, ['M0 0H1V1H0Z', 'M0 0L1 1M1 0L0 1']];   // sem desenho próprio: bloco com X, o jeito do AutoCAD
     const arruma = k => {   // as coisas do cômodo em fileiras, encostadas nas paredes; não cabe, encolhe (posição aproximada até ela dizer onde fica)
-      const cs = (k.itens || []).filter(it => !/^piso|^m[áa]rmore|^parede de cimento/i.test(typeof it === 'string' ? it : it.nome)).map((it, n) => { const nome = typeof it === 'string' ? it : it.nome, tp = tipoDe(nome); const ob = typeof it === 'object' ? it : {}; return { nome, n, k, tp, w: ob.w || tp[1], h: ob.h || tp[2], medida: ob.medida || '', onde: ob.onde || '', projeto: !!ob.projeto, desenhar: ob.desenhar !== false && !!(ob.w && ob.h), fixo: ob.x != null ? ob : null, nivel: ob.nivel === 3 ? 3 : 2 }; });   // tudo vem do Inst (May 18:10 e 18:13): só desenhar o que tem medida e fica no chão; o resto só na lista
+      const cs = (k.itens || []).filter(it => !/^piso|^m[áa]rmore|^parede de cimento/i.test(typeof it === 'string' ? it : it.nome)).map((it, n) => { const nome = typeof it === 'string' ? it : it.nome, tp = tipoDe(nome); const ob = typeof it === 'object' ? it : {}; return { nome, chave: ob._chave || (k.nome + '|' + nome), n, k, tp, w: ob.w || tp[1], h: ob.h || tp[2], medida: ob.medida || '', onde: ob.onde || '', projeto: !!ob.projeto, desenhar: ob.desenhar !== false && !!(ob.w && ob.h), fixo: ob.x != null ? ob : null, nivel: ob.nivel === 3 ? 3 : 2 }; });   // tudo vem do Inst (May 18:10 e 18:13): só desenhar o que tem medida e fica no chão; o resto só na lista
       const [ax, ay, aw, ah] = k.arrumar || [k.x, k.y, k.w, k.h], m0 = .18, W = aw - m0 * 2, H = ah - m0 * 2;   // cômodo em L: as coisas soltas vão pra parte larga
       for (let esc = 1; esc > .2; esc *= .85) {
         let x = 0, y = 0, alt = 0, ok = true;
@@ -5183,9 +5233,10 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
       enquadra(k.x, k.y, k.w, k.h, Math.max(k.w, k.h) * 0.12 + 0.3); if (nivel < 2) liga(2);
       nomeEl.textContent = k.nome; sub.textContent = num(k.w) + ' × ' + num(k.h) + ' m · ' + num(areaDe(k)) + ' m²'; coord.textContent = 'X ' + num(k.x) + '  Y ' + num(k.y); cabecalho({ icone: 'home', sub: k.nome });
       const abas = [['Coisas · ' + k.coisas.length, cp => {
-        if (!k.coisas.length) { cp.append(elD('p', 'p-nota', k.obs || 'Ainda não tem nada anotado daqui.')); return; }
-        const ul = elD('ul', 'pl-lista'); k.coisas.forEach(ci => { const li = elD('li', 'pl-toca'); li.dataset.n = ci.n; const ic = ns('svg', { viewBox: '-.1 -.1 1.2 1.2', class: 'pl-ic', preserveAspectRatio: 'xMidYMid meet' }); ci.tp[3].forEach(p => ic.append(ns('path', { d: p, 'vector-effect': 'non-scaling-stroke' }))); const tx = elD('span', '', (ci.numerado ? (ci.n + 1) + ' · ' : '') + ci.nome); if (ci.medida || ci.onde) tx.append(elD('small', 'pl-med-it', [ci.medida || 'sem medida no Inst', ci.onde].filter(Boolean).join(' · '))); if (!ci.desenhar) li.classList.add('fora'); if (ci.projeto) li.classList.add('projeto'); li.append(ic, tx); li.onclick = () => tocaCoisa(ci); ul.append(li); });
-        cp.append(ul, elD('p', 'p-nota', 'Medida e lugar tirados do Inst (' + (k.fontes || []).map(f => f.replace(/^casa\//, '')).join(', ') + '). O lugar no desenho é aproximado quando o arquivo só diz a parede; apagada = fica na parede ou em cima de outra coisa.')); marcaLista();
+        const nvC = elD('button', 'pl-bt on', '+ Coisa'); nvC.type = 'button'; nvC.onclick = () => lancaCoisa(k);
+        if (!k.coisas.length) { cp.append(elD('p', 'p-nota', k.obs || 'Ainda não tem nada anotado daqui.'), nvC); return; }
+        const ul = elD('ul', 'pl-lista'); k.coisas.forEach(ci => { const li = elD('li', 'pl-toca'); li.dataset.n = ci.n; const ic = ns('svg', { viewBox: '-.1 -.1 1.2 1.2', class: 'pl-ic', preserveAspectRatio: 'xMidYMid meet' }); ci.tp[3].forEach(p => ic.append(ns('path', { d: p, 'vector-effect': 'non-scaling-stroke' }))); const tx = elD('span', '', (ci.numerado ? (ci.n + 1) + ' · ' : '') + ci.nome); if (ci.medida || ci.onde) tx.append(elD('small', 'pl-med-it', [ci.medida || 'sem medida no Inst', ci.onde].filter(Boolean).join(' · '))); if (!ci.desenhar) li.classList.add('fora'); if (ci.projeto) li.classList.add('projeto'); li.append(ic, tx, edMini('note', 'Editar', () => editaCoisa(k, ci))); li.onclick = () => tocaCoisa(ci); ul.append(li); });
+        cp.append(ul, nvC, elD('p', 'p-nota', 'Medida e lugar tirados do Inst (' + (k.fontes || []).map(f => f.replace(/^casa\//, '')).join(', ') + '). O lugar no desenho é aproximado quando o arquivo só diz a parede; apagada = fica na parede ou em cima de outra coisa.')); marcaLista();
       }], ['Medidas', cp => { const ul = elD('ul', 'pl-med'); [['Largura', num(k.w) + ' m'], ['Comprimento', num(k.h) + ' m'], ['Área', num(areaDe(k)) + ' m²'], ['Perímetro', num(2 * (k.w + k.h)) + ' m'], ['Posição', 'X ' + num(k.x) + ' · Y ' + num(k.y)]].forEach(([a, b]) => { const li = elD('li'); li.append(elD('span', '', a), elD('b', '', b)); ul.append(li); }); cp.append(ul); }]];
       if ((k.tomadas || []).length) abas.splice(1, 0, ['Tomadas · ' + k.tomadas.length, cp => { const ul = elD('ul', 'pl-med'); k.tomadas.forEach(t => { const li = elD('li'); li.append(elD('span', '', t)); ul.append(li); }); cp.append(ul, elD('p', 'p-nota', 'Da May em 21/10 (casa/TOMADAS-DA-CASA-21-10-2026.md).')); }]);   // tomadas de cada cômodo, do levantamento dela
       if (k.obs || k.doc || k.alexa || k.eletrica || k.portas || k.janelas || k.pe_direito) abas.push(['Sobre', cp => { if (k.obs) cp.append(elD('p', 'pl-obs', k.obs)); [['Pé-direito', k.pe_direito ? [k.pe_direito] : null], ['Portas', k.portas], ['Janelas', k.janelas], ['Alexa', k.alexa], ['Elétrica', k.eletrica]].forEach(([t, xs]) => { if (!(xs || []).length) return; cp.append(elD('small', 'ob-folha-rot', t)); const ul = elD('ul', 'pl-med'); xs.forEach(x => { const li = elD('li'); li.append(elD('span', '', x)); ul.append(li); }); cp.append(ul); }); if (k.doc) { const ab = elD('button', 'pl-bt on', 'Inventário completo'); ab.type = 'button'; ab.onclick = () => abreCartoes({ nome: k.nome, arq: k.doc }); cp.append(ab); } }]);
@@ -5194,7 +5245,7 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
     };
     NOMES.forEach((t, k) => { const b = elD('button', 'cad-nivel', String(k + 1)); b.type = 'button'; b.title = t; b.onclick = () => liga(k + 1); niveis.push(b); status.append(b); });
     status.prepend(elD('span', 'cad-st', 'DETALHE'));
-    cx.append(barra, svg, status); c.append(cx, info); liga(1); const inicia = n => { if ((svg.clientWidth < 10 || svg.clientHeight < 10) && n < 30) return requestAnimationFrame(() => inicia(n + 1)); toca(null); }; requestAnimationFrame(() => inicia(0));
+    cx.append(barra, svg, status); c.append(cx, info); liga(1); const inicia = n => { if ((svg.clientWidth < 10 || svg.clientHeight < 10) && n < 30) return requestAnimationFrame(() => inicia(n + 1)); toca(plantaSel ? d.comodos.find(z => z.nome === plantaSel) || null : null); plantaSel = ''; }; requestAnimationFrame(() => inicia(0));
   });
 }
 // Pendências como sistema financeiro (May, 07/11/2026 12:43: "quase uma planilha, pra ver e pra lançar por popup") e Contas do mês (12:47).
@@ -5557,7 +5608,7 @@ const diaLocal = () => new Date().toLocaleDateString('sv');   // AAAA-MM-DD no f
 const guardaMarcados = (v, l, s) => {
   if (v._json) {
     const pre = v.id + ':' + l.id + ':', antes = marcados(v, l), agora = edAgora(), mud = [];
-    l.grupos.forEach(g => g.itens.forEach(([id]) => { const t = s.has(id), era = antes.has(id); if (t && !era) mud.push([id, agora]); else if (!t && era) mud.push([id, null]); }));
+    l.grupos.forEach(g => g.itens.filter(itemVivo).forEach(([id]) => { const t = s.has(id), era = antes.has(id); if (t && !era) mud.push([id, agora]); else if (!t && era) mud.push([id, null]); }));
     if (!mud.length) return;
     mud.forEach(([id, q]) => { if (q) v._feitos[pre + id] = q; else delete v._feitos[pre + id]; });
     gravaJson(v._arq, d => { d.feitos = d.feitos || {}; mud.forEach(([id, q]) => { if (q) d.feitos[pre + id] = q; else delete d.feitos[pre + id]; }); }, 'Marcado pelo app', null).then(ok => { if (!ok) showNote('Não guardou: confere a internet e tenta de novo.', true); });
@@ -5571,7 +5622,8 @@ const guardaMarcados = (v, l, s) => {
   else if (s.size) store.set('treino-ativo', JSON.stringify({ dia: diaLocal(), v: v.id, l: l.id }));
   else store.set('treino-ativo', '');
 };
-const totalItens = l => l.grupos.reduce((n, g) => n + g.itens.length, 0);
+const itemVivo = it => !(it[2] && it[2].apagado);   // item de treino apagado pelo app: [id, texto, { apagado }] (nada se apaga, só some da lista)
+const totalItens = l => l.grupos.reduce((n, g) => n + g.itens.filter(itemVivo).length, 0);
 // Treino (May, 29/10): as marcações zeram sozinhas toda segunda-feira (semana nova = contar o treino de novo, do começo).
 const segundaDe = (d = new Date()) => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x.toLocaleDateString('sv'); };
 function zeraSemanaTreino(viagens) {
@@ -5633,22 +5685,33 @@ function abreCheck(m) {
 function abreAtelie(m) {
   tela(m.nome, async c => {
     const p = skCarga(); c.append(p);
-    let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    let E; try { E = await edAbre({ arq: m.arq, lista: 'obras' }); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
     p.remove();
-    const w = elD('div', 'at-tela'); c.append(w);
-    const ltr = elD('div', 'at-letreiro'); ltr.append(elD('small', '', 'o estúdio da May apresenta'), elD('b', '', 'ATELIÊ'), elD('span', '', (d.obras || []).length + ' obras no forno')); w.append(ltr);
     const ETAPAS = ['ideia', 'rascunho', 'gravar · colorir', 'mixar · finalizar'];
-    (d.obras || []).slice().sort((a, b) => (b.etapa || 0) - (a.etapa || 0)).forEach((o, k) => {
-      const cd = elD('article', 'at-obra'); cd.style.setProperty('--i', k);
-      const topo = elD('div', 'at-topo'); topo.append(elD('span', 'at-carimbo', (o.tipo || 'Obra').toUpperCase()), elD('span', 'at-take', 'TAKE ' + String(k + 1).padStart(2, '0')));
-      cd.append(topo, elD('h3', 'at-nome', o.nome));
-      const fita = elD('div', 'at-fita');
-      ETAPAS.forEach((e, i) => { const q = elD('div', 'at-quadro' + (i + 1 < o.etapa ? ' feito' : i + 1 === o.etapa ? ' agora' : '')); q.append(elD('b', '', String(i + 1)), elD('small', '', e)); fita.append(q); });
-      cd.append(fita);
-      const f = elD('p', 'at-falta'); f.append(elD('b', '', 'falta: '), document.createTextNode(o.falta || 'nada')); cd.append(f);
-      if (o.com) cd.append(elD('p', 'at-com', 'na mão de: ' + o.com));
-      w.append(cd);
-    });
+    const campos = [{ nome: 'nome', rotulo: 'Nome da obra', tipo: 'texto', obrigatorio: true }, { nome: 'tipo', rotulo: 'Tipo (música, desenho, animação…)', tipo: 'texto' }, { nome: 'etapa', rotulo: 'Etapa', tipo: 'escolha', opcoes: ETAPAS.map((e, i) => [String(i + 1), (i + 1) + ' · ' + e]), padrao: '1' }, { nome: 'falta', rotulo: 'O que falta', tipo: 'texto_longo' }, { nome: 'com', rotulo: 'Na mão de', tipo: 'texto' }];
+    const w = elD('div', 'at-tela'); c.append(w);
+    const lanca = () => edFormulario({ titulo: 'Obra nova', campos, aoSalvar: async v => { v.etapa = +v.etapa || 1; await E.lanca(v); pinta(); } });
+    const edita = o => edFormulario({ titulo: 'Editar obra', campos, v: { ...o, etapa: String(o.etapa || 1) }, aoSalvar: async v => { v.etapa = +v.etapa || 1; await E.edita(o.id, v); pinta(); }, aoApagar: () => apaga(o) });
+    const apaga = async o => { await E.apaga(o.id, true); pinta(); edFaixaDesfazer('Obra apagada', async () => { await E.apaga(o.id, false); pinta(); }); };
+    const conclui = async o => { await E.feito(o.id, !o.feito); pinta(); };
+    const pinta = () => {
+      w.replaceChildren(); const obras = E.itens.filter(x => !x.apagado);
+      const ltr = elD('div', 'at-letreiro'); ltr.append(elD('small', '', 'o estúdio da May apresenta'), elD('b', '', 'ATELIÊ'), elD('span', '', obras.length + ' obras no forno')); w.append(ltr);
+      obras.slice().sort((a, b) => !!a.feito - !!b.feito || (b.etapa || 0) - (a.etapa || 0)).forEach((o, k) => {
+        const cd = elD('article', 'at-obra' + (o.feito ? ' concluida' : '')); cd.style.setProperty('--i', k);
+        const topo = elD('div', 'at-topo'); topo.append(elD('span', 'at-carimbo', (o.tipo || 'Obra').toUpperCase()), elD('span', 'at-take', 'TAKE ' + String(k + 1).padStart(2, '0')), edMini('note', 'Editar', () => edita(o)));
+        cd.append(topo, elD('h3', 'at-nome', o.nome));
+        const fita = elD('div', 'at-fita');
+        ETAPAS.forEach((e, i) => { const q = elD('div', 'at-quadro' + (i + 1 < o.etapa || o.feito ? ' feito' : i + 1 === o.etapa ? ' agora' : '')); q.append(elD('b', '', String(i + 1)), elD('small', '', e)); fita.append(q); });
+        cd.append(fita);
+        const f = elD('p', 'at-falta'); f.append(elD('b', '', 'falta: '), document.createTextNode(o.falta || 'nada')); cd.append(f);
+        if (o.com) cd.append(elD('p', 'at-com', 'na mão de: ' + o.com));
+        const bt = elD('button', 'at-conclui', o.feito ? edRotuloFeito(o, 'Concluída') + ' · desfazer' : 'Marcar como concluída'); bt.type = 'button'; bt.onclick = () => conclui(o); cd.append(bt);
+        w.append(cd);
+      });
+      const nv = elD('button', 'at-conclui at-nova', '+ Obra nova'); nv.type = 'button'; nv.onclick = lanca; w.append(nv);
+    };
+    pinta();
   });
 }
 function abreViagens(m) {
@@ -5722,23 +5785,60 @@ function montaViagens(c, d) {   // Viagens com cara própria (May 08/11 12:18: "
   });
   requestAnimationFrame(marca);
 }
+let trAba = 'treino';   // aba aberta da tela Treino (Treino | Mural); o abrir sozinho e o menu caem na mesma tela
 function montaTreino(c, d) {
   c.classList.add('treino-tela');   // cara das artes da Corpus (May 08/11 13:00 e 13:15, Sigma 16:27, layout do Hermes)
   const cab = elD('div', 'tr-cab'); cab.append(elD('span', 'tr-x'), elD('b', '', 'Treino'), elD('i', '', 'bora pra cima'), elD('small', '', 'a semana de treino da May')); c.append(cab);
   zeraSemanaTreino(d.viagens);
-  const b = botao('chart', 'Estatística', 'semana, cargas, comparação com a base', () => abreEstatistica(d.historico || [])); b.classList.add('treino-est'); c.append(b);
-  const folga = () => store.get('treino-folga') === diaLocal() || (d.folgas || []).includes(diaLocal());
-  const bf = botao(folga() ? 'moon' : 'sofa', folga() ? 'Hoje é folga' : 'Hoje não vou', folga() ? 'o treino não abre sozinho hoje · tocar desfaz' : 'o treino não abre sozinho hoje', () => {
-    if (store.get('treino-folga') === diaLocal()) { store.set('treino-folga', ''); showNote('Folga desfeita: o treino volta a abrir no horário'); }
-    else { store.set('treino-folga', diaLocal()); showNote('Beleza, hoje o treino não abre sozinho'); }
-    c.replaceChildren(); montaTreino(c, d);
-  });
-  d.viagens.forEach(v => {
-    if (v.resumo) { const r = document.createElement('div'); r.className = 'p-texto'; r.textContent = v.resumo; c.append(r); }
-    const lista = document.createElement('div'); lista.className = 'p-lista'; c.append(lista);
-    v.listas.forEach(l => lista.append(botao(l.icone, semHojeFalso(l.nome), marcados(v, l).size + ' de ' + totalItens(l) + ' feitos · ' + semHojeFalso(l.sub || ''), () => abreChecklist(v, l))));
-  });
-  c.append(bf);   // "Hoje não vou" fica lá embaixo, depois dos treinos (May, 05/11/2026)
+  const abas = elD('div', 'tr-abas'), corpo = elD('div', 'tr-corpo'); abas.setAttribute('role', 'tablist'); c.append(abas, corpo);
+  const pinta = () => {
+    abas.replaceChildren(); corpo.replaceChildren();
+    [['treino', 'Treino'], ['mural', 'Mural']].forEach(([id, nome]) => { const b = elD('button', 'tr-aba' + (trAba === id ? ' on' : ''), nome); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(trAba === id)); b.onclick = () => { trAba = id; pinta(); }; abas.append(b); });
+    if (trAba === 'mural') return montaMural(corpo);
+    const b = botao('chart', 'Estatística', 'semana, cargas, comparação com a base', () => abreEstatistica(d.historico || [])); b.classList.add('treino-est'); corpo.append(b);
+    const folga = () => store.get('treino-folga') === diaLocal() || (d.folgas || []).includes(diaLocal());
+    const bf = botao(folga() ? 'moon' : 'sofa', folga() ? 'Hoje é folga' : 'Hoje não vou', folga() ? 'o treino não abre sozinho hoje · tocar desfaz' : 'o treino não abre sozinho hoje', () => {
+      if (store.get('treino-folga') === diaLocal()) { store.set('treino-folga', ''); showNote('Folga desfeita: o treino volta a abrir no horário'); }
+      else { store.set('treino-folga', diaLocal()); showNote('Beleza, hoje o treino não abre sozinho'); }
+      c.replaceChildren(); montaTreino(c, d);
+    });
+    d.viagens.forEach(v => {
+      if (v.resumo) { const r = document.createElement('div'); r.className = 'p-texto'; r.textContent = v.resumo; corpo.append(r); }
+      const lista = document.createElement('div'); lista.className = 'p-lista'; corpo.append(lista);
+      v.listas.forEach(l => lista.append(botao(l.icone, semHojeFalso(l.nome), marcados(v, l).size + ' de ' + totalItens(l) + ' feitos · ' + semHojeFalso(l.sub || ''), () => abreChecklist(v, l))));
+    });
+    corpo.append(bf);   // "Hoje não vou" fica lá embaixo, depois dos treinos (May, 05/11/2026)
+  };
+  pinta();
+}
+// Mural da academia (May, 09/11/2026): privado, só pra ela; 1 foto por dia, legenda que ela copia pra onde quiser. Fonte: categorias/academia/mural.json ({ dias: [{ id, data AAAA-MM-DD, legenda, foto }] }). Nada de postar.
+const MURAL_ARQ = 'categorias/academia/mural.json';
+async function montaMural(w) {
+  const nota = skCarga(); w.append(nota); let E;
+  try { E = await edAbre({ arq: MURAL_ARQ, lista: 'dias' }); } catch (e) { nota.textContent = 'Não abriu. Confere a internet.'; return; }
+  nota.remove();
+  const campos = [{ nome: 'data', rotulo: 'Dia', tipo: 'data', obrigatorio: true }, { nome: 'foto', rotulo: 'Foto', tipo: 'foto', obrigatorio: true }, { nome: 'legenda', rotulo: 'Legenda', tipo: 'texto_longo' }];
+  let sel = null;
+  const vis = () => E.itens.filter(x => !x.apagado).sort((a, b) => (b.data || '').localeCompare(a.data || '') || (b.criado || '').localeCompare(a.criado || ''));
+  const quadro = elD('div', 'mu-quadro'); w.append(quadro);
+  const lanca = () => edFormulario({ titulo: 'Foto do dia', campos, v: { data: diaLocal() }, aoSalvar: async v => { const it = await E.lanca(v, 'Foto nova no mural'); if (it) sel = it.id; pinta(); } });
+  const edita = x => edFormulario({ titulo: 'Editar', campos, v: x, aoSalvar: async v => { await E.edita(x.id, v); pinta(); }, aoApagar: () => apaga(x) });
+  const apaga = async x => { await E.apaga(x.id, true); if (sel === x.id) sel = null; pinta(); edFaixaDesfazer('Foto apagada', async () => { await E.apaga(x.id, false); sel = x.id; pinta(); }); };
+  const pinta = () => {
+    quadro.replaceChildren(); const l = vis();
+    const atual = l.find(x => x.id === sel) || l.find(x => x.data === diaLocal()) || l[0];
+    if (!atual) { quadro.append(elD('p', 'p-nota', 'Nenhuma foto no mural ainda.')); }
+    else {
+      const f = elD('figure', 'mu-foto'), im = elD('img'); im.alt = ''; fotoUrl(atual.foto).then(u => { im.src = u; }).catch(() => { im.replaceWith(elD('p', 'p-nota', 'A foto não abriu.')); });
+      f.append(im, elD('figcaption', '', (atual.data === diaLocal() ? 'Hoje · ' : '') + edDataBr(atual.data))); quadro.append(f);
+      quadro.append(elD('p', 'mu-leg' + (atual.legenda ? '' : ' vazia'), atual.legenda || 'Sem legenda ainda. Toca em Editar pra escrever.'));
+      const ac = elD('div', 'mu-acoes'), cp = elD('button', 'mu-bt on', 'Copiar legenda'); cp.type = 'button'; cp.disabled = !atual.legenda; cp.onclick = () => copiaTexto(atual.legenda);
+      const ed = elD('button', 'mu-bt', 'Editar'); ed.type = 'button'; ed.onclick = () => edita(atual); ac.append(cp, ed); quadro.append(ac);
+    }
+    const nv = elD('button', 'mu-bt on mu-novo', '+ Foto do dia'); nv.type = 'button'; nv.onclick = lanca; quadro.append(nv);
+    if (l.length > 1) { const g = elD('div', 'mu-grade'); l.forEach(x => { const b = elD('button', 'mu-mini' + (atual && x.id === atual.id ? ' on' : '')); b.type = 'button'; b.setAttribute('aria-label', 'Foto de ' + edDataBr(x.data)); fotoUrl(x.foto).then(u => { b.style.backgroundImage = 'url("' + u + '")'; }).catch(() => {}); b.append(elD('small', '', (x.data || '').slice(8) + '/' + (x.data || '').slice(5, 7))); b.onclick = () => { sel = x.id; pinta(); }; g.append(b); }); quadro.append(g); }
+  };
+  pinta();
 }
 // Estatística do Treino: só o que está em "historico" do menu/treino.json (cada treino feito: dia AAAA-MM-DD, grupo, exercícios com kg quando anotado). Sem peso corporal.
 function abreEstatistica(h) {
@@ -5807,7 +5907,7 @@ function abreViagem(v) {
 }
 function abreChecklist(v, l) {
   tela(semHojeFalso(l.nome), c => {
-    const feitos = marcados(v, l), total = totalItens(l);
+    const feitos = marcados(v, l); let total = totalItens(l); const ehTreino = v._arq === 'menu/treino.json';
     const prog = document.createElement('p'); prog.className = 'p-nota';
     const conta = () => { prog.innerHTML = ''; prog.append(document.createTextNode(feitos.size + ' de ' + total + ' feitos')); if (feitos.size === total) { const ok = document.createElement('span'); ok.innerHTML = ' ' + icone('check'); ok.style.color = 'var(--accent)'; prog.append(ok); } };
     conta(); c.append(prog);
@@ -5821,32 +5921,58 @@ function abreChecklist(v, l) {
       };
       c.append(nv);
     }
-    l.grupos.forEach(g => {
-      const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = g.nome; c.append(t);
-      const box = document.createElement('div'); box.className = 'check-lista'; c.append(box);
-      const sobe = v._arq === 'menu/treino.json';   // treino: o que falta fica em cima, o concluído desce pro fim
-      const ordena = () => { if (sobe) [...box.children].sort((a, b) => (a.querySelector('input').checked - b.querySelector('input').checked) || (a._i - b._i)).forEach(x => box.append(x)); };
-      g.itens.forEach(([id, texto], i) => {
-        const lb = document.createElement('label'); lb.className = 'check'; lb._i = i;
-        const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = feitos.has(id);
-        const sp = document.createElement('span'); sp.textContent = String(texto).replace(/\s*✅\s*/g, ' ').trim();   // o ✅ do registro antigo não aparece como feito: quem diz feito é a caixa
-        cb.onchange = () => { cb.checked ? feitos.add(id) : feitos.delete(id); guardaMarcados(v, l, feitos); conta(); ordena(); };
-        lb.append(cb, sp); box.append(lb);
+    const cont = document.createElement('div'); c.append(cont);
+    // Treino editável pelo app (May, 09/11/2026): lança, edita e apaga exercício direto no menu/treino.json; item é [id, texto, { apagado }]; a marcação da semana continua neste aparelho
+    const muda = (g, fn, msg) => { fn(g); total = totalItens(l); conta(); desenha(); return gravaJson(v._arq, dd => { const vv = (dd.viagens || []).find(x => x.id === v.id), ll = vv && vv.listas.find(x => x.id === l.id), gg = ll && ll.grupos.find(x => x.nome === g.nome); if (gg) fn(gg); }, msg, null).then(ok => { if (!ok) showNote('Não guardou: confere a internet e tenta de novo.', true); }); };
+    const camposEx = [{ nome: 'texto', rotulo: 'Exercício', tipo: 'texto_longo', obrigatorio: true }];
+    const novoEx = g => { const k = Date.now().toString(36); edFormulario({ titulo: 'Novo exercício', campos: camposEx, aoSalvar: async f => { await muda(g, gg => { if (!gg.itens.some(it => it[0] === 'u-' + k)) gg.itens.push(['u-' + k, f.texto, { criado: edAgora() }]); }, 'Exercício novo pelo app'); } }); };
+    const editaEx = (g, it) => edFormulario({ titulo: 'Editar exercício', campos: camposEx, v: { texto: it[1] }, aoSalvar: async f => { await muda(g, gg => { const x = gg.itens.find(y => y[0] === it[0]); if (x) x[1] = f.texto; }, 'Exercício editado pelo app'); }, aoApagar: () => apagaEx(g, it) });
+    const apagaEx = async (g, it) => {
+      feitos.delete(it[0]); guardaMarcados(v, l, feitos);
+      await muda(g, gg => { const x = gg.itens.find(y => y[0] === it[0]); if (x) x[2] = Object.assign({}, x[2], { apagado: edAgora() }); }, 'Exercício apagado pelo app (fica guardado)');
+      edFaixaDesfazer('Exercício apagado', () => muda(g, gg => { const x = gg.itens.find(y => y[0] === it[0]); if (x && x[2]) { delete x[2].apagado; } }, 'Apagado desfeito pelo app'));
+    };
+    const desenha = () => {
+      cont.replaceChildren();
+      l.grupos.forEach(g => {
+        const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = g.nome; cont.append(t);
+        const box = document.createElement('div'); box.className = 'check-lista'; cont.append(box);
+        const sobe = ehTreino;   // treino: o que falta fica em cima, o concluído desce pro fim
+        const ordena = () => { if (sobe) [...box.children].sort((a, b) => (a.querySelector('input').checked - b.querySelector('input').checked) || (a._i - b._i)).forEach(x => box.append(x)); };
+        g.itens.filter(itemVivo).forEach((it, i) => {
+          const [id, texto] = it;
+          const lb = document.createElement('label'); lb.className = 'check'; lb._i = i;
+          const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = feitos.has(id);
+          const sp = document.createElement('span'); sp.textContent = String(texto).replace(/\s*✅\s*/g, ' ').trim();   // o ✅ do registro antigo não aparece como feito: quem diz feito é a caixa
+          cb.onchange = () => { cb.checked ? feitos.add(id) : feitos.delete(id); guardaMarcados(v, l, feitos); conta(); ordena(); };
+          lb.append(cb, sp);
+          if (ehTreino) { const li = elD('div', 'tr-ed'); li._i = i; li.append(lb, edMini('note', 'Editar exercício', () => editaEx(g, it))); box.append(li); } else box.append(lb);
+        });
+        if (ehTreino) { const nv = document.createElement('button'); nv.type = 'button'; nv.className = 'gostei check-limpa tr-novo'; nv.textContent = '+ Exercício'; nv.onclick = () => novoEx(g); cont.append(nv); }
+        ordena();
       });
-      ordena();
-    });
+    };
+    desenha();
     const limpa = document.createElement('button'); limpa.type = 'button'; limpa.className = 'gostei check-limpa'; limpa.textContent = 'Desmarcar tudo';
-    limpa.onclick = () => { if (!feitos.size || !confirm('Desmarcar tudo desta lista?')) return; feitos.clear(); guardaMarcados(v, l, feitos); c.querySelectorAll('.check input').forEach(x => { x.checked = false; }); conta(); };
+    limpa.onclick = () => { if (!feitos.size || !confirm('Desmarcar tudo desta lista?')) return; feitos.clear(); guardaMarcados(v, l, feitos); c.querySelectorAll('.check input').forEach(x => { x.checked = false; }); conta(); desenha(); };
     c.append(limpa);
   });
 }
 // ---- Imagens (plantas, referências…): menu/imagens.json = { grupos: [{ nome, capa?, imagens: [{ titulo, arq, nota }] }] }
 // Cada grupo é um ÁLBUM (May, 26/10): primeiro a lista de álbuns com capa; tocando, as imagens dele + Baixar tudo.
+const MIDIA_OV = 'menu/edicoes/midia.json';   // edições da Mídia (imagens, animações, vídeos) por cima dos JSON gerados; chave = caminho do arquivo (arq)
+async function midiaAplica(grupos) {   // junta as edições: título/nota mudados, apagados somem, imagens novas entram no álbum
+  const O = await ovAbre(MIDIA_OV), por = {}; O.itens.forEach(x => { por[x.id] = x; });
+  grupos.forEach(g => { g.imagens = g.imagens.filter(im => !(por[im.arq] && por[im.arq].apagado)).map(im => { const o = por[im.arq]; return o ? { ...im, ...(o.titulo != null ? { titulo: o.titulo } : {}), ...(o.nota != null ? { nota: o.nota } : {}) } : im; }); });
+  O.itens.filter(x => x.novo && !x.apagado).forEach(x => { const g = grupos.find(y => y.nome === x.grupo); if (g && !g.imagens.some(im => im.arq === x.arq)) g.imagens.push({ titulo: x.titulo || '', arq: x.arq, nota: x.nota || '' }); });
+  return O;
+}
 function abreImagens(m) {
   tela(m.nome, async c => {
     const p = skCarga(); c.append(p);
-    let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    let d, O; try { d = JSON.parse(await lerArquivo(m.arq)); O = await midiaAplica(d.grupos); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
     p.textContent = 'Toca num álbum pra abrir.';
+    cabecalho({ sub: d.grupos.length + ' álbuns', acao: { icone: 'plus', rotulo: 'Imagem nova', fn: () => edFormulario({ titulo: 'Imagem nova', campos: [{ nome: 'grupo', rotulo: 'Álbum', tipo: 'escolha', opcoes: d.grupos.map(g => g.nome), obrigatorio: true }, { nome: 'arq', rotulo: 'Foto', tipo: 'foto', obrigatorio: true }, { nome: 'titulo', rotulo: 'Título', tipo: 'texto' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto_longo' }], aoSalvar: async v => { await O.op({ tipo: 'lanca', item: { id: v.arq, novo: true, ...v, criado: edAgora() } }, 'Imagem nova pelo app'); desenhaTela(); } }) } });
     if (m.estilo === 'estudio') return estudio(c, d.grupos.filter(g => g.imagens.length), m, p);
     d.grupos.forEach(g => {
       if (!g.imagens.length) return;
@@ -5887,8 +6013,11 @@ function estudio(c, gs, m, p) {
 function abreVideos(m) {
   tela(m.nome, async c => {
     const p = skCarga(); c.append(p);
-    let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
-    const vs = d.videos || [];
+    let d, O; try { d = JSON.parse(await lerArquivo(m.arq)); O = await ovAbre(MIDIA_OV); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    const por = {}; O.itens.forEach(x => { por[x.id] = x; });
+    const vs = (d.videos || []).filter(v => !(por[v.arq] && por[v.arq].apagado)).map(v => { const o = por[v.arq]; return o ? { ...v, ...(o.titulo != null ? { titulo: o.titulo } : {}), ...(o.nota != null ? { nota: o.nota } : {}) } : v; });
+    const camposV = [{ nome: 'titulo', rotulo: 'Título', tipo: 'texto', obrigatorio: true }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto_longo' }];
+    const editaV = v => edFormulario({ titulo: 'Editar vídeo', campos: camposV, v, aoSalvar: async f => { await O.op({ tipo: 'edita', id: v.arq, v: f, quando: edAgora() }, 'Vídeo editado pelo app'); desenhaTela(); }, aoApagar: async () => { await O.op({ tipo: 'apaga', id: v.arq, on: true, quando: edAgora() }, 'Vídeo apagado pelo app (fica guardado)'); desenhaTela(); edFaixaDesfazer('Vídeo apagado', async () => { await O.op({ tipo: 'apaga', id: v.arq, on: false, quando: edAgora() }, 'Apagado desfeito pelo app'); desenhaTela(); }); } });
     p.textContent = vs.length ? '' : 'Nenhum vídeo ainda.'; if (vs.length) p.remove();
     vs.forEach(v => {
       const el = document.createElement('button'); el.type = 'button'; el.className = 'cine-card';
@@ -5899,7 +6028,8 @@ function abreVideos(m) {
       if (v.duracao) { const du = document.createElement('span'); du.className = 'dur'; du.textContent = v.duracao; cp.append(du); }
       const h = document.createElement('h3'); h.textContent = v.titulo;
       const n = document.createElement('div'); n.className = 'det'; n.textContent = [v.versao || v.nota, v.versoes && v.versoes.length ? (v.versoes.length + 1) + ' versões' : ''].filter(Boolean).join(' · ');
-      el.append(cp, h, n); el.onclick = () => abreVideo(v); c.append(el);
+      el.append(cp, h, n); el.onclick = () => abreVideo(v);
+      const wr = elD('div', 'cine-wrap'); wr.append(el, edMini('note', 'Editar vídeo', () => editaV(v))); c.append(wr);
     });
   });
 }
@@ -5932,7 +6062,10 @@ function carregaVersao(el) {
   fotoUrl(x.arq, true).then(u => { el.src = u; st.textContent = nota; if (!nota) st.remove(); }).catch(e => { st.textContent = e && e.status === 404 ? 'Esse vídeo ainda não subiu.' : 'Não consegui abrir o vídeo. Confere a internet.'; });
 }
 function abreAlbum(g, m) {
-  tela(g.nome, c => {
+  tela(g.nome, async c => {
+    let O = null; try { O = await ovAbre(MIDIA_OV); } catch (e) {}
+    const camposIm = [{ nome: 'titulo', rotulo: 'Título', tipo: 'texto', obrigatorio: true }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto_longo' }];
+    const editaIm = im => edFormulario({ titulo: 'Editar imagem', campos: camposIm, v: im, aoSalvar: async v => { Object.assign(im, v); if (O) await O.op({ tipo: 'edita', id: im.arq, v, quando: edAgora() }, 'Imagem editada pelo app'); desenhaTela(); }, aoApagar: async () => { const i = g.imagens.indexOf(im); g.imagens.splice(i, 1); if (O) await O.op({ tipo: 'apaga', id: im.arq, on: true, quando: edAgora() }, 'Imagem apagada pelo app (fica guardada)'); desenhaTela(); edFaixaDesfazer('Imagem apagada', async () => { g.imagens.splice(i, 0, im); if (O) await O.op({ tipo: 'apaga', id: im.arq, on: false, quando: edAgora() }, 'Apagado desfeito pelo app'); desenhaTela(); }); } });
     const prontos = {};   // arq -> File já baixado (o share do iOS precisa sair logo do toque)
     const caixa = document.createElement('div'); caixa.className = 'album';
     const bt = document.createElement('button'); bt.type = 'button'; bt.className = 'baixar-tudo'; bt.innerHTML = icone('download') + ' Baixar tudo (' + g.imagens.length + ')';
@@ -5953,7 +6086,7 @@ function abreAlbum(g, m) {
       const b = document.createElement('div'); b.className = 'i-corpo';
       const h = document.createElement('h3'); h.textContent = im.titulo; b.append(h);
       if (im.nota) { const n = document.createElement('div'); n.className = 'det'; n.textContent = im.nota; b.append(n); }
-      el.append(b); c.append(el);
+      el.append(b, edMini('note', 'Editar imagem', () => editaIm(im))); c.append(el);
     });
   });
 }
@@ -6413,6 +6546,8 @@ let poll = null;
 // Além disso (May, 27/10): começou um treino (marcou 1 item) => reabre nele a qualquer hora do dia, até marcar tudo.
 // Não abre por cima de quem está respondendo (05/11/2026): veio de notificação, citação, rascunho, foto na bandeja ou gravando.
 const ocupadaNaConversa = () => Date.now() - pushEm < 60000 || !!respondendo || !!box.value.trim() || anexos.length > 0 || !!gravador;
+// Um treino só (May, 09/11/2026): o abrir sozinho abre a MESMA tela Treino do Menu (mesma fonte, menu/treino.json), com o treino do dia por cima; voltar cai na tela Treino
+function abreTreinoTela(v, l) { trAba = 'treino'; abreViagens({ nome: 'Treino', arq: 'menu/treino.json' }); if (v && l) abreChecklist(v, l); }
 async function abreTreinoSeHora() {
   if (CFG.treinoAbrirSozinho === false) return;
   if (ocupadaNaConversa()) return;
@@ -6427,7 +6562,7 @@ async function abreTreinoSeHora() {
   let ativo = null; try { ativo = JSON.parse(store.get('treino-ativo') || 'null'); } catch (e) {}
   if (ativo && ativo.dia === hoje && painel.hidden) {
     const va = d.viagens.find(x => x.id === ativo.v), la = va && va.listas.find(x => x.id === ativo.l);
-    if (la && marcados(va, la).size < totalItens(la)) { menu.hidden = true; painel.hidden = false; pilha = []; abreChecklist(va, la); return; }
+    if (la && marcados(va, la).size < totalItens(la)) { menu.hidden = true; painel.hidden = false; pilha = []; abreTreinoTela(va, la); return; }
     store.set('treino-ativo', '');
   }
   const a = d.abrir; if (!a) return;
@@ -6439,7 +6574,7 @@ async function abreTreinoSeHora() {
   if (marcados(v, l).size >= totalItens(l)) { store.set('treino-feito', hoje); return; }   // tudo marcado = terminou
   if (store.get('treino-auto') === hoje) return;   // pelo horário abre sozinho só 1x por dia; fechou = o Treino continua no Menu (05/11/2026)
   store.set('treino-auto', hoje);
-  menu.hidden = true; painel.hidden = false; pilha = []; abreChecklist(v, l);
+  menu.hidden = true; painel.hidden = false; pilha = []; abreTreinoTela(v, l);
 }
 function start() {
   chaveVencida = false; aplicaLargura(); grupoTrabEm = 0;   // chave nova: tenta o grupo do Trabalho de novo na hora

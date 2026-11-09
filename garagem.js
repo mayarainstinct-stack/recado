@@ -413,9 +413,40 @@ function aplicaLanc(v, tipo, c, quando) {
   }
 }
 const ESTMAN = [['a fazer', '#F08A24'], ['agendado', '#4EA8DE'], ['feito', '#3FBF5F']];
+// Tudo no garagem.json (May, 09/11/2026: o app funciona sem Claude): lançar, editar, feito e apagar gravam direto na fonte; apagar só marca "apagado" (nada se apaga) e dá pra desfazer.
+const ARQ_GAR = 'categorias/carros-moto/garagem.json';
+const hashG = t => { let h = 0; for (const ch of t) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h.toString(36); };
+const idLista = (lista, x) => x.id || (lista + '-' + hashG(JSON.stringify([x.data, x.valor, x.km, x.nota, x.item])));   // item antigo sem id ganha um estável pelo conteúdo
+const vivos = l => (l || []).filter(x => !x.apagado);
+const achaG = (arr, lista, id) => arr.find(y => idLista(lista, y) === id);
+function poeItem(arr, lista, obj) {   // lançar: manutenção com o mesmo nome atualiza; o resto acrescenta (sem duplicar o id)
+  if (lista === 'manutencao') { const k = chaveItem(obj.item), i = arr.findIndex(x => !x.apagado && chaveItem(x.item) === k); if (i >= 0) { arr[i] = Object.assign({}, arr[i], obj, { id: idLista(lista, arr[i]), desde: arr[i].desde || obj.desde }); return; } }
+  if (!arr.some(y => y.id === obj.id)) arr.push(obj);
+}
+async function gravaGar(v, lista, fn, msg) {   // mesma mudança na cópia da tela e no arquivo (relido na hora)
+  fn(v[lista] = v[lista] || []);
+  const ok = await gravaJson(ARQ_GAR, d => { const vv = (d.veiculos || []).find(x => x.id === v.id); if (!vv) return; fn(vv[lista] = vv[lista] || []); }, msg, null);
+  if (!ok) showNote('Não guardou: confere a internet e tenta de novo.', true);
+  return !!ok;
+}
+const CAMPOS_G = {
+  abastecimentos: [{ nome: 'data', rotulo: 'Data (DD/MM/AAAA)', tipo: 'texto', obrigatorio: true }, { nome: 'valor', rotulo: 'Valor (R$)', tipo: 'valor', obrigatorio: true }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto' }],
+  trocas_oleo: [{ nome: 'data', rotulo: 'Data (DD/MM/AAAA)', tipo: 'texto', obrigatorio: true }, { nome: 'km', rotulo: 'Km', tipo: 'texto' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto' }],
+  usos: [{ nome: 'data', rotulo: 'Data (DD/MM/AAAA)', tipo: 'texto', obrigatorio: true }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto' }],
+  manutencao: [{ nome: 'item', rotulo: 'O que', tipo: 'texto', obrigatorio: true }, { nome: 'estado', rotulo: 'Estado', tipo: 'escolha', opcoes: ESTMAN.map(e => e[0]) }, { nome: 'data', rotulo: 'Data (agendado ou feito)', tipo: 'texto' }, { nome: 'valor', rotulo: 'Valor gasto (opcional)', tipo: 'valor' }]
+};
+function editaGar(v, lista, x, depois) {
+  const id = idLista(lista, x);
+  edFormulario({ titulo: 'Editar', campos: CAMPOS_G[lista], v: x,
+    aoSalvar: async f => { if (f.valor === '') delete f.valor; await gravaGar(v, lista, arr => { const t = achaG(arr, lista, id); if (t) { Object.assign(t, f, { id, atualizado: stamp(new Date()) }); if (f.valor === undefined) delete t.valor; } }, 'Garagem editada pelo app'); depois(); },
+    aoApagar: async () => {
+      await gravaGar(v, lista, arr => { const t = achaG(arr, lista, id); if (t) { t.id = id; t.apagado = stamp(new Date()); } }, 'Garagem: item apagado pelo app (fica guardado)'); depois();
+      edFaixaDesfazer('Item apagado', async () => { await gravaGar(v, lista, arr => { const t = achaG(arr, lista, id); if (t) delete t.apagado; }, 'Apagado desfeito pelo app'); depois(); });
+    } });
+}
 function botaoMais(rot, fn) { const b = elD('button', 'gr-mais', '+'); b.type = 'button'; b.setAttribute('aria-label', rot); b.onclick = fn; return b; }
-function manutencao(v, lanca) {
-  const l = v.manutencao || [], k = cartao('Manutenção', l.length ? String(l.length) : '');
+function manutencao(v, lanca, edita) {
+  const l = vivos(v.manutencao), k = cartao('Manutenção', l.length ? String(l.length) : '');
   k.firstChild.append(botaoMais('Lançar manutenção, abastecimento ou óleo', () => lanca('manutencao')));
   if (!l.length) k.append(elD('p', 'gr-vazio', 'nada anotado ainda'));
   ESTMAN.forEach(([est, cor]) => {
@@ -426,17 +457,17 @@ function manutencao(v, lanca) {
       const li = elD('li', 'gr-item ' + (est === 'feito' ? 'feito' : '')); li.style.setProperty('--e', cor);
       const cx = elD('span', 'gr-caixa'); if (est === 'feito') cx.innerHTML = CHAVE;
       const dt = est === 'agendado' ? 'para ' + dataBr(x.data || '') : est === 'feito' ? 'feito em ' + dataBr(x.data || x.desde || '') : 'desde ' + dataBr(x.desde || '');
-      li.append(cx, elD('span', 'gr-peca', x.item), elD('span', 'gr-man-dt', dt));
+      li.append(cx, elD('span', 'gr-peca', x.item), elD('span', 'gr-man-dt', dt + (x.valor ? ' · ' + moeda(x.valor) : '')));
       if (est !== 'feito') { const bt = elD('button', 'gr-feito-bt', 'Feito'); bt.type = 'button'; bt.onclick = () => lanca('feito', x); li.append(bt); }
-      ul.append(li);
+      li.append(edMini('note', 'Editar', () => edita('manutencao', x))); ul.append(li);
     });
     k.append(ul);
   });
   return k;
 }
-function diario(v, lanca) {
-  const k = cartao('Diário'), ab = (v.abastecimentos || []).slice().sort(ord);
-  k.firstChild.append(botaoMais('Lançar abastecimento ou troca de óleo', () => lanca('abastecimento')));
+function diario(v, lanca, edita) {
+  const k = cartao('Diário'), ab = vivos(v.abastecimentos).sort(ord);
+  k.firstChild.append(botaoMais('Lançar abastecimento, uso ou troca de óleo', () => lanca('abastecimento')));
   k.append(elD('div', 'gr-sub', 'Abastecimentos'));
   if (!ab.length) k.append(elD('p', 'gr-vazio', 'nada anotado ainda'));
   else {
@@ -444,12 +475,12 @@ function diario(v, lanca) {
     ab.forEach(a => { const c = chaveData(a.data), nome = c ? MESES[c[1] - 1] + ' ' + c[0] : 'sem data'; let g = grupos.find(x => x.nome === nome); if (!g) grupos.push(g = { nome, tot: 0, l: [] }); g.tot += Number(a.valor) || 0; g.l.push(a); });
     grupos.forEach(g => {
       const h = elD('div', 'gr-mes'); h.append(elD('span', null, g.nome), elD('span', null, 'total ' + moeda(g.tot))); k.append(h);
-      g.l.forEach(a => { const r = elD('div', 'gr-reg'); r.append(elD('b', null, dataBr(a.data)), elD('span', 'gr-rs', moeda(a.valor)), elD('span', 'gr-nt', a.nota || '')); k.append(r); });
+      g.l.forEach(a => { const r = elD('div', 'gr-reg'); r.append(elD('b', null, dataBr(a.data)), elD('span', 'gr-rs', moeda(a.valor)), elD('span', 'gr-nt', a.nota || ''), edMini('note', 'Editar', () => edita('abastecimentos', a))); k.append(r); });
     });
   }
-  const lista = (tit, l, fmt) => { k.append(elD('div', 'gr-sub', tit)); if (!l.length) { k.append(elD('p', 'gr-vazio', 'nada anotado ainda')); return; } l.forEach(x => { const r = elD('div', 'gr-reg'); r.append(elD('b', null, dataBr(x.data || x.feito || '') || '-'), elD('span', 'gr-nt', fmt(x))); k.append(r); }); };
-  lista('Trocas de óleo', (v.trocas_oleo || []).slice().sort(ord), x => [x.km ? x.km + ' km' : '', x.nota || ''].filter(Boolean).join(' · '));
-  lista('Usos', (v.usos || []).slice().sort(ord), x => x.nota || '');
+  const lista = (tit, l, fmt, ch) => { k.append(elD('div', 'gr-sub', tit)); if (!l.length) { k.append(elD('p', 'gr-vazio', 'nada anotado ainda')); return; } l.forEach(x => { const r = elD('div', 'gr-reg'); r.append(elD('b', null, dataBr(x.data || x.feito || '') || '-'), elD('span', 'gr-nt', fmt(x)), edMini('note', 'Editar', () => edita(ch, x))); k.append(r); }); };
+  lista('Trocas de óleo', vivos(v.trocas_oleo).sort(ord), x => [x.km ? x.km + ' km' : '', x.nota || ''].filter(Boolean).join(' · '), 'trocas_oleo');
+  lista('Usos', vivos(v.usos).sort(ord), x => x.nota || '', 'usos');
   return k;
 }
 const hojeBr = () => stamp(new Date()).slice(0, 10);
@@ -463,16 +494,17 @@ function folhaLancar(raiz, v, tipo0, item0, grava, depois) {   // o formulário 
   const erro = elD('p', 'gr-erro'), ok = elD('button', 'gr-ok', 'Lançar'); ok.type = 'button';
   let F = {};
   const monta = () => {
-    [...tipos.children].forEach((b, i) => b.classList.toggle('on', ['manutencao', 'abastecimento', 'oleo'][i] === t));
+    [...tipos.children].forEach((b, i) => b.classList.toggle('on', ['manutencao', 'abastecimento', 'uso', 'oleo'][i] === t));
     F = {}; campos.replaceChildren(); erro.textContent = '';
     if (t === 'manutencao') {
       F.item = inp('ex.: trocar pastilha de freio', item0 ? item0.item : ''); F.estado = elD('select'); ESTMAN.forEach(([e]) => { const o = elD('option', null, e); o.value = e; F.estado.append(o); }); F.estado.value = item0 ? 'feito' : 'a fazer';
-      F.data = inp('DD/MM/AAAA', item0 ? hojeBr() : '', 'numeric');
-      campos.append(campo('O que', F.item), campo('Estado', F.estado), campo('Data (agendado ou feito)', F.data));
+      F.data = inp('DD/MM/AAAA', item0 ? hojeBr() : '', 'numeric'); F.valor = inp('R$ (opcional)', '', 'decimal');
+      campos.append(campo('O que', F.item), campo('Estado', F.estado), campo('Data (agendado ou feito)', F.data), campo('Valor gasto (opcional)', F.valor));
     } else if (t === 'abastecimento') { F.data = inp('DD/MM/AAAA', hojeBr(), 'numeric'); F.valor = inp('0,00', '', 'decimal'); F.nota = inp('posto, litros, km (opcional)', ''); campos.append(campo('Data', F.data), campo('Valor (R$)', F.valor), campo('Nota', F.nota)); }
+    else if (t === 'uso') { F.data = inp('DD/MM/AAAA', hojeBr(), 'numeric'); F.nota = inp('pra onde foi (opcional)', ''); campos.append(campo('Data', F.data), campo('Nota', F.nota)); }
     else { F.data = inp('DD/MM/AAAA', hojeBr(), 'numeric'); F.km = inp('km (opcional)', '', 'numeric'); F.nota = inp('óleo, filtro (opcional)', ''); campos.append(campo('Data', F.data), campo('Km', F.km), campo('Nota', F.nota)); }
   };
-  [['manutencao', 'Manutenção'], ['abastecimento', 'Abastecimento'], ['oleo', 'Troca de óleo']].forEach(([q, n]) => { const b = elD('button', 'gr-chip', n); b.type = 'button'; b.onclick = () => { t = q; item0 = null; monta(); }; tipos.append(b); });
+  [['manutencao', 'Manutenção'], ['abastecimento', 'Abastecimento'], ['uso', 'Uso'], ['oleo', 'Troca de óleo']].forEach(([q, n]) => { const b = elD('button', 'gr-chip', n); b.type = 'button'; b.onclick = () => { t = q; item0 = null; monta(); }; tipos.append(b); });
   monta();
   const lim = s => String(s || '').trim().replace(/\s*·\s*/g, ' - ');
   ok.onclick = async () => {
@@ -481,10 +513,16 @@ function folhaLancar(raiz, v, tipo0, item0, grava, depois) {   // o formulário 
     let c2;
     if (t === 'manutencao') { const it = lim(F.item.value), es = F.estado.value; if (!it) { erro.textContent = 'Diz o que é a manutenção.'; return; } if (es === 'agendado' && !dt) { erro.textContent = 'Agendado precisa da data.'; return; } c2 = [it, es, es === 'feito' ? (dt || hojeBr()) : dt]; if (!c2[2]) c2.pop(); }
     else if (t === 'abastecimento') { const n = numBr(F.valor.value); if (!(n > 0)) { erro.textContent = 'Põe o valor em R$.'; return; } c2 = [dt || hojeBr(), n.toFixed(2).replace('.', ','), lim(F.nota.value)]; if (!c2[2]) c2.pop(); }
+    else if (t === 'uso') { c2 = [dt || hojeBr(), lim(F.nota.value)]; if (!c2[1]) c2.pop(); }
     else { c2 = [dt || hojeBr(), lim(F.km.value), lim(F.nota.value)]; while (c2.length > 1 && !c2[c2.length - 1]) c2.pop(); }
-    const agora = new Date(), linha = '- [' + stamp(agora) + '] ' + t + ' · ' + v.id + ' · ' + c2.join(' · ');
+    const agora = new Date(), quando = stamp(agora).slice(0, 10), nid = Date.now().toString(36), carimbo = stamp(agora);
     ok.disabled = true; ok.textContent = 'Lançando…';
-    if (await grava(linha)) { aplicaLanc(v, t, c2, stamp(agora).slice(0, 10)); fecha(); depois(t); }
+    let lista, obj;
+    if (t === 'abastecimento') { lista = 'abastecimentos'; obj = { id: v.id + '-abast-' + nid, data: c2[0], valor: numBr(c2[1]), nota: c2[2] || '', criado: carimbo }; }
+    else if (t === 'oleo') { lista = 'trocas_oleo'; obj = { id: v.id + '-oleo-' + nid, data: c2[0], km: c2[1] || '', nota: c2[2] || '', criado: carimbo }; }
+    else if (t === 'uso') { lista = 'usos'; obj = { id: v.id + '-uso-' + nid, data: c2[0], nota: c2[1] || '', criado: carimbo }; }
+    else { lista = 'manutencao'; obj = { id: v.id + '-man-' + nid, item: c2[0], estado: c2[1], desde: quando, data: c2[2] || '', criado: carimbo }; const vl = numBr(F.valor.value); if (vl > 0) obj.valor = vl; if (c2[1] === 'feito') obj.feito = carimbo; }
+    if (await gravaGar(v, lista, arr => poeItem(arr, lista, obj), 'Garagem: lançado pelo app')) { fecha(); depois(t); }
     else { ok.disabled = false; ok.textContent = 'Lançar'; erro.textContent = 'Não lançou: confere a internet.'; }
   };
   f.append(h, tipos, campos, erro, ok); fo.append(f); raiz.append(fo);
@@ -507,8 +545,9 @@ function pagina(v, i, tot, raiz) {
   const abas = elD('div', 'gr-abas'), corpo = elD('div', 'gr-corpo');
   const ficha = () => { const l = []; if (v.antes || v.depois) l.push(antesDepois(v)); if (v.odometro) l.push(odometro(v)); l.push(datas(v), pendentes(v)); if (v.cor_nota) l.push(elD('span', 'gr-cornota', v.cor_nota)); if (v.fonte) l.push(elD('p', 'gr-fonte', 'fonte: ' + v.fonte)); return l; };
   const tunar = () => { if (v.projeto && v.projeto.length) return [projeto(v)]; const k = cartao('Tunar'); k.append(elD('p', 'gr-vazio', 'nada anotado ainda')); return [k]; };
-  const lanca = (t, it) => folhaLancar(raiz, v, t, it, linha => gravaLinha(ARQ_LANC, linha), tp => { bs[tp === 'manutencao' ? 2 : 3].click(); showNote('Lançado.'); });
-  const AB = [['Ficha', ficha], ['Tunar', tunar], ['Manutenção', () => [manutencao(v, lanca)]], ['Diário', () => [diario(v, lanca)]]];
+  const lanca = (t, it) => folhaLancar(raiz, v, t, it, null, tp => { bs[tp === 'manutencao' ? 2 : 3].click(); showNote('Lançado.'); });
+  const edita = (lista, x) => editaGar(v, lista, x, () => { const on = bs.findIndex(b => b.classList.contains('on')); bs[on < 0 ? 0 : on].click(); });
+  const AB = [['Ficha', ficha], ['Tunar', tunar], ['Manutenção', () => [manutencao(v, lanca, edita)]], ['Diário', () => [diario(v, lanca, edita)]]];
   const bs = AB.map(([t, f], n) => { const b = elD('button', 'gr-aba', t); b.type = 'button'; b.onclick = () => { bs.forEach((x, q) => x.classList.toggle('on', q === n)); corpo.replaceChildren(...f()); }; abas.append(b); return b; });
   bs[0].click(); ro.append(abas, corpo);
   pg.append(pal, ctl, nm, ro); return pg;

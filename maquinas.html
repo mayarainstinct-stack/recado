@@ -82,6 +82,12 @@ body.maq-inativa #fundo{filter:grayscale(1) brightness(.8)}body.maq-inativa .pal
 .zoom{position:fixed;inset:0;z-index:9;background:rgba(0,0,0,.92);display:grid;place-items:center;padding:16px}.zoom img{max-width:100%;max-height:100%;border-radius:12px}
 .aviso{padding:40px 16px;color:var(--texto2);font-size:15px}
 @media (prefers-reduced-motion:reduce){.palco{animation:none}.bloco{transition:none}}
+.ed-bt{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--vidro);border:1px solid var(--borda);color:var(--texto);cursor:pointer;padding:0;font-size:22px;line-height:1}
+.ed-ov{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center}.ed-card{width:100%;max-width:520px;max-height:92dvh;overflow:auto;box-sizing:border-box;background:#12162a;color:var(--texto);border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));border:1px solid var(--borda)}
+.ed-card h3{margin:0 0 12px;font-size:17px}.ed-card label{display:block;margin-bottom:10px}.ed-card label>span{display:block;font-size:12px;font-weight:700;color:var(--texto3);margin:0 2px 4px}.ed-card input,.ed-card textarea{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:10px 12px;border-radius:12px;border:1px solid var(--borda);background:rgba(255,255,255,.06);color:var(--texto)}
+.ed-acoes{display:flex;gap:10px;align-items:center;margin-top:6px}.ed-ok{flex:1;height:46px;border-radius:999px;border:0;background:var(--k1);color:#fff;font-weight:800;font-size:15px;cursor:pointer}.ed-link{background:none;border:0;color:#ff8a8a;font:inherit;font-weight:700;padding:10px;cursor:pointer}.ed-erro{color:#ff8a8a;font-size:13px;margin:4px 0}
+.ed-faixa{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:60;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#222842;color:#fff;border-radius:14px;padding:12px 14px;border:1px solid var(--borda)}.ed-faixa button{background:none;border:0;color:#9fb4ff;font-weight:800;font:inherit;cursor:pointer}
+.falta li{display:list-item}.falta .ok-bt{margin-left:8px;border:1px solid var(--borda);background:var(--vidro);color:var(--texto2);border-radius:999px;font-size:11px;padding:2px 8px;cursor:pointer}.desc li{color:var(--texto3);font-size:13px;margin:3px 0 3px 18px;text-decoration:line-through}.desc li small{text-decoration:none;display:inline-block;margin-left:6px}
 </style>
 </head>
 <body>
@@ -168,12 +174,37 @@ function foto(p){if(!p)return Promise.reject();if(fotos[p])return fotos[p];retur
 const cor=m=>m.robo&&ROBO[m.robo]?ROBO[m.robo][1]:(m.cor||"#4F46E5")
 const app=document.getElementById("app"),fundo=document.getElementById("fundo")
 const volta=()=>{if(history.length>1&&/app\.html/.test(document.referrer))history.back();else location.replace("app.html#menu")}   // volta pelo histórico: o botão e o deslizar fazem a mesma rota (May 12:37)
+// ===== Editar a coleção pelo app (May, 09/11/2026: tudo editável, sem Claude): grava direto em casa/maquinas.json; apagar só marca "apagado" (com data e hora) e tem desfazer
+const ARQ="casa/maquinas.json",agoraBr=()=>{const d=new Date(),p=n=>String(n).padStart(2,"0");return p(d.getDate())+"/"+p(d.getMonth()+1)+"/"+d.getFullYear()+" "+p(d.getHours())+":"+p(d.getMinutes())}
+const b64e=t=>{let b="";new TextEncoder().encode(t).forEach(c=>b+=String.fromCharCode(c));return btoa(b)},b64d=t=>new TextDecoder().decode(Uint8Array.from(atob(t.replace(/\s/g,"")),c=>c.charCodeAt(0)))
+async function grava(muda,msg){
+  for(let t=0;t<4;t++){try{const r=await gh(ARQ,false);if(!r.ok)return null;const j=await r.json(),d=JSON.parse(b64d(j.content));muda(d)
+    const w=await fetch(apiDe(ARQ),{method:"PUT",headers:{Authorization:"Bearer "+TOKEN,Accept:"application/vnd.github+json"},body:JSON.stringify({message:msg,content:b64e(JSON.stringify(d,null,1)+"\n"),sha:j.sha})})
+    if(w.ok)return d;if(w.status!==409&&w.status!==422)return null}catch(e){if(t===3)return null}await new Promise(o=>setTimeout(o,600))}return null}
+const salva=async(muda,msg)=>{const ok=await grava(muda,msg);if(!ok)aviso("Não guardou: confere a internet e tenta de novo.");return !!ok}
+function aviso(t){document.querySelector(".ed-faixa")?.remove();const f=el("div","ed-faixa",t);document.body.append(f);setTimeout(()=>f.remove(),5000)}
+function faixaDesfazer(t,fn){document.querySelector(".ed-faixa")?.remove();const f=el("div","ed-faixa"),b=el("button","","Desfazer");b.type="button";const fim=setTimeout(()=>f.remove(),8000);b.onclick=()=>{clearTimeout(fim);f.remove();fn()};f.append(el("span","",t),b);document.body.append(f)}
+const CAMPOS=[["nome","Nome",0,1],["apelido","Apelido"],["modelo","Modelo"],["onde","Onde fica"],["dono","De quem"],["papel","Papel"],["desde","Desde"],["como_veio","Como veio",1],["controles","Controles",1],["estado","Estado",1],["historia","História",1],["acessorios","Acessórios (um por linha)",2],["conquistas","Insígnias (uma por linha)",2],["falta","A descobrir (um por linha)",2]]
+function formulario(titulo,x,aoSalvar,aoApagar){
+  const ov=el("div","ed-ov"),card=el("form","ed-card"),els={};ov.append(card);card.append(el("h3","",titulo));const fecha=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)fecha()}
+  CAMPOS.forEach(([n,rot,tp,ob])=>{const lb=el("label"),i=el(tp?"textarea":"input");if(tp)i.rows=tp===2?3:2;i.value=tp===2?(x[n]||[]).join("\n"):(x[n]||"");els[n]=i;lb.append(el("span","",rot+(ob?" *":"")),i);card.append(lb)})
+  const er=el("p","ed-erro");er.hidden=true;const ac=el("div","ed-acoes"),ok=el("button","ed-ok","Guardar");ok.type="submit";ac.append(ok)
+  if(aoApagar){const ap=el("button","ed-link","Apagar");ap.type="button";ap.onclick=()=>{fecha();aoApagar()};ac.append(ap)}
+  const cancela=el("button","ed-link","Cancelar");cancela.type="button";cancela.style.color="var(--texto3)";cancela.onclick=fecha;ac.append(cancela);card.append(er,ac)
+  card.onsubmit=async e=>{e.preventDefault();const v={};for(const [n,,tp] of CAMPOS){const t=els[n].value.trim();v[n]=tp===2?t.split(/\r?\n/).map(a=>a.trim()).filter(Boolean):t}
+    if(!v.nome){er.textContent="Falta preencher: Nome";er.hidden=false;return}ok.disabled=true;await aoSalvar(v);fecha()}
+  document.body.append(ov)}
+const idNovo=n=>(String(n).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,30)||"maquina")+"-"+Date.now().toString(36)
+const lancaMaq=()=>formulario("Máquina nova",{},async v=>{const m={id:idNovo(v.nome),tipo:"console",...v,criado:agoraBr()};Object.keys(m).forEach(k=>{if(Array.isArray(m[k])&&!m[k].length)delete m[k];else if(m[k]==="")delete m[k]});if(await salva(d=>{d.maquinas.push(m)},"Máquina nova pelo app")){ALL.push(m);filtra();grade()}})
+const editaMaq=m=>formulario("Editar "+m.nome,m,async v=>{const f=v;if(await salva(d=>{const t=d.maquinas.find(y=>y.id===m.id);if(!t)return;Object.keys(f).forEach(k=>{if(f[k]===""||(Array.isArray(f[k])&&!f[k].length))delete t[k];else t[k]=f[k]});t.atualizado=agoraBr()},"Máquina editada pelo app")){Object.keys(f).forEach(k=>{if(f[k]===""||(Array.isArray(f[k])&&!f[k].length))delete m[k];else m[k]=f[k]});monta(D.maquinas.indexOf(m))}},async()=>{const q=agoraBr();if(await salva(d=>{const t=d.maquinas.find(y=>y.id===m.id);if(t)t.apagado=q},"Máquina apagada pelo app (fica guardada)")){m.apagado=q;filtra();grade();faixaDesfazer("Máquina apagada",async()=>{if(await salva(d=>{const t=d.maquinas.find(y=>y.id===m.id);if(t)delete t.apagado},"Apagado desfeito pelo app")){delete m.apagado;filtra();grade()}})}})
+const resolveFalta=async(m,txt,on)=>{const q=agoraBr();const f=d=>{const t=d.maquinas.find(y=>y.id===m.id);if(!t)return;t.falta=t.falta||[];t.descobertas=t.descobertas||[];if(on){const i=t.falta.indexOf(txt);if(i>=0)t.falta.splice(i,1);t.descobertas.push({texto:txt,feito:q})}else{const i=t.descobertas.findIndex(z=>z.texto===txt);if(i>=0)t.descobertas.splice(i,1);t.falta.push(txt)}}
+  if(await salva(f,on?"Descoberto: marcado pelo app":"Descoberta desfeita pelo app")){f({maquinas:[m]});monta(D.maquinas.indexOf(m))}}
 const VB=document.getElementById("voltar");VB.onclick=volta   // voltar SÓ na barra de cima, canto esquerdo (May 09/11 12:31)
 {let bx=null,by=0;addEventListener("touchstart",e=>{const t=e.touches[0];bx=t.clientX<28?t.clientX:null;by=t.clientY},{passive:true});addEventListener("touchend",e=>{if(bx===null)return;const t=e.changedTouches[0],dx=t.clientX-bx,dy=t.clientY-by;bx=null;if(dx>70&&Math.abs(dy)<dx*.7)volta()},{passive:true})}   // arrastar da borda esquerda pra direita = voltar, igual o resto do app (May 07/11 11:28)
-let D=null,atual=0
+let D=null,atual=0,ALL=[];const filtra=()=>{D.maquinas=ALL.filter(x=>!x.apagado)}
 async function inicio(){
   if(!TOKEN){app.innerHTML='<p class="aviso">Abre primeiro o app de recados neste aparelho (ele guarda a chave).</p>';return}
-  try{const r=await gh("casa/maquinas.json",true);if(!r.ok)throw 0;D=JSON.parse(await r.text())}catch(e){app.innerHTML='<p class="aviso">Não consegui abrir a coleção. Confere a internet.</p>';return}
+  try{const r=await gh("casa/maquinas.json",true);if(!r.ok)throw 0;D=JSON.parse(await r.text());ALL=D.maquinas;filtra()}catch(e){app.innerHTML='<p class="aviso">Não consegui abrir a coleção. Confere a internet.</p>';return}
   grade()
 }
 const LAPIS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>'
@@ -181,7 +212,8 @@ function anota(tela){const b=el("button","anota");b.type="button";b.setAttribute
 function grade(){
   document.documentElement.style.setProperty("--k1","#4F46E5");fundo.style.backgroundImage="none";app.replaceChildren()
   const topo=el("div","topo"),ms2=el("div","marca-sis");ms2.append(el("i"),"Minha coleção");const t=D.total||{}
-  topo.append(VB,ms2,el("span","tot",D.maquinas.length+" máquinas · "+(t.zerados??"–")+(t.zerados===1?" zerado":" zerados")),anota("Máquinas"));app.append(topo)
+  const nv=el("button","ed-bt","+");nv.type="button";nv.setAttribute("aria-label","Máquina nova");nv.onclick=lancaMaq
+  topo.append(VB,ms2,el("span","tot",D.maquinas.length+" máquinas · "+(t.zerados??"–")+(t.zerados===1?" zerado":" zerados")),nv,anota("Máquinas"));app.append(topo)
   const g=el("div","grade")
   {const b=el("button","card diag-largo"),ic=el("span","diag-ic"),tx=el("span","diag-tx"),res=el("small","","a saúde dos PCs");b.style.setProperty("--c","#8B5CF6")
     ic.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="19" height="13" rx="2"/><path d="M8 20.5h8M12 16.5v4"/><path d="M5.5 10h3l1.5-3 2.5 6 1.5-3h4.5"/></svg>'
@@ -203,7 +235,8 @@ function monta(i){
   {const w=wallpaper(m);fundo.classList.toggle("marca",!!w);fundo.style.backgroundImage="none";fundo.style.backgroundColor=w?w.cor:"";if(w)aplicaFundo(fundo,m,w,true)}   // fundo = o logo da marca repetido, não a foto (May 18:45); as fotos ficam na aba Fotos
   app.replaceChildren()
   const topo=el("div","topo"),vt=el("button","volta-col","← Coleção");vt.onclick=grade;const t=D.total||{}
-  topo.append(VB,vt,el("span","tot",(t.zerados??"–")+(t.zerados===1?" zerado":" zerados")),anota("Máquinas · "+m.nome));app.append(topo)
+  const eb=el("button","ed-bt");eb.type="button";eb.innerHTML=LAPIS;eb.setAttribute("aria-label","Editar "+m.nome);eb.style.padding="9px";eb.onclick=()=>editaMaq(m)
+  topo.append(VB,vt,el("span","tot",(t.zerados??"–")+(t.zerados===1?" zerado":" zerados")),eb,anota("Máquinas · "+m.nome));app.append(topo)
   const fila=el("div","fila");ms.forEach((x,j)=>{const b=el("button","bloco"+(j===i?" ativo":""));b.style.setProperty("--c",x.ativo===false?"#8B8F98":cor(x));b.setAttribute("aria-label",x.nome)
     if(x.robo&&ROBO[x.robo]){const im=el("img");if(x.ativo===false)im.style.filter="grayscale(1)";im.alt="";im.src=ROBO[x.robo][2];b.append(im)}else b.append(el("span","",CURTO[x.console]||x.nome.slice(0,4)))
     b.onclick=()=>{if(j!==atual)monta(j)};fila.append(b)});
@@ -222,7 +255,8 @@ function monta(i){
   if((m.conquistas||[]).length){const v=vid("Insígnias"),c=el("div","ins");m.conquistas.forEach(x=>c.append(el("span","",x)));v.append(c)}
   if((m.acessorios||[]).length){const v=vid("Acessórios"),c=el("div","chips");m.acessorios.forEach(x=>c.append(el("span","",x)));v.append(c)}
   if((m.fotos||[]).length){const v=vid("Fotos"),c=el("div","fotos");m.fotos.forEach(pth=>{const b=el("button");b.setAttribute("aria-label","Abrir foto");foto(pth).then(u=>{b.style.backgroundImage="url("+u+")";b.onclick=()=>{const z=el("div","zoom"),im=el("img");im.src=u;im.alt="";z.append(im);z.onclick=()=>z.remove();document.body.append(z)}}).catch(()=>{});c.append(b)});v.append(c)}
-  if((m.falta||[]).length){const v=vid("A descobrir"),ul=el("ul","falta");m.falta.forEach(x=>ul.append(el("li","",x)));v.append(ul)}
+  if((m.falta||[]).length||(m.descobertas||[]).length){const v=vid("A descobrir"),ul=el("ul","falta");(m.falta||[]).forEach(x=>{const li=el("li","",x),b=el("button","ok-bt","Descobri");b.type="button";b.onclick=()=>resolveFalta(m,x,true);li.append(b);ul.append(li)});v.append(ul)
+    if((m.descobertas||[]).length){const ud=el("ul","desc");m.descobertas.forEach(z=>{const li=el("li","",z.texto),sm=el("small","","descoberto em "+z.feito.slice(0,5)+" às "+z.feito.slice(11)),b=el("button","ok-bt","desfazer");b.type="button";b.onclick=()=>resolveFalta(m,z.texto,false);li.append(sm,b);ud.append(li)});v.append(ud)}}
   const ePC2=!!(m.robo||m.tipo==="pc"||/^pc/.test(m.id))
   if(!ePC2||m.id==="pc2"){const v=vid("Jogos");v.append(el("p","hist","Carregando os jogos…"));jogosDe(m).then(js=>{v.replaceChildren(el("h2","","Jogos"));const st=j=>j.status,grupo=(t,lst,mostra)=>{if(!lst.length)return;v.append(el("h3","jg-tit",t+" · "+lst.length));const ul=el("ul","jg");lst.slice(0,mostra).forEach(j=>{const li=el("li");li.append(el("span","",j.titulo),el("small","",j.pct&&j.pct!=="None"?j.pct+"%":""));ul.append(li)});if(lst.length>mostra)ul.append(el("li","jg-mais","+ "+(lst.length-mostra)+" na tela Jogos"));v.append(ul)}
     grupo("Jogando agora",js.filter(j=>st(j)==="jogando").sort((a,b)=>(+b.pct||0)-(+a.pct||0)),10);grupo("Zerados",js.filter(j=>st(j)==="zerado"),12);grupo("Parados no meio",js.filter(j=>st(j)==="parado"||st(j)==="quer_terminar"),6)
