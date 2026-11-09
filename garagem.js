@@ -12,7 +12,7 @@ const CSS = `
 @keyframes gr-portao { 0% { transform: translateY(0); } 7% { transform: translateY(5px); } 100% { transform: translateY(-104%); } }
 .p-corpo > .tela.gr-tela > .gr-pager { flex: 1 1 0; min-height: 0; display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .gr-tela .gr-pager::-webkit-scrollbar { display: none; }
-.gr-tela .gr-pag { flex: 0 0 100%; width: 100%; min-width: 0; height: 100%; scroll-snap-align: start; scroll-snap-stop: always; display: flex; flex-direction: column; --v: #9AA1AB; }
+.gr-tela .gr-pag { flex: 0 0 100%; width: 100%; min-width: 0; height: 100%; scroll-snap-align: start; scroll-snap-stop: always; display: flex; flex-direction: column; --v: #9AA1AB; overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }
 .gr-tela .gr-palco { flex: none; position: relative; height: var(--gr-palco); overflow: hidden; background: #2A2C31; }
 .gr-tela .gr-parede { position: absolute; left: 0; right: 0; top: 0; height: 190px; background: radial-gradient(ellipse 70% 55% at 50% 0, rgba(255,244,214,.16), transparent 70%), repeating-linear-gradient(90deg, transparent 0 96px, rgba(0,0,0,.34) 96px 97px, rgba(255,255,255,.045) 97px 98px), linear-gradient(#30333A, #25272C); }
 .gr-tela .gr-lampada { position: absolute; top: 0; left: 50%; width: 120px; margin-left: -60px; height: 14px; }
@@ -54,13 +54,13 @@ const CSS = `
 .gr-tela .gr-trena { display: inline-flex; align-items: stretch; font: 700 12px/1 var(--gr-mono); color: #111; }
 .gr-tela .gr-trena i { width: 20px; background: radial-gradient(circle at 50% 50%, #F2F2F0 3px, transparent 3.5px), #2B2D32; border: 2px solid #111; border-radius: 6px 0 0 6px; }
 .gr-tela .gr-trena span { padding: 5px 10px 4px; background: repeating-linear-gradient(90deg, #111 0 1px, transparent 1px 6px) 0 0 / 100% 4px no-repeat, repeating-linear-gradient(90deg, #111 0 1px, transparent 1px 30px) 0 0 / 100% 7px no-repeat, var(--gr-am); padding-top: 9px; border: 2px solid #111; border-left: 0; }
-.gr-tela .gr-rola { flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: 14px 16px calc(96px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 12px; background: linear-gradient(#18191C, #1E1F23 24px); }
+.gr-tela .gr-rola { flex: none; overflow: visible; padding: 14px 16px calc(96px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 12px; background: linear-gradient(#18191C, #1E1F23 24px); }
 .gr-tela .gr-rola > * { flex: none; min-width: 0; }
 .gr-tela .gr-cartao { position: relative; background: #2A2C31; border: 1px solid #3B3E45; padding: 12px; clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px); }
 .gr-tela .gr-tit { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font: 700 17px/1 var(--gr-imp); font-synthesis: none; letter-spacing: .1em; text-transform: uppercase; color: #F2F2F0; }
 .gr-tela .gr-tit::before { content: ''; width: 6px; height: 16px; background: var(--gr-am); transform: skewX(-14deg); }
 .gr-tela .gr-tit small { margin-left: 4px; padding: 3px 7px; border-radius: 3px; background: #F5C400; color: #1E1F23 !important; font: 700 12px/1 var(--gr-mono); letter-spacing: 0; color: #C9CCD2; text-transform: none; }
-.gr-tela .gr-ad { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: #141518; touch-action: none; user-select: none; -webkit-user-select: none; cursor: ew-resize; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+.gr-tela .gr-ad { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: #141518; touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: ew-resize; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
 .gr-tela .gr-ad img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; -webkit-user-drag: none; }
 .gr-tela .gr-ad .gr-dep { clip-path: inset(0 0 0 var(--x, 50%)); will-change: clip-path; }
 .gr-tela .gr-ad-sem { position: absolute; inset: 0; display: grid; place-items: center; color: #8A8F98; font-weight: 700; font-size: 13px; }
@@ -142,7 +142,7 @@ const CSS = `
 .gr-tela .gr-reg .gr-nt { flex: 1; min-width: 0; color: #C9CCD2; font-weight: 500; }
 .gr-tela .gr-sub { margin: 14px 0 6px; font: 700 13px/1 var(--gr-mono); letter-spacing: .08em; text-transform: uppercase; color: #9EA2AA; }
 .gr-tela .gr-vet { position: relative; height: 138px; touch-action: pan-y; contain: layout paint; user-select: none; -webkit-user-select: none; }
-.gr-tela .gr-vet.cmp { cursor: ew-resize; touch-action: none; } .gr-tela .gr-vet .gr-dep { position: absolute; inset: 0; will-change: clip-path; } .gr-tela .gr-vet .gr-dep img { position: absolute; inset: 0; }
+.gr-tela .gr-vet.cmp { cursor: ew-resize; touch-action: pan-y; } .gr-tela .gr-vet .gr-dep { position: absolute; inset: 0; will-change: clip-path; } .gr-tela .gr-vet .gr-dep img { position: absolute; inset: 0; }
 .gr-tela .gr-vet img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; pointer-events: none; -webkit-user-drag: none; filter: drop-shadow(0 6px 5px rgba(0,0,0,.45)); }
 .gr-tela .gr-vet .gr-dep { clip-path: inset(0 0 0 var(--x, 50%)); }
 .gr-tela .gr-vet .gr-div { top: -8px; bottom: -4px; }
@@ -272,12 +272,15 @@ const parteDe = t => { const m = /^(.*?)\s*\((.*)\)\s*$/.exec(t || ''); return m
 function cartao(titulo, extra) { const k = elD('section', 'gr-cartao'), h = elD('h4', 'gr-tit', titulo); if (extra) h.append(elD('small', null, extra)); k.append(h); return k; }
 // arrastar liso (May 09/11 12:43): pointer capture, 1 atualização por quadro (rAF), só o recorte (clip-path) se mexe; as duas camadas ficam desenhadas
 function arrasta(el, poe, ativo) {
-  let arr = false, px = 0, quadro = 0, w = 1, l = 0;
+  // rolagem vertical livre (touch-action pan-y); só vira arraste se o dedo começa na alça (faixa estreita) ou anda mais na horizontal que na vertical
+  let arr = false, ini = false, px = 0, quadro = 0, w = 1, l = 0, x0 = 0, y0 = 0;
   const roda = () => { quadro = 0; poe(px); };
   const daX = e => { px = (e.clientX - l) / w * 100; if (!quadro) quadro = requestAnimationFrame(roda); };
-  el.addEventListener('pointerdown', e => { if (ativo && !ativo()) return; arr = true; const r = el.getBoundingClientRect(); l = r.left; w = Math.max(1, r.width); try { el.setPointerCapture(e.pointerId); } catch (x) {} daX(e); e.stopPropagation(); e.preventDefault(); });
-  el.addEventListener('pointermove', e => { if (arr) { daX(e); e.preventDefault(); } });
-  const solta = e => { arr = false; try { el.releasePointerCapture(e.pointerId); } catch (x) {} }; el.addEventListener('pointerup', solta); el.addEventListener('pointercancel', solta); el.addEventListener('lostpointercapture', () => { arr = false; });
+  el.addEventListener('pointerdown', e => { if (ativo && !ativo()) return; ini = true; arr = false; x0 = e.clientX; y0 = e.clientY; const r = el.getBoundingClientRect(); l = r.left; w = Math.max(1, r.width);
+    const d = el.querySelector('.gr-div'); if (d) { const q = d.getBoundingClientRect(); if (Math.abs(e.clientX - (q.left + q.width / 2)) < 26) { arr = true; try { el.setPointerCapture(e.pointerId); } catch (x) {} daX(e); e.stopPropagation(); } } });
+  el.addEventListener('pointermove', e => { if (!ini) return; if (!arr) { const dx = Math.abs(e.clientX - x0), dy = Math.abs(e.clientY - y0); if (dx > 8 && dx > dy * 1.2) { arr = true; try { el.setPointerCapture(e.pointerId); } catch (x) {} } else return; } daX(e); e.stopPropagation(); });
+  const solta = e => { if (ini && !arr && Math.abs(e.clientX - x0) < 8 && Math.abs(e.clientY - y0) < 8) daX(e); ini = arr = false; try { el.releasePointerCapture(e.pointerId); } catch (x) {} };
+  el.addEventListener('pointerup', solta); el.addEventListener('pointercancel', e => { ini = arr = false; }); el.addEventListener('lostpointercapture', () => { arr = false; });
 }
 function antesDepois(v) {
   const k = cartao('Antes × depois'), ad = elD('div', 'gr-ad');
@@ -527,6 +530,7 @@ window.abreGaragem = function (m) {
       cabecalho({ icone: 'car', sub: vs.length + (vs.length === 1 ? ' veículo' : ' veículos') + ' na oficina' });
       const pager = elD('div', 'gr-pager'), pts = elD('div', 'gr-pontos'), pgs = vs.map((v, i) => pagina(v, i, vs.length, c));
       pager.append(...pgs);
+      pgs.forEach(p => p.addEventListener('scroll', () => { pts.style.top = 'calc(var(--gr-palco) - 16px - ' + p.scrollTop + 'px)'; pts.style.visibility = p.scrollTop > 240 ? 'hidden' : ''; }, { passive: true }));
       pgs.forEach((p, i) => { const b = elD('button', 'gr-ponto' + (i ? '' : ' on')); b.type = 'button'; b.setAttribute('aria-label', vs[i].nome); b.onclick = () => pager.scrollTo({ left: i * pager.clientWidth, behavior: 'smooth' }); pts.append(b); });
       c.prepend(pager, pts);
       let aberto = false, atual = -1;
