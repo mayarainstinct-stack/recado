@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-09.233">
+<meta name="app-versao" content="2026-11-09.234">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -3112,7 +3112,7 @@ micBtn.addEventListener('pointercancel', soltaMic);
 micBtn.addEventListener('contextmenu', e => e.preventDefault());
 let pararAoIniciar = false;
 // microfone: pede uma vez e reaproveita o mesmo stream na sessão (no app da tela de início o iOS pergunta a cada getUserMedia);
-// solta sozinho 2 min depois da última gravação ou quando o app vai pro fundo, pra não ficar com o microfone aberto
+// fica aberto enquanto a conversa estiver aberta (o iPhone pedia permissão toda hora); solta ao sair da conversa ou após 15 min parado (May, 09/11/2026)
 let micStream = null, micSolta = null;
 function soltaMicStream() { clearTimeout(micSolta); if (micStream) micStream.getTracks().forEach(t => t.stop()); micStream = null; }
 async function pegaMic() {
@@ -3121,7 +3121,7 @@ async function pegaMic() {
   micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
   return micStream;
 }
-document.addEventListener('visibilitychange', () => { if (document.hidden && !gravador) soltaMicStream(); });
+
 // fechou o app com recado ainda indo (May, 07/11/2026 12:53: "digito rapidinho, envio e fecho o app"): joga cada um, só texto, num arquivinho
 // _geral/recados/fila/<id>.json com keepalive (o celular deixa terminar mesmo fechando); o PC1 junta na conversa em até 1 min (house-bridge/junta-fila.sh).
 // Abriu de novo e o recado ainda tava pendente: o envio normal confere (jaGravado) e não duplica.
@@ -3146,7 +3146,7 @@ async function comecaGravar() {
     gravador = new MediaRecorder(stream, tipo ? { mimeType: tipo } : undefined);
     pedacos = []; cancelado = false;
     gravador.ondataavailable = e => { if (e.data.size) pedacos.push(e.data); };
-    gravador.onstop = () => { clearTimeout(micSolta); micSolta = setTimeout(soltaMicStream, 120000); const g = gravador; gravador = null; mostraGravando(false); if (!cancelado) enviaAudio(new Blob(pedacos, { type: g.mimeType || tipo || 'audio/mp4' })); };
+    gravador.onstop = () => { clearTimeout(micSolta); micSolta = setTimeout(soltaMicStream, 900000); const g = gravador; gravador = null; mostraGravando(false); if (!cancelado) enviaAudio(new Blob(pedacos, { type: g.mimeType || tipo || 'audio/mp4' })); };
     gravador.start(); mostraGravando(true);
     if (navigator.vibrate) navigator.vibrate(20);
     if (pararAoIniciar) { cancelado = true; gravador.stop(); showNote('Segura o microfone enquanto fala'); }
@@ -3383,28 +3383,45 @@ window.addEventListener('hashchange', () => { if (token && !chaveVencida) trataH
 // Lembrete em popup (May 09/11/2026): a notificação abre o app numa janela da TELA de onde veio, com Sim · Não · Ver.
 // O iPhone não mostra botão na notificação de app da tela inicial, então os botões ficam aqui. Hash: #lembrete=<querystring>
 // t=fin (quem, valor, lado) ou t=chk (id, arq); q = pergunta; conv = Geral ou Trabalho (popup de Trabalho só no Trabalho).
+// Fila (May, 09/11/2026): cada lembrete recebido fica guardado no aparelho (chave 'lembretes-fila', id = a querystring) e só sai quando ela responde Sim, Não ou Ver;
+// tocar fora ou fechar só esconde, e ele volta ao abrir o app, ao voltar do segundo plano ou ao trocar de conversa. Lembrete do Trabalho só na conversa Trabalho, o da Geral só na Geral.
+const lemFila = () => { try { const v = JSON.parse(store.get('lembretes-fila') || '[]'); return Array.isArray(v) ? v.filter(x => typeof x === 'string') : []; } catch (e) { return []; } };
+const lemGrava = v => store.set('lembretes-fila', v.length ? JSON.stringify(v.slice(-30)) : '');
+const lemTira = qs => lemGrava(lemFila().filter(x => x !== qs));
 function trataHashLembrete() {
-  if (!location.hash.startsWith('#lembrete=')) return false;
-  const h = new URLSearchParams(decodeURIComponent(location.hash.slice(10)));
+  if (!location.hash.startsWith('#lembrete=')) { mostraProximoLembrete(); return false; }
+  let qs = ''; try { qs = decodeURIComponent(location.hash.slice(10)); } catch (e) { qs = location.hash.slice(10); }
   history.replaceState(null, '', location.pathname + location.search);
-  const conv = h.get('conv') || GERAL.arq; document.body.classList.toggle('modo-trab', conv === TRAB.arq);
+  const fila = lemFila(); if (qs && !fila.includes(qs)) { fila.push(qs); lemGrava(fila); }
+  const conv = new URLSearchParams(qs).get('conv') || GERAL.arq; document.body.classList.toggle('modo-trab', conv === TRAB.arq);   // veio da notificação: abre na conversa de onde veio
+  document.querySelectorAll('.lem-fundo').forEach(o => o.remove()); mostraProximoLembrete();
+  return true;
+}
+function mostraProximoLembrete() {
+  if (!token || chaveVencida) return;
+  const trab = document.body.classList.contains('modo-trab'), aberto = document.querySelector('.lem-fundo');
+  const daConv = qs => ((new URLSearchParams(qs).get('conv') || GERAL.arq) === TRAB.arq) === trab;
+  if (aberto) { if (aberto.dataset.qs && daConv(aberto.dataset.qs)) return; aberto.remove(); }
+  const qs = lemFila().find(daConv); if (!qs) return;
+  const h = new URLSearchParams(qs), conv = h.get('conv') || GERAL.arq;
   const tela = h.get('t') === 'fin' ? 'Finanças' : 'Checklist', cor = h.get('t') === 'fin' ? '#16A34A' : '#1D4ED8';
-  const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card lem-card'); card.style.setProperty('--quem', cor);
-  const fecha = () => ov.remove(); ov.onclick = e => { if (e.target === ov) fecha(); };
+  const ov = elD('div', 'fixa-pop lem-fundo'), card = elD('div', 'pp-card lem-card'); card.style.setProperty('--quem', cor); ov.dataset.qs = qs;
+  const esconde = () => ov.remove(); ov.onclick = e => { if (e.target === ov) esconde(); };   // fora = só esconde, continua na fila
   const bts = elD('div', 'lem-bts'), bt = (txt, cls, fn) => { const b = elD('button', 'pp-op ' + cls, txt); b.type = 'button'; b.onclick = fn; bts.append(b); return b; };
   card.append(elD('small', 'lem-de', 'Lembrete · ' + tela), elD('div', 'pp-perg', h.get('q') || 'Lembrete'), bts);
-  const ver = () => { fecha(); lerArquivo(conv === TRAB.arq ? 'menu/menu-trabalho.json' : 'menu/menu.json').then(x => JSON.parse(x).itens).then(its => { const m = its.find(i => h.get('t') === 'fin' ? i.tipo === 'financas' : i.tipo === 'checklist'); if (m) { menu.hidden = true; painel.hidden = false; pilha = []; abreItemMenu(m); } }).catch(() => {}); };
+  const resolvido = () => { lemTira(qs); esconde(); setTimeout(mostraProximoLembrete, 300); };
+  const ver = () => { resolvido(); lerArquivo(conv === TRAB.arq ? 'menu/menu-trabalho.json' : 'menu/menu.json').then(x => JSON.parse(x).itens).then(its => { const m = its.find(i => h.get('t') === 'fin' ? i.tipo === 'financas' : i.tipo === 'checklist'); if (m) { menu.hidden = true; painel.hidden = false; pilha = []; abreItemMenu(m); } }).catch(() => {}); };
   const sim = bt('Sim', 'rec', async () => {
     sim.disabled = true; sim.textContent = 'Marcando…';
     if (h.get('t') === 'fin') {
       const linha = '- [' + stamp(new Date()) + '] ' + (h.get('lado') || 'pagar') + ' · ' + h.get('quem') + ' · ' + h.get('valor') + ' · marcado no lembrete';
-      if (await gravaLinha('contas/LANCAMENTOS.md', linha)) { fecha(); showNote('Marcado como pago: ' + h.get('quem')); } else { sim.disabled = false; sim.textContent = 'Sim'; showNote('Não marcou: confere a internet.', true); }
-    } else { let f = {}; try { f = JSON.parse(store.get('check-feitos') || '{}'); } catch (e) {} f[h.get('id')] = diaLocal(); store.set('check-feitos', JSON.stringify(f)); fecha(); showNote('Marcado como feito.'); }
+      if (await gravaLinha('contas/LANCAMENTOS.md', linha)) { resolvido(); showNote('Marcado como pago: ' + h.get('quem')); } else { sim.disabled = false; sim.textContent = 'Sim'; showNote('Não marcou: confere a internet.', true); }
+    } else { let f = {}; try { f = JSON.parse(store.get('check-feitos') || '{}'); } catch (e) {} f[h.get('id')] = diaLocal(); store.set('check-feitos', JSON.stringify(f)); resolvido(); showNote('Marcado como feito.'); }
   });
-  bt('Não', '', fecha); bt('Ver', '', ver);
+  bt('Não', '', resolvido); bt('Ver', '', ver);
   ov.append(card); document.body.append(ov);
-  return true;
 }
+document.addEventListener('visibilitychange', () => { if (!document.hidden) setTimeout(mostraProximoLembrete, 300); });
 window.addEventListener('hashchange', () => { if (token && !chaveVencida) trataHashLembrete(); });
 
 // sw antigo (ou iPhone sem client.navigate) ainda manda postMessage
@@ -3652,7 +3669,22 @@ function aplicaLargura() {
 }
 window.addEventListener('resize', () => { clearTimeout(aplicaLargura.t); aplicaLargura.t = setTimeout(aplicaLargura, 150); });
 let conversas = [], sigLista = '', ultimaLista = 0, carregandoLista = null;
-async function lerArquivo(arq) { return (await apiOk(apiDe(arq), RAW)).text(); }
+// Última versão boa (May, 09/11/2026): leitura certa de menu/, casa/, contas/, categorias/, saude/ (.json/.md; caixas/ NÃO) fica guardada no aparelho; se falhar ou o JSON vier inválido, devolve a guardada
+// e marca em dadosAntigos[arq] = true pra tela poder dizer "sem internet, mostrando a última versão".
+const CACHE_DADOS = 'recados-dados-v1', DADOS_OK = /^(menu|casa|contas|categorias|saude)\/.+\.(json|md)$/i, dadosAntigos = {};
+const chaveDado = arq => new Request('https://dados.local/' + encodeURI(arq));
+async function dadoGuarda(arq, t) { try { const c = await caches.open(CACHE_DADOS); await c.put(chaveDado(arq), new Response(t)); } catch (e) {} }
+async function dadoLe(arq) { try { const r = await (await caches.open(CACHE_DADOS)).match(chaveDado(arq)); return r ? await r.text() : null; } catch (e) { return null; } }
+async function lerArquivo(arq) {
+  if (!DADOS_OK.test(arq)) return (await apiOk(apiDe(arq), RAW)).text();
+  let t = null, erro = null;
+  try { t = await (await apiOk(apiDe(arq), RAW)).text(); if (/\.json$/i.test(arq)) JSON.parse(t); } catch (e) { erro = e; }
+  if (!erro) { delete dadosAntigos[arq]; dadoGuarda(arq, t); return t; }
+  const velho = await dadoLe(arq);
+  if (velho !== null) { dadosAntigos[arq] = true; return velho; }
+  if (t !== null) return t;   // JSON inválido e nada guardado: devolve como veio
+  throw erro;
+}
 function previaDe(it) {
   const quem = it.from === 'may' ? 'Você: ' : (GRUPO[it.quem] ? GRUPO[it.quem].nome + ': ' : '');
   const t = it.audio ? '\u0001mic\u0001Áudio' : (it.foto ? '\u0001cam\u0001' + (it.text || 'Foto') : it.text);
@@ -3725,7 +3757,7 @@ function desenhaLista() {
     lista.append(el);
   });
 }
-function mostraLista() {
+function mostraLista() { if (!gravador) soltaMicStream();   // saiu da conversa: solta o microfone
   FILE = null; API = null; nomeConv = ''; fotoConv = ''; logoEl.style.backgroundImage = ''; convAv.style.backgroundImage = ''; convAv.hidden = true;
   voltar.hidden = true; logoEl.hidden = false; tituloEl.textContent = 'Recados';
   feed.hidden = true; fixaEl.hidden = true; form.hidden = true; citando.hidden = true; desce.hidden = true; lista.hidden = false; novaBtn.hidden = false;
@@ -3738,7 +3770,7 @@ function mostraLista() {
 function abrir(c) {
   store.set('ultima-conv', c.arq); store.set('ultima-nome', c.nome);
   if (c.arq === TRAB.arq) geralLiberada = false;
-  const comMenu = c.arq === GERAL.arq || c.arq === TRAB.arq; mais.innerHTML = icone(comMenu ? 'grade' : 'more'); mais.setAttribute('aria-label', comMenu ? 'Menu' : 'Mais opções');
+  setTimeout(mostraProximoLembrete, 500); const comMenu = c.arq === GERAL.arq || c.arq === TRAB.arq; mais.innerHTML = icone(comMenu ? 'grade' : 'more'); mais.setAttribute('aria-label', comMenu ? 'Menu' : 'Mais opções');
   mais.hidden = false;   // Trabalho mostra o ícone do Menu (grade), igual à Geral (May 09/11/2026); os pontinhos continuam NUNCA aparecendo no Trabalho (May 16:36 e 16:40: "nunca é pra aparecer os pontinhos no trabalho"); pra Geral, dois toques no anel da semana
   irGeral.hidden = c.arq === GERAL.arq || escondeGeral(); irTrab.hidden = c.arq === TRAB.arq; abreMenu.hidden = c.arq !== GERAL.arq && c.arq !== TRAB.arq; document.body.classList.toggle('modo-trab', c.arq === TRAB.arq);   // Trabalho é só trabalho; Casa juntada na Geral (pedido dela, 02/11/2026)
   if (typeof ocultosConversa !== 'undefined') ocultosConversa = null;
@@ -3843,7 +3875,7 @@ const ICONE_LIMPO = {   // desenho de linha limpo, traço igual em todos (May 15
   treino: '<path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/>', garagem: '<path d="M3 10l9-6 9 6v10H3z"/><path d="M6 20v-7h12v7M6 15.5h12M6 18h12"/>', pendencias: '<rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M3.5 9h17M3.5 14h17M9 9v10.5"/><rect x="9" y="9" width="5.5" height="5" stroke-width="2.6"/>',   // Finanças: uma tabelinha com a célula marcada, sem número (May 08/11 14:48) casa: '<path d="M3 11l9-7 9 7"/><path d="M5 9.5V20h14V9.5"/>'
 };
 // ícones do Menu do Trabalho: mesmo traço limpo do ICONE_LIMPO, sem fundo (May 09/11: "o ícone e já o fundo branco do botão")
-const ICONE_TRAB = { calendar: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>', clipboard: '<rect x="5" y="4.5" width="14" height="16" rx="2"/><path d="M9 4.5V3h6v1.5M8.5 10h7M8.5 13.5h7M8.5 17h4"/>', chart: '<path d="M4 20h16"/><path d="M7 16v-5M12 16V6M17 16v-8"/>', bell: '<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>', doc: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 15.5h5"/>' };
+const ICONE_TRAB = { clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', calendar: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>', clipboard: '<rect x="5" y="4.5" width="14" height="16" rx="2"/><path d="M9 4.5V3h6v1.5M8.5 10h7M8.5 13.5h7M8.5 17h4"/>', chart: '<path d="M4 20h16"/><path d="M7 16v-5M12 16V6M17 16v-8"/>', bell: '<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>', doc: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 15.5h5"/>' };
 function vesteBotao(b, nome) {
   const k = (BOTAO_DE.find(([re]) => re.test(nome)) || [])[1]; if (!k) return;
   b.classList.add('bt-' + k);
@@ -3884,11 +3916,14 @@ function cabecalho({ icone: ic, sub, acao } = {}) {
 }
 function cabecalhoGenerico() { pTopo.classList.remove('proprio'); pTopo.querySelector('.p-ic')?.remove(); pTopo.querySelector('.p-acao')?.remove(); pSub.textContent = ''; pSub.hidden = true; pMais.hidden = false; }
 function desenhaTela() {
-  const [titulo, montar, rolou] = pilha[pilha.length - 1]; painel.classList.remove('tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude');   // o tema claro é só da tela que pedir (a Agenda, May 08/11 12:56)
+  const entrada = pilha[pilha.length - 1], [titulo, montar, rolou] = entrada, mae = pilha.length > 1 ? pilha[pilha.length - 2][3] : null; painel.classList.remove('tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude');
+  if (mae) mae.temas.forEach(c => painel.classList.add(c));   // tela filha herda o tema da mãe (May, 09/11/2026: "senão fica cagado"); a filha que quiser outro tema troca no montar   // o tema claro é só da tela que pedir (a Agenda, May 08/11 12:56)
   pTit.textContent = titulo; pCorpo.scrollTop = 0; pExtra.hidden = !pilha.length || pilha[pilha.length - 1][0] !== 'Menu';   /* só na raiz do Menu, também quando a tela abre direto pela notificação */ cabecalhoGenerico();
   pTopo.hidden = pilha.length === 1 && titulo === 'Menu'; painel.classList.toggle('sem-topo', pTopo.hidden);   // sem a barra, o Recados ganha respiro em cima (May 18:47: "colou em cima")   // o Menu começa direto em Recados, sem a barra de cima (May 18:40); voltar fica no botão de baixo e no deslize
-  const t = document.createElement('div'); t.className = 'tela'; pCorpo.replaceChildren(t);   // carga atrasada de tela que já saiu cai no invólucro velho
-  const r = montar(t); if (rolou) Promise.resolve(r).then(() => { if (t.isConnected) pCorpo.scrollTop = rolou; });   // voltando: devolve a rolagem de onde ela estava
+  const t = document.createElement('div'); t.className = 'tela'; if (mae) mae.gr.forEach(c => t.classList.add(c)); pCorpo.replaceChildren(t);   // carga atrasada de tela que já saiu cai no invólucro velho
+  const r = montar(t); const guardaTema = () => { entrada[3] = { temas: ['tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude'].filter(c => painel.classList.contains(c)), gr: [...t.classList].filter(c => c.startsWith('gr-') && !c.startsWith('gr-grade')) }; };   // a filha herda daqui
+  if (pilha[pilha.length - 1] === entrada) { guardaTema(); Promise.resolve(r).then(() => { if (pilha[pilha.length - 1] === entrada && t.isConnected) guardaTema(); }).catch(() => {}); }
+  if (rolou) Promise.resolve(r).then(() => { if (t.isConnected) pCorpo.scrollTop = rolou; });   // voltando: devolve a rolagem de onde ela estava
 }
 function fechaPainel() { const n = pilha.length; painel.hidden = true; pilha = []; if (n && history.state && history.state.painel) { fechandoPainel = true; try { history.go(-history.state.painel); } catch (e) { fechandoPainel = false; } } }
 let fechandoPainel = false;
@@ -3897,7 +3932,7 @@ addEventListener('popstate', () => {   // voltar do navegador (deslizar da borda
   if (painel.hidden || !pilha.length) return;
   pilha.pop(); if (pilha.length) desenhaTela(); else { painel.hidden = true; }
 });
-document.getElementById('p-anotar').onclick = () => abreFicha({ titulo: 'Anotar · ' + pTit.textContent, contexto: pTit.textContent });
+document.getElementById('p-anotar').onclick = () => { const caminho = pilha.map(p => p[0]).filter((x, i) => !(i === 0 && x === 'Menu')).join(' > ') || pTit.textContent; abreFicha({ titulo: 'Anotar · ' + caminho, contexto: caminho }); };   // o lápis vale em toda tela filha, com o caminho (ex.: Saúde > Perguntas pro médico); no Trabalho vai pra caixas/trabalho.md
 { let bx = null, by = 0;   // arrastar da borda esquerda pra direita = voltar, igual o iPhone
   painel.addEventListener('touchstart', e => { const t = e.touches[0]; bx = t.clientX < 28 ? t.clientX : null; by = t.clientY; }, { passive: true });
   painel.addEventListener('touchend', e => { if (bx === null) return; const t = e.changedTouches[0], dx = t.clientX - bx, dy = t.clientY - by; bx = null; if (dx > 70 && Math.abs(dy) < dx * .7) document.getElementById('p-voltar').click(); }, { passive: true }); }
@@ -5508,7 +5543,7 @@ function avisoCurto(txt, ico = 'check') {
 async function enviarComentario(txt, btn, fecha) { const ok = await mandaPraLyra(txt, btn); if (ok) { if (fecha) fecha(); avisoCurto('Mandado'); } return ok; }
 async function mandaPraLyra(txt, btn) {   // manda direto pra caixa da Geral, sem sair da tela
   const antes = btn.innerHTML; btn.disabled = true; btn.classList.add('enviando'); btn.textContent = 'Enviando…';
-  const url = apiDe(GERAL.arq);
+  const url = apiDe(document.body.classList.contains('modo-trab') ? TRAB.arq : GERAL.arq);
   for (let tentativa = 0; tentativa < 4; tentativa++) {
     try {
       const f = await (await apiOk(url)).json();   // escrita lê o JSON (precisa do sha)
