@@ -125,9 +125,9 @@ const CSS = `
 .gr-tela .gr-chip, .gr-tela .gr-aba, .gr-tela .gr-ang { border-radius: 0; }
 .gr-tela .gr-chip { flex: 1 1 auto; padding: 8px 4px 6px; white-space: nowrap; border: 2px solid #4C5058; background: #1E1F23; color: #C9CCD2; font: 700 13px/1 var(--gr-imp); font-synthesis: none; letter-spacing: .04em; text-transform: uppercase; clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%); }
 .gr-tela .gr-chip.on { background: var(--gr-am); border-color: #111; color: #111; }
-.gr-tela .gr-angs { display: flex; gap: 6px; margin: 0 0 10px; overflow-x: auto; scrollbar-width: none; }
+.gr-tela .gr-angs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin: 0 0 10px; }
 .gr-tela .gr-angs::-webkit-scrollbar { display: none; }
-.gr-tela .gr-ang { flex: none; padding: 6px 9px 5px; border: 1px solid #4C5058; background: #1E1F23; color: #C9CCD2; font: 600 12px/1 var(--gr-mono); }
+.gr-tela .gr-ang { min-width: 0; text-align: center; white-space: nowrap; padding: 9px 2px 8px; border: 1px solid #4C5058; background: #1E1F23; color: #C9CCD2; font: 600 12px/1 var(--gr-mono); }
 .gr-tela .gr-ang.on { border-color: var(--gr-am); color: var(--gr-am); background: #26282C; }
 .gr-tela .gr-olho { flex: none; width: 40px; height: 32px; border-radius: 0; display: grid; place-items: center; border: 2px solid #111; background: var(--gr-am); color: #111; padding: 0; margin-left: 2px; }
 .gr-tela .gr-olho svg { width: 22px; height: 22px; }
@@ -338,7 +338,7 @@ function odometro(v) {
   k.append(w); return k;
 }
 const PASTA = 'categorias/carros-moto/vetores/';
-const ANGS = [['lado-esquerdo', 'Lado esq.'], ['lado-direito', 'Lado dir.'], ['frente', 'Frente'], ['traseira', 'Trás'], ['cima', 'Cima'], ['farol', 'Farol']];
+const ANGS = [['lado-direito', 'Direita'], ['lado-esquerdo', 'Esquerda'], ['frente', 'Frente'], ['traseira', 'Trás'], ['cima', 'Cima']];   // May 09/11 12:35: sem Farol, nomes curtos, ocupando a largura toda
 const FASES = { original: ['Original', '-original'], agora: ['Agora', ''], meta: ['Meta', '-tunado'] };
 const svgCache = {};
 const lePlaca = () => { try { return localStorage.getItem('gr-placa') !== '0'; } catch (e) { return true; } };

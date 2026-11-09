@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-09.236">
+<meta name="app-versao" content="2026-11-09.237">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -786,7 +786,9 @@ img.esq { min-height: 140px; }
 .p-voltar-baixo { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 5; width: 56px; height: 56px; border-radius: 50%; background: var(--head); color: var(--head-fg); box-shadow: 0 8px 24px rgba(0,0,0,.4), 0 0 0 1px color-mix(in srgb, var(--head-fg) 18%, transparent); display: grid; place-items: center; }
 .p-voltar-baixo svg { width: 24px; height: 24px; }
 .painel:has(#p-extra:not([hidden])) .p-voltar-baixo { bottom: calc(92px + env(safe-area-inset-bottom, 0px)); }
-#p-voltar { display: none; }   /* o voltar mora embaixo à direita, perto do polegar (May, 07/11/2026 09:55) */
+/* voltar SÓ no canto superior esquerdo, em todas as telas (May, 09/11/2026 12:31: "tira esse botão de voltar daí e de todas as telas"); o de baixo à direita saiu */
+#p-voltar { display: inline-flex; order: -1; }
+.p-voltar-baixo, .painel .p-voltar-baixo, body .painel .p-voltar-baixo { display: none !important; }
 .mq-hero { position: relative; overflow: hidden; border-radius: 20px; padding: 16px; color: #fff; background: radial-gradient(100% 80% at 0% 0%, #E31B23, transparent 60%), radial-gradient(100% 80% at 100% 0%, #286EDC, transparent 60%), radial-gradient(120% 80% at 50% 120%, #6FCF00, transparent 60%), #0B0B10; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
 .mq-hero::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 4px); pointer-events: none; }
 .mq-hero b { position: relative; display: block; font-size: 22px; font-weight: 900; letter-spacing: .02em; text-transform: uppercase; text-shadow: 0 0 18px rgba(255,255,255,.35); }
@@ -5905,6 +5907,6 @@ if (location.hash === '#menu' || (history.state && history.state.painel && !loca
 }
 window.appPronto = true;   // o script inteiro rodou: o modo de emergência do socorro.js não precisa abrir (#174)
 </script>
-<script src="garagem.js?v=4"></script>
+<script src="garagem.js?v=5"></script>
 </body>
 </html>
