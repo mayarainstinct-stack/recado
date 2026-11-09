@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-09.231">
+<meta name="app-versao" content="2026-11-09.233">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1489,6 +1489,9 @@ body.modo-trab .p-grade.apps .ic { background: none !important; color: #059669; 
 body.modo-trab .p-grade.apps .ic svg.lp { width: 34px; height: 34px; fill: none; stroke: #059669; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 body.modo-trab .painel .p-hero .logo { display: block; background-size: 78% auto; background-position: center; background-repeat: no-repeat; border: 1px solid #E2E8F0; box-shadow: none; }
 .p-extra { padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }   /* a barra de baixo não cola no fim da tela (May 09/11) */
+
+.lem-card { border-top: 4px solid var(--quem); text-align: center; } .lem-de { display: block; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--quem); margin-bottom: 6px; }
+.lem-bts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 14px; } .lem-bts .pp-op { min-height: 44px; }
 </style>
 </head>
 <body>
@@ -3377,6 +3380,33 @@ function trataHashPush() {
   return true;
 }
 window.addEventListener('hashchange', () => { if (token && !chaveVencida) trataHashPush(); });
+// Lembrete em popup (May 09/11/2026): a notificação abre o app numa janela da TELA de onde veio, com Sim · Não · Ver.
+// O iPhone não mostra botão na notificação de app da tela inicial, então os botões ficam aqui. Hash: #lembrete=<querystring>
+// t=fin (quem, valor, lado) ou t=chk (id, arq); q = pergunta; conv = Geral ou Trabalho (popup de Trabalho só no Trabalho).
+function trataHashLembrete() {
+  if (!location.hash.startsWith('#lembrete=')) return false;
+  const h = new URLSearchParams(decodeURIComponent(location.hash.slice(10)));
+  history.replaceState(null, '', location.pathname + location.search);
+  const conv = h.get('conv') || GERAL.arq; document.body.classList.toggle('modo-trab', conv === TRAB.arq);
+  const tela = h.get('t') === 'fin' ? 'Finanças' : 'Checklist', cor = h.get('t') === 'fin' ? '#16A34A' : '#1D4ED8';
+  const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card lem-card'); card.style.setProperty('--quem', cor);
+  const fecha = () => ov.remove(); ov.onclick = e => { if (e.target === ov) fecha(); };
+  const bts = elD('div', 'lem-bts'), bt = (txt, cls, fn) => { const b = elD('button', 'pp-op ' + cls, txt); b.type = 'button'; b.onclick = fn; bts.append(b); return b; };
+  card.append(elD('small', 'lem-de', 'Lembrete · ' + tela), elD('div', 'pp-perg', h.get('q') || 'Lembrete'), bts);
+  const ver = () => { fecha(); lerArquivo(conv === TRAB.arq ? 'menu/menu-trabalho.json' : 'menu/menu.json').then(x => JSON.parse(x).itens).then(its => { const m = its.find(i => h.get('t') === 'fin' ? i.tipo === 'financas' : i.tipo === 'checklist'); if (m) { menu.hidden = true; painel.hidden = false; pilha = []; abreItemMenu(m); } }).catch(() => {}); };
+  const sim = bt('Sim', 'rec', async () => {
+    sim.disabled = true; sim.textContent = 'Marcando…';
+    if (h.get('t') === 'fin') {
+      const linha = '- [' + stamp(new Date()) + '] ' + (h.get('lado') || 'pagar') + ' · ' + h.get('quem') + ' · ' + h.get('valor') + ' · marcado no lembrete';
+      if (await gravaLinha('contas/LANCAMENTOS.md', linha)) { fecha(); showNote('Marcado como pago: ' + h.get('quem')); } else { sim.disabled = false; sim.textContent = 'Sim'; showNote('Não marcou: confere a internet.', true); }
+    } else { let f = {}; try { f = JSON.parse(store.get('check-feitos') || '{}'); } catch (e) {} f[h.get('id')] = diaLocal(); store.set('check-feitos', JSON.stringify(f)); fecha(); showNote('Marcado como feito.'); }
+  });
+  bt('Não', '', fecha); bt('Ver', '', ver);
+  ov.append(card); document.body.append(ov);
+  return true;
+}
+window.addEventListener('hashchange', () => { if (token && !chaveVencida) trataHashLembrete(); });
+
 // sw antigo (ou iPhone sem client.navigate) ainda manda postMessage
 if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { const d = e.data || {}; if (d === 'responder' || d.responder !== undefined) { pushEm = Date.now(); store.set('push-conv', (d.responder || GERAL.arq) + '|' + pushEm); abreRespondendo(d.responder, d.foto); } });
 // Proteção do toque duplo (May, 05/11/2026: "usa o toque duplo: mantém, com proteção de rolagem"): só conta toque curto,
@@ -5442,7 +5472,7 @@ function abreAgenda(m) {
       const corpo = rot ? txt.replace(/^\*\*[^*]+\*\*:?\s*/, '') : txt;
       const d = dataDe(rot);
       const trabAg = /agenda-trabalho/.test(m.arq || ''), quemT = trabAg ? (corpo.match(/^([^:]{2,24}):/) || [])[1] || '' : '';
-      const PROJ_T = { 'rm': ['#22C55E', 'clipboard'], 'simp-mobile': ['#14B8A6', 'check'], 'promotor-mobile': ['#F59E0B', 'pin'], 'promotor': ['#F59E0B', 'pin'], 'kds': ['#EAB308', 'chart'], 'acompanhamentos': ['#940088', 'bell'], 'você': ['#b47ae0', 'star'], 'folga': ['#64748B', 'calendar'] }, pt = PROJ_T[quemT.toLowerCase()] || (trabAg ? ['#059669', 'doc'] : null);
+      const PROJ_T = { 'rm': ['#22C55E', 'clipboard'], 'simp-mobile': ['#14B8A6', 'check'], 'promotor-mobile': ['#F59E0B', 'pin'], 'promotor': ['#F59E0B', 'pin'], 'kds': ['#EAB308', 'chart'], 'acompanhamentos': ['#4F9CF0', 'bell'], 'você': ['#C878E8', 'star'], 'folga': ['#64748B', 'calendar'] }, pt = PROJ_T[quemT.toLowerCase()] || (trabAg ? ['#059669', 'doc'] : null);
       const el = document.createElement('div'), tipo = pt ? ['trab', quemT || 'Trabalho', pt[0]] : tipoAg(txt); el.className = 'ag'; el.dataset.tipo = tipo[0]; el.dataset.cor = tipo[2]; el.style.setProperty('--tc', tipo[2]); if (d) el.dataset.dia = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
       const dt = document.createElement('div'); dt.className = 'dt';
       if (d && !pt) { dt.innerHTML = '<b></b><small></small>'; dt.querySelector('b').textContent = d.getDate(); dt.querySelector('small').textContent = MESES[d.getMonth()]; }
@@ -5784,7 +5814,7 @@ async function abreTreinoSeHora() {
 }
 function start() {
   chaveVencida = false; aplicaLargura(); grupoTrabEm = 0;   // chave nova: tenta o grupo do Trabalho de novo na hora
-  const veioDoPush = trataHashPush();   // veio da notificação: abre a conversa dela já respondendo
+  const veioDoPush = trataHashPush(); setTimeout(() => trataHashLembrete(), 400);   // veio da notificação: abre a conversa dela já respondendo
   if (!veioDoPush) { if (MODO_WEB) mostraLista(); else abrir(ultimaConv()).catch(() => {}); }   // celular: Trabalho no horário de trabalho, senão Geral
   if (!MODO_WEB && !veioDoPush) abreTreinoSeHora();   // na hora da academia, abre direto no treino de hoje (não se veio de notificação)
   // Conversa aberta: busca a cada 4 s (com 304 quase de graça); lista de conversas: a cada 15 s; status: 45-60 s (só com a página na tela).

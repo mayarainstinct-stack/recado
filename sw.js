@@ -1,4 +1,4 @@
-// v15 (app .224: Menu do trabalho, 09/11/2026). v14 (cache das imagens estáticas: avatares, ícones, fontes e marca ficam no celular depois da 1ª vez, até 300 arquivos; app.html e dados continuam sem cache). v13 (tocar na notificação navega a janela pra ./#responder=... em vez de postMessage: o hash sobrevive ao reload). v12..v3 no histórico do git. Service worker dos Recados: só serve pra notificação push (iPhone com a página na tela de início, iOS 16.4+). Sem cache do app.html de propósito.
+// v16 (lembrete em popup, 09/11/2026). v15 (app .224: Menu do trabalho, 09/11/2026). v14 (cache das imagens estáticas: avatares, ícones, fontes e marca ficam no celular depois da 1ª vez, até 300 arquivos; app.html e dados continuam sem cache). v13 (tocar na notificação navega a janela pra ./#responder=... em vez de postMessage: o hash sobrevive ao reload). v12..v3 no histórico do git. Service worker dos Recados: só serve pra notificação push (iPhone com a página na tela de início, iOS 16.4+). Sem cache do app.html de propósito.
 self.addEventListener('install', () => self.skipWaiting());
 const CACHE_ESTATICO = 'recados-estatico-v1', MAX_ESTATICO = 300;
 self.addEventListener('fetch', e => {
@@ -38,7 +38,8 @@ self.addEventListener('notificationclick', e => {
   // Tocou na notificação: abre (ou traz pra frente) a conversa certa (Geral ou Trabalho) já no modo de responder.
   // O pedido vai no endereço (#responder=...), não em postMessage: se a página recarregar no meio, o hash continua lá.
   const conv = (e.notification.data && e.notification.data.conv) || '', foto = (e.notification.data && e.notification.data.foto) || '';
-  const url = './#responder=' + encodeURIComponent(conv) + (foto ? '&foto=' + encodeURIComponent(foto) : '');
+  const lem = (e.notification.data && e.notification.data.lembrete) || '';   // lembrete em popup (09/11/2026): abre o app na janela Sim · Não · Ver
+  const url = lem ? './#lembrete=' + encodeURIComponent(lem) : './#responder=' + encodeURIComponent(conv) + (foto ? '&foto=' + encodeURIComponent(foto) : '');
   e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(async cs => {
     for (const c of cs) {
       if (!('focus' in c)) continue;
