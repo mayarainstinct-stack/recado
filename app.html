@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-09.228">
+<meta name="app-versao" content="2026-11-09.230">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1475,6 +1475,15 @@ body.modo-trab .pcd-abas, body.modo-trab .pcd-abas.embaixo { border-radius: 8px;
 body.modo-trab .pcd-abas button { min-height: 40px; font-size: 12px; }
 body.modo-trab .pcd-lin { grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); }
 body.modo-trab .pcd-num div, body.modo-trab .pcd-val { border-radius: 6px; }
+
+body.modo-trab .p-grade.apps .ic, body.modo-trab .p-grade.apps svg, body.modo-trab .p-grade.apps > * { filter: none !important; text-shadow: none !important; }
+body.modo-trab .p-grade.apps .ic { color: #059669; background: #ECFDF5; border-radius: 8px; box-shadow: none !important; }
+body.modo-trab .painel .p-hero .logo { display: none; }
+
+body.modo-trab .pcd-abas.embaixo { margin-right: 72px; overflow-x: auto; scrollbar-width: none; }
+body.modo-trab .pcd-abas.embaixo::-webkit-scrollbar { display: none; }
+body.modo-trab .pcd-abas button { flex: 0 0 auto; min-width: 64px; padding: 0 8px; font-size: 11px; white-space: nowrap; }
+body.modo-trab .pcd-cab div { font-size: 11px; overflow-wrap: normal; word-break: normal; hyphens: auto; padding: 6px 4px; text-align: center; }
 </style>
 </head>
 <body>
@@ -3986,7 +3995,8 @@ abreMenu.onclick = () => {
       .then(itens => {   // ordem: a que ela arrumou arrastando (fica neste aparelho); sem isso, a do menu.json (mão direita)
         let ordem = []; try { ordem = JSON.parse(store.get(FILE === TRAB.arq ? 'menu-ordem-trab' : 'menu-ordem') || '[]').map(n => n === 'Ideias' ? 'Tarefas' : n); } catch (e) {}   // Ideias virou Tarefas (May 16:16): a ordem que ela arrumou continua valendo
         const pos = n => { const i = ordem.indexOf(n); return i < 0 ? 999 : i; };
-        itens.map((m, i) => [m, i]).sort((a, b) => pos(a[0].nome) - pos(b[0].nome) || a[1] - b[1]).forEach(([m]) => { const b = botaoGrade(m.icone, m.nome, m.sub, () => { conta(m.nome); abreItemMenu(m); }); b.dataset.nome = m.nome; vesteBotao(b, m.nome); lista.append(b); });
+        itens.map((m, i) => [m, i]).sort((a, b) => pos(a[0].nome) - pos(b[0].nome) || a[1] - b[1]).forEach(([m]) => { const b = botaoGrade(m.icone, m.nome, m.sub, () => { conta(m.nome); abreItemMenu(m); }); b.dataset.nome = m.nome; if (FILE !== TRAB.arq) vesteBotao(b, m.nome);   // Trabalho: só ícone limpo, sem número do dia nem enfeite (May 09/11)
+ lista.append(b); });
         arrumaArrastando(lista);
       });
   });
@@ -4000,7 +4010,7 @@ const fotoRobo = g => { const im = elD('img'); im.alt = ''; im.src = AVATAR_PAGE
 function cartaoPc(p) {
   const g = GRUPO[p.robo] || TRAB_NEUTRO, [en, ec] = EST_PC[p.estado] || EST_PC.atencao;
   const d = elD('div', 'pcd'); d.style.setProperty('--rc', g.cor);
-  const top = elD('div', 'pcd-top'), nm = elD('div'); nm.append(elD('b', '', p.pc + ' · ' + g.nome.replace(/\s*\(.*\)/, '')), elD('span', '', p.papel || ''));
+  const top = elD('div', 'pcd-top'), nm = elD('div'); const gn = g.nome.replace(/\s*\(.*\)/, ''); nm.append(elD('b', '', gn.toLowerCase().startsWith(String(p.pc).toLowerCase()) ? gn : p.pc + ' · ' + gn), elD('span', '', p.papel || ''));   // sem "Checklist · Checklist" (projetos do Trabalho, 09/11)
   const es = elD('span', 'pcd-est', en); es.style.setProperty('--ec', ec); top.append(fotoRobo(g), nm, es); d.append(top);
   if (p.resumo) d.append(elD('p', 'pcd-res', p.resumo));
   if ((p.numeros || []).length) { const n = elD('div', 'pcd-num'); p.numeros.forEach(([k, v]) => { const b = elD('div'); b.append(elD('span', '', k), elD('b', '', v)); n.append(b); }); d.append(n); }
@@ -5401,7 +5411,7 @@ function abreAgenda(m) {
     let md; try { md = await lerArquivo(m.arq); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
     p.remove();
     painel.classList.add('tema-claro'); c.classList.add('ag-tela');   // Agenda clara, cara de consultório (May 08/11 12:49 e 12:56): branco, verde-água suave, cantos redondos, sem neon
-    { const rl = elD('button', 'ag-relat'); rl.type = 'button'; rl.append(elD('b', '', 'Relatório da semana'), elD('small', '', 'o que cada robô acertou e errou, 06 a 08/11')); rl.onclick = () => abreTexto({ nome: 'Relatório da semana', arq: 'casa/relatorios/semana-06-08-11-2026.md' }); c.append(rl); }   // o relatório que ela pediu na Agenda (May 08/11 18:30)
+    if (!/agenda-trabalho/.test(m.arq || '')) { const rl = elD('button', 'ag-relat'); rl.type = 'button'; rl.append(elD('b', '', 'Relatório da semana'), elD('small', '', 'o que cada robô acertou e errou, 06 a 08/11')); rl.onclick = () => abreTexto({ nome: 'Relatório da semana', arq: 'casa/relatorios/semana-06-08-11-2026.md' }); c.append(rl); }   // o relatório que ela pediu na Agenda (May 08/11 18:30)
     const cal = elD('div', 'ag-cal'); c.append(cal); setTimeout(() => montaCalendario(cal, c), 0);   // calendário do mês em cima (May, 07/11/2026 12:43 e 12:44: agenda de verdade, azul)
     const neg = (el, txt) => txt.split(/(\*\*[^*]+\*\*)/).forEach(parte => {
       if (/^\*\*[^*]+\*\*$/.test(parte)) { const b = document.createElement('b'); b.textContent = parte.slice(2, -2); el.append(b); }
