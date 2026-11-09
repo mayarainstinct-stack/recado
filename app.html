@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-09.225">
+<meta name="app-versao" content="2026-11-09.226">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -3674,8 +3674,8 @@ function mostraLista() {
 function abrir(c) {
   store.set('ultima-conv', c.arq); store.set('ultima-nome', c.nome);
   if (c.arq === TRAB.arq) geralLiberada = false;
-  mais.innerHTML = icone(c.arq === GERAL.arq ? 'grade' : 'more'); mais.setAttribute('aria-label', c.arq === GERAL.arq ? 'Menu' : 'Mais opções');
-  mais.hidden = c.arq === TRAB.arq;   // no Trabalho NUNCA aparece o ⋮ (May 16:36 e 16:40: "nunca é pra aparecer os pontinhos no trabalho"); pra Geral, dois toques no anel da semana
+  const comMenu = c.arq === GERAL.arq || c.arq === TRAB.arq; mais.innerHTML = icone(comMenu ? 'grade' : 'more'); mais.setAttribute('aria-label', comMenu ? 'Menu' : 'Mais opções');
+  mais.hidden = false;   // Trabalho mostra o ícone do Menu (grade), igual à Geral (May 09/11/2026); os pontinhos continuam NUNCA aparecendo no Trabalho (May 16:36 e 16:40: "nunca é pra aparecer os pontinhos no trabalho"); pra Geral, dois toques no anel da semana
   irGeral.hidden = c.arq === GERAL.arq || escondeGeral(); irTrab.hidden = c.arq === TRAB.arq; abreMenu.hidden = c.arq !== GERAL.arq && c.arq !== TRAB.arq; document.body.classList.toggle('modo-trab', c.arq === TRAB.arq);   // Trabalho é só trabalho; Casa juntada na Geral (pedido dela, 02/11/2026)
   if (typeof ocultosConversa !== 'undefined') ocultosConversa = null;
   document.body.classList.toggle('na-geral', c.arq === GERAL.arq);   // a Geral tem cara de casa (grafite, gamer); o Trabalho fica simples e sério (May, 07/11/2026 12:00)
