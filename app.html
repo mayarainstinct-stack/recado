@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-09.239">
+<meta name="app-versao" content="2026-11-09.240">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1496,6 +1496,45 @@ body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px
 
 .lem-card { border-top: 4px solid var(--quem); text-align: center; } .lem-de { display: block; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--quem); margin-bottom: 6px; }
 .lem-bts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 14px; } .lem-bts .pp-op { min-height: 44px; }
+/* ===== Editor, Configurações, Planos e Contraste (May, 09/11/2026). Só variáveis do tema: Trabalho herda as cores Simp sozinho. */
+.painel .p-topo { padding-top: calc(4px + env(safe-area-inset-top, 0px)); padding-bottom: 4px; gap: 8px; }   /* barra de cima mais fina (May 09/11) */
+.painel .p-topo button { width: 38px; height: 38px; font-size: 20px; } .painel .p-topo button svg { width: 20px; height: 20px; }
+.ed-mini { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: none; border: 0; color: var(--muted); opacity: .75; cursor: pointer; } .ed-mini svg { width: 15px; height: 15px; } .ed-mini:active { background: color-mix(in srgb, var(--fg) 10%, transparent); }
+.ed-card { text-align: left; } .ed-card .pp-perg { margin: 0 34px 12px 2px; }
+.ed-card input, .ed-card select, .ed-card textarea { width: 100%; box-sizing: border-box; font: inherit; font-size: 16px; padding: 9px 11px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); resize: none; }
+.ed-campo { display: block; margin-bottom: 10px; } .ed-campo > span { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin: 0 2px 4px; }
+.ed-previa { display: block; margin-top: 8px; max-height: 120px; border-radius: 10px; max-width: 100%; }
+.ed-erro { color: var(--err); font-size: 13px; margin: 0 0 8px; } .ed-acoes { display: flex; align-items: center; gap: 12px; margin-top: 4px; } .ed-acoes .pp-op { flex: 1; }
+.ed-link { background: none; border: 0; color: var(--muted); font: inherit; font-size: 13px; font-weight: 600; text-decoration: underline; padding: 8px 6px; cursor: pointer; }
+.ed-links { display: flex; justify-content: center; gap: 6px; margin-top: 6px; }
+.ed-faixa { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 1100; display: flex; align-items: center; gap: 14px; padding: 10px 10px 10px 16px; border-radius: 999px; background: #1F2937; color: #fff; font-size: 14px; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,.35); white-space: nowrap; }
+.ed-faixa button { background: none; border: 0; color: #FACC15; font: inherit; font-weight: 800; padding: 6px 10px; cursor: pointer; }
+.ck-item .ed-mini { align-self: center; margin-left: auto; } .ck-item { cursor: pointer; }
+.li-lista { display: grid; gap: 10px; padding: 4px 0 24px; }
+.li-card { display: flex; align-items: center; gap: 12px; padding: 12px 8px 12px 12px; border-radius: 16px; background: var(--paper); border: 1px solid var(--line); border-left: 4px solid var(--c); }
+.li-ck { flex: none; width: 28px; height: 28px; border-radius: 50%; border: 2px solid color-mix(in srgb, var(--c) 70%, var(--line)); background: none; display: grid; place-items: center; padding: 0; cursor: pointer; } .li-ck svg { width: 16px; height: 16px; fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+.li-card.feito .li-ck { background: var(--c); border-color: var(--c); } .li-card.feito .li-ck svg { opacity: 1; } .li-card.feito .li-tx b { text-decoration: line-through; opacity: .6; }
+.li-tx { flex: 1; min-width: 0; display: grid; gap: 2px; } .li-tx b { font-size: 16px; } .li-tx small { font-size: 13px; color: var(--muted); } .li-tx small i { font-style: normal; font-weight: 700; } .li-tx .li-feito { color: var(--c); font-weight: 700; }
+.cf-grupo { display: grid; gap: 4px; } .cf-linha { padding: 12px 4px; border-bottom: 1px solid var(--line); display: grid; gap: 6px; } .cf-linha.lado { grid-template-columns: 1fr auto; align-items: center; } .cf-linha.lado small { grid-column: 1; }
+.cf-nome { font-weight: 700; font-size: 15px; } .cf-linha small { color: var(--muted); font-size: 12px; }
+.cf-linha input, .cf-linha select { width: 100%; box-sizing: border-box; font: inherit; font-size: 16px; padding: 9px 11px; border-radius: 12px; border: 1px solid var(--line); background: var(--paper); color: var(--fg); }
+.cf-chave { width: 50px; height: 30px; border-radius: 999px; border: 0; background: color-mix(in srgb, var(--muted) 35%, transparent); position: relative; cursor: pointer; transition: background .2s; } .cf-chave::after { content: ''; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; transition: transform .2s; } .cf-chave.on { background: var(--accent); } .cf-chave.on::after { transform: translateX(20px); }
+.cf-dias { display: flex; gap: 6px; } .cf-dias button { flex: 1; height: 38px; border-radius: 12px; border: 1px solid var(--line); background: var(--paper); color: var(--muted); font-weight: 800; cursor: pointer; } .cf-dias button.on { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.cf-acoes { display: grid; gap: 8px; margin-top: 14px; padding-bottom: 24px; } .cf-acoes button { min-height: 46px; border-radius: 14px; border: 1px solid var(--line); background: var(--paper); color: var(--fg); font-size: 15px; font-weight: 600; text-align: left; padding: 0 14px; display: flex; align-items: center; gap: 10px; }
+.cf-status { text-align: center; margin: 8px 0 0; }
+/* Contraste: preto com as faixas CMYK da marca */
+.painel.tema-contraste, .painel.tema-contraste .p-corpo { background: #000; color: #fff; --bg: #000; --paper: #0D0D0D; --fg: #fff; --muted: #A3A3A3; --line: #262626; --accent: #EC008C; }
+body .painel.tema-contraste .p-topo { background: #000; color: #fff; box-shadow: none; border-bottom: 0; } body .painel.tema-contraste .p-topo::after { background: linear-gradient(90deg, #FFF200 0 33.3%, #EC008C 33.3% 66.6%, #00AEEF 66.6%); height: 4px; box-shadow: none; left: 0; right: 0; border-radius: 0; }
+.painel.tema-contraste .p-topo button, .painel.tema-contraste .p-voltar-baixo { background: #1A1A1A; color: #fff; border: 1px solid #2A2A2A; } .painel.tema-contraste .p-ic { background: #EC008C; color: #fff; box-shadow: none; }
+.ctr-hero { background: #fff; border-radius: 16px; padding: 18px 16px 0; overflow: hidden; } .ctr-hero img { display: block; width: 100%; max-height: 120px; object-fit: contain; }
+.ctr-faixas { display: flex; height: 8px; margin: 14px -16px 0; } .ctr-faixas i { flex: 1; }
+.ctr-frase { font-size: 15px; line-height: 1.45; color: #D4D4D4; margin: 14px 2px; }
+.ctr-cores { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; } .ctr-cor { text-align: center; } .ctr-cor span { display: block; height: 46px; border-radius: 12px; border: 1px solid #333; margin-bottom: 6px; } .ctr-cor b { display: block; font-size: 13px; } .ctr-cor small { color: #A3A3A3; font-size: 11px; }
+.ctr-card { background: #0D0D0D; border: 1px solid #262626; border-radius: 16px; padding: 14px; margin-bottom: 10px; } .ctr-card h3 { margin: 0 0 6px; font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: #FFF200; } .ctr-card:nth-of-type(2n) h3 { color: #EC008C; } .ctr-card:nth-of-type(3n) h3 { color: #00AEEF; } .ctr-card p { margin: 0; font-size: 14px; line-height: 1.5; color: #E5E5E5; }
+.p-engrenagem { margin-left: auto; flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: none; border: 0; color: var(--muted); cursor: pointer; align-self: flex-start; } .p-engrenagem svg { width: 22px; height: 22px; } .p-engrenagem:active { background: color-mix(in srgb, var(--fg) 12%, transparent); }
+body .ed-form, body.na-geral .ed-form { display: block; padding: 0; margin: 0; background: none; border: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; animation: none; }
+.ed-links .ed-link { white-space: nowrap; font-size: 12.5px; padding: 8px 4px; }
+.cf-acoes button { width: 100%; max-width: none; flex: none; justify-content: flex-start; white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -1551,7 +1590,8 @@ body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px
   <div class="p-topo"><button type="button" id="p-voltar" aria-label="Voltar" data-i="back"></button><h2 id="p-tit">Menu</h2><button type="button" id="p-anotar" aria-label="Escrever sobre esta tela" data-i="note"></button><button type="button" id="p-mais" aria-label="Mais opções" aria-haspopup="menu" data-i="more"></button></div>
   <div class="p-corpo" id="p-corpo"></div>
   <button type="button" class="p-voltar-baixo" id="p-voltar-baixo" aria-label="Voltar" data-i="back"></button>
-  <div class="p-extra" id="p-extra">
+  <div id="p-extra" hidden></div>
+  <div id="cfg-guarda" hidden>
     <button type="button" id="notificar" data-i="bell" data-t="Ativar notificações"></button>
     <button type="button" id="sair" data-i="key" data-t="Trocar chave"></button>
     <button type="button" id="som" data-i="headphones" data-t="Som"></button>
@@ -1574,6 +1614,8 @@ body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px
 <script>
 // ---- Icones da interface (May, 05/11/2026: "interface so com SVG, emoji so na mensagem"). Traco, 24x24, herdam a cor do texto.
 const ICONES_SVG = {
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   msg: '<path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.3A8 8 0 1 1 21 12z"/>',
   work: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 13h18"/>',
   menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
@@ -3152,7 +3194,7 @@ async function comecaGravar() {
     gravador.ondataavailable = e => { if (e.data.size) pedacos.push(e.data); };
     gravador.onstop = () => { clearTimeout(micSolta); micSolta = setTimeout(soltaMicStream, 900000); const g = gravador; gravador = null; mostraGravando(false); if (!cancelado) enviaAudio(new Blob(pedacos, { type: g.mimeType || tipo || 'audio/mp4' })); };
     gravador.start(); mostraGravando(true);
-    if (navigator.vibrate) navigator.vibrate(20);
+    if (CFG.vibracao !== false && navigator.vibrate) navigator.vibrate(20);
     if (pararAoIniciar) { cancelado = true; gravador.stop(); showNote('Segura o microfone enquanto fala'); }
   } catch (e) { gravador = null; soltaMicStream(); showNote('Sem acesso ao microfone. Libera em Ajustes → Apps → Safari → Microfone (Permitir) e, no site, toca em aA → Ajustes do Site → Microfone → Permitir.', true); }
 }
@@ -3420,7 +3462,7 @@ function mostraProximoLembrete() {
     if (h.get('t') === 'fin') {
       const linha = '- [' + stamp(new Date()) + '] ' + (h.get('lado') || 'pagar') + ' · ' + h.get('quem') + ' · ' + h.get('valor') + ' · marcado no lembrete';
       if (await gravaLinha('contas/LANCAMENTOS.md', linha)) { resolvido(); showNote('Marcado como pago: ' + h.get('quem')); } else { sim.disabled = false; sim.textContent = 'Sim'; showNote('Não marcou: confere a internet.', true); }
-    } else { let f = {}; try { f = JSON.parse(store.get('check-feitos') || '{}'); } catch (e) {} f[h.get('id')] = diaLocal(); store.set('check-feitos', JSON.stringify(f)); resolvido(); showNote('Marcado como feito.'); }
+    } else { const idc = h.get('id'), q = edAgora(); if (await gravaJson(conv === TRAB.arq ? 'menu/edicoes/checklist-trabalho.json' : 'menu/edicoes/checklist.json', d => { d.itens = d.itens || []; edAplica(d.itens, { tipo: 'feito', id: idc, on: true, quando: q }, true); }, 'Lembrete marcado como feito pelo app', { itens: [] })) { resolvido(); showNote('Marcado como feito.'); } else { sim.disabled = false; sim.textContent = 'Sim'; showNote('Não marcou: confere a internet.', true); } }
   });
   bt('Não', '', resolvido); bt('Ver', '', ver);
   ov.append(card); document.body.append(ov);
@@ -3650,7 +3692,7 @@ btnNotif.onclick = async () => {
 };
 
 function askToken() {
-  form.hidden = true; mais.hidden = true; menu.hidden = true; lista.hidden = true; novaBtn.hidden = true; voltar.hidden = true; logoEl.hidden = false; tituloEl.textContent = 'Recados'; FILE = null; feed.hidden = false;
+  form.hidden = true; mais.hidden = true; menu.hidden = true; lista.hidden = true; novaBtn.hidden = true; voltar.hidden = true; logoEl.hidden = false; tituloEl.textContent = nomeApp(); FILE = null; feed.hidden = false;
   feed.replaceChildren(document.getElementById('setup-tpl').content.cloneNode(true));
   document.getElementById('salvar-token').onclick = async () => {
     token = document.getElementById('token').value.trim(); if (!token) return;
@@ -3763,7 +3805,7 @@ function desenhaLista() {
 }
 function mostraLista() { if (!gravador) soltaMicStream();   // saiu da conversa: solta o microfone
   FILE = null; API = null; nomeConv = ''; fotoConv = ''; logoEl.style.backgroundImage = ''; convAv.style.backgroundImage = ''; convAv.hidden = true;
-  voltar.hidden = true; logoEl.hidden = false; tituloEl.textContent = 'Recados';
+  voltar.hidden = true; logoEl.hidden = false; tituloEl.textContent = nomeApp();
   feed.hidden = true; fixaEl.hidden = true; form.hidden = true; citando.hidden = true; desce.hidden = true; lista.hidden = false; novaBtn.hidden = false;
   mostraFazendo(''); showNote(''); menu.hidden = true; onlineBadge.hidden = true; onlinePop.hidden = true; semanaEl.hidden = true;
   if (conversas.length) desenhaLista();
@@ -3801,7 +3843,7 @@ voltar.onclick = () => { if (!sending) mostraLista(); };
 // Web: abre a última conversa vista.
 function horaDeTrabalho(d = new Date()) {
   const dia = d.getDay(), h = d.getHours();
-  return dia >= 1 && dia <= 5 && h >= 8 && h < 18 && h !== 12;
+  return CFG.trabalhaAtivo !== false && (CFG.diasDeTrabalho || []).includes(dia) && h >= CFG.horaTrabalhoInicio && h < CFG.horaTrabalhoFim && !(h >= CFG.almocoInicio && h < CFG.almocoFim);   // parâmetros em config/app.json (padrão: seg-sex 8h-18h, almoço 12h-13h)
 }
 // Combinado (May, 07/11/2026 15:52): no horário do serviço o app abre no Trabalho e a Geral some (lista e ⋮); dois toques rápidos no anel do limite semanal abrem a Geral, como segredo.
 let geralLiberada = false;
@@ -3824,7 +3866,7 @@ const irGeral = document.getElementById('ir-geral'), irTrab = document.getElemen
 const painel = document.getElementById('painel'), pCorpo = document.getElementById('p-corpo'), pTit = document.getElementById('p-tit'), pExtra = document.getElementById('p-extra');
 let pilha = [], catalogo = null;
 const reais = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
-const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#62B02A'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#B3261E'], [/ateli/i, '#B3261E'], [/^listas/i, '#F59E0B'], [/ideia|tarefa/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia|contas/i, '#F59E0B']];
+const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#62B02A'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/m[uú]sica/i, '#8B5CF6'], [/^artes/i, '#EC008C'], [/^planos/i, '#06B6D4'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#B3261E'], [/ateli/i, '#B3261E'], [/^listas/i, '#F59E0B'], [/ideia|tarefa/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia|contas/i, '#F59E0B']];
 // Arrumar o Menu arrastando (May, 07/11/2026 12:03: "dar pra eu clicar e arrastar, aí eu mesma organizava"): segura o azulejo até ele levantar,
 // arrasta pro lugar do outro e solta; a ordem fica guardada neste aparelho
 function arrumaArrastando(grade) {
@@ -3870,8 +3912,9 @@ function iconeMenu(nome) { const a = ICONES_MENU.find(([re]) => re.test(nome)); 
 // Menu: cada botão com a cara da tela de dentro (May, 07/11/2026 15:08 e 15:16: "cara de botão, mas cada botão tem que ser o CSS separado;
 // o que eles têm de igual é largura e altura, o resto cada um pega do seu interior"). Classe bt-<assunto>; a Agenda mostra o dia de hoje
 const BOTAO_DE = [[/jogo/i, 'jogos'], [/m[aá]quina|console/i, 'maquinas'], [/pend[eê]ncia|finan[cç]/i, 'pendencias'], [/garag/i, 'garagem'], [/sa[uú]de|cirurgia/i, 'saude'], [/treino|academia/i, 'treino'], [/casa/i, 'casa'],
-  [/obra|piscina/i, 'obra'], [/m[ií]dia|imagen|v[ií]deo|anima/i, 'midia'], [/lista/i, 'listas'], [/ideia|tarefa/i, 'ideias'], [/conta|comida/i, 'contas'], [/agenda/i, 'agenda']];
-const ICONE_LIMPO = {   // desenho de linha limpo, traço igual em todos (May 15:33: "tá parecendo uma criança desenhando, tem que ser mais profissional")
+  [/obra|piscina/i, 'obra'], [/m[ií]dia|imagen|v[ií]deo|anima/i, 'midia'], [/lista/i, 'listas'], [/ideia|tarefa/i, 'ideias'], [/conta|comida/i, 'contas'], [/agenda/i, 'agenda'], [/m[uú]sica/i, 'musica'], [/^artes/i, 'artes'], [/^planos/i, 'planos']];
+const ICONE_LIMPO = {
+  musica: '<path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>', artes: '<path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-.9 2-1.8 0-1.4-1.2-1.6-1.2-2.8 0-.9.7-1.4 1.6-1.4H17a4 4 0 0 0 4-4C21 6.8 17 3 12 3z"/><circle cx="7.5" cy="11" r=".9"/><circle cx="10" cy="7.2" r=".9"/><circle cx="14.5" cy="7.2" r=".9"/>', planos: '<path d="M5 21V4"/><path d="M5 4h12l-2.5 4L17 12H5"/>',   // desenho de linha limpo, traço igual em todos (May 15:33: "tá parecendo uma criança desenhando, tem que ser mais profissional")
   midia: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9.2l5 2.8-5 2.8z"/>', listas: '<path d="M10 6.5h10M10 12h10M10 17.5h10"/><path d="M4 6.5l1.3 1.3L7.6 5.5M4 12l1.3 1.3L7.6 11M4 17.5l1.3 1.3 2.3-2.3"/>',
   ideias: '<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.9 10.6c.6.6.9 1.4.9 2.4h6c0-1 .3-1.8.9-2.4A6 6 0 0 0 12 3z"/>', maquinas: '<rect x="3" y="4" width="18" height="12" rx="1.6"/><path d="M8 20h8M12 16v4"/><path d="M7.5 10h3M9 8.5v3"/><circle cx="15.5" cy="10" r=".9"/>',
   obra: '<path d="M2.5 17.5h19"/><path d="M4.5 17.5a7.5 7.5 0 0 1 15 0"/><path d="M10 10.5V6h4v4.5"/>', saude: '<path d="M12 3c-2 0-3.5 1.6-3.5 3.5 0 2 1.4 4 3.5 6.5 2.1-2.5 3.5-4.5 3.5-6.5C15.5 4.6 14 3 12 3z"/><path d="M10.3 12.5 6 21l3-1.2 1.7 2.5 2.4-6.8M13.7 12.5 18 21l-3-1.2-1.7 2.5-2.4-6.8"/>',
@@ -3920,9 +3963,9 @@ function cabecalho({ icone: ic, sub, acao } = {}) {
 }
 function cabecalhoGenerico() { pTopo.classList.remove('proprio'); pTopo.querySelector('.p-ic')?.remove(); pTopo.querySelector('.p-acao')?.remove(); pSub.textContent = ''; pSub.hidden = true; pMais.hidden = false; }
 function desenhaTela() {
-  const entrada = pilha[pilha.length - 1], [titulo, montar, rolou] = entrada, mae = pilha.length > 1 ? pilha[pilha.length - 2][3] : null; painel.classList.remove('tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude');
+  const entrada = pilha[pilha.length - 1], [titulo, montar, rolou] = entrada, mae = pilha.length > 1 ? pilha[pilha.length - 2][3] : null; painel.classList.remove('tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude', 'tema-contraste');
   if (mae) mae.temas.forEach(c => painel.classList.add(c));   // tela filha herda o tema da mãe (May, 09/11/2026: "senão fica cagado"); a filha que quiser outro tema troca no montar   // o tema claro é só da tela que pedir (a Agenda, May 08/11 12:56)
-  pTit.textContent = titulo; pCorpo.scrollTop = 0; pExtra.hidden = !pilha.length || pilha[pilha.length - 1][0] !== 'Menu';   /* só na raiz do Menu, também quando a tela abre direto pela notificação */ cabecalhoGenerico();
+  pTit.textContent = titulo; pCorpo.scrollTop = 0; pExtra.hidden = true;   /* só na raiz do Menu, também quando a tela abre direto pela notificação */ cabecalhoGenerico();
   pTopo.hidden = pilha.length === 1 && titulo === 'Menu'; painel.classList.toggle('sem-topo', pTopo.hidden);   // sem a barra, o Recados ganha respiro em cima (May 18:47: "colou em cima")   // o Menu começa direto em Recados, sem a barra de cima (May 18:40); voltar fica no botão de baixo e no deslize
   const t = document.createElement('div'); t.className = 'tela'; if (mae) mae.gr.forEach(c => t.classList.add(c)); pCorpo.replaceChildren(t);   // carga atrasada de tela que já saiu cai no invólucro velho
   const r = montar(t); const guardaTema = () => { entrada[3] = { temas: ['tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude'].filter(c => painel.classList.contains(c)), gr: [...t.classList].filter(c => c.startsWith('gr-') && !c.startsWith('gr-grade')) }; };   // a filha herda daqui
@@ -4061,7 +4104,7 @@ function abreInfoConversa() {
 abreMenu.onclick = () => {
   menu.hidden = true; painel.hidden = false; pilha = []; painel.style.removeProperty('--c'); Som.pagina();
   tela('Menu', c => {
-    const h = document.createElement('div'); h.className = 'p-hero'; h.innerHTML = '<div class="logo" aria-hidden="true" style="background-image:url(' + (FILE === TRAB.arq ? '' : FOTO_GERAL) + ');background-color:' + (FILE === TRAB.arq ? '#FFFFFF' : '#0E0F12') + '"></div><div><b>' + (FILE === TRAB.arq ? 'Trabalho' : 'Recados') + '</b><span>' + (FILE === TRAB.arq ? 'Simplificação · o dia de trabalho' : 'Atalhos da casa') + '</span></div>'; c.append(h);
+    const h = document.createElement('div'); h.className = 'p-hero'; h.innerHTML = '<div class="logo" aria-hidden="true" style="background-image:url(' + (FILE === TRAB.arq ? '' : FOTO_GERAL) + ');background-color:' + (FILE === TRAB.arq ? '#FFFFFF' : '#0E0F12') + '"></div><div><b>' + (FILE === TRAB.arq ? 'Trabalho' : nomeApp()) + '</b><span>' + (FILE === TRAB.arq ? 'Simplificação · o dia de trabalho' : 'Atalhos da casa') + '</span></div>'; const eng = elD('button', 'p-engrenagem'); eng.type = 'button'; eng.innerHTML = icone('gear'); eng.setAttribute('aria-label', 'Configurações'); eng.onclick = abreConfig; h.append(eng); c.append(h);   // engrenagem no canto de cima, à direita (May 09/11)
     if (FILE === TRAB.arq) fundoFoto(h.querySelector('.logo'), 'recados-fotos/simp-logo-transparente.png');   // logo do Simp no Menu do Trabalho (May 09/11)
     const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = 'Atalhos'; c.append(t);
     // Os botões do Menu vêm de menu/menu.json (a Lyra acrescenta páginas sem mexer no app); sem ele, só o Catálogo.
@@ -4293,17 +4336,189 @@ async function mandaAvisosQuadro() {   // um recado por dono, com tudo que mudou
     if (!(await gravaLinha(GERAL.arq, linha))) showNote('O aviso pro ' + nome + ' não foi; confere a internet.', true);
   }
 }
-async function gravaJson(arq, muda, msg) {   // lê o JSON mais novo com o sha, aplica a mudança e grava; 409 = alguém gravou junto, refaz em cima do novo
+async function gravaJson(arq, muda, msg, inicial) {   // lê o JSON mais novo com o sha, aplica a mudança e grava; 409 = alguém gravou junto, refaz em cima do novo
   for (let t = 0; t < 4; t++) {
     try {
-      const r = await api(apiDe(arq)); if (!r.ok) throw erroDe(r.status); const j = await r.json(), d = JSON.parse(b64decode(j.content)); muda(d);
-      const w = await api(apiDe(arq), { method: 'PUT', body: JSON.stringify({ message: msg, content: b64encode(JSON.stringify(d, null, 1) + '\n'), sha: j.sha }) });
+      const r = await api(apiDe(arq)); let j = {}, d; if (r.ok) { j = await r.json(); d = JSON.parse(b64decode(j.content)); } else if (r.status === 404 && inicial) d = JSON.parse(JSON.stringify(inicial)); else throw erroDe(r.status); muda(d);   // arquivo ainda não existe e veio um molde: cria
+      const corpoW = { message: msg, content: b64encode(JSON.stringify(d, null, 1) + '\n') }; if (j.sha) corpoW.sha = j.sha;
+      const w = await api(apiDe(arq), { method: 'PUT', body: JSON.stringify(corpoW) });
       if (w.ok) return d;
       if (w.status !== 409 && w.status !== 422) return null;
     } catch (e) { if (t === 3) return null; }
     await new Promise(ok => setTimeout(ok, 600));
   }
   return null;
+}
+// ===== Editor único (May, 09/11/2026): o app funciona sem Claude. Guiado pelos "campos" do JSON de cada tela.
+// Formato simples pra Claude escrever direto: { campos: [{ nome, rotulo, tipo, obrigatorio, opcoes }], itens: [{ id, ...campos, criado, feito, valor_feito, apagado }] }
+// tipos de campo: texto, texto_longo, numero, valor, data, escolha (opcoes), url_imagem (cola um link; o app mostra direto), oculto (o editor guarda e não mostra, ex.: capa_tratada).
+// feito/apagado = "DD/MM/AAAA HH:MM". NADA SE APAGA: apagar só marca "apagado". Telas de arquivo gerado gravam em "edicoes" (arquivo à parte, somado por cima).
+const edAgora = () => stamp(new Date());
+const edRotulo = c => c.rotulo || c.nome.replace(/_/g, ' ').replace(/^./, s => s.toUpperCase());
+const edNovoId = t => (String(t || 'item').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'item') + '-' + Date.now().toString(36);
+const edDataBr = s => { const m = String(s || '').match(/^(\d{4})-(\d\d)-(\d\d)$/); return m ? m[3] + '/' + m[2] + '/' + m[1] : s || ''; };
+function edQuando(s) { const m = String(s || '').match(/^(\d\d\/\d\d)\/\d{4} (\d\d:\d\d)/); return m ? m[1] + ' às ' + m[2] : String(s || ''); }
+function edRotuloFeito(x, verbo) { return (verbo || 'Feito') + ' em ' + edQuando(x.feito) + (x.valor_feito != null && x.valor_feito !== '' ? ' · ' + reais(x.valor_feito) : ''); }
+// uma operação vale igual no arquivo (relido na hora, com retry) e na cópia que o app tem na tela
+function edAplica(arr, op, criaSeFalta) {
+  if (op.tipo === 'lanca') { if (!arr.some(y => y.id === op.item.id)) arr.push({ ...op.item }); return; }
+  let t = arr.find(y => y.id === op.id); if (!t) { if (!criaSeFalta) return; t = { id: op.id }; arr.push(t); }
+  if (op.tipo === 'edita') Object.assign(t, op.v, { atualizado: op.quando });
+  else if (op.tipo === 'feito') { if (op.on) { t.feito = op.quando; if (op.valor != null && op.valor !== '') t.valor_feito = op.valor; else delete t.valor_feito; } else { delete t.feito; delete t.valor_feito; } }
+  else if (op.tipo === 'apaga') { if (op.on) t.apagado = op.quando; else delete t.apagado; }
+}
+// cfg = { arq, lista: 'itens', edicoes: arquivo à parte ou '' }; devolve a lista junta (base + edicoes) e as funções
+async function edAbre(cfg) {
+  const lista = cfg.lista || 'itens';
+  const base = JSON.parse(await lerArquivo(cfg.arq)); let sobre = { itens: [] };
+  if (cfg.edicoes) { try { sobre = JSON.parse(await lerArquivo(cfg.edicoes)); } catch (e) {} }
+  const itens = (base[lista] || []).map(x => ({ ...x }));
+  (sobre.itens || []).forEach(o => { const x = itens.find(y => y.id === o.id); if (x) Object.assign(x, o); else itens.push({ ...o }); });
+  const m = { base, itens, campos: base.campos || cfg.campos || [] };
+  m.op = async (op, msg) => {
+    edAplica(m.itens, op, false);
+    const alvo = cfg.edicoes || cfg.arq, ok = await gravaJson(alvo, d => { d[lista] = d[lista] || []; edAplica(d[lista], op, !!cfg.edicoes); }, msg || 'Edição pelo app', { itens: [] });
+    if (!ok) showNote('Não guardou: confere a internet e tenta de novo.', true);
+    return !!ok;
+  };
+  m.lanca = (v, msg) => { const item = { id: edNovoId(v[m.campos[0] && m.campos[0].nome] || v.texto || v.nome), ...v, criado: edAgora() }; return m.op({ tipo: 'lanca', item }, msg || 'Item novo pelo app').then(ok => ok ? item : null); };
+  m.edita = (id, v) => m.op({ tipo: 'edita', id, v, quando: edAgora() }, 'Item editado pelo app');
+  m.feito = (id, on, valor) => m.op({ tipo: 'feito', id, on, valor, quando: edAgora() }, on ? 'Marcado como feito pelo app' : 'Desmarcado pelo app');
+  m.apaga = (id, on) => m.op({ tipo: 'apaga', id, on, quando: edAgora() }, on ? 'Item apagado pelo app (fica guardado)' : 'Apagado desfeito pelo app');
+  return m;
+}
+// faixa "Item apagado · Desfazer" por 8 segundos
+function edFaixaDesfazer(txt, desfaz) {
+  document.querySelector('.ed-faixa')?.remove();
+  const f = elD('div', 'ed-faixa'), t = elD('span', '', txt), b = elD('button', '', 'Desfazer'); b.type = 'button';
+  const fim = setTimeout(() => f.remove(), 8000); b.onclick = () => { clearTimeout(fim); f.remove(); desfaz(); };
+  f.append(t, b); document.body.append(f);
+}
+// valor opcional ao marcar feito/pago (vem preenchido com o valor do item)
+function edPedeValor(titulo, sugestao) {
+  return new Promise(ok => {
+    const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card ed-card'), x = elD('button', 'pp-x'), inp = elD('input'), bt = elD('button', 'pp-op rec', 'Marcar');
+    x.type = 'button'; x.innerHTML = icone('close'); inp.type = 'text'; inp.inputMode = 'decimal'; inp.placeholder = 'Valor (opcional)'; inp.value = sugestao != null ? String(sugestao).replace('.', ',') : ''; bt.type = 'button';
+    const fecha = v => { ov.remove(); ok(v); };
+    x.onclick = () => fecha(null); ov.onclick = e => { if (e.target === ov) fecha(null); };
+    bt.onclick = () => { const s = inp.value.trim().replace(/\./g, '').replace(',', '.'); fecha(s === '' ? '' : (isNaN(+s) ? '' : +s)); };
+    card.append(x, elD('div', 'pp-perg', titulo), inp, bt); ov.append(card); document.body.append(ov); setTimeout(() => inp.focus(), 50);
+  });
+}
+// formulário pelos campos: v = valores atuais (editar) ou {} (lançar); aoSalvar(valores); aoApagar opcional
+function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar }) {
+  const ov = elD('div', 'fixa-pop ed-pop'), card = elD('div', 'pp-card ed-card'), x = elD('button', 'pp-x'), form = elD('form', 'ed-form'), els = {};
+  x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); };
+  card.append(x, elD('div', 'pp-perg', titulo));
+  campos.filter(c => c.nome !== 'id' && c.tipo !== 'oculto').forEach(c => {
+    const lb = elD('label', 'ed-campo'); lb.append(elD('span', '', edRotulo(c) + (c.obrigatorio ? ' *' : '')));
+    let el;
+    if (c.tipo === 'texto_longo') { el = elD('textarea'); el.rows = 3; }
+    else if (c.tipo === 'escolha') { el = elD('select'); (c.opcoes || []).forEach(o => { const [val, tx] = Array.isArray(o) ? o : [o, o]; const op = elD('option', '', tx); op.value = val; el.append(op); }); }
+    else { el = elD('input'); el.type = c.tipo === 'data' ? 'date' : c.tipo === 'url_imagem' ? 'url' : 'text'; if (c.tipo === 'numero' || c.tipo === 'valor') el.inputMode = 'decimal'; }
+    el.value = v[c.nome] != null ? v[c.nome] : (c.padrao != null ? c.padrao : ''); els[c.nome] = el; lb.append(el);
+    if (c.tipo === 'url_imagem') { const im = elD('img', 'ed-previa'); im.alt = ''; im.hidden = true; const mostra = () => { im.hidden = !/^https?:/i.test(el.value); if (!im.hidden) im.src = el.value; }; im.onerror = () => { im.hidden = true; }; el.addEventListener('change', mostra); mostra(); lb.append(im); }
+    form.append(lb);
+  });
+  const erro = elD('p', 'ed-erro'); erro.hidden = true; const ops = elD('div', 'ed-acoes');
+  const ok = elD('button', 'pp-op rec', 'Guardar'); ok.type = 'submit'; ops.append(ok);
+  if (aoApagar) { const ap = elD('button', 'ed-link', 'Apagar'); ap.type = 'button'; ap.onclick = () => { fecha(); aoApagar(); }; ops.append(ap); }
+  form.append(erro, ops);
+  form.onsubmit = async e => {
+    e.preventDefault(); const out = {};
+    for (const c of campos) { if (!els[c.nome]) continue; let val = els[c.nome].value.trim(); if (c.tipo === 'numero' || c.tipo === 'valor') { const n = +val.replace(/\./g, '').replace(',', '.'); val = val === '' ? '' : (isNaN(n) ? val : n); } if (c.obrigatorio && val === '') { erro.textContent = 'Falta preencher: ' + edRotulo(c); erro.hidden = false; return; } out[c.nome] = val; }
+    ok.disabled = true; await aoSalvar(out); fecha();
+  };
+  card.append(form); ov.append(card); document.body.append(ov);
+}
+const edMini = (ic, rot, fn) => { const b = elD('button', 'ed-mini'); b.type = 'button'; b.innerHTML = icone(ic); b.setAttribute('aria-label', rot); b.onclick = e => { e.stopPropagation(); fn(); }; return b; };
+// tela de lista genérica (tipo "lista" no menu): Planos e as próximas. Toque no círculo = feito; lápis pequeno = editar; apagar fica dentro do editar
+function abreLista(m) {
+  tela(m.nome, async c => {
+    painel.style.setProperty('--c', m.cor || '#06B6D4'); c.classList.add('li-tela');
+    const nota = elD('p', 'p-nota', 'Carregando…'); c.append(nota); let E;
+    try { E = await edAbre({ arq: m.arq, edicoes: m.edicoes }); } catch (e) { nota.textContent = 'Não abriu. Confere a internet.'; return; }
+    nota.remove();
+    const campos = E.campos, tit = campos[0] ? campos[0].nome : 'nome', verbo = E.base.feitoRotulo || 'Feito', pedeValor = !!E.base.pedeValor;
+    const lanca = () => edFormulario({ titulo: 'Novo', campos, aoSalvar: async v => { await E.lanca(v); pinta(); } });
+    const edita = x => edFormulario({ titulo: 'Editar', campos, v: x, aoSalvar: async v => { await E.edita(x.id, v); pinta(); }, aoApagar: () => apaga(x) });
+    const apaga = async x => { await E.apaga(x.id, true); pinta(); edFaixaDesfazer('Item apagado', async () => { await E.apaga(x.id, false); pinta(); }); };
+    const marca = async x => { if (x.feito) { await E.feito(x.id, false); } else { let val; if (pedeValor || x.valor != null) { val = await edPedeValor(x[tit] || '', x.valor); if (val === null) return; } await E.feito(x.id, true, val); } pinta(); };
+    const w = elD('div', 'li-lista'); c.append(w);
+    const pinta = () => {
+      cabecalho({ sub: E.itens.filter(x => !x.apagado && !x.feito).length + ' em aberto', acao: { icone: 'plus', rotulo: 'Novo', fn: lanca } });
+      w.replaceChildren(); const vis = E.itens.filter(x => !x.apagado);
+      if (!vis.length) w.append(elD('p', 'p-nota', 'Nada por aqui ainda. Toca no + pra acrescentar.'));
+      vis.slice().sort((a, b) => !!a.feito - !!b.feito).forEach(x => {
+        const card = elD('div', 'li-card' + (x.feito ? ' feito' : '')), ck = elD('button', 'li-ck'); ck.type = 'button'; ck.setAttribute('aria-label', x.feito ? 'Desmarcar' : 'Marcar como feito'); ck.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg>'; ck.onclick = () => marca(x);
+        const tx = elD('div', 'li-tx'); tx.append(elD('b', '', x[tit] || '(sem título)'));
+        campos.slice(1).filter(f => f.tipo !== 'oculto' && f.tipo !== 'url_imagem' && x[f.nome] !== undefined && x[f.nome] !== '').forEach(f => { const l = elD('small'); l.append(elD('i', '', edRotulo(f) + ': '), document.createTextNode(f.tipo === 'data' ? edDataBr(x[f.nome]) : x[f.nome])); tx.append(l); });
+        if (x.feito) tx.append(elD('small', 'li-feito', edRotuloFeito(x, verbo)));
+        card.append(ck, tx, edMini('note', 'Editar', () => edita(x))); w.append(card);
+      });
+    };
+    pinta();
+  });
+}
+// Contraste Artes Gráficas (tela filha de Artes): preto + faixas CMYK da marca (marca/contraste/IDENTIDADE.md e ESTILO.md)
+function abreContraste(m) {
+  tela(m.nome, async c => {
+    painel.classList.add('tema-contraste'); painel.style.setProperty('--c', '#EC008C'); c.classList.add('ct-tela');
+    let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { c.append(elD('p', 'p-nota', 'Não abriu. Confere a internet.')); return; }
+    cabecalho({ icone: 'sparkle', sub: 'a gráfica da May' });
+    const hero = elD('div', 'ctr-hero'), im = elD('img'); im.alt = d.nome || ''; fotoUrl(d.logo).then(u => { im.src = u; }).catch(() => {});
+    const faixas = elD('div', 'ctr-faixas'); ['#FFF200', '#EC008C', '#00AEEF'].forEach(k => { const s = elD('i'); s.style.background = k; faixas.append(s); });
+    hero.append(im, faixas); c.append(hero, elD('p', 'ctr-frase', d.frase || ''));
+    const cores = elD('div', 'ctr-cores'); (d.cores || []).forEach(k => { const b = elD('div', 'ctr-cor'), s = elD('span'); s.style.background = k.hex; b.append(s, elD('b', '', k.nome), elD('small', '', k.hex)); cores.append(b); }); c.append(cores);
+    (d.cartoes || []).forEach(k => { const cd = elD('article', 'ctr-card'); cd.append(elD('h3', '', k.titulo), elD('p', '', k.texto)); c.append(cd); });
+  });
+}
+// ===== Configurações (May, 09/11/2026): config/app.json no Inst; cada parâmetro tem padrão no código; sem o arquivo, vale o padrão (o app nunca para por causa da config)
+const CFG_PADRAO = { nomeApp: 'Recados', telaInicial: 'geral', trabalhaAtivo: true, diasDeTrabalho: [1, 2, 3, 4, 5], horaTrabalhoInicio: 8, horaTrabalhoFim: 18, almocoInicio: 12, almocoFim: 13, treinoAbrirSozinho: true, vibracao: true };
+const CFG_CAMPOS = [   // o que aparece na tela de Configurações, na ordem
+  { nome: 'nomeApp', rotulo: 'Nome do app', tipo: 'texto' },
+  { nome: 'telaInicial', rotulo: 'Ao abrir o app, ir pra', tipo: 'escolha', opcoes: [['geral', 'A conversa'], ['menu', 'O Menu']] },
+  { nome: 'trabalhaAtivo', rotulo: 'Trabalho no horário do serviço', tipo: 'sim_nao', ajuda: 'Desligado, o app não troca sozinho pro Trabalho.' },
+  { nome: 'diasDeTrabalho', rotulo: 'Dias de trabalho', tipo: 'dias' },
+  { nome: 'horaTrabalhoInicio', rotulo: 'Começa às (hora)', tipo: 'numero' },
+  { nome: 'horaTrabalhoFim', rotulo: 'Termina às (hora)', tipo: 'numero' },
+  { nome: 'almocoInicio', rotulo: 'Almoço começa às (hora)', tipo: 'numero' },
+  { nome: 'almocoFim', rotulo: 'Almoço termina às (hora)', tipo: 'numero' },
+  { nome: 'treinoAbrirSozinho', rotulo: 'Abrir o Treino sozinho na hora da academia', tipo: 'sim_nao' },
+  { nome: 'vibracao', rotulo: 'Vibrar ao gravar áudio', tipo: 'sim_nao' }
+];
+const CFG_BTNS = ['notificar', 'sair', 'som'].map(id => document.getElementById(id));
+let CFG = { ...CFG_PADRAO }; try { Object.assign(CFG, JSON.parse(localStorage.getItem('cfg-cache') || '{}')); } catch (e) {}   // cópia só pra abrir rápido; a verdade é o config/app.json
+function cfgAplica() {
+  document.title = CFG.nomeApp || 'Recados';
+  const t = document.getElementById('titulo'); if (t && !FILE) t.textContent = CFG.nomeApp || 'Recados';
+}
+async function cfgCarrega() {
+  try { const d = JSON.parse(await lerArquivo('config/app.json')); Object.keys(CFG_PADRAO).forEach(k => { if (d[k] !== undefined && d[k] !== null) CFG[k] = d[k]; }); try { localStorage.setItem('cfg-cache', JSON.stringify(CFG)); } catch (e) {} } catch (e) {}
+  cfgAplica();
+}
+const nomeApp = () => CFG.nomeApp || 'Recados';
+function abreConfig() {
+  tela('Configurações', c => {
+    const grupo = elD('div', 'cf-grupo'), atual = { ...CFG }, status = elD('p', 'p-nota cf-status', 'Mexeu, já fica guardado.');
+    const guarda = async (k, v) => {
+      atual[k] = v; CFG[k] = v; try { localStorage.setItem('cfg-cache', JSON.stringify(CFG)); } catch (e) {} cfgAplica();
+      const ok = await gravaJson('config/app.json', d => { d[k] = v; }, 'Configuração pelo app: ' + k, { sobre: 'Configurações do app da May. O app lê e grava aqui pelas Configurações.' });
+      status.textContent = ok ? 'Guardado.' : 'Não guardou no GitHub: confere a internet.';
+    };
+    CFG_CAMPOS.forEach(f => {
+      const lb = elD('div', 'cf-linha'); lb.append(elD('span', 'cf-nome', f.rotulo)); if (f.ajuda) lb.append(elD('small', '', f.ajuda));
+      if (f.tipo === 'sim_nao') { const b = elD('button', 'cf-chave'); b.type = 'button'; b.setAttribute('role', 'switch'); const pinta = () => { b.setAttribute('aria-checked', atual[f.nome] ? 'true' : 'false'); b.classList.toggle('on', !!atual[f.nome]); }; pinta(); b.onclick = () => { guarda(f.nome, !atual[f.nome]); pinta(); }; lb.classList.add('lado'); lb.append(b); }
+      else if (f.tipo === 'dias') { const r = elD('div', 'cf-dias'); ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].forEach((n, i) => { const b = elD('button', '', n); b.type = 'button'; const pinta = () => b.classList.toggle('on', (atual.diasDeTrabalho || []).includes(i)); pinta(); b.onclick = () => { const s = new Set(atual.diasDeTrabalho || []); s.has(i) ? s.delete(i) : s.add(i); guarda('diasDeTrabalho', [...s].sort()); pinta(); }; r.append(b); }); lb.append(r); }
+      else if (f.tipo === 'escolha') { const s = elD('select'); f.opcoes.forEach(([v, t]) => { const o = elD('option', '', t); o.value = v; s.append(o); }); s.value = atual[f.nome]; s.onchange = () => guarda(f.nome, s.value); lb.append(s); }
+      else { const i = elD('input'); i.type = f.tipo === 'numero' ? 'number' : 'text'; if (f.tipo === 'numero') { i.min = 0; i.max = 24; i.inputMode = 'numeric'; } i.value = atual[f.nome]; i.onchange = () => guarda(f.nome, f.tipo === 'numero' ? (+i.value || 0) : (i.value.trim() || CFG_PADRAO[f.nome])); lb.append(i); }
+      grupo.append(lb);
+    });
+    const acoes = elD('div', 'cf-acoes'); acoes.append(elD('div', 'p-sec', 'Do aparelho'));
+    CFG_BTNS.forEach(b => acoes.append(b));
+    c.append(grupo, status, acoes);
+    cabecalho({ icone: 'gear', sub: 'o app do jeito da May' });
+  });
 }
 // Ideias = quadro de pedidos da casa (May, 07/11/2026 12:38 a 13:11): todo pedido dela vira post-it; branco = sem dono (o Sigma faz a triagem),
 // na cor do robô = já tem dono; de cima pra baixo = urgência, ela reordena segurando e arrastando; aba 1 esperando + fazendo, aba 2 concluídos
@@ -4447,9 +4662,9 @@ function abreIdeias(m) {
     busca.addEventListener('input', () => pinta());
     const papel = p => { const g = GRUPO[p.dono]; return g ? 'color-mix(in srgb, ' + g.cor + ' 52%, #FFF8E7)' : '#FFFDF5'; };
     const prio = p => p.prioridade || 3, quandoNum = q => { const m = String(q || '').match(/(\d\d)\/(\d\d)\/(\d{4}) (\d\d):(\d\d)/); return m ? +(m[3] + m[2] + m[1] + m[4] + m[5]) : 0; };
-    const daTela = t => d.postits.filter(p => TELAS[t].some(([e]) => e === p.estado)).sort((a, b) => prio(a) - prio(b) || a.ordem - b.ordem);   // prioridade primeiro, depois a ordem dela (May 16:18)
+    const daTela = t => d.postits.filter(p => !p.apagado && TELAS[t].some(([e]) => e === p.estado)).sort((a, b) => prio(a) - prio(b) || a.ordem - b.ordem);   // prioridade primeiro, depois a ordem dela (May 16:18)
     const abertos = () => daTela('quadro'), telaDe = p => Object.keys(TELAS).find(t => TELAS[t].some(([e]) => e === p.estado)) || 'feitos';
-    const feitos = () => d.postits.filter(p => p.estado === 'concluido').sort((a, b) => quandoNum(b.feito) - quandoNum(a.feito) || b.ordem - a.ordem);   // o que terminou por último em cima (May 16:20)
+    const feitos = () => d.postits.filter(p => !p.apagado && p.estado === 'concluido').sort((a, b) => quandoNum(b.feito) - quandoNum(a.feito) || b.ordem - a.ordem);   // o que terminou por último em cima (May 16:20)
     const PRIO = { 1: ['altíssima', '#DC2626'], 2: ['alta', '#F97316'], 4: ['baixa', '#64748B'], 5: ['sem pressa', '#94A3B8'] };
     const pop = (titulo, corpo, cor) => { const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card ie-card'), x = elD('button', 'pp-x'); card.style.setProperty('--quem', cor || '#FACC15'); x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; card.append(x, elD('div', 'pp-perg', titulo), corpo); ov.append(card); document.body.append(ov); fechaPuxando(ov, fecha, () => card, () => card); return fecha; };   // o mesmo popup padrão, na cor do robô dono (May 17:02)
     const postit = (p, k) => {
@@ -4481,8 +4696,19 @@ function abreIdeias(m) {
       const daColuna = t !== 'feitos' ? daTela(t).filter(x => x.estado === p.estado) : [];
       if (daColuna.length && daColuna[0] !== p) botao('Mais urgente: pro topo', '', () => { fecha(); const cols = colsDe(t); cols[p.estado] = [p.id, ...cols[p.estado].filter(x => x !== p.id)]; salvaOrdem(cols); pinta(); });
       if (ops.children.length) cp.append(ops);
+      const links = elD('div', 'ed-links'), lk = (rot, fn) => { const b = elD('button', 'ed-link', rot); b.type = 'button'; b.onclick = () => { fecha(); fn(); }; links.append(b); };
+      lk('Editar', () => editaTarefa(p)); if (p.estado !== 'concluido') lk('Marcar como feita', () => muda(p, 'concluido', { feito: agoraBr(), feitoPor: 'may' })); else lk('Desmarcar', () => muda(p, 'esperando', { feito: '' })); lk('Apagar', () => apagaTarefa(p));
+      cp.append(links);
       const fecha = pop('Pedido #' + p.id, cp, g && g.cor);
     };
+    const CAMPOS_T = [{ nome: 'texto', rotulo: 'O que fazer', tipo: 'texto_longo', obrigatorio: true }, { nome: 'dono', rotulo: 'Quem faz', tipo: 'escolha', opcoes: [['', 'Sem dono (o Sigma escolhe)'], ...ROBOS_IE.map(r => [r, r.charAt(0).toUpperCase() + r.slice(1)])] }, { nome: 'prioridade', rotulo: 'Prioridade', tipo: 'escolha', padrao: '3', opcoes: [['1', 'Altíssima'], ['2', 'Alta'], ['3', 'Normal'], ['4', 'Baixa'], ['5', 'Sem pressa']] }, { nome: 'assunto', rotulo: 'Assunto', tipo: 'texto' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto_longo' }];
+    const NOMEP2 = { 1: 'altíssima', 2: 'alta', 3: 'normal', 4: 'baixa', 5: 'sem pressa' };
+    const grvT = async (op, msg) => { edAplica(d.postits, op, false); pinta(); if (!(await gravaJson(arq, dd => edAplica(dd.postits, op, false), msg))) showNote('Não guardou: confere a internet.', true); };
+    const editaTarefa = p => edFormulario({ titulo: 'Editar pedido #' + p.id, campos: CAMPOS_T, v: p, aoSalvar: async v => { v.prioridade = +v.prioridade || 3; v.prioridadeNome = NOMEP2[v.prioridade]; await grvT({ tipo: 'edita', id: p.id, v, quando: agoraBr() }, 'Quadro: #' + p.id + ' editado pelo app'); }, aoApagar: () => apagaTarefa(p) });
+    const apagaTarefa = async p => { await grvT({ tipo: 'apaga', id: p.id, on: true, quando: agoraBr() }, 'Quadro: #' + p.id + ' apagado pelo app (fica guardado)'); edFaixaDesfazer('Pedido apagado', () => grvT({ tipo: 'apaga', id: p.id, on: false }, 'Quadro: #' + p.id + ' voltou')); };
+    const novaTarefa = () => edFormulario({ titulo: 'Novo pedido', campos: CAMPOS_T, aoSalvar: async v => {
+      const t = String(v.texto).replace(/\s+/g, ' '), novo = dd => { const n = Math.max(0, ...dd.postits.map(x => parseInt(x.id, 10) || 0)) + 1, ord = Math.max(0, ...dd.postits.map(x => x.ordem)) + 1, pr = +v.prioridade || 3; const q = { id: String(n), texto: t, quando: agoraBr(), estado: 'esperando', dono: v.dono || '', ordem: ord, nota: v.nota || '', categoria: '', assunto: v.assunto || '', prioridade: pr, prioridadeNome: NOMEP2[pr] }; dd.postits.push(q); return q; };
+      novo(d); aba = 'quadro'; pinta(); if (!(await gravaJson(arq, dd => { novo(dd); }, 'Pedido novo da May pelo app (formulário)'))) showNote('Não guardou: confere a internet.', true); } });
     const agoraBr = () => { const dt = new Date(); return String(dt.getDate()).padStart(2, '0') + '/' + String(dt.getMonth() + 1).padStart(2, '0') + '/' + dt.getFullYear() + ' ' + String(dt.getHours()).padStart(2, '0') + ':' + String(dt.getMinutes()).padStart(2, '0'); };
     const colsDe = t => { const cols = {}; TELAS[t].forEach(([e]) => { cols[e] = daTela(t).filter(x => x.estado === e).map(x => x.id); }); return cols; };
     const NOME_E = { esperando: 'Esperando', fazendo: 'Fazendo', aguardando: 'Revisão aguardando', revisando: 'Revisando', concluido: 'Concluído' }, NOME_P = { 1: 'altíssima', 2: 'alta', 3: 'normal', 4: 'baixa', 5: 'sem pressa' };
@@ -4515,13 +4741,13 @@ function abreIdeias(m) {
       else if (antesO) avisa(d.postits.find(y => y.id === movido), antesO);
     };
     const pinta = () => {
-      cabecalho({ icone: 'pin', sub: abertos().length + ' planejadas · ' + daTela('revisao').length + ' na revisão' });
+      cabecalho({ icone: 'pin', sub: abertos().length + ' planejadas · ' + daTela('revisao').length + ' na revisão', acao: { icone: 'plus', rotulo: 'Novo pedido', fn: novaTarefa } });
       nav.replaceChildren(); tr.replaceChildren();
       abas.forEach(([id, rot]) => { const n = TELAS[id] ? daTela(id).length : feitos().length, b = elD('button', aba === id ? 'on' : '', rot + ' · ' + n); b.type = 'button'; b.onclick = () => { if (aba === id) return; const dir = abas.findIndex(a => a[0] === id) > abas.findIndex(a => a[0] === aba) ? 1 : -1; aba = id; pinta(); entraDoLado(tr, dir); }; nav.append(b); });
       const termo = busca.value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       if (termo) {   // procurando: uma lista só com tudo que bate, aberto ou concluído
         const q = elD('div', 'ie-quadro'), sem = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        const achou = d.postits.filter(p => [p.texto, p.assunto, p.categoria, p.tela, p.nota, '#' + p.id].some(t => sem(t).includes(termo))).sort((a, b) => abas.findIndex(z => z[0] === telaDe(a)) - abas.findIndex(z => z[0] === telaDe(b)) || prio(a) - prio(b) || a.ordem - b.ordem);
+        const achou = d.postits.filter(p => !p.apagado).filter(p => [p.texto, p.assunto, p.categoria, p.tela, p.nota, '#' + p.id].some(t => sem(t).includes(termo))).sort((a, b) => abas.findIndex(z => z[0] === telaDe(a)) - abas.findIndex(z => z[0] === telaDe(b)) || prio(a) - prio(b) || a.ordem - b.ordem);
         q.append(elD('p', 'p-nota', achou.length ? achou.length + ' tarefa' + (achou.length > 1 ? 's' : '') + ' com "' + busca.value.trim() + '"' : 'Nada com "' + busca.value.trim() + '".'));
         achou.forEach((p, k) => q.append(postit(p, k))); tr.append(q);
         q.addEventListener('click', e => { const el = e.target.closest('.ie-post'); if (!el) return; const p = d.postits.find(x => x.id === el.dataset.id); if (p) detalhe(p); });
@@ -5013,6 +5239,8 @@ function abreItemMenu(m) {
   if (m.tipo === 'garagem' && window.abreGaragem) return abreGaragem(m);   // a Garagem, a oficina dos 3 veículos (vaga do Menu, May 08/11 14:41)
   if (m.tipo === 'grupo') return abreGrupo(m);
   if (m.tipo === 'ideias') return abreIdeias(m);
+  if (m.tipo === 'lista') return abreLista(m);
+  if (m.tipo === 'contraste') return abreContraste(m);
   if (m.tipo === 'planta') return abrePlanta(m);
   if (m.tipo === 'obra') return abreObra(m);
   if (m.tipo === 'financas') return m.aba === 'contas' ? abreContasMes(m) : abreFinancas(m);
@@ -5058,32 +5286,40 @@ function semHojeFalso(txt) {   // "Perna · hoje (29/10)" num dia que não é 29
 function abreCheck(m) {
   tela(m.nome, async c => {
     const p = elD('p', 'p-nota', 'Carregando…'); c.append(p);
-    let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    let E; try { E = await edAbre({ arq: m.arq, edicoes: m.edicoes }); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
     p.remove();
-    let feitos = {}; try { feitos = JSON.parse(store.get('check-feitos') || '{}'); } catch (e) {}
+    const campos = [{ nome: 'texto', rotulo: 'O que fazer', tipo: 'texto', obrigatorio: true }, { nome: 'data', rotulo: 'Até quando', tipo: 'data' }, { nome: 'de', rotulo: 'De onde vem', tipo: 'texto', padrao: 'Eu' }];
     const hoje = diaLocal(), soma = n => { const x = new Date(hoje + 'T12:00'); x.setDate(x.getDate() + n); return x.toLocaleDateString('sv'); };
-    Object.keys(feitos).forEach(k => { if (feitos[k] < hoje) delete feitos[k]; });
-    const itens = (d.itens || []).map(x => ({ ...x, data: x.data || x.quando || '', saude: !!x.saude || x.de === 'Saúde' })).filter(x => !feitos[x.id] || feitos[x.id] === hoje);
     const w = elD('div', 'ck-bloco'); c.append(w);
-    w.append(elD('div', 'ck-espiral'));
-    const cab = elD('div', 'ck-cab'); cab.append(elD('b', '', 'pra fazer'), elD('span', '', new Date(hoje + 'T12:00').toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }))); w.append(cab);
-    const amanha = soma(1), semana = soma(7), dm = s => s.slice(8, 10) + '/' + s.slice(5, 7);
-    const grupos = [['Atrasado', x => x.data && x.data < hoje], ['Hoje', x => x.data === hoje], ['Amanhã', x => x.data === amanha], ['Esta semana', x => x.data > amanha && x.data <= semana], ['Mais pra frente', x => x.data > semana], ['Sem data', x => !x.data]];
-    if (!itens.length) w.append(elD('p', 'ck-vazio', 'Nada pra fazer agora.'));
-    grupos.forEach(([nome, cabe]) => {
-      const lista = itens.filter(cabe).sort((a, b) => (a.data || '').localeCompare(b.data || ''));
-      if (!lista.length) return;
-      w.append(elD('div', 'ck-sec' + (nome === 'Atrasado' ? ' atraso' : ''), nome));
-      lista.forEach(x => {
-        const b = elD('button', 'ck-item' + (feitos[x.id] ? ' feito' : '')); b.type = 'button';
+    const lanca = () => edFormulario({ titulo: 'Novo item', campos, aoSalvar: async v => { await E.lanca(v); pinta(); } });
+    const apaga = async x => { await E.apaga(x.id, true); pinta(); edFaixaDesfazer('Item apagado', async () => { await E.apaga(x.id, false); pinta(); }); };
+    const edita = x => edFormulario({ titulo: 'Editar', campos, v: { ...x, data: x.data || x.quando || '' }, aoSalvar: async v => { await E.edita(x.id, v); pinta(); }, aoApagar: () => apaga(x) });
+    const pinta = () => {
+      cabecalho({ acao: { icone: 'plus', rotulo: 'Novo item', fn: lanca } });
+      w.replaceChildren(); w.append(elD('div', 'ck-espiral'));
+      const todos = E.itens.filter(x => !x.apagado).map(x => ({ ...x, data: x.data || x.quando || '', saude: !!x.saude || x.de === 'Saúde' })), itens = todos.filter(x => !x.feito), feitos = todos.filter(x => x.feito);
+      const cab = elD('div', 'ck-cab'); cab.append(elD('b', '', 'pra fazer'), elD('span', '', new Date(hoje + 'T12:00').toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }))); w.append(cab);
+      const amanha = soma(1), semana = soma(7), dm = s => s.slice(8, 10) + '/' + s.slice(5, 7);
+      const grupos = [['Atrasado', x => x.data && x.data < hoje], ['Hoje', x => x.data === hoje], ['Amanhã', x => x.data === amanha], ['Esta semana', x => x.data > amanha && x.data <= semana], ['Mais pra frente', x => x.data > semana], ['Sem data', x => !x.data]];
+      if (!itens.length) w.append(elD('p', 'ck-vazio', 'Nada pra fazer agora.'));
+      const linha = (x, nome) => {
+        const b = elD('div', 'ck-item' + (x.feito ? ' feito' : '')); b.setAttribute('role', 'button'); b.tabIndex = 0;
         b.innerHTML = '<span class="ck-caixa"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg></span><span class="ck-tx"><span class="ck-t"></span><span class="ck-risco"><svg viewBox="0 0 100 12" preserveAspectRatio="none"><path d="M1 7 C 18 4, 30 9, 48 6 S 80 4, 99 7"/></svg></span><small></small></span>';
         b.querySelector('.ck-t').textContent = x.saude && !/ver em Saúde/i.test(x.texto || '') ? (x.texto || 'Um item de saúde') + ' · ver em Saúde' : x.texto;
-        b.querySelector('small').textContent = [x.data && nome !== 'Hoje' && nome !== 'Amanhã' ? dm(x.data) : '', x.de].filter(Boolean).join(' · ');
+        b.querySelector('small').textContent = x.feito ? edRotuloFeito(x) : [x.data && nome !== 'Hoje' && nome !== 'Amanhã' ? dm(x.data) : '', x.de].filter(Boolean).join(' · ');
+        b.append(edMini('note', 'Editar', () => edita(x)));
         const mede = () => { const q = b.querySelector('.ck-t').getClientRects()[0]; if (q) b.style.setProperty('--rw', Math.round(q.width + 8) + 'px'); };
-        b.onclick = () => { mede(); if (feitos[x.id]) delete feitos[x.id]; else feitos[x.id] = hoje; store.set('check-feitos', JSON.stringify(feitos)); b.classList.toggle('feito', !!feitos[x.id]); };
-        w.append(b); if (feitos[x.id]) requestAnimationFrame(mede);
+        b.onclick = async () => { mede(); await E.feito(x.id, !x.feito); pinta(); };
+        w.append(b); requestAnimationFrame(mede);
+      };
+      grupos.forEach(([nome, cabe]) => {
+        const lista = itens.filter(cabe).sort((a, b) => (a.data || '').localeCompare(b.data || ''));
+        if (!lista.length) return;
+        w.append(elD('div', 'ck-sec' + (nome === 'Atrasado' ? ' atraso' : ''), nome)); lista.forEach(x => linha(x, nome));
       });
-    });
+      if (feitos.length) { w.append(elD('div', 'ck-sec', 'Feitos')); feitos.sort((a, b) => String(b.feito).slice(6, 10).concat(String(b.feito).slice(3, 5), String(b.feito).slice(0, 2), String(b.feito).slice(11)).localeCompare(String(a.feito).slice(6, 10).concat(String(a.feito).slice(3, 5), String(a.feito).slice(0, 2), String(a.feito).slice(11)))).forEach(x => linha(x, 'Feitos')); }
+    };
+    pinta();
   });
 }
 // Ateliê (aba nova da Mídia, May 08/11 14:52 e 15:09, Sigma 15:18): as obras em andamento (música, desenho, animação), cada uma com a etapa numa tira de filme e o que falta; estúdio antigo, igual à Mídia. Dados: menu/atelie.json = { obras: [{ id, nome, tipo, etapa 1-4, falta, com }] }. Hermes
@@ -5825,6 +6061,7 @@ let poll = null;
 // Não abre por cima de quem está respondendo (05/11/2026): veio de notificação, citação, rascunho, foto na bandeja ou gravando.
 const ocupadaNaConversa = () => Date.now() - pushEm < 60000 || !!respondendo || !!box.value.trim() || anexos.length > 0 || !!gravador;
 async function abreTreinoSeHora() {
+  if (CFG.treinoAbrirSozinho === false) return;
   if (ocupadaNaConversa()) return;
   let d; try { d = JSON.parse(await lerArquivo('menu/treino.json')); } catch (e) { return; }
   if (ocupadaNaConversa()) return;   // o push pode ter chegado enquanto lia o treino.json
@@ -5854,7 +6091,8 @@ async function abreTreinoSeHora() {
 function start() {
   chaveVencida = false; aplicaLargura(); grupoTrabEm = 0;   // chave nova: tenta o grupo do Trabalho de novo na hora
   const veioDoPush = trataHashPush(); setTimeout(() => trataHashLembrete(), 400);   // veio da notificação: abre a conversa dela já respondendo
-  if (!veioDoPush) { if (MODO_WEB) mostraLista(); else abrir(ultimaConv()).catch(() => {}); }   // celular: Trabalho no horário de trabalho, senão Geral
+  cfgCarrega();
+  if (!veioDoPush) { if (MODO_WEB) mostraLista(); else abrir(ultimaConv()).then(() => { if (CFG.telaInicial === 'menu' && painel.hidden && !abreMenu.hidden) abreMenu.click(); }).catch(() => {}); }   // celular: Trabalho no horário de trabalho, senão Geral
   if (!MODO_WEB && !veioDoPush) abreTreinoSeHora();   // na hora da academia, abre direto no treino de hoje (não se veio de notificação)
   // Conversa aberta: busca a cada 4 s (com 304 quase de graça); lista de conversas: a cada 15 s; status: 45-60 s (só com a página na tela).
   // Parado: chave vencida (401), limite do GitHub até o reset, GitHub fora (5xx) por 30 s.
