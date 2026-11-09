@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-09.226">
+<meta name="app-versao" content="2026-11-09.227">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -5759,7 +5759,8 @@ function start() {
 // Recarrega só se o app.html publicado é de outra versão e não tem nada pela metade (05/11/2026).
 const VERSAO = (document.querySelector('meta[name="app-versao"]') || {}).content || '';
 { const NOV = (document.querySelector('meta[name="app-novidade"]') || {}).content || '', vista = store.get('versao-vista');   // balão de atualizado: o número da versão e uma frase do que mudou (#34); desce do topo e sobe de volta
-  if (VERSAO && vista && vista !== VERSAO && NOV) setTimeout(() => { const b = document.createElement('button'); b.type = 'button'; b.className = 'novo-ver'; b.append(document.createElement('b'), document.createElement('span')); b.firstChild.textContent = 'Atualizado · versão ' + VERSAO.split('.').pop(); b.lastChild.textContent = NOV; document.body.append(b); const sai = () => { if (b.classList.contains('sai')) return; b.classList.add('sai'); setTimeout(() => b.remove(), 320); }; b.onclick = sai; setTimeout(sai, 7000); }, 1200);
+  if (false && VERSAO && vista && vista !== VERSAO && NOV) setTimeout(   // balão verde de "Atualizado" DESLIGADO (May 09/11/2026: "não precisa me falar q atualizou")
+() => { const b = document.createElement('button'); b.type = 'button'; b.className = 'novo-ver'; b.append(document.createElement('b'), document.createElement('span')); b.firstChild.textContent = 'Atualizado · versão ' + VERSAO.split('.').pop(); b.lastChild.textContent = NOV; document.body.append(b); const sai = () => { if (b.classList.contains('sai')) return; b.classList.add('sai'); setTimeout(() => b.remove(), 320); }; b.onclick = sai; setTimeout(sai, 7000); }, 1200);
   if (VERSAO) store.set('versao-vista', VERSAO); }
 async function versaoNova() {
   try { const r = await fetch('app.html', { cache: 'no-cache' }); if (!r.ok) return false; const m = (await r.text()).match(/<meta name="app-versao" content="([^"]+)"/); return !!(m && VERSAO && m[1] !== VERSAO); } catch (e) { return false; }
