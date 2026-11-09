@@ -115,12 +115,43 @@ const CSS = `
 .gr-tela .gr-odo-em { width: 100%; font: 600 12px/1.2 var(--gr-mono); color: #C9CCD2; }
 .gr-tela .gr-fonte { margin: 2px 2px 0; font: 500 11px/1.35 var(--gr-mono); color: #7D828B; }
 .gr-tela .gr-cornota { display: inline-block; margin-top: 8px; padding: 3px 7px; font: 600 11px/1.2 var(--gr-mono); color: #111; background: #E9E5D8; }
+.gr-tela .gr-abas { display: flex; gap: 0; border: 2px solid #111; background: #141518; }
+.gr-tela .gr-aba { flex: 1; padding: 11px 4px 9px; border: 0; background: transparent; color: #9EA2AA; font: 700 16px/1 var(--gr-imp); font-synthesis: none; letter-spacing: .1em; text-transform: uppercase; }
+.gr-tela .gr-aba + .gr-aba { border-left: 2px solid #111; }
+.gr-tela .gr-aba.on { background: repeating-linear-gradient(-45deg, #F5C400 0 9px, #E0B300 9px 18px); color: #111; }
+.gr-tela .gr-corpo { display: flex; flex-direction: column; gap: 12px; }
+.gr-tela .gr-corpo > * { flex: none; min-width: 0; }
+.gr-tela .gr-fases { display: flex; gap: 6px; margin: 0 0 8px; flex-wrap: wrap; }
+.gr-tela .gr-chip, .gr-tela .gr-aba, .gr-tela .gr-ang { border-radius: 0; }
+.gr-tela .gr-chip { flex: 1 1 auto; padding: 8px 4px 6px; white-space: nowrap; border: 2px solid #4C5058; background: #1E1F23; color: #C9CCD2; font: 700 13px/1 var(--gr-imp); font-synthesis: none; letter-spacing: .04em; text-transform: uppercase; clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%); }
+.gr-tela .gr-chip.on { background: var(--gr-am); border-color: #111; color: #111; }
+.gr-tela .gr-angs { display: flex; gap: 6px; margin: 0 0 10px; overflow-x: auto; scrollbar-width: none; }
+.gr-tela .gr-angs::-webkit-scrollbar { display: none; }
+.gr-tela .gr-ang { flex: none; padding: 6px 9px 5px; border: 1px solid #4C5058; background: #1E1F23; color: #C9CCD2; font: 600 12px/1 var(--gr-mono); }
+.gr-tela .gr-ang.on { border-color: var(--gr-am); color: var(--gr-am); background: #26282C; }
+.gr-tela .gr-des { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: repeating-linear-gradient(0deg, #17181B 0 22px, #1A1B1E 22px 23px); touch-action: pan-y; user-select: none; -webkit-user-select: none; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+.gr-tela .gr-des img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; -webkit-user-drag: none; }
+.gr-tela .gr-des.cmp { cursor: ew-resize; }
+.gr-tela .gr-des .gr-dep { clip-path: inset(0 0 0 var(--x, 50%)); }
+.gr-tela .gr-des-sem { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; color: #8A8F98; font: 700 13px/1.3 var(--gr-mono); }
+.gr-tela .gr-olho { position: absolute; right: 10px; top: 8px; width: 40px; height: 34px; border-radius: 0; display: grid; place-items: center; border: 2px solid #111; background: var(--gr-am); color: #111; z-index: 2; padding: 0; }
+.gr-tela .gr-olho svg { width: 22px; height: 22px; }
+.gr-tela .gr-olho.off { background: #3A3D43; color: #C9CCD2; border-color: #4C5058; }
+.gr-tela .gr-legenda { margin: 8px 0 0; font: 500 12px/1.35 var(--gr-mono); color: #C9CCD2; }
+.gr-tela .gr-opcoes, .gr-tela .gr-ideia { display: block; margin-top: 3px; font: 500 12px/1.3 var(--gr-mono); color: #9EA2AA; }
+.gr-tela .gr-mes { display: flex; justify-content: space-between; align-items: baseline; margin: 10px 0 4px; padding-bottom: 4px; border-bottom: 2px solid #111; font: 700 14px/1 var(--gr-imp); font-synthesis: none; letter-spacing: .1em; text-transform: uppercase; color: var(--gr-am); }
+.gr-tela .gr-reg { display: flex; gap: 10px; align-items: baseline; padding: 7px 0; font-size: 13px; }
+.gr-tela .gr-reg + .gr-reg { border-top: 1px dashed #4C5058; }
+.gr-tela .gr-reg b { flex: none; min-width: 78px; font: 700 12px/1.2 var(--gr-mono); color: #F2F2F0; }
+.gr-tela .gr-reg .gr-rs { flex: none; font: 700 13px/1.2 var(--gr-mono); color: var(--gr-am); }
+.gr-tela .gr-reg .gr-nt { flex: 1; min-width: 0; color: #C9CCD2; font-weight: 500; }
+.gr-tela .gr-sub { margin: 14px 0 6px; font: 700 13px/1 var(--gr-mono); letter-spacing: .08em; text-transform: uppercase; color: #9EA2AA; }
 @media (prefers-reduced-motion: reduce) { .gr-tela .gr-portao.gr-sobe { animation-duration: 1ms; } .gr-tela .gr-carga, .gr-tela .gr-sombra, .gr-tela .gr-barra i, .gr-tela .gr-rolo span { transition-duration: 1ms; } .gr-tela .gr-pag.gr-entra .gr-item, .gr-tela .gr-pag.gr-entra .gr-tag, .gr-tela .gr-pag.gr-entra .gr-chave, .gr-tela .gr-pag.gr-no-ar .gr-ferr { animation: none; } }
 `;
 function injetaCss() { if (document.getElementById('garagem-css')) return; const s = document.createElement('style'); s.id = 'garagem-css'; s.textContent = CSS; document.head.append(s); }
 const corOk = c => /^#[0-9a-f]{6}$/i.test(c || '') ? c : '#9AA1AB';
 function tom(hex, f) { const n = parseInt(hex.slice(1), 16), a = [n >> 16, (n >> 8) & 255, n & 255], alvo = f < 0 ? 0 : 255, k = Math.abs(f); return '#' + a.map(v => Math.round(v + (alvo - v) * k).toString(16).padStart(2, '0')).join(''); }
-const ESTADOS = { 'feito': ['#3FBF5F', 'feito'], 'começou': ['#F5C400', 'comecou'], 'escolhido': ['#4EA8DE', 'escolhido'], 'a comprar': ['#F08A24', 'comprar'], 'planejado': ['#B7BCC3', 'planejado'], 'desejo': ['#E879A6', 'desejo'], 'futuro': ['#7D828B', 'futuro'] };
+const ESTADOS = { 'feito': ['#3FBF5F', 'feito'], 'começou': ['#F5C400', 'comecou'], 'escolhido': ['#4EA8DE', 'escolhido'], 'a comprar': ['#F08A24', 'comprar'], 'planejado': ['#B7BCC3', 'planejado'], 'desejo': ['#E879A6', 'desejo'], 'futuro': ['#7D828B', 'futuro'], 'escolhendo': ['#4EA8DE', 'escolhendo'], 'a decidir': ['#A98BE0', 'decidir'] };
 const ORDEM = Object.keys(ESTADOS);
 const CHAVE = '<svg class="gr-chave" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.7 6.3a5.5 5.5 0 0 1-7.4 6.9l-7.6 7.6a2.2 2.2 0 0 1-3.1-3.1l7.6-7.6a5.5 5.5 0 0 1 6.9-7.4l-3.4 3.4.6 2.9 2.9.6z"/></svg>';
 const FERRAMENTAS = `<svg viewBox="0 0 128 66" aria-hidden="true">
@@ -236,14 +267,16 @@ function antesDepois(v) {
 function projeto(v) {
   const pec = (v.projeto || []).slice().sort((a, b) => { const x = ORDEM.indexOf(a.estado), y = ORDEM.indexOf(b.estado); return (x < 0 ? 99 : x) - (y < 0 ? 99 : y); });
   const feitos = pec.filter(p => p.estado === 'feito').length;
-  const k = cartao('Projeto', feitos + ' de ' + pec.length + ' feito' + (feitos === 1 ? '' : 's'));
+  const k = cartao('Tunar', feitos + ' de ' + pec.length + ' feito' + (feitos === 1 ? '' : 's'));
   const bar = elD('div', 'gr-barra'), fill = elD('i'); bar.style.setProperty('--p', (pec.length ? feitos / pec.length * 100 : 0) + '%'); bar.setAttribute('role', 'progressbar'); bar.setAttribute('aria-valuenow', feitos); bar.setAttribute('aria-valuemax', pec.length); bar.append(fill); k.append(bar);
   const ul = elD('ul', 'gr-lista');
   pec.forEach((p, i) => {
     const [cor, cl] = ESTADOS[p.estado] || ['#7D828B', 'outro'];
     const li = elD('li', 'gr-item ' + cl); li.style.setProperty('--e', cor); li.style.setProperty('--i', i);
     const cx = elD('span', 'gr-caixa'); if (p.estado === 'feito') cx.innerHTML = CHAVE;
-    li.append(cx, elD('span', 'gr-peca', p.peca), elD('span', 'gr-etq', p.estado)); ul.append(li);
+    const tx = elD('span', 'gr-peca', p.peca); if (p.ideia) tx.append(elD('span', 'gr-ideia', p.ideia));
+    const op = (p.opcoes || []).map(o => typeof o === 'string' ? o : (o && (o.nome || o.peca || o.titulo)) || '').filter(Boolean); if (op.length) tx.append(elD('span', 'gr-opcoes', 'opções: ' + op.join(' · ')));
+    li.append(cx, tx, elD('span', 'gr-etq', p.estado)); ul.append(li);
   });
   k.append(ul); return k;
 }
@@ -281,6 +314,75 @@ function odometro(v) {
   if (m[2]) w.append(elD('span', 'gr-odo-em', 'anotado em ' + dataBr(m[2])));
   k.append(w); return k;
 }
+const PASTA = 'categorias/carros-moto/vetores/';
+const ANGS = [['lado-esquerdo', 'Lado esq.'], ['lado-direito', 'Lado dir.'], ['frente', 'Frente'], ['traseira', 'Trás'], ['cima', 'Cima'], ['farol', 'Farol']];
+const FASES = { original: ['Original', '-original'], agora: ['Agora', ''], meta: ['Meta', '-tunado'] };
+const svgCache = {};
+const lePlaca = () => { try { return localStorage.getItem('gr-placa') !== '0'; } catch (e) { return true; } };
+const gravaPlaca = on => { try { localStorage.setItem('gr-placa', on ? '1' : '0'); } catch (e) {} };
+function desenho(id, fase, ang, placa) {
+  const cam = PASTA + id + FASES[fase][1] + '/' + ang + '.svg';
+  const prom = svgCache[cam] || (svgCache[cam] = lerArquivo(cam).then(t => { if (!/<svg[\s>]/.test(t)) throw new Error('sem svg'); return t; }).catch(e => { delete svgCache[cam]; throw e; }));
+  return prom.then(t => {
+    if (!placa) { try { const dc = new DOMParser().parseFromString(t, 'image/svg+xml'), g = dc.getElementById('placa'); if (g) { g.remove(); t = new XMLSerializer().serializeToString(dc.documentElement); } } catch (e) {} }
+    return URL.createObjectURL(new Blob([t], { type: 'image/svg+xml' }));
+  });
+}
+const OLHO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+const OLHO_X = OLHO.replace('</svg>', '<path d="M4 4l16 16"/></svg>');
+function desenhos(v) {
+  const k = cartao('Desenhos'), id = v.id, angs = ANGS.filter(a => a[0] !== 'farol' || id === 'gol');
+  let fase = 'comparar', ang = angs[0][0], placa = lePlaca(), tok = 0;
+  const fases = elD('div', 'gr-fases'), ags = elD('div', 'gr-angs'), pal = elD('div', 'gr-des'), leg = elD('p', 'gr-legenda');
+  const olho = elD('button', 'gr-olho'); olho.type = 'button';
+  const chips = [['original', 'Original'], ['agora', 'Agora'], ['meta', 'Meta'], ['comparar', 'Comparar']].map(([f, t]) => { const b = elD('button', 'gr-chip', t); b.type = 'button'; b.onclick = () => { fase = f; desenha(); }; fases.append(b); return [f, b]; });
+  const abas = angs.map(([a, t]) => { const b = elD('button', 'gr-ang', t); b.type = 'button'; b.onclick = () => { ang = a; desenha(); }; ags.append(b); return [a, b]; });
+  olho.onclick = e => { e.stopPropagation(); placa = !placa; gravaPlaca(placa); desenha(); };
+  const poe = p => { p = Math.max(0, Math.min(100, p)); pal.style.setProperty('--x', p + '%'); };
+  const daX = e => { const r = pal.getBoundingClientRect(); poe((e.clientX - r.left) / r.width * 100); };
+  let arr = false;
+  pal.addEventListener('pointerdown', e => { if (!pal.classList.contains('cmp') || e.target.closest('.gr-olho')) return; arr = true; try { pal.setPointerCapture(e.pointerId); } catch (x) {} daX(e); e.stopPropagation(); });
+  pal.addEventListener('pointermove', e => { if (arr) { daX(e); e.preventDefault(); } });
+  const solta = () => { arr = false; }; pal.addEventListener('pointerup', solta); pal.addEventListener('pointercancel', solta);
+  const img = (url, cls, alt) => { const i = elD('img', cls); i.alt = alt; i.decoding = 'async'; i.src = url; return i; };
+  function desenha() {
+    const meu = ++tok;
+    chips.forEach(([f, b]) => b.classList.toggle('on', f === fase)); abas.forEach(([a, b]) => b.classList.toggle('on', a === ang));
+    olho.classList.toggle('off', !placa); olho.innerHTML = placa ? OLHO : OLHO_X; olho.setAttribute('aria-label', placa ? 'Esconder a placa' : 'Mostrar a placa'); olho.setAttribute('aria-pressed', String(placa));
+    const cmp = fase === 'comparar'; pal.classList.toggle('cmp', cmp);
+    const pedidos = cmp ? ['agora', 'meta'] : [fase], o = v.original && v.original.descricao;
+    pal.replaceChildren(elD('div', 'gr-des-sem', 'Abrindo o desenho…'));
+    leg.textContent = fase === 'original' ? (o ? 'Original: ' + o : 'Como saiu de fábrica.') : fase === 'meta' ? 'Meta: como ela quer deixar.' : fase === 'agora' ? 'Agora: como está hoje.' : 'Arraste a linha: de um lado o Agora, do outro a Meta.';
+    Promise.allSettled(pedidos.map(f => desenho(id, f, ang, placa))).then(r => {
+      if (meu !== tok) return;
+      if (r.some(x => x.status === 'rejected')) { const falta = pedidos.filter((f, i) => r[i].status === 'rejected').map(f => FASES[f][0]); pal.replaceChildren(elD('div', 'gr-des-sem', 'desenho chegando' + (cmp ? ' (' + falta.join(' e ') + ')' : ''))); return; }
+      if (!cmp) { pal.replaceChildren(img(r[0].value, '', FASES[fase][0])); return; }
+      pal.replaceChildren(img(r[0].value, '', 'Agora'), img(r[1].value, 'gr-dep', 'Meta'), elD('div', 'gr-div'), elD('span', 'gr-rot a', 'AGORA'), elD('span', 'gr-rot d', 'META'));
+    });
+  }
+  k.append(olho, fases, ags, pal, leg); desenha(); return k;
+}
+const moeda = n => 'R$ ' + (Number(n) || 0).toFixed(2).replace('.', ',');
+const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+function chaveData(s) { const m = [...String(s || '').matchAll(/(\d{1,2})\/(\d{1,2})\/(\d{4})/g)].pop(); if (m) return [+m[3], +m[2], +m[1]]; const q = /^(\d{4})-(\d{2})-(\d{2})/.exec(s || ''); return q ? [+q[1], +q[2], +q[3]] : null; }
+const ord = (a, b) => { const x = chaveData(a.data), y = chaveData(b.data); if (!x || !y) return x ? -1 : y ? 1 : 0; return (y[0] - x[0]) || (y[1] - x[1]) || (y[2] - x[2]); };
+function diario(v) {
+  const k = cartao('Diário'), ab = (v.abastecimentos || []).slice().sort(ord);
+  k.append(elD('div', 'gr-sub', 'Abastecimentos'));
+  if (!ab.length) k.append(elD('p', 'gr-vazio', 'nada anotado ainda'));
+  else {
+    const grupos = [];
+    ab.forEach(a => { const c = chaveData(a.data), nome = c ? MESES[c[1] - 1] + ' ' + c[0] : 'sem data'; let g = grupos.find(x => x.nome === nome); if (!g) grupos.push(g = { nome, tot: 0, l: [] }); g.tot += Number(a.valor) || 0; g.l.push(a); });
+    grupos.forEach(g => {
+      const h = elD('div', 'gr-mes'); h.append(elD('span', null, g.nome), elD('span', null, 'total ' + moeda(g.tot))); k.append(h);
+      g.l.forEach(a => { const r = elD('div', 'gr-reg'); r.append(elD('b', null, dataBr(a.data)), elD('span', 'gr-rs', moeda(a.valor)), elD('span', 'gr-nt', a.nota || '')); k.append(r); });
+    });
+  }
+  const lista = (tit, l, fmt) => { k.append(elD('div', 'gr-sub', tit)); if (!l.length) { k.append(elD('p', 'gr-vazio', 'nada anotado ainda')); return; } l.forEach(x => { const r = elD('div', 'gr-reg'); r.append(elD('b', null, dataBr(x.data || x.feito || '') || '-'), elD('span', 'gr-nt', fmt(x))); k.append(r); }); };
+  lista('Trocas de óleo', (v.trocas_oleo || []).slice().sort(ord), x => [x.km ? x.km + ' km' : '', x.nota || ''].filter(Boolean).join(' · '));
+  lista('Usos', (v.usos || []).slice().sort(ord), x => x.nota || '');
+  return k;
+}
 function pagina(v, i, tot) {
   const cor = corOk(v.cor), pg = elD('article', 'gr-pag'); pg.style.setProperty('--v', cor); pg.setAttribute('aria-label', v.nome);
   const pal = elD('div', 'gr-palco'), par = elD('div', 'gr-parede'), pf = elD('div', 'gr-painel-f'), box = elD('div', 'gr-box', 'BOX');
@@ -295,12 +397,13 @@ function pagina(v, i, tot) {
   if (v.medida) { const tr = elD('span', 'gr-trena'); tr.setAttribute('aria-label', 'Medida ' + v.medida); tr.append(elD('i'), elD('span', null, v.medida)); ln.append(tr); }
   if (ln.children.length) nm.append(ln);
   const ro = elD('div', 'gr-rola');
-  if (v.antes || v.depois) ro.append(antesDepois(v));
-  if (v.projeto && v.projeto.length) ro.append(projeto(v));
-  if (v.odometro) ro.append(odometro(v));
-  ro.append(datas(v), pendentes(v));
-  if (v.cor_nota) ro.append(elD('span', 'gr-cornota', v.cor_nota));
-  if (v.fonte) ro.append(elD('p', 'gr-fonte', 'fonte: ' + v.fonte));
+  ro.append(desenhos(v));
+  const abas = elD('div', 'gr-abas'), corpo = elD('div', 'gr-corpo');
+  const ficha = () => { const l = []; if (v.antes || v.depois) l.push(antesDepois(v)); if (v.odometro) l.push(odometro(v)); l.push(datas(v), pendentes(v)); if (v.cor_nota) l.push(elD('span', 'gr-cornota', v.cor_nota)); if (v.fonte) l.push(elD('p', 'gr-fonte', 'fonte: ' + v.fonte)); return l; };
+  const tunar = () => { if (v.projeto && v.projeto.length) return [projeto(v)]; const k = cartao('Tunar'); k.append(elD('p', 'gr-vazio', 'nada anotado ainda')); return [k]; };
+  const AB = [['Ficha', ficha], ['Tunar', tunar], ['Diário', () => [diario(v)]]];
+  const bs = AB.map(([t, f], n) => { const b = elD('button', 'gr-aba', t); b.type = 'button'; b.onclick = () => { bs.forEach((x, q) => x.classList.toggle('on', q === n)); corpo.replaceChildren(...f()); }; abas.append(b); return b; });
+  bs[0].click(); ro.append(abas, corpo);
   pg.append(pal, nm, ro); return pg;
 }
 window.abreGaragem = function (m) {

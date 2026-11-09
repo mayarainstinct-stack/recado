@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-09.234">
+<meta name="app-versao" content="2026-11-09.235">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1487,7 +1487,7 @@ body.modo-trab .pcd-cab div { font-size: 11px; overflow-wrap: normal; word-break
 
 body.modo-trab .p-grade.apps .ic { background: none !important; color: #059669; }
 body.modo-trab .p-grade.apps .ic svg.lp { width: 34px; height: 34px; fill: none; stroke: #059669; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-body.modo-trab .painel .p-hero .logo { display: block; background-size: 78% auto; background-position: center; background-repeat: no-repeat; border: 1px solid #E2E8F0; box-shadow: none; }
+body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px; background-color: transparent !important; background-size: contain; background-position: center; background-repeat: no-repeat; border: 0; border-radius: 0; box-shadow: none; }   /* logo do Simp sem fundo e maior (May 09/11 11:06) */
 .p-extra { padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }   /* a barra de baixo não cola no fim da tela (May 09/11) */
 
 .lem-card { border-top: 4px solid var(--quem); text-align: center; } .lem-de { display: block; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--quem); margin-bottom: 6px; }
@@ -2629,7 +2629,7 @@ function marcaPend(el, p, falhou) {
   infoPend(el, falhou && p.perdidas ? (p.perdidas > 1 ? p.perdidas + ' fotos não subiram' : '1 foto não subiu') : horaDe(p.em));
 }
 function novoPendente(text, fotos, arq, extra) {
-  if (respondendo && respondendo.nome !== 'Você' && !(fotos && fotos.length) && !/^🎤 /.test(text || '')) {   // respondeu a mensagem de alguém: já marca o @ de quem mandou, pro vigia dele pegar (May via Lyra, 06/11/2026 08:43)
+  if (respondendo && respondendo.nome !== 'Você' && !document.body.classList.contains('modo-trab') && !(fotos && fotos.length) && !/^🎤 /.test(text || '')) {   // respondeu a mensagem de alguém: já marca o @ de quem mandou, pro vigia dele pegar (May via Lyra, 06/11/2026 08:43)
     const alvo = String(respondendo.nome).replace(/\s*\(PC\d\)\s*$/i, '').split(/\s+/)[0];
     if (alvo && !new RegExp('@' + alvo + '(?![\\wÀ-ÿ])', 'i').test(text || '')) text = '@' + alvo + ' ' + (text || '');
   }
@@ -3522,7 +3522,7 @@ function porUso(nomes) {   // o @ que ela mais usa fica mais perto do polegar (M
 }
 function checaMencao() {
   const pos = box.selectionStart, antes = box.value.slice(0, pos);
-  const m = antes.match(/(^|\s)@(\w*)$/);
+  const m = document.body.classList.contains('modo-trab') ? null : antes.match(/(^|\s)@(\w*)$/);   // Trabalho: sem chip de @, a Lyra lê tudo
   if (!m) { mencoesEl.hidden = true; mencaoSel = -1; return; }
   const alvo = m[2].toLowerCase();
   const nomes = porUso(nomesGrupo().filter(n => n.toLowerCase().startsWith(alvo)));   // 1º = embaixo à direita, no polegar (Sigma 13:17)
@@ -4058,7 +4058,7 @@ abreMenu.onclick = () => {
   menu.hidden = true; painel.hidden = false; pilha = []; painel.style.removeProperty('--c'); Som.pagina();
   tela('Menu', c => {
     const h = document.createElement('div'); h.className = 'p-hero'; h.innerHTML = '<div class="logo" aria-hidden="true" style="background-image:url(' + (FILE === TRAB.arq ? '' : FOTO_GERAL) + ');background-color:' + (FILE === TRAB.arq ? '#FFFFFF' : '#0E0F12') + '"></div><div><b>' + (FILE === TRAB.arq ? 'Trabalho' : 'Recados') + '</b><span>' + (FILE === TRAB.arq ? 'Simplificação · o dia de trabalho' : 'Atalhos da casa') + '</span></div>'; c.append(h);
-    if (FILE === TRAB.arq) fundoFoto(h.querySelector('.logo'), 'recados-fotos/simp-logo-oficial.png');   // logo do Simp no Menu do Trabalho (May 09/11)
+    if (FILE === TRAB.arq) fundoFoto(h.querySelector('.logo'), 'recados-fotos/simp-logo-transparente.png');   // logo do Simp no Menu do Trabalho (May 09/11)
     const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = 'Atalhos'; c.append(t);
     // Os botões do Menu vêm de menu/menu.json (a Lyra acrescenta páginas sem mexer no app); sem ele, só o Catálogo.
     // grade de ícones em 3 colunas, o mais usado em cima (May, 06/11/2026: "lista muito grande")
@@ -5568,11 +5568,11 @@ function destinoNota() {
 const nomeRobo = k => (GRUPO[k] ? GRUPO[k].nome : 'Lyra').replace(/\s*\(.*\)$/, '');
 function notaBox(contexto, fecha) {
   const nb = document.createElement('div'); nb.className = 'nota-box';
-  const dest = destinoNota(), nome = nomeRobo(dest), pra = 'Mandar pro ' + nome;
+  const trab = document.body.classList.contains('modo-trab'), dest = trab ? 'lyra' : destinoNota(), nome = trab ? 'Lyra' : nomeRobo(dest), pra = trab ? 'Mandar pra Lyra' : 'Mandar pro ' + nome;   // Trabalho: tudo é pra Lyra, sem @ (May via Lyra, 09/11/2026)
   nb.innerHTML = '<label>' + icone('note') + ' Escrever sobre isso</label><textarea rows="3" maxlength="600"></textarea><button type="button" class="manda" disabled></button>';
-  const ta = nb.querySelector('textarea'), mb = nb.querySelector('.manda'); ta.placeholder = 'Escreve aqui, vai pro ' + nome; mb.textContent = pra;
+  const ta = nb.querySelector('textarea'), mb = nb.querySelector('.manda'); ta.placeholder = trab ? 'Escreve aqui, vai pra Lyra' : 'Escreve aqui, vai pro ' + nome; mb.textContent = pra;
   ta.oninput = () => { mb.disabled = !ta.value.trim(); if (!mb.disabled) mb.textContent = pra; };
-  mb.onclick = async () => { const t = ta.value.trim(); if (t && await enviarComentario('📝 ' + contexto + ': @' + nome + ' ' + t, mb, fecha)) ta.value = ''; };
+  mb.onclick = async () => { const t = ta.value.trim(); if (t && await enviarComentario('📝 ' + contexto + ': ' + (trab ? '' : '@' + nome + ' ') + t, mb, fecha)) ta.value = ''; };
   return nb;
 }
 // Ficha: popup por cima de tudo, com o detalhe (foto grande, texto) e a caixinha de anotação embaixo
@@ -5905,6 +5905,6 @@ if (location.hash === '#menu' || (history.state && history.state.painel && !loca
 }
 window.appPronto = true;   // o script inteiro rodou: o modo de emergência do socorro.js não precisa abrir (#174)
 </script>
-<script src="garagem.js?v=2"></script>
+<script src="garagem.js?v=3"></script>
 </body>
 </html>
