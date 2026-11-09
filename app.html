@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-09.224">
+<meta name="app-versao" content="2026-11-09.225">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -3486,7 +3486,8 @@ form.addEventListener('submit', async e => {
 
 const mais = document.getElementById('mais');
 const menu = document.getElementById('menu');
-mais.onclick = e => { e.stopPropagation(); if (FILE === GERAL.arq) { menu.hidden = true; abreMenu.click(); return; }   // na Geral o botão é o Menu direto (May 16:25)
+mais.onclick = e => { e.stopPropagation(); if (FILE === GERAL.arq || FILE === TRAB.arq) { menu.hidden = true; abreMenu.click(); return; }   // Trabalho abre o Menu do trabalho do mesmo jeito que a Geral (May 09/11/2026: "tem q ser padrão")
+   // na Geral o botão é o Menu direto (May 16:25)
   if (typeof menuCasa !== 'undefined' && menu.parentElement !== menuCasa) menuCasa.append(menu);
   if (typeof ocultosConversa !== 'undefined' && ocultosConversa) { [irGeral.hidden, irTrab.hidden, abreMenu.hidden] = ocultosConversa; ocultosConversa = null; } menu.classList.remove('no-painel'); menu.hidden = !menu.hidden; mais.setAttribute('aria-expanded', String(!menu.hidden)); };
 document.addEventListener('keydown', e => {
@@ -3949,7 +3950,7 @@ function abreInfoConversa() {
 }
 [tituloEl.parentElement, logoEl, convAv].forEach(e => e.addEventListener('click', () => { if (FILE) abreInfoConversa(); }));
 { let gx = null, gy = 0, gt = 0;   // na Geral, deslizar da direita pra esquerda abre o Menu: atalho de uma mão só, o ícone de cima continua (May, 07/11/2026 16:46)
-  feed.addEventListener('touchstart', e => { const t = e.touches[0]; gx = e.touches.length === 1 && FILE === GERAL.arq && !abreMenu.hidden && painel.hidden && !document.querySelector('.fixa-pop') && !e.target.closest('.player, input, textarea, .opcoes') ? t.clientX : null; gy = t.clientY; gt = Date.now(); }, { passive: true });
+  feed.addEventListener('touchstart', e => { const t = e.touches[0]; gx = e.touches.length === 1 && (FILE === GERAL.arq || FILE === TRAB.arq) && !abreMenu.hidden && painel.hidden && !document.querySelector('.fixa-pop') && !e.target.closest('.player, input, textarea, .opcoes') ? t.clientX : null; gy = t.clientY; gt = Date.now(); }, { passive: true });
   feed.addEventListener('touchend', e => { if (gx === null) return; const t = e.changedTouches[0], dx = t.clientX - gx, dy = t.clientY - gy; gx = null; if (dx < -70 && Math.abs(dy) < -dx * .6 && Date.now() - gt < 700) { abreMenu.click(); if (painel.animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) painel.animate([{ transform: 'translateX(100%)' }, { transform: 'none' }], { duration: 260, easing: 'cubic-bezier(.2,.8,.2,1)' }); } }, { passive: true });
   feed.addEventListener('touchcancel', () => { gx = null; }, { passive: true }); }
 abreMenu.onclick = () => {
