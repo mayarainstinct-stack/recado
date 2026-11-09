@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-09.227">
+<meta name="app-versao" content="2026-11-09.228">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1456,6 +1456,25 @@ body.modo-trab .painel .ag-cal { background: #0F1825; color: #FFFFFF; border-rad
 body.modo-trab .painel .ag-dia.sel, body.modo-trab .painel .ag-tudo { background: #ECFDF5; color: #059669; }
 body.modo-trab .painel .ag-seta { background: #1A2D42; color: #FFFFFF; box-shadow: none; }
 body.modo-trab .painel .ag .cx .tag { background: #F1F5F9; color: #475569; }
+
+/* Trabalho, retorno da May 09/11 10:13-10:14: checklist em folha branca lisa (sem bloco desenhado), agenda com cor e ícone do projeto em fundo branco sem blur, Projetos limpo */
+body.modo-trab .ck-bloco { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; box-shadow: 0 1px 2px rgba(15,23,42,.05); padding: 18px 16px; }
+body.modo-trab .ck-espiral { display: none; }
+body.modo-trab .ck-cab b, body.modo-trab .ck-sec { font-family: Inter, system-ui, sans-serif; transform: none; }
+body.modo-trab .ck-cab b { font-size: 18px; color: #1E293B; } body.modo-trab .ck-sec { font-size: 13px; color: #059669; letter-spacing: .03em; text-transform: uppercase; }
+body.modo-trab .ck-caixa { border: 1.5px solid #94A3B8; border-radius: 5px; transform: none; background: #FFFFFF; }
+body.modo-trab .ck-caixa svg, body.modo-trab .ck-risco path { stroke: #059669; }
+body.modo-trab .ck-t { color: #1E293B; font-weight: 600; } body.modo-trab .ck-item { min-height: 56px; }
+body.modo-trab .ag .dt.trab-ic { background: #FFFFFF !important; border: 1px solid #E2E8F0; color: var(--tc); box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+body.modo-trab .ag .dt.trab-ic svg { width: 22px; height: 22px; color: var(--tc); stroke: currentColor; }
+body.modo-trab .painel .ag[data-tipo] { box-shadow: inset 4px 0 0 var(--tc), 0 1px 2px rgba(15,23,42,.05); }
+body.modo-trab .painel .rel { display: none; }
+body.modo-trab .pcd { border-radius: 8px; border-top-width: 3px; box-shadow: 0 1px 2px rgba(15,23,42,.05); }
+body.modo-trab .pcd-top img, body.modo-trab .pcd-abas img, body.modo-trab .pcd-cab img { display: none; }
+body.modo-trab .pcd-abas, body.modo-trab .pcd-abas.embaixo { border-radius: 8px; background: #FFFFFF; backdrop-filter: none; -webkit-backdrop-filter: none; }
+body.modo-trab .pcd-abas button { min-height: 40px; font-size: 12px; }
+body.modo-trab .pcd-lin { grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); }
+body.modo-trab .pcd-num div, body.modo-trab .pcd-val { border-radius: 6px; }
 </style>
 </head>
 <body>
@@ -5403,13 +5422,17 @@ function abreAgenda(m) {
       const rot = (txt.match(/^\*\*([^*]+?):?\*\*:?\s*/) || [])[1] || '';
       const corpo = rot ? txt.replace(/^\*\*[^*]+\*\*:?\s*/, '') : txt;
       const d = dataDe(rot);
-      const el = document.createElement('div'), tipo = tipoAg(txt); el.className = 'ag'; el.dataset.tipo = tipo[0]; el.dataset.cor = tipo[2]; el.style.setProperty('--tc', tipo[2]); if (d) el.dataset.dia = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      const trabAg = /agenda-trabalho/.test(m.arq || ''), quemT = trabAg ? (corpo.match(/^([^:]{2,24}):/) || [])[1] || '' : '';
+      const PROJ_T = { 'rm': ['#22C55E', 'clipboard'], 'simp-mobile': ['#14B8A6', 'check'], 'promotor-mobile': ['#F59E0B', 'pin'], 'promotor': ['#F59E0B', 'pin'], 'kds': ['#EAB308', 'chart'], 'acompanhamentos': ['#940088', 'bell'], 'você': ['#b47ae0', 'star'], 'folga': ['#64748B', 'calendar'] }, pt = PROJ_T[quemT.toLowerCase()] || (trabAg ? ['#059669', 'doc'] : null);
+      const el = document.createElement('div'), tipo = pt ? ['trab', quemT || 'Trabalho', pt[0]] : tipoAg(txt); el.className = 'ag'; el.dataset.tipo = tipo[0]; el.dataset.cor = tipo[2]; el.style.setProperty('--tc', tipo[2]); if (d) el.dataset.dia = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
       const dt = document.createElement('div'); dt.className = 'dt';
-      if (d) { dt.innerHTML = '<b></b><small></small>'; dt.querySelector('b').textContent = d.getDate(); dt.querySelector('small').textContent = MESES[d.getMonth()]; }
+      if (d && !pt) { dt.innerHTML = '<b></b><small></small>'; dt.querySelector('b').textContent = d.getDate(); dt.querySelector('small').textContent = MESES[d.getMonth()]; }
+      else if (pt) { dt.classList.add('ic', 'trab-ic'); dt.innerHTML = icone(pt[1]); }
       else { dt.classList.add('ic'); dt.innerHTML = icone(iconeDe(txt)); }
       const cx = document.createElement('div'); cx.className = 'cx';
       const tp = document.createElement('div'); tp.className = 'tp';
-      if (d) tp.append(document.createTextNode(rot.replace(/^~?\s*\d{1,2}\/\d{1,2}(\/\d{4})?\s*/, '').replace(/^de\s/, '').trim()));
+      if (d && pt) tp.append(document.createTextNode(rot.replace(/\s*\(([^)]+)\)\s*/, ' $1 · ').replace(/ · $/, '').trim()));
+      else if (d) tp.append(document.createTextNode(rot.replace(/^~?\s*\d{1,2}\/\d{1,2}(\/\d{4})?\s*/, '').replace(/^de\s/, '').trim()));
       else if (rot) tp.append(document.createTextNode(rot));
       if (d && /^até/i.test(rot) && d < hoje) el.classList.add('passou');   // "Até 03/11" que já venceu também desce pra Anteriores (Sigma, 06/11/2026)
       if (d && !/^até/i.test(rot)) {
