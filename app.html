@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-10.263">
+<meta name="app-versao" content="2026-11-10.264">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1721,6 +1721,11 @@ body.modo-trab .sl-t b { color: #1E293B; } body.modo-trab .sl-item.nota .sl-t, b
 .sw-hero { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 2px 2px 8px; border-bottom: 1px solid #E2E8F0; }
 .sw-hero h1 { margin: 0; font-size: 18px; font-weight: 700; color: #1E293B; } .sw-sem { font-size: 13px; color: #475569; }
 .sw-leg { display: flex; flex-wrap: wrap; gap: 4px 10px; flex-basis: 100%; } .sw-lg { font-size: 11px; color: #475569; } .sw-lg::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--c); margin-right: 4px; }
+.sw-rs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0 6px; } .sw-k { display: inline-flex; align-items: baseline; gap: 4px; padding: 6px 12px; border-radius: 999px; background: #F1F5F9; color: #334155; font: 500 13px Inter, system-ui, sans-serif; } .sw-k b { font-size: 16px; font-weight: 800; }
+.sw-k.doing { background: #E0F2FE; color: #0369A1; } .sw-k.todo { background: #1E293B; color: #FFFFFF; } .sw-k.tot { background: #F1F5F9; }
+.sw-impb { width: auto; min-height: 0; border: 1.5px dashed #94A3B8; background: #FFFFFF; cursor: pointer; } .sw-impb.on { border-style: solid; border-color: #1E293B; }
+.sw-prog { height: 6px; border-radius: 999px; background: #E2E8F0; overflow: hidden; margin-bottom: 10px; } .sw-prog i { display: block; height: 100%; background: #1E293B; border-radius: inherit; }
+.sw-imps { margin: 4px 0 12px; display: grid; gap: 8px; } .sw-imps h2 { margin: 0; font-size: 15px; color: #334155; } .sw-imps .sw-sub { margin: 0; } .sw-imps h3 { margin: 0 0 4px; font-size: 13px; color: #334155; }
 .sw-exp { margin-left: auto; width: auto; min-height: 40px; padding: 0 14px; border-radius: 8px; border: 0; background: #047857; color: #FFFFFF; font: 700 13px Inter, system-ui, sans-serif; }
 .sw-dia { display: grid; grid-template-columns: 56px 1fr; gap: 8px; break-inside: avoid; }
 .sw-data { align-self: start; background: #EEF2F6; color: #1E293B; border: 1px solid #E2E8F0; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 2px; min-height: 52px; }
@@ -3068,6 +3073,21 @@ semanaEl.addEventListener('click', e => { const t = Date.now(); if (t - semanaTo
   if (typeof fechaPainel === 'function') fechaPainel(); if (sending) return;
   if (FILE === GERAL.arq) { abrir(TRAB).catch(() => {}); return; }   // da Geral volta pro Trabalho com os mesmos dois toques (May 16:25)
   geralLiberada = true; abrir(GERAL).catch(() => {}); });
+// anel aparece na hora com 0 e enche animado até o valor (May, 10/11/2026: "aparecer primeiro com 0 e depois preencher animado")
+let anelValor = 0, anelQuadro = 0;
+function anelDesenha(v) {
+  const R = 17.5, C = 2 * Math.PI * R;
+  if (!semanaEl.querySelector('.cheio')) semanaEl.innerHTML = '<svg viewBox="0 0 42 42" aria-hidden="true"><circle class="fundo" cx="21" cy="21" r="' + R + '"/><circle class="cheio" cx="21" cy="21" r="' + R + '"/></svg><b></b>';
+  semanaEl.querySelector('.cheio').setAttribute('stroke-dasharray', (C * v / 100).toFixed(2) + ' ' + C.toFixed(2));
+  semanaEl.querySelector('b').textContent = Math.round(v);
+}
+function animaAnel(v) {
+  cancelAnimationFrame(anelQuadro);
+  const de = anelValor, t0 = performance.now(), dur = 900;
+  const passo = agora => { const k = Math.min(1, (agora - t0) / dur), e = 1 - Math.pow(1 - k, 3); anelValor = de + (v - de) * e; anelDesenha(anelValor); if (k < 1) anelQuadro = requestAnimationFrame(passo); };
+  anelQuadro = requestAnimationFrame(passo);
+}
+anelDesenha(0); semanaEl.hidden = false;
 function mostraSemana(lista) {
   // número de antes da semana zerar não vale (o Vega parado desde 11:54 deixava 93% no anel depois do zerar das 15h, May 06/11/2026 19:21)
   const agora = Date.now() / 1000, fresco = p => p.semanaReset ? p.semanaReset > agora : Date.now() - Date.parse(p.ultimaAtualizacao || 0) < 6 * 3600e3;
@@ -3075,7 +3095,7 @@ function mostraSemana(lista) {
   if (!c) { semanaEl.hidden = true; return; }
   const v = Math.max(0, Math.min(100, Math.round(c.semana)));
   const R = 17.5, C = 2 * Math.PI * R;
-  semanaEl.innerHTML = '<svg viewBox="0 0 42 42" aria-hidden="true"><circle class="fundo" cx="21" cy="21" r="' + R + '"/><circle class="cheio" cx="21" cy="21" r="' + R + '" stroke-dasharray="' + (C * v / 100).toFixed(1) + ' ' + C.toFixed(1) + '"/></svg><b>' + v + '</b>';
+  animaAnel(v);
   // cor pelo ritmo POR HORA (May, 07/11/2026 09:58; antes era por dia): a semana zera sexta 15h, são 168 h; a cada hora fechada o planejado sobe 100/168.
   // até 70% do planejado = verde, abaixo do planejado = amarelo (tá quase), chegou ou passou = vermelho
   const sex15 = () => { const d = new Date(); d.setHours(15, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 2) % 7)); if (d > new Date()) d.setDate(d.getDate() - 7); return d.getTime() / 1000; };   // sexta 15h mais recente, sem o reset do robô
@@ -4041,7 +4061,7 @@ function mostraLista() { if (!gravador) soltaMicStream();   // saiu da conversa:
   FILE = null; API = null; nomeConv = ''; fotoConv = ''; logoEl.style.backgroundImage = ''; convAv.style.backgroundImage = ''; convAv.hidden = true;
   voltar.hidden = true; logoEl.hidden = false; tituloEl.textContent = nomeApp();
   feed.hidden = true; fixaEl.hidden = true; form.hidden = true; citando.hidden = true; desce.hidden = true; lista.hidden = false; novaBtn.hidden = false;
-  mostraFazendo(''); showNote(''); menu.hidden = true; onlineBadge.hidden = true; onlinePop.hidden = true; semanaEl.hidden = true;
+  mostraFazendo(''); showNote(''); menu.hidden = true; onlineBadge.hidden = true; onlinePop.hidden = true; cancelAnimationFrame(anelQuadro); anelValor = 0; anelDesenha(0); semanaEl.hidden = false;   // troca de conversa: anel volta a 0 e enche de novo
   if (conversas.length) desenhaLista();
   carregaLista().catch(() => {});
   if (largo()) abrir(ultimaConv()).catch(() => {});   // no PC já abre do lado a última que ela viu
@@ -6399,13 +6419,17 @@ function swModeloTrab(d) {
     const dia = dias.find(x => (it[0] || '').startsWith(x.dd)); if (!dia) return;
     const ini = swDH(it[0], ano), fim = it[3] || '', f = swFeito(swCap(it[2] || '')), [cor, nome] = SW_PROJ[it[1]] || ['#64748b', it[1]];
     let hora = (it[0] || '').slice(6); if (fim) hora += '–' + (fim.slice(0, 5) === it[0].slice(0, 5) ? fim.slice(6) : fim);
-    dia.linhas.push({ ini, hora, tag: nome, texto: f.texto, cor, ok: f.ok, andamento: !f.ok && !fim && !!ini && ini <= agora });
+    const ok = f.ok || !!fim; dia.linhas.push({ ini, hora, tag: nome, texto: f.texto, cor, ok, andamento: !ok && !!ini && ini <= agora });
   });
   dias.forEach(x => x.linhas.sort((a, b) => (a.hora < b.hora ? -1 : a.hora > b.hora ? 1 : 0)));
   const blocos = [], lin = (x, hora) => { const [cor, nome] = SW_PROJ[x[0]] || ['#64748b', x[0]], f = swFeito(swCap(x[1] || '')); return { hora, tag: nome, texto: f.texto, cor, ok: f.ok }; };
   if ((d.fila || []).length) blocos.push({ titulo: 'Fila de desenvolvimento', sub: 'Em ordem: o pedido mais novo da May entra na frente, a não ser que ela diga para fazer depois.', linhas: d.fila.map((x, n) => lin(x, (n + 1) + 'º')) });
-  if ((d.aguardando_cliente || []).length) blocos.push({ titulo: 'Aguardando cliente', sub: 'Fora da agenda até o cliente aprovar ou responder. Coluna da esquerda: o ticket.', linhas: d.aguardando_cliente.map(x => lin(x, x[2] || 'sem ticket')) });
-  return { titulo: 'Agenda da semana', semana: d.semana || '', dias, blocos, leg: Object.values(SW_PROJ).map(v => [v[0], v[1]]).concat([['#43A047', 'Concluído']]) };
+  // impedimentos num botão que abre (May, 10/11/2026: "impedimentos tem q ser um botão", "clicar tipo 17 impedimentos", "clicando abre")
+  const imp = []; if ((d.aguardando_cliente || []).length) imp.push({ titulo: 'Aguardando cliente', linhas: d.aguardando_cliente.map(x => lin(x, x[2] || '')) });
+  const porQuem = {}; (d.impedimentos || []).forEach(x => { const q = x[2] || 'resposta'; (porQuem[q] = porQuem[q] || []).push(lin(x, x[3] || '')); });
+  Object.keys(porQuem).forEach(q => imp.push({ titulo: 'Aguardando ' + q, linhas: porQuem[q] }));
+  const todas = dias.flatMap(x => x.linhas), conta = { ok: todas.filter(l => l.ok).length, doing: todas.filter(l => l.andamento).length, total: todas.length }; conta.todo = conta.total - conta.ok - conta.doing;
+  return { titulo: 'Agenda da semana', semana: d.semana || '', dias, blocos, imp, conta, leg: Object.values(SW_PROJ).map(v => [v[0], v[1]]).concat([['#43A047', 'Concluído']]) };
 }
 function swAssuntoFn(F) {   // cor por ASSUNTO (menu/agenda.json › cores_por_assunto): campo assunto do item, senão palavras do texto, senão o tipo
   const CA = F.cores_por_assunto || {}, ch = Object.keys(CA).filter(k => k[0] !== '_'), re = {};
@@ -6442,6 +6466,25 @@ function swRender(m, o = {}) {
   m.leg.forEach(l => { const s = elD('span', 'sw-lg', l[1]); s.style.setProperty('--c', l[0]); leg.append(s); }); hero.append(leg);
   if (o.exporta) { const b = elD('button', 'sw-exp', 'Exportar PDF'); b.type = 'button'; b.onclick = o.exporta; hero.append(b); }
   raiz.append(hero);
+  let impBox = null;
+  if (m.conta && m.conta.total) {   // contadores da agenda nova (concluídas, executando, por fazer, X de Y)
+    const k = m.conta, rs = elD('div', 'sw-rs'), pr = elD('div', 'sw-prog'), bar = elD('i');
+    [['ok', k.ok, k.ok === 1 ? 'concluída' : 'concluídas'], ['doing', k.doing, 'executando'], ['todo', k.todo, 'por fazer']].forEach(([c, n, r]) => { const s = elD('span', 'sw-k ' + c); s.append(elD('b', '', String(n)), document.createTextNode(' ' + r)); rs.append(s); });
+    const tot = elD('span', 'sw-k tot'); tot.append(elD('b', '', k.ok + ' de ' + k.total)); rs.append(tot);
+    if ((m.imp || []).length && !o.pdf) {
+      const n = m.imp.reduce((a, b) => a + b.linhas.length, 0), bt = elD('button', 'sw-k sw-impb'); bt.type = 'button'; bt.setAttribute('aria-expanded', 'false');
+      bt.append(elD('b', '', String(n)), document.createTextNode(n === 1 ? ' impedimento' : ' impedimentos'));
+      bt.onclick = () => { const ab = impBox.hidden; impBox.hidden = !ab; bt.setAttribute('aria-expanded', String(ab)); bt.classList.toggle('on', ab); if (ab) impBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); };
+      rs.append(bt);
+    }
+    bar.style.width = Math.round(100 * k.ok / k.total) + '%'; pr.append(bar); raiz.append(rs, pr);
+  }
+  if ((m.imp || []).length) {
+    impBox = elD('section', 'sw-imps'); impBox.hidden = !o.pdf;
+    impBox.append(elD('h2', '', 'Impedimentos'), elD('p', 'sw-sub', 'Não dá para desenvolver até quem está indicado responder ou aprovar.'));
+    m.imp.forEach(g => { const cx = elD('div', 'sw-aguarda'), li = elD('div', 'sw-lista'); g.linhas.forEach(l => li.append(swLinha(l))); cx.append(elD('h3', '', g.titulo), li); impBox.append(cx); });
+    raiz.append(impBox);
+  }
   m.dias.forEach(x => {
     const sec = elD('section', 'sw-dia' + (x.folga ? ' folga' : '') + (x.chave === o.sel ? ' sel' : '')), dt = elD('div', 'sw-data'), li = elD('div', 'sw-lista');
     sec.dataset.dia = x.chave; dt.append(elD('b', '', x.dd.slice(0, 2)), elD('small', '', x.sem)); if (o.aoEscolher) dt.onclick = () => o.aoEscolher(x.chave);
