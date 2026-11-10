@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-10.256">
+<meta name="app-versao" content="2026-11-10.257">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -3997,7 +3997,8 @@ voltar.onclick = () => { if (!sending) mostraLista(); };
 // Celular: abre pelo relógio (May, 22/10/2026): seg–sex 8h–18h, fora do almoço (12h–13h) = Trabalho; resto = Geral.
 // Web: abre a última conversa vista.
 function horaDeTrabalho(d = new Date()) {
-  const dia = d.getDay(), h = d.getHours();
+  const dia = d.getDay(), h = d.getHours(), hoje = String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
+  if ((CFG.folgas || []).includes(hoje)) return false;   // folga (May, 10/11/2026: "quinta não abrir trabalho porque tô viajando")
   return CFG.trabalhaAtivo !== false && (CFG.diasDeTrabalho || []).includes(dia) && h >= CFG.horaTrabalhoInicio && h < CFG.horaTrabalhoFim && !(h >= CFG.almocoInicio && h < CFG.almocoFim);   // parâmetros em config/app.json (padrão: seg-sex 8h-18h, almoço 12h-13h)
 }
 // Combinado (May, 07/11/2026 15:52): no horário do serviço o app abre no Trabalho e a Geral some (lista e ⋮); dois toques rápidos no anel do limite semanal abrem a Geral, como segredo.
@@ -4781,7 +4782,7 @@ function abreContraste(m) {
   });
 }
 // ===== Configurações (May, 09/11/2026): config/app.json no Inst; cada parâmetro tem padrão no código; sem o arquivo, vale o padrão (o app nunca para por causa da config)
-const CFG_PADRAO = { nomeApp: 'Recados', telaInicial: 'geral', trabalhaAtivo: true, diasDeTrabalho: [1, 2, 3, 4, 5], horaTrabalhoInicio: 8, horaTrabalhoFim: 18, almocoInicio: 12, almocoFim: 13, treinoAbrirSozinho: true, vibracao: true };
+const CFG_PADRAO = { nomeApp: 'Recados', telaInicial: 'geral', trabalhaAtivo: true, diasDeTrabalho: [1, 2, 3, 4, 5], horaTrabalhoInicio: 8, horaTrabalhoFim: 18, almocoInicio: 12, almocoFim: 13, treinoAbrirSozinho: true, vibracao: true, folgas: [] };   // folgas: ['DD/MM/AAAA'] = dia sem Trabalho (viagem, férias)
 const CFG_CAMPOS = [   // o que aparece na tela de Configurações, na ordem
   { nome: 'nomeApp', rotulo: 'Nome do app', tipo: 'texto' },
   { nome: 'telaInicial', rotulo: 'Ao abrir o app, ir pra', tipo: 'escolha', opcoes: [['geral', 'A conversa'], ['menu', 'O Menu']], ajuda: 'Toque duplo no nome da conversa (ou no título do Menu) troca entre os dois.' },
@@ -4803,6 +4804,7 @@ function cfgAplica() {
 async function cfgCarrega() {
   try { const d = JSON.parse(await lerArquivo('config/app.json')); Object.keys(CFG_PADRAO).forEach(k => { if (d[k] !== undefined && d[k] !== null) CFG[k] = d[k]; }); try { localStorage.setItem('cfg-cache', JSON.stringify(CFG)); } catch (e) {} } catch (e) {}
   cfgAplica();
+  if (!MODO_WEB && FILE === TRAB.arq && !horaDeTrabalho() && !cfgCarrega.corrigiu) { cfgCarrega.corrigiu = true; abrir(GERAL).catch(() => {}); }   // a config nova (ex.: folga) chegou depois de abrir no Trabalho: volta pra Geral, uma vez
 }
 const nomeApp = () => CFG.nomeApp || 'Recados';
 function abreConfig() {
