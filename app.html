@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-10.261">
+<meta name="app-versao" content="2026-11-10.262">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1583,6 +1583,17 @@ body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px
 .vs-dest.est-contorno { background: #FFFFFF; color: var(--vs-e); border: 2px solid var(--vs-c); box-shadow: 0 6px 16px var(--vs-s2); } .vs-dest.est-contorno h2 { color: var(--vs-c); } .vs-dest.est-contorno .vs-dest-ic { background: var(--vs-l); color: var(--vs-c); } .vs-dest.est-contorno .vs-decor, .vs-dest.est-contorno .vs-pulso { color: var(--vs-l); }
 .vs-dest.est-papel { background: repeating-linear-gradient(180deg, var(--vs-f) 0 27px, var(--vs-b) 27px 28px); color: var(--vs-e); border-left: 7px solid var(--vs-c); border-radius: 6px 22px 22px 6px; box-shadow: 0 4px 12px var(--vs-s2); } .vs-dest.est-papel h2 { color: var(--vs-c); } .vs-dest.est-papel .vs-dest-ic { background: var(--vs-c); color: #FFFFFF; } .vs-dest.est-papel .vs-decor, .vs-dest.est-papel .vs-pulso { color: var(--vs-b); }
 .vs-dest.est-faixa { display: grid; grid-template-columns: auto 1fr; column-gap: 14px; align-items: center; border-radius: 999px 22px 22px 999px; padding: 18px 18px 18px 16px; } .vs-dest.est-faixa .vs-dest-ic { grid-row: span 2; width: 66px; height: 66px; border-radius: 50%; background: rgba(255,255,255,.22); } .vs-dest.est-faixa .vs-dest-ic svg { width: 34px; height: 34px; } .vs-dest.est-faixa h2 { margin: 0 0 4px; font-size: 19px; } .vs-dest.est-faixa p { font-size: 14px; } .vs-dest.est-faixa .vs-pulso { display: none; }
+.vs-flip { perspective: 900px; cursor: pointer; min-height: 132px; } .vs-flip-in { position: relative; display: grid; height: 100%; transition: transform .45s; transform-style: preserve-3d; } .vs-flip.virado .vs-flip-in { transform: rotateY(180deg); }
+.vs-face { grid-area: 1 / 1; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 18px; padding: 12px; border: 1px solid var(--vs-b); box-shadow: 0 2px 8px var(--vs-s2); } .vs-frente { background: #FFFFFF; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; } .vs-frente h4 { margin: 2px 0 0; font-size: 14px; line-height: 1.25; } .vs-frente small { margin-top: auto; font-size: 11px; color: var(--vs-m); font-weight: 700; }
+.vs-verso { background: var(--vs-c); color: #FFFFFF; transform: rotateY(180deg); } .vs-verso h4 { margin: 0 0 4px; font-size: 13px; opacity: .85; } .vs-verso p { margin: 0; font-size: 13px; line-height: 1.4; }
+.vs-trilha { position: relative; } .vs-trilha::before { content: ""; position: absolute; left: 21px; top: 10px; bottom: 40px; width: 4px; border-radius: 4px; background: repeating-linear-gradient(180deg, var(--vs-m) 0 10px, transparent 10px 18px); z-index: 0; }
+.vs-estacao { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; margin-top: 6px; } .vs-est-n { flex: none; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; background: var(--vs-c); color: #FFFFFF; font-weight: 800; font-size: 18px; box-shadow: 0 0 0 5px #FFFFFF, 0 4px 12px var(--vs-s); } .vs-estacao h2 { margin: 0; font-size: 19px; color: var(--vs-c); }
+.vs-trecho { position: relative; z-index: 1; display: grid; gap: 12px; margin-left: 30px; } .vs-chegada { position: relative; z-index: 1; justify-self: start; padding: 10px 16px; border-radius: 999px; background: var(--vs-l); color: var(--vs-c); font-weight: 800; font-size: 14px; }
+.vs-slides { display: flex; align-items: flex-start; gap: 0; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding: 4px 0 8px; } .vs-slides::-webkit-scrollbar { display: none; }
+.vs-slide { flex: 0 0 100%; scroll-snap-align: start; display: flex; flex-direction: column; justify-content: flex-start; align-self: flex-start; gap: 10px; padding: 0 4px; box-sizing: border-box; color: #4A0F2B; }
+.vs-slide .vs-frase { padding: 28px 22px 22px 26px; } .vs-slide .vs-frase blockquote { font-size: 21px; } .vs-sl-aba { align-self: center; padding: 4px 12px; border-radius: 999px; background: var(--vs-l); color: var(--vs-c); font-size: 12px; font-weight: 800; }
+.vs-sl-cont { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 2px 10px; background: #FFFFFF; } .vs-sl-info { flex: 1; text-align: center; font-size: 13px; font-weight: 700; color: var(--vs-c); }
+.vs-sl-b { flex: none; width: 52px; height: 52px; border-radius: 50%; border: 0; background: var(--vs-c); color: #FFFFFF; font: inherit; font-size: 22px; font-weight: 800; } .vs-sl-b:disabled { background: var(--vs-l); color: var(--vs-b); }
 .vs-duas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .vs-lado { background: #FFFFFF; border: 1px solid var(--vs-b); border-radius: 18px; padding: 12px; } .vs-lado h4 { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font-size: 14px; color: var(--vs-c); } .vs-lado.b { background: var(--vs-f); } .vs-lado .vs-lista li { font-size: 13px; }
 .vs-abas { flex-wrap: wrap; overflow: visible; } .vs-abas .sl-aba { max-width: none; }
 .vs-corpo { display: grid; gap: 14px; padding-bottom: 32px; color: #4A0F2B; }
@@ -6689,7 +6700,32 @@ function abreVisual(m) {
       duas: b => { const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-duas'); ['a', 'b'].forEach(k => { const x = b[k] || {}; const l = elD('div', 'vs-lado ' + k); const h = elD('h4'); h.append(ic(x.icone || (k === 'a' ? 'check' : 'warn'), 'vs-ic-p')); mdInline(h, x.titulo || ''); const ul = elD('ul', 'vs-lista'); (x.itens || []).forEach(s => ul.append(tx('li', '', s))); l.append(h, ul); g.append(l); }); w.append(g); return w; },
       topicos: b => { const w = elD('section', 'vs-bloco'); tit(b, w); (b.itens || []).forEach(x => { const dt = elD('details', 'vs-perg vs-top'); const sm = elD('summary'); mdInline(sm, x.titulo); const ul = elD('ul', 'vs-lista'); (x.itens || []).forEach(s => ul.append(tx('li', '', s))); dt.append(sm, ul); w.append(dt); }); return w; },
     };
+    if (d.modo === 'virar') R.cartoes = b => { const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-grade vs-flips'); (b.itens || []).forEach(x => { const k = elD('div', 'vs-flip'); k.setAttribute('role', 'button'); k.tabIndex = 0; const inn = elD('div', 'vs-flip-in'); const fr = elD('div', 'vs-face vs-frente'); fr.append(ic(x.icone), tx('h4', '', x.titulo), elD('small', '', 'toque pra ver')); const tr = elD('div', 'vs-face vs-verso'); tr.append(tx('h4', '', x.titulo), tx('p', '', x.texto)); inn.append(fr, tr); k.append(inn); k.onclick = () => k.classList.toggle('virado'); g.append(k); }); w.append(g); return w; };   // Dicas: cartões que viram ao tocar (May, 10/11/2026: "dicas são cartões")
     const abas = d.abas || [];
+    const monta = b => { const f = R[b.t]; if (!f) return null; try { return f(b); } catch (e) { return null; } };
+    if (d.modo === 'trilha') {   // Preparo e pós: uma trilha só, descendo fase por fase, sem abas
+      cabecalho({ icone: (abas[0] && abas[0].icone) || 'heart', sub: d.sub || '' });
+      const w = elD('div', 'vs-corpo vs-trilha'); c.append(w);
+      abas.forEach((a, i) => { const est = elD('div', 'vs-estacao'); est.append(elD('span', 'vs-est-n', String(i + 1)), ic(a.icone || 'heart', 'vs-ic-p'), elD('h2', '', a.nome)); w.append(est); const sec = elD('div', 'vs-trecho'); (a.blocos || []).forEach(b => { const el = monta(b); if (el) sec.append(el); }); w.append(sec); });
+      w.append(elD('div', 'vs-chegada', 'Chegou no fim da trilha'));
+      if (d.atualizado) w.append(elD('p', 'vs-rodape', 'Atualizado em ' + d.atualizado));
+      return;
+    }
+    if (d.modo === 'slides') {   // Relatos: uma coisa por tela, passando com o dedo (May, 10/11/2026: "relatos slides")
+      cabecalho({ icone: (abas[0] && abas[0].icone) || 'heart', sub: d.sub || '' });
+      const itens = []; abas.forEach(a => (a.blocos || []).forEach(b => { const el = monta(b); if (el) itens.push([a.nome, el]); }));
+      const trilho = elD('div', 'vs-slides'), cont = elD('div', 'vs-sl-cont'), ant = elD('button', 'vs-sl-b', '←'), prox = elD('button', 'vs-sl-b', '→'), info = elD('span', 'vs-sl-info');
+      ant.type = prox.type = 'button'; ant.setAttribute('aria-label', 'Anterior'); prox.setAttribute('aria-label', 'Próximo');
+      itens.forEach(([nome, el]) => { const s = elD('div', 'vs-slide'); s.append(elD('span', 'vs-sl-aba', nome), el); trilho.append(s); });
+      let atual = 0; try { atual = Math.min(+(store.get('vs-slide:' + m.arq) || 0), itens.length - 1); } catch (e) {}
+      const mostra = () => { info.textContent = (atual + 1) + ' de ' + itens.length + ' · ' + (itens[atual] || [''])[0]; ant.disabled = atual === 0; prox.disabled = atual >= itens.length - 1; try { store.set('vs-slide:' + m.arq, String(atual)); } catch (e) {} };
+      const vai = i => { atual = Math.max(0, Math.min(itens.length - 1, i)); trilho.scrollTo({ left: trilho.children[atual].offsetLeft - trilho.offsetLeft, behavior: 'smooth' }); mostra(); };
+      ant.onclick = () => vai(atual - 1); prox.onclick = () => vai(atual + 1);
+      let t0; trilho.addEventListener('scroll', () => { clearTimeout(t0); t0 = setTimeout(() => { const i = Math.round(trilho.scrollLeft / trilho.clientWidth); if (i !== atual) { atual = i; mostra(); } }, 90); }, { passive: true });
+      cont.append(ant, info, prox); c.append(cont, trilho); mostra();
+      requestAnimationFrame(() => { trilho.scrollLeft = atual * trilho.clientWidth; });
+      return;
+    }
     let aba = 0; try { aba = Math.min(+(store.get('vs-aba:' + m.arq) || 0), abas.length - 1); } catch (e) {}
     const abasEl = elD('div', 'sl-abas vs-abas'); abasEl.setAttribute('role', 'tablist'); const w = elD('div', 'vs-corpo');
     c.append(abasEl, w);
