@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-10.255">
+<meta name="app-versao" content="2026-11-10.256">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1554,6 +1554,7 @@ body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px
 .ed-links { display: flex; justify-content: center; gap: 6px; margin-top: 6px; }
 .sl-abas { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 12px; scrollbar-width: none; } .sl-abas::-webkit-scrollbar { display: none; } .sl-abas[hidden] { display: none; }
 .sl-aba { flex: none; width: auto; height: auto; min-width: 0; max-width: 62vw; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; padding: 9px 14px; border-radius: 999px; border: 1px solid #F5C6D6; background: #FFFFFF; color: #D61F69; font: inherit; font-size: 13px; font-weight: 800; white-space: nowrap; } .sl-aba.on { background: #D61F69; border-color: #D61F69; color: #FFFFFF; }
+.sl-resposta { margin-top: 6px; padding: 8px 10px; border-radius: 10px; background: #FDF2F7; color: #4A0F2B; font-size: 14px; line-height: 1.35; white-space: pre-wrap; } .sl-resposta::before { content: 'Resposta: '; font-weight: 800; color: #D61F69; }
 .sl-grupo { width: 100%; height: auto; min-height: 0; display: flex; align-items: center; gap: 10px; padding: 12px 0; background: none; border: 0; text-align: left; cursor: pointer; font: inherit; color: inherit; } .sl-grupo .sl-tx { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; } .sl-grupo .sl-t { line-height: 1.3; } .sl-seta { font-style: normal; font-size: 26px; line-height: 1; color: #D61F69; margin-left: auto; padding-left: 10px; } body.modo-trab .sl-seta { color: #059669; }
 .sl-corpo { display: grid; gap: 12px; padding-bottom: 28px; } .sl-card { background: #FFFFFF; color: #4A0F2B; border: 1px solid #F5C6D6; border-left: 4px solid #D61F69; border-radius: 16px; padding: 6px 8px 6px 12px; box-shadow: 0 2px 8px rgba(214,31,105,.10); }
 .sl-sub { margin: 10px 0 2px; color: #D61F69; font-size: 13px; font-weight: 800; }
@@ -4753,6 +4754,7 @@ function abreSaudeLista(m, soGrupo) {   // soGrupo: tela filha com um grupo só 
         lista.forEach(x => {
           const linha = elD('div', 'sl-item' + (x.tipo === 'nota' ? ' nota' : '') + (x.feito ? ' feito' : '')), tx = elD('div', 'sl-tx'), t = elD('span', 'sl-t'); slNeg(t, x.texto); tx.append(t);
           if (x.feito) tx.append(elD('small', 'sl-feito', edRotuloFeito(x)));
+          if (x.resposta) { const rs = elD('div', 'sl-resposta'); slNeg(rs, x.resposta); tx.append(rs); }   // resposta do médico, preenchida depois (May, 10/11/2026)
           if (x.tipo !== 'nota') {
             if (marcavel) { const ck = elD('button', 'li-ck'); ck.type = 'button'; ck.setAttribute('aria-label', x.feito ? 'Desmarcar' : 'Marcar como feito'); ck.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg>'; ck.onclick = async () => { await E.feito(x.id, !x.feito); pinta(); }; linha.append(ck); }
             else linha.append(elD('i', 'sl-ponto'));
