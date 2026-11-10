@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-09.246">
+<meta name="app-versao" content="2026-11-10.247">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -4551,11 +4551,21 @@ async function edAbre(cfg) {
   const itens = (base[lista] || []).map(x => ({ ...x }));
   (sobre.itens || []).forEach(o => { const x = itens.find(y => y.id === o.id); if (x) Object.assign(x, o); else itens.push({ ...o }); });
   const cs = base.campos, m = { base, itens, campos: Array.isArray(cs) ? cs : (cs && cs[lista]) || cfg.campos || [] };   // campos pode ser uma lista só ou { <lista>: [...] } quando o arquivo tem mais de uma lista (Finanças)
-  m.op = async (op, msg) => {
+  // A ação acontece na tela ANTES do envio (May, 09/11/2026 21:47: "marcar primeiro e enviar depois ... se der errado volta"):
+  // aplica na memória e devolve na hora; o envio vai numa fila (um por vez, na ordem); se falhar, a tela volta a como estava antes
+  // dessa ação (as seguintes da fila não são enviadas) e m.aoMudar() repinta.
+  let fila = Promise.resolve(), desfeito = null, pend = 0;
+  m.op = (op, msg) => {
+    const antes = JSON.parse(JSON.stringify(m.itens));
     edAplica(m.itens, op, !!cfg.edicoes);
-    const alvo = cfg.edicoes || cfg.arq, ok = await gravaJson(alvo, d => { d[lista] = d[lista] || []; edAplica(d[lista], op, !!cfg.edicoes); }, msg || 'Edição pelo app', { itens: [] });
-    if (!ok) showNote('Não guardou: confere a internet e tenta de novo.', true);
-    return !!ok;
+    const alvo = cfg.edicoes || cfg.arq; pend++;
+    fila = fila.then(async () => {
+      if (desfeito) return;
+      let ok = false; try { ok = await gravaJson(alvo, d => { d[lista] = d[lista] || []; edAplica(d[lista], op, !!cfg.edicoes); }, msg || 'Edição pelo app', { itens: [] }); } catch (e) {}
+      if (!ok) { desfeito = antes; m.itens.splice(0, m.itens.length, ...antes); showNote('Não guardou: voltou como estava. Confere a internet e tenta de novo.', true); if (m.aoMudar) try { m.aoMudar(); } catch (e) {} }
+    }).then(() => { if (--pend === 0) desfeito = null; });
+    m.enviando = fila;
+    return Promise.resolve(true);
   };
   m.lanca = (v, msg) => { const item = { id: edNovoId(v[m.campos[0] && m.campos[0].nome] || v.texto || v.nome), ...v, criado: edAgora() }; return m.op({ tipo: 'lanca', item }, msg || 'Item novo pelo app').then(ok => ok ? item : null); };
   m.edita = (id, v) => m.op({ tipo: 'edita', id, v, quando: edAgora() }, 'Item editado pelo app');
@@ -4629,6 +4639,7 @@ function abreLista(m) {
     painel.style.setProperty('--c', m.cor || '#06B6D4'); c.classList.add('li-tela');
     const nota = skCarga(); c.append(nota); let E;
     try { E = await edAbre({ arq: m.arq, edicoes: m.edicoes }); } catch (e) { nota.textContent = 'Não abriu. Confere a internet.'; return; }
+    E.aoMudar = () => pinta();
     nota.remove();
     const campos = E.campos, tit = campos[0] ? campos[0].nome : 'nome', verbo = E.base.feitoRotulo || 'Feito', pedeValor = !!E.base.pedeValor;
     const lanca = () => edFormulario({ titulo: 'Novo', campos, aoSalvar: async v => { await E.lanca(v); pinta(); } });
@@ -4659,6 +4670,7 @@ function abreSaudeLista(m) {
     c.classList.add('sl-tela');
     const nota = skCarga(); c.append(nota); let E;
     try { E = await edAbre({ arq: m.arq }); } catch (e) { nota.textContent = 'Não abriu. Confere a internet.'; return; }
+    E.aoMudar = () => pinta();
     nota.remove();
     const campos = E.campos, marcavel = !!E.base.marcavel; let aba = '';
     const velho = E.base.migrar_marcas_de;   // marcas antigas (neste aparelho) passam uma vez pro arquivo
@@ -5467,6 +5479,7 @@ function abreFinancas(m) {
       try { await lerArquivo(FIN_ARQ); } catch (e) { if (!e || e.status !== 404) throw e; if (!(await gravaJson(FIN_ARQ, () => {}, 'Finanças criada pelo app', FIN_MOLDE))) throw e; }   // ainda não existe: cria vazio
       [Ec, Ep] = await Promise.all([edAbre({ arq: FIN_ARQ, lista: 'contas', edicoes: FIN_ARQ, campos: FIN_CAMPOS.contas }), edAbre({ arq: FIN_ARQ, lista: 'pagamentos', campos: FIN_CAMPOS.pagamentos })]);
     } catch (e) { nota.textContent = 'Não abriu as contas lançadas. Confere a internet.'; return; }
+    Ec.aoMudar = Ep.aoMudar = () => repinta();   // falhou o envio: volta como estava
     nota.remove();
     cabecalho({ icone: 'money', sub: 'da planilha · ' + String(d0.atualizado || '').replace(/\/\d{4}/, ''), acao: { icone: 'retry', rotulo: 'Ler a planilha de novo', fn: () => desenhaTela() } });
     const hoje = new Date(); hoje.setHours(0, 0, 0, 0); let mesAt = new Date(hoje.getFullYear(), hoje.getMonth(), 1), S;
@@ -5680,6 +5693,7 @@ function abreCheck(m) {
   tela(m.nome, async c => {
     const p = skCarga(); c.append(p);
     let E; try { E = await edAbre({ arq: m.arq, edicoes: m.edicoes }); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    E.aoMudar = () => pinta();
     p.remove();
     let velhos = {}; try { velhos = JSON.parse(store.get('check-feitos') || '{}'); } catch (e) {}   // marcas antigas deste aparelho (check-feitos): passam uma vez pro arquivo
     const opsV = Object.keys(velhos).filter(id => E.itens.some(x => x.id === id && !x.feito && !x.apagado)).map(id => ({ tipo: 'feito', id, on: true, quando: (/^\d{4}-\d\d-\d\d$/.test(velhos[id]) ? edDataBr(velhos[id]) : edAgora().slice(0, 10)) + ' 12:00' }));
@@ -5724,6 +5738,7 @@ function abreAtelie(m) {
   tela(m.nome, async c => {
     const p = skCarga(); c.append(p);
     let E; try { E = await edAbre({ arq: m.arq, lista: 'obras' }); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    E.aoMudar = () => pinta();
     p.remove();
     const ETAPAS = ['ideia', 'rascunho', 'gravar · colorir', 'mixar · finalizar'];
     const campos = [{ nome: 'nome', rotulo: 'Nome da obra', tipo: 'texto', obrigatorio: true }, { nome: 'tipo', rotulo: 'Tipo (música, desenho, animação…)', tipo: 'texto' }, { nome: 'etapa', rotulo: 'Etapa', tipo: 'escolha', opcoes: ETAPAS.map((e, i) => [String(i + 1), (i + 1) + ' · ' + e]), padrao: '1' }, { nome: 'falta', rotulo: 'O que falta', tipo: 'texto_longo' }, { nome: 'com', rotulo: 'Na mão de', tipo: 'texto' }];
@@ -5854,6 +5869,7 @@ const MURAL_ARQ = 'categorias/academia/mural.json';
 async function montaMural(w) {
   const nota = skCarga(); w.append(nota); let E;
   try { E = await edAbre({ arq: MURAL_ARQ, lista: 'dias' }); } catch (e) { nota.textContent = 'Não abriu. Confere a internet.'; return; }
+  E.aoMudar = () => pinta();
   nota.remove();
   const campos = [{ nome: 'data', rotulo: 'Dia', tipo: 'data', obrigatorio: true }, { nome: 'foto', rotulo: 'Foto', tipo: 'foto', obrigatorio: true }, { nome: 'legenda', rotulo: 'Legenda', tipo: 'texto_longo' }];
   let sel = null;
