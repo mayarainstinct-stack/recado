@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-10.257">
+<meta name="app-versao" content="2026-11-10.258">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1556,6 +1556,16 @@ body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px
 .sl-aba { flex: none; width: auto; height: auto; min-width: 0; max-width: 62vw; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; padding: 9px 14px; border-radius: 999px; border: 1px solid #F5C6D6; background: #FFFFFF; color: #D61F69; font: inherit; font-size: 13px; font-weight: 800; white-space: nowrap; } .sl-aba.on { background: #D61F69; border-color: #D61F69; color: #FFFFFF; }
 .sl-resposta { margin-top: 6px; padding: 8px 10px; border-radius: 10px; background: #FDF2F7; color: #4A0F2B; font-size: 14px; line-height: 1.35; white-space: pre-wrap; } .sl-resposta::before { content: 'Resposta: '; font-weight: 800; color: #D61F69; }
 .sl-grupo { width: 100%; height: auto; min-height: 0; display: flex; align-items: center; gap: 10px; padding: 12px 0; background: none; border: 0; text-align: left; cursor: pointer; font: inherit; color: inherit; } .sl-grupo .sl-tx { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; } .sl-grupo .sl-t { line-height: 1.3; } .sl-seta { font-style: normal; font-size: 26px; line-height: 1; color: #D61F69; margin-left: auto; padding-left: 10px; } body.modo-trab .sl-seta { color: #059669; }
+.ex-tela .p-nota { margin: 0 0 8px; } .ex-corpo > .sl-card { padding: 12px 14px; } .ex-corpo > .sl-card > h3 { margin: 0 0 4px; font-size: 15px; } .ex-corpo ul { margin: 4px 0 0; padding-left: 18px; font-size: 13px; } .ex-tela .sl-aba { flex: 1 1 0; padding: 9px 6px; text-align: center; } .ex-card { display: block; width: 100%; text-align: left; font: inherit; cursor: pointer; padding: 12px 14px; }
+.ex-card.acima, .ex-card.abaixo { border-left-color: #F28C28; } .ex-cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; } .ex-cab h3 { margin: 0; font-size: 16px; }
+.ex-selo { flex: none; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; color: #FFFFFF; background: #2E9E6A; } .ex-selo.acima, .ex-selo.abaixo { background: #F28C28; }
+.ex-val { display: flex; align-items: baseline; gap: 8px; margin: 4px 0 6px; } .ex-val b { font-size: 26px; line-height: 1.1; } .ex-val span { font-size: 12px; opacity: .7; }
+.ex-graf { position: relative; display: flex; align-items: flex-end; gap: 10px; height: 78px; padding: 0 4px; margin: 18px 0 20px; } .ex-faixa { position: absolute; left: 0; right: 0; background: rgba(46,158,106,.12); border-top: 1px dashed rgba(46,158,106,.5); border-bottom: 1px dashed rgba(46,158,106,.5); }
+.ex-col { position: relative; flex: 1; max-width: 64px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; } .ex-barra { position: relative; width: 100%; border-radius: 6px 6px 2px 2px; background: #2E9E6A; } .ex-barra.acima, .ex-barra.abaixo { background: #F28C28; }
+.ex-bv { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 2px; font-size: 11px; font-weight: 800; white-space: nowrap; } .ex-ano { position: absolute; bottom: -16px; font-size: 11px; opacity: .7; }
+.ex-tend { margin: 4px 0 0; font-size: 13px; } .ex-fx { font-size: 12px; opacity: .75; } .ex-tab { width: 100%; border-collapse: collapse; font-size: 13px; margin: 6px 0; } .ex-tab th { text-align: left; font-size: 11px; opacity: .7; padding: 4px; } .ex-tab td { padding: 6px 4px; border-top: 1px solid #F5C6D6; vertical-align: top; }
+.ex-tab tr.ex-acima td, .ex-tab tr.ex-abaixo td { color: #B45309; font-weight: 700; } .ex-fxc { font-size: 11px; opacity: .7; } .ex-rem { padding: 12px 14px; } .ex-rem h3 { margin: 0 0 6px; font-size: 15px; } .ex-rl { padding: 6px 0; border-top: 1px solid #F5C6D6; } .ex-rl p { margin: 2px 0 0; font-size: 13px; } .ex-quando { display: inline-block; margin-right: 6px; padding: 2px 8px; border-radius: 999px; background: #FCE7F0; font-size: 11px; font-weight: 800; }
+.ex-perg { display: flex; gap: 10px; padding: 12px 14px; } .ex-perg h3 { margin: 0; font-size: 15px; } .ex-perg p { margin: 2px 0 0; font-size: 13px; } .ex-n { flex: none; width: 26px; height: 26px; border-radius: 50%; background: #D61F69; color: #FFFFFF; display: grid; place-items: center; font-weight: 800; font-size: 13px; }
 .sl-corpo { display: grid; gap: 12px; padding-bottom: 28px; } .sl-card { background: #FFFFFF; color: #4A0F2B; border: 1px solid #F5C6D6; border-left: 4px solid #D61F69; border-radius: 16px; padding: 6px 8px 6px 12px; box-shadow: 0 2px 8px rgba(214,31,105,.10); }
 .sl-sub { margin: 10px 0 2px; color: #D61F69; font-size: 13px; font-weight: 800; }
 .sl-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-top: 1px dashed #F0C9D6; } .sl-item:first-child, .sl-sub + .sl-item { border-top: 0; }
@@ -5704,6 +5714,7 @@ function abreItemMenu(m) {
   if (m.tipo === 'maquinas') return abreMaquinas(m);
   if (m.tipo === 'imagens') return abreImagens(m);
   if (m.tipo === 'videos') return abreVideos(m);
+  if (m.tipo === 'exames') return abreExames(m);
   if (m.tipo === 'texto' && m.cartoes) return abreCartoes(m);
   if (m.tipo === 'texto') return abreTexto(m);
   if (m.tipo === 'agenda') return abreAgenda(m);
@@ -6526,6 +6537,58 @@ function abreFicha({ titulo, foto, corpo, contexto, fotos }) {
   return f;
 }
 // ---- Texto em cartões (Comida e água…): cada "## " vira um cartão; "### " subtítulo; "- " item. Tocar abre a ficha com anotação.
+// ---- Exames (May, 10/11/2026 11:29: "odeio textão, tem que ser mais visual"): saude/exames.json = { aviso, abas, exames: [{ nome, unidade, min, max, faixa, pontos: [{ data, v, lab, nota }], tendencia, aba }], umavez, remedio, perguntas, duvidas }
+// Cartão por exame: último valor grande, selo dentro/acima/abaixo da faixa e a evolução em barras (a faixa fica marcada atrás). Toque abre a tabela com data, valor e laboratório.
+function abreExames(m) {
+  tela(m.nome, async c => {
+    c.classList.add('sl-tela', 'ex-tela');
+    const p = skCarga(); c.append(p); let d;
+    try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não abriu. Confere a internet.'; return; }
+    p.remove();
+    const num = (v, u) => v.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) + (u ? ' ' + u : '');
+    const sit = (x, v) => (x.max != null && v > x.max) ? ['acima', 'Acima'] : (x.min != null && v < x.min) ? ['abaixo', 'Abaixo'] : ['ok', 'Dentro'];
+    const ano = s => String(s).slice(-4);
+    const grafico = x => {   // barras na escala do maior valor (ou do limite da faixa); a faixa vira uma tarja clara atrás
+      const g = elD('div', 'ex-graf'), topo = Math.max(...x.pontos.map(q => q.v), x.max || 0) * 1.25 || 1;
+      if (x.max != null) { const f = elD('div', 'ex-faixa'); f.style.bottom = ((x.min || 0) / topo * 100) + '%'; f.style.height = ((x.max - (x.min || 0)) / topo * 100) + '%'; g.append(f); }
+      x.pontos.forEach(q => { const col = elD('div', 'ex-col'), b = elD('div', 'ex-barra ' + sit(x, q.v)[0]); b.style.height = Math.max(4, q.v / topo * 100) + '%'; b.append(elD('span', 'ex-bv', num(q.v))); col.append(b, elD('span', 'ex-ano', ano(q.data))); g.append(col); });
+      return g;
+    };
+    const ficha = x => { const t = elD('table', 'ex-tab'); t.append(Object.assign(elD('tr'), { innerHTML: '<th>Data</th><th>Valor</th><th>Laboratório</th>' }));
+      x.pontos.forEach(q => { const tr = elD('tr', 'ex-' + sit(x, q.v)[0]); tr.append(elD('td', '', q.data), elD('td', '', num(q.v, x.unidade) + (q.nota ? ' *' : '')), elD('td', '', q.lab)); t.append(tr); });
+      const corpo = elD('div'); corpo.append(grafico(x), elD('p', 'ex-fx', 'Faixa: ' + x.faixa), t, elD('p', '', x.tendencia));
+      x.pontos.filter(q => q.nota).forEach(q => corpo.append(elD('p', 'p-nota', '* ' + q.data + ': ' + q.nota)));
+      abreFicha({ titulo: x.nome, corpo, contexto: m.nome + ' (' + x.nome + ')' }); };
+    const cartao = x => {
+      const u = x.pontos[x.pontos.length - 1], [k, rot] = sit(x, u.v), b = elD('div', 'sl-card ex-card ' + k); b.setAttribute('role', 'button'); b.tabIndex = 0; b.onclick = () => ficha(x);
+      const cab = elD('div', 'ex-cab'); cab.append(elD('h3', '', x.nome), elD('span', 'ex-selo ' + k, rot));
+      const val = elD('div', 'ex-val'); val.append(elD('b', '', num(u.v)), elD('span', '', x.unidade + ' · ' + u.data));
+      b.append(cab, val, grafico(x), elD('p', 'ex-tend', x.tendencia)); return b;
+    };
+    let aba = store.get('ex-aba') || d.abas[0].id; if (!d.abas.some(a => a.id === aba)) aba = d.abas[0].id;
+    const abasEl = elD('div', 'sl-abas'); abasEl.setAttribute('role', 'tablist'); const w = elD('div', 'sl-corpo ex-corpo'); c.append(elD('p', 'p-nota', d.aviso), abasEl, w);
+    const pinta = () => {
+      abasEl.replaceChildren(...d.abas.map(a => { const f = elD('button', 'sl-aba' + (a.id === aba ? ' on' : ''), a.nome); f.type = 'button'; f.onclick = () => { aba = a.id; store.set('ex-aba', aba); pinta(); }; return f; }));
+      w.replaceChildren();
+      const lista = d.exames.filter(x => x.aba === aba);
+      if (lista.length) {
+        const fora = lista.filter(x => sit(x, x.pontos[x.pontos.length - 1].v)[0] !== 'ok').length;
+        cabecalho({ icone: 'chart', sub: lista.length + ' exames · ' + (fora ? fora + ' fora da faixa no último' : 'todos dentro no último') });
+        if (aba === 'hormonios' && d.remedio) { const r = elD('section', 'sl-card ex-rem'); r.append(elD('h3', '', 'Remédio em cada época')); d.remedio.forEach(([q, n, t]) => { const l = elD('div', 'ex-rl'); l.append(elD('span', 'ex-quando', q), elD('b', '', n), elD('p', '', t)); r.append(l); }); w.append(r); }
+        lista.forEach(x => w.append(cartao(x)));
+      } else if (aba === 'umavez') {
+        cabecalho({ icone: 'chart', sub: 'exames sem repetição' });
+        d.umavez.forEach(g => { const s = elD('section', 'sl-card'); s.append(elD('h3', '', g.data + ' · ' + g.lab)); const t = elD('table', 'ex-tab');
+          g.itens.forEach(([n, v, f, ok]) => { const tr = elD('tr', ok ? 'ex-ok' : ''); tr.append(elD('td', '', n), elD('td', '', v), elD('td', 'ex-fxc', f)); t.append(tr); }); s.append(t); w.append(s); });
+      } else if (aba === 'perguntas') {
+        cabecalho({ icone: 'chart', sub: d.perguntas.length + ' perguntas pra levar' });
+        d.perguntas.forEach(([t, q], i) => { const s = elD('section', 'sl-card ex-perg'); s.append(elD('span', 'ex-n', String(i + 1)), elD('div')); s.lastChild.append(elD('h3', '', t), elD('p', '', q)); w.append(s); });
+        if (d.duvidas) { const s = elD('section', 'sl-card'); s.append(elD('h3', '', 'Conferir no papel')); const ul = elD('ul'); d.duvidas.forEach(t => ul.append(elD('li', '', t))); s.append(ul); w.append(s); }
+      }
+    };
+    pinta();
+  });
+}
 function abreCartoes(m) {
   tela(m.nome, async c => {
     const p = skCarga(); c.append(p);
