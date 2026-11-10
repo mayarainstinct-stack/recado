@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-10.249">
+<meta name="app-versao" content="2026-11-10.250">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -4678,7 +4678,7 @@ function abreSaudeLista(m, soGrupo) {   // soGrupo: tela filha com um grupo só 
     try { E = await edAbre({ arq: m.arq }); } catch (e) { nota.textContent = 'Não abriu. Confere a internet.'; return; }
     E.aoMudar = () => pinta();
     nota.remove();
-    const campos = E.campos, marcavel = !!E.base.marcavel; let aba = '';
+    const campos = E.campos, marcavel = !!E.base.marcavel; let aba = '', filtroG = 'ordem';
     const velho = E.base.migrar_marcas_de;   // marcas antigas (neste aparelho) passam uma vez pro arquivo
     if (velho && marcavel && !store.get('sl-migrado:' + m.arq)) {
       const ops = []; E.itens.forEach(x => { if (x.tipo !== 'nota' && !x.feito && !x.apagado && store.get('marca:' + velho + ':' + String(x.texto).replace(/\*\*/g, ''))) ops.push({ tipo: 'feito', id: x.id, on: true, quando: edAgora() }); });
@@ -4695,9 +4695,15 @@ function abreSaudeLista(m, soGrupo) {   // soGrupo: tela filha com um grupo só 
       if (!grupos.includes(aba)) aba = grupos[0] || '';
       // 4 grupos ou mais: submenu com o nome de cada lista antes, no lugar da fileira de abas (May, 10/11/2026: "era melhor ter um submenu antes com o nome das listas")
       if (soGrupo == null && grupos.length >= 4) {
-        abasEl.hidden = true; w.replaceChildren(); const card = elD('section', 'sl-card sl-menu');
-        grupos.forEach(g => { const its = vis.filter(x => (x.grupo || '') === g && x.tipo !== 'nota'), b = elD('button', 'sl-item sl-grupo'), tx = elD('div', 'sl-tx'); b.type = 'button'; tx.append(elD('span', 'sl-t', g || 'Geral')); if (marcavel && its.length) tx.append(elD('small', 'sl-feito', its.filter(x => x.feito).length + ' de ' + its.length + ' feitos')); b.append(tx, elD('i', 'sl-seta', '›')); b.onclick = () => abreSaudeLista({ ...m, nome: g || m.nome }, g); card.append(b); });
-        w.append(card); return;
+        // filtros do submenu (May, 10/11/2026): padrão = ordem do arquivo, que segue a ordem do que vai acontecer (viagem, consulta, ... cirurgia)
+        abasEl.replaceChildren(); abasEl.hidden = false;
+        [['ordem', 'Na ordem'], ['falta', 'Faltando'], ['az', 'A-Z']].forEach(([k, t]) => { if (k === 'falta' && !marcavel) return; const f = elD('button', 'sl-aba' + (filtroG === k ? ' on' : ''), t); f.type = 'button'; f.onclick = () => { filtroG = k; pinta(); }; abasEl.append(f); });
+        let gs = grupos.slice(); const falta = g => vis.some(x => (x.grupo || '') === g && x.tipo !== 'nota' && !x.feito);
+        if (filtroG === 'falta') gs = gs.filter(falta); else if (filtroG === 'az') gs.sort((x, y) => x.localeCompare(y, 'pt-BR'));
+        w.replaceChildren(); const card = elD('section', 'sl-card sl-menu');
+        if (!gs.length) w.append(elD('p', 'p-nota', 'Nada faltando por aqui.'));
+        gs.forEach(g => { const its = vis.filter(x => (x.grupo || '') === g && x.tipo !== 'nota'), b = elD('button', 'sl-item sl-grupo'), tx = elD('div', 'sl-tx'); b.type = 'button'; tx.append(elD('span', 'sl-t', g || 'Geral')); if (marcavel && its.length) tx.append(elD('small', 'sl-feito', its.filter(x => x.feito).length + ' de ' + its.length + ' feitos')); b.append(tx, elD('i', 'sl-seta', '›')); b.onclick = () => abreSaudeLista({ ...m, nome: g || m.nome }, g); card.append(b); });
+        if (gs.length) w.append(card); return;
       }
       abasEl.replaceChildren(); abasEl.hidden = grupos.length < 2;
       grupos.forEach(g => { const b = elD('button', 'sl-aba' + (g === aba ? ' on' : ''), g); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(g === aba)); b.onclick = () => { aba = g; pinta(); pCorpo.scrollTop = 0; }; abasEl.append(b); });
