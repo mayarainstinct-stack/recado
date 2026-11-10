@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-10.250">
+<meta name="app-versao" content="2026-11-10.251">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -4103,8 +4103,9 @@ function desenhaTela() {
   if (rolou) Promise.resolve(r).then(() => { if (t.isConnected) pCorpo.scrollTop = rolou; });   // voltando: devolve a rolagem de onde ela estava
 }
 function fechaPainel() { const n = pilha.length; painel.hidden = true; pilha = []; if (n && history.state && history.state.painel) { fechandoPainel = true; try { history.go(-history.state.painel); } catch (e) { fechandoPainel = false; } } }
-let fechandoPainel = false;
+let fechandoPainel = false, ultimoPop = 0;
 addEventListener('popstate', () => {   // voltar do navegador (deslizar da borda) = o mesmo voltar do app
+  ultimoPop = Date.now();
   if (fechandoPainel) { fechandoPainel = false; return; }
   if (painel.hidden || !pilha.length) return;
   pilha.pop(); if (pilha.length) desenhaTela(); else { painel.hidden = true; }
@@ -4112,7 +4113,7 @@ addEventListener('popstate', () => {   // voltar do navegador (deslizar da borda
 document.getElementById('p-anotar').onclick = () => { const caminho = pilha.map(p => p[0]).filter((x, i) => !(i === 0 && x === 'Menu')).join(' > ') || pTit.textContent; abreFicha({ titulo: 'Anotar · ' + caminho, contexto: caminho }); };   // o lápis vale em toda tela filha, com o caminho (ex.: Saúde > Perguntas pro médico); no Trabalho vai pra caixas/trabalho.md
 { let bx = null, by = 0;   // arrastar da borda esquerda pra direita = voltar, igual o iPhone
   painel.addEventListener('touchstart', e => { const t = e.touches[0]; bx = t.clientX < 28 ? t.clientX : null; by = t.clientY; }, { passive: true });
-  painel.addEventListener('touchend', e => { if (bx === null) return; const t = e.changedTouches[0], dx = t.clientX - bx, dy = t.clientY - by; bx = null; if (dx > 70 && Math.abs(dy) < dx * .7) document.getElementById('p-voltar').click(); }, { passive: true }); }
+  painel.addEventListener('touchend', e => { if (bx === null) return; const t = e.changedTouches[0], dx = t.clientX - bx, dy = t.clientY - by; bx = null; if (dx > 70 && Math.abs(dy) < dx * .7) setTimeout(() => { if (Date.now() - ultimoPop > 600 && !painel.hidden) document.getElementById('p-voltar').click(); }, 350); }, { passive: true }); }   // o iPhone também volta sozinho no deslize da borda: os dois juntos voltavam 2 telas e caíam no menu do Trabalho (May, 10/11/2026: "não pode acontecer de jeito nenhum"); só volta por aqui se o do iPhone não voltou
 document.getElementById('p-voltar').onclick = document.getElementById('p-voltar-baixo').onclick = () => { if (history.state && history.state.painel) history.back(); else { pilha.pop(); if (pilha.length) desenhaTela(); else fechaPainel(); } };
 // ---- Dados da conversa (tocar no nome ou na foto lá em cima): foto, quem participa e tudo que já foi mandado nela
 const EXT_IMG = /\.(png|jpe?g|webp|gif)$/i, EXT_AUDIO = /\.(m4a|webm|mp3|wav|ogg)$/i, EXT_TEXTO = /\.(md|txt|json|csv|py|sh|ps1|html|svg)$/i;
