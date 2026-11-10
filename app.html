@@ -4107,6 +4107,7 @@ let fechandoPainel = false, ultimoPop = 0;
 addEventListener('popstate', () => {   // voltar do navegador (deslizar da borda) = o mesmo voltar do app
   ultimoPop = Date.now();
   if (fechandoPainel) { fechandoPainel = false; return; }
+  if (history.state && history.state.painel && history.state.painel > pilha.length) { try { history.back(); } catch (e) {} return; }   // deslize pra FRENTE (direita pra esquerda no iPhone) refazia uma tela antiga e podia cair no Trabalho (May, 10/11/2026): pra frente não vale, desfaz na hora
   if (painel.hidden || !pilha.length) return;
   pilha.pop(); if (pilha.length) desenhaTela(); else { painel.hidden = true; }
 });
