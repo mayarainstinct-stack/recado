@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-10.259">
+<meta name="app-versao" content="2026-11-10.260">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1062,6 +1062,7 @@ body.na-geral .painel.tema-rosa .p-topo::after { background: #E75480; box-shadow
 .gr-grade.gr-grade-saude .gr-item::after { content: ''; position: absolute; left: 16px; right: 16px; top: 12px; height: 0; border-top: 1.5px dashed #F0C9D6; }
 .gr-grade.gr-grade-saude .gr-item .ic { width: 34px; height: 34px; align-self: flex-start; margin: 0; color: #D61F69; filter: none; }
 .gr-grade.gr-grade-saude .gr-item .t { align-self: stretch; text-align: left; color: #4A0F2B; text-shadow: none; font-weight: 800; font-size: 15px; line-height: 1.2; }
+.gr-grade.gr-grade-saude .gr-item.cor-propria { border-color: color-mix(in srgb, var(--c) 45%, #FFFFFF); box-shadow: 0 2px 0 color-mix(in srgb, var(--c) 45%, #FFFFFF), 0 10px 18px rgba(31,41,55,.08); } .gr-grade.gr-grade-saude .gr-item.cor-propria::before { background: var(--c); } .gr-grade.gr-grade-saude .gr-item.cor-propria::after { border-top-color: color-mix(in srgb, var(--c) 30%, #FFFFFF); } .gr-grade.gr-grade-saude .gr-item.cor-propria .ic { color: var(--c); } .gr-grade.gr-grade-saude .gr-item.cor-propria .t { color: color-mix(in srgb, var(--c) 55%, #000000); }
 .gr-grade.gr-grade-saude .gr-item:active { transform: translateY(2px); box-shadow: 0 0 0 #E9B8C9, 0 6px 12px rgba(74,15,43,.08); }
 .painel.tema-saude, body.na-geral .painel.tema-saude { --c: #D61F69; --fg: #4A0F2B; --muted: #A3456B; --line: #F5C6D6; --paper: #FFFFFF; --bg: #FFFFFF; background: #FFFFFF; color: #4A0F2B; }
 body.na-geral .painel.tema-saude .p-topo, .painel.tema-saude .p-topo { background: #FFFFFF; color: #4A0F2B; box-shadow: 0 1px 0 #F5C6D6, 0 6px 18px rgba(74,15,43,.07); }
@@ -1567,6 +1568,53 @@ body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px
 .ex-tend { margin: 4px 0 0; font-size: 13px; } .ex-fx { font-size: 12px; opacity: .75; } .ex-tab { width: 100%; border-collapse: collapse; font-size: 13px; margin: 6px 0; } .ex-tab th { text-align: left; font-size: 11px; opacity: .7; padding: 4px; } .ex-tab td { padding: 6px 4px; border-top: 1px solid #F5C6D6; vertical-align: top; }
 .ex-tab tr.ex-acima td, .ex-tab tr.ex-abaixo td { color: #B45309; font-weight: 700; } .ex-fxc { font-size: 11px; opacity: .7; } .ex-rem { padding: 12px 14px; } .ex-rem h3 { margin: 0 0 6px; font-size: 15px; } .ex-rl { padding: 6px 0; border-top: 1px solid #F5C6D6; } .ex-rl p { margin: 2px 0 0; font-size: 13px; } .ex-quando { display: inline-block; margin-right: 6px; padding: 2px 8px; border-radius: 999px; background: #FCE7F0; font-size: 11px; font-weight: 800; }
 .ex-perg { display: flex; gap: 10px; padding: 12px 14px; } .ex-perg h3 { margin: 0; font-size: 15px; } .ex-perg p { margin: 2px 0 0; font-size: 13px; } .ex-n { flex: none; width: 26px; height: 26px; border-radius: 50%; background: #D61F69; color: #FFFFFF; display: grid; place-items: center; font-weight: 800; font-size: 13px; }
+.vs-tela { --vs-c: #D61F69; --vs-m: #F0609A; --vs-e: #A3134F; --vs-l: #FCE7F0; --vs-b: #F5C6D6; --vs-f: #FFF1F6; --vs-s: rgba(214,31,105,.25); --vs-s2: rgba(214,31,105,.08); }
+.vs-tela.tema-coral { --vs-c: #E0485A; --vs-m: #FF8A7A; --vs-e: #B42A3C; --vs-l: #FFE8E4; --vs-b: #FBCFC8; --vs-f: #FFF4F1; --vs-s: rgba(224,72,90,.25); --vs-s2: rgba(224,72,90,.08); }
+.vs-tela.tema-magenta { --vs-c: #C0127F; --vs-m: #E85AB8; --vs-e: #8E0B5E; --vs-l: #FBE3F3; --vs-b: #F2C2E2; --vs-f: #FEF0F9; --vs-s: rgba(192,18,127,.25); --vs-s2: rgba(192,18,127,.08); }
+.vs-tela.tema-vinho { --vs-c: #9E1650; --vs-m: #D6457F; --vs-e: #6B0E36; --vs-l: #F8E1EA; --vs-b: #EBC1D2; --vs-f: #FCEFF4; --vs-s: rgba(158,22,80,.25); --vs-s2: rgba(158,22,80,.08); }
+.vs-tela.tema-pessego { --vs-c: #E2683C; --vs-m: #F9A27C; --vs-e: #A9441F; --vs-l: #FFEDE4; --vs-b: #F8CDB8; --vs-f: #FFF6F1; --vs-s: rgba(226,104,60,.25); --vs-s2: rgba(226,104,60,.08); }
+.vs-tela.tema-framboesa { --vs-c: #C8164A; --vs-m: #EE5A82; --vs-e: #8F0E34; --vs-l: #FDE4EB; --vs-b: #F5BFCF; --vs-f: #FFF1F5; --vs-s: rgba(200,22,74,.25); --vs-s2: rgba(200,22,74,.08); }
+.vs-tela.tema-orquidea { --vs-c: #B5359E; --vs-m: #DD7BCB; --vs-e: #7F2270; --vs-l: #F8E4F4; --vs-b: #EBC3E4; --vs-f: #FCF2FA; --vs-s: rgba(181,53,158,.25); --vs-s2: rgba(181,53,158,.08); }
+.vs-tela.tema-ameixa { --vs-c: #7C2D6B; --vs-m: #B4609F; --vs-e: #561D4A; --vs-l: #F3E3EF; --vs-b: #DEC1D7; --vs-f: #F9F1F7; --vs-s: rgba(124,45,107,.25); --vs-s2: rgba(124,45,107,.08); }
+.vs-tela.tema-cinza { --vs-c: #4B5563; --vs-m: #9CA3AF; --vs-e: #1F2937; --vs-l: #F1F2F4; --vs-b: #D6D9DE; --vs-f: #F7F8F9; --vs-s: rgba(75,85,99,.25); --vs-s2: rgba(75,85,99,.08); } .vs-tela.tema-cinza .vs-corpo { color: #1F2937; }
+.vs-tela.tema-lilas { --vs-c: #A33DB8; --vs-m: #D27CE0; --vs-e: #74288A; --vs-l: #F5E6F9; --vs-b: #E5C8EE; --vs-f: #FAF1FC; --vs-s: rgba(163,61,184,.25); --vs-s2: rgba(163,61,184,.08); }
+.vs-tela .sl-aba { color: var(--vs-c); border-color: var(--vs-b); } .vs-tela .sl-aba.on { background: var(--vs-c); border-color: var(--vs-c); color: #FFFFFF; }
+.vs-decor { position: absolute; right: -6px; top: -6px; width: 150px; height: 110px; color: rgba(255,255,255,.28); pointer-events: none; } .vs-dest > *:not(.vs-decor):not(.vs-pulso) { position: relative; }
+.vs-duas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .vs-lado { background: #FFFFFF; border: 1px solid var(--vs-b); border-radius: 18px; padding: 12px; } .vs-lado h4 { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font-size: 14px; color: var(--vs-c); } .vs-lado.b { background: var(--vs-f); } .vs-lado .vs-lista li { font-size: 13px; }
+.vs-abas { flex-wrap: wrap; overflow: visible; } .vs-abas .sl-aba { max-width: none; }
+.vs-corpo { display: grid; gap: 14px; padding-bottom: 32px; color: #4A0F2B; }
+.vs-dest { position: relative; overflow: hidden; border-radius: 22px; padding: 20px 18px 30px; color: #FFFFFF; background: linear-gradient(135deg, var(--vs-m) 0%, var(--vs-c) 60%, var(--vs-e) 100%); box-shadow: 0 8px 20px var(--vs-s); }
+.vs-dest h2 { margin: 10px 0 6px; font-size: 21px; line-height: 1.2; } .vs-dest p { margin: 0; font-size: 15px; line-height: 1.45; opacity: .95; }
+.vs-dest-ic { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: rgba(255,255,255,.2); } .vs-dest-ic svg { width: 26px; height: 26px; }
+.vs-pulso { position: absolute; left: 0; right: 0; bottom: 6px; width: 100%; height: 22px; color: rgba(255,255,255,.35); }
+.vs-tit { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font-size: 16px; color: var(--vs-c); }
+.vs-cx { background: #FFFFFF; border: 1px solid var(--vs-b); border-radius: 18px; padding: 14px 16px; }
+.vs-ic { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; background: var(--vs-l); color: var(--vs-c); } .vs-ic svg { width: 20px; height: 20px; }
+.vs-ic-p { display: inline-grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 9px; background: var(--vs-l); color: var(--vs-c); } .vs-ic-p svg { width: 16px; height: 16px; }
+.vs-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.vs-card { background: #FFFFFF; border: 1px solid var(--vs-b); border-radius: 18px; padding: 12px; box-shadow: 0 2px 8px var(--vs-s2); } .vs-card h4 { margin: 8px 0 4px; font-size: 14px; line-height: 1.25; } .vs-card p { margin: 0; font-size: 13px; line-height: 1.4; }
+.vs-card.tom-bom .vs-ic { background: #DCFCE7; color: #15803D; } .vs-card.tom-atencao .vs-ic { background: #FFEDD5; color: #C2410C; } .vs-card.tom-alerta .vs-ic { background: #FEE2E2; color: #B91C1C; }
+.vs-passos { list-style: none; margin: 0; padding: 0; position: relative; } .vs-passos::before { content: ""; position: absolute; left: 15px; top: 8px; bottom: 8px; width: 2px; background: var(--vs-b); }
+.vs-passos li { position: relative; display: flex; gap: 12px; padding: 0 0 14px; } .vs-passos li:last-child { padding-bottom: 0; }
+.vs-n { position: relative; flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: #FFFFFF; border: 2px solid var(--vs-m); color: var(--vs-c); font-weight: 800; font-size: 13px; }
+.vs-passos li.est-feito .vs-n { background: var(--vs-c); border-color: var(--vs-c); color: #FFFFFF; } .vs-passos li.est-agora .vs-n { background: var(--vs-f); box-shadow: 0 0 0 5px var(--vs-s); }
+.vs-passos li > div { flex: 1; min-width: 0; background: #FFFFFF; border: 1px solid var(--vs-b); border-radius: 14px; padding: 8px 12px; } .vs-passos h4 { margin: 0; font-size: 14px; } .vs-passos p { margin: 3px 0 0; font-size: 13px; line-height: 1.4; }
+.vs-passos li.est-depois > div { background: var(--vs-f); border-style: dashed; }
+.vs-data { display: inline-block; margin-bottom: 3px; padding: 1px 8px; border-radius: 999px; background: var(--vs-l); color: var(--vs-e); font-size: 11px; font-weight: 800; }
+.vs-nums { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; } .vs-num { background: #FFFFFF; border: 1px solid var(--vs-b); border-radius: 18px; padding: 12px; text-align: center; }
+.vs-num b { display: block; font-size: 24px; line-height: 1.1; color: var(--vs-c); } .vs-num span { display: block; margin-top: 4px; font-size: 12px; line-height: 1.3; }
+.vs-lista { margin: 0; padding: 0; list-style: none; display: grid; gap: 7px; } .vs-lista li { position: relative; padding-left: 18px; font-size: 14px; line-height: 1.4; } .vs-lista li::before { content: ""; position: absolute; left: 2px; top: .5em; width: 8px; height: 8px; border-radius: 50%; background: var(--vs-m); }
+.vs-frase { margin: 0; padding: 18px 18px 14px 22px; border-radius: 18px; background: var(--vs-f); border-left: 5px solid var(--vs-c); } .vs-frase blockquote { margin: 0; font-size: 17px; line-height: 1.4; font-style: italic; color: var(--vs-e); } .vs-frase figcaption { margin-top: 6px; font-size: 12px; font-weight: 800; color: var(--vs-c); }
+.vs-aviso { display: flex; gap: 12px; align-items: flex-start; border-radius: 18px; padding: 12px 14px; background: var(--vs-f); border: 1px solid var(--vs-b); } .vs-aviso .vs-ic { flex: none; } .vs-aviso h4 { margin: 0 0 2px; font-size: 14px; } .vs-aviso p { margin: 0; font-size: 13px; line-height: 1.45; }
+.vs-aviso.tom-bom { background: #F0FDF4; border-color: #BBF7D0; } .vs-aviso.tom-bom .vs-ic { background: #DCFCE7; color: #15803D; }
+.vs-aviso.tom-atencao { background: #FFF7ED; border-color: #FED7AA; } .vs-aviso.tom-atencao .vs-ic { background: #FFEDD5; color: #C2410C; }
+.vs-aviso.tom-alerta { background: #FEF2F2; border-color: #FECACA; } .vs-aviso.tom-alerta .vs-ic { background: #FEE2E2; color: #B91C1C; }
+.vs-perg { background: #FFFFFF; border: 1px solid var(--vs-b); border-radius: 14px; margin-bottom: 8px; } .vs-perg summary { list-style: none; cursor: pointer; padding: 12px 44px 12px 14px; font-size: 14px; font-weight: 700; position: relative; } .vs-perg summary::-webkit-details-marker { display: none; }
+.vs-perg summary::after { content: "+"; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 24px; height: 24px; border-radius: 50%; background: var(--vs-l); color: var(--vs-c); display: grid; place-items: center; font-weight: 800; } .vs-perg[open] summary::after { content: "\2212"; }
+.vs-perg > p, .vs-perg > ul { margin: 0; padding: 0 14px 12px; font-size: 13px; line-height: 1.45; } .vs-top > ul { padding-left: 14px; }
+.vs-cont { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-top: 1px solid var(--vs-l); } .vs-cont:first-of-type { border-top: 0; } .vs-cont b { display: block; font-size: 14px; } .vs-cont span, .vs-cont a { font-size: 13px; overflow-wrap: anywhere; } .vs-cont a { color: var(--vs-c); }
+.vs-prox { justify-self: end; border: 0; border-radius: 999px; padding: 10px 16px; background: var(--vs-c); color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 800; width: auto; height: auto; }
+.vs-rodape { margin: 0; text-align: center; font-size: 11px; opacity: .6; }
 .sl-corpo { display: grid; gap: 12px; padding-bottom: 28px; } .sl-card { background: #FFFFFF; color: #4A0F2B; border: 1px solid #F5C6D6; border-left: 4px solid #D61F69; border-radius: 16px; padding: 6px 8px 6px 12px; box-shadow: 0 2px 8px rgba(214,31,105,.10); }
 .sl-sub { margin: 10px 0 2px; color: #D61F69; font-size: 13px; font-weight: 800; }
 .sl-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-top: 1px dashed #F0C9D6; } .sl-item:first-child, .sl-sub + .sl-item { border-top: 0; }
@@ -4540,7 +4588,7 @@ function abreGrupo(m) {
     const chave = 'grupo-ordem:' + m.nome; let ordem = []; try { ordem = JSON.parse(store.get(chave) || '[]'); } catch (e) {}
     const pos = x => { const i = ordem.indexOf(x.nome); return i < 0 ? 999 : i; }, itensG = (m.itens || []).map((x, i) => [x, i]).sort((a, b) => pos(a[0]) - pos(b[0]) || a[1] - b[1]).map(a => a[0]);   // a ordem que ela arrumou arrastando (neste aparelho); item novo vai pro fim
     arrumaArrastando(g, { sel: '.gr-item', chave, aviso: 'Pastas arrumadas: ficam assim neste celular' });
-    itensG.forEach(x => { const b = botaoGrade(x.icone, x.nome, x.sub, () => abreItemMenu(x)); b.classList.add('gr-item'); b.dataset.nome = x.nome; b.style.setProperty('--c', x.cor || cor); if (!m.estilo || m.estilo === 'cinema') { const sb = elD('small', 'gr-sub', x.sub || ''); b.append(sb); } g.append(b); });
+    itensG.forEach(x => { const b = botaoGrade(x.icone, x.nome, x.sub, () => abreItemMenu(x)); b.classList.add('gr-item'); b.dataset.nome = x.nome; b.style.setProperty('--c', x.cor || cor); if (x.cor) b.classList.add('cor-propria'); if (!m.estilo || m.estilo === 'cinema') { const sb = elD('small', 'gr-sub', x.sub || ''); b.append(sb); } g.append(b); });
   });
 }
 // Ideias (May via Sigma, 07/11/2026): anotar rápido ideia do app, da casa ou de conteúdo; vira pauta pros robôs. Arquivo: m.arq, uma linha por ideia, a mais nova embaixo
@@ -5715,6 +5763,7 @@ function abreItemMenu(m) {
   if (m.tipo === 'maquinas') return abreMaquinas(m);
   if (m.tipo === 'imagens') return abreImagens(m);
   if (m.tipo === 'videos') return abreVideos(m);
+  if (m.tipo === 'visual') return abreVisual(m);
   if (m.tipo === 'exames') return abreExames(m);
   if (m.tipo === 'texto' && m.cartoes) return abreCartoes(m);
   if (m.tipo === 'texto') return abreTexto(m);
@@ -6606,6 +6655,49 @@ function abreExames(m) {
         d.perguntas.forEach(([t, q], i) => { const s = elD('section', 'sl-card ex-perg'); s.append(elD('span', 'ex-n', String(i + 1)), elD('div')); s.lastChild.append(elD('h3', '', t), elD('p', '', q)); w.append(s); });
         if (d.duvidas) { const s = elD('section', 'sl-card'); s.append(elD('h3', '', 'Conferir no papel')); const ul = elD('ul'); d.duvidas.forEach(t => ul.append(elD('li', '', t))); s.append(ul); w.append(s); }
       }
+    };
+    pinta();
+  });
+}
+// ---- Telas visuais da Saúde (May, 10/11/2026: "pega na saúde tudo e coloca de uma maneira bonita e fácil de ler", "não quero textão", "vou ler tudo na viagem")
+// saude/visual/<id>.json = { titulo, sub, abas: [{ nome, icone, blocos: [{ t: destaque|cartoes|passos|numeros|lista|frase|aviso|perguntas|tabela|contatos|topicos, ... }] }] }   (formato em saude/visual/FORMATO.md)
+function abreVisual(m) {
+  tela(m.nome, async c => {
+    c.classList.add('sl-tela', 'vs-tela');
+    const p = skCarga(); c.append(p); let d;
+    try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não abriu. Confere a internet.'; return; }
+    p.remove();
+    const tema = d.tema || {}; if (/^(coral|magenta|vinho|lilas|cinza|pessego|framboesa|orquidea|ameixa)$/.test(tema.cor || '')) c.classList.add('tema-' + tema.cor);
+    const DECOR = { circulos: [[118, 22, 14], [118, 22, 30], [118, 22, 46], [118, 22, 62]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="currentColor" stroke-width="3"/>`).join(''), raios: Array.from({ length: 9 }, (_, i) => { const a = (100 + i * 10) * Math.PI / 180; return `<path d="M150 0L${150 + Math.cos(a) * 150} ${-Math.sin(a) * -150}" stroke="currentColor" stroke-width="${i % 2 ? 2 : 5}" stroke-linecap="round"/>`; }).join('') + '<circle cx="150" cy="0" r="22" fill="currentColor"/>', flores: [[42, 34, 1], [108, 24, .7], [122, 78, 1.2], [70, 86, .6]].map(([x, y, s]) => `<g transform="translate(${x} ${y}) scale(${s})">` + [0, 72, 144, 216, 288].map(r => `<ellipse rx="6" ry="11" cy="-10" transform="rotate(${r})" fill="currentColor"/>`).join('') + '<circle r="5" fill="rgba(255,255,255,.5)"/></g>').join(''), losangos: [[30, 26, 10], [70, 14, 6], [104, 40, 13], [138, 18, 7], [82, 78, 9], [132, 90, 6]].map(([x, y, r]) => `<path d="M${x} ${y - r}L${x + r * .7} ${y}L${x} ${y + r}L${x - r * .7} ${y}Z" fill="currentColor"/>`).join(''), ondas: '<path d="M0 30q19-16 38 0t38 0 38 0 38 0M0 55q19-16 38 0t38 0 38 0 38 0M0 80q19-16 38 0t38 0 38 0 38 0" fill="none" stroke="currentColor" stroke-width="3"/>', estrelas: [[30, 28, 9], [92, 18, 6], [120, 52, 11], [64, 70, 7], [128, 92, 5]].map(([x, y, r]) => `<path d="M${x} ${y - r}l${r * .3} ${r * .7} ${r * .7} ${r * .3}-${r * .7} ${r * .3}-${r * .3} ${r * .7}-${r * .3}-${r * .7}-${r * .7}-${r * .3} ${r * .7}-${r * .3}z" fill="currentColor"/>`).join(''), coracoes: [[40, 30, 1.1], [104, 22, .7], [118, 70, 1.3], [64, 82, .6]].map(([x, y, s]) => `<path transform="translate(${x} ${y}) scale(${s})" d="M0 6C-4-2-14 0-12 8c1 5 7 9 12 13 5-4 11-8 12-13 2-8-8-10-12-2z" fill="currentColor"/>`).join(''), pontos: Array.from({ length: 30 }, (_, i) => `<circle cx="${18 + (i % 6) * 24}" cy="${14 + Math.floor(i / 6) * 20}" r="3" fill="currentColor"/>`).join(''), folhas: [[50, 40, -30], [100, 26, 20], [120, 78, -60], [70, 88, 40]].map(([x, y, r]) => `<path transform="translate(${x} ${y}) rotate(${r})" d="M0-18C12-10 12 10 0 18-12 10-12-10 0-18zM0-16V16" fill="currentColor" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/>`).join('') };
+    const tx = (tag, cls, s) => { const e = elD(tag, cls); mdInline(e, s || ''); return e; };
+    const ic = (k, cls) => { const s = elD('span', cls || 'vs-ic'); s.innerHTML = icone(k || 'heart'); return s; };
+    const tit = (b, w) => { if (b.titulo) w.append(tx('h3', 'vs-tit', b.titulo)); };
+    const R = {
+      destaque: b => { const s = elD('section', 'vs-dest'); s.append(ic(b.icone || 'heart', 'vs-dest-ic'), tx('h2', '', b.titulo), tx('p', '', b.texto)); if (DECOR[tema.decor]) s.insertAdjacentHTML('afterbegin', '<svg class="vs-decor" viewBox="0 0 150 110" aria-hidden="true">' + DECOR[tema.decor] + '</svg>'); if (!tema.decor || tema.decor === 'pulso') s.insertAdjacentHTML('beforeend', '<svg class="vs-pulso" viewBox="0 0 200 30" preserveAspectRatio="none" aria-hidden="true"><path d="M0 15h70l6-10 8 20 8-26 8 26 6-10h94" fill="none" stroke="currentColor" stroke-width="2"/></svg>'); return s; },
+      cartoes: b => { const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-grade'); (b.itens || []).forEach(x => { const k = elD('div', 'vs-card' + (x.tom ? ' tom-' + x.tom : '')); k.append(ic(x.icone), tx('h4', '', x.titulo), tx('p', '', x.texto)); g.append(k); }); w.append(g); return w; },
+      passos: b => { const w = elD('section', 'vs-bloco'); tit(b, w); const ol = elD('ol', 'vs-passos'); (b.itens || []).forEach((x, i) => { const li = elD('li', x.estado ? 'est-' + x.estado : ''); li.append(elD('span', 'vs-n', x.estado === 'feito' ? '✓' : String(i + 1))); const cx = elD('div'); if (x.data) cx.append(elD('span', 'vs-data', x.data)); cx.append(tx('h4', '', x.titulo)); if (x.texto) cx.append(tx('p', '', x.texto)); li.append(cx); ol.append(li); }); w.append(ol); return w; },
+      numeros: b => { const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-nums'); (b.itens || []).forEach(x => { const k = elD('div', 'vs-num'); k.append(elD('b', '', x.valor), tx('span', '', x.rotulo)); g.append(k); }); w.append(g); return w; },
+      lista: b => { const w = elD('section', 'vs-bloco vs-cx'); if (b.titulo) { const h = elD('h3', 'vs-tit'); if (b.icone) h.append(ic(b.icone, 'vs-ic-p')); mdInline(h, b.titulo); w.append(h); } const ul = elD('ul', 'vs-lista'); (b.itens || []).forEach(s => ul.append(tx('li', '', s))); w.append(ul); return w; },
+      frase: b => { const s = elD('figure', 'vs-frase'); s.append(tx('blockquote', '', b.texto)); if (b.autor) s.append(elD('figcaption', '', b.autor)); return s; },
+      aviso: b => { const s = elD('section', 'vs-aviso tom-' + (b.tom || 'info')); s.append(ic({ bom: 'check', atencao: 'warn', alerta: 'warn', info: 'sparkle' }[b.tom] || 'sparkle')); const cx = elD('div'); if (b.titulo) cx.append(tx('h4', '', b.titulo)); cx.append(tx('p', '', b.texto)); s.append(cx); return s; },
+      perguntas: b => { const w = elD('section', 'vs-bloco'); tit(b, w); (b.itens || []).forEach(x => { const dt = elD('details', 'vs-perg'); const sm = elD('summary'); mdInline(sm, x.p); dt.append(sm, tx('p', '', x.r)); w.append(dt); }); return w; },
+      tabela: b => { const w = elD('section', 'vs-bloco vs-cx'); tit(b, w); const t = elD('table', 'md-tab'); const tr = elD('tr'); (b.cab || []).forEach(h => tr.append(tx('th', '', h))); t.append(tr); (b.linhas || []).forEach(l => { const r = elD('tr'); l.forEach(cel => r.append(tx('td', '', String(cel)))); t.append(r); }); const sw = elD('div', 'md-tab-w'); sw.append(t); w.append(sw); return w; },
+      contatos: b => { const w = elD('section', 'vs-bloco vs-cx'); tit(b, w); (b.itens || []).forEach(x => { const l = elD('div', 'vs-cont'); l.append(ic(x.icone || 'phone', 'vs-ic-p')); const cx = elD('div'); cx.append(tx('b', '', x.nome)); const i = String(x.info || ''); if (/^https?:\/\//.test(i)) { const a = elD('a', '', i.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')); a.href = i; a.target = '_blank'; a.rel = 'noopener'; cx.append(a); } else cx.append(tx('span', '', i)); l.append(cx); w.append(l); }); return w; },
+      duas: b => { const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-duas'); ['a', 'b'].forEach(k => { const x = b[k] || {}; const l = elD('div', 'vs-lado ' + k); const h = elD('h4'); h.append(ic(x.icone || (k === 'a' ? 'check' : 'warn'), 'vs-ic-p')); mdInline(h, x.titulo || ''); const ul = elD('ul', 'vs-lista'); (x.itens || []).forEach(s => ul.append(tx('li', '', s))); l.append(h, ul); g.append(l); }); w.append(g); return w; },
+      topicos: b => { const w = elD('section', 'vs-bloco'); tit(b, w); (b.itens || []).forEach(x => { const dt = elD('details', 'vs-perg vs-top'); const sm = elD('summary'); mdInline(sm, x.titulo); const ul = elD('ul', 'vs-lista'); (x.itens || []).forEach(s => ul.append(tx('li', '', s))); dt.append(sm, ul); w.append(dt); }); return w; },
+    };
+    const abas = d.abas || [];
+    let aba = 0; try { aba = Math.min(+(store.get('vs-aba:' + m.arq) || 0), abas.length - 1); } catch (e) {}
+    const abasEl = elD('div', 'sl-abas vs-abas'); abasEl.setAttribute('role', 'tablist'); const w = elD('div', 'vs-corpo');
+    c.append(abasEl, w);
+    const pinta = () => {
+      cabecalho({ icone: (abas[aba] && abas[aba].icone) || 'heart', sub: d.sub || '' });
+      abasEl.replaceChildren(...abas.map((a, i) => { const f = elD('button', 'sl-aba' + (i === aba ? ' on' : ''), a.nome); f.type = 'button'; f.onclick = () => { aba = i; try { store.set('vs-aba:' + m.arq, String(i)); } catch (e) {} pinta(); const pc = document.querySelector('#p-corpo'); if (pc) pc.scrollTop = 0; }; return f; }));
+      abasEl.hidden = abas.length < 2;
+      w.replaceChildren();
+      ((abas[aba] || {}).blocos || []).forEach(b => { const f = R[b.t]; if (!f) return; try { w.append(f(b)); } catch (e) {} });
+      if (aba < abas.length - 1) { const prox = elD('button', 'vs-prox'); prox.type = 'button'; prox.textContent = 'Próximo: ' + abas[aba + 1].nome + ' →'; prox.onclick = () => abasEl.children[aba + 1].click(); w.append(prox); }
+      if (d.atualizado) w.append(elD('p', 'vs-rodape', 'Atualizado em ' + d.atualizado));
     };
     pinta();
   });
