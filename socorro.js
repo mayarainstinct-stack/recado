@@ -61,10 +61,8 @@
     if (picos.length >= 4) { picos = []; dispara(); }
   };
   const liga = () => { if (!ligado) { ligado = true; addEventListener('devicemotion', mov); } };
-  if (window.DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {   // iPhone: o sensor pede licença, e só dentro de um toque
-    const pede = () => { document.removeEventListener('touchend', pede, true); DeviceMotionEvent.requestPermission().then(st => { if (st === 'granted') liga(); }).catch(() => {}); };
-    document.addEventListener('touchend', pede, true);
-  } else if (window.DeviceMotionEvent) liga();
+  // chacoalhar DESLIGADO (May, 10/11/2026: "fica me pedindo permissão toda vez, desabilita"): não pede o sensor nem escuta o movimento; liga() e mov ficam aqui pra voltar se ela pedir
+  void liga;
   setInterval(reenvia, 60000); addEventListener('online', () => setTimeout(reenvia, 3000));
   function compoe(tela, robo, cor) {   // escrever pra Geral sem sair da tela, nas páginas separadas (May 08/11 12:50: "kd o botão de mandar msg em qualquer tela?"); a linha sai igual a do app: 📝 tela: @robô texto
     estilo(); const ov = document.createElement('div'), f = document.createElement('div'), t = document.createElement('b'), ta = document.createElement('textarea'), msg = document.createElement('div'), bts = document.createElement('div'), x = document.createElement('button'), ok = document.createElement('button');
