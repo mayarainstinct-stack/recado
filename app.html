@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-10.253">
+<meta name="app-versao" content="2026-11-10.254">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -3872,7 +3872,7 @@ let conversas = [], sigLista = '', ultimaLista = 0, carregandoLista = null;
 // e marca em dadosAntigos[arq] = true pra tela poder dizer "sem internet, mostrando a última versão".
 const CACHE_DADOS = 'recados-dados-v1', DADOS_OK = /^(menu|casa|contas|categorias|saude)\/.+\.(json|md)$/i, dadosAntigos = {};
 const chaveDado = arq => new Request('https://dados.local/' + encodeURI(arq));
-const DADOS_LS = /^(menu\/menu\.json|menu\/pos-cirurgia\.json|saude\/)/i;   // o que é importante sem internet também vai pro localStorage (May, 10/11/2026)
+const DADOS_LS = /^(menu\/(menu|pos-cirurgia|agenda|checklist|planos|edicoes\/checklist)\.json|saude\/)/i;   // o que é importante sem internet também vai pro localStorage (May, 10/11/2026)
 async function dadoGuarda(arq, t) { if (DADOS_LS.test(arq)) { try { localStorage.setItem('dado:' + arq, t); } catch (e) {} } try { const c = await caches.open(CACHE_DADOS); await c.put(chaveDado(arq), new Response(t)); } catch (e) {} }
 async function dadoLe(arq) { try { const r = await (await caches.open(CACHE_DADOS)).match(chaveDado(arq)); if (r) return await r.text(); } catch (e) {} try { return localStorage.getItem('dado:' + arq); } catch (e) { return null; } }
 async function lerArquivo(arq) {
@@ -4286,7 +4286,7 @@ abreMenu.onclick = () => {
         let ordem = []; try { ordem = JSON.parse(store.get(FILE === TRAB.arq ? 'menu-ordem-trab' : 'menu-ordem') || '[]').map(n => n === 'Ideias' ? 'Tarefas' : n); } catch (e) {}   // Ideias virou Tarefas (May 16:16): a ordem que ela arrumou continua valendo
         lista.querySelectorAll('.sk-bt').forEach(x => x.remove());
         const pos = n => { const i = ordem.indexOf(n); return i < 0 ? 999 : i; };
-        itens.map((m, i) => [m, i]).sort((a, b) => pos(a[0].nome) - pos(b[0].nome) || a[1] - b[1]).forEach(([m]) => { const b = botaoGrade(m.icone, m.nome, m.sub, () => { if (navigator.onLine === false && m.nome !== 'Saúde') { showNote('Sem internet: só a Saúde abre agora.'); return; } conta(m.nome); abreItemMenu(m); }); b.dataset.nome = m.nome; if (navigator.onLine === false && m.nome !== 'Saúde') b.classList.add('sem-rede'); if (FILE !== TRAB.arq) vesteBotao(b, m.nome); else if (ICONE_TRAB[m.icone]) b.querySelector('.ic').innerHTML = '<svg class="lp" viewBox="0 0 24 24" aria-hidden="true">' + ICONE_TRAB[m.icone] + '</svg>';   // Trabalho: só ícone limpo, sem número do dia nem enfeite (May 09/11)
+        itens.map((m, i) => [m, i]).sort((a, b) => pos(a[0].nome) - pos(b[0].nome) || a[1] - b[1]).forEach(([m]) => { const b = botaoGrade(m.icone, m.nome, m.sub, () => { if (navigator.onLine === false && !SEM_REDE_OK.includes(m.nome)) { showNote('Sem internet: abrem a Saúde, a Agenda, o Checklist e os Planos.'); return; } conta(m.nome); abreItemMenu(m); }); b.dataset.nome = m.nome; if (navigator.onLine === false && !SEM_REDE_OK.includes(m.nome)) b.classList.add('sem-rede'); if (FILE !== TRAB.arq) vesteBotao(b, m.nome); else if (ICONE_TRAB[m.icone]) b.querySelector('.ic').innerHTML = '<svg class="lp" viewBox="0 0 24 24" aria-hidden="true">' + ICONE_TRAB[m.icone] + '</svg>';   // Trabalho: só ícone limpo, sem número do dia nem enfeite (May 09/11)
  lista.append(b); });
         arrumaArrastando(lista);
       });
@@ -6849,12 +6849,14 @@ function abreContas() {
   pintaNiveis(); pintaPlacar(); proxima();
 }
 // Saúde sem internet (May, 10/11/2026): a cada abertura com rede, lê (e assim guarda) todos os arquivos que a Saúde usa
+const SEM_REDE_OK = ['Saúde', 'Agenda', 'Checklist', 'Planos'];   // telas que abrem sem internet (May, 10/11/2026: "o que tiver fácil de transformar em offline")
 async function guardaSaude() {
   try {
-    const sa = (JSON.parse(await lerArquivo('menu/menu.json')).itens || []).find(m => m.nome === 'Saúde'); if (!sa) return;
-    const arqs = new Set(); const junta = o => { if (!o || typeof o !== 'object') return; ['arq', 'edicoes'].forEach(k => { if (typeof o[k] === 'string' && DADOS_OK.test(o[k])) arqs.add(o[k]); }); (o.itens || []).forEach(junta); };
-    junta(sa);
+    const todos = JSON.parse(await lerArquivo('menu/menu.json')).itens || [];
+    const arqs = new Set(), fotosV = new Set(); const junta = o => { if (!o || typeof o !== 'object') return; ['arq', 'edicoes'].forEach(k => { if (typeof o[k] === 'string' && DADOS_OK.test(o[k])) arqs.add(o[k]); }); (Array.isArray(o.fotos) ? o.fotos : []).forEach(f => { if (typeof f === 'string' && /\.(png|jpe?g|webp)$/i.test(f)) fotosV.add(f); }); (o.itens || []).forEach(junta); };
+    todos.filter(m => SEM_REDE_OK.includes(m.nome)).forEach(junta);
     for (const a of arqs) { try { const t = await lerArquivo(a); if (/\.json$/i.test(a)) junta(JSON.parse(t)); } catch (e) {} }
+    for (const f of fotosV) { try { await fotoUrl(f, true); } catch (e) {} }   // fotos das telas (ex.: QR da passagem na Agenda) ficam no aparelho
   } catch (e) {}
 }
 function start() {
