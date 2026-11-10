@@ -893,6 +893,7 @@ img.esq { min-height: 140px; }
 .p-grade.apps .ic.mini.so-num { justify-items: end; gap: 0; padding: 0 10px; } .p-grade.apps .so-num b { font-size: 12.5px; font-weight: 800; line-height: 1.3; } .p-grade.apps .so-num .pos { color: #15803D; } .p-grade.apps .so-num .neg { color: #B91C1C; } .p-grade.apps .so-num .saldo { font-size: 16px; border-top: 1.5px solid #B45309; padding-top: 1px; margin-top: 2px; } .p-grade.apps .bt-contas .ic.mini { padding: 0 2px 0 0; }
 .p-grade.apps .p-azulejo:active { transform: scale(.95); } .p-grade.apps .bt-ideias:active { transform: rotate(-1.5deg) scale(.95); }
 .p-grade .p-azulejo { touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.p-grade .sem-rede { filter: grayscale(1); opacity: .4; }
 .gr-grade .gr-item.arrastando { z-index: 5; touch-action: none; transition: none; box-shadow: 0 16px 34px rgba(74,15,43,.28); }
 .p-grade .p-azulejo.arrastando { position: relative; z-index: 5; touch-action: none; box-shadow: 0 16px 34px rgba(0,0,0,.5); transition: none; }
 .p-corpo > .tela.pl-tela { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 10px; } .p-corpo > .tela.pl-tela > .pl-caixa { flex: 0 0 62%; min-height: 0; } .p-corpo > .tela.pl-tela > .pl-info { flex: 1 1 0; min-height: 0; padding-bottom: env(safe-area-inset-bottom, 0px); }   /* planta inteira sem zoom, desenho mais alto (May 09/11 12:39); metade de cima a casa, metade de baixo as abas (May 16:50) */
@@ -4250,7 +4251,7 @@ abreMenu.onclick = () => {
         let ordem = []; try { ordem = JSON.parse(store.get(FILE === TRAB.arq ? 'menu-ordem-trab' : 'menu-ordem') || '[]').map(n => n === 'Ideias' ? 'Tarefas' : n); } catch (e) {}   // Ideias virou Tarefas (May 16:16): a ordem que ela arrumou continua valendo
         lista.querySelectorAll('.sk-bt').forEach(x => x.remove());
         const pos = n => { const i = ordem.indexOf(n); return i < 0 ? 999 : i; };
-        itens.map((m, i) => [m, i]).sort((a, b) => pos(a[0].nome) - pos(b[0].nome) || a[1] - b[1]).forEach(([m]) => { const b = botaoGrade(m.icone, m.nome, m.sub, () => { conta(m.nome); abreItemMenu(m); }); b.dataset.nome = m.nome; if (FILE !== TRAB.arq) vesteBotao(b, m.nome); else if (ICONE_TRAB[m.icone]) b.querySelector('.ic').innerHTML = '<svg class="lp" viewBox="0 0 24 24" aria-hidden="true">' + ICONE_TRAB[m.icone] + '</svg>';   // Trabalho: só ícone limpo, sem número do dia nem enfeite (May 09/11)
+        itens.map((m, i) => [m, i]).sort((a, b) => pos(a[0].nome) - pos(b[0].nome) || a[1] - b[1]).forEach(([m]) => { const b = botaoGrade(m.icone, m.nome, m.sub, () => { if (navigator.onLine === false && m.nome !== 'Saúde') { showNote('Sem internet: só a Saúde abre agora.'); return; } conta(m.nome); abreItemMenu(m); }); b.dataset.nome = m.nome; if (navigator.onLine === false && m.nome !== 'Saúde') b.classList.add('sem-rede'); if (FILE !== TRAB.arq) vesteBotao(b, m.nome); else if (ICONE_TRAB[m.icone]) b.querySelector('.ic').innerHTML = '<svg class="lp" viewBox="0 0 24 24" aria-hidden="true">' + ICONE_TRAB[m.icone] + '</svg>';   // Trabalho: só ícone limpo, sem número do dia nem enfeite (May 09/11)
  lista.append(b); });
         arrumaArrastando(lista);
       });
@@ -6751,11 +6752,23 @@ async function abreTreinoSeHora() {
   store.set('treino-auto', hoje);
   menu.hidden = true; painel.hidden = false; pilha = []; abreTreinoTela(v, l);
 }
+// Saúde sem internet (May, 10/11/2026): a cada abertura com rede, lê (e assim guarda) todos os arquivos que a Saúde usa
+async function guardaSaude() {
+  try {
+    const sa = (JSON.parse(await lerArquivo('menu/menu.json')).itens || []).find(m => m.nome === 'Saúde'); if (!sa) return;
+    const arqs = new Set(); const junta = o => { if (!o || typeof o !== 'object') return; ['arq', 'edicoes'].forEach(k => { if (typeof o[k] === 'string' && DADOS_OK.test(o[k])) arqs.add(o[k]); }); (o.itens || []).forEach(junta); };
+    junta(sa);
+    for (const a of arqs) { try { const t = await lerArquivo(a); if (/\.json$/i.test(a)) junta(JSON.parse(t)); } catch (e) {} }
+  } catch (e) {}
+}
 function start() {
   chaveVencida = false; aplicaLargura(); grupoTrabEm = 0;   // chave nova: tenta o grupo do Trabalho de novo na hora
   const veioDoPush = trataHashPush(); setTimeout(() => trataHashLembrete(), 400);   // veio da notificação: abre a conversa dela já respondendo
   cfgCarrega();
-  if (!veioDoPush) { if (MODO_WEB) mostraLista(); else abrir(ultimaConv()).then(() => { if (CFG.telaInicial === 'menu' && painel.hidden && !abreMenu.hidden) abreMenu.click(); }).catch(() => {}); }   // celular: Trabalho no horário de trabalho, senão Geral
+  const semRede = navigator.onLine === false;
+  if (semRede && !MODO_WEB) { document.body.classList.remove('modo-trab'); abreMenu.click(); }   // sem internet: cai direto no Menu Geral, só a Saúde funciona (May, 10/11/2026)
+  else setTimeout(guardaSaude, 6000);   // com internet: guarda a Saúde inteira no aparelho pra abrir sem rede
+  if (!veioDoPush && !semRede) { if (MODO_WEB) mostraLista(); else abrir(ultimaConv()).then(() => { if (CFG.telaInicial === 'menu' && painel.hidden && !abreMenu.hidden) abreMenu.click(); }).catch(() => {}); }   // celular: Trabalho no horário de trabalho, senão Geral
   if (!MODO_WEB && !veioDoPush) abreTreinoSeHora();   // na hora da academia, abre direto no treino de hoje (não se veio de notificação)
   // Conversa aberta: busca a cada 4 s (com 304 quase de graça); lista de conversas: a cada 15 s; status: 45-60 s (só com a página na tela).
   // Parado: chave vencida (401), limite do GitHub até o reset, GitHub fora (5xx) por 30 s.
