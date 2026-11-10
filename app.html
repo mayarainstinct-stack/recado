@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-10.254">
+<meta name="app-versao" content="2026-11-10.255">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -6865,7 +6865,8 @@ function start() {
   cfgCarrega();
   const semRede = navigator.onLine === false;
   if (semRede && !MODO_WEB) { document.body.classList.remove('modo-trab'); abreMenu.click(); }   // sem internet: cai direto no Menu Geral, só a Saúde funciona (May, 10/11/2026)
-  else setTimeout(guardaSaude, 6000);   // com internet: guarda a Saúde inteira no aparelho pra abrir sem rede
+  else setTimeout(guardaSaude, 6000);
+  if (!start.guardando) { start.guardando = setInterval(() => { if (navigator.onLine !== false && !document.hidden) guardaSaude(); }, 15 * 60000); addEventListener('online', () => setTimeout(guardaSaude, 3000)); }   // aberto (Geral ou Trabalho): renova a cópia a cada 15 min e quando a internet volta (May, 10/11/2026)   // com internet: guarda a Saúde inteira no aparelho pra abrir sem rede
   if (!veioDoPush && !semRede) { if (MODO_WEB) mostraLista(); else abrir(ultimaConv()).then(() => { if (CFG.telaInicial === 'menu' && painel.hidden && !abreMenu.hidden) abreMenu.click(); }).catch(() => {}); }   // celular: Trabalho no horário de trabalho, senão Geral
   if (!MODO_WEB && !veioDoPush) abreTreinoSeHora();   // na hora da academia, abre direto no treino de hoje (não se veio de notificação)
   // Conversa aberta: busca a cada 4 s (com 304 quase de graça); lista de conversas: a cada 15 s; status: 45-60 s (só com a página na tela).
