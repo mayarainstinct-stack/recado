@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-10.247">
+<meta name="app-versao" content="2026-11-10.248">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1519,6 +1519,7 @@ body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px
 .ed-links { display: flex; justify-content: center; gap: 6px; margin-top: 6px; }
 .sl-abas { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 12px; scrollbar-width: none; } .sl-abas::-webkit-scrollbar { display: none; } .sl-abas[hidden] { display: none; }
 .sl-aba { flex: none; width: auto; height: auto; min-width: 0; max-width: 62vw; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; padding: 9px 14px; border-radius: 999px; border: 1px solid #F5C6D6; background: #FFFFFF; color: #D61F69; font: inherit; font-size: 13px; font-weight: 800; white-space: nowrap; } .sl-aba.on { background: #D61F69; border-color: #D61F69; color: #FFFFFF; }
+.sl-grupo { width: 100%; background: none; border: 0; text-align: left; cursor: pointer; font: inherit; color: inherit; align-items: center; } .sl-seta { font-style: normal; font-size: 26px; line-height: 1; color: #D61F69; margin-left: auto; padding-left: 10px; } body.modo-trab .sl-seta { color: #059669; }
 .sl-corpo { display: grid; gap: 12px; padding-bottom: 28px; } .sl-card { background: #FFFFFF; color: #4A0F2B; border: 1px solid #F5C6D6; border-left: 4px solid #D61F69; border-radius: 16px; padding: 6px 8px 6px 12px; box-shadow: 0 2px 8px rgba(214,31,105,.10); }
 .sl-sub { margin: 10px 0 2px; color: #D61F69; font-size: 13px; font-weight: 800; }
 .sl-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-top: 1px dashed #F0C9D6; } .sl-item:first-child, .sl-sub + .sl-item { border-top: 0; }
@@ -4665,7 +4666,7 @@ function abreLista(m) {
 // ===== Listas da Saúde em JSON (May, 09/11/2026): Perguntas, O que levar, Quem passou cada laudo, Autocuidado, Transição. Mesmo editor único; abas no lugar de rolagem; feito grava no JSON.
 // Formato: { sobre, titulo, marcavel, migrar_marcas_de, campos, itens: [{ id, grupo (vira aba), subgrupo, tipo: item|nota, texto, feito, apagado }] }
 const slNeg = (el, txt) => String(txt || '').split(/(\*\*[^*]+\*\*)/).forEach(p => { if (/^\*\*[^*]+\*\*$/.test(p)) el.append(elD('b', '', p.slice(2, -2))); else if (p) el.append(document.createTextNode(p)); });
-function abreSaudeLista(m) {
+function abreSaudeLista(m, soGrupo) {   // soGrupo: tela filha com um grupo só (vindo do submenu)
   tela(m.nome, async c => {
     c.classList.add('sl-tela');
     const nota = skCarga(); c.append(nota); let E;
@@ -4684,9 +4685,15 @@ function abreSaudeLista(m) {
     const apaga = async x => { await E.apaga(x.id, true); pinta(); edFaixaDesfazer('Item apagado', async () => { await E.apaga(x.id, false); pinta(); }); };
     const edita = x => edFormulario({ titulo: 'Editar', campos, v: x, aoSalvar: async v => { if (!v.tipo) v.tipo = 'item'; await E.edita(x.id, v); pinta(); }, aoApagar: () => apaga(x) });
     const pinta = () => {
-      const vis = E.itens.filter(x => !x.apagado), grupos = [...new Set(vis.map(x => x.grupo || ''))], itensM = vis.filter(x => x.tipo !== 'nota');
+      const todosVis = E.itens.filter(x => !x.apagado), vis = soGrupo != null ? todosVis.filter(x => (x.grupo || '') === soGrupo) : todosVis, grupos = [...new Set(vis.map(x => x.grupo || ''))], itensM = vis.filter(x => x.tipo !== 'nota');
       cabecalho({ sub: marcavel ? itensM.filter(x => x.feito).length + ' de ' + itensM.length + ' feitos' : vis.length + ' itens', acao: { icone: 'plus', rotulo: 'Novo', fn: lanca } });
       if (!grupos.includes(aba)) aba = grupos[0] || '';
+      // 4 grupos ou mais: submenu com o nome de cada lista antes, no lugar da fileira de abas (May, 10/11/2026: "era melhor ter um submenu antes com o nome das listas")
+      if (soGrupo == null && grupos.length >= 4) {
+        abasEl.hidden = true; w.replaceChildren(); const card = elD('section', 'sl-card sl-menu');
+        grupos.forEach(g => { const its = vis.filter(x => (x.grupo || '') === g && x.tipo !== 'nota'), b = elD('button', 'sl-item sl-grupo'), tx = elD('div', 'sl-tx'); b.type = 'button'; tx.append(elD('span', 'sl-t', g || 'Geral')); if (marcavel && its.length) tx.append(elD('small', 'sl-feito', its.filter(x => x.feito).length + ' de ' + its.length + ' feitos')); b.append(tx, elD('i', 'sl-seta', '›')); b.onclick = () => abreSaudeLista({ ...m, nome: g || m.nome }, g); card.append(b); });
+        w.append(card); return;
+      }
       abasEl.replaceChildren(); abasEl.hidden = grupos.length < 2;
       grupos.forEach(g => { const b = elD('button', 'sl-aba' + (g === aba ? ' on' : ''), g); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(g === aba)); b.onclick = () => { aba = g; pinta(); pCorpo.scrollTop = 0; }; abasEl.append(b); });
       w.replaceChildren();
