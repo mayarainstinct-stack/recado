@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-10.248">
+<meta name="app-versao" content="2026-11-10.249">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -893,6 +893,7 @@ img.esq { min-height: 140px; }
 .p-grade.apps .ic.mini.so-num { justify-items: end; gap: 0; padding: 0 10px; } .p-grade.apps .so-num b { font-size: 12.5px; font-weight: 800; line-height: 1.3; } .p-grade.apps .so-num .pos { color: #15803D; } .p-grade.apps .so-num .neg { color: #B91C1C; } .p-grade.apps .so-num .saldo { font-size: 16px; border-top: 1.5px solid #B45309; padding-top: 1px; margin-top: 2px; } .p-grade.apps .bt-contas .ic.mini { padding: 0 2px 0 0; }
 .p-grade.apps .p-azulejo:active { transform: scale(.95); } .p-grade.apps .bt-ideias:active { transform: rotate(-1.5deg) scale(.95); }
 .p-grade .p-azulejo { touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.gr-grade .gr-item.arrastando { z-index: 5; touch-action: none; transition: none; box-shadow: 0 16px 34px rgba(74,15,43,.28); }
 .p-grade .p-azulejo.arrastando { position: relative; z-index: 5; touch-action: none; box-shadow: 0 16px 34px rgba(0,0,0,.5); transition: none; }
 .p-corpo > .tela.pl-tela { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 10px; } .p-corpo > .tela.pl-tela > .pl-caixa { flex: 0 0 62%; min-height: 0; } .p-corpo > .tela.pl-tela > .pl-info { flex: 1 1 0; min-height: 0; padding-bottom: env(safe-area-inset-bottom, 0px); }   /* planta inteira sem zoom, desenho mais alto (May 09/11 12:39); metade de cima a casa, metade de baixo as abas (May 16:50) */
 .pl-caixa { flex: 1 1 0; min-height: 0; border-radius: 20px; overflow: hidden; background: radial-gradient(rgba(255,255,255,.05) 1px, transparent 1.4px) 0 0 / 14px 14px, #0E1116; border: 1px solid var(--line); box-shadow: inset 0 0 40px rgba(0,0,0,.5); }
@@ -3987,11 +3988,12 @@ const reais = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDi
 const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#62B02A'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/m[uú]sica/i, '#8B5CF6'], [/^artes/i, '#EC008C'], [/^planos/i, '#06B6D4'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#B3261E'], [/ateli/i, '#B3261E'], [/^listas/i, '#F59E0B'], [/ideia|tarefa/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia|contas/i, '#F59E0B']];
 // Arrumar o Menu arrastando (May, 07/11/2026 12:03: "dar pra eu clicar e arrastar, aí eu mesma organizava"): segura o azulejo até ele levantar,
 // arrasta pro lugar do outro e solta; a ordem fica guardada neste aparelho
-function arrumaArrastando(grade) {
+function arrumaArrastando(grade, op) {   // op: { sel, chave, aviso } pra usar em outra grade (pastas da Saúde, May 10/11/2026: "como se fossem pastas mesmo")
+  const SEL = (op && op.sel) || '.p-azulejo', CHAVE = op && op.chave;
   let seg = null, arr = null, ox = 0, oy = 0, fantasma = null, mexeu = false;
-  const salva = () => { try { store.set(FILE === TRAB.arq ? 'menu-ordem-trab' : 'menu-ordem', JSON.stringify([...grade.children].map(b => b.dataset.nome).filter(Boolean))); } catch (e) {} };
+  const salva = () => { try { store.set(CHAVE || (FILE === TRAB.arq ? 'menu-ordem-trab' : 'menu-ordem'), JSON.stringify([...grade.children].map(b => b.dataset.nome).filter(Boolean))); } catch (e) {} };
   grade.addEventListener('pointerdown', e => {
-    const b = e.target.closest('.p-azulejo'); if (!b || !b.dataset.nome) return;
+    const b = e.target.closest(SEL); if (!b || !b.dataset.nome || b.parentNode !== grade) return;
     ox = e.clientX; oy = e.clientY; mexeu = false;
     seg = setTimeout(() => { arr = b; b.classList.add('arrastando'); if (navigator.vibrate) navigator.vibrate(15); const r0 = b.getBoundingClientRect(); fantasma = { dx: ox - r0.left, dy: oy - r0.top }; }, 450);
   });
@@ -3999,17 +4001,17 @@ function arrumaArrastando(grade) {
     if (!arr) { if (seg && Math.hypot(e.clientX - ox, e.clientY - oy) > 10) { clearTimeout(seg); seg = null; } return; }
     e.preventDefault(); mexeu = true;
     arr.style.transform = 'translate(' + (e.clientX - ox) + 'px,' + (e.clientY - oy) + 'px) scale(1.08)';
-    const sob = document.elementsFromPoint(e.clientX, e.clientY).map(x => x.closest && x.closest('.p-azulejo')).find(x => x && x !== arr && x.parentNode === grade);
+    const sob = document.elementsFromPoint(e.clientX, e.clientY).map(x => x.closest && x.closest(SEL)).find(x => x && x !== arr && x.parentNode === grade);
     if (sob) { const lista = [...grade.children], a = lista.indexOf(arr), b = lista.indexOf(sob); if (a < b) sob.after(arr); else sob.before(arr); arr.style.transform = ''; const r1 = arr.getBoundingClientRect(); ox = r1.left + fantasma.dx; oy = r1.top + fantasma.dy; arr.style.transform = 'translate(' + (e.clientX - ox) + 'px,' + (e.clientY - oy) + 'px) scale(1.08)'; }   // trocou de lugar: o azulejo continua embaixo do dedo
   }, { passive: false });
   const fim = e => {
     clearTimeout(seg); seg = null; if (!arr) return;
     const b = arr; arr = null; b.classList.remove('arrastando'); b.style.transform = '';
-    if (mexeu) { salva(); const para = ev => { ev.stopPropagation(); ev.preventDefault(); }; b.addEventListener('click', para, { capture: true, once: true }); showNote('Menu arrumado: fica assim neste celular'); }
+    if (mexeu) { salva(); const para = ev => { ev.stopPropagation(); ev.preventDefault(); }; b.addEventListener('click', para, { capture: true, once: true }); showNote((op && op.aviso) || 'Menu arrumado: fica assim neste celular'); }
   };
   grade.addEventListener('touchmove', e => { if (arr) e.preventDefault(); }, { passive: false });   // arrastando: a tela não rola
   grade.addEventListener('pointerup', fim); grade.addEventListener('pointercancel', fim);
-  grade.addEventListener('contextmenu', e => { if (e.target.closest('.p-azulejo')) e.preventDefault(); });
+  grade.addEventListener('contextmenu', e => { if (e.target.closest(SEL)) e.preventDefault(); });
 }
 // ícones ilustrados do Menu (May 07/11 12:47: "refletindo o que tem dentro de cada aba, diferentes mesmo, estranheza"): duas camadas, preenchimento (f1 claro, f2 cheio) e traço, na cor do assunto (Hermes)
 const ICONES_MENU = [
@@ -4484,7 +4486,10 @@ function abreGrupo(m) {
     if (m.estilo) c.classList.add('gr-' + m.estilo);
     if (m.estilo === 'saude') painel.classList.add('tema-saude');   // Saúde clara em rosa, barra de cima clara (May 14:42, Hermes)   // grupo com cara própria (ex.: Saúde rosa)
     const g = elD('div', 'gr-grade' + (m.estilo ? ' gr-grade-' + m.estilo : '')); c.append(g);
-    (m.itens || []).forEach(x => { const b = botaoGrade(x.icone, x.nome, x.sub, () => abreItemMenu(x)); b.classList.add('gr-item'); b.style.setProperty('--c', x.cor || cor); if (!m.estilo || m.estilo === 'cinema') { const sb = elD('small', 'gr-sub', x.sub || ''); b.append(sb); } g.append(b); });
+    const chave = 'grupo-ordem:' + m.nome; let ordem = []; try { ordem = JSON.parse(store.get(chave) || '[]'); } catch (e) {}
+    const pos = x => { const i = ordem.indexOf(x.nome); return i < 0 ? 999 : i; }, itensG = (m.itens || []).map((x, i) => [x, i]).sort((a, b) => pos(a[0]) - pos(b[0]) || a[1] - b[1]).map(a => a[0]);   // a ordem que ela arrumou arrastando (neste aparelho); item novo vai pro fim
+    arrumaArrastando(g, { sel: '.gr-item', chave, aviso: 'Pastas arrumadas: ficam assim neste celular' });
+    itensG.forEach(x => { const b = botaoGrade(x.icone, x.nome, x.sub, () => abreItemMenu(x)); b.classList.add('gr-item'); b.dataset.nome = x.nome; b.style.setProperty('--c', x.cor || cor); if (!m.estilo || m.estilo === 'cinema') { const sb = elD('small', 'gr-sub', x.sub || ''); b.append(sb); } g.append(b); });
   });
 }
 // Ideias (May via Sigma, 07/11/2026): anotar rápido ideia do app, da casa ou de conteúdo; vira pauta pros robôs. Arquivo: m.arq, uma linha por ideia, a mais nova embaixo
