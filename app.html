@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-10.252">
+<meta name="app-versao" content="2026-11-10.253">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -6796,8 +6796,9 @@ function ctGera(nv) {
   const r = ctSorteia;
   const f = {
     facil: [() => { const a = r(2, 60), b = r(2, 40); return [a + ' + ' + b, a + b]; }, () => { const a = r(20, 100), b = r(2, a - 1); return [a + ' − ' + b, a - b]; }, () => { const a = r(2, 10), b = r(2, 10); return [a + ' × ' + b, a * b]; }, () => { const d = r(2, 10), q = r(2, 10); return [d * q + ' ÷ ' + d, q]; }],
-    medio: [() => { const n = r(4, 20); return ['√' + n * n, n]; }, () => { const d = r(2, 9), q = r(11, 99); return [d * q + ' ÷ ' + d, q]; }, () => { const a = r(12, 99), b = r(3, 9); return [a + ' × ' + b, a * b]; }, () => { const a = r(100, 899), b = r(100, 899); return [a + ' + ' + b, a + b]; }, () => { const a = r(300, 999), b = r(100, a - 50); return [a + ' − ' + b, a - b]; }],
-    dificil: [() => { const a = r(12, 99), b = r(12, 99); return [a + ' × ' + b, a * b]; }, () => { const d = r(11, 29), q = r(6, 45); return [d * q + ' ÷ ' + d, q]; }, () => { const p = ctUm([5, 10, 15, 20, 25, 30, 40, 50, 75]), base = r(1, 25) * 20; return [p + '% de ' + base, p * base / 100]; }, () => { const n = r(21, 30); return ['√' + n * n, n]; }, () => { const a = r(1000, 4999), b = r(1000, 4999); return [a + ' + ' + b, a + b]; }]
+    medio: [() => { const n = r(4, 15); return ['√' + n * n, n]; }, () => { const d = r(2, 9), q = r(11, 40); return [d * q + ' ÷ ' + d, q]; }, () => { const a = r(11, 40), b = r(2, 9); return [a + ' × ' + b, a * b]; }, () => { const a = r(100, 300), b = r(11, 99); return [a + ' + ' + b, a + b]; }, () => { const a = r(100, 300), b = r(11, 99); return [a + ' − ' + b, a - b]; }],   // mais leve (May, 10/11/2026: "achei o médio meio difícil")
+    dificil: [() => { const n = r(16, 20); return ['√' + n * n, n]; }, () => { const d = r(2, 9), q = r(41, 99); return [d * q + ' ÷ ' + d, q]; }, () => { const a = r(41, 99), b = r(3, 9); return [a + ' × ' + b, a * b]; }, () => { const a = r(100, 899), b = r(100, 899); return [a + ' + ' + b, a + b]; }, () => { const a = r(300, 999), b = r(100, a - 50); return [a + ' − ' + b, a - b]; },   // o Médio antigo virou parte do Difícil
+      () => { const a = r(12, 99), b = r(12, 99); return [a + ' × ' + b, a * b]; }, () => { const d = r(11, 29), q = r(6, 45); return [d * q + ' ÷ ' + d, q]; }, () => { const p = ctUm([5, 10, 15, 20, 25, 30, 40, 50, 75]), base = r(1, 25) * 20; return [p + '% de ' + base, p * base / 100]; }, () => { const n = r(21, 30); return ['√' + n * n, n]; }, () => { const a = r(1000, 4999), b = r(1000, 4999); return [a + ' + ' + b, a + b]; }]
   };
   return ctUm(f[nv] || f.medio)();
 }
