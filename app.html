@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-10.262">
+<meta name="app-versao" content="2026-11-10.263">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1595,7 +1595,13 @@ body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px
 .vs-sl-cont { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 2px 10px; background: #FFFFFF; } .vs-sl-info { flex: 1; text-align: center; font-size: 13px; font-weight: 700; color: var(--vs-c); }
 .vs-sl-b { flex: none; width: 52px; height: 52px; border-radius: 50%; border: 0; background: var(--vs-c); color: #FFFFFF; font: inherit; font-size: 22px; font-weight: 800; } .vs-sl-b:disabled { background: var(--vs-l); color: var(--vs-b); }
 .vs-duas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .vs-lado { background: #FFFFFF; border: 1px solid var(--vs-b); border-radius: 18px; padding: 12px; } .vs-lado h4 { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font-size: 14px; color: var(--vs-c); } .vs-lado.b { background: var(--vs-f); } .vs-lado .vs-lista li { font-size: 13px; }
-.vs-abas { flex-wrap: wrap; overflow: visible; } .vs-abas .sl-aba { max-width: none; }
+.vs-abas { flex-wrap: nowrap; overflow-x: auto; gap: 6px; } .vs-abas .sl-aba { max-width: none; padding: 8px 12px; font-size: 12.5px; }
+.vs-busca { width: 100%; box-sizing: border-box; margin: 0 0 10px; padding: 12px 14px 12px 40px; border-radius: 999px; border: 1.5px solid var(--vs-b); background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-4-4'/%3E%3C/svg%3E") no-repeat 14px center / 18px; font: inherit; font-size: 15px; color: var(--vs-e); }
+.vs-busca:focus { outline: none; border-color: var(--vs-c); } .vs-achou { justify-self: start; }
+.vs-qa { background: #FFFFFF; border: 1px solid var(--vs-b); border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; } .vs-qa h4 { display: flex; gap: 8px; align-items: flex-start; margin: 0 0 4px; font-size: 14px; } .vs-qa p { margin: 0 0 0 30px; font-size: 13px; line-height: 1.45; }
+.vs-q { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--vs-c); color: #FFFFFF; font-size: 12px; font-weight: 800; }
+.vs-topo { background: #FFFFFF; border: 1px solid var(--vs-b); border-radius: 16px; padding: 12px 14px; margin-bottom: 10px; } .vs-topo h4 { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 8px; font-size: 15px; color: var(--vs-c); }
+.vs-cont-n { flex: none; min-width: 26px; height: 26px; padding: 0 6px; box-sizing: border-box; border-radius: 999px; background: var(--vs-l); color: var(--vs-c); display: grid; place-items: center; font-size: 12px; font-weight: 800; }
 .vs-corpo { display: grid; gap: 14px; padding-bottom: 32px; color: #4A0F2B; }
 .vs-dest { position: relative; overflow: hidden; border-radius: 22px; padding: 20px 18px 30px; color: #FFFFFF; background: linear-gradient(135deg, var(--vs-m) 0%, var(--vs-c) 60%, var(--vs-e) 100%); box-shadow: 0 8px 20px var(--vs-s); }
 .vs-dest h2 { margin: 10px 0 6px; font-size: 21px; line-height: 1.2; } .vs-dest p { margin: 0; font-size: 15px; line-height: 1.45; opacity: .95; }
@@ -4803,6 +4809,9 @@ function abreSaudeLista(m, soGrupo) {   // soGrupo: tela filha com um grupo só 
     const apaga = async x => { await E.apaga(x.id, true); pinta(); edFaixaDesfazer('Item apagado', async () => { await E.apaga(x.id, false); pinta(); }); };
     const edita = x => edFormulario({ titulo: 'Editar', campos, v: x, aoSalvar: async v => { if (!v.tipo) v.tipo = 'item'; await E.edita(x.id, v); pinta(); }, aoApagar: () => apaga(x) });
     const pinta = () => {
+      // item com "zera" (Autocuidado, May 08/11: creme toda noite, cabelo 2x por semana): o feito vale só pro dia ou pra semana; depois volta a aparecer pra marcar
+      const hojeZ = new Date(); hojeZ.setHours(0, 0, 0, 0); const segZ = new Date(hojeZ); segZ.setDate(hojeZ.getDate() - ((hojeZ.getDay() + 6) % 7));
+      E.itens.forEach(x => { if (!x.zera || !x.feito) return; const m2 = String(x.feito).match(/(\d{2})\/(\d{2})\/(\d{4})/); if (!m2) return; const dF = new Date(+m2[3], +m2[2] - 1, +m2[1]); if (dF < (x.zera === 'semana' ? segZ : hojeZ)) x.feito = ''; });
       const todosVis = E.itens.filter(x => !x.apagado), vis = soGrupo != null ? todosVis.filter(x => (x.grupo || '') === soGrupo) : todosVis, grupos = [...new Set(vis.map(x => x.grupo || ''))], itensM = vis.filter(x => x.tipo !== 'nota');
       cabecalho({ sub: marcavel ? itensM.filter(x => x.feito).length + ' de ' + itensM.length + ' feitos' : vis.length + ' itens', acao: { icone: 'plus', rotulo: 'Novo', fn: lanca } });
       if (!grupos.includes(aba)) aba = grupos[0] || '';
@@ -6670,8 +6679,14 @@ function abreExames(m) {
         if (d.duvidas) { const s = elD('section', 'sl-card'); s.append(elD('h3', '', 'Conferir no papel')); const ul = elD('ul'); d.duvidas.forEach(t => ul.append(elD('li', '', t))); s.append(ul); w.append(s); }
       }
     };
+    deslizaAbas(w, () => d.abas.findIndex(a => a.id === aba), i => { if (i < 0 || i >= d.abas.length) return; aba = d.abas[i].id; store.set('ex-aba', aba); pinta(); });
     pinta();
   });
+}
+function deslizaAbas(el, atual, troca) {   // dedo pro lado no meio da tela troca de aba; a borda (28 px) continua sendo o voltar
+  let x0 = null, y0 = 0;
+  el.addEventListener('touchstart', e => { const t = e.touches[0]; x0 = (e.touches.length === 1 && t.clientX > 28 && !e.target.closest('input, textarea, .md-tab-w, .vs-slides')) ? t.clientX : null; y0 = t.clientY; }, { passive: true });
+  el.addEventListener('touchend', e => { if (x0 == null) return; const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0; x0 = null; if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.6) troca(atual() + (dx < 0 ? 1 : -1)); }, { passive: true });
 }
 // ---- Telas visuais da Saúde (May, 10/11/2026: "pega na saúde tudo e coloca de uma maneira bonita e fácil de ler", "não quero textão", "vou ler tudo na viagem")
 // saude/visual/<id>.json = { titulo, sub, abas: [{ nome, icone, blocos: [{ t: destaque|cartoes|passos|numeros|lista|frase|aviso|perguntas|tabela|contatos|topicos, ... }] }] }   (formato em saude/visual/FORMATO.md)
@@ -6694,11 +6709,11 @@ function abreVisual(m) {
       lista: b => { const w = elD('section', 'vs-bloco vs-cx'); if (b.titulo) { const h = elD('h3', 'vs-tit'); if (b.icone) h.append(ic(b.icone, 'vs-ic-p')); mdInline(h, b.titulo); w.append(h); } const ul = elD('ul', 'vs-lista'); (b.itens || []).forEach(s => ul.append(tx('li', '', s))); w.append(ul); return w; },
       frase: b => { const s = elD('figure', 'vs-frase'); s.append(tx('blockquote', '', b.texto)); if (b.autor) s.append(elD('figcaption', '', b.autor)); return s; },
       aviso: b => { const s = elD('section', 'vs-aviso tom-' + (b.tom || 'info')); s.append(ic({ bom: 'check', atencao: 'warn', alerta: 'warn', info: 'sparkle' }[b.tom] || 'sparkle')); const cx = elD('div'); if (b.titulo) cx.append(tx('h4', '', b.titulo)); cx.append(tx('p', '', b.texto)); s.append(cx); return s; },
-      perguntas: b => { const w = elD('section', 'vs-bloco'); tit(b, w); (b.itens || []).forEach(x => { const dt = elD('details', 'vs-perg'); const sm = elD('summary'); mdInline(sm, x.p); dt.append(sm, tx('p', '', x.r)); w.append(dt); }); return w; },
+      perguntas: b => { const w = elD('section', 'vs-bloco'); tit(b, w); (b.itens || []).forEach(x => { const k = elD('div', 'vs-qa'); const h = elD('h4'); h.append(elD('span', 'vs-q', '?')); const ht = elD('span'); mdInline(ht, x.p); h.append(ht); k.append(h, tx('p', '', x.r)); w.append(k); }); return w; },   // tudo aberto, nada retraído (May, 10/11/2026: "nada de saúde abre retraído")
       tabela: b => { const w = elD('section', 'vs-bloco vs-cx'); tit(b, w); const t = elD('table', 'md-tab'); const tr = elD('tr'); (b.cab || []).forEach(h => tr.append(tx('th', '', h))); t.append(tr); (b.linhas || []).forEach(l => { const r = elD('tr'); l.forEach(cel => r.append(tx('td', '', String(cel)))); t.append(r); }); const sw = elD('div', 'md-tab-w'); sw.append(t); w.append(sw); return w; },
       contatos: b => { const w = elD('section', 'vs-bloco vs-cx'); tit(b, w); (b.itens || []).forEach(x => { const l = elD('div', 'vs-cont'); l.append(ic(x.icone || 'phone', 'vs-ic-p')); const cx = elD('div'); cx.append(tx('b', '', x.nome)); const i = String(x.info || ''); if (/^https?:\/\//.test(i)) { const a = elD('a', '', i.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')); a.href = i; a.target = '_blank'; a.rel = 'noopener'; cx.append(a); } else cx.append(tx('span', '', i)); l.append(cx); w.append(l); }); return w; },
       duas: b => { const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-duas'); ['a', 'b'].forEach(k => { const x = b[k] || {}; const l = elD('div', 'vs-lado ' + k); const h = elD('h4'); h.append(ic(x.icone || (k === 'a' ? 'check' : 'warn'), 'vs-ic-p')); mdInline(h, x.titulo || ''); const ul = elD('ul', 'vs-lista'); (x.itens || []).forEach(s => ul.append(tx('li', '', s))); l.append(h, ul); g.append(l); }); w.append(g); return w; },
-      topicos: b => { const w = elD('section', 'vs-bloco'); tit(b, w); (b.itens || []).forEach(x => { const dt = elD('details', 'vs-perg vs-top'); const sm = elD('summary'); mdInline(sm, x.titulo); const ul = elD('ul', 'vs-lista'); (x.itens || []).forEach(s => ul.append(tx('li', '', s))); dt.append(sm, ul); w.append(dt); }); return w; },
+      topicos: b => { const w = elD('section', 'vs-bloco'); tit(b, w); (b.itens || []).forEach(x => { const k = elD('div', 'vs-topo'); const h = elD('h4'); mdInline(h, x.titulo); h.append(elD('span', 'vs-cont-n', String((x.itens || []).length))); const ul = elD('ul', 'vs-lista'); (x.itens || []).forEach(s => ul.append(tx('li', '', s))); k.append(h, ul); w.append(k); }); return w; },
     };
     if (d.modo === 'virar') R.cartoes = b => { const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-grade vs-flips'); (b.itens || []).forEach(x => { const k = elD('div', 'vs-flip'); k.setAttribute('role', 'button'); k.tabIndex = 0; const inn = elD('div', 'vs-flip-in'); const fr = elD('div', 'vs-face vs-frente'); fr.append(ic(x.icone), tx('h4', '', x.titulo), elD('small', '', 'toque pra ver')); const tr = elD('div', 'vs-face vs-verso'); tr.append(tx('h4', '', x.titulo), tx('p', '', x.texto)); inn.append(fr, tr); k.append(inn); k.onclick = () => k.classList.toggle('virado'); g.append(k); }); w.append(g); return w; };   // Dicas: cartões que viram ao tocar (May, 10/11/2026: "dicas são cartões")
     const abas = d.abas || [];
@@ -6728,12 +6743,32 @@ function abreVisual(m) {
     }
     let aba = 0; try { aba = Math.min(+(store.get('vs-aba:' + m.arq) || 0), abas.length - 1); } catch (e) {}
     const abasEl = elD('div', 'sl-abas vs-abas'); abasEl.setAttribute('role', 'tablist'); const w = elD('div', 'vs-corpo');
+    let busca = null, q = '';
+    if (d.busca) {   // Pasta cinza (May, 10/11/2026: "resumo do que tem lá com botão de procurar"): procura em todas as abas de uma vez
+      busca = elD('input', 'vs-busca'); busca.type = 'search'; busca.placeholder = 'Procurar na pasta (ex.: Unimed, SUS, 2021)';
+      busca.oninput = () => { q = busca.value.trim(); pinta(); };
+      c.append(busca);
+    }
     c.append(abasEl, w);
+    const trocaAba = i => { if (i < 0 || i >= abas.length || i === aba) return; aba = i; try { store.set('vs-aba:' + m.arq, String(i)); } catch (e) {} pinta(); const pc = document.querySelector('#p-corpo'); if (pc) pc.scrollTop = 0; };
+    deslizaAbas(w, () => aba, trocaAba);   // passar o dedo pro lado troca de aba (May, 10/11/2026: "página que tem abas tem que mudar no slider")
+    const sem = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
     const pinta = () => {
       cabecalho({ icone: (abas[aba] && abas[aba].icone) || 'heart', sub: d.sub || '' });
-      abasEl.replaceChildren(...abas.map((a, i) => { const f = elD('button', 'sl-aba' + (i === aba ? ' on' : ''), a.nome); f.type = 'button'; f.onclick = () => { aba = i; try { store.set('vs-aba:' + m.arq, String(i)); } catch (e) {} pinta(); const pc = document.querySelector('#p-corpo'); if (pc) pc.scrollTop = 0; }; return f; }));
-      abasEl.hidden = abas.length < 2;
+      abasEl.replaceChildren(...abas.map((a, i) => { const f = elD('button', 'sl-aba' + (i === aba ? ' on' : ''), a.nome); f.type = 'button'; f.onclick = () => trocaAba(i); return f; }));
+      abasEl.hidden = abas.length < 2 || q.length >= 2;
+      requestAnimationFrame(() => { const on = abasEl.querySelector('.on'); if (on) abasEl.scrollTo({ left: on.offsetLeft - (abasEl.clientWidth - on.offsetWidth) / 2, behavior: 'smooth' }); });
       w.replaceChildren();
+      if (q.length >= 2) {   // resultado da busca: todos os blocos, só o que tem a palavra
+        const alvo = sem(q); let achou = 0;
+        abas.forEach(a => (a.blocos || []).forEach(b => { const el = monta(b); if (!el) return;
+          const folhas = [...el.querySelectorAll('li, .vs-card, .vs-qa, .vs-num, .vs-cont, tr, .vs-topo, .vs-lado')];
+          if (folhas.length) { folhas.forEach(f => { if (!sem(f.textContent).includes(alvo) && !f.querySelector('li')) f.hidden = true; }); if (!folhas.some(f => !f.hidden && sem(f.textContent).includes(alvo))) return; }
+          else if (!sem(el.textContent).includes(alvo)) return;
+          const tag = elD('span', 'vs-sl-aba vs-achou', a.nome); w.append(tag, el); achou++; }));
+        if (!achou) w.append(elD('p', 'p-nota', 'Nada com "' + q + '" na pasta.'));
+        return;
+      }
       ((abas[aba] || {}).blocos || []).forEach(b => { const f = R[b.t]; if (!f) return; try { w.append(f(b)); } catch (e) {} });
       if (aba < abas.length - 1) { const prox = elD('button', 'vs-prox'); prox.type = 'button'; prox.textContent = 'Próximo: ' + abas[aba + 1].nome + ' →'; prox.onclick = () => abasEl.children[aba + 1].click(); w.append(prox); }
       if (d.atualizado) w.append(elD('p', 'vs-rodape', 'Atualizado em ' + d.atualizado));
