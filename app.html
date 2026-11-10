@@ -898,15 +898,21 @@ img.esq { min-height: 140px; }
 .ct-fundo > * { position: relative; } .ct-fundo > .ct-estrada { position: absolute; }
 .ct-fundo { position: fixed; inset: 0; z-index: 9000; display: flex; flex-direction: column; color: #E8EEFF; background: radial-gradient(120% 60% at 50% 0%, #1E2A55 0%, #0D1430 55%, #080C1E 100%); padding: env(safe-area-inset-top) 16px calc(12px + env(safe-area-inset-bottom)); user-select: none; -webkit-user-select: none; touch-action: manipulation; }
 .ct-estrada { position: absolute; left: 0; right: 0; top: 0; height: calc(64px + env(safe-area-inset-top)); pointer-events: none; overflow: hidden; background: radial-gradient(1.5px 1.5px at 12% 30%, #fff9, transparent), radial-gradient(1px 1px at 28% 60%, #fff7, transparent), radial-gradient(1.5px 1.5px at 47% 20%, #fffa, transparent), radial-gradient(1px 1px at 66% 50%, #fff8, transparent), radial-gradient(1.5px 1.5px at 84% 26%, #fff9, transparent), radial-gradient(1px 1px at 93% 64%, #fff6, transparent); }
-.ct-estrada::after { content: ''; position: absolute; left: 0; right: 0; bottom: 10px; height: 2px; background: repeating-linear-gradient(90deg, #F5C451 0 18px, transparent 18px 34px); opacity: .55; animation: ct-anda 1.6s linear infinite; }
+.ct-estrada::after { content: ''; position: absolute; left: 0; right: 0; bottom: 10px; height: 2px; background: repeating-linear-gradient(90deg, #F5C451 0 18px, transparent 18px 34px); opacity: .35; }
 @keyframes ct-anda { to { background-position: 34px 0; } }
-@media (prefers-reduced-motion: reduce) { .ct-estrada::after { animation: none; } }
+.ct-onibus { position: absolute; bottom: 12px; left: -60px; width: 44px; height: 22px; animation: ct-viaja 26s linear infinite; opacity: .85; }
+@keyframes ct-viaja { to { transform: translateX(calc(100vw + 120px)); } }
+.ct-estrada::before { content: ''; position: absolute; inset: 0; background: radial-gradient(2px 2px at 20% 40%, #fff, transparent), radial-gradient(2px 2px at 58% 22%, #fff, transparent), radial-gradient(2px 2px at 76% 58%, #fff, transparent); animation: ct-pisca 6s ease-in-out infinite alternate; }
+@keyframes ct-pisca { from { opacity: .1; } to { opacity: .45; } }
+.ct-aviso.certo, .ct-aviso.errado { animation: ct-pula .35s cubic-bezier(.2,.9,.3,1.4); }
+@keyframes ct-pula { from { transform: scale(.7); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .ct-estrada::after, .ct-estrada::before, .ct-onibus, .ct-aviso.certo, .ct-aviso.errado { animation: none; } }
 .ct-topo { display: flex; align-items: center; gap: 8px; position: relative; padding-top: 8px; }
 .ct-x { flex: none; width: 40px; height: 40px; padding: 0; border-radius: 50%; border: 1px solid #ffffff22; background: #ffffff12; color: #E8EEFF; font-size: 22px; line-height: 1; }
 .ct-niveis { display: flex; gap: 6px; margin-left: auto; }
 .ct-nv { width: auto; height: auto; white-space: nowrap; padding: 8px 11px; border-radius: 999px; border: 1px solid #ffffff26; background: transparent; color: #B9C6EE; font: inherit; font-size: 13px; font-weight: 700; }
 .ct-nv.on { background: #5EEAD4; border-color: #5EEAD4; color: #0B1430; }
-.ct-placar { display: flex; justify-content: center; align-items: baseline; gap: 16px; white-space: nowrap; margin: 14px 0 0; font-size: 14px; color: #B9C6EE; }
+.ct-placar { display: flex; justify-content: center; align-items: baseline; gap: 16px; white-space: nowrap; margin: 24px 0 0; font-size: 14px; color: #B9C6EE; }
 .ct-placar b { color: #E8EEFF; } .ct-placar button { background: none; border: 0; color: #93C5FD; font: inherit; font-size: 14px; text-decoration: underline; padding: 0; }
 .ct-meio { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; min-height: 0; }
 .ct-conta { font-size: clamp(40px, 13vw, 64px); font-weight: 800; letter-spacing: .5px; text-align: center; }
@@ -6802,7 +6808,7 @@ function abreContas() {
   let nv = 'medio'; try { nv = localStorage.getItem('contas-nivel') || 'medio'; } catch (e) {}
   let conta = null, resp = '', travado = false;
   const fundo = elD('div', 'ct-fundo'); fundo.setAttribute('role', 'dialog'); fundo.setAttribute('aria-label', 'Contas');
-  const estrada = elD('div', 'ct-estrada'), topo = elD('div', 'ct-topo'), x = elD('button', 'ct-x', '×'); x.type = 'button'; x.setAttribute('aria-label', 'Fechar');
+  const estrada = elD('div', 'ct-estrada'); estrada.innerHTML = '<svg class="ct-onibus" viewBox="0 0 44 22" aria-hidden="true"><rect x="1" y="2" width="40" height="15" rx="4" fill="#F5C451"/><rect x="5" y="5" width="7" height="5" rx="1.5" fill="#1E2A55"/><rect x="14" y="5" width="7" height="5" rx="1.5" fill="#1E2A55"/><rect x="23" y="5" width="7" height="5" rx="1.5" fill="#1E2A55"/><rect x="32" y="5" width="7" height="6" rx="1.5" fill="#93C5FD"/><circle cx="10" cy="18" r="3" fill="#0B1430" stroke="#B9C6EE" stroke-width="1.2"/><circle cx="32" cy="18" r="3" fill="#0B1430" stroke="#B9C6EE" stroke-width="1.2"/><circle cx="41" cy="13" r="1.3" fill="#FFF7D6"/></svg>'; const topo = elD('div', 'ct-topo'), x = elD('button', 'ct-x', '×'); x.type = 'button'; x.setAttribute('aria-label', 'Fechar');
   const niveis = elD('div', 'ct-niveis'); topo.append(x, niveis);
   const placar = elD('div', 'ct-placar'), meio = elD('div', 'ct-meio'), contaEl = elD('div', 'ct-conta'), respEl = elD('div', 'ct-resp vazio'), aviso = elD('div', 'ct-aviso');
   meio.append(contaEl, respEl, aviso);
