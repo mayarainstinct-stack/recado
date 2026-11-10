@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-10.251">
+<meta name="app-versao" content="2026-11-10.252">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -894,6 +894,33 @@ img.esq { min-height: 140px; }
 .p-grade.apps .p-azulejo:active { transform: scale(.95); } .p-grade.apps .bt-ideias:active { transform: rotate(-1.5deg) scale(.95); }
 .p-grade .p-azulejo { touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .p-grade .sem-rede { filter: grayscale(1); opacity: .4; }
+/* Contas da viagem (May, 10/11/2026): jogo sem fim de contas aleatórias, teclado próprio, conta por dia, funciona sem internet */
+.ct-fundo > * { position: relative; } .ct-fundo > .ct-estrada { position: absolute; }
+.ct-fundo { position: fixed; inset: 0; z-index: 9000; display: flex; flex-direction: column; color: #E8EEFF; background: radial-gradient(120% 60% at 50% 0%, #1E2A55 0%, #0D1430 55%, #080C1E 100%); padding: env(safe-area-inset-top) 16px calc(12px + env(safe-area-inset-bottom)); user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+.ct-estrada { position: absolute; left: 0; right: 0; top: 0; height: calc(64px + env(safe-area-inset-top)); pointer-events: none; overflow: hidden; background: radial-gradient(1.5px 1.5px at 12% 30%, #fff9, transparent), radial-gradient(1px 1px at 28% 60%, #fff7, transparent), radial-gradient(1.5px 1.5px at 47% 20%, #fffa, transparent), radial-gradient(1px 1px at 66% 50%, #fff8, transparent), radial-gradient(1.5px 1.5px at 84% 26%, #fff9, transparent), radial-gradient(1px 1px at 93% 64%, #fff6, transparent); }
+.ct-estrada::after { content: ''; position: absolute; left: 0; right: 0; bottom: 10px; height: 2px; background: repeating-linear-gradient(90deg, #F5C451 0 18px, transparent 18px 34px); opacity: .55; animation: ct-anda 1.6s linear infinite; }
+@keyframes ct-anda { to { background-position: 34px 0; } }
+@media (prefers-reduced-motion: reduce) { .ct-estrada::after { animation: none; } }
+.ct-topo { display: flex; align-items: center; gap: 8px; position: relative; padding-top: 8px; }
+.ct-x { flex: none; width: 40px; height: 40px; padding: 0; border-radius: 50%; border: 1px solid #ffffff22; background: #ffffff12; color: #E8EEFF; font-size: 22px; line-height: 1; }
+.ct-niveis { display: flex; gap: 6px; margin-left: auto; }
+.ct-nv { width: auto; height: auto; white-space: nowrap; padding: 8px 11px; border-radius: 999px; border: 1px solid #ffffff26; background: transparent; color: #B9C6EE; font: inherit; font-size: 13px; font-weight: 700; }
+.ct-nv.on { background: #5EEAD4; border-color: #5EEAD4; color: #0B1430; }
+.ct-placar { display: flex; justify-content: center; align-items: baseline; gap: 16px; white-space: nowrap; margin: 14px 0 0; font-size: 14px; color: #B9C6EE; }
+.ct-placar b { color: #E8EEFF; } .ct-placar button { background: none; border: 0; color: #93C5FD; font: inherit; font-size: 14px; text-decoration: underline; padding: 0; }
+.ct-meio { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; min-height: 0; }
+.ct-conta { font-size: clamp(40px, 13vw, 64px); font-weight: 800; letter-spacing: .5px; text-align: center; }
+.ct-resp { min-width: 60%; min-height: 64px; padding: 6px 18px; border-radius: 18px; background: #ffffff10; border: 1.5px solid #ffffff24; font-size: 44px; font-weight: 800; text-align: center; font-variant-numeric: tabular-nums; }
+.ct-resp.vazio::before { content: '?'; color: #ffffff40; }
+.ct-aviso { min-height: 28px; font-size: 20px; font-weight: 800; }
+.ct-aviso.certo { color: #5EEAD4; text-shadow: 0 0 18px #5EEAD488; } .ct-aviso.errado { color: #FDA4AF; }
+.ct-resp.certo { border-color: #5EEAD4; box-shadow: 0 0 24px #5EEAD455; } .ct-resp.errado { border-color: #FDA4AF; }
+.ct-teclas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.ct-teclas button { width: 100%; min-width: 0; height: 62px; border-radius: 18px; border: 1px solid #ffffff1c; background: linear-gradient(180deg, #ffffff16, #ffffff0a); color: #E8EEFF; font: inherit; font-size: 28px; font-weight: 700; }
+.ct-teclas button:active { transform: translateY(1px); background: #ffffff26; }
+.ct-teclas .ct-ok { background: #5EEAD4; color: #0B1430; border-color: #5EEAD4; font-size: 20px; font-weight: 800; }
+.ct-hist { position: absolute; inset: 0; z-index: 2; background: #0B1230F2; padding: calc(20px + env(safe-area-inset-top)) 20px 20px; overflow: auto; }
+.ct-hist h4 { margin: 0 0 12px; font-size: 18px; } .ct-hist li { list-style: none; padding: 10px 0; border-bottom: 1px solid #ffffff14; font-size: 15px; } .ct-hist ul { margin: 0; padding: 0; }
 .gr-grade .gr-item.arrastando { z-index: 5; touch-action: none; transition: none; box-shadow: 0 16px 34px rgba(74,15,43,.28); }
 .p-grade .p-azulejo.arrastando { position: relative; z-index: 5; touch-action: none; box-shadow: 0 16px 34px rgba(0,0,0,.5); transition: none; }
 .p-corpo > .tela.pl-tela { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 10px; } .p-corpo > .tela.pl-tela > .pl-caixa { flex: 0 0 62%; min-height: 0; } .p-corpo > .tela.pl-tela > .pl-info { flex: 1 1 0; min-height: 0; padding-bottom: env(safe-area-inset-bottom, 0px); }   /* planta inteira sem zoom, desenho mais alto (May 09/11 12:39); metade de cima a casa, metade de baixo as abas (May 16:50) */
@@ -1521,7 +1548,7 @@ body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px
 .ed-links { display: flex; justify-content: center; gap: 6px; margin-top: 6px; }
 .sl-abas { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 12px; scrollbar-width: none; } .sl-abas::-webkit-scrollbar { display: none; } .sl-abas[hidden] { display: none; }
 .sl-aba { flex: none; width: auto; height: auto; min-width: 0; max-width: 62vw; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; padding: 9px 14px; border-radius: 999px; border: 1px solid #F5C6D6; background: #FFFFFF; color: #D61F69; font: inherit; font-size: 13px; font-weight: 800; white-space: nowrap; } .sl-aba.on { background: #D61F69; border-color: #D61F69; color: #FFFFFF; }
-.sl-grupo { width: 100%; background: none; border: 0; text-align: left; cursor: pointer; font: inherit; color: inherit; align-items: center; } .sl-seta { font-style: normal; font-size: 26px; line-height: 1; color: #D61F69; margin-left: auto; padding-left: 10px; } body.modo-trab .sl-seta { color: #059669; }
+.sl-grupo { width: 100%; height: auto; min-height: 0; display: flex; align-items: center; gap: 10px; padding: 12px 0; background: none; border: 0; text-align: left; cursor: pointer; font: inherit; color: inherit; } .sl-grupo .sl-tx { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; } .sl-grupo .sl-t { line-height: 1.3; } .sl-seta { font-style: normal; font-size: 26px; line-height: 1; color: #D61F69; margin-left: auto; padding-left: 10px; } body.modo-trab .sl-seta { color: #059669; }
 .sl-corpo { display: grid; gap: 12px; padding-bottom: 28px; } .sl-card { background: #FFFFFF; color: #4A0F2B; border: 1px solid #F5C6D6; border-left: 4px solid #D61F69; border-radius: 16px; padding: 6px 8px 6px 12px; box-shadow: 0 2px 8px rgba(214,31,105,.10); }
 .sl-sub { margin: 10px 0 2px; color: #D61F69; font-size: 13px; font-weight: 800; }
 .sl-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-top: 1px dashed #F0C9D6; } .sl-item:first-child, .sl-sub + .sl-item { border-top: 0; }
@@ -3839,8 +3866,9 @@ let conversas = [], sigLista = '', ultimaLista = 0, carregandoLista = null;
 // e marca em dadosAntigos[arq] = true pra tela poder dizer "sem internet, mostrando a última versão".
 const CACHE_DADOS = 'recados-dados-v1', DADOS_OK = /^(menu|casa|contas|categorias|saude)\/.+\.(json|md)$/i, dadosAntigos = {};
 const chaveDado = arq => new Request('https://dados.local/' + encodeURI(arq));
-async function dadoGuarda(arq, t) { try { const c = await caches.open(CACHE_DADOS); await c.put(chaveDado(arq), new Response(t)); } catch (e) {} }
-async function dadoLe(arq) { try { const r = await (await caches.open(CACHE_DADOS)).match(chaveDado(arq)); return r ? await r.text() : null; } catch (e) { return null; } }
+const DADOS_LS = /^(menu\/menu\.json|menu\/pos-cirurgia\.json|saude\/)/i;   // o que é importante sem internet também vai pro localStorage (May, 10/11/2026)
+async function dadoGuarda(arq, t) { if (DADOS_LS.test(arq)) { try { localStorage.setItem('dado:' + arq, t); } catch (e) {} } try { const c = await caches.open(CACHE_DADOS); await c.put(chaveDado(arq), new Response(t)); } catch (e) {} }
+async function dadoLe(arq) { try { const r = await (await caches.open(CACHE_DADOS)).match(chaveDado(arq)); if (r) return await r.text(); } catch (e) {} try { return localStorage.getItem('dado:' + arq); } catch (e) { return null; } }
 async function lerArquivo(arq) {
   if (!DADOS_OK.test(arq)) return (await apiOk(apiDe(arq), RAW)).text();
   let t = null, erro = null;
@@ -4175,7 +4203,7 @@ function abreInfoConversa() {
     if (geral) { ft.style.backgroundImage = 'url(avatares/grupo-7-512.png)'; ft.setAttribute('role', 'button'); ft.setAttribute('aria-label', 'Ver a foto do grupo'); ft.onclick = () => abreZoom('avatares/grupo-7-512.png', '', []); }
     else if (fotoConv) fotoUrl(fotoConv).then(u => { ft.style.backgroundImage = 'url(' + u + ')'; }).catch(() => {});
     else ft.textContent = nome.charAt(0).toUpperCase();
-    const h = document.createElement('h3'); h.textContent = nome;
+    const h = document.createElement('h3'); h.textContent = nome; if (geral) { h.style.cursor = 'pointer'; h.onclick = abreContas; }   // tocar em "Geral" abre as Contas da viagem (foto da May, 09/11 22:09)
     const sub = document.createElement('span'); sub.textContent = (gente.length > 2 ? 'Grupo · ' : 'Conversa · ') + gente.length + ' participantes';
     hero.append(ft, h, sub); c.append(hero);
     if (geral) { const d = document.createElement('div'); d.className = 'ig-desc'; d.textContent = 'A casa toda: a May e os robôs, cada um com o seu trabalho. Recado pra um só: escreve @ e o nome.'; c.append(d); }
@@ -4238,7 +4266,8 @@ abreMenu.onclick = () => {
   menu.hidden = true; painel.hidden = false; pilha = []; painel.style.removeProperty('--c'); Som.pagina();
   tela('Menu', c => {
     const h = document.createElement('div'); h.className = 'p-hero'; h.innerHTML = '<div class="logo" aria-hidden="true" style="background-image:url(' + (FILE === TRAB.arq ? '' : FOTO_GERAL) + ');background-color:' + (FILE === TRAB.arq ? '#FFFFFF' : '#0E0F12') + '"></div><div><b>' + (FILE === TRAB.arq ? 'Trabalho' : nomeApp()) + '</b><span>' + (FILE === TRAB.arq ? 'Simplificação · o dia de trabalho' : 'Atalhos da casa') + '</span></div>'; const eng = elD('button', 'p-engrenagem'); eng.type = 'button'; eng.innerHTML = icone('gear'); eng.setAttribute('aria-label', 'Configurações'); eng.onclick = abreConfig; h.append(eng); c.append(h);   // engrenagem no canto de cima, à direita (May 09/11)
-    if (FILE === TRAB.arq) fundoFoto(h.querySelector('.logo'), 'recados-fotos/simp-logo-transparente.png');   // logo do Simp no Menu do Trabalho (May 09/11)
+    if (FILE === TRAB.arq) fundoFoto(h.querySelector('.logo'), 'recados-fotos/simp-logo-transparente.png');
+    else { const nomeG = h.querySelector('b'); if (nomeG) { nomeG.style.cursor = 'pointer'; nomeG.onclick = abreContas; } }   // tocar em "Geral" abre as Contas da viagem (May, 10/11/2026)   // logo do Simp no Menu do Trabalho (May 09/11)
     const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = 'Atalhos'; c.append(t);
     // Os botões do Menu vêm de menu/menu.json (a Lyra acrescenta páginas sem mexer no app); sem ele, só o Catálogo.
     // grade de ícones em 3 colunas, o mais usado em cima (May, 06/11/2026: "lista muito grande")
@@ -6751,6 +6780,66 @@ async function abreTreinoSeHora() {
   if (store.get('treino-auto') === hoje) return;   // pelo horário abre sozinho só 1x por dia; fechou = o Treino continua no Menu (05/11/2026)
   store.set('treino-auto', hoje);
   menu.hidden = true; painel.hidden = false; pilha = []; abreTreinoTela(v, l);
+}
+// ===== Contas da viagem (May, 09/11 22:09 e 10/11/2026): toca em "Geral" (no topo do Menu ou nos Dados do grupo); sem fim, contas geradas na hora
+// (nada escrito antes), nível Fácil/Médio/Difícil, resultado sempre inteiro; teclado próprio na tela; acertos e erros por dia no localStorage; sem internet
+const CT_NIVEIS = [['facil', 'Fácil'], ['medio', 'Médio'], ['dificil', 'Difícil']];
+const ctSorteia = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const ctUm = l => l[Math.floor(Math.random() * l.length)];
+function ctGera(nv) {
+  const r = ctSorteia;
+  const f = {
+    facil: [() => { const a = r(2, 60), b = r(2, 40); return [a + ' + ' + b, a + b]; }, () => { const a = r(20, 100), b = r(2, a - 1); return [a + ' − ' + b, a - b]; }, () => { const a = r(2, 10), b = r(2, 10); return [a + ' × ' + b, a * b]; }, () => { const d = r(2, 10), q = r(2, 10); return [d * q + ' ÷ ' + d, q]; }],
+    medio: [() => { const n = r(4, 20); return ['√' + n * n, n]; }, () => { const d = r(2, 9), q = r(11, 99); return [d * q + ' ÷ ' + d, q]; }, () => { const a = r(12, 99), b = r(3, 9); return [a + ' × ' + b, a * b]; }, () => { const a = r(100, 899), b = r(100, 899); return [a + ' + ' + b, a + b]; }, () => { const a = r(300, 999), b = r(100, a - 50); return [a + ' − ' + b, a - b]; }],
+    dificil: [() => { const a = r(12, 99), b = r(12, 99); return [a + ' × ' + b, a * b]; }, () => { const d = r(11, 29), q = r(6, 45); return [d * q + ' ÷ ' + d, q]; }, () => { const p = ctUm([5, 10, 15, 20, 25, 30, 40, 50, 75]), base = r(1, 25) * 20; return [p + '% de ' + base, p * base / 100]; }, () => { const n = r(21, 30); return ['√' + n * n, n]; }, () => { const a = r(1000, 4999), b = r(1000, 4999); return [a + ' + ' + b, a + b]; }]
+  };
+  return ctUm(f[nv] || f.medio)();
+}
+function ctLe() { try { return JSON.parse(localStorage.getItem('contas-dias') || '{}'); } catch (e) { return {}; } }
+function ctHoje() { const d = new Date(); return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear(); }
+function abreContas() {
+  if (document.querySelector('.ct-fundo')) return;
+  let nv = 'medio'; try { nv = localStorage.getItem('contas-nivel') || 'medio'; } catch (e) {}
+  let conta = null, resp = '', travado = false;
+  const fundo = elD('div', 'ct-fundo'); fundo.setAttribute('role', 'dialog'); fundo.setAttribute('aria-label', 'Contas');
+  const estrada = elD('div', 'ct-estrada'), topo = elD('div', 'ct-topo'), x = elD('button', 'ct-x', '×'); x.type = 'button'; x.setAttribute('aria-label', 'Fechar');
+  const niveis = elD('div', 'ct-niveis'); topo.append(x, niveis);
+  const placar = elD('div', 'ct-placar'), meio = elD('div', 'ct-meio'), contaEl = elD('div', 'ct-conta'), respEl = elD('div', 'ct-resp vazio'), aviso = elD('div', 'ct-aviso');
+  meio.append(contaEl, respEl, aviso);
+  const teclas = elD('div', 'ct-teclas');
+  ['1', '2', '3', '4', '5', '6', '7', '8', '9', '⌫', '0', 'OK'].forEach(k => { const b = elD('button', k === 'OK' ? 'ct-ok' : '', k); b.type = 'button'; if (k === '⌫') b.setAttribute('aria-label', 'Apagar'); b.onclick = () => tecla(k === '⌫' ? 'apaga' : k === 'OK' ? 'ok' : k); teclas.append(b); });
+  fundo.append(estrada, topo, placar, meio, teclas); document.body.append(fundo);
+  const pintaPlacar = () => {
+    const d = (ctLe()[ctHoje()] || {})[nv] || { a: 0, e: 0 };
+    placar.replaceChildren(); const a = elD('span'); a.append('Hoje: ', elD('b', '', d.a + (d.a === 1 ? ' acerto' : ' acertos'))); const e = elD('span'); e.append(elD('b', '', d.e + (d.e === 1 ? ' erro' : ' erros')));
+    const h = elD('button', '', 'Histórico'); h.type = 'button'; h.onclick = historico; placar.append(a, e, h);
+  };
+  const pintaNiveis = () => { niveis.replaceChildren(); CT_NIVEIS.forEach(([k, t]) => { const b = elD('button', 'ct-nv' + (k === nv ? ' on' : ''), t); b.type = 'button'; b.onclick = () => { nv = k; try { localStorage.setItem('contas-nivel', k); } catch (e) {} pintaNiveis(); pintaPlacar(); proxima(); }; niveis.append(b); }); };
+  const pintaResp = () => { respEl.textContent = resp; respEl.classList.toggle('vazio', !resp); };
+  const proxima = () => { conta = ctGera(nv); contaEl.textContent = conta[0] + ' ='; resp = ''; travado = false; aviso.textContent = ''; aviso.className = 'ct-aviso'; respEl.className = 'ct-resp'; pintaResp(); };
+  const conta1 = certo => { const t = ctLe(), d = ctHoje(); t[d] = t[d] || {}; t[d][nv] = t[d][nv] || { a: 0, e: 0 }; t[d][nv][certo ? 'a' : 'e']++; try { localStorage.setItem('contas-dias', JSON.stringify(t)); } catch (e) {} pintaPlacar(); };
+  function tecla(k) {
+    if (travado) return;
+    if (k === 'apaga') { resp = resp.slice(0, -1); pintaResp(); return; }
+    if (k === 'ok') {
+      if (!resp) return; travado = true; const certo = Number(resp) === conta[1];
+      aviso.textContent = certo ? 'Acertou!' : 'Errou, era ' + conta[1]; aviso.className = 'ct-aviso ' + (certo ? 'certo' : 'errado'); respEl.classList.add(certo ? 'certo' : 'errado');
+      if (navigator.vibrate) navigator.vibrate(certo ? 15 : [30, 40, 30]); conta1(certo); setTimeout(proxima, certo ? 900 : 1600); return;
+    }
+    if (resp.length < 7) { resp += k; pintaResp(); }
+  }
+  function historico() {
+    const h = elD('div', 'ct-hist'), t = ctLe(), x2 = elD('button', 'ct-x', '×'); x2.type = 'button'; x2.setAttribute('aria-label', 'Fechar histórico'); x2.style.float = 'right'; x2.onclick = () => h.remove();
+    h.append(x2, elD('h4', '', 'Contas por dia')); const ul = elD('ul');
+    const chave = d => d.split('/').reverse().join(''), dias = Object.keys(t).sort((a, b) => chave(b).localeCompare(chave(a)));
+    if (!dias.length) ul.append(elD('li', '', 'Ainda nada por aqui. Bora a primeira!'));
+    dias.forEach(d => { const partes = CT_NIVEIS.filter(([k]) => t[d][k]).map(([k, n]) => n + ': ' + t[d][k].a + ' certas, ' + t[d][k].e + ' erradas'); ul.append(elD('li', '', d + ' · ' + partes.join(' · '))); });
+    h.append(ul); fundo.append(h);
+  }
+  const teclado = e => { if (/^[0-9]$/.test(e.key)) tecla(e.key); else if (e.key === 'Backspace') tecla('apaga'); else if (e.key === 'Enter') tecla('ok'); else if (e.key === 'Escape') fecha(); else return; e.stopPropagation(); e.preventDefault(); };
+  const fecha = () => { removeEventListener('keydown', teclado, true); fundo.remove(); };
+  x.onclick = fecha; addEventListener('keydown', teclado, true);
+  pintaNiveis(); pintaPlacar(); proxima();
 }
 // Saúde sem internet (May, 10/11/2026): a cada abertura com rede, lê (e assim guarda) todos os arquivos que a Saúde usa
 async function guardaSaude() {

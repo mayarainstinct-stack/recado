@@ -32,6 +32,8 @@ function abre() {
   document.body.innerHTML = '<div class="ld"><i></i></div>';
   fetch('app.html', { cache: 'no-cache' })
     .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(html => { try { localStorage.setItem('app-html', html); } catch (e) {} return html; })   // cópia no celular: sem internet abre a última (May, 10/11/2026)
+    .catch(e => { let h = null; try { h = localStorage.getItem('app-html'); } catch (e2) {} if (h) return h; throw e; })
     .then(html => { document.open(); document.write(html); document.close(); })
     .catch(() => { document.body.innerHTML = '<div class="ld"><div><p>Não consegui abrir. Confere a internet.</p><button type="button" onclick="abre()">Tentar de novo</button></div></div>'; });
 }
