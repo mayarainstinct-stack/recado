@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-11.290">
+<meta name="app-versao" content="2026-11-11.291">
 <meta name="app-novidade" content="Consulta: carteirinha com o cartão de verdade, roteiro por momento e tudo em rosa">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -7124,7 +7124,7 @@ function popupRosa(titulo) {
 }
 function blocoCarteirinha(b, tit, tx) {
   const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-pass'), k = elD('button', 'vs-pass-btn'); k.type = 'button';
-  k.append(elD('b', '', 'Carteirinha Unimed'), elD('span', '', 'Abre o cartão em tela cheia; deslize para ver o verso'), elD('span', 'go', 'Abrir')); g.append(k); w.append(g);
+  k.append(elD('b', '', 'Abrir carteirinha')); g.append(k); w.append(g);
   let d = null; const carrega = () => d || (d = lerArquivo(b.arq).then(t => JSON.parse(t)).catch(e => { d = null; throw e; }));
   carrega().then(c => { [c.frente || c.imagem, c.verso].filter(Boolean).forEach(f => fotoUrl(f, true).catch(() => {})); }).catch(() => {});   // já guarda a foto no aparelho (abre sem internet)
   k.onclick = async () => {   // May 11/11: abre direto o CARTÃO DA FRENTE, tela cheia, sem mais nenhum dado; ela vira o celular e entrega
