@@ -1837,15 +1837,16 @@ body .painel .ag-dia { width: 36px; height: 36px; aspect-ratio: 1 / 1; justify-s
 .sw-n .sw-tx { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-size: 14px; line-height: 1.38; }
 .sw-n.aberto .sw-tx { display: block; overflow: visible; }
 .sw-n .sw-rodape { display: flex; align-items: center; gap: 8px; min-height: 16px; }
-.sw-n .sw-ini { font-weight: 700; font-size: 12.5px; color: #334155; font-variant-numeric: tabular-nums; }
+.sw-n .sw-ini { font-weight: 700; font-size: 12.5px; color: #334155; font-variant-numeric: tabular-nums; display: inline-flex; align-items: center; gap: 4px; }
+.sw-n .sw-ini::before { content: ''; width: 12px; height: 12px; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E") center/contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E") center/contain no-repeat; }
 .sw-n .sw-fim { margin-left: auto; font-weight: 700; font-size: 12px; letter-spacing: .03em; color: #475569; white-space: nowrap; display: inline-flex; align-items: center; }
 .sw-n .sw-dica { margin-left: auto; font-size: 11px; font-weight: 700; color: #B91C1C; } .sw-n .sw-dica + .sw-fim { margin-left: 0; }
 .sw-n.ok .sw-fim { color: #1E293B; }
 .sw-n .sw-fim.exec { color: color-mix(in srgb, var(--c) 75%, black); } .sw-n .sw-fim.atr { color: #B91C1C; }
 .sw-bol { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--c); margin-right: 6px; animation: sw-bol 1.3s ease-in-out infinite; }
 @keyframes sw-bol { 0%, 100% { transform: scale(.7); opacity: .55; box-shadow: 0 0 0 0 color-mix(in srgb, var(--c) 55%, transparent); } 50% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 6px transparent; } }
-@keyframes sw-trab { 0%, 100% { background: color-mix(in srgb, var(--c) 7%, white); } 50% { background: color-mix(in srgb, var(--c) 24%, white); } }
-.sw-it.sw-n.doing { animation: sw-trab 2.4s ease-in-out infinite; }
+@keyframes sw-trab { 0%, 100% { background: color-mix(in srgb, var(--c) 8%, white); } 50% { background: color-mix(in srgb, var(--c) 30%, white); } }
+.sw-it.sw-n.doing { animation: sw-trab 3.2s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .sw-it.sw-n.doing, .sw-bol { animation: none; } }
 .sw-tela .sw-agora { margin-left: 0; }
 /* Agenda da Geral igual à do Trabalho (11/11/2026): calendário congelado com marcas em círculo, legenda sem corte, Pesquisar + PDF, só a lista rola; cartão no desenho novo, cor por assunto */
@@ -6546,7 +6547,8 @@ function swModeloTrab(d) {
     const dia = dias.find(x => (it[0] || '').startsWith(x.dd)); if (!dia) return;
     const ini = swDH(it[0], ano), fim = it[3] || '', f = swFeito(swCap(it[2] || '')), [cor, nome] = SW_PROJ[it[1]] || ['#64748b', it[1]];
     let hora = (it[0] || "").slice(6), ok = f.ok || !!fim, cm = f.texto.match(/^([^:\d]{2,22}?):\s+(\S.*)$/); if (cm && /^cliente$/i.test(cm[1])) cm = cm[2].match(/^([^:\d]{2,22}?):\s+(\S.*)$/) || [null, cm[2].split(' ')[0], cm[2].split(' ').slice(1).join(' ') || cm[2]];   // "cliente: tarefa" vira etiqueta pequena embaixo do projeto, como na agenda da empresa
-    const cli = cm && cm[1].split(' ').length <= 3 ? cm[1] : '', tx0 = cli ? cm[2] : f.texto, tkm = tx0.match(/^(\d{7})\s*[-:]\s*(\S[\s\S]*)$/), tk = tkm ? '#' + tkm[1] : (typeof it[4] === 'string' && it[4] && it[4] !== 'extra' ? (/^\d+$/.test(it[4]) ? '#' + it[4] : 'Ticket') : '');   // ticket e cliente vão à direita do cartão (agenda da empresa, 11/11/2026)
+    const cli = '', tx0 = f.texto,   /* cliente só viria de um prefixo da lista de clientes; a cópia limpa já tira esses nomes, então não se extrai nada do texto (igual à agenda da empresa) */
+       tkm = tx0.match(/^(\d{7})\s*[-:]\s*(\S[\s\S]*)$/), tk = tkm ? '#' + tkm[1] : (typeof it[4] === 'string' && it[4] && it[4] !== 'extra' ? (/^\d+$/.test(it[4]) ? '#' + it[4] : 'Ticket') : '');   // ticket e cliente vão à direita do cartão (agenda da empresa, 11/11/2026)
     dia.linhas.push({ ini, hora, fimH: fim ? fim.slice(fim.length > 5 ? 6 : 0) : '', tag: nome, cli, tk, texto: tkm ? tkm[2] : tx0, cor, ok, andamento: !ok && it.length > 3 && !!ini && ini <= agora, atrasada: !ok && it.length <= 3 && !!ini && ini <= agora && swChave(ini) === swChave(agora), dia: true, extra: it[4] === true || it[4] === 'extra' || !!(d.extra || d.hora_extra || {})[it[0].slice(0, 5)] });   // vermelho de hora extra SÓ quando o JSON marca (item[4] true/'extra' ou extra:{"DD/MM":true}); o app não inventa o sinal
   });
   dias.forEach(x => x.linhas.sort((a, b) => (a.hora < b.hora ? -1 : a.hora > b.hora ? 1 : 0)));
@@ -6591,7 +6593,7 @@ function swLinha(o) {   // cartão compacto da agenda da empresa (11/11/2026): e
   const tx = elD('span', 'sw-tx'); o.texto.split(/(\b\d{7}\b)/).forEach((p, n) => tx.append(n % 2 ? elD('b', 'sw-tk', p) : document.createTextNode(p)));   // outros números de ticket (7 dígitos) em negrito
   el.append(topo, tx);
   const fim = elD('span', 'sw-fim');
-  if (o.ok) fim.textContent = '✓' + (o.fimH ? ' ' + o.fimH : ''); else if (o.andamento) { fim.classList.add('exec'); fim.append(elD('i', 'sw-bol'), document.createTextNode('EXECUTANDO')); } else if (o.atrasada) { fim.classList.add('atr'); fim.textContent = 'ATRASADA'; }
+  if (o.ok) fim.textContent = '✓' + (o.fimH ? ' ' + o.fimH : ''); else if (o.andamento) { fim.classList.add('exec'); fim.append(elD('i', 'sw-bol'), document.createTextNode('EXECUTANDO')); } else if (o.atrasada) { fim.classList.add('atr'); fim.textContent = 'atrasada'; }
   if (o.hora || fim.firstChild || o.extra) { const rp = elD('div', 'sw-rodape'); if (o.hora) rp.append(elD('span', 'sw-ini', o.hora)); if (o.extra) rp.append(elD('span', 'sw-dica', 'Fora do horário')); if (fim.firstChild) rp.append(fim); el.append(rp); }
   if (o.extra) el.title = 'Fora do horário de serviço'; else if (o.atrasada) el.title = 'Passou da hora e ainda não começou';
   el.onclick = () => el.classList.toggle('aberto');   // tocar mostra o texto inteiro (no celular não tem como passar o mouse)
@@ -6606,7 +6608,7 @@ function swLinhaPdf(o) {
   if (o.ok) el.append(elD('span', 'sw-okm', '✓' + (o.fimH ? ' ' + o.fimH : ''))); else if (o.andamento) el.append(elD('span', 'sw-and', 'executando')); else if (o.atrasada) el.append(elD('span', 'sw-atr', 'atrasada'));
   return el;
 }
-const swAgora = d => { const e = elD('div', 'sw-agora'); e.append(elD('span', '', 'Agora ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'))); return e; };
+const swAgora = d => { const e = elD('div', 'sw-agora'); e.append(elD('span', '', 'agora ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'))); return e; };
 function swRender(m, o = {}) {
   const LN = o.pdf ? swLinhaPdf : swLinha, red = !!o.reduzida;   // celular: só calendário e tarefas; título, legenda, contadores e barra saem, Exportar vai pro cabeçalho, impedimentos no fim
   const raiz = elD('div', 'sw' + (o.pdf ? ' sw-pdf' : '')), hero = elD('div', 'sw-hero'), h = elD('div'), leg = elD('div', 'sw-leg'), agora = new Date(), hk = swChave(agora);
