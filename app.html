@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-11.283">
+<meta name="app-versao" content="2026-11-11.284">
 <meta name="app-novidade" content="Agenda do Trabalho com o cartão novo e Agenda da Geral no mesmo desenho, com pesquisa e PDF">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1931,6 +1931,7 @@ body .painel .ag-dia { width: 36px; height: 36px; aspect-ratio: 1 / 1; justify-s
 
 /* correções de tela, 11/11/2026 (.282): fundo até o fim sob a barra do gesto, colunas no celular, cortes */
 html { background: var(--bg); }
+html:has(body.modo-trab) { background: #F8FAFC; }   /* Trabalho e claro mesmo com o iPhone no escuro: sem faixa escura ao puxar a tela (11/11) */
 #p-corpo:has(.gr-grade-cinema, .gr-grade-saude, .at-tela, .pos-tela, .treino-tela, .ck-bloco) { padding-bottom: 0; }
 .gr-grade.gr-grade-cinema, .gr-grade.gr-grade-saude, .at-tela, .pos-tela, .treino-tela { flex: 1 0 auto; min-height: 0; margin-bottom: 0; }
 @media (max-width: 480px) { .ctr-cores { grid-template-columns: repeat(2, 1fr); } }
