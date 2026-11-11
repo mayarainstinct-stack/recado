@@ -1609,19 +1609,20 @@ body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px
 .vs-pass { display: grid; gap: 12px; } .vs-pass-btn { all: unset; box-sizing: border-box; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 12px; padding: 18px 18px; border-radius: 16px; background: linear-gradient(135deg, #D61F69, #F0609A); color: #fff; cursor: pointer; box-shadow: 0 6px 16px rgba(214,31,105,.30); -webkit-tap-highlight-color: transparent; } .vs-pass-btn:active { transform: scale(.98); }
 .vs-pass-btn b { font-size: 21px; line-height: 1.2; } .vs-pass-btn span { font-size: 15px; opacity: .96; } .vs-pass-btn .go { grid-row: 1 / span 3; grid-column: 2; align-self: center; padding: 8px 14px; border-radius: 999px; background: #fff; color: #D61F69; font-size: 13px; font-weight: 800; opacity: 1; }
 .pass-pop { position: fixed; inset: 0; z-index: 60; background: rgba(74,15,43,.55); display: grid; place-items: center; padding: 14px; font-family: var(--font-ui); }
-.pass-caixa { position: relative; width: 100%; max-width: 420px; max-height: 94vh; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; background: #FFF1F6; color: #4A0F2B; border-radius: 24px; padding: 18px 16px 20px; box-shadow: 0 14px 40px rgba(214,31,105,.35); animation: entra .2s ease-out both; touch-action: pan-y; }
-.pass-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; } .pass-abas { display: flex; gap: 6px; }
-.pass-aba { all: unset; box-sizing: border-box; padding: 9px 18px; border-radius: 999px; border: 1.5px solid #F5C6D6; background: #fff; color: #D61F69; font-size: 14px; font-weight: 800; cursor: pointer; } .pass-aba.on { background: #D61F69; border-color: #D61F69; color: #fff; }
-.pass-x { all: unset; box-sizing: border-box; flex: none; width: 46px; height: 46px; display: grid; place-items: center; border-radius: 50%; background: #fff; color: #D61F69; border: 1.5px solid #F5C6D6; cursor: pointer; } .pass-x svg { width: 22px; height: 22px; }
-.pass-corpo { display: grid; gap: 12px; } .pass-data { margin: 0; font-size: 14px; font-weight: 700; color: #A3134F; text-align: center; }
-.pass-onde { display: grid; gap: 2px; padding: 14px 16px; border-radius: 16px; background: #fff; border: 1.5px solid #F5C6D6; box-shadow: 0 2px 8px rgba(214,31,105,.08); } .pass-onde small { font-size: 12px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: #D61F69; } .pass-onde b { font-size: 19px; line-height: 1.25; } .pass-onde span { font-size: 15px; color: #A3134F; }
-.pass-gr { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .pass-gr.um { grid-template-columns: 1fr; }
-.pass-gd { display: grid; gap: 2px; justify-items: center; text-align: center; padding: 14px 8px; border-radius: 16px; background: linear-gradient(135deg, #D61F69, #F0609A); color: #fff; box-shadow: 0 4px 12px rgba(214,31,105,.30); } .pass-gd small { font-size: 12px; font-weight: 800; letter-spacing: .06em; opacity: .95; } .pass-gd b { font-size: 46px; line-height: 1.05; font-weight: 800; }
-.pass-pq { display: grid; gap: 2px; justify-items: center; text-align: center; padding: 12px 8px; border-radius: 16px; background: #fff; border: 1.5px solid #F5C6D6; } .pass-pq small { font-size: 12px; font-weight: 800; letter-spacing: .04em; color: #D61F69; } .pass-pq b { font-size: 24px; color: #A3134F; }
-.pass-qr { display: grid; gap: 8px; justify-items: center; padding: 14px 12px 12px; border-radius: 16px; background: #fff; border: 1.5px solid #F5C6D6; } .pass-qr small { font-size: 13px; font-weight: 800; color: #D61F69; text-align: center; }
-.pass-qr .qrb { width: 100%; aspect-ratio: 1 / 1; background: #fff; border-radius: 12px; display: grid; place-items: center; } .pass-qr img { width: 100%; height: 100%; object-fit: contain; background: #fff; image-rendering: pixelated; } .pass-qr .qrb.erro::after { content: "QR sem internet. Abra uma vez com internet."; padding: 12px; text-align: center; font-size: 14px; color: #A3134F; }
-.pass-peq { display: grid; gap: 4px; padding: 12px 14px; border-radius: 16px; background: #fff; border: 1px solid #F5C6D6; font-size: 13px; color: #A3134F; } .pass-peq div { display: flex; justify-content: space-between; gap: 10px; } .pass-peq b { color: #4A0F2B; overflow-wrap: anywhere; text-align: right; }
-.pass-pdf { all: unset; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 10px 14px; border-radius: 16px; background: #fff; border: 1.5px solid #F5C6D6; color: #D32F2F; font-size: 15px; font-weight: 800; cursor: pointer; } .pass-pdf:active { background: #FCE7F0; } .pass-pdf.ocupado { opacity: .5; } .pass-pdf span.t { color: #D61F69; }
+.pass-caixa { position: relative; width: 100%; max-width: 420px; max-height: calc(100vh - 28px); max-height: calc(100dvh - 28px); overflow: hidden; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; background: #FFF1F6; color: #4A0F2B; border-radius: 24px; padding: 10px 12px 12px; box-shadow: 0 14px 40px rgba(214,31,105,.35); animation: entra .2s ease-out both; touch-action: pan-y; }
+.pass-topo { display: flex; align-items: center; gap: 8px; } .pass-abas { display: flex; gap: 5px; }
+.pass-aba { all: unset; box-sizing: border-box; padding: 6px 13px; border-radius: 999px; border: 1.5px solid #F5C6D6; background: #fff; color: #D61F69; font-size: 13px; font-weight: 800; cursor: pointer; } .pass-aba.on { background: #D61F69; border-color: #D61F69; color: #fff; }
+.pass-data { flex: 1; min-width: 0; margin: 0; font-size: 12px; font-weight: 700; color: #A3134F; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pass-x { all: unset; box-sizing: border-box; flex: none; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: #fff; color: #D61F69; border: 1.5px solid #F5C6D6; cursor: pointer; } .pass-x svg { width: 18px; height: 18px; }
+.pass-corpo { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+.pass-onde { display: grid; gap: 1px; padding: 8px 12px; border-radius: 14px; background: #fff; border: 1.5px solid #F5C6D6; min-width: 0; } .pass-onde .l1 { display: flex; align-items: baseline; gap: 8px; min-width: 0; } .pass-onde b { flex: 0 1 auto; min-width: 0; font-size: 17px; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .pass-onde .pl { flex: none; max-width: 55%; font-size: 13px; font-weight: 800; color: #D61F69; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .pass-onde .l2 { font-size: 12px; color: #A3134F; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pass-gr { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pass-gd { display: grid; gap: 0; justify-items: center; text-align: center; padding: 7px 4px; border-radius: 14px; background: linear-gradient(135deg, #D61F69, #F0609A); color: #fff; box-shadow: 0 3px 8px rgba(214,31,105,.28); } .pass-gd small { font-size: 10.5px; font-weight: 800; letter-spacing: .05em; opacity: .95; } .pass-gd b { font-size: 30px; line-height: 1.05; font-weight: 800; }
+.pass-qr { display: grid; gap: 5px; justify-items: center; padding: 8px; border-radius: 14px; background: #fff; border: 1.5px solid #F5C6D6; } .pass-qr small { font-size: 12px; font-weight: 800; color: #D61F69; text-align: center; }
+.pass-chips { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; } .pass-chip { all: unset; box-sizing: border-box; padding: 5px 12px; border-radius: 999px; border: 1.5px solid #F5C6D6; background: #fff; color: #D61F69; font-size: 12px; font-weight: 800; cursor: pointer; } .pass-chip.on { background: #D61F69; border-color: #D61F69; color: #fff; }
+.pass-qr .qrb { width: min(100%, calc(100vh - 318px)); width: min(100%, calc(100dvh - 318px)); aspect-ratio: 1 / 1; min-width: 0; background: #fff; border-radius: 8px; display: grid; place-items: center; cursor: pointer; } .pass-qr img { width: 100%; height: 100%; object-fit: contain; background: #fff; image-rendering: pixelated; } .pass-qr .qrb.erro::after { content: "QR sem internet. Abra uma vez com internet."; padding: 12px; text-align: center; font-size: 14px; color: #A3134F; }
+.pass-peq { display: flex; align-items: center; gap: 8px; } .pass-inf { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; gap: 0 10px; font-size: 11px; line-height: 1.35; color: #A3134F; } .pass-inf span { white-space: nowrap; } .pass-inf b { color: #4A0F2B; }
+.pass-pdf { all: unset; box-sizing: border-box; flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; background: #fff; border: 1.5px solid #F5C6D6; color: #D32F2F; cursor: pointer; } .pass-pdf:active { background: #FCE7F0; } .pass-pdf.ocupado { opacity: .5; } .pass-pdf svg { width: 20px; height: 23px; }
 .vs-ligar { display: grid; gap: 10px; } .vs-lig { display: flex; gap: 8px; align-items: stretch; }
 .vs-lig-tel { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 14px; background: #D61F69; color: #fff; text-decoration: none; box-shadow: 0 3px 10px rgba(214,31,105,.35); } .vs-lig-tel:active { transform: scale(.98); }
 .vs-lig-tel .vs-ic-p { flex: none; width: 26px; height: 26px; color: #fff; stroke: #fff; } .vs-lig-tx { flex: 1; min-width: 0; display: grid; gap: 1px; } .vs-lig-tx b { font-size: 16px; } .vs-lig-tx small { font-size: 15px; opacity: .95; }
@@ -7022,31 +7023,33 @@ function abrePassagem(its, i0) {
   const cx = elD('div', 'pass-caixa'), topo = elD('div', 'pass-topo'), abas = elD('div', 'pass-abas'), corpo = elD('div', 'pass-corpo');
   const x = elD('button', 'pass-x'); x.type = 'button'; x.setAttribute('aria-label', 'Fechar'); x.innerHTML = icone('close');
   const botoes = its.map((it, k) => { const a = elD('button', 'pass-aba', it.titulo || String(k + 1)); a.type = 'button'; a.onclick = () => troca(k); abas.append(a); return a; });
-  topo.append(abas, x); cx.append(topo, corpo); pop.append(cx); document.body.append(pop);
-  const par = (r, v) => { const d = elD('div'); d.append(elD('span', '', r), elD('b', '', v)); return d; };
+  const dataEl = elD('p', 'pass-data'); topo.append(abas, dataEl, x); cx.append(topo, corpo); pop.append(cx); document.body.append(pop);
   function desenha() {
     const it = its[i]; corpo.replaceChildren(); botoes.forEach((a, k) => a.classList.toggle('on', k === i));
-    corpo.append(elD('p', 'pass-data', it.data || ''));
-    const on = elD('div', 'pass-onde'); on.append(elD('small', '', 'Onde ir'), elD('b', '', it.local_embarque || it.origem || ''));
-    if (it.plataforma) on.append(elD('span', '', 'Plataforma: ' + it.plataforma)); if (it.empresa) on.append(elD('span', '', it.empresa)); if (it.destino) on.append(elD('span', '', 'Para ' + it.destino)); corpo.append(on);
-    const gr = elD('div', 'pass-gr' + (it.poltrona && it.embarque ? '' : ' um'));
-    const gd = (r, v) => { const e = elD('div', 'pass-gd'); e.append(elD('small', '', r), elD('b', '', v)); return e; };
-    if (it.embarque) gr.append(gd('EMBARQUE', it.embarque)); if (it.poltrona) gr.append(gd('POLTRONA', it.poltrona)); corpo.append(gr);
-    const g2 = elD('div', 'pass-gr'); const pq = (r, v) => { const e = elD('div', 'pass-pq'); e.append(elD('small', '', r), elD('b', '', v)); return e; };
-    if (it.saida) g2.append(pq('SAÍDA', it.saida)); if (it.chegada) g2.append(pq('CHEGADA', it.chegada));
-    if (g2.children.length) { if (g2.children.length === 1) g2.classList.add('um'); corpo.append(g2); }
-    (it.qrs || []).forEach(q => {
-      const e = elD('div', 'pass-qr'), bx = elD('div', 'qrb'), im = elD('img'); im.alt = 'QR code: ' + (q.legenda || ''); bx.append(im);
-      fotoUrl(q.img, true).then(u => { im.src = u; }).catch(() => bx.classList.add('erro'));
-      e.append(bx); if (q.legenda) e.append(elD('small', '', q.legenda)); corpo.append(e);
-    });
-    const pe = elD('div', 'pass-peq'); if (it.localizador) pe.append(par('Localizador', it.localizador)); if (it.bilhete) pe.append(par('Bilhete', it.bilhete)); if (it.passageira) pe.append(par('Passageira', it.passageira)); corpo.append(pe);
-    if (it.pdf) {
-      const pb = elD('button', 'pass-pdf'); pb.type = 'button'; pb.append(iconePdf(), elD('span', 't', 'Baixar o bilhete em PDF'));
-      pb.onclick = async () => { if (pb.classList.contains('ocupado')) return; pb.classList.add('ocupado'); try { const f = await pdfArquivo(it.pdf); if (await entregaPdfs([f]) === 'cancelou') showNote('Toque de novo para compartilhar.'); } catch (e) { showNote('Não baixou. Confere a internet.', true); } pb.classList.remove('ocupado'); };
-      corpo.append(pb);
+    const dm = /(\d{2}\/\d{2})(\/\d{4})?/.exec(it.data || ''), dia = (it.data || '').slice(0, 3);
+    dataEl.textContent = dm ? dia + ', ' + dm[1] : (it.data || '');
+    const on = elD('div', 'pass-onde'), l1 = elD('div', 'l1'), pl = it.plataforma ? (it.plataforma.length <= 5 ? 'Plat. ' + it.plataforma : it.plataforma) : '';
+    l1.append(elD('b', '', it.local_embarque || it.origem || '')); if (pl) l1.append(elD('span', 'pl', pl)); on.append(l1);
+    const l2 = [it.empresa, it.destino ? 'para ' + it.destino : ''].filter(Boolean).join(' · '); if (l2) on.append(elD('span', 'l2', l2)); corpo.append(on);
+    const gr = elD('div', 'pass-gr'); const gd = (r, v) => { const e = elD('div', 'pass-gd'); e.append(elD('small', '', r), elD('b', '', v)); return e; };
+    if (it.embarque) gr.append(gd('EMBARQUE', it.embarque)); if (it.poltrona) gr.append(gd('POLTRONA', it.poltrona)); if (it.saida) gr.append(gd('SAÍDA', it.saida)); else if (it.chegada) gr.append(gd('CHEGADA', it.chegada));
+    if (gr.children.length) { gr.style.gridTemplateColumns = 'repeat(' + gr.children.length + ', 1fr)'; corpo.append(gr); }
+    const qs = it.qrs || [];
+    if (qs.length) {
+      const e = elD('div', 'pass-qr'), bx = elD('div', 'qrb'), im = elD('img'), chips = elD('div', 'pass-chips'); let qi = 0;
+      const mostra = k => { qi = k; im.alt = 'QR code: ' + (qs[k].legenda || ''); bx.classList.remove('erro'); fotoUrl(qs[k].img, true).then(u => { if (qi === k) im.src = u; }).catch(() => bx.classList.add('erro')); [...chips.children].forEach((c, j) => c.classList.toggle('on', j === k)); };
+      if (qs.length > 1) { qs.forEach((q, k) => { const c = elD('button', 'pass-chip', q.legenda || ('QR ' + (k + 1))); c.type = 'button'; c.onclick = () => mostra(k); chips.append(c); }); e.append(chips); bx.onclick = () => mostra((qi + 1) % qs.length); }
+      else if (qs[0].legenda) e.append(elD('small', '', qs[0].legenda));
+      bx.append(im); e.append(bx); corpo.append(e); mostra(0);
     }
-    cx.scrollTop = 0;
+    const pe = elD('div', 'pass-peq'), inf = elD('div', 'pass-inf'); const par = (r, v) => { const d = elD('span'); d.append(r ? r + ' ' : '', elD('b', '', v)); return d; };
+    if (it.localizador) inf.append(par('Loc.', it.localizador)); if (it.bilhete) inf.append(par('Bilhete', it.bilhete)); if (it.passageira) inf.append(par('', it.passageira)); pe.append(inf);
+    if (it.pdf) {
+      const pb = elD('button', 'pass-pdf'); pb.type = 'button'; pb.setAttribute('aria-label', 'Baixar o bilhete em PDF'); pb.title = 'Baixar o bilhete em PDF'; pb.append(iconePdf());
+      pb.onclick = async () => { if (pb.classList.contains('ocupado')) return; pb.classList.add('ocupado'); try { const f = await pdfArquivo(it.pdf); if (await entregaPdfs([f]) === 'cancelou') showNote('Toque de novo para compartilhar.'); } catch (e) { showNote('Não baixou. Confere a internet.', true); } pb.classList.remove('ocupado'); };
+      pe.append(pb);
+    }
+    corpo.append(pe);
   }
   function troca(k, dir) {
     if (k === i || k < 0 || k >= its.length) return; const d = dir || (k > i ? 1 : -1); i = k; desenha();
