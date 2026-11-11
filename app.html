@@ -9,6 +9,7 @@
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
 <meta name="app-versao" content="2026-11-11.287">
+<meta name="app-versao" content="2026-11-11.288">
 <meta name="app-novidade" content="Mapa da consulta preciso (Google Maps, rota a pé) e Anotar com a cor da tela de onde veio">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1064,6 +1065,7 @@ body.na-geral .painel.tema-rosa .p-topo::after { background: #E75480; box-shadow
 .gr-grade.gr-grade-saude .gr-item .t { align-self: stretch; text-align: left; color: #4A0F2B; text-shadow: none; font-weight: 800; font-size: 15px; line-height: 1.2; }
 .gr-grade.gr-grade-saude .gr-item.cor-propria { border-color: color-mix(in srgb, var(--c) 45%, #FFFFFF); box-shadow: 0 2px 0 color-mix(in srgb, var(--c) 45%, #FFFFFF), 0 10px 18px rgba(31,41,55,.08); } .gr-grade.gr-grade-saude .gr-item.cor-propria::before { background: var(--c); } .gr-grade.gr-grade-saude .gr-item.cor-propria::after { border-top-color: color-mix(in srgb, var(--c) 30%, #FFFFFF); } .gr-grade.gr-grade-saude .gr-item.cor-propria .ic { color: var(--c); } .gr-grade.gr-grade-saude .gr-item.cor-propria .t { color: color-mix(in srgb, var(--c) 55%, #000000); }
 .gr-grade.gr-grade-saude .gr-item:active { transform: translateY(2px); box-shadow: 0 0 0 #E9B8C9, 0 6px 12px rgba(74,15,43,.08); }
+.painel.tema-saude { --tema-cor: #D61F69; } .painel.tema-rosa { --tema-cor: #D61F69; } .painel.tema-claro { --tema-cor: #2A9D8F; } .painel.tema-excel { --tema-cor: #217346; } .painel.tema-contraste { --tema-cor: #EC008C; }   /* cor da tela pro Anotar herdar (#212, Orfeu 11/11/2026) */
 .painel.tema-saude, body.na-geral .painel.tema-saude { --c: #D61F69; --fg: #4A0F2B; --muted: #A3456B; --line: #F5C6D6; --paper: #FFFFFF; --bg: #FFFFFF; background: #FFFFFF; color: #4A0F2B; }
 body.na-geral .painel.tema-saude .p-topo, .painel.tema-saude .p-topo { background: #FFFFFF; color: #4A0F2B; box-shadow: 0 1px 0 #F5C6D6, 0 6px 18px rgba(74,15,43,.07); }
 body.na-geral .painel.tema-saude .p-topo::after { background: #D61F69; box-shadow: none; height: 2px; }
@@ -6963,7 +6965,7 @@ function notaBox(contexto, fecha) {
 function abreFicha({ titulo, foto, corpo, contexto, fotos }) {
   const f = document.createElement('div'); f.className = 'ficha'; f.setAttribute('role', 'dialog'); f.setAttribute('aria-label', titulo || 'Detalhe');
   // a ficha herda a cor da tela de onde abriu (Saúde rosa, Artes etc.), nunca o escuro padrão (May 11/11/2026: tela filha herda a mãe)
-  if (painel.getClientRects().length && ([...painel.classList].some(c => c.startsWith('tema-')) || painel.style.getPropertyValue('--c'))) { const tp = getComputedStyle(painel); ['--paper', '--fg', '--bg', '--line', '--muted'].forEach(v => { const k = tp.getPropertyValue(v).trim(); if (k) f.style.setProperty(v, k); }); const k = tp.getPropertyValue('--c').trim(); if (k) { f.style.setProperty('--accent', k); f.style.setProperty('--accent-fg', '#FFFFFF'); } }
+  if (painel.getClientRects().length && ([...painel.classList].some(c => c.startsWith('tema-')) || painel.style.getPropertyValue('--c'))) { const tp = getComputedStyle(painel); ['--paper', '--fg', '--bg', '--line', '--muted'].forEach(v => { const k = tp.getPropertyValue(v).trim(); if (k) f.style.setProperty(v, k); }); const k = tp.getPropertyValue('--tema-cor').trim() || tp.getPropertyValue('--c').trim(); if (k) { const t = document.createElement('i'); t.style.color = k; document.body.append(t); const [r, g, bl] = getComputedStyle(t).color.match(/\d+/g).map(n => { n = n / 255; return n <= .03928 ? n / 12.92 : ((n + .055) / 1.055) ** 2.4; }); t.remove(); const L = .2126 * r + .7152 * g + .0722 * bl; f.style.setProperty('--accent', k); f.style.setProperty('--accent-fg', 1.05 / (L + .05) >= (L + .05) / .05 ? '#FFFFFF' : '#111111'); } }
   const cx = document.createElement('div'); cx.className = 'f-caixa';
   const topo = document.createElement('div'); topo.className = 'f-topo';
   const h = document.createElement('h3'); h.textContent = titulo || '';
