@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-11.270">
+<meta name="app-versao" content="2026-11-11.279">
 <meta name="app-novidade" content="Agenda do Trabalho com o cartão novo e Agenda da Geral no mesmo desenho, com pesquisa e PDF">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -7030,7 +7030,7 @@ function abrePassagem(its, i0) {
     dataEl.textContent = dm ? dia + ', ' + dm[1] : (it.data || '');
     const on = elD('div', 'pass-onde'), l1 = elD('div', 'l1'), pl = it.plataforma ? (it.plataforma.length <= 5 ? 'Plat. ' + it.plataforma : it.plataforma) : '';
     l1.append(elD('b', '', it.local_embarque || it.origem || '')); if (pl) l1.append(elD('span', 'pl', pl)); on.append(l1);
-    const l2 = [it.empresa, it.destino ? 'para ' + it.destino : ''].filter(Boolean).join(' · '); if (l2) on.append(elD('span', 'l2', l2)); corpo.append(on);
+    const l2 = [it.empresa, it.destino ? 'para ' + it.destino : '', it.saida && it.chegada ? 'chega ' + it.chegada : ''].filter(Boolean).join(' · '); if (l2) on.append(elD('span', 'l2', l2)); corpo.append(on);
     const gr = elD('div', 'pass-gr'); const gd = (r, v) => { const e = elD('div', 'pass-gd'); e.append(elD('small', '', r), elD('b', '', v)); return e; };
     if (it.embarque) gr.append(gd('EMBARQUE', it.embarque)); if (it.poltrona) gr.append(gd('POLTRONA', it.poltrona)); if (it.saida) gr.append(gd('SAÍDA', it.saida)); else if (it.chegada) gr.append(gd('CHEGADA', it.chegada));
     if (gr.children.length) { gr.style.gridTemplateColumns = 'repeat(' + gr.children.length + ', 1fr)'; corpo.append(gr); }
