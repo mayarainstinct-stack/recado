@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-11.267">
+<meta name="app-versao" content="2026-11-11.268">
 <meta name="app-novidade" content="Agenda do Trabalho com calendário, hoje selecionado e o visual da agenda da empresa">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1770,7 +1770,7 @@ body.modo-trab .sl-t b { color: #1E293B; } body.modo-trab .sl-item.nota .sl-t, b
 .sw-agora span { color: #FFFFFF; background: #DC2626; border-radius: 999px; padding: 1px 10px; font-size: 12px; }
 .sw-k.ok { background: #F1F5F9; } .sw-hero { position: static; }
 body .painel .sw-calbox .ag-dia.tem { background: #C878E8; color: #FFFFFF; } body .painel .sw-calbox .ag-dia.tem .ag-pts { display: none; } body .painel .sw-calbox .ag-dia.sel { background: #0F172A; color: #FFFFFF; outline: 0; box-shadow: none; } body .painel .sw-calbox .ag-dia.hoje:not(.sel) { outline: 2px solid #0F172A; outline-offset: -2px; text-decoration: none; }
-.sw-calbox { margin: 2px 0 6px; position: sticky; top: 0; z-index: 3; padding: 6px 10px 8px !important; } .sw-calbox .ag-cal-topo { margin-bottom: 2px; }
+.sw-calbox { margin: 2px 0 6px; }
 .sw-it.late { background: #FDECEC !important; }
 /* versão do PDF (A4): linha única, como no gerar.py */
 .sw-pdf { gap: 5px; font-size: 12.6px; line-height: 1.28; color: #1E293B; background: #FFFFFF; }
@@ -6408,14 +6408,13 @@ function montaCalendario(cal, c, opc) {   // opc (Agenda do Trabalho): { marcas:
     topo.append(ant, elD('b', '', NOMES[mes] + ' ' + ano), prox); cal.append(topo);
     const g = elD('div', 'ag-grade'); ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].forEach(x => g.append(elD('span', 'ag-sem', x)));
     let primeiro = new Date(ano, mes, 1).getDay(), total = new Date(ano, mes + 1, 0).getDate(), de = 1;
-    if (opc) { const v = opc.validos.map(k => new Date(+k.slice(0, 4), +k.slice(5, 7) - 1, +k.slice(8))), a0 = v[0], z0 = v[v.length - 1]; de = a0.getDate(); total = z0.getDate(); primeiro = a0.getDay(); ant.hidden = prox.hidden = true; }   // Trabalho: só a faixa da semana, pra caber com a lista do dia
     for (let k = 0; k < primeiro; k++) g.append(elD('span'));
     for (let dd = de; dd <= total; dd++) {
       const chave = ano + '-' + String(mes + 1).padStart(2, '0') + '-' + String(dd).padStart(2, '0'), b = elD('button', 'ag-dia', String(dd)); b.type = 'button';
       if (dias.has(chave)) { b.classList.add('tem'); const pts = elD('span', 'ag-pts'); corDia[chave].slice(0, 3).forEach(cor => { const i = elD('i'); i.style.background = cor; pts.append(i); }); b.append(pts); }   // um pontinho por tipo, na cor dele
       if (chave === sel) b.classList.add('sel');
       if (dd === hoje.getDate() && mes === hoje.getMonth() && ano === hoje.getFullYear()) b.classList.add('hoje');
-      b.onclick = () => { if (opc) { if (!opc.validos.includes(chave)) return; sel = chave; desenhar(); opc.aoEscolher(chave); return; } sel = sel === chave ? '' : chave; filtra(); desenhar(); };
+      b.onclick = () => { if (opc) { sel = sel === chave ? '' : chave; desenhar(); opc.aoEscolher(sel); return; } sel = sel === chave ? '' : chave; filtra(); desenhar(); };
       g.append(b);
     }
     cal.append(g);
@@ -6552,17 +6551,18 @@ function swRolaAteAgora(raiz) {   // abre no dia de hoje: rola ANIMADO do começ
 function agendaSemanaTrab(c, F) {
   painel.classList.add('tema-claro'); c.classList.add('sw-tela');
   const modelo = swModeloTrab(F), hk = swChave(new Date()); let sel = modelo.dias.some(x => x.chave === hk) ? hk : (modelo.dias[0] || {}).chave, cal;
-  const escolhe = k => {   // hoje: rola até a linha do agora; outro dia: começa do topo dele
-    sel = k; c.querySelectorAll('.sw-dia').forEach(e => e.classList.toggle('sel', e.dataset.dia === k)); if (cal) cal.escolhe(k);
+  const nada = elD('div', 'sw-vazio', 'Nada marcado neste dia'); nada.hidden = true;
+  const escolhe = k => {   // mesmo jeito da Agenda pessoal: tocar num dia mostra só o dele; tocar de novo mostra a semana; hoje rola até a linha do agora
+    sel = k; let achou = false;
+    c.querySelectorAll('.sw-dia').forEach(e => { const ok = !k || e.dataset.dia === k; e.style.display = ok ? '' : 'none'; e.classList.toggle('sel', e.dataset.dia === k); if (ok) achou = true; });
+    nada.hidden = achou; if (cal) cal.escolhe(k);
     if (k === hk && c.querySelector('.sw-agora')) swRolaAteAgora(c);
-    else { const d = c.querySelector('.sw-dia[data-dia="' + k + '"]'); if (d) pCorpo.scrollTop = Math.max(0, d.getBoundingClientRect().top - pCorpo.getBoundingClientRect().top + pCorpo.scrollTop - 8); }
   };
   const marcas = {}; modelo.dias.forEach(x => { if (x.folga) marcas[x.chave] = ['#C878E8']; });   // só dia fora do comum (folga, viagem) leva marca; dia normal fica sem
   const raiz = swRender(modelo, { sel, exporta: () => swExportar(modelo), aoEscolher: escolhe }), box = elD('div', 'ag-cal sw-calbox');
-  raiz.querySelector('.sw-hero').after(box); c.replaceChildren(raiz);
-  { const pt = parseFloat(getComputedStyle(pCorpo).paddingTop) || 0; box.style.top = (-pt) + 'px'; }   // cola no topo da área rolável, sem a faixa do preenchimento
-  cal = montaCalendario(box, c, { marcas, validos: modelo.dias.map(x => x.chave), sel, aoEscolher: escolhe });
-  if (sel === hk) swRolaAteAgora(c);
+  raiz.querySelector('.sw-hero').after(box); const prim = raiz.querySelector('.sw-dia'); if (prim) prim.before(nada); else raiz.append(nada); c.replaceChildren(raiz);
+  cal = montaCalendario(box, c, { marcas, sel, aoEscolher: escolhe });
+  escolhe(sel);
 }
 function abreAgenda(m) {
   tela(m.nome, async c => {
