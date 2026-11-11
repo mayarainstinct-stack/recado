@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-11.289">
+<meta name="app-versao" content="2026-11-11.290">
 <meta name="app-novidade" content="Consulta: carteirinha com o cartão de verdade, roteiro por momento e tudo em rosa">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -7124,16 +7124,23 @@ function popupRosa(titulo) {
 }
 function blocoCarteirinha(b, tit, tx) {
   const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-pass'), k = elD('button', 'vs-pass-btn'); k.type = 'button';
-  k.append(elD('b', '', 'Carteirinha Unimed'), elD('span', '', 'Número, plano e dados do beneficiário'), elD('span', 'go', 'Abrir')); g.append(k); w.append(g);
+  k.append(elD('b', '', 'Carteirinha Unimed'), elD('span', '', 'Abre o cartão em tela cheia; deslize para ver o verso'), elD('span', 'go', 'Abrir')); g.append(k); w.append(g);
   let d = null; const carrega = () => d || (d = lerArquivo(b.arq).then(t => JSON.parse(t)).catch(e => { d = null; throw e; }));
-  carrega().then(c => { if (c.imagem) fotoUrl(c.imagem, true).catch(() => {}); }).catch(() => {});   // já guarda a foto no aparelho (abre sem internet)
-  k.onclick = async () => {
-    const p = popupRosa('Carteirinha Unimed'); p.corpo.append(skCarga(2)); let c;
-    try { c = await carrega(); } catch (e) { p.corpo.replaceChildren(elD('p', 'p-nota', 'Não abriu. Confere a internet.')); return; }
-    p.corpo.replaceChildren();
-    if (c.imagem) { const im = elD('img', 'pr-foto'); im.alt = 'Cartão da Unimed, frente e verso'; p.corpo.append(im); fotoUrl(c.imagem, true).then(u => { im.src = u; }).catch(() => im.remove()); }   // o cartão de verdade vem primeiro, na largura toda, pra mostrar na recepção
-    if (c.destaque) { const e = elD('div', 'pass-onde pr-num'); e.append(elD('small', '', c.destaque.rotulo), elD('b', '', c.destaque.valor)); p.corpo.append(e); }
-    const gd = elD('div', 'pr-campos pr-campos-peq'); (c.campos || []).forEach(f => { const l = elD('div', 'pr-campo'); l.append(elD('small', '', f.rotulo), elD('b', '', f.valor)); gd.append(l); }); p.corpo.append(gd);
+  carrega().then(c => { [c.frente || c.imagem, c.verso].filter(Boolean).forEach(f => fotoUrl(f, true).catch(() => {})); }).catch(() => {});   // já guarda a foto no aparelho (abre sem internet)
+  k.onclick = async () => {   // May 11/11: abre direto o CARTÃO DA FRENTE, tela cheia, sem mais nenhum dado; ela vira o celular e entrega
+    const ov = document.createElement('div'); ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', 'Carteirinha Unimed');
+    ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#fff;display:grid;place-items:center;overflow:hidden;touch-action:none';
+    const im = document.createElement('img'); im.alt = 'Carteirinha Unimed (frente)';
+    const ajusta = () => { const W = innerWidth, H = innerHeight, retrato = H > W; im.style.cssText = retrato ? 'position:absolute;left:50%;top:50%;width:' + Math.min(H - 40, (W - 24) * 1.5) + 'px;height:auto;transform:translate(-50%,-50%) rotate(90deg);image-rendering:auto' : 'max-width:96vw;max-height:92vh'; };
+    ajusta(); addEventListener('resize', ajusta);
+    const sai = () => { removeEventListener('resize', ajusta); ov.remove(); };
+    ov.onclick = sai;   // só o cartão na tela: tocar fecha, deslizar vira
+    ov.append(im); document.body.append(ov);
+    let lados = [], i = 0, x0 = null, y0 = null;   // deslizar vira o cartão (frente <-> verso)
+    const vira = () => { if (lados.length < 2) return; i = 1 - i; im.style.transition = 'opacity .18s'; im.style.opacity = '0'; setTimeout(() => { im.src = lados[i]; im.style.opacity = '1'; }, 180); };
+    ov.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+    ov.addEventListener('touchend', e => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null; if (Math.max(Math.abs(dx), Math.abs(dy)) > 40) vira(); });
+    try { const c = await carrega(); lados = [await fotoUrl(c.frente || c.imagem, true)]; im.src = lados[0]; if (c.verso) fotoUrl(c.verso, true).then(u => lados.push(u)).catch(() => {}); } catch (e) { im.replaceWith(elD('p', 'p-nota', 'Não abriu. Confere a internet.')); }
   };
   return w;
 }
