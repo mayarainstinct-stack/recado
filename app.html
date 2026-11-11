@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
 <meta name="app-versao" content="2026-11-11.270">
-<meta name="app-novidade" content="Agenda do Trabalho com pesquisa, tarefa atrasada piscando e tudo que toca com cara de botão">
+<meta name="app-novidade" content="Agenda do Trabalho com o cartão novo e Agenda da Geral no mesmo desenho, com pesquisa e PDF">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -1826,6 +1826,48 @@ body .painel .ag-dia { width: 36px; height: 36px; aspect-ratio: 1 / 1; justify-s
   .sw-data.clic:hover { filter: brightness(.93); box-shadow: 0 2px 6px rgba(15, 23, 42, .18); } .sw-impb:hover { background: #F1F5F9; border-color: #475569; } .sw-exp:hover { background: #065F46; }
   .painel .ag-dia:not(.sel):hover { background: rgba(15, 23, 42, .10); } .painel .ag-seta:hover, .painel .ag-tudo:hover, .painel .ag .li-ck:hover, .painel .ag-ed button:hover { filter: brightness(.93); box-shadow: 0 2px 6px rgba(15, 23, 42, .2); } .painel .ag[data-tipo]:hover { filter: brightness(.97); box-shadow: 0 2px 8px rgba(15, 23, 42, .12); }
 }
+/* cartão compacto igual ao da agenda da empresa (11/11/2026): projeto e ticket/cliente em cima, texto em até 3 linhas, início e término embaixo; EXECUTANDO com bolinha pulsando */
+.sw:not(.sw-pdf) .sw-lista { gap: 8px; }
+.sw-it.sw-n, .sw-it.sw-n.todo, .sw-it.sw-n.atras { display: flex; flex-direction: column; align-items: stretch; gap: 5px; padding: 11px 13px 10px; cursor: pointer; }
+.sw-it.sw-n.todo, .sw-it.sw-n.atras { padding: 10px 12px 9px 13px; }
+.sw-n .sw-topo { display: flex; align-items: center; gap: 8px; min-height: 16px; }
+.sw-n .sw-tag { font-size: 11px; }
+.sw-n .sw-ref { margin-left: auto; min-width: 0; max-width: 62%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-weight: 600; color: #475569; }
+.sw-n .sw-ref.comtk { font-weight: 800; color: #0F172A; }
+.sw-n .sw-tx { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-size: 14px; line-height: 1.38; }
+.sw-n.aberto .sw-tx { display: block; overflow: visible; }
+.sw-n .sw-rodape { display: flex; align-items: center; gap: 8px; min-height: 16px; }
+.sw-n .sw-ini { font-weight: 700; font-size: 12.5px; color: #334155; font-variant-numeric: tabular-nums; }
+.sw-n .sw-fim { margin-left: auto; font-weight: 700; font-size: 12px; letter-spacing: .03em; color: #475569; white-space: nowrap; display: inline-flex; align-items: center; }
+.sw-n .sw-dica { margin-left: auto; font-size: 11px; font-weight: 700; color: #B91C1C; } .sw-n .sw-dica + .sw-fim { margin-left: 0; }
+.sw-n.ok .sw-fim { color: #1E293B; }
+.sw-n .sw-fim.exec { color: color-mix(in srgb, var(--c) 75%, black); } .sw-n .sw-fim.atr { color: #B91C1C; }
+.sw-bol { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--c); margin-right: 6px; animation: sw-bol 1.3s ease-in-out infinite; }
+@keyframes sw-bol { 0%, 100% { transform: scale(.7); opacity: .55; box-shadow: 0 0 0 0 color-mix(in srgb, var(--c) 55%, transparent); } 50% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 6px transparent; } }
+@keyframes sw-trab { 0%, 100% { background: color-mix(in srgb, var(--c) 7%, white); } 50% { background: color-mix(in srgb, var(--c) 24%, white); } }
+.sw-it.sw-n.doing { animation: sw-trab 2.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .sw-it.sw-n.doing, .sw-bol { animation: none; } }
+.sw-tela .sw-agora { margin-left: 0; }
+/* Agenda da Geral igual à do Trabalho (11/11/2026): calendário congelado com marcas em círculo, legenda sem corte, Pesquisar + PDF, só a lista rola; cartão no desenho novo, cor por assunto */
+.ag-tela > .sw-busca-lin { flex: none; } .ag-tela > .p-sec { flex: none; margin: 0; }
+.ag-tela .ag-pts { display: none; }
+.ag-tela .ag-dia.tem { color: #FFFFFF; text-shadow: 0 1px 2px rgba(0, 0, 0, .5); box-shadow: 0 0 0 1.5px #FFFFFF; font-weight: 800; } .ag-tela .ag-dia.tem.sel { color: #2F8FB8; text-shadow: none; }
+.ag-tela .ag-leg { flex-wrap: wrap; overflow: visible; white-space: normal; gap: 2px 10px; margin-top: 8px; font-size: 10.5px; line-height: 1.25; } .ag-tela .ag-leg span::before { width: 8px; height: 8px; margin-right: 4px; }
+.ag-rola .sw-fora { display: none !important; } .ag-rola.buscando .ag[hidden]:not(.sw-fora) { display: block !important; }
+.painel.tema-claro .ag.ag-n[data-tipo] { display: block; padding: 11px 13px 10px; cursor: pointer; }
+.painel.tema-claro .ag.ag-n[data-tipo].tem-ed { padding-right: 13px; }
+.ag-n .cx { display: flex; flex-direction: column; gap: 5px; }
+.ag-n .ag-topo { display: flex; align-items: center; gap: 8px; min-height: 28px; }
+.ag-n .ag-tipo { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .02em; color: color-mix(in srgb, var(--tc) 55%, black); }
+.ag-n .ag-ed { position: static; margin-left: auto; margin-right: -4px; }
+.ag-n .ag-tx { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-size: 14px; line-height: 1.38; color: #1E293B; }
+.ficha .ag-n .ag-tx { display: block; overflow: visible; }
+.ag.ag-n.feito .cx > div:not(.tp):not(.ag-fotos) { text-decoration: none; opacity: 1; }
+.ag-n .ag-rodape { display: flex; align-items: center; gap: 8px; min-height: 16px; }
+.ag-n .ag-ini { font-weight: 700; font-size: 12.5px; color: #334155; }
+.ag-n .ag-fim { margin-left: auto; font-weight: 700; font-size: 12px; white-space: nowrap; }
+.ag-n .ag-fim.feito { color: #1E293B; }
+.ag-n.passou { opacity: .75; }
 /* versão do PDF (A4): linha única, como no gerar.py */
 .sw-pdf { gap: 5px; font-size: 12.6px; line-height: 1.28; color: #1E293B; background: #FFFFFF; }
 .sw-pdf .sw-hero { flex-wrap: nowrap; padding: 4px 4px 8px; margin-bottom: 4px; } .sw-pdf .sw-hero h1 { font-size: 20px; } .sw-pdf .sw-leg { flex-basis: auto; margin-left: auto; flex-wrap: nowrap; white-space: nowrap; gap: 10px; } .sw-pdf .sw-lg { font-size: 10.5px; color: #64748B; }
@@ -6452,8 +6494,9 @@ function montaCalendario(cal, c, opc) {   // opc (Agenda do Trabalho): { marcas:
   const filtra = () => { cal.dataset.sel = sel; if (opc) return;   // sem dia escolhido: só os próximos (o que já passou some); com dia: só os dele (May 12:54)
     c.querySelectorAll('.ag').forEach(e => { e.hidden = sel ? e.dataset.dia !== sel : e.classList.contains('passou'); });
     c.querySelectorAll('.p-sec').forEach(t => { t.hidden = !!sel || /anterior/i.test(t.textContent); });
-    if (proxT) { proxT.textContent = 'Compromissos do dia'; proxT.hidden = !sel; } };
-  const proxT = opc ? null : elD('div', 'p-sec', 'Próximos'); if (proxT) cal.after(proxT);
+    if (proxT) { proxT.textContent = 'Compromissos do dia'; proxT.hidden = !sel; }
+    const rl = c.querySelector('.ag-rola'); if (rl) rl.scrollTop = 0; };
+  const proxT = opc ? null : elD('div', 'p-sec', 'Próximos'); if (proxT) { const bl = cal.nextElementSibling; (bl && bl.matches('.sw-busca-lin') ? bl : cal).after(proxT); }
   const desenhar = () => {
     cal.replaceChildren();
     const topo = elD('div', 'ag-cal-topo'), ant = elD('button', 'ag-seta'), prox = elD('button', 'ag-seta');
@@ -6465,7 +6508,7 @@ function montaCalendario(cal, c, opc) {   // opc (Agenda do Trabalho): { marcas:
     for (let k = 0; k < primeiro; k++) g.append(elD('span'));
     for (let dd = de; dd <= total; dd++) {
       const chave = ano + '-' + String(mes + 1).padStart(2, '0') + '-' + String(dd).padStart(2, '0'), b = elD('button', 'ag-dia', String(dd)); b.type = 'button';
-      if (dias.has(chave)) { b.classList.add('tem'); const pts = elD('span', 'ag-pts'); corDia[chave].slice(0, 3).forEach(cor => { const i = elD('i'); i.style.background = cor; pts.append(i); }); b.append(pts); }   // um pontinho por tipo, na cor dele
+      if (dias.has(chave)) { b.classList.add('tem'); const cs = corDia[chave].slice(0, 3); if (!opc && chave !== sel) { const pc = 100 / cs.length; b.style.background = cs.length === 1 ? cs[0] : 'conic-gradient(' + cs.map((x, k) => x + ' ' + k * pc + '% ' + (k + 1) * pc + '%').join(', ') + ')'; } }   // marca em círculo na cor do assunto (várias cores = fatias)   // um pontinho por tipo, na cor dele
       if (chave === sel) b.classList.add('sel');
       if (dd === hoje.getDate() && mes === hoje.getMonth() && ano === hoje.getFullYear()) b.classList.add('hoje');
       b.onclick = () => { if (opc) { sel = sel === chave ? '' : chave; desenhar(); opc.aoEscolher(sel); return; } sel = sel === chave ? '' : chave; filtra(); desenhar(); };
@@ -6488,7 +6531,7 @@ function montaCalendario(cal, c, opc) {   // opc (Agenda do Trabalho): { marcas:
 }
 // ---- Agenda da semana no layout do PDF (May 09/11/2026): mesmo desenho do PDF de C:/claude/tools/agenda-da-semana/gerar.py; CSS .sw escopado
 let agTiposAtual = null;
-const SW_PROJ = { 'promotor-mobile': ['#f59e0b', 'PROM.'], 'rm': ['#22c55e', 'RM'], 'simp-mobile': ['#2dd4bf', 'SIMP'], 'kds': ['#eab308', 'KDS'], 'acompanhamentos': ['#4F9CF0', 'OTRS'], 'may': ['#C878E8', 'GERAL'], 'geral': ['#C878E8', 'GERAL'] };   // nomes curtos; GERAL em rosa = só o que depende da própria May
+const SW_PROJ = { 'promotor-mobile': ['#f59e0b', 'Promotor'], 'rm': ['#22c55e', 'Recebimento'], 'simp-mobile': ['#2dd4bf', 'SIMP'], 'kds': ['#eab308', 'KDS'], 'acompanhamentos': ['#4F9CF0', 'OTRS'], 'may': ['#C878E8', 'GERAL'], 'geral': ['#C878E8', 'GERAL'] };   // nomes completos, como na agenda da empresa (11/11/2026); GERAL em rosa = só o que depende da própria May
 const SW_SEM = { seg: 'Segunda', ter: 'Terça', qua: 'Quarta', qui: 'Quinta', sex: 'Sexta', sab: 'Sábado', dom: 'Domingo' }, SW_DOW = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab'];
 const swCap = t => t.charAt(0).toUpperCase() + t.slice(1), swChave = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 const swDH = (s, ano) => { const m = (s || '').match(/^(\d\d)\/(\d\d) (\d\d):(\d\d)$/); return m ? new Date(ano, +m[2] - 1, +m[1], +m[3], +m[4]) : null; };
@@ -6503,7 +6546,8 @@ function swModeloTrab(d) {
     const dia = dias.find(x => (it[0] || '').startsWith(x.dd)); if (!dia) return;
     const ini = swDH(it[0], ano), fim = it[3] || '', f = swFeito(swCap(it[2] || '')), [cor, nome] = SW_PROJ[it[1]] || ['#64748b', it[1]];
     let hora = (it[0] || "").slice(6), ok = f.ok || !!fim, cm = f.texto.match(/^([^:\d]{2,22}?):\s+(\S.*)$/); if (cm && /^cliente$/i.test(cm[1])) cm = cm[2].match(/^([^:\d]{2,22}?):\s+(\S.*)$/) || [null, cm[2].split(' ')[0], cm[2].split(' ').slice(1).join(' ') || cm[2]];   // "cliente: tarefa" vira etiqueta pequena embaixo do projeto, como na agenda da empresa
-    dia.linhas.push({ ini, hora, fimH: fim ? fim.slice(fim.length > 5 ? 6 : 0) : '', tag: nome, cli: cm && cm[1].split(' ').length <= 3 ? cm[1] : '', texto: cm && cm[1].split(' ').length <= 3 ? cm[2] : f.texto, cor, ok, andamento: !ok && it.length > 3 && !!ini && ini <= agora, atrasada: !ok && it.length <= 3 && !!ini && ini <= agora && swChave(ini) === swChave(agora), dia: true, extra: it[4] === true || it[4] === 'extra' || !!(d.extra || d.hora_extra || {})[it[0].slice(0, 5)] });   // vermelho de hora extra SÓ quando o JSON marca (item[4] true/'extra' ou extra:{"DD/MM":true}); o app não inventa o sinal
+    const cli = cm && cm[1].split(' ').length <= 3 ? cm[1] : '', tx0 = cli ? cm[2] : f.texto, tkm = tx0.match(/^(\d{7})\s*[-:]\s*(\S[\s\S]*)$/), tk = tkm ? '#' + tkm[1] : (typeof it[4] === 'string' && it[4] && it[4] !== 'extra' ? (/^\d+$/.test(it[4]) ? '#' + it[4] : 'Ticket') : '');   // ticket e cliente vão à direita do cartão (agenda da empresa, 11/11/2026)
+    dia.linhas.push({ ini, hora, fimH: fim ? fim.slice(fim.length > 5 ? 6 : 0) : '', tag: nome, cli, tk, texto: tkm ? tkm[2] : tx0, cor, ok, andamento: !ok && it.length > 3 && !!ini && ini <= agora, atrasada: !ok && it.length <= 3 && !!ini && ini <= agora && swChave(ini) === swChave(agora), dia: true, extra: it[4] === true || it[4] === 'extra' || !!(d.extra || d.hora_extra || {})[it[0].slice(0, 5)] });   // vermelho de hora extra SÓ quando o JSON marca (item[4] true/'extra' ou extra:{"DD/MM":true}); o app não inventa o sinal
   });
   dias.forEach(x => x.linhas.sort((a, b) => (a.hora < b.hora ? -1 : a.hora > b.hora ? 1 : 0)));
   const blocos = [], lin = (x, hora) => { const [cor, nome] = SW_PROJ[x[0]] || ['#64748b', x[0]], f = swFeito(swCap(x[1] || '')); return { hora, tag: nome, texto: f.texto, cor, ok: f.ok }; };
@@ -6539,7 +6583,21 @@ function swModeloPessoal(F, ref, ass) {
   dias.forEach(x => x.linhas.sort((p, q) => (p.hora < q.hora ? -1 : p.hora > q.hora ? 1 : 0)));
   return { titulo: 'Minha semana', semana: dias[0].dd + ' a ' + fim.dd + '/' + fim.chave.slice(0, 4), dias, blocos: sem.length ? [{ titulo: 'Sem data', sub: 'Compromissos ainda sem dia marcado.', linhas: sem }] : [], leg: ass.lista.filter(x => x[0] !== 'outros').map(x => [x[2], x[1]]).concat([['#43A047', 'Concluído']]) };
 }
-function swLinha(o) {
+function swLinha(o) {   // cartão compacto da agenda da empresa (11/11/2026): em cima o projeto e, à direita, ticket e cliente; texto em até 3 linhas; embaixo início e término
+  const el = elD('div', 'sw-it sw-n' + (o.ok ? ' ok' : '')); el.style.setProperty('--c', o.cor);
+  if (!o.ok && o.dia) el.classList.add(o.andamento ? 'doing' : 'todo'); if (o.atrasada) el.classList.add('atras'); if (o.extra) el.classList.add('late');
+  const topo = elD('div', 'sw-topo'), ref = [o.tk, o.cli].filter(Boolean);
+  topo.append(elD('span', 'sw-tag', o.tag)); if (ref.length) topo.append(elD('span', 'sw-ref' + (o.tk ? ' comtk' : ''), ref.join(' - ')));
+  const tx = elD('span', 'sw-tx'); o.texto.split(/(\b\d{7}\b)/).forEach((p, n) => tx.append(n % 2 ? elD('b', 'sw-tk', p) : document.createTextNode(p)));   // outros números de ticket (7 dígitos) em negrito
+  el.append(topo, tx);
+  const fim = elD('span', 'sw-fim');
+  if (o.ok) fim.textContent = '✓' + (o.fimH ? ' ' + o.fimH : ''); else if (o.andamento) { fim.classList.add('exec'); fim.append(elD('i', 'sw-bol'), document.createTextNode('EXECUTANDO')); } else if (o.atrasada) { fim.classList.add('atr'); fim.textContent = 'ATRASADA'; }
+  if (o.hora || fim.firstChild || o.extra) { const rp = elD('div', 'sw-rodape'); if (o.hora) rp.append(elD('span', 'sw-ini', o.hora)); if (o.extra) rp.append(elD('span', 'sw-dica', 'Fora do horário')); if (fim.firstChild) rp.append(fim); el.append(rp); }
+  if (o.extra) el.title = 'Fora do horário de serviço'; else if (o.atrasada) el.title = 'Passou da hora e ainda não começou';
+  el.onclick = () => el.classList.toggle('aberto');   // tocar mostra o texto inteiro (no celular não tem como passar o mouse)
+  return el;
+}
+function swLinhaPdf(o) {
   const el = elD('div', 'sw-it' + (o.ok ? ' ok' : '')); el.style.setProperty('--c', o.cor);
   if (!o.ok && o.dia) el.classList.add(o.andamento ? 'doing' : 'todo'); if (o.atrasada) el.classList.add('atras'); if (o.extra) el.classList.add('late');
   const tg = elD('span', 'sw-tag', o.tag); if (o.cli) { tg.append(document.createTextNode(' - ')); tg.append(elD('span', 'sw-cli', o.cli)); }   // projeto - cliente, na mesma linha
@@ -6550,7 +6608,7 @@ function swLinha(o) {
 }
 const swAgora = d => { const e = elD('div', 'sw-agora'); e.append(elD('span', '', 'Agora ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'))); return e; };
 function swRender(m, o = {}) {
-  const red = !!o.reduzida;   // celular: só calendário e tarefas; título, legenda, contadores e barra saem, Exportar vai pro cabeçalho, impedimentos no fim
+  const LN = o.pdf ? swLinhaPdf : swLinha, red = !!o.reduzida;   // celular: só calendário e tarefas; título, legenda, contadores e barra saem, Exportar vai pro cabeçalho, impedimentos no fim
   const raiz = elD('div', 'sw' + (o.pdf ? ' sw-pdf' : '')), hero = elD('div', 'sw-hero'), h = elD('div'), leg = elD('div', 'sw-leg'), agora = new Date(), hk = swChave(agora);
   h.append(elD('h1', '', m.titulo), elD('div', 'sw-sem', m.semana)); hero.append(h);
   m.leg.forEach(l => { const s = elD('span', 'sw-lg', l[1]); s.style.setProperty('--c', l[0]); leg.append(s); }); hero.append(leg);
@@ -6577,22 +6635,22 @@ function swRender(m, o = {}) {
   if (!red && (m.imp || []).length) {
     impBox = elD('section', 'sw-imps'); impBox.hidden = !o.pdf;
     impBox.append(elD('h2', '', 'Impedimentos'), elD('p', 'sw-sub', 'Não dá para desenvolver até quem está indicado responder ou aprovar.'));
-    m.imp.forEach(g => { const cx = elD('div', 'sw-aguarda'), li = elD('div', 'sw-lista'); g.linhas.forEach(l => li.append(swLinha(l))); cx.append(elD('h3', '', g.titulo), li); impBox.append(cx); });
+    m.imp.forEach(g => { const cx = elD('div', 'sw-aguarda'), li = elD('div', 'sw-lista'); g.linhas.forEach(l => li.append(LN(l))); cx.append(elD('h3', '', g.titulo), li); impBox.append(cx); });
     raiz.append(impBox);
   }
   m.dias.forEach(x => {
     const sec = elD('section', 'sw-dia' + (x.folga ? ' folga' : '') + (x.chave === o.sel ? ' sel' : '') + (!o.pdf && x.chave === hk ? ' hoje' : '')), dt = elD('div', 'sw-data'), li = elD('div', 'sw-lista');
     sec.dataset.dia = x.chave; dt.append(elD('b', '', x.dd.slice(0, 2)), elD('small', '', x.sem)); if (o.aoEscolher) { dt.onclick = () => o.aoEscolher(x.chave); dt.classList.add('clic'); dt.setAttribute('role', 'button'); }
     const feitas = x.linhas.filter(l => l.ok || l.andamento), nq = x.folga ? feitas.length : x.linhas.length;
-    if (x.folga) { const cx = elD('div', 'sw-folga-caixa'), cs = elD('div', 'sw-folga-cards'); cx.append(elD('div', 'sw-fx', x.folga)); feitas.forEach(l => cs.append(swLinha(l))); if (feitas.length) cx.append(cs); li.append(cx); }   // folga: caixa rosa com o motivo e, embaixo, só o que os agentes executaram ou concluíram
+    if (x.folga) { const cx = elD('div', 'sw-folga-caixa'), cs = elD('div', 'sw-folga-cards'); cx.append(elD('div', 'sw-fx', x.folga)); feitas.forEach(l => cs.append(LN(l))); if (feitas.length) cx.append(cs); li.append(cx); }   // folga: caixa rosa com o motivo e, embaixo, só o que os agentes executaram ou concluíram
     else if (!x.linhas.length) li.append(elD('div', 'sw-vazio', 'Nada marcado'));
     else {
       if (!o.pdf && x.chave === hk) {   // hoje: o que já passou, a linha do agora, depois o que está executando e o atrasado (não começou) e por fim o que vem pela frente (igual à agenda da empresa)
         const ex = l => l.andamento || l.atrasada, passou = l => l.ini && l.ini <= agora;
-        x.linhas.filter(l => passou(l) && !ex(l)).forEach(l => li.append(swLinha(l))); li.append(swAgora(agora));
-        x.linhas.filter(l => l.andamento).concat(x.linhas.filter(l => l.atrasada)).forEach(l => li.append(swLinha(l)));
-        x.linhas.filter(l => !passou(l) && !ex(l)).forEach(l => li.append(swLinha(l)));
-      } else x.linhas.forEach(l => li.append(swLinha(l)));
+        x.linhas.filter(l => passou(l) && !ex(l)).forEach(l => li.append(LN(l))); li.append(swAgora(agora));
+        x.linhas.filter(l => l.andamento).concat(x.linhas.filter(l => l.atrasada)).forEach(l => li.append(LN(l)));
+        x.linhas.filter(l => !passou(l) && !ex(l)).forEach(l => li.append(LN(l)));
+      } else x.linhas.forEach(l => li.append(LN(l)));
     }
     if (nq) li.prepend(elD('div', 'sw-qtd', nq + (nq === 1 ? ' tarefa' : ' tarefas')));   // quantidade do dia no lado direito do título
     if (red) { sec.classList.add('sem-data'); sec.append(li); } else sec.append(dt, li); raiz.append(sec);   // celular: sem o bloco da data (o dia já está no calendário)
@@ -6600,13 +6658,13 @@ function swRender(m, o = {}) {
   if (red && (m.imp || []).length) {
     impBox = elD('section', 'sw-imps'); impBox.hidden = true;
     impBox.append(elD('h2', '', 'Impedimentos'), elD('p', 'sw-sub', 'Não dá para desenvolver até quem está indicado responder ou aprovar.'));
-    m.imp.forEach(g => { const cx = elD('div', 'sw-aguarda'), li = elD('div', 'sw-lista'); g.linhas.forEach(l => li.append(swLinha(l))); cx.append(elD('h3', '', g.titulo), li); impBox.append(cx); });
+    m.imp.forEach(g => { const cx = elD('div', 'sw-aguarda'), li = elD('div', 'sw-lista'); g.linhas.forEach(l => li.append(LN(l))); cx.append(elD('h3', '', g.titulo), li); impBox.append(cx); });
     const n = m.imp.reduce((a, b) => a + b.linhas.length, 0), bt = elD('button', 'sw-k sw-impb'); bt.type = 'button'; bt.setAttribute('aria-expanded', 'false');
     bt.append(elD('b', '', String(n)), document.createTextNode(n === 1 ? ' impedimento' : ' impedimentos'));
     bt.onclick = () => { const ab = impBox.hidden; impBox.hidden = !ab; bt.setAttribute('aria-expanded', String(ab)); bt.classList.toggle('on', ab); if (ab) impBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); };
     raiz.append(bt, impBox);
   }
-  m.blocos.forEach(b => { const s = elD('section', 'sw-aguarda'), li = elD('div', 'sw-lista'); b.linhas.forEach(l => li.append(swLinha(l))); s.append(elD('h2', '', b.titulo), elD('p', 'sw-sub', b.sub), li); raiz.append(s); });
+  m.blocos.forEach(b => { const s = elD('section', 'sw-aguarda'), li = elD('div', 'sw-lista'); b.linhas.forEach(l => li.append(LN(l))); s.append(elD('h2', '', b.titulo), elD('p', 'sw-sub', b.sub), li); raiz.append(s); });
   if (red) { const rola = elD('div', 'sw-rola'); [...raiz.children].filter(e => !e.matches('.sw-ancora, .sw-busca, .sw-busca-lin')).forEach(e => rola.append(e)); raiz.append(rola); }   // partes fixas congeladas; só a lista rola
   return raiz;
 }
@@ -6654,6 +6712,15 @@ function agendaSemanaTrab(c, F) {
   cal = montaCalendario(box, c, { marcas, sel, aoEscolher: escolhe });
   escolhe(sel);
 }
+let agQ = '';
+function agFiltra(c, q) {   // pesquisa da Agenda da Geral: acha em tudo (também nos dias passados) e esconde o resto
+  q = (q || '').trim().toLowerCase(); agQ = q;
+  const rola = c.querySelector('.ag-rola'); if (!rola) return; rola.classList.toggle('buscando', !!q);
+  let n = 0; rola.querySelectorAll('.ag').forEach(e => { const ach = !q || e.textContent.toLowerCase().includes(q); e.classList.toggle('sw-fora', !ach); if (ach) n++; });
+  rola.querySelectorAll('.p-sec').forEach(t => t.classList.toggle('sw-fora', !!q));
+  let nada = rola.querySelector('.sw-nada-busca'); if (!nada) { nada = elD('div', 'sw-vazio sw-nada-busca', 'Nenhum compromisso encontrado'); rola.append(nada); } nada.hidden = !q || n > 0;
+  rola.scrollTop = 0;
+}
 function abreAgenda(m) {
   tela(m.nome, async c => {
     const p = skCarga(); c.append(p);
@@ -6687,8 +6754,15 @@ function abreAgenda(m) {
     }
     painel.classList.add('tema-claro'); c.classList.add('ag-tela');   // Agenda clara, cara de consultório (May 08/11 12:49 e 12:56): branco, verde-água suave, cantos redondos, sem neon
     if (false) { const rl = elD('button', 'ag-relat'); rl.type = 'button'; rl.append(elD('b', '', 'Relatório da semana'), elD('small', '', 'o que cada robô acertou e errou, 06 a 08/11')); rl.onclick = () => abreTexto({ nome: 'Relatório da semana', arq: 'casa/relatorios/semana-06-08-11-2026.md' }); c.append(rl); }   // o relatório que ela pediu na Agenda (May 08/11 18:30)
-    if (AGASS) { const ex = elD('button', 'sw-exp sw-exp-p', 'Exportar PDF da semana'); ex.type = 'button'; ex.onclick = () => { const s = (cal.dataset.sel || '').split('-'), ref = s.length === 3 ? new Date(+s[0], +s[1] - 1, +s[2]) : new Date(); swExportar(swModeloPessoal(FONTE, ref, AGASS)); }; c.append(ex); }
-    const cal = elD('div', 'ag-cal'); c.append(cal); setTimeout(() => montaCalendario(cal, c), 0);   // calendário do mês em cima (May, 07/11/2026 12:43 e 12:44: agenda de verdade, azul)
+    const cal = elD('div', 'ag-cal'); c.append(cal);
+    if (AGASS) {   // mesma linha do Trabalho: Pesquisar + ícone do PDF da semana, logo abaixo do calendário congelado
+      const bx = elD('input', 'sw-busca'), lin = elD('div', 'sw-busca-lin'), pdf = elD('button', 'sw-pdf-bt'); bx.type = 'search'; bx.placeholder = 'Pesquisar compromisso'; bx.autocomplete = 'off'; bx.setAttribute('aria-label', 'Pesquisar compromisso'); bx.value = agQ;
+      bx.oninput = () => agFiltra(c, bx.value);
+      pdf.append(iconePdf()); pdf.type = 'button'; pdf.setAttribute('aria-label', 'Exportar PDF da semana'); pdf.title = 'Exportar PDF da semana';
+      pdf.onclick = () => { const s = (cal.dataset.sel || '').split('-'), ref = s.length === 3 ? new Date(+s[0], +s[1] - 1, +s[2]) : new Date(); swExportar(swModeloPessoal(FONTE, ref, AGASS)); };
+      lin.append(bx, pdf); c.append(lin);
+    }
+    setTimeout(() => montaCalendario(cal, c), 0);   // calendário do mês em cima (May, 07/11/2026 12:43 e 12:44: agenda de verdade, azul)
     const neg = (el, txt) => txt.split(/(\*\*[^*]+\*\*)/).forEach(parte => {
       if (/^\*\*[^*]+\*\*$/.test(parte)) { const b = document.createElement('b'); b.textContent = parte.slice(2, -2); el.append(b); }
       else if (parte) el.append(document.createTextNode(parte));
@@ -6702,7 +6776,7 @@ function abreAgenda(m) {
       const sub = l.match(/^\s{2,}[-*] (.*)$/);
       if (sub && ult) { let ul = ult.querySelector('ul'); if (!ul) { ul = document.createElement('ul'); ult.querySelector('.cx').append(ul); } const li = document.createElement('li'); neg(li, sub[1]); ul.append(li); return; }
       const it = l.match(/^\s*[-*] (.*)$/);
-      if (!it) { if (/^Atualizada/i.test(l)) { const n = document.createElement('p'); n.className = 'p-nota'; n.textContent = l; c.append(n); api('https://api.github.com/repos/' + REPO + '/commits?path=' + encodeURIComponent(m.arq) + '&per_page=1').then(r => r.ok ? r.json() : []).then(j => { const q = j && j[0] && new Date(j[0].commit.committer.date); if (q && isFinite(q)) n.textContent = 'Última mudança: ' + q.toLocaleDateString('pt-BR') + ' às ' + q.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); }).catch(() => {}); return; } const n = document.createElement('p'); n.className = 'p-nota'; neg(n, l.replace(/^>\s?/, '')); c.append(n); ult = null; return; }
+      if (!it) { if (/^Atualizada/i.test(l) && FONTE) return; if (/^Atualizada/i.test(l)) { const n = document.createElement('p'); n.className = 'p-nota'; n.textContent = l; c.append(n); api('https://api.github.com/repos/' + REPO + '/commits?path=' + encodeURIComponent(m.arq) + '&per_page=1').then(r => r.ok ? r.json() : []).then(j => { const q = j && j[0] && new Date(j[0].commit.committer.date); if (q && isFinite(q)) n.textContent = 'Última mudança: ' + q.toLocaleDateString('pt-BR') + ' às ' + q.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); }).catch(() => {}); return; } const n = document.createElement('p'); n.className = 'p-nota'; neg(n, l.replace(/^>\s?/, '')); c.append(n); ult = null; return; }
       let txt = it[1], foto = '';
       const fotos = [...txt.matchAll(/📷\s*(\S+)/g)].map(f => f[1]); foto = fotos[0] || ''; txt = txt.replace(/📷\s*\S+/g, '').trim();
       const rot = (txt.match(/^\*\*([^*]+?):?\*\*:?\s*/) || [])[1] || '';
@@ -6710,38 +6784,48 @@ function abreAgenda(m) {
       const d = dataDe(rot);
       const trabAg = /agenda-trabalho/.test(m.arq || ''), quemT = trabAg ? (corpo.match(/^([^:]{2,24}):/) || [])[1] || '' : '';
       const pt = PROJ_T[quemT.toLowerCase()] || (trabAg ? ['#059669', 'doc'] : null);
-      const el = document.createElement('div'), tipo = pt ? ['trab', quemT || 'Trabalho', pt[0]] : (AGASS ? AGASS(idDe.get(li), txt) : tipoAg(txt)); el.className = 'ag'; el.dataset.tipo = tipo[0]; el.dataset.cor = tipo[2]; el.style.setProperty('--tc', tipo[2]); if (d) el.dataset.dia = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      const itFonte = idDe.get(li), novo = !!itFonte, el = document.createElement('div'), tipo = pt ? ['trab', quemT || 'Trabalho', pt[0]] : (AGASS ? AGASS(idDe.get(li), txt) : tipoAg(txt)); el.className = 'ag' + (novo ? ' ag-n' : ''); el.dataset.tipo = tipo[0]; el.dataset.cor = tipo[2]; el.style.setProperty('--tc', tipo[2]); if (d) el.dataset.dia = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
       const dt = document.createElement('div'); dt.className = 'dt';
-      if (d && !pt) { dt.innerHTML = '<b></b><small></small>'; dt.querySelector('b').textContent = d.getDate(); dt.querySelector('small').textContent = MESES[d.getMonth()]; }
+      if (novo) { /* cartão novo: sem bloco de data nem ícone */ }
+      else if (d && !pt) { dt.innerHTML = '<b></b><small></small>'; dt.querySelector('b').textContent = d.getDate(); dt.querySelector('small').textContent = MESES[d.getMonth()]; }
       else if (pt) { dt.classList.add('ic', 'trab-ic'); dt.innerHTML = icone(pt[1]); }
       else { dt.classList.add('ic'); dt.innerHTML = icone(iconeDe(txt)); }
       const cx = document.createElement('div'); cx.className = 'cx';
       const tp = document.createElement('div'); tp.className = 'tp';
-      if (d && pt) tp.append(document.createTextNode(rot.replace(/\s*\(([^)]+)\)\s*/, ' $1 · ').replace(/ · $/, '').trim()));
+      if (novo) { /* o rótulo inteiro vai para o rodapé */ }
+      else if (d && pt) tp.append(document.createTextNode(rot.replace(/\s*\(([^)]+)\)\s*/, ' $1 · ').replace(/ · $/, '').trim()));
       else if (d) tp.append(document.createTextNode(rot.replace(/^~?\s*\d{1,2}\/\d{1,2}(\/\d{4})?\s*/, '').replace(/^de\s/, '').trim()));
       else if (rot) tp.append(document.createTextNode(rot));
+      let tgEl = null;
       if (d && /^até/i.test(rot) && d < hoje) el.classList.add('passou');   // "Até 03/11" que já venceu também desce pra Anteriores (Sigma, 06/11/2026)
       if (d && !/^até/i.test(rot)) {
         const dias = Math.round((d - hoje) / 864e5);
         if (dias < 0) el.classList.add('passou');
-        else { const tg = document.createElement('span'); tg.className = 'tag'; tg.textContent = dias === 0 ? 'hoje' : dias === 1 ? 'amanhã' : 'em ' + dias + ' dias'; tp.append(tg); if (dias <= 2) el.classList.add('perto'); }
+        else { const tg = document.createElement('span'); tg.className = 'tag'; tg.textContent = dias === 0 ? 'hoje' : dias === 1 ? 'amanhã' : 'em ' + dias + ' dias'; tgEl = tg; if (!novo) tp.append(tg); if (dias <= 2) el.classList.add('perto'); }
       }
-      if (tp.textContent.trim()) cx.append(tp);
-      const corpoEl = document.createElement('div'); neg(corpoEl, corpo); cx.append(corpoEl);
+      if (!novo && tp.textContent.trim()) cx.append(tp);
+      const corpoEl = document.createElement('div'); neg(corpoEl, corpo);
+      let topoN = null; if (novo) { topoN = elD('div', 'ag-topo'); topoN.append(elD('span', 'ag-tipo', tipo[1])); cx.append(topoN); corpoEl.className = 'ag-tx'; }
+      cx.append(corpoEl);
       if (fotos.length) { const box = elD('div', fotos.length > 1 ? 'ag-fotos' : ''); fotos.forEach(fp => { const im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; im.decoding = 'async'; box.append(im); fotoUrl(fp).then(u => { im.src = u; im.onclick = e => { e.stopPropagation(); abreZoom(u, fp, fotos); }; }).catch(() => im.remove()); }); cx.append(box); }
-      const itFonte = idDe.get(li);
+      let feitoTxt = '';
       if (itFonte) {   // controles de edição (só quando a Agenda vem do JSON): bolinha de feito + lápis
         el.classList.add('tem-ed'); const bar = elD('div', 'ag-ed'), ck = elD('button', 'li-ck'); ck.type = 'button'; ck.setAttribute('aria-label', itFonte.feito ? 'Desmarcar' : 'Marcar como feito'); ck.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg>'; ck.onclick = e => { e.stopPropagation(); agMarca(itFonte); };
-        bar.append(ck, edMini('note', 'Editar', () => agEdita(itFonte))); el.append(bar);
-        if (itFonte.feito) { el.classList.add('feito'); cx.append(elD('small', 'li-feito', edRotuloFeito(itFonte))); }
+        bar.append(ck, edMini('note', 'Editar', () => agEdita(itFonte))); (topoN || el).append(bar);
+        if (itFonte.feito) { el.classList.add('feito'); feitoTxt = edRotuloFeito(itFonte); if (!novo) cx.append(elD('small', 'li-feito', feitoTxt)); }
       }
-      el.append(dt, cx); if (el.classList.contains('passou')) passados.push(el); else c.append(el); ult = el;
+      if (novo) {   // rodapé: o quando à esquerda; à direita "hoje / amanhã" ou o feito
+        const rp = elD('div', 'ag-rodape'); if (rot) rp.append(elD('span', 'ag-ini', rot.replace(/^~/, '')));
+        if (feitoTxt) rp.append(elD('span', 'ag-fim feito', '✓ ' + feitoTxt)); else if (tgEl) { tgEl.classList.add('ag-fim'); rp.append(tgEl); }
+        if (rp.firstChild) cx.append(rp);
+      }
+      el.append(...(novo ? [cx] : [dt, cx])); if (el.classList.contains('passou')) passados.push(el); else c.append(el); ult = el;
       el.onclick = () => abreFicha({ titulo: rot || 'Agenda', foto, corpo: el.cloneNode(true), contexto: 'Agenda (' + (rot || corpo.slice(0, 40)) + ')' });
     });
     c.querySelectorAll('.p-sec').forEach(sec => { const prox = sec.nextElementSibling; if (!prox || prox.classList.contains('p-sec')) sec.remove(); });
     if (passados.length) { const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = 'Anteriores'; c.append(t); passados.reverse().forEach(e => c.append(e)); }
-    { const rola = elD('div', 'ag-rola'); [...c.children].filter(e => !e.matches('.ag-cal, .sw-exp-p')).forEach(e => rola.append(e)); c.append(rola); rola.scrollTop = rolou; }   // calendário congelado em cima; só a lista rola
-    pCorpo.scrollTop = rolou;
+    { const rola = elD('div', 'ag-rola'); [...c.children].filter(e => !e.matches('.ag-cal, .sw-exp-p, .sw-busca-lin')).forEach(e => rola.append(e)); c.append(rola); rola.scrollTop = rolou; }   // calendário congelado em cima; só a lista rola
+    pCorpo.scrollTop = rolou; if (agQ) agFiltra(c, agQ);
     };
     monta();
   });
