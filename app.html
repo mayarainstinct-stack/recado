@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-11.279">
+<meta name="app-versao" content="2026-11-11.280">
 <meta name="app-novidade" content="Agenda do Trabalho com o cartão novo e Agenda da Geral no mesmo desenho, com pesquisa e PDF">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1623,6 +1623,19 @@ body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px
 .pass-qr .qrb { width: min(100%, calc(100vh - 318px)); width: min(100%, calc(100dvh - 318px)); aspect-ratio: 1 / 1; min-width: 0; background: #fff; border-radius: 8px; display: grid; place-items: center; cursor: pointer; } .pass-qr img { width: 100%; height: 100%; object-fit: contain; background: #fff; image-rendering: pixelated; } .pass-qr .qrb.erro::after { content: "QR sem internet. Abra uma vez com internet."; padding: 12px; text-align: center; font-size: 14px; color: #A3134F; }
 .pass-peq { display: flex; align-items: center; gap: 8px; } .pass-inf { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; gap: 0 10px; font-size: 11px; line-height: 1.35; color: #A3134F; } .pass-inf span { white-space: nowrap; } .pass-inf b { color: #4A0F2B; }
 .pass-pdf { all: unset; box-sizing: border-box; flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; background: #fff; border: 1.5px solid #F5C6D6; color: #D32F2F; cursor: pointer; } .pass-pdf:active { background: #FCE7F0; } .pass-pdf.ocupado { opacity: .5; } .pass-pdf svg { width: 20px; height: 23px; }
+.vs-mapa { display: flex; width: fit-content; align-items: center; margin-top: 10px; padding: 10px 18px; border-radius: 12px; background: var(--vs-c); color: #fff !important; font-size: 15px !important; font-weight: 800; text-decoration: none; } .vs-mapa:active { transform: scale(.97); }
+.vs-pd-cont { margin: 0 0 8px; font-size: 14px; font-weight: 800; color: var(--vs-e); } .vs-pd-card { display: grid; gap: 8px; margin-bottom: 12px; } .vs-pd-sub { margin: 4px 0 0; font-size: 13px; font-weight: 800; letter-spacing: .02em; color: var(--vs-c); }
+.vs-pd-item { display: grid; gap: 8px; padding: 12px; border-radius: 16px; background: #fff; border: 1.5px solid var(--vs-b); } .vs-pd-item.feita { background: var(--vs-f); } .vs-pd-t { font-size: 16px; line-height: 1.35; color: #1E293B; } .vs-pd-item.feita .vs-pd-t { opacity: .65; }
+.vs-pd-ok { all: unset; box-sizing: border-box; justify-self: start; padding: 9px 16px; border-radius: 999px; border: 2px solid var(--vs-c); color: var(--vs-c); font-size: 14px; font-weight: 800; cursor: pointer; } .vs-pd-ok:active { transform: scale(.97); } .vs-pd-item.feita .vs-pd-ok { background: var(--vs-c); color: #fff; } .vs-pd-quando { font-size: 12px; color: var(--vs-e); }
+.vs-pd-item .sl-escreve, .vs-pd-item .sl-resposta { margin-top: 0; }
+.vs-an { display: grid; gap: 10px; } .vs-an-gravar { all: unset; box-sizing: border-box; width: 100%; min-height: 72px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px 16px; border-radius: 18px; background: var(--vs-c); color: #fff; font-size: 20px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 12px var(--vs-s); } .vs-an-gravar:active { transform: scale(.98); } .vs-an-gravar.gravando { background: #C81E1E; } .vs-an-mic { font-size: 26px; } .vs-an-rec { width: 16px; height: 16px; border-radius: 50%; background: #fff; animation: vsPisca 1s infinite; } .vs-an-tempo { font-size: 20px; font-variant-numeric: tabular-nums; }
+@keyframes vsPisca { 50% { opacity: .25; } } @media (prefers-reduced-motion: reduce) { .vs-an-rec { animation: none; } }
+.vs-an-cancela, .vs-an-guarda { all: unset; box-sizing: border-box; justify-self: start; padding: 10px 18px; border-radius: 12px; border: 2px solid var(--vs-c); color: var(--vs-c); font-size: 15px; font-weight: 800; cursor: pointer; } .vs-an-cancela[hidden] { display: none; } .vs-an-guarda { background: var(--vs-c); color: #fff; }
+.vs-an-st { min-height: 20px; margin: 0; font-size: 14px; color: var(--vs-e); } .vs-an-txt { width: 100%; box-sizing: border-box; padding: 10px; border-radius: 12px; border: 1.5px solid var(--vs-c); font: inherit; font-size: 16px; line-height: 1.35; resize: vertical; background: #fff; color: #1E293B; }
+.vs-an-lista { display: grid; gap: 10px; } .vs-an-item { display: grid; gap: 8px; padding: 12px; border-radius: 16px; background: #fff; border: 1.5px solid var(--vs-b); } .vs-an-item.esp { border-style: dashed; } .vs-an-cab { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 14px; color: var(--vs-e); } .vs-an-espera { padding: 2px 10px; border-radius: 999px; background: #FFF3D6; color: #8A5A00; font-size: 12px; font-weight: 800; } .vs-an-item audio { width: 100%; } .vs-an-texto { margin: 0; font-size: 16px; line-height: 1.35; white-space: pre-wrap; color: #1E293B; }
+.vs-vals { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } .vs-val { display: grid; gap: 4px; padding: 12px; border-radius: 18px; background: #fff; border: 1.5px solid var(--vs-b); text-align: center; align-content: start; } .vs-val.fora { border-color: #E2683C; background: #FFF6F1; }
+.vs-val-n { font-size: 14px; font-weight: 800; color: var(--vs-e); } .vs-val-v b { font-size: 32px; line-height: 1.1; color: var(--vs-c); } .vs-val-v small { display: block; font-size: 12px; color: #475569; } .vs-val.fora .vs-val-v b { color: #C2410C; } .vs-val-ref { font-size: 12px; color: #475569; }
+.vs-val-selo { justify-self: center; margin-top: 2px; padding: 3px 10px; border-radius: 999px; background: #DCFCE7; color: #166534; font-size: 12px; font-weight: 800; } .vs-val.fora .vs-val-selo { background: #FFE4D6; color: #9A3412; }
 .vs-ligar { display: grid; gap: 10px; } .vs-lig { display: flex; gap: 8px; align-items: stretch; }
 .vs-lig-tel { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 14px; background: #D61F69; color: #fff; text-decoration: none; box-shadow: 0 3px 10px rgba(214,31,105,.35); } .vs-lig-tel:active { transform: scale(.98); }
 .vs-lig-tel .vs-ic-p { flex: none; width: 26px; height: 26px; color: #fff; stroke: #fff; } .vs-lig-tx { flex: 1; min-width: 0; display: grid; gap: 1px; } .vs-lig-tx b { font-size: 16px; } .vs-lig-tx small { font-size: 15px; opacity: .95; }
@@ -5010,6 +5023,7 @@ function abreSaudeLista(m, soGrupo) {   // soGrupo: tela filha com um grupo só 
         lista.forEach(x => {
           const linha = elD('div', 'sl-item' + (x.tipo === 'nota' ? ' nota' : '') + (x.feito ? ' feito' : '')), tx = elD('div', 'sl-tx'), t = elD('span', 'sl-t'); slNeg(t, x.texto); tx.append(t);
           if (x.feito) tx.append(elD('small', 'sl-feito', edRotuloFeito(x)));
+          if (x.perguntada) tx.append(elD('small', 'sl-feito', 'Perguntada em ' + edQuando(x.perguntada)));
           if (x.tipo !== 'nota' && (campos || []).some(k => k.nome === 'resposta')) {   // resposta do médico, escrita no app depois da consulta (May, 11/11/2026): toque abre o campo embaixo da pergunta
             if (abertoR === x.id) {
               const cx = elD('div', 'sl-resp-ed'), ta = elD('textarea'), bs = elD('div', 'sl-resp-bt'), sv = elD('button', 'sl-resp-salva', 'Salvar'), ca = elD('button', 'sl-resp-cancela', 'Cancelar');
@@ -7091,6 +7105,142 @@ function cartoesDoc(b, tit, tx) {   // cartões de documento com as páginas em 
   });
   return w;
 }
+// ---- Pasta Consulta (May, 11/11/2026): perguntas com "perguntada", anotações por áudio/texto com fila sem internet, números do exame
+const EVC = {};   // lista de perguntas aberta (a mesma da tela Perguntas pro médico), reaproveitada por 2 minutos: marcar e trocar de aba não perde a marca que ainda está indo pro arquivo
+async function evcAbre(arq) { const k = EVC[arq]; if (k && Date.now() - k.t < 120000) return k.E; const E = await edAbre({ arq }); EVC[arq] = { E, t: Date.now() }; return E; }
+function blocoPerguntasDia(b, tit, tx) {
+  const w = elD('section', 'vs-bloco vs-pd'); tit(b, w); const corpo = elD('div', 'vs-pd-corpo'); corpo.append(skCarga(3)); w.append(corpo);
+  let E = null, aberto = '';
+  const pinta = () => {
+    const its = E.itens.filter(x => x.grupo === b.grupo && x.tipo !== 'nota' && !x.apagado), feitas = its.filter(x => x.perguntada).length;
+    corpo.replaceChildren(elD('p', 'vs-pd-cont', feitas + ' de ' + its.length + ' perguntadas'));
+    let sub = null, card = null;
+    its.forEach(x => {
+      if (sub !== (x.subgrupo || '') || !card) { sub = x.subgrupo || ''; card = elD('div', 'vs-pd-card'); if (sub) card.append(elD('h4', 'vs-pd-sub', sub)); corpo.append(card); }
+      const li = elD('div', 'vs-pd-item' + (x.perguntada ? ' feita' : '')), t = elD('div', 'vs-pd-t'); slNeg(t, x.texto);
+      const bt = elD('button', 'vs-pd-ok', x.perguntada ? '✓ Perguntada' : 'Marcar como perguntada'); bt.type = 'button'; bt.setAttribute('aria-pressed', String(!!x.perguntada));
+      bt.onclick = async () => {
+        if (x.perguntada) { await E.edita(x.id, { perguntada: '' }); pinta(); return; }
+        await E.edita(x.id, { perguntada: edAgora() }); pinta();
+        edFaixaDesfazer('Marcada como perguntada', async () => { await E.edita(x.id, { perguntada: '' }); pinta(); });
+      };
+      li.append(t, bt);
+      if (x.perguntada) li.append(elD('small', 'vs-pd-quando', 'Perguntada em ' + edQuando(x.perguntada)));
+      if (aberto === x.id) {   // escrever a resposta: o mesmo campo da tela Perguntas pro médico (resposta + respondida)
+        const cx = elD('div', 'sl-resp-ed'), ta = elD('textarea'), bs = elD('div', 'sl-resp-bt'), sv = elD('button', 'sl-resp-salva', 'Salvar'), ca = elD('button', 'sl-resp-cancela', 'Cancelar');
+        ta.value = x.resposta || ''; ta.rows = 4; ta.placeholder = 'Escreva a resposta. Pode usar o microfone do teclado.'; ta.setAttribute('aria-label', 'Resposta'); sv.type = ca.type = 'button';
+        sv.onclick = async () => { const v = ta.value.trim(); aberto = ''; await E.edita(x.id, v ? { resposta: v, respondida: edAgora() } : { resposta: '', respondida: '' }); pinta(); };
+        ca.onclick = () => { aberto = ''; pinta(); }; bs.append(sv, ca); cx.append(ta, bs); li.append(cx);
+        setTimeout(() => { try { ta.focus(); } catch (e) {} }, 60);
+      } else if (x.resposta) {
+        const rs = elD('button', 'sl-resposta'); rs.type = 'button'; rs.setAttribute('aria-label', 'Editar a resposta'); const rt = elD('span', 'sl-resp-t'); slNeg(rt, x.resposta);
+        rs.append(elD('span', 'sl-resp-sinal', '✓ Respondida' + (x.respondida ? ' em ' + edQuando(x.respondida) : '')), rt); rs.onclick = () => { aberto = x.id; pinta(); }; li.append(rs);
+      } else { const eb = elD('button', 'sl-escreve', 'Escrever a resposta'); eb.type = 'button'; eb.onclick = () => { aberto = x.id; pinta(); }; li.append(eb); }
+      card.append(li);
+    });
+    if (!its.length) corpo.append(elD('p', 'p-nota', 'Nenhuma pergunta por aqui.'));
+  };
+  evcAbre(b.arq).then(e => { E = e; E.aoMudar = pinta; pinta(); }).catch(() => { corpo.replaceChildren(elD('p', 'p-nota', 'Não abriu. Confere a internet.')); });
+  return w;
+}
+// Anotações da consulta: áudio (grava, ouve, sobe pro Inst) e texto curto. Sem internet vai pra uma fila no aparelho (áudio no IndexedDB) e sobe sozinho quando a rede volta.
+const CONS_BLOBS = {};
+function blocoAnotacoes(b, tit, tx) {
+  const pasta = b.pasta, arqIdx = pasta + '/anotacoes.json', chaveFila = 'cons-fila:' + pasta;
+  const lerFila = () => { try { return JSON.parse(localStorage.getItem(chaveFila) || '[]'); } catch (e) { return []; } };
+  const gravaFila = f => { try { localStorage.setItem(chaveFila, JSON.stringify(f)); } catch (e) {} };
+  const chaveData = s => String(s || '').replace(/^(\d\d)\/(\d\d)\/(\d{4}) (\d\d:\d\d)/, '$3-$2-$1 $4');
+  const w = elD('section', 'vs-bloco vs-an'); tit(b, w);
+  const bt = elD('button', 'vs-an-gravar'); bt.type = 'button';
+  const tempo = elD('span', 'vs-an-tempo'), cancela = elD('button', 'vs-an-cancela', 'Cancelar a gravação'); cancela.type = 'button'; cancela.hidden = true;
+  const st = elD('p', 'vs-an-st'); st.setAttribute('role', 'status');
+  const ta = elD('textarea', 'vs-an-txt'); ta.rows = 3; ta.placeholder = 'Anotação curta em texto'; ta.setAttribute('aria-label', 'Anotação em texto');
+  const gt = elD('button', 'vs-an-guarda', 'Guardar o texto'); gt.type = 'button';
+  const lista = elD('div', 'vs-an-lista');
+  w.append(bt, cancela, st, ta, gt, elD('h3', 'vs-tit', 'Anotações guardadas'), lista);
+  let rec = null, partes = [], t0 = 0, timer = null, cancel = false, remotos = [], sincronizando = false;
+  const pintaBt = () => { bt.replaceChildren(); bt.classList.toggle('gravando', !!rec); cancela.hidden = !rec; if (rec) bt.append(elD('span', 'vs-an-rec'), elD('b', '', 'Parar e guardar'), tempo); else bt.append(elD('span', 'vs-an-mic', '🎤'), elD('b', '', 'Gravar anotação')); };
+  const pinta = () => {
+    const fila = lerFila(), todos = [...fila.map(x => ({ ...x, esperando: true })), ...remotos.filter(r => !fila.some(f => f.id === r.id))];
+    todos.sort((a, c) => chaveData(c.criado).localeCompare(chaveData(a.criado)));
+    lista.replaceChildren();
+    if (!todos.length) { lista.append(elD('p', 'p-nota', 'Nada guardado ainda.')); return; }
+    todos.forEach(x => {
+      const li = elD('div', 'vs-an-item' + (x.esperando ? ' esp' : '')), cab = elD('div', 'vs-an-cab');
+      cab.append(elD('b', '', (x.tipo === 'audio' ? 'Áudio' : 'Texto') + ' · ' + edQuando(x.criado) + (x.dur ? ' · ' + Math.floor(x.dur / 60) + ':' + pad(x.dur % 60) : '')));
+      if (x.esperando) cab.append(elD('span', 'vs-an-espera', 'Esperando internet'));
+      li.append(cab);
+      if (x.tipo === 'audio') {
+        const au = elD('audio'); au.controls = true; au.preload = 'metadata'; au.setAttribute('aria-label', 'Ouvir a gravação'); li.append(au);
+        const url = x.esperando ? (CONS_BLOBS[x.id] ? Promise.resolve(URL.createObjectURL(CONS_BLOBS[x.id])) : audioGuardado('cons-' + x.id).then(bl => URL.createObjectURL(bl))) : fotoUrl(x.arq);
+        url.then(u => { au.src = u; }).catch(() => { au.replaceWith(elD('small', 'vs-an-sem', 'Esse áudio não abriu. Confere a internet.')); });
+      } else li.append(elD('p', 'vs-an-texto', x.texto || ''));
+      lista.append(li);
+    });
+  };
+  const carrega = async () => { try { remotos = (JSON.parse(await lerArquivo(arqIdx)).itens || []).filter(x => !x.apagado); } catch (e) {} pinta(); };
+  const sincroniza = async () => {
+    if (sincronizando || !lerFila().length) return; sincronizando = true;
+    try {
+      for (const it of lerFila()) {
+        if (it.tipo === 'audio' && !it.subiu) {
+          const urlA = apiDe(it.nome); let ja = false;
+          if (it.tentou) { const r = await api(urlA, { method: 'HEAD', tempo: 20000 }); ja = r.ok; if (!ja && r.status !== 404) throw erroDe(r.status); }
+          if (!ja) {
+            const bl = CONS_BLOBS[it.id] || await audioGuardado('cons-' + it.id); if (!bl) { gravaFila(lerFila().filter(x => x.id !== it.id)); continue; }
+            const b64 = await new Promise((ok2, erro2) => { const fr = new FileReader(); fr.onload = () => ok2(String(fr.result).split(',')[1]); fr.onerror = erro2; fr.readAsDataURL(bl); });
+            gravaFila(lerFila().map(x => x.id === it.id ? { ...x, tentou: true } : x));
+            await apiOk(urlA, { method: 'PUT', body: JSON.stringify({ message: 'Anotação da consulta (áudio)', content: b64 }) });
+            try { guardaFoto(it.nome, await bl.arrayBuffer()); } catch (e) {}   // já fica pra ouvir sem internet
+          }
+          gravaFila(lerFila().map(x => x.id === it.id ? { ...x, subiu: true } : x));
+        }
+        const item = { id: it.id, tipo: it.tipo, criado: it.criado }; if (it.nome) item.arq = it.nome; if (it.dur) item.dur = it.dur; if (it.texto) item.texto = it.texto;
+        const ok = await gravaJson(arqIdx, d => { d.itens = d.itens || []; edAplica(d.itens, { tipo: 'lanca', item }, false); }, 'Anotação da consulta pelo app', { sobre: 'Anotações da consulta feitas pelo app (áudio e texto).', itens: [] });
+        if (!ok) throw new Error('rede');
+        gravaFila(lerFila().filter(x => x.id !== it.id)); remotos.push(item); tiraAudio('cons-' + it.id); delete CONS_BLOBS[it.id]; pinta();
+      }
+      st.textContent = 'Tudo guardado.';
+    } catch (e) { st.textContent = 'Sem internet agora. Fica guardado no celular e sobe sozinho quando a internet voltar.'; }
+    sincronizando = false; pinta();
+  };
+  const entra = it => { gravaFila([...lerFila(), it]); pinta(); st.textContent = 'Guardando...'; sincroniza(); };
+  const novoId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const guardaGravacao = async (blob, dur) => {
+    if (blob.size < 1500) { showNote('Áudio curto demais.', true); return; }
+    const id = novoId(), nome = nomeArq(pasta + '/audios', new Date(), 0, /webm/.test(blob.type) ? 'webm' : 'm4a');
+    CONS_BLOBS[id] = blob; await guardaAudio('cons-' + id, blob);
+    entra({ id, tipo: 'audio', nome, dur, criado: edAgora() });
+  };
+  const comeca = async () => {
+    if (!navigator.mediaDevices || !window.MediaRecorder) { showNote('Este navegador não grava áudio. Abre pelo ícone da tela de início.', true); return; }
+    try {
+      const stream = await pegaMic(), tipo = tipoAudio();
+      rec = new MediaRecorder(stream, tipo ? { mimeType: tipo } : undefined); partes = []; cancel = false;
+      rec.ondataavailable = e => { if (e.data.size) partes.push(e.data); };
+      rec.onstop = () => { soltaMicStream(); const g = rec, dur = Math.round((Date.now() - t0) / 1000); rec = null; clearInterval(timer); pintaBt(); if (!cancel) guardaGravacao(new Blob(partes, { type: g.mimeType || tipo || 'audio/mp4' }), dur); };
+      rec.start(); t0 = Date.now(); tempo.textContent = '0:00'; clearInterval(timer); timer = setInterval(() => { const sg = Math.floor((Date.now() - t0) / 1000); tempo.textContent = Math.floor(sg / 60) + ':' + pad(sg % 60); }, 250);
+      pintaBt(); st.textContent = 'Gravando. Toque de novo para parar e guardar.'; if (CFG.vibracao !== false && navigator.vibrate) navigator.vibrate(20);
+    } catch (e) { rec = null; soltaMicStream(); pintaBt(); showNote(e && e.name === 'NotAllowedError' ? 'Sem acesso ao microfone. Libera em Ajustes → Apps → Safari → Microfone (Permitir).' : 'Microfone não abriu (' + ((e && e.name) || 'erro') + ').', true); }
+  };
+  bt.onclick = () => { if (rec) rec.stop(); else comeca(); };
+  cancela.onclick = () => { if (rec) { cancel = true; rec.stop(); st.textContent = 'Gravação descartada.'; } };
+  gt.onclick = () => { const v = ta.value.trim(); if (!v) { showNote('Escreva a anotação primeiro.'); return; } ta.value = ''; entra({ id: novoId(), tipo: 'texto', texto: v, criado: edAgora() }); };
+  const volta = () => { if (!w.isConnected) { removeEventListener('online', volta); return; } sincroniza(); };
+  addEventListener('online', volta);
+  pintaBt(); pinta(); carrega().then(sincroniza);
+  return w;
+}
+function blocoValores(b, tit, tx) {   // números grandes do exame, com a faixa do laboratório e o selo dentro/fora
+  const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-vals');
+  (b.itens || []).forEach(x => {
+    const fora = x.estado === 'fora', k = elD('div', 'vs-val' + (fora ? ' fora' : ''));
+    const v = elD('div', 'vs-val-v'); v.append(elD('b', '', x.valor), elD('small', '', x.un || ''));
+    k.append(elD('span', 'vs-val-n', x.rotulo), v, elD('span', 'vs-val-ref', 'Faixa: ' + x.ref), elD('span', 'vs-val-selo', fora ? '▲ ' + (x.sentido || 'Fora da faixa') : '✓ Dentro da faixa'));
+    g.append(k);
+  });
+  w.append(g); return w;
+}
 // ---- Telas visuais da Saúde (May, 10/11/2026: "pega na saúde tudo e coloca de uma maneira bonita e fácil de ler", "não quero textão", "vou ler tudo na viagem")
 // saude/visual/<id>.json = { titulo, sub, abas: [{ nome, icone, blocos: [{ t: destaque|cartoes|passos|numeros|lista|frase|aviso|perguntas|tabela|contatos|topicos, ... }] }] }   (formato em saude/visual/FORMATO.md)
 function abreVisual(m) {
@@ -7099,6 +7249,7 @@ function abreVisual(m) {
     const p = skCarga(); c.append(p); let d;
     try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não abriu. Confere a internet.'; return; }
     p.remove();
+    (d.pre || []).forEach(a => { fotoUrl(a).catch(() => {}); });   // imagens da pasta ficam guardadas no aparelho já na 1ª abertura (funciona sem internet depois)
     const tema = d.tema || {}; if (/^(coral|magenta|vinho|lilas|cinza|pessego|framboesa|orquidea|ameixa)$/.test(tema.cor || '')) c.classList.add('tema-' + tema.cor);
     const DECOR = { circulos: [[118, 22, 14], [118, 22, 30], [118, 22, 46], [118, 22, 62]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="currentColor" stroke-width="3"/>`).join(''), raios: Array.from({ length: 9 }, (_, i) => { const a = (100 + i * 10) * Math.PI / 180; return `<path d="M150 0L${150 + Math.cos(a) * 150} ${-Math.sin(a) * -150}" stroke="currentColor" stroke-width="${i % 2 ? 2 : 5}" stroke-linecap="round"/>`; }).join('') + '<circle cx="150" cy="0" r="22" fill="currentColor"/>', flores: [[42, 34, 1], [108, 24, .7], [122, 78, 1.2], [70, 86, .6]].map(([x, y, s]) => `<g transform="translate(${x} ${y}) scale(${s})">` + [0, 72, 144, 216, 288].map(r => `<ellipse rx="6" ry="11" cy="-10" transform="rotate(${r})" fill="currentColor"/>`).join('') + '<circle r="5" fill="rgba(255,255,255,.5)"/></g>').join(''), losangos: [[30, 26, 10], [70, 14, 6], [104, 40, 13], [138, 18, 7], [82, 78, 9], [132, 90, 6]].map(([x, y, r]) => `<path d="M${x} ${y - r}L${x + r * .7} ${y}L${x} ${y + r}L${x - r * .7} ${y}Z" fill="currentColor"/>`).join(''), ondas: '<path d="M0 30q19-16 38 0t38 0 38 0 38 0M0 55q19-16 38 0t38 0 38 0 38 0M0 80q19-16 38 0t38 0 38 0 38 0" fill="none" stroke="currentColor" stroke-width="3"/>', estrelas: [[30, 28, 9], [92, 18, 6], [120, 52, 11], [64, 70, 7], [128, 92, 5]].map(([x, y, r]) => `<path d="M${x} ${y - r}l${r * .3} ${r * .7} ${r * .7} ${r * .3}-${r * .7} ${r * .3}-${r * .3} ${r * .7}-${r * .3}-${r * .7}-${r * .7}-${r * .3} ${r * .7}-${r * .3}z" fill="currentColor"/>`).join(''), coracoes: [[40, 30, 1.1], [104, 22, .7], [118, 70, 1.3], [64, 82, .6]].map(([x, y, s]) => `<path transform="translate(${x} ${y}) scale(${s})" d="M0 6C-4-2-14 0-12 8c1 5 7 9 12 13 5-4 11-8 12-13 2-8-8-10-12-2z" fill="currentColor"/>`).join(''), pontos: Array.from({ length: 30 }, (_, i) => `<circle cx="${18 + (i % 6) * 24}" cy="${14 + Math.floor(i / 6) * 20}" r="3" fill="currentColor"/>`).join(''), folhas: [[50, 40, -30], [100, 26, 20], [120, 78, -60], [70, 88, 40]].map(([x, y, r]) => `<path transform="translate(${x} ${y}) rotate(${r})" d="M0-18C12-10 12 10 0 18-12 10-12-10 0-18zM0-16V16" fill="currentColor" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/>`).join('') };
     const tx = (tag, cls, s) => { const e = elD(tag, cls); mdInline(e, s || ''); return e; };
@@ -7115,9 +7266,12 @@ function abreVisual(m) {
       perguntas: b => { const w = elD('section', 'vs-bloco'); tit(b, w); (b.itens || []).forEach(x => { const k = elD('div', 'vs-qa'); const h = elD('h4'); h.append(elD('span', 'vs-q', '?')); const ht = elD('span'); mdInline(ht, x.p); h.append(ht); k.append(h, tx('p', '', x.r)); w.append(k); }); return w; },   // tudo aberto, nada retraído (May, 10/11/2026: "nada de saúde abre retraído")
       tabela: b => { const w = elD('section', 'vs-bloco vs-cx'); tit(b, w); const t = elD('table', 'md-tab'); const tr = elD('tr'); (b.cab || []).forEach(h => tr.append(tx('th', '', h))); t.append(tr); (b.linhas || []).forEach(l => { const r = elD('tr'); l.forEach(cel => r.append(tx('td', '', String(cel)))); t.append(r); }); const sw = elD('div', 'md-tab-w'); sw.append(t); w.append(sw); return w; },
       ligar: b => { const w = elD('section', 'vs-bloco vs-ligar'); tit(b, w); (b.itens || []).forEach(x => { const l = elD('div', 'vs-lig'), n = String(x.numero || ''), a = elD('a', 'vs-lig-tel'); a.href = 'tel:' + n.replace(/[^\d+]/g, ''); a.setAttribute('aria-label', 'Ligar para ' + x.nome); a.append(ic('phone', 'vs-ic-p')); const t = elD('span', 'vs-lig-tx'); t.append(tx('b', '', x.nome), tx('small', '', n)); a.append(t, tx('span', 'vs-lig-go', 'Ligar')); l.append(a); if (x.whatsapp) { const z = elD('a', 'vs-lig-wa', 'WhatsApp'); z.href = x.whatsapp; z.target = '_blank'; z.rel = 'noopener'; z.setAttribute('aria-label', 'Abrir o WhatsApp de ' + x.nome); l.append(z); } w.append(l); }); return w; },   // botões de ligar: um toque liga (tel:); números vêm do JSON (May, 11/11/2026)
-      contatos: b => { const w = elD('section', 'vs-bloco vs-cx'); tit(b, w); (b.itens || []).forEach(x => { const l = elD('div', 'vs-cont'); l.append(ic(x.icone || 'phone', 'vs-ic-p')); const cx = elD('div'); cx.append(tx('b', '', x.nome)); const i = String(x.info || ''); if (/^https?:\/\//.test(i)) { const a = elD('a', '', i.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')); a.href = i; a.target = '_blank'; a.rel = 'noopener'; cx.append(a); } else cx.append(tx('span', '', i)); l.append(cx); w.append(l); }); return w; },
+      contatos: b => { const w = elD('section', 'vs-bloco vs-cx'); tit(b, w); (b.itens || []).forEach(x => { const l = elD('div', 'vs-cont'); l.append(ic(x.icone || 'phone', 'vs-ic-p')); const cx = elD('div'); cx.append(tx('b', '', x.nome)); const i = String(x.info || ''); let mp = null; if (x.mapa) { mp = elD('a', 'vs-mapa', x.mapaRotulo || 'Ir a pé'); mp.href = x.mapa; mp.target = '_blank'; mp.rel = 'noopener'; mp.setAttribute('aria-label', (x.mapaRotulo || 'Ir a pé') + ': abrir o trajeto no mapa'); } if (/^https?:\/\//.test(i)) { const a = elD('a', '', i.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')); a.href = i; a.target = '_blank'; a.rel = 'noopener'; cx.append(a); } else cx.append(tx('span', '', i)); if (mp) cx.append(mp); l.append(cx); w.append(l); }); return w; },
       duas: b => { const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-duas'); ['a', 'b'].forEach(k => { const x = b[k] || {}; const l = elD('div', 'vs-lado ' + k); const h = elD('h4'); h.append(ic(x.icone || (k === 'a' ? 'check' : 'warn'), 'vs-ic-p')); mdInline(h, x.titulo || ''); const ul = elD('ul', 'vs-lista'); (x.itens || []).forEach(s => ul.append(tx('li', '', s))); l.append(h, ul); g.append(l); }); w.append(g); return w; },
       passagens: b => cartoesPassagens(b, tit, tx),
+      perguntasdia: b => blocoPerguntasDia(b, tit, tx),   // pasta Consulta: as perguntas do arquivo Perguntas pro médico, com "perguntada"
+      anotacoes: b => blocoAnotacoes(b, tit, tx),   // pasta Consulta: gravar áudio e escrever anotação, com fila sem internet
+      valores: b => blocoValores(b, tit, tx),   // pasta Consulta: números do exame com faixa e selo
       laudos: b => cartoesDoc(b, tit, tx),   // Pasta cinza: os 3 laudos (imagens recortadas, tela cheia, deslizar, salvar, PDF no canto)
       documentos: b => cartoesDoc(b, tit, tx),   // Pasta cinza, aba "Todas as imagens": um cartão por documento, a lista vem do JSON
       pastapdf: b => { const w = elD('section', 'vs-bloco'); tit(b, w); if (b.texto) w.append(tx('p', 'vs-laudo-dica', b.texto)); const bt = elD('button', 'vs-pdf-tudo'); bt.type = 'button'; bt.append(iconePdf(), elD('span', '', b.botao || 'Baixar a pasta inteira (PDF)')); const st = elD('p', 'vs-pdf-st'); st.setAttribute('role', 'status');
