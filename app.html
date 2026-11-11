@@ -1770,8 +1770,32 @@ body.modo-trab .sl-t b { color: #1E293B; } body.modo-trab .sl-item.nota .sl-t, b
 .sw-agora span { color: #FFFFFF; background: #DC2626; border-radius: 999px; padding: 1px 10px; font-size: 12px; }
 .sw-k.ok { background: #F1F5F9; } .sw-hero { position: static; }
 body .painel .sw-calbox .ag-dia.tem { background: #C878E8; color: #FFFFFF; } body .painel .sw-calbox .ag-dia.tem .ag-pts { display: none; } body .painel .sw-calbox .ag-dia.sel { background: #0F172A; color: #FFFFFF; outline: 0; box-shadow: none; } body .painel .sw-calbox .ag-dia.hoje:not(.sel) { outline: 2px solid #0F172A; outline-offset: -2px; text-decoration: none; }
-.sw-calbox { margin: 2px 0 6px; }
+.sw-calbox { margin: 2px 0 6px; flex: none; }
+.sw-tx .sw-tk, .sw-it.ok .sw-tx .sw-tk { font-weight: 800 !important; color: #0F172A; } /* regra do app: partes fixas congeladas, a rolagem fica nos filhos, nunca na página */
+.p-corpo:has(> .tela.sw-tela), .p-corpo:has(> .tela.ag-tela) { overflow: hidden; }
+.p-corpo > .tela.sw-tela, .p-corpo > .tela.ag-tela { display: flex !important; flex-direction: column; gap: 8px; flex: 1 1 0 !important; min-height: 0 !important; }
+/* Agenda da Geral: parte congelada enxuta (calendário baixo, legenda numa linha) pra sobrar tela pra lista */
+.ag-tela > .ag-cal { flex: none; padding: 10px 12px; border-radius: 26px; } .ag-tela .ag-dia { width: 30px; height: 30px; font-size: 13px; } .ag-tela .ag-grade { gap: 2px; row-gap: 2px; } .ag-tela .ag-leg { flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; margin-top: 4px; font-size: 11px; } .ag-tela > .sw-exp-p { flex: none; align-self: flex-end; min-height: 34px; margin: 0; font-size: 12px; }
+.p-corpo > .tela.ag-tela > .ag-rola { flex: 1 1 0; min-height: 0; overflow-y: auto; }
+.ag-rola > .p-sec:first-child { margin-top: 0; }
+.p-corpo > .tela.sw-tela > .sw { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+.sw-rola, .ag-rola { flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 8px; } .ag-rola { gap: 10px; } .sw-rola > *, .ag-rola > * { flex: none; min-width: 0; }
+.sw-ancora { display: none; } .sw-busca-lin { display: flex; gap: 8px; align-items: center; } .sw-busca-lin .sw-busca { flex: 1; min-width: 0; width: auto; }
+.sw-pdf-bt { flex: none; width: auto; min-height: 40px; padding: 0 12px; border-radius: 10px; border: 1.5px solid #CBD5E1; background: #FFFFFF; color: #B91C1C; font: 800 11px Inter, system-ui, sans-serif; letter-spacing: .04em; cursor: pointer; box-shadow: inset 0 2px 0 rgba(255,255,255,.9), 0 2px 4px rgba(15,23,42,.12); } .sw-pdf-bt:active { transform: scale(.94); } .sw-tela .sw-impb { align-self: flex-start; margin-top: 6px; flex: none; }
+/* chanfro do padrão do app (luz em cima, sombra embaixo) no calendário e nos cartões da Agenda do Trabalho */
+body .painel .sw-calbox.ag-cal { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 20px; padding: 12px 10px 14px; box-shadow: inset 0 2px 0 rgba(255,255,255,.95), inset 0 -4px 0 rgba(15,23,42,.12), 0 8px 16px -6px rgba(15,23,42,.25); }
+.sw-it { box-shadow: inset 0 2px 0 rgba(255,255,255,.7), inset 0 -3px 0 color-mix(in srgb, var(--c) 28%, transparent); border-radius: 9px; }
+.sw-it.todo, .sw-it.atras { box-shadow: none; }
+/* marcação do dia no calendário: círculo perfeito (largura = altura), também na Geral */
+body .painel .ag-dia { width: 36px; height: 36px; aspect-ratio: 1 / 1; justify-self: center; align-self: center; border-radius: 50%; padding: 0; }
+.sw-cli { display: inline; font-size: inherit; font-weight: 700; text-transform: none; letter-spacing: 0; color: color-mix(in srgb, var(--c) 55%, black); line-height: inherit; }
+.sw-agora { margin-left: -64px; } .sw-pdf .sw-agora { margin-left: 0; }
 .sw-it.late { background: #FDECEC !important; }
+.sw-qtd { align-self: flex-end; font-size: 12px; font-weight: 700; color: #475569; padding: 0 2px; } .sw-dia.hoje .sw-qtd { color: #0F172A; }
+.sw-dia.folga .sw-data { background: #C878E8; border-color: #C878E8; }
+.sw-folga-caixa { border: 2px solid #C878E8; border-radius: 12px; background: #FFFFFF; overflow: hidden; } .sw-folga-caixa .sw-fx { border-radius: 0; }
+.sw-folga-cards { padding: 6px; display: flex; flex-direction: column; gap: 3px; }
+.sw-dia .sw-data.clic { cursor: pointer; } .sw-dia .sw-data.clic:active { filter: brightness(.94); }
 /* Agenda da Geral com o acabamento dos itens da agenda da empresa (May 11/11/2026): mesma disposição, só o item mais limpo; cor por assunto continua vindo de --tc */
 .painel.tema-claro .ag[data-tipo] { gap: 10px; padding: 8px 10px; border-radius: 10px; box-shadow: none; background: color-mix(in srgb, var(--tc) 6%, white); border: 1px dashed color-mix(in srgb, var(--tc) 75%, white); border-left: 5px solid var(--tc); }
 .painel.tema-claro .ag[data-tipo].feito { background: color-mix(in srgb, var(--tc) 24%, white); border: 1px solid color-mix(in srgb, var(--tc) 40%, white); border-left: 5px solid var(--tc); }
@@ -6463,7 +6487,7 @@ function montaCalendario(cal, c, opc) {   // opc (Agenda do Trabalho): { marcas:
 }
 // ---- Agenda da semana no layout do PDF (May 09/11/2026): mesmo desenho do PDF de C:/claude/tools/agenda-da-semana/gerar.py; CSS .sw escopado
 let agTiposAtual = null;
-const SW_PROJ = { 'promotor-mobile': ['#f59e0b', 'Promotor'], 'rm': ['#22c55e', 'Simp RM'], 'simp-mobile': ['#2dd4bf', 'Checklist'], 'kds': ['#eab308', 'KDS'], 'acompanhamentos': ['#4F9CF0', 'Acompanhamentos'], 'may': ['#C878E8', 'May'] };
+const SW_PROJ = { 'promotor-mobile': ['#f59e0b', 'PROM.'], 'rm': ['#22c55e', 'RM'], 'simp-mobile': ['#2dd4bf', 'SIMP'], 'kds': ['#eab308', 'KDS'], 'acompanhamentos': ['#4F9CF0', 'OTRS'], 'may': ['#C878E8', 'GERAL'], 'geral': ['#C878E8', 'GERAL'] };   // nomes curtos; GERAL em rosa = só o que depende da própria May
 const SW_SEM = { seg: 'Segunda', ter: 'Terça', qua: 'Quarta', qui: 'Quinta', sex: 'Sexta', sab: 'Sábado', dom: 'Domingo' }, SW_DOW = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab'];
 const swCap = t => t.charAt(0).toUpperCase() + t.slice(1), swChave = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 const swDH = (s, ano) => { const m = (s || '').match(/^(\d\d)\/(\d\d) (\d\d):(\d\d)$/); return m ? new Date(ano, +m[2] - 1, +m[1], +m[3], +m[4]) : null; };
@@ -6477,16 +6501,18 @@ function swModeloTrab(d) {
   (d.itens || []).forEach(it => {
     const dia = dias.find(x => (it[0] || '').startsWith(x.dd)); if (!dia) return;
     const ini = swDH(it[0], ano), fim = it[3] || '', f = swFeito(swCap(it[2] || '')), [cor, nome] = SW_PROJ[it[1]] || ['#64748b', it[1]];
-    const hora = (it[0] || '').slice(6), ok = f.ok || !!fim, cm = f.texto.match(/^([^:\d]{2,22}?):\s+(\S.*)$/);   // "cliente: tarefa" vira etiqueta pequena embaixo do projeto, como na agenda da empresa
+    let hora = (it[0] || "").slice(6), ok = f.ok || !!fim, cm = f.texto.match(/^([^:\d]{2,22}?):\s+(\S.*)$/); if (cm && /^cliente$/i.test(cm[1])) cm = cm[2].match(/^([^:\d]{2,22}?):\s+(\S.*)$/) || [null, cm[2].split(' ')[0], cm[2].split(' ').slice(1).join(' ') || cm[2]];   // "cliente: tarefa" vira etiqueta pequena embaixo do projeto, como na agenda da empresa
     dia.linhas.push({ ini, hora, fimH: fim ? fim.slice(fim.length > 5 ? 6 : 0) : '', tag: nome, cli: cm && cm[1].split(' ').length <= 3 ? cm[1] : '', texto: cm && cm[1].split(' ').length <= 3 ? cm[2] : f.texto, cor, ok, andamento: !ok && it.length > 3 && !!ini && ini <= agora, atrasada: !ok && it.length <= 3 && !!ini && ini <= agora && swChave(ini) === swChave(agora), dia: true, extra: it[4] === true || it[4] === 'extra' || !!(d.extra || d.hora_extra || {})[it[0].slice(0, 5)] });   // vermelho de hora extra SÓ quando o JSON marca (item[4] true/'extra' ou extra:{"DD/MM":true}); o app não inventa o sinal
   });
   dias.forEach(x => x.linhas.sort((a, b) => (a.hora < b.hora ? -1 : a.hora > b.hora ? 1 : 0)));
   const blocos = [], lin = (x, hora) => { const [cor, nome] = SW_PROJ[x[0]] || ['#64748b', x[0]], f = swFeito(swCap(x[1] || '')); return { hora, tag: nome, texto: f.texto, cor, ok: f.ok }; };
   if ((d.fila || []).length) blocos.push({ titulo: 'Fila de desenvolvimento', sub: 'Em ordem: o pedido mais novo da May entra na frente, a não ser que ela diga para fazer depois.', linhas: d.fila.map((x, n) => lin(x, (n + 1) + 'º')) });
   // impedimentos num botão que abre (May, 10/11/2026: "impedimentos tem q ser um botão", "clicar tipo 17 impedimentos", "clicando abre")
-  const imp = []; if ((d.aguardando_cliente || []).length) imp.push({ titulo: 'Aguardando cliente', linhas: d.aguardando_cliente.map(x => lin(x, x[2] || '')) });
-  const porQuem = {}; (d.impedimentos || []).forEach(x => { const q = x[2] || 'resposta'; (porQuem[q] = porQuem[q] || []).push(lin(x, x[3] || '')); });
-  Object.keys(porQuem).forEach(q => imp.push({ titulo: 'Aguardando ' + q, linhas: porQuem[q] }));
+  const imp = [], lcom = (x, q) => { const l = lin(x, ''); l.texto = (q ? q + ': ' : '') + l.texto; return l; };   // 3 blocos: equipe (nome na frente), cliente e Apple, conforme vier no JSON
+  const eq = [], ap = [], cl = (d.aguardando_cliente || []).map(x => lin(x, ''));
+  (d.impedimentos || []).forEach(x => { const q = (x[2] || '').trim(); if (/^apple$/i.test(q)) ap.push(lin(x, '')); else eq.push(lcom(x, q)); });
+  (d.aguardando_equipe || []).forEach(x => eq.push(lcom(x, x[2] || ''))); (d.aguardando_apple || []).forEach(x => ap.push(lin(x, '')));
+  if (eq.length) imp.push({ titulo: 'Aguardando equipe', linhas: eq }); if (cl.length) imp.push({ titulo: 'Aguardando cliente', linhas: cl }); if (ap.length) imp.push({ titulo: 'Aguardando Apple', linhas: ap });
   const todas = dias.flatMap(x => x.linhas), conta = { ok: todas.filter(l => l.ok).length, doing: todas.filter(l => l.andamento).length, total: todas.length }; conta.todo = conta.total - conta.ok - conta.doing;
   return { titulo: 'Agenda da semana', semana: d.semana || '', dias, blocos, imp, conta, leg: Object.values(SW_PROJ).map(v => [v[0], v[1]]).concat([['#43A047', 'Concluído']]) };
 }
@@ -6515,20 +6541,22 @@ function swModeloPessoal(F, ref, ass) {
 function swLinha(o) {
   const el = elD('div', 'sw-it' + (o.ok ? ' ok' : '')); el.style.setProperty('--c', o.cor);
   if (!o.ok && o.dia) el.classList.add(o.andamento ? 'doing' : 'todo'); if (o.atrasada) el.classList.add('atras'); if (o.extra) el.classList.add('late');
-  const tg = elD('span', 'sw-tag', o.tag); if (o.cli) tg.append(elD('small', 'sw-cli', o.cli));
-  el.append(elD('span', 'sw-hr', o.hora), tg, elD('span', 'sw-tx', o.texto));
+  const tg = elD('span', 'sw-tag', o.tag); if (o.cli) { tg.append(document.createTextNode(' - ')); tg.append(elD('span', 'sw-cli', o.cli)); }   // projeto - cliente, na mesma linha
+  const tx = elD('span', 'sw-tx'); o.texto.split(/(\b\d{7}\b)/).forEach((p, n) => tx.append(n % 2 ? elD('b', 'sw-tk', p) : document.createTextNode(p)));   // ticket (7 dígitos) em negrito
+  el.append(elD('span', 'sw-hr', o.hora), tg, tx);
   if (o.ok) el.append(elD('span', 'sw-okm', '✓' + (o.fimH ? ' ' + o.fimH : ''))); else if (o.andamento) el.append(elD('span', 'sw-and', 'executando')); else if (o.atrasada) el.append(elD('span', 'sw-atr', 'atrasada'));
   return el;
 }
 const swAgora = d => { const e = elD('div', 'sw-agora'); e.append(elD('span', '', 'Agora ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'))); return e; };
 function swRender(m, o = {}) {
+  const red = !!o.reduzida;   // celular: só calendário e tarefas; título, legenda, contadores e barra saem, Exportar vai pro cabeçalho, impedimentos no fim
   const raiz = elD('div', 'sw' + (o.pdf ? ' sw-pdf' : '')), hero = elD('div', 'sw-hero'), h = elD('div'), leg = elD('div', 'sw-leg'), agora = new Date(), hk = swChave(agora);
   h.append(elD('h1', '', m.titulo), elD('div', 'sw-sem', m.semana)); hero.append(h);
   m.leg.forEach(l => { const s = elD('span', 'sw-lg', l[1]); s.style.setProperty('--c', l[0]); leg.append(s); }); hero.append(leg);
   if (o.exporta) { const b = elD('button', 'sw-exp', 'Exportar PDF'); b.type = 'button'; b.onclick = o.exporta; hero.append(b); }
-  raiz.append(hero);
+  if (!red) raiz.append(hero); else raiz.append(elD('span', 'sw-ancora'));
   let impBox = null;
-  if (m.conta && m.conta.total) {   // contadores da agenda nova (concluídas, executando, por fazer, X de Y)
+  if (!red && m.conta && m.conta.total) {   // contadores da agenda nova (concluídas, executando, por fazer, X de Y)
     const k = m.conta, rs = elD('div', 'sw-rs'), pr = elD('div', 'sw-prog'), bar = elD('i');
     [['ok', k.ok, k.ok === 1 ? 'concluída' : 'concluídas'], ['doing', k.doing, 'executando'], ['todo', k.todo, 'por fazer']].forEach(([c, n, r]) => { const s = elD('span', 'sw-k ' + c); s.append(elD('b', '', String(n)), document.createTextNode(' ' + r)); rs.append(s); });
     const tot = elD('span', 'sw-k tot'); tot.append(elD('b', '', k.ok + ' de ' + k.total)); rs.append(tot);
@@ -6542,9 +6570,10 @@ function swRender(m, o = {}) {
   }
   if (o.busca) {   // pesquisa na hora: tarefa, projeto, cliente ou ticket; destaca o trecho; vazia mostra tudo
     const bx = elD('input', 'sw-busca'); bx.type = 'search'; bx.placeholder = 'Pesquisar tarefa, projeto ou ticket'; bx.autocomplete = 'off'; bx.setAttribute('aria-label', 'Pesquisar tarefa, projeto ou ticket');
-    bx.oninput = () => swFiltra(raiz, bx.value, impBox); raiz.append(bx);
+    bx.oninput = () => swFiltra(raiz, bx.value, impBox);
+    if (red && o.exporta) { const lin = elD('div', 'sw-busca-lin'), pdf = elD('button', 'sw-pdf-bt', 'PDF'); pdf.type = 'button'; pdf.setAttribute('aria-label', 'Exportar PDF'); pdf.title = 'Exportar PDF'; pdf.onclick = o.exporta; lin.append(bx, pdf); raiz.append(lin); } else raiz.append(bx);   // Exportar PDF: botão discreto à direita da pesquisa
   }
-  if ((m.imp || []).length) {
+  if (!red && (m.imp || []).length) {
     impBox = elD('section', 'sw-imps'); impBox.hidden = !o.pdf;
     impBox.append(elD('h2', '', 'Impedimentos'), elD('p', 'sw-sub', 'Não dá para desenvolver até quem está indicado responder ou aprovar.'));
     m.imp.forEach(g => { const cx = elD('div', 'sw-aguarda'), li = elD('div', 'sw-lista'); g.linhas.forEach(l => li.append(swLinha(l))); cx.append(elD('h3', '', g.titulo), li); impBox.append(cx); });
@@ -6553,7 +6582,8 @@ function swRender(m, o = {}) {
   m.dias.forEach(x => {
     const sec = elD('section', 'sw-dia' + (x.folga ? ' folga' : '') + (x.chave === o.sel ? ' sel' : '') + (!o.pdf && x.chave === hk ? ' hoje' : '')), dt = elD('div', 'sw-data'), li = elD('div', 'sw-lista');
     sec.dataset.dia = x.chave; dt.append(elD('b', '', x.dd.slice(0, 2)), elD('small', '', x.sem)); if (o.aoEscolher) { dt.onclick = () => o.aoEscolher(x.chave); dt.classList.add('clic'); dt.setAttribute('role', 'button'); }
-    if (x.folga) li.append(elD('div', 'sw-fx', x.folga));
+    const feitas = x.linhas.filter(l => l.ok || l.andamento), nq = x.folga ? feitas.length : x.linhas.length;
+    if (x.folga) { const cx = elD('div', 'sw-folga-caixa'), cs = elD('div', 'sw-folga-cards'); cx.append(elD('div', 'sw-fx', x.folga)); feitas.forEach(l => cs.append(swLinha(l))); if (feitas.length) cx.append(cs); li.append(cx); }   // folga: caixa rosa com o motivo e, embaixo, só o que os agentes executaram ou concluíram
     else if (!x.linhas.length) li.append(elD('div', 'sw-vazio', 'Nada marcado'));
     else {
       if (!o.pdf && x.chave === hk) {   // hoje: o que já passou, a linha do agora, depois o que está executando e o atrasado (não começou) e por fim o que vem pela frente (igual à agenda da empresa)
@@ -6563,9 +6593,20 @@ function swRender(m, o = {}) {
         x.linhas.filter(l => !passou(l) && !ex(l)).forEach(l => li.append(swLinha(l)));
       } else x.linhas.forEach(l => li.append(swLinha(l)));
     }
+    if (nq) li.prepend(elD('div', 'sw-qtd', nq + (nq === 1 ? ' tarefa' : ' tarefas')));   // quantidade do dia no lado direito do título
     sec.append(dt, li); raiz.append(sec);
   });
+  if (red && (m.imp || []).length) {
+    impBox = elD('section', 'sw-imps'); impBox.hidden = true;
+    impBox.append(elD('h2', '', 'Impedimentos'), elD('p', 'sw-sub', 'Não dá para desenvolver até quem está indicado responder ou aprovar.'));
+    m.imp.forEach(g => { const cx = elD('div', 'sw-aguarda'), li = elD('div', 'sw-lista'); g.linhas.forEach(l => li.append(swLinha(l))); cx.append(elD('h3', '', g.titulo), li); impBox.append(cx); });
+    const n = m.imp.reduce((a, b) => a + b.linhas.length, 0), bt = elD('button', 'sw-k sw-impb'); bt.type = 'button'; bt.setAttribute('aria-expanded', 'false');
+    bt.append(elD('b', '', String(n)), document.createTextNode(n === 1 ? ' impedimento' : ' impedimentos'));
+    bt.onclick = () => { const ab = impBox.hidden; impBox.hidden = !ab; bt.setAttribute('aria-expanded', String(ab)); bt.classList.toggle('on', ab); if (ab) impBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); };
+    raiz.append(bt, impBox);
+  }
   m.blocos.forEach(b => { const s = elD('section', 'sw-aguarda'), li = elD('div', 'sw-lista'); b.linhas.forEach(l => li.append(swLinha(l))); s.append(elD('h2', '', b.titulo), elD('p', 'sw-sub', b.sub), li); raiz.append(s); });
+  if (red) { const rola = elD('div', 'sw-rola'); [...raiz.children].filter(e => !e.matches('.sw-ancora, .sw-busca, .sw-busca-lin')).forEach(e => rola.append(e)); raiz.append(rola); }   // partes fixas congeladas; só a lista rola
   return raiz;
 }
 function swFiltra(raiz, q, impBox) {
@@ -6578,7 +6619,7 @@ function swFiltra(raiz, q, impBox) {
   raiz.querySelectorAll('.sw-dia').forEach(d => d.classList.toggle('sw-fora', !!q && !d.querySelector('.sw-it:not(.sw-fora)')));
   raiz.querySelectorAll('.sw-aguarda').forEach(d => d.classList.toggle('sw-fora', !!q && !d.querySelector('.sw-it:not(.sw-fora)')));
   if (impBox) { const bt = raiz.querySelector('.sw-impb'); impBox.hidden = q ? !impBox.querySelector('.sw-it:not(.sw-fora)') : !(bt && bt.classList.contains('on')); }
-  let nada = raiz.querySelector('.sw-nada-busca'); if (!nada) { nada = elD('div', 'sw-vazio sw-nada-busca', 'Nenhuma tarefa encontrada'); raiz.append(nada); } nada.hidden = !q || total > 0;
+  let nada = raiz.querySelector('.sw-nada-busca'); if (!nada) { nada = elD('div', 'sw-vazio sw-nada-busca', 'Nenhuma tarefa encontrada'); (raiz.querySelector('.sw-rola') || raiz).append(nada); } nada.hidden = !q || total > 0;
 }
 function swExportar(m) {   // monta a página inteira do PDF num nó que só aparece na impressão e abre "Salvar como PDF" do navegador
   document.getElementById('sw-print')?.remove();
@@ -6586,15 +6627,14 @@ function swExportar(m) {   // monta a página inteira do PDF num nó que só apa
   const t = document.title; document.title = 'Agenda ' + m.semana.replace(/\//g, '-');
   setTimeout(() => { try { window.print(); } catch (e) { } document.title = t; }, 80);
 }
-function swRolaAteAgora(raiz) {   // abre no dia de hoje: rola ANIMADO do começo do dia até a hora atual (dá para subir)
-  const alvo = raiz.querySelector('.sw-agora'); if (!alvo) return;
-  const topo = el => el.getBoundingClientRect().top - pCorpo.getBoundingClientRect().top + pCorpo.scrollTop;
-  const dia = alvo.closest('.sw-dia'), ini = dia ? Math.max(0, topo(dia) - 8) : 0, destino = () => Math.max(0, topo(alvo) - pCorpo.clientHeight * 0.4);
-  pCorpo.scrollTop = ini;
-  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) { pCorpo.scrollTop = destino(); return; }
-  let parou = false; const para = () => { parou = true; }; pCorpo.addEventListener('touchstart', para, { once: true, passive: true }); pCorpo.addEventListener('wheel', para, { once: true, passive: true });
-  setTimeout(() => { const b = destino(), t0 = performance.now(), dur = Math.min(2200, 700 + Math.abs(b - ini) * 0.8);
-    const passo = t => { if (parou) return; const k = Math.min(1, (t - t0) / dur); pCorpo.scrollTop = ini + (b - ini) * (1 - Math.pow(1 - k, 3)); if (k < 1) requestAnimationFrame(passo); }; requestAnimationFrame(passo); }, 500);
+function swRolaAteAgora(raiz) {   // posiciona na hora (sem animação) dentro da lista: hoje no "agora"; dia passado no fim do dia; senão no começo
+  const sc = raiz.querySelector('.sw-rola') || pCorpo, alvo = raiz.querySelector('.sw-agora'); if (!alvo) return;
+  const topo = el => el.getBoundingClientRect().top - sc.getBoundingClientRect().top + sc.scrollTop;
+  sc.scrollTop = Math.max(0, topo(alvo) - sc.clientHeight * 0.4);
+}
+function swRolaFimDoDia(raiz, k) {
+  const sc = raiz.querySelector('.sw-rola') || pCorpo, e = raiz.querySelector('.sw-dia[data-dia="' + k + '"]'); if (!e) return;
+  sc.scrollTop = Math.max(0, e.getBoundingClientRect().bottom - sc.getBoundingClientRect().top + sc.scrollTop - sc.clientHeight + 12);
 }
 function agendaSemanaTrab(c, F) {
   painel.classList.add('tema-claro'); c.classList.add('sw-tela');
@@ -6604,11 +6644,12 @@ function agendaSemanaTrab(c, F) {
     sel = k; let achou = false;
     c.querySelectorAll('.sw-dia').forEach(e => { const ok = !k || e.dataset.dia === k; e.style.display = ok ? '' : 'none'; e.classList.toggle('sel', e.dataset.dia === k); if (ok) achou = true; });
     nada.hidden = achou; if (cal) cal.escolhe(k);
-    if (k === hk && c.querySelector('.sw-agora')) swRolaAteAgora(c);
+    const posiciona = () => { const sc = c.querySelector('.sw-rola') || pCorpo; sc.scrollTop = 0; if (k === hk && c.querySelector('.sw-agora')) swRolaAteAgora(c); else if (k && k < hk) swRolaFimDoDia(c, k); };
+    posiciona(); requestAnimationFrame(posiciona);   // instantâneo, antes do primeiro desenho; vale ao trocar de dia
   };
   const marcas = {}; modelo.dias.forEach(x => { if (x.folga) marcas[x.chave] = ['#C878E8']; });   // só dia fora do comum (folga, viagem) leva marca; dia normal fica sem
-  const raiz = swRender(modelo, { busca: true, sel, exporta: () => swExportar(modelo), aoEscolher: escolhe }), box = elD('div', 'ag-cal sw-calbox');
-  raiz.querySelector('.sw-hero').after(box); const prim = raiz.querySelector('.sw-dia'); if (prim) prim.before(nada); else raiz.append(nada); c.replaceChildren(raiz);
+  const raiz = swRender(modelo, { reduzida: true, busca: true, exporta: () => swExportar(modelo), sel, aoEscolher: escolhe }), box = elD('div', 'ag-cal sw-calbox');
+  raiz.querySelector('.sw-ancora').after(box); const prim = raiz.querySelector('.sw-dia'); if (prim) prim.before(nada); else raiz.append(nada); c.replaceChildren(raiz);
   cal = montaCalendario(box, c, { marcas, sel, aoEscolher: escolhe });
   escolhe(sel);
 }
@@ -6698,6 +6739,7 @@ function abreAgenda(m) {
     });
     c.querySelectorAll('.p-sec').forEach(sec => { const prox = sec.nextElementSibling; if (!prox || prox.classList.contains('p-sec')) sec.remove(); });
     if (passados.length) { const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = 'Anteriores'; c.append(t); passados.reverse().forEach(e => c.append(e)); }
+    { const rola = elD('div', 'ag-rola'); [...c.children].filter(e => !e.matches('.ag-cal, .sw-exp-p')).forEach(e => rola.append(e)); c.append(rola); rola.scrollTop = rolou; }   // calendário congelado em cima; só a lista rola
     pCorpo.scrollTop = rolou;
     };
     monta();
