@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
 <meta name="app-versao" content="2026-11-11.287">
-<meta name="app-novidade" content="Agenda do Trabalho com o cartão novo e Agenda da Geral no mesmo desenho, com pesquisa e PDF">
+<meta name="app-novidade" content="Mapa da consulta preciso (Google Maps, rota a pé) e Anotar com a cor da tela de onde veio">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -6952,9 +6952,9 @@ function destinoNota() {
 const nomeRobo = k => (GRUPO[k] ? GRUPO[k].nome : 'Lyra').replace(/\s*\(.*\)$/, '');
 function notaBox(contexto, fecha) {
   const nb = document.createElement('div'); nb.className = 'nota-box';
-  const trab = document.body.classList.contains('modo-trab'), dest = trab ? 'lyra' : destinoNota(), nome = trab ? 'Lyra' : nomeRobo(dest), pra = trab ? 'Mandar pra Lyra' : 'Mandar pro ' + nome;   // Trabalho: tudo é pra Lyra, sem @ (May via Lyra, 09/11/2026)
+  const trab = document.body.classList.contains('modo-trab'), dest = trab ? 'lyra' : destinoNota(), nome = trab ? 'Lyra' : nomeRobo(dest), art = trab || ['lyra', 'nyx', 'vega'].includes(dest) ? 'pra' : 'pro', pra = 'Mandar ' + art + ' ' + nome;   // Lyra, Nyx e Vega: pra (May 11/11/2026)   // Trabalho: tudo é pra Lyra, sem @ (May via Lyra, 09/11/2026)
   nb.innerHTML = '<label>' + icone('note') + ' Escrever sobre isso</label><textarea rows="3" maxlength="600"></textarea><button type="button" class="manda" disabled></button>';
-  const ta = nb.querySelector('textarea'), mb = nb.querySelector('.manda'); ta.placeholder = trab ? 'Escreve aqui, vai pra Lyra' : 'Escreve aqui, vai pro ' + nome; mb.textContent = pra;
+  const ta = nb.querySelector('textarea'), mb = nb.querySelector('.manda'); ta.placeholder = 'Escreve aqui, vai ' + art + ' ' + nome; mb.textContent = pra;
   ta.oninput = () => { mb.disabled = !ta.value.trim(); if (!mb.disabled) mb.textContent = pra; };
   mb.onclick = async () => { const t = ta.value.trim(); if (t && await enviarComentario('📝 ' + contexto + ': ' + (trab ? '' : '@' + nome + ' ') + t, mb, fecha)) ta.value = ''; };
   return nb;
@@ -6962,6 +6962,8 @@ function notaBox(contexto, fecha) {
 // Ficha: popup por cima de tudo, com o detalhe (foto grande, texto) e a caixinha de anotação embaixo
 function abreFicha({ titulo, foto, corpo, contexto, fotos }) {
   const f = document.createElement('div'); f.className = 'ficha'; f.setAttribute('role', 'dialog'); f.setAttribute('aria-label', titulo || 'Detalhe');
+  // a ficha herda a cor da tela de onde abriu (Saúde rosa, Artes etc.), nunca o escuro padrão (May 11/11/2026: tela filha herda a mãe)
+  if (painel.getClientRects().length && ([...painel.classList].some(c => c.startsWith('tema-')) || painel.style.getPropertyValue('--c'))) { const tp = getComputedStyle(painel); ['--paper', '--fg', '--bg', '--line', '--muted'].forEach(v => { const k = tp.getPropertyValue(v).trim(); if (k) f.style.setProperty(v, k); }); const k = tp.getPropertyValue('--c').trim(); if (k) { f.style.setProperty('--accent', k); f.style.setProperty('--accent-fg', '#FFFFFF'); } }
   const cx = document.createElement('div'); cx.className = 'f-caixa';
   const topo = document.createElement('div'); topo.className = 'f-topo';
   const h = document.createElement('h3'); h.textContent = titulo || '';
