@@ -1780,8 +1780,9 @@ body .painel .sw-calbox .ag-dia.tem { background: #C878E8; color: #FFFFFF; } bod
 .ag-rola > .p-sec:first-child { margin-top: 0; }
 .p-corpo > .tela.sw-tela > .sw { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
 .sw-rola, .ag-rola { flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 8px; } .ag-rola { gap: 10px; } .sw-rola > *, .ag-rola > * { flex: none; min-width: 0; }
-.sw-ancora { display: none; } .sw-busca-lin { display: flex; gap: 8px; align-items: center; } .sw-busca-lin .sw-busca { flex: 1; min-width: 0; width: auto; }
-.sw-pdf-bt { flex: none; width: auto; min-height: 40px; padding: 0 12px; border-radius: 10px; border: 1.5px solid #CBD5E1; background: #FFFFFF; color: #B91C1C; font: 800 11px Inter, system-ui, sans-serif; letter-spacing: .04em; cursor: pointer; box-shadow: inset 0 2px 0 rgba(255,255,255,.9), 0 2px 4px rgba(15,23,42,.12); } .sw-pdf-bt:active { transform: scale(.94); } .sw-tela .sw-impb { align-self: flex-start; margin-top: 6px; flex: none; }
+.sw-ancora { display: none; } .sw-dia.sem-data { display: block; } .sw-dia.sem-data .sw-qtd { align-self: flex-end; font-size: 11px; line-height: 1.2; font-weight: 600; color: #64748B; padding: 0 2px 2px; }
+.sw-pdf-bt { padding: 0 !important; width: 44px !important; min-height: 44px !important; display: inline-flex; align-items: center; justify-content: center; } .sw-busca-lin { display: flex; gap: 8px; align-items: center; } .sw-busca-lin .sw-busca { flex: 1; min-width: 0; width: auto; }
+.sw-pdf-bt { flex: none; width: auto; min-height: 40px; padding: 0 12px; border-radius: 10px; border: 1.5px solid #CBD5E1; background: #FFFFFF; color: #B91C1C; font: 800 11px Inter, system-ui, sans-serif; letter-spacing: .04em; cursor: pointer; box-shadow: inset 0 2px 0 rgba(255,255,255,.9), 0 2px 4px rgba(15,23,42,.12); } .sw-pdf-bt:active { transform: scale(.94); } .sw-tela .sw-impb { align-self: stretch; width: 100%; justify-content: center; margin-top: 6px; flex: none; min-height: 44px; }
 /* chanfro do padrão do app (luz em cima, sombra embaixo) no calendário e nos cartões da Agenda do Trabalho */
 body .painel .sw-calbox.ag-cal { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 20px; padding: 12px 10px 14px; box-shadow: inset 0 2px 0 rgba(255,255,255,.95), inset 0 -4px 0 rgba(15,23,42,.12), 0 8px 16px -6px rgba(15,23,42,.25); }
 .sw-it { box-shadow: inset 0 2px 0 rgba(255,255,255,.7), inset 0 -3px 0 color-mix(in srgb, var(--c) 28%, transparent); border-radius: 9px; }
@@ -6571,7 +6572,7 @@ function swRender(m, o = {}) {
   if (o.busca) {   // pesquisa na hora: tarefa, projeto, cliente ou ticket; destaca o trecho; vazia mostra tudo
     const bx = elD('input', 'sw-busca'); bx.type = 'search'; bx.placeholder = 'Pesquisar tarefa, projeto ou ticket'; bx.autocomplete = 'off'; bx.setAttribute('aria-label', 'Pesquisar tarefa, projeto ou ticket');
     bx.oninput = () => swFiltra(raiz, bx.value, impBox);
-    if (red && o.exporta) { const lin = elD('div', 'sw-busca-lin'), pdf = elD('button', 'sw-pdf-bt', 'PDF'); pdf.type = 'button'; pdf.setAttribute('aria-label', 'Exportar PDF'); pdf.title = 'Exportar PDF'; pdf.onclick = o.exporta; lin.append(bx, pdf); raiz.append(lin); } else raiz.append(bx);   // Exportar PDF: botão discreto à direita da pesquisa
+    if (red && o.exporta) { const lin = elD('div', 'sw-busca-lin'), pdf = elD('button', 'sw-pdf-bt'); pdf.append(iconePdf()); pdf.type = 'button'; pdf.setAttribute('aria-label', 'Exportar PDF'); pdf.title = 'Exportar PDF'; pdf.onclick = o.exporta; lin.append(bx, pdf); raiz.append(lin); } else raiz.append(bx);   // Exportar PDF: botão discreto à direita da pesquisa
   }
   if (!red && (m.imp || []).length) {
     impBox = elD('section', 'sw-imps'); impBox.hidden = !o.pdf;
@@ -6594,7 +6595,7 @@ function swRender(m, o = {}) {
       } else x.linhas.forEach(l => li.append(swLinha(l)));
     }
     if (nq) li.prepend(elD('div', 'sw-qtd', nq + (nq === 1 ? ' tarefa' : ' tarefas')));   // quantidade do dia no lado direito do título
-    sec.append(dt, li); raiz.append(sec);
+    if (red) { sec.classList.add('sem-data'); sec.append(li); } else sec.append(dt, li); raiz.append(sec);   // celular: sem o bloco da data (o dia já está no calendário)
   });
   if (red && (m.imp || []).length) {
     impBox = elD('section', 'sw-imps'); impBox.hidden = true;
