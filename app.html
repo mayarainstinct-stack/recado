@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-10.264">
+<meta name="app-versao" content="2026-11-11.265">
 <meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1596,6 +1596,14 @@ body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px
 .vs-sl-b { flex: none; width: 52px; height: 52px; border-radius: 50%; border: 0; background: var(--vs-c); color: #FFFFFF; font: inherit; font-size: 22px; font-weight: 800; } .vs-sl-b:disabled { background: var(--vs-l); color: var(--vs-b); }
 .vs-duas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .vs-lado { background: #FFFFFF; border: 1px solid var(--vs-b); border-radius: 18px; padding: 12px; } .vs-lado h4 { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font-size: 14px; color: var(--vs-c); } .vs-lado.b { background: var(--vs-f); } .vs-lado .vs-lista li { font-size: 13px; }
 .vs-abas { flex-wrap: nowrap; overflow-x: auto; gap: 6px; } .vs-abas .sl-aba { max-width: none; padding: 8px 12px; font-size: 12.5px; }
+.vs-laudo-dica { margin: 0 0 10px; font-size: 14px; color: var(--vs-e); }
+.vs-bloco { min-width: 0; } .vs-laudo { min-width: 0; max-width: 100%; box-sizing: border-box; margin: 0 0 12px; padding: 12px; border-radius: 14px; background: #fff; border: 1.5px solid var(--vs-b); }
+.vs-laudo-cab { display: flex; flex-direction: column; gap: 2px; margin-bottom: 10px; } .vs-laudo-cab h4 { margin: 0; font-size: 16px; color: var(--vs-e); } .vs-laudo-cab .vs-data { font-size: 13px; color: var(--vs-c); }
+.vs-laudo-fotos { min-width: 0; display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+.vs-laudo-pg { position: relative; flex: none; width: 92px; height: 128px; padding: 0; border-radius: 8px; border: 1.5px solid var(--vs-b); background: var(--vs-l); overflow: hidden; cursor: pointer; }
+.vs-laudo-pg img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: none; } .vs-laudo-pg.ok img { display: block; }
+.vs-laudo-pg.erro { opacity: .5; }
+.vs-laudo-n { position: absolute; left: 4px; bottom: 4px; z-index: 1; min-width: 20px; padding: 1px 6px; border-radius: 10px; background: rgba(31,41,55,.78); color: #fff; font-size: 12px; text-align: center; }
 .vs-busca { width: 100%; box-sizing: border-box; margin: 0 0 10px; padding: 12px 14px 12px 40px; border-radius: 999px; border: 1.5px solid var(--vs-b); background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-4-4'/%3E%3C/svg%3E") no-repeat 14px center / 18px; font: inherit; font-size: 15px; color: var(--vs-e); }
 .vs-busca:focus { outline: none; border-color: var(--vs-c); } .vs-achou { justify-self: start; }
 .vs-qa { background: #FFFFFF; border: 1px solid var(--vs-b); border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; } .vs-qa h4 { display: flex; gap: 8px; align-items: flex-start; margin: 0 0 4px; font-size: 14px; } .vs-qa p { margin: 0 0 0 30px; font-size: 13px; line-height: 1.45; }
@@ -6756,6 +6764,14 @@ function abreVisual(m) {
       tabela: b => { const w = elD('section', 'vs-bloco vs-cx'); tit(b, w); const t = elD('table', 'md-tab'); const tr = elD('tr'); (b.cab || []).forEach(h => tr.append(tx('th', '', h))); t.append(tr); (b.linhas || []).forEach(l => { const r = elD('tr'); l.forEach(cel => r.append(tx('td', '', String(cel)))); t.append(r); }); const sw = elD('div', 'md-tab-w'); sw.append(t); w.append(sw); return w; },
       contatos: b => { const w = elD('section', 'vs-bloco vs-cx'); tit(b, w); (b.itens || []).forEach(x => { const l = elD('div', 'vs-cont'); l.append(ic(x.icone || 'phone', 'vs-ic-p')); const cx = elD('div'); cx.append(tx('b', '', x.nome)); const i = String(x.info || ''); if (/^https?:\/\//.test(i)) { const a = elD('a', '', i.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')); a.href = i; a.target = '_blank'; a.rel = 'noopener'; cx.append(a); } else cx.append(tx('span', '', i)); l.append(cx); w.append(l); }); return w; },
       duas: b => { const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-duas'); ['a', 'b'].forEach(k => { const x = b[k] || {}; const l = elD('div', 'vs-lado ' + k); const h = elD('h4'); h.append(ic(x.icone || (k === 'a' ? 'check' : 'warn'), 'vs-ic-p')); mdInline(h, x.titulo || ''); const ul = elD('ul', 'vs-lista'); (x.itens || []).forEach(s => ul.append(tx('li', '', s))); l.append(h, ul); g.append(l); }); w.append(g); return w; },
+      laudos: b => { const w = elD('section', 'vs-bloco'); tit(b, w); if (b.texto) w.append(tx('p', 'vs-laudo-dica', b.texto));   // Pasta cinza (May, 11/11/2026): os 3 laudos como imagem; baixa pela API com o token, só quando a tela abre, e fica guardada no aparelho (fotoUrl)
+        const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.unobserve(e.target); e.target.carrega(); } }), { rootMargin: '300px' }) : null;
+        (b.itens || []).forEach(x => { const k = elD('div', 'vs-laudo'); const h = elD('div', 'vs-laudo-cab'); h.append(elD('h4', '', x.nome), elD('span', 'vs-data', x.data + ' · ' + (x.paginas.length === 1 ? '1 página' : x.paginas.length + ' páginas'))); const fl = elD('div', 'vs-laudo-fotos');
+          x.paginas.forEach((arq, i) => { const t = elD('button', 'vs-laudo-pg'); t.type = 'button'; t.setAttribute('aria-label', x.nome + ', página ' + (i + 1)); t.append(elD('span', 'vs-laudo-n', String(i + 1))); const im = elD('img'); im.alt = ''; im.decoding = 'async'; t.append(im);
+            t.carrega = () => fotoUrl(arq).then(u => { im.src = u; t.classList.add('ok'); t.dataset.url = u; }).catch(() => t.classList.add('erro'));
+            t.onclick = async () => { try { const u = t.dataset.url || await fotoUrl(arq); abreZoom(u, arq, x.paginas); } catch (e) { showNote('Não abriu. Confere a internet.', true); } };
+            fl.append(t); if (io) io.observe(t); else t.carrega(); });
+          k.append(h, fl); w.append(k); }); return w; },
       topicos: b => { const w = elD('section', 'vs-bloco'); tit(b, w); (b.itens || []).forEach(x => { const k = elD('div', 'vs-topo'); const h = elD('h4'); mdInline(h, x.titulo); h.append(elD('span', 'vs-cont-n', String((x.itens || []).length))); const ul = elD('ul', 'vs-lista'); (x.itens || []).forEach(s => ul.append(tx('li', '', s))); k.append(h, ul); w.append(k); }); return w; },
     };
     if (d.modo === 'virar') R.cartoes = b => { const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-grade vs-flips'); (b.itens || []).forEach(x => { const k = elD('div', 'vs-flip'); k.setAttribute('role', 'button'); k.tabIndex = 0; const inn = elD('div', 'vs-flip-in'); const fr = elD('div', 'vs-face vs-frente'); fr.append(ic(x.icone), tx('h4', '', x.titulo), elD('small', '', 'toque pra ver')); const tr = elD('div', 'vs-face vs-verso'); tr.append(tx('h4', '', x.titulo), tx('p', '', x.texto)); inn.append(fr, tr); k.append(inn); k.onclick = () => k.classList.toggle('virado'); g.append(k); }); w.append(g); return w; };   // Dicas: cartões que viram ao tocar (May, 10/11/2026: "dicas são cartões")
