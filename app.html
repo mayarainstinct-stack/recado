@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-11.266">
-<meta name="app-novidade" content="Relatório da semana na Agenda: o que cada robô acertou e errou">
+<meta name="app-versao" content="2026-11-11.267">
+<meta name="app-novidade" content="Agenda do Trabalho com calendário, hoje selecionado e o visual da agenda da empresa">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -1758,6 +1758,20 @@ body.modo-trab .sl-t b { color: #1E293B; } body.modo-trab .sl-item.nota .sl-t, b
 .sw-aguarda { margin-top: 10px; padding: 10px 10px 12px; border: 2px dashed #94A3B8; border-radius: 12px; break-inside: avoid; } .sw-aguarda h2 { margin: 0 0 2px; font-size: 16px; color: #334155; } .sw-sub { margin: 0 0 8px; font-size: 11.5px; color: #475569; }
 .sw-aguarda .sw-hr { max-width: 30vw; overflow-wrap: anywhere; }
 @media (prefers-reduced-motion: reduce) { .sw * { scroll-behavior: auto; } }
+/* visual da agenda da empresa, simplificado pro celular (May 11/11/2026) */
+.sw-lg { border: 1px solid color-mix(in srgb, var(--c) 50%, white); border-radius: 999px; padding: 1px 7px; }
+.sw-cli { display: block; font-size: 9.5px; font-weight: 600; text-transform: none; letter-spacing: 0; color: #475569; line-height: 1.1; }
+.sw-it.ok { background: color-mix(in srgb, var(--c) 24%, white); border-left-color: var(--c); } .sw-it.ok .sw-hr, .sw-it.ok .sw-tx { color: #1E293B; font-weight: 400; } .sw-it.ok .sw-tag { color: color-mix(in srgb, var(--c) 55%, black); } .sw-it.ok .sw-okm { color: #1E293B; font-weight: 700; font-size: 11.5px; }
+.sw-it.todo { background: color-mix(in srgb, var(--c) 6%, white); border: 1px dashed color-mix(in srgb, var(--c) 75%, white); border-left: 5px solid var(--c); padding: 4px 7px 4px 8px; }
+.sw-it.doing { background: color-mix(in srgb, var(--c) 7%, white); box-shadow: inset 0 0 0 1.5px var(--c); } .sw-it.doing .sw-tx { font-weight: 600; }
+.sw-and { border: 0; background: none; padding: 0; color: color-mix(in srgb, var(--c) 75%, black); }
+.sw-dia.hoje .sw-data { background: #0F172A; border-color: #0F172A; color: #FFFFFF; } .sw-dia.hoje .sw-data small { color: #FFFFFF; font-weight: 600; }
+.sw-dia.folga .sw-data, .sw-fx { color: #FFFFFF; } .sw-dia.folga .sw-data small { color: #FFFFFF; }
+.sw-agora span { color: #FFFFFF; background: #DC2626; border-radius: 999px; padding: 1px 10px; font-size: 12px; }
+.sw-k.ok { background: #F1F5F9; } .sw-hero { position: static; }
+body .painel .sw-calbox .ag-dia.tem { background: #C878E8; color: #FFFFFF; } body .painel .sw-calbox .ag-dia.tem .ag-pts { display: none; } body .painel .sw-calbox .ag-dia.sel { background: #0F172A; color: #FFFFFF; outline: 0; box-shadow: none; } body .painel .sw-calbox .ag-dia.hoje:not(.sel) { outline: 2px solid #0F172A; outline-offset: -2px; text-decoration: none; }
+.sw-calbox { margin: 2px 0 6px; position: sticky; top: 0; z-index: 3; padding: 6px 10px 8px !important; } .sw-calbox .ag-cal-topo { margin-bottom: 2px; }
+.sw-it.late { background: #FDECEC !important; }
 /* versão do PDF (A4): linha única, como no gerar.py */
 .sw-pdf { gap: 5px; font-size: 12.6px; line-height: 1.28; color: #1E293B; background: #FFFFFF; }
 .sw-pdf .sw-hero { flex-wrap: nowrap; padding: 4px 4px 8px; margin-bottom: 4px; } .sw-pdf .sw-hero h1 { font-size: 20px; } .sw-pdf .sw-leg { flex-basis: auto; margin-left: auto; flex-wrap: nowrap; white-space: nowrap; gap: 10px; } .sw-pdf .sw-lg { font-size: 10.5px; color: #64748B; }
@@ -6374,16 +6388,18 @@ function dataDe(rot) {   // "04/11", "~29/10", "13/02/2027", "05/11 (qui) 10h" �
 }
 const TIPOS_AG = [['saude', 'Saúde', '#F43F5E', /consulta|m[ée]dic|psiquiatra|postinho|exame|guia|laudo|unimed|cirurgia|pesar|barriga|rem[ée]dio|dentista/i], ['viagem', 'Viagem', '#3B82F6', /[ôo]nibus|rodovi[áa]ria|passage|embarque|viagem|uber|voo/i], ['trabalho', 'Trabalho', '#8B5CF6', /adriano|empresa|hora extra|f[ée]rias|servi[çc]o|trabalh/i], ['dinheiro', 'Dinheiro', '#F59E0B', /pagamento|reembolso|pix|\bc6\b|vence|boleto|parcela/i], ['familia', 'Família e casa', '#10B981', /anivers[áa]rio|ch[áa] de|churrasco|festa|visita|m[ãa]e|pai\b/i]];
 const tipoAg = t => TIPOS_AG.find(x => x[3].test(t)) || ['outro', 'Outros', '#94A3B8'];   // a cor de cada compromisso (May 21:37)
-function montaCalendario(cal, c) {   // mês em grade; dia com compromisso tem ponto; tocar no dia mostra só os dele; setas trocam o mês
-  const els = [...c.querySelectorAll('.ag[data-dia]')], dias = new Set(els.map(e => e.dataset.dia)), hoje = new Date(), corDia = {};
+function montaCalendario(cal, c, opc) {   // opc (Agenda do Trabalho): { marcas: {AAAA-MM-DD: [cores]}, validos: [dias da semana], sel, aoEscolher(chave) } reaproveita o mesmo calendário sem filtrar cartões
+    // mês em grade; dia com compromisso tem ponto; tocar no dia mostra só os dele; setas trocam o mês
+  const els = opc ? [] : [...c.querySelectorAll('.ag[data-dia]')], dias = new Set(opc ? Object.keys(opc.marcas) : els.map(e => e.dataset.dia)), hoje = new Date(), corDia = opc ? opc.marcas : {};
   els.forEach(e => { (corDia[e.dataset.dia] = corDia[e.dataset.dia] || []).includes(e.dataset.cor) || corDia[e.dataset.dia].push(e.dataset.cor); });
-  let ano = hoje.getFullYear(), mes = hoje.getMonth(), sel = '';
+  let ano = hoje.getFullYear(), mes = hoje.getMonth(), sel = opc ? opc.sel || '' : '';
+  if (sel) { ano = +sel.slice(0, 4); mes = +sel.slice(5, 7) - 1; }
   const NOMES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
-  const filtra = () => { cal.dataset.sel = sel;   // sem dia escolhido: só os próximos (o que já passou some); com dia: só os dele (May 12:54)
+  const filtra = () => { cal.dataset.sel = sel; if (opc) return;   // sem dia escolhido: só os próximos (o que já passou some); com dia: só os dele (May 12:54)
     c.querySelectorAll('.ag').forEach(e => { e.hidden = sel ? e.dataset.dia !== sel : e.classList.contains('passou'); });
     c.querySelectorAll('.p-sec').forEach(t => { t.hidden = !!sel || /anterior/i.test(t.textContent); });
     if (proxT) { proxT.textContent = 'Compromissos do dia'; proxT.hidden = !sel; } };
-  const proxT = elD('div', 'p-sec', 'Próximos'); cal.after(proxT);
+  const proxT = opc ? null : elD('div', 'p-sec', 'Próximos'); if (proxT) cal.after(proxT);
   const desenhar = () => {
     cal.replaceChildren();
     const topo = elD('div', 'ag-cal-topo'), ant = elD('button', 'ag-seta'), prox = elD('button', 'ag-seta');
@@ -6391,17 +6407,19 @@ function montaCalendario(cal, c) {   // mês em grade; dia com compromisso tem p
     ant.onclick = () => { mes--; if (mes < 0) { mes = 11; ano--; } desenhar(); }; prox.onclick = () => { mes++; if (mes > 11) { mes = 0; ano++; } desenhar(); };
     topo.append(ant, elD('b', '', NOMES[mes] + ' ' + ano), prox); cal.append(topo);
     const g = elD('div', 'ag-grade'); ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].forEach(x => g.append(elD('span', 'ag-sem', x)));
-    const primeiro = new Date(ano, mes, 1).getDay(), total = new Date(ano, mes + 1, 0).getDate();
+    let primeiro = new Date(ano, mes, 1).getDay(), total = new Date(ano, mes + 1, 0).getDate(), de = 1;
+    if (opc) { const v = opc.validos.map(k => new Date(+k.slice(0, 4), +k.slice(5, 7) - 1, +k.slice(8))), a0 = v[0], z0 = v[v.length - 1]; de = a0.getDate(); total = z0.getDate(); primeiro = a0.getDay(); ant.hidden = prox.hidden = true; }   // Trabalho: só a faixa da semana, pra caber com a lista do dia
     for (let k = 0; k < primeiro; k++) g.append(elD('span'));
-    for (let dd = 1; dd <= total; dd++) {
+    for (let dd = de; dd <= total; dd++) {
       const chave = ano + '-' + String(mes + 1).padStart(2, '0') + '-' + String(dd).padStart(2, '0'), b = elD('button', 'ag-dia', String(dd)); b.type = 'button';
       if (dias.has(chave)) { b.classList.add('tem'); const pts = elD('span', 'ag-pts'); corDia[chave].slice(0, 3).forEach(cor => { const i = elD('i'); i.style.background = cor; pts.append(i); }); b.append(pts); }   // um pontinho por tipo, na cor dele
       if (chave === sel) b.classList.add('sel');
       if (dd === hoje.getDate() && mes === hoje.getMonth() && ano === hoje.getFullYear()) b.classList.add('hoje');
-      b.onclick = () => { sel = sel === chave ? '' : chave; filtra(); desenhar(); };
+      b.onclick = () => { if (opc) { if (!opc.validos.includes(chave)) return; sel = chave; desenhar(); opc.aoEscolher(chave); return; } sel = sel === chave ? '' : chave; filtra(); desenhar(); };
       g.append(b);
     }
     cal.append(g);
+    if (opc) return;
     const usados = (agTiposAtual || TIPOS_AG.concat([['outro', 'Outros', '#94A3B8']])).filter(t => els.some(e => e.dataset.tipo === t[0])), leg = elD('div', 'ag-leg');   // a legenda das cores
     usados.forEach(t => { const x = elD('span', '', t[1]); x.style.setProperty('--tc', t[2]); leg.append(x); }); if (usados.length) cal.append(leg);
     if (sel) { const v = elD('button', 'ag-tudo', 'Ver tudo'); v.type = 'button'; v.onclick = () => { sel = ''; filtra(); desenhar(); }; cal.append(v);
@@ -6413,6 +6431,7 @@ function montaCalendario(cal, c) {   // mês em grade; dia com compromisso tem p
   cal.addEventListener('touchend', e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null;
     if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return; e.stopPropagation(); const dir = dx < 0 ? 1 : -1; mes += dir; if (mes < 0) { mes = 11; ano--; } if (mes > 11) { mes = 0; ano++; } desenhar(); entraDoLado(cal.querySelector('.ag-grade'), dir); }, { passive: true });
   desenhar(); filtra();
+  return opc ? { escolhe: k => { sel = k; desenhar(); } } : undefined;
 }
 // ---- Agenda da semana no layout do PDF (May 09/11/2026): mesmo desenho do PDF de C:/claude/tools/agenda-da-semana/gerar.py; CSS .sw escopado
 let agTiposAtual = null;
@@ -6430,8 +6449,8 @@ function swModeloTrab(d) {
   (d.itens || []).forEach(it => {
     const dia = dias.find(x => (it[0] || '').startsWith(x.dd)); if (!dia) return;
     const ini = swDH(it[0], ano), fim = it[3] || '', f = swFeito(swCap(it[2] || '')), [cor, nome] = SW_PROJ[it[1]] || ['#64748b', it[1]];
-    let hora = (it[0] || '').slice(6); if (fim) hora += '–' + (fim.slice(0, 5) === it[0].slice(0, 5) ? fim.slice(6) : fim);
-    const ok = f.ok || !!fim; dia.linhas.push({ ini, hora, tag: nome, texto: f.texto, cor, ok, andamento: !ok && !!ini && ini <= agora });
+    const hora = (it[0] || '').slice(6), ok = f.ok || !!fim, cm = f.texto.match(/^([^:\d]{2,22}?):\s+(\S.*)$/);   // "cliente: tarefa" vira etiqueta pequena embaixo do projeto, como na agenda da empresa
+    dia.linhas.push({ ini, hora, fimH: fim ? fim.slice(fim.length > 5 ? 6 : 0) : '', tag: nome, cli: cm && cm[1].split(' ').length <= 3 ? cm[1] : '', texto: cm && cm[1].split(' ').length <= 3 ? cm[2] : f.texto, cor, ok, andamento: !ok && !!ini && ini <= agora, dia: true, extra: it[4] === true || it[4] === 'extra' || !!(d.extra || d.hora_extra || {})[it[0].slice(0, 5)] });   // vermelho de hora extra SÓ quando o JSON marca (item[4] true/'extra' ou extra:{"DD/MM":true}); o app não inventa o sinal
   });
   dias.forEach(x => x.linhas.sort((a, b) => (a.hora < b.hora ? -1 : a.hora > b.hora ? 1 : 0)));
   const blocos = [], lin = (x, hora) => { const [cor, nome] = SW_PROJ[x[0]] || ['#64748b', x[0]], f = swFeito(swCap(x[1] || '')); return { hora, tag: nome, texto: f.texto, cor, ok: f.ok }; };
@@ -6467,8 +6486,10 @@ function swModeloPessoal(F, ref, ass) {
 }
 function swLinha(o) {
   const el = elD('div', 'sw-it' + (o.ok ? ' ok' : '')); el.style.setProperty('--c', o.cor);
-  el.append(elD('span', 'sw-hr', o.hora), elD('span', 'sw-tag', o.tag), elD('span', 'sw-tx', o.texto));
-  if (o.ok) el.append(elD('span', 'sw-okm', 'Concluído')); else if (o.andamento) el.append(elD('span', 'sw-and', 'Em andamento'));
+  if (!o.ok && o.dia) el.classList.add(o.andamento ? 'doing' : 'todo'); if (o.extra) el.classList.add('late');
+  const tg = elD('span', 'sw-tag', o.tag); if (o.cli) tg.append(elD('small', 'sw-cli', o.cli));
+  el.append(elD('span', 'sw-hr', o.hora), tg, elD('span', 'sw-tx', o.texto));
+  if (o.ok) el.append(elD('span', 'sw-okm', '✓' + (o.fimH ? ' ' + o.fimH : ''))); else if (o.andamento) el.append(elD('span', 'sw-and', 'executando'));
   return el;
 }
 const swAgora = d => { const e = elD('div', 'sw-agora'); e.append(elD('span', '', 'Agora ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'))); return e; };
@@ -6498,7 +6519,7 @@ function swRender(m, o = {}) {
     raiz.append(impBox);
   }
   m.dias.forEach(x => {
-    const sec = elD('section', 'sw-dia' + (x.folga ? ' folga' : '') + (x.chave === o.sel ? ' sel' : '')), dt = elD('div', 'sw-data'), li = elD('div', 'sw-lista');
+    const sec = elD('section', 'sw-dia' + (x.folga ? ' folga' : '') + (x.chave === o.sel ? ' sel' : '') + (!o.pdf && x.chave === hk ? ' hoje' : '')), dt = elD('div', 'sw-data'), li = elD('div', 'sw-lista');
     sec.dataset.dia = x.chave; dt.append(elD('b', '', x.dd.slice(0, 2)), elD('small', '', x.sem)); if (o.aoEscolher) dt.onclick = () => o.aoEscolher(x.chave);
     if (x.folga) li.append(elD('div', 'sw-fx', x.folga));
     else if (!x.linhas.length) li.append(elD('div', 'sw-vazio', 'Nada marcado'));
@@ -6530,9 +6551,18 @@ function swRolaAteAgora(raiz) {   // abre no dia de hoje: rola ANIMADO do começ
 }
 function agendaSemanaTrab(c, F) {
   painel.classList.add('tema-claro'); c.classList.add('sw-tela');
-  const modelo = swModeloTrab(F), hk = swChave(new Date()); let sel = modelo.dias.some(x => x.chave === hk) ? hk : (modelo.dias[0] || {}).chave;
-  c.replaceChildren(swRender(modelo, { sel, exporta: () => swExportar(modelo), aoEscolher: k => { sel = k; c.querySelectorAll('.sw-dia').forEach(e => e.classList.toggle('sel', e.dataset.dia === k)); } }));
-  swRolaAteAgora(c);
+  const modelo = swModeloTrab(F), hk = swChave(new Date()); let sel = modelo.dias.some(x => x.chave === hk) ? hk : (modelo.dias[0] || {}).chave, cal;
+  const escolhe = k => {   // hoje: rola até a linha do agora; outro dia: começa do topo dele
+    sel = k; c.querySelectorAll('.sw-dia').forEach(e => e.classList.toggle('sel', e.dataset.dia === k)); if (cal) cal.escolhe(k);
+    if (k === hk && c.querySelector('.sw-agora')) swRolaAteAgora(c);
+    else { const d = c.querySelector('.sw-dia[data-dia="' + k + '"]'); if (d) pCorpo.scrollTop = Math.max(0, d.getBoundingClientRect().top - pCorpo.getBoundingClientRect().top + pCorpo.scrollTop - 8); }
+  };
+  const marcas = {}; modelo.dias.forEach(x => { if (x.folga) marcas[x.chave] = ['#C878E8']; });   // só dia fora do comum (folga, viagem) leva marca; dia normal fica sem
+  const raiz = swRender(modelo, { sel, exporta: () => swExportar(modelo), aoEscolher: escolhe }), box = elD('div', 'ag-cal sw-calbox');
+  raiz.querySelector('.sw-hero').after(box); c.replaceChildren(raiz);
+  { const pt = parseFloat(getComputedStyle(pCorpo).paddingTop) || 0; box.style.top = (-pt) + 'px'; }   // cola no topo da área rolável, sem a faixa do preenchimento
+  cal = montaCalendario(box, c, { marcas, validos: modelo.dias.map(x => x.chave), sel, aoEscolher: escolhe });
+  if (sel === hk) swRolaAteAgora(c);
 }
 function abreAgenda(m) {
   tela(m.nome, async c => {
@@ -6566,7 +6596,7 @@ function abreAgenda(m) {
       if (FONTE.rodape) linhasAg.push('', FONTE.rodape);
     }
     painel.classList.add('tema-claro'); c.classList.add('ag-tela');   // Agenda clara, cara de consultório (May 08/11 12:49 e 12:56): branco, verde-água suave, cantos redondos, sem neon
-    if (!/agenda-trabalho/.test(m.arq || '')) { const rl = elD('button', 'ag-relat'); rl.type = 'button'; rl.append(elD('b', '', 'Relatório da semana'), elD('small', '', 'o que cada robô acertou e errou, 06 a 08/11')); rl.onclick = () => abreTexto({ nome: 'Relatório da semana', arq: 'casa/relatorios/semana-06-08-11-2026.md' }); c.append(rl); }   // o relatório que ela pediu na Agenda (May 08/11 18:30)
+    if (false) { const rl = elD('button', 'ag-relat'); rl.type = 'button'; rl.append(elD('b', '', 'Relatório da semana'), elD('small', '', 'o que cada robô acertou e errou, 06 a 08/11')); rl.onclick = () => abreTexto({ nome: 'Relatório da semana', arq: 'casa/relatorios/semana-06-08-11-2026.md' }); c.append(rl); }   // o relatório que ela pediu na Agenda (May 08/11 18:30)
     if (AGASS) { const ex = elD('button', 'sw-exp sw-exp-p', 'Exportar PDF da semana'); ex.type = 'button'; ex.onclick = () => { const s = (cal.dataset.sel || '').split('-'), ref = s.length === 3 ? new Date(+s[0], +s[1] - 1, +s[2]) : new Date(); swExportar(swModeloPessoal(FONTE, ref, AGASS)); }; c.append(ex); }
     const cal = elD('div', 'ag-cal'); c.append(cal); setTimeout(() => montaCalendario(cal, c), 0);   // calendário do mês em cima (May, 07/11/2026 12:43 e 12:44: agenda de verdade, azul)
     const neg = (el, txt) => txt.split(/(\*\*[^*]+\*\*)/).forEach(parte => {
