@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-11.285">
+<meta name="app-versao" content="2026-11-11.287">
 <meta name="app-novidade" content="Agenda do Trabalho com o cartão novo e Agenda da Geral no mesmo desenho, com pesquisa e PDF">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -7141,19 +7141,21 @@ function carregaLeaflet() {
     const sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js'; sc.onload = () => window.L ? ok(window.L) : erro(new Error('L')); sc.onerror = () => { LEAFLET = null; erro(new Error('leaflet')); }; document.head.append(sc);
   }));
 }
-function abreMapa(x) {
+function abreMapa(x) {   // Google Maps dentro do app (embed sem chave): acha o número exato e mostra a rota a pé da rodoviária (May 11/11: "preciso de um mapa que seja preciso")
   const p = popupRosa(x.nome || 'Mapa'), cx = elD('div', 'pr-mapa'); p.corpo.append(cx);
-  p.corpo.append(elD('p', 'pr-legenda', x.pino || x.nome || ''));
+  let dest = '', orig = '';
+  try { const u = new URL(x.mapaExterno || ''); dest = u.searchParams.get('destination') || ''; orig = u.searchParams.get('origin') || ''; } catch (e) {}
+  if (!dest) dest = x.lat + ',' + x.lon;
+  const e = encodeURIComponent, srcs = { rota: orig ? 'https://www.google.com/maps?saddr=' + e(orig) + '&daddr=' + e(dest) + '&dirflg=w&hl=pt-BR&output=embed' : '', lugar: 'https://www.google.com/maps?q=' + e(dest) + '&z=17&hl=pt-BR&output=embed' };
+  const fr = document.createElement('iframe'); fr.loading = 'eager'; fr.referrerPolicy = 'no-referrer-when-downgrade'; fr.style.cssText = 'width:100%;height:100%;border:0;border-radius:inherit'; fr.title = 'Mapa';
+  const abas = elD('div', 'pr-mapa-abas'); abas.style.cssText = 'display:flex;gap:8px;margin:10px 0 0';
+  const aba = (k, rot) => { const bt = elD('button', 'pr-externo', rot); bt.type = 'button'; bt.style.cssText = 'flex:1;cursor:pointer;margin:0'; bt.onclick = () => { fr.src = srcs[k]; [...abas.children].forEach(c => c.style.opacity = c === bt ? '1' : '.55'); }; abas.append(bt); return bt; };
+  cx.append(fr);
+  const b1 = srcs.rota ? aba('rota', 'Rota a pé') : null, b2 = aba('lugar', 'Consultório');
+  p.corpo.append(abas, elD('p', 'pr-legenda', x.pino || x.nome || ''));
   if (x.mapaExterno) { const a = elD('a', 'pr-externo', x.mapaExternoRotulo || 'Abrir no app de mapas'); a.href = x.mapaExterno; a.target = '_blank'; a.rel = 'noopener'; p.corpo.append(a); }
-  let mapa = null; p.aoFechar(() => { try { if (mapa) mapa.remove(); } catch (e) {} });
-  carregaLeaflet().then(L => {
-    mapa = L.map(cx, { zoomControl: true, attributionControl: true }).setView([x.lat, x.lon], 16);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(mapa);
-    const pino = (lat, lon, rot, cor) => L.marker([lat, lon], { icon: L.divIcon({ className: 'pr-pino', html: '<span style="background:' + cor + '"></span>', iconSize: [26, 26], iconAnchor: [13, 26] }), title: rot }).addTo(mapa).bindTooltip(rot, { permanent: true, direction: 'top', offset: [0, -24] });
-    pino(x.lat, x.lon, 'Consultório', '#D61F69');
-    if (x.origem && x.origem.lat != null) { pino(x.origem.lat, x.origem.lon, 'Rodoviária', '#3B82F6'); mapa.fitBounds([[x.lat, x.lon], [x.origem.lat, x.origem.lon]], { padding: [40, 40] }); }
-    setTimeout(() => { try { mapa.invalidateSize(); } catch (e) {} }, 120);
-  }).catch(() => { cx.classList.add('erro'); cx.textContent = 'O mapa precisa de internet. Use o botão abaixo para abrir no app de mapas.'; });
+  (b1 || b2).click();
+  if (!navigator.onLine) { cx.classList.add('erro'); cx.textContent = 'O mapa precisa de internet. Use o botão abaixo para abrir no app de mapas.'; }
 }
 function cartoesDoc(b, tit, tx) {   // cartões de documento com as páginas em miniatura (cada miniatura carrega só quando aparece na tela)
   const w = elD('section', 'vs-bloco'); tit(b, w); if (b.texto) w.append(tx('p', 'vs-laudo-dica', b.texto));
