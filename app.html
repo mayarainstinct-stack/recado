@@ -1605,6 +1605,23 @@ body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px
 .vs-abas { flex-wrap: nowrap; overflow-x: auto; gap: 6px; } .vs-abas .sl-aba { max-width: none; padding: 8px 12px; font-size: 12.5px; }
 .vs-laudo-dica { margin: 0 0 10px; font-size: 14px; color: var(--vs-e); }
 .vs-bloco { min-width: 0; } .vs-laudo { min-width: 0; max-width: 100%; box-sizing: border-box; margin: 0 0 12px; padding: 12px; border-radius: 14px; background: #fff; border: 1.5px solid var(--vs-b); }
+/* Passagens (popup): rosa da Saude, cantos grandes (24px popup, 16px blocos) */
+.vs-pass { display: grid; gap: 12px; } .vs-pass-btn { all: unset; box-sizing: border-box; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 12px; padding: 18px 18px; border-radius: 16px; background: linear-gradient(135deg, #D61F69, #F0609A); color: #fff; cursor: pointer; box-shadow: 0 6px 16px rgba(214,31,105,.30); -webkit-tap-highlight-color: transparent; } .vs-pass-btn:active { transform: scale(.98); }
+.vs-pass-btn b { font-size: 21px; line-height: 1.2; } .vs-pass-btn span { font-size: 15px; opacity: .96; } .vs-pass-btn .go { grid-row: 1 / span 3; grid-column: 2; align-self: center; padding: 8px 14px; border-radius: 999px; background: #fff; color: #D61F69; font-size: 13px; font-weight: 800; opacity: 1; }
+.pass-pop { position: fixed; inset: 0; z-index: 60; background: rgba(74,15,43,.55); display: grid; place-items: center; padding: 14px; font-family: var(--font-ui); }
+.pass-caixa { position: relative; width: 100%; max-width: 420px; max-height: 94vh; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; background: #FFF1F6; color: #4A0F2B; border-radius: 24px; padding: 18px 16px 20px; box-shadow: 0 14px 40px rgba(214,31,105,.35); animation: entra .2s ease-out both; touch-action: pan-y; }
+.pass-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; } .pass-abas { display: flex; gap: 6px; }
+.pass-aba { all: unset; box-sizing: border-box; padding: 9px 18px; border-radius: 999px; border: 1.5px solid #F5C6D6; background: #fff; color: #D61F69; font-size: 14px; font-weight: 800; cursor: pointer; } .pass-aba.on { background: #D61F69; border-color: #D61F69; color: #fff; }
+.pass-x { all: unset; box-sizing: border-box; flex: none; width: 46px; height: 46px; display: grid; place-items: center; border-radius: 50%; background: #fff; color: #D61F69; border: 1.5px solid #F5C6D6; cursor: pointer; } .pass-x svg { width: 22px; height: 22px; }
+.pass-corpo { display: grid; gap: 12px; } .pass-data { margin: 0; font-size: 14px; font-weight: 700; color: #A3134F; text-align: center; }
+.pass-onde { display: grid; gap: 2px; padding: 14px 16px; border-radius: 16px; background: #fff; border: 1.5px solid #F5C6D6; box-shadow: 0 2px 8px rgba(214,31,105,.08); } .pass-onde small { font-size: 12px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: #D61F69; } .pass-onde b { font-size: 19px; line-height: 1.25; } .pass-onde span { font-size: 15px; color: #A3134F; }
+.pass-gr { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .pass-gr.um { grid-template-columns: 1fr; }
+.pass-gd { display: grid; gap: 2px; justify-items: center; text-align: center; padding: 14px 8px; border-radius: 16px; background: linear-gradient(135deg, #D61F69, #F0609A); color: #fff; box-shadow: 0 4px 12px rgba(214,31,105,.30); } .pass-gd small { font-size: 12px; font-weight: 800; letter-spacing: .06em; opacity: .95; } .pass-gd b { font-size: 46px; line-height: 1.05; font-weight: 800; }
+.pass-pq { display: grid; gap: 2px; justify-items: center; text-align: center; padding: 12px 8px; border-radius: 16px; background: #fff; border: 1.5px solid #F5C6D6; } .pass-pq small { font-size: 12px; font-weight: 800; letter-spacing: .04em; color: #D61F69; } .pass-pq b { font-size: 24px; color: #A3134F; }
+.pass-qr { display: grid; gap: 8px; justify-items: center; padding: 14px 12px 12px; border-radius: 16px; background: #fff; border: 1.5px solid #F5C6D6; } .pass-qr small { font-size: 13px; font-weight: 800; color: #D61F69; text-align: center; }
+.pass-qr .qrb { width: 100%; aspect-ratio: 1 / 1; background: #fff; border-radius: 12px; display: grid; place-items: center; } .pass-qr img { width: 100%; height: 100%; object-fit: contain; background: #fff; image-rendering: pixelated; } .pass-qr .qrb.erro::after { content: "QR sem internet. Abra uma vez com internet."; padding: 12px; text-align: center; font-size: 14px; color: #A3134F; }
+.pass-peq { display: grid; gap: 4px; padding: 12px 14px; border-radius: 16px; background: #fff; border: 1px solid #F5C6D6; font-size: 13px; color: #A3134F; } .pass-peq div { display: flex; justify-content: space-between; gap: 10px; } .pass-peq b { color: #4A0F2B; overflow-wrap: anywhere; text-align: right; }
+.pass-pdf { all: unset; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 10px 14px; border-radius: 16px; background: #fff; border: 1.5px solid #F5C6D6; color: #D32F2F; font-size: 15px; font-weight: 800; cursor: pointer; } .pass-pdf:active { background: #FCE7F0; } .pass-pdf.ocupado { opacity: .5; } .pass-pdf span.t { color: #D61F69; }
 .vs-ligar { display: grid; gap: 10px; } .vs-lig { display: flex; gap: 8px; align-items: stretch; }
 .vs-lig-tel { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 14px; background: #D61F69; color: #fff; text-decoration: none; box-shadow: 0 3px 10px rgba(214,31,105,.35); } .vs-lig-tel:active { transform: scale(.98); }
 .vs-lig-tel .vs-ic-p { flex: none; width: 26px; height: 26px; color: #fff; stroke: #fff; } .vs-lig-tx { flex: 1; min-width: 0; display: grid; gap: 1px; } .vs-lig-tx b { font-size: 16px; } .vs-lig-tx small { font-size: 15px; opacity: .95; }
@@ -6988,6 +7005,62 @@ async function entregaPdfs(files) {   // ok = abriu a folha de compartilhar; bai
   files.forEach((f, i) => setTimeout(() => baixaArquivo(f, f.name), i * 400)); return 'baixou';
 }
 function iconePdf() { const s = elD('span', 'vs-pdf-ic'); s.setAttribute('aria-hidden', 'true'); s.innerHTML = '<svg viewBox="0 0 24 28" width="26" height="30"><path d="M3 1.5h12l6 6V26a1.5 1.5 0 0 1-1.5 1.5h-16A1.5 1.5 0 0 1 2 26V3A1.5 1.5 0 0 1 3.5 1.5z" class="fl" fill="#fff" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M15 1.5V7.5h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><rect x="2" y="13.5" width="19" height="8" rx="1.6" fill="currentColor" class="tg"/><text x="11.5" y="19.7" text-anchor="middle" font-size="6.6" font-weight="800" font-family="Arial,sans-serif" fill="#fff" class="tx">PDF</text></svg>'; return s; }
+function cartoesPassagens(b, tit, tx) {   // bloco "passagens": 1 botao grande por item; toque abre o popup rosa, deslizar troca entre ida e volta (May, 11/11/2026)
+  const w = elD('section', 'vs-bloco'); tit(b, w); if (b.texto) w.append(tx('p', 'vs-laudo-dica', b.texto));
+  const its = b.itens || [], g = elD('div', 'vs-pass');
+  its.forEach((x, i) => {
+    const k = elD('button', 'vs-pass-btn'); k.type = 'button';
+    const nome = /volta/i.test(x.titulo || '') ? 'Passagem de volta' : /ida/i.test(x.titulo || '') ? 'Passagem de ida' : 'Passagem ' + (x.titulo || '');
+    k.append(elD('b', '', nome), elD('span', '', x.data || ''), elD('span', '', (x.embarque ? 'Embarque ' + x.embarque : '') + (x.saida ? (x.embarque ? ' · ' : '') + 'Saída ' + x.saida : '')), elD('span', 'go', 'Abrir'));
+    k.onclick = () => abrePassagem(its, i); g.append(k);
+    (x.qrs || []).forEach(q => { fotoUrl(q.img, true).catch(() => {}); });   // ja guarda os QR no aparelho (abrem sem internet na rodoviaria)
+  });
+  w.append(g); return w;
+}
+function abrePassagem(its, i0) {
+  let i = i0; const pop = elD('div', 'pass-pop'); pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-modal', 'true');
+  const cx = elD('div', 'pass-caixa'), topo = elD('div', 'pass-topo'), abas = elD('div', 'pass-abas'), corpo = elD('div', 'pass-corpo');
+  const x = elD('button', 'pass-x'); x.type = 'button'; x.setAttribute('aria-label', 'Fechar'); x.innerHTML = icone('close');
+  const botoes = its.map((it, k) => { const a = elD('button', 'pass-aba', it.titulo || String(k + 1)); a.type = 'button'; a.onclick = () => troca(k); abas.append(a); return a; });
+  topo.append(abas, x); cx.append(topo, corpo); pop.append(cx); document.body.append(pop);
+  const par = (r, v) => { const d = elD('div'); d.append(elD('span', '', r), elD('b', '', v)); return d; };
+  function desenha() {
+    const it = its[i]; corpo.replaceChildren(); botoes.forEach((a, k) => a.classList.toggle('on', k === i));
+    corpo.append(elD('p', 'pass-data', it.data || ''));
+    const on = elD('div', 'pass-onde'); on.append(elD('small', '', 'Onde ir'), elD('b', '', it.local_embarque || it.origem || ''));
+    if (it.plataforma) on.append(elD('span', '', 'Plataforma: ' + it.plataforma)); if (it.empresa) on.append(elD('span', '', it.empresa)); if (it.destino) on.append(elD('span', '', 'Para ' + it.destino)); corpo.append(on);
+    const gr = elD('div', 'pass-gr' + (it.poltrona && it.embarque ? '' : ' um'));
+    const gd = (r, v) => { const e = elD('div', 'pass-gd'); e.append(elD('small', '', r), elD('b', '', v)); return e; };
+    if (it.embarque) gr.append(gd('EMBARQUE', it.embarque)); if (it.poltrona) gr.append(gd('POLTRONA', it.poltrona)); corpo.append(gr);
+    const g2 = elD('div', 'pass-gr'); const pq = (r, v) => { const e = elD('div', 'pass-pq'); e.append(elD('small', '', r), elD('b', '', v)); return e; };
+    if (it.saida) g2.append(pq('SAÍDA', it.saida)); if (it.chegada) g2.append(pq('CHEGADA', it.chegada));
+    if (g2.children.length) { if (g2.children.length === 1) g2.classList.add('um'); corpo.append(g2); }
+    (it.qrs || []).forEach(q => {
+      const e = elD('div', 'pass-qr'), bx = elD('div', 'qrb'), im = elD('img'); im.alt = 'QR code: ' + (q.legenda || ''); bx.append(im);
+      fotoUrl(q.img, true).then(u => { im.src = u; }).catch(() => bx.classList.add('erro'));
+      e.append(bx); if (q.legenda) e.append(elD('small', '', q.legenda)); corpo.append(e);
+    });
+    const pe = elD('div', 'pass-peq'); if (it.localizador) pe.append(par('Localizador', it.localizador)); if (it.bilhete) pe.append(par('Bilhete', it.bilhete)); if (it.passageira) pe.append(par('Passageira', it.passageira)); corpo.append(pe);
+    if (it.pdf) {
+      const pb = elD('button', 'pass-pdf'); pb.type = 'button'; pb.append(iconePdf(), elD('span', 't', 'Baixar o bilhete em PDF'));
+      pb.onclick = async () => { if (pb.classList.contains('ocupado')) return; pb.classList.add('ocupado'); try { const f = await pdfArquivo(it.pdf); if (await entregaPdfs([f]) === 'cancelou') showNote('Toque de novo para compartilhar.'); } catch (e) { showNote('Não baixou. Confere a internet.', true); } pb.classList.remove('ocupado'); };
+      corpo.append(pb);
+    }
+    cx.scrollTop = 0;
+  }
+  function troca(k, dir) {
+    if (k === i || k < 0 || k >= its.length) return; const d = dir || (k > i ? 1 : -1); i = k; desenha();
+    if (corpo.animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) corpo.animate([{ transform: 'translateX(' + (d * 40) + '%)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 240, easing: 'cubic-bezier(.2,.8,.2,1)' });
+  }
+  const fecha = () => { pop.remove(); document.removeEventListener('keydown', esc); };
+  const esc = e => { if (e.key === 'Escape') fecha(); else if (e.key === 'ArrowRight') troca(i + 1, 1); else if (e.key === 'ArrowLeft') troca(i - 1, -1); };
+  document.addEventListener('keydown', esc); x.onclick = fecha;
+  pop.addEventListener('click', e => { if (e.target === pop) fecha(); });   // toca fora: fecha
+  let t0 = null;
+  cx.addEventListener('touchstart', e => { t0 = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null; }, { passive: true });
+  cx.addEventListener('touchend', e => { if (!t0) return; const t = e.changedTouches[0], dx = t.clientX - t0.x, dy = t.clientY - t0.y; t0 = null; if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) troca(i + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1); }, { passive: true });
+  desenha();
+}
 function cartoesDoc(b, tit, tx) {   // cartões de documento com as páginas em miniatura (cada miniatura carrega só quando aparece na tela)
   const w = elD('section', 'vs-bloco'); tit(b, w); if (b.texto) w.append(tx('p', 'vs-laudo-dica', b.texto));
   const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.unobserve(e.target); e.target.carrega(); } }), { rootMargin: '300px' }) : null;
@@ -7041,6 +7114,7 @@ function abreVisual(m) {
       ligar: b => { const w = elD('section', 'vs-bloco vs-ligar'); tit(b, w); (b.itens || []).forEach(x => { const l = elD('div', 'vs-lig'), n = String(x.numero || ''), a = elD('a', 'vs-lig-tel'); a.href = 'tel:' + n.replace(/[^\d+]/g, ''); a.setAttribute('aria-label', 'Ligar para ' + x.nome); a.append(ic('phone', 'vs-ic-p')); const t = elD('span', 'vs-lig-tx'); t.append(tx('b', '', x.nome), tx('small', '', n)); a.append(t, tx('span', 'vs-lig-go', 'Ligar')); l.append(a); if (x.whatsapp) { const z = elD('a', 'vs-lig-wa', 'WhatsApp'); z.href = x.whatsapp; z.target = '_blank'; z.rel = 'noopener'; z.setAttribute('aria-label', 'Abrir o WhatsApp de ' + x.nome); l.append(z); } w.append(l); }); return w; },   // botões de ligar: um toque liga (tel:); números vêm do JSON (May, 11/11/2026)
       contatos: b => { const w = elD('section', 'vs-bloco vs-cx'); tit(b, w); (b.itens || []).forEach(x => { const l = elD('div', 'vs-cont'); l.append(ic(x.icone || 'phone', 'vs-ic-p')); const cx = elD('div'); cx.append(tx('b', '', x.nome)); const i = String(x.info || ''); if (/^https?:\/\//.test(i)) { const a = elD('a', '', i.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')); a.href = i; a.target = '_blank'; a.rel = 'noopener'; cx.append(a); } else cx.append(tx('span', '', i)); l.append(cx); w.append(l); }); return w; },
       duas: b => { const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-duas'); ['a', 'b'].forEach(k => { const x = b[k] || {}; const l = elD('div', 'vs-lado ' + k); const h = elD('h4'); h.append(ic(x.icone || (k === 'a' ? 'check' : 'warn'), 'vs-ic-p')); mdInline(h, x.titulo || ''); const ul = elD('ul', 'vs-lista'); (x.itens || []).forEach(s => ul.append(tx('li', '', s))); l.append(h, ul); g.append(l); }); w.append(g); return w; },
+      passagens: b => cartoesPassagens(b, tit, tx),
       laudos: b => cartoesDoc(b, tit, tx),   // Pasta cinza: os 3 laudos (imagens recortadas, tela cheia, deslizar, salvar, PDF no canto)
       documentos: b => cartoesDoc(b, tit, tx),   // Pasta cinza, aba "Todas as imagens": um cartão por documento, a lista vem do JSON
       pastapdf: b => { const w = elD('section', 'vs-bloco'); tit(b, w); if (b.texto) w.append(tx('p', 'vs-laudo-dica', b.texto)); const bt = elD('button', 'vs-pdf-tudo'); bt.type = 'button'; bt.append(iconePdf(), elD('span', '', b.botao || 'Baixar a pasta inteira (PDF)')); const st = elD('p', 'vs-pdf-st'); st.setAttribute('role', 'status');
