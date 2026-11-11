@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-11.284">
+<meta name="app-versao" content="2026-11-11.285">
 <meta name="app-novidade" content="Agenda do Trabalho com o cartão novo e Agenda da Geral no mesmo desenho, com pesquisa e PDF">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1622,6 +1622,14 @@ body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px
 .pass-chips { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; } .pass-chip { all: unset; box-sizing: border-box; padding: 5px 12px; border-radius: 999px; border: 1.5px solid #F5C6D6; background: #fff; color: #D61F69; font-size: 12px; font-weight: 800; cursor: pointer; } .pass-chip.on { background: #D61F69; border-color: #D61F69; color: #fff; }
 .pass-qr .qrb { width: min(100%, calc(100vh - 318px)); width: min(100%, calc(100dvh - 318px)); aspect-ratio: 1 / 1; min-width: 0; background: #fff; border-radius: 8px; display: grid; place-items: center; cursor: pointer; } .pass-qr img { width: 100%; height: 100%; object-fit: contain; background: #fff; image-rendering: pixelated; } .pass-qr .qrb.erro::after { content: "QR sem internet. Abra uma vez com internet."; padding: 12px; text-align: center; font-size: 14px; color: #A3134F; }
 .pass-peq { display: flex; align-items: center; gap: 8px; } .pass-inf { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; gap: 0 10px; font-size: 11px; line-height: 1.35; color: #A3134F; } .pass-inf span { white-space: nowrap; } .pass-inf b { color: #4A0F2B; }
+.pr-caixa { max-width: 420px; } .pr-tit { font-size: 16px; color: #4A0F2B; } .pr-corpo { overflow-y: auto; overscroll-behavior: contain; }
+.pr-foto { width: 100%; max-height: 34vh; object-fit: contain; border-radius: 12px; background: #fff; border: 1.5px solid #F5C6D6; } .pr-foto:not([src]) { display: none; }
+.pr-num { text-align: center; padding: 12px; } .pr-num small { font-size: 11px; font-weight: 800; letter-spacing: .05em; color: #A3134F; } .pr-num b { font-size: 25px; white-space: normal; overflow: visible; letter-spacing: .02em; }
+.pr-campos { display: grid; gap: 6px; } .pr-campo { display: grid; gap: 0; padding: 7px 12px; border-radius: 14px; background: #fff; border: 1.5px solid #F5C6D6; min-width: 0; } .pr-campo small { font-size: 11px; font-weight: 800; color: #A3134F; } .pr-campo b { font-size: 15px; line-height: 1.3; overflow-wrap: anywhere; }
+.pr-mapa { width: 100%; height: min(52vh, 420px); border-radius: 14px; border: 1.5px solid #F5C6D6; overflow: hidden; background: #FCE7F0; z-index: 0; } .pr-mapa.erro { display: grid; place-items: center; padding: 14px; text-align: center; font-size: 14px; color: #A3134F; }
+.pr-legenda { margin: 0; font-size: 12.5px; color: #A3134F; text-align: center; } .pr-externo { align-self: center; padding: 8px 14px; border-radius: 999px; border: 1.5px solid #F5C6D6; background: #fff; color: #D61F69; font-size: 13px; font-weight: 800; text-decoration: none; cursor: pointer; } .pr-externo:hover { background: #FCE7F0; }
+.pr-pino span { display: block; width: 22px; height: 22px; margin: 0 2px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.4); }
+.vs-pd-outras { margin-top: 12px; } .vs-pd-outras > summary { cursor: pointer; font-weight: 800; padding: 10px 12px; border-radius: 14px; background: var(--vs-f, #FFF1F6); border: 1px solid var(--vs-b, #F5C6D6); list-style: none; } .vs-pd-outras > summary:hover { filter: brightness(.97); } .vs-pd-outras[open] > summary { margin-bottom: 8px; }
 .pass-pdf { all: unset; box-sizing: border-box; flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; background: #fff; border: 1.5px solid #F5C6D6; color: #D32F2F; cursor: pointer; } .pass-pdf:active { background: #FCE7F0; } .pass-pdf.ocupado { opacity: .5; } .pass-pdf svg { width: 24px; height: 24px; }
 .vs-mapa { display: flex; width: fit-content; align-items: center; margin-top: 10px; padding: 10px 18px; border-radius: 12px; background: var(--vs-c); color: #fff !important; font-size: 15px !important; font-weight: 800; text-decoration: none; } .vs-mapa:active { transform: scale(.97); }
 .vs-pd-cont { margin: 0 0 8px; font-size: 14px; font-weight: 800; color: var(--vs-e); } .vs-pd-card { display: grid; gap: 8px; margin-bottom: 12px; } .vs-pd-sub { margin: 4px 0 0; font-size: 13px; font-weight: 800; letter-spacing: .02em; color: var(--vs-c); }
@@ -7100,6 +7108,53 @@ function abrePassagem(its, i0) {
   cx.addEventListener('touchend', e => { if (!t0) return; const t = e.changedTouches[0], dx = t.clientX - t0.x, dy = t.clientY - t0.y; t0 = null; if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) troca(i + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1); }, { passive: true });
   desenha();
 }
+// Popup rosa genérico (mesmo estilo e mesmo jeito de fechar do popup da passagem): X, toque fora, Esc
+function popupRosa(titulo) {
+  const pop = elD('div', 'pass-pop'); pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-modal', 'true');
+  const cx = elD('div', 'pass-caixa pr-caixa'), topo = elD('div', 'pass-topo'), tt = elD('p', 'pass-data pr-tit', titulo || ''), x = elD('button', 'pass-x'), corpo = elD('div', 'pass-corpo pr-corpo');
+  x.type = 'button'; x.setAttribute('aria-label', 'Fechar'); x.innerHTML = icone('close'); topo.append(tt, x); cx.append(topo, corpo); pop.append(cx); document.body.append(pop);
+  let aoFechar = null; const fecha = () => { if (aoFechar) aoFechar(); pop.remove(); document.removeEventListener('keydown', esc); }; const esc = e => { if (e.key === 'Escape') fecha(); };
+  document.addEventListener('keydown', esc); x.onclick = fecha; pop.addEventListener('click', e => { if (e.target === pop) fecha(); });
+  return { corpo, fecha, aoFechar: f => { aoFechar = f; } };
+}
+function blocoCarteirinha(b, tit, tx) {
+  const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-pass'), k = elD('button', 'vs-pass-btn'); k.type = 'button';
+  k.append(elD('b', '', 'Carteirinha Unimed'), elD('span', '', 'Número, plano e dados do beneficiário'), elD('span', 'go', 'Abrir')); g.append(k); w.append(g);
+  let d = null; const carrega = () => d || (d = lerArquivo(b.arq).then(t => JSON.parse(t)).catch(e => { d = null; throw e; }));
+  carrega().then(c => { if (c.imagem) fotoUrl(c.imagem, true).catch(() => {}); }).catch(() => {});   // já guarda a foto no aparelho (abre sem internet)
+  k.onclick = async () => {
+    const p = popupRosa('Carteirinha Unimed'); p.corpo.append(skCarga(2)); let c;
+    try { c = await carrega(); } catch (e) { p.corpo.replaceChildren(elD('p', 'p-nota', 'Não abriu. Confere a internet.')); return; }
+    p.corpo.replaceChildren();
+    if (c.imagem) { const im = elD('img', 'pr-foto'); im.alt = 'Foto da carteirinha'; p.corpo.append(im); fotoUrl(c.imagem, true).then(u => { im.src = u; }).catch(() => im.remove()); }
+    if (c.destaque) { const e = elD('div', 'pass-onde pr-num'); e.append(elD('small', '', c.destaque.rotulo), elD('b', '', c.destaque.valor)); p.corpo.append(e); }
+    const gd = elD('div', 'pr-campos'); (c.campos || []).forEach(f => { const l = elD('div', 'pr-campo'); l.append(elD('small', '', f.rotulo), elD('b', '', f.valor)); gd.append(l); }); p.corpo.append(gd);
+  };
+  return w;
+}
+// Mapa dentro do app: Leaflet 1.9.4 (cdnjs) + OpenStreetMap, pino no endereço (e na rodoviária, se vier origem). Sem internet: aviso e o botão de abrir no app de mapas.
+let LEAFLET = null;
+function carregaLeaflet() {
+  if (window.L) return Promise.resolve(window.L);
+  return LEAFLET || (LEAFLET = new Promise((ok, erro) => {
+    const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css'; document.head.append(css);
+    const sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js'; sc.onload = () => window.L ? ok(window.L) : erro(new Error('L')); sc.onerror = () => { LEAFLET = null; erro(new Error('leaflet')); }; document.head.append(sc);
+  }));
+}
+function abreMapa(x) {
+  const p = popupRosa(x.nome || 'Mapa'), cx = elD('div', 'pr-mapa'); p.corpo.append(cx);
+  p.corpo.append(elD('p', 'pr-legenda', x.pino || x.nome || ''));
+  if (x.mapaExterno) { const a = elD('a', 'pr-externo', x.mapaExternoRotulo || 'Abrir no app de mapas'); a.href = x.mapaExterno; a.target = '_blank'; a.rel = 'noopener'; p.corpo.append(a); }
+  let mapa = null; p.aoFechar(() => { try { if (mapa) mapa.remove(); } catch (e) {} });
+  carregaLeaflet().then(L => {
+    mapa = L.map(cx, { zoomControl: true, attributionControl: true }).setView([x.lat, x.lon], 16);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(mapa);
+    const pino = (lat, lon, rot, cor) => L.marker([lat, lon], { icon: L.divIcon({ className: 'pr-pino', html: '<span style="background:' + cor + '"></span>', iconSize: [26, 26], iconAnchor: [13, 26] }), title: rot }).addTo(mapa).bindTooltip(rot, { permanent: true, direction: 'top', offset: [0, -24] });
+    pino(x.lat, x.lon, 'Consultório', '#D61F69');
+    if (x.origem && x.origem.lat != null) { pino(x.origem.lat, x.origem.lon, 'Rodoviária', '#3B82F6'); mapa.fitBounds([[x.lat, x.lon], [x.origem.lat, x.origem.lon]], { padding: [40, 40] }); }
+    setTimeout(() => { try { mapa.invalidateSize(); } catch (e) {} }, 120);
+  }).catch(() => { cx.classList.add('erro'); cx.textContent = 'O mapa precisa de internet. Use o botão abaixo para abrir no app de mapas.'; });
+}
 function cartoesDoc(b, tit, tx) {   // cartões de documento com as páginas em miniatura (cada miniatura carrega só quando aparece na tela)
   const w = elD('section', 'vs-bloco'); tit(b, w); if (b.texto) w.append(tx('p', 'vs-laudo-dica', b.texto));
   const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.unobserve(e.target); e.target.carrega(); } }), { rootMargin: '300px' }) : null;
@@ -7132,13 +7187,15 @@ const EVC = {};   // lista de perguntas aberta (a mesma da tela Perguntas pro m�
 async function evcAbre(arq) { const k = EVC[arq]; if (k && Date.now() - k.t < 120000) return k.E; const E = await edAbre({ arq }); EVC[arq] = { E, t: Date.now() }; return E; }
 function blocoPerguntasDia(b, tit, tx) {
   const w = elD('section', 'vs-bloco vs-pd'); tit(b, w); const corpo = elD('div', 'vs-pd-corpo'); corpo.append(skCarga(3)); w.append(corpo);
-  let E = null, aberto = '';
+  let E = null, aberto = '', outrasAberto = false;
   const pinta = () => {
     const its = E.itens.filter(x => x.grupo === b.grupo && x.tipo !== 'nota' && !x.apagado), feitas = its.filter(x => x.perguntada).length;
+    const outras = b.outras ? E.itens.filter(x => x.grupo !== b.grupo && x.tipo !== 'nota' && !x.apagado) : [];   // "outras": as perguntas dos outros grupos (a antiga tela Perguntas pro médico) ficam aqui dentro, recolhidas
     corpo.replaceChildren(elD('p', 'vs-pd-cont', feitas + ' de ' + its.length + ' perguntadas'));
-    let sub = null, card = null;
-    its.forEach(x => {
-      if (sub !== (x.subgrupo || '') || !card) { sub = x.subgrupo || ''; card = elD('div', 'vs-pd-card'); if (sub) card.append(elD('h4', 'vs-pd-sub', sub)); corpo.append(card); }
+    let sub = null, card = null, alvo = corpo;
+    const lista = (arr, multi) => arr.forEach(x => {
+      const chave = (multi ? x.grupo + '|' : '') + (x.subgrupo || '');
+      if (sub !== chave || !card) { sub = chave; card = elD('div', 'vs-pd-card'); const ht = multi ? [x.grupo, x.subgrupo].filter(Boolean).join(' · ') : (x.subgrupo || ''); if (ht) card.append(elD('h4', 'vs-pd-sub', ht)); alvo.append(card); }
       const li = elD('div', 'vs-pd-item' + (x.perguntada ? ' feita' : '')), t = elD('div', 'vs-pd-t'); slNeg(t, x.texto);
       const bt = elD('button', 'vs-pd-ok', x.perguntada ? '✓ Perguntada' : 'Marcar como perguntada'); bt.type = 'button'; bt.setAttribute('aria-pressed', String(!!x.perguntada));
       bt.onclick = async () => {
@@ -7160,7 +7217,12 @@ function blocoPerguntasDia(b, tit, tx) {
       } else { const eb = elD('button', 'sl-escreve', 'Escrever a resposta'); eb.type = 'button'; eb.onclick = () => { aberto = x.id; pinta(); }; li.append(eb); }
       card.append(li);
     });
+    lista(its, false);
     if (!its.length) corpo.append(elD('p', 'p-nota', 'Nenhuma pergunta por aqui.'));
+    if (outras.length) {
+      const dt = elD('details', 'vs-pd-outras'), sm = elD('summary', '', (b.outrasTitulo || 'Outras perguntas') + ' (' + outras.length + ')'); dt.open = outrasAberto; dt.ontoggle = () => { outrasAberto = dt.open; };
+      dt.append(sm); corpo.append(dt); alvo = dt; sub = null; card = null; lista(outras, true);
+    }
   };
   evcAbre(b.arq).then(e => { E = e; E.aoMudar = pinta; pinta(); }).catch(() => { corpo.replaceChildren(elD('p', 'p-nota', 'Não abriu. Confere a internet.')); });
   return w;
@@ -7305,12 +7367,13 @@ function abreVisual(m) {
       perguntas: b => { const w = elD('section', 'vs-bloco'); tit(b, w); (b.itens || []).forEach(x => { const k = elD('div', 'vs-qa'); const h = elD('h4'); h.append(elD('span', 'vs-q', '?')); const ht = elD('span'); mdInline(ht, x.p); h.append(ht); k.append(h, tx('p', '', x.r)); w.append(k); }); return w; },   // tudo aberto, nada retraído (May, 10/11/2026: "nada de saúde abre retraído")
       tabela: b => { const w = elD('section', 'vs-bloco vs-cx'); tit(b, w); const t = elD('table', 'md-tab'); const tr = elD('tr'); (b.cab || []).forEach(h => tr.append(tx('th', '', h))); t.append(tr); (b.linhas || []).forEach(l => { const r = elD('tr'); l.forEach(cel => { const td = tx('td', /^[▲▼]/.test(String(cel)) ? 'vs-td-fora' : /^✓/.test(String(cel)) ? 'vs-td-ok' : '', String(cel)); r.append(td); }); t.append(r); }); const sw = elD('div', 'md-tab-w'); sw.append(t); w.append(sw); return w; },
       ligar: b => { const w = elD('section', 'vs-bloco vs-ligar'); tit(b, w); (b.itens || []).forEach(x => { const l = elD('div', 'vs-lig'), n = String(x.numero || ''), a = elD('a', 'vs-lig-tel'); a.href = 'tel:' + n.replace(/[^\d+]/g, ''); a.setAttribute('aria-label', 'Ligar para ' + x.nome); a.append(ic('phone', 'vs-ic-p')); const t = elD('span', 'vs-lig-tx'); t.append(tx('b', '', x.nome), tx('small', '', n)); a.append(t, tx('span', 'vs-lig-go', 'Ligar')); l.append(a); if (x.whatsapp) { const z = elD('a', 'vs-lig-wa', 'WhatsApp'); z.href = x.whatsapp; z.target = '_blank'; z.rel = 'noopener'; z.setAttribute('aria-label', 'Abrir o WhatsApp de ' + x.nome); l.append(z); } w.append(l); }); return w; },   // botões de ligar: um toque liga (tel:); números vêm do JSON (May, 11/11/2026)
-      contatos: b => { const w = elD('section', 'vs-bloco vs-cx'); tit(b, w); (b.itens || []).forEach(x => { const l = elD('div', 'vs-cont'); l.append(ic(x.icone || 'phone', 'vs-ic-p')); const cx = elD('div'); cx.append(tx('b', '', x.nome)); const i = String(x.info || ''); let mp = null; if (x.mapa) { mp = elD('a', 'vs-mapa', x.mapaRotulo || 'Ir a pé'); mp.href = x.mapa; mp.target = '_blank'; mp.rel = 'noopener'; mp.setAttribute('aria-label', (x.mapaRotulo || 'Ir a pé') + ': abrir o trajeto no mapa'); } if (/^https?:\/\//.test(i)) { const a = elD('a', '', i.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')); a.href = i; a.target = '_blank'; a.rel = 'noopener'; cx.append(a); } else cx.append(tx('span', '', i)); if (mp) cx.append(mp); l.append(cx); w.append(l); }); return w; },
+      contatos: b => { const w = elD('section', 'vs-bloco vs-cx'); tit(b, w); (b.itens || []).forEach(x => { const l = elD('div', 'vs-cont'); l.append(ic(x.icone || 'phone', 'vs-ic-p')); const cx = elD('div'); cx.append(tx('b', '', x.nome)); const i = String(x.info || ''); let mp = null; if (x.lat != null && x.lon != null) { mp = elD('button', 'vs-mapa', x.mapaRotulo || 'Ver no mapa'); mp.type = 'button'; mp.setAttribute('aria-label', (x.mapaRotulo || 'Ver no mapa') + ': abrir o mapa'); mp.onclick = () => abreMapa(x); } else if (x.mapa) { mp = elD('a', 'vs-mapa', x.mapaRotulo || 'Ir a pé'); mp.href = x.mapa; mp.target = '_blank'; mp.rel = 'noopener'; mp.setAttribute('aria-label', (x.mapaRotulo || 'Ir a pé') + ': abrir o trajeto no mapa'); } if (/^https?:\/\//.test(i)) { const a = elD('a', '', i.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')); a.href = i; a.target = '_blank'; a.rel = 'noopener'; cx.append(a); } else cx.append(tx('span', '', i)); if (mp) cx.append(mp); l.append(cx); w.append(l); }); return w; },
       duas: b => { const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-duas'); ['a', 'b'].forEach(k => { const x = b[k] || {}; const l = elD('div', 'vs-lado ' + k); const h = elD('h4'); h.append(ic(x.icone || (k === 'a' ? 'check' : 'warn'), 'vs-ic-p')); mdInline(h, x.titulo || ''); const ul = elD('ul', 'vs-lista'); (x.itens || []).forEach(s => ul.append(tx('li', '', s))); l.append(h, ul); g.append(l); }); w.append(g); return w; },
       passagens: b => cartoesPassagens(b, tit, tx),
       perguntasdia: b => blocoPerguntasDia(b, tit, tx),   // pasta Consulta: as perguntas do arquivo Perguntas pro médico, com "perguntada"
       anotacoes: b => blocoAnotacoes(b, tit, tx),   // pasta Consulta: gravar áudio e escrever anotação, com fila sem internet
       valores: b => blocoValores(b, tit, tx),
+      carteirinha: b => blocoCarteirinha(b, tit, tx),   // pasta Consulta: botão que abre o popup com os dados da carteirinha (lidos de saude/carteirinha.json no Inst)
       namao: b => blocoNaMao(b, tit, tx),   // pasta Consulta: números para copiar e documentos para imprimir   // pasta Consulta: números do exame com faixa e selo
       laudos: b => cartoesDoc(b, tit, tx),   // Pasta cinza: os 3 laudos (imagens recortadas, tela cheia, deslizar, salvar, PDF no canto)
       documentos: b => cartoesDoc(b, tit, tx),   // Pasta cinza, aba "Todas as imagens": um cartão por documento, a lista vem do JSON
