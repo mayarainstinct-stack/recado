@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-12.300">
-<meta name="app-novidade" content="A pergunta espera você terminar de digitar e não some no toque de fora">
+<meta name="app-versao" content="2026-11-12.301">
+<meta name="app-novidade" content="Tarefas: aba Semana com o cartão de cada robô">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -1494,6 +1494,14 @@ body.na-geral form textarea:focus { border-color: #FACC15; box-shadow: 0 0 0 3px
 .anexo.doc { width: 132px; display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 8px 30px 8px 10px; background: var(--bg); font-size: 12px; line-height: 1.25; }
 .anexo.doc b { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; word-break: break-word; font-weight: 600; }
 .anexo.doc svg.i { width: 20px; height: 20px; }
+.ie-sem { border-left: 6px solid var(--quem); }
+.ie-sem h3 { color: var(--quem); }
+.ie-sem-barra { display: flex; height: 12px; border-radius: 6px; overflow: hidden; background: rgba(127,127,127,.18); margin: 8px 0 4px; }
+.ie-sem-barra i { display: block; height: 100%; }
+.ie-sem-barra i.ok { background: #16A34A; } .ie-sem-barra i.erro { background: #DC2626; }
+.ie-sem-n { font-weight: 600; margin: 0 0 6px; }
+.ie-sem-erro, .ie-sem-muda { margin: 4px 0; font-size: 14px; line-height: 1.35; }
+.ie-sem-muda { color: #16A34A; font-weight: 600; }
 .anexo.doc > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .anexo.doc > div b { max-width: 100%; }
 .msg .arq-cartao { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; margin-bottom: 4px; border-radius: 10px; border: 1px solid rgba(0,0,0,.12); background: rgba(0,0,0,.06); color: inherit; font: inherit; text-align: left; cursor: pointer; }
@@ -5366,7 +5374,7 @@ function abreIdeias(m) {
     let d; try { d = JSON.parse(await lerArquivo(arq)); } catch (e) { nota.textContent = 'Não consegui abrir o quadro. Confere a internet.'; return; }
     nota.remove();
     const TELAS = { quadro: [['esperando', 'Esperando'], ['fazendo', 'Fazendo']], revisao: [['aguardando', 'Aguardando'], ['revisando', 'Revisando']] }, NOME_EST = { concluido: 'concluído', aguardando: 'aguardando revisão', revisando: 'Sigma revisando' };
-    const abas = [['quadro', 'Planejado'], ['revisao', 'Revisão'], ['feitos', 'Concluído']], nav = elD('nav', 'ie-abas'), tr = elD('div', 'ie-trilho'), busca = elD('input', 'ie-busca'); busca.type = 'search'; busca.placeholder = 'Procurar em todas as tarefas (até nas concluídas)'; busca.enterKeyHint = 'search';
+    const abas = [['quadro', 'Planejado'], ['revisao', 'Revisão'], ['feitos', 'Concluído'], ['semana', 'Semana']], nav = elD('nav', 'ie-abas'), tr = elD('div', 'ie-trilho'), busca = elD('input', 'ie-busca'); busca.type = 'search'; busca.placeholder = 'Procurar em todas as tarefas (até nas concluídas)'; busca.enterKeyHint = 'search';
     const caixa = elD('div', 'id-nova ie-nova'), ta = elD('textarea'); ta.rows = 1; ta.placeholder = 'Novo pedido (@Orfeu manda direto)'; ta.enterKeyHint = 'send';
     const env = elD('button'); env.type = 'button'; env.setAttribute('aria-label', 'Pregar o post-it'); env.innerHTML = icone('reply'); caixa.append(ta, env);
     c.append(nav, busca, tr, caixa);
@@ -5452,10 +5460,28 @@ function abreIdeias(m) {
       if (!(await gravaJson(arq, aplica, 'Quadro: May mudou a ordem ou a coluna pelo app'))) showNote('Não guardou: confere a internet.', true);
       else if (antesO) avisa(d.postits.find(y => y.id === movido), antesO);
     };
+    // Aba Semana (post-it #206, Sigma 12/11/2026: a May tirou o relatório da Agenda na .267): cartão por robô com a barra de entregou x errou, o último erro e o que muda, lido do casa/reavaliacao.json
+    const semanaRobos = () => {
+      const w = elD('div', 'ie-quadro ie-semana'), car = skCarga(); w.append(car);
+      lerArquivo('casa/reavaliacao.json').then(t => { const r = JSON.parse(t), s = r.semanas[r.semanas.length - 1]; car.remove();
+        const dbr = x => String(x || '').split('-').reverse().slice(0, 2).join('/');
+        w.append(elD('p', 'p-nota', 'Semana de ' + dbr(s.de) + ' a ' + dbr(s.ate) + (s.feita ? ' · reavaliada' : ' · a reavaliação é sexta, com a Lyra')));
+        Object.entries(s.robos).filter(([k, v]) => k !== 'may' && ((v.entregou || []).length || (v.errou || []).length)).forEach(([k, v]) => {
+          const g = GRUPO[k] || { nome: k, cor: '#888' }, ent = (v.entregou || []).length, err = (v.errou || []).length, c = elD('section', 'sl-card ie-sem');
+          c.style.setProperty('--quem', g.cor); c.style.borderLeft = '6px solid ' + g.cor; c.append(elD('h3', '', (g.nome || k).replace(/ \(PC\d\)$/, '')));
+          const barra = elD('div', 'ie-sem-barra'), bo = elD('i', 'ok'), be = elD('i', 'erro'); bo.style.width = (ent / Math.max(1, ent + err) * 100) + '%'; be.style.width = (err / Math.max(1, ent + err) * 100) + '%'; barra.append(bo, be);
+          c.append(barra, elD('p', 'ie-sem-n', ent + ' entrega' + (ent === 1 ? '' : 's') + ' · ' + err + ' erro' + (err === 1 ? '' : 's')));
+          const ult = (v.errou || [])[err - 1];
+          if (ult) { const [o, muda] = String(ult.texto).split(/\s*(?:Daqui pra frente|O que muda)[:,]?\s*/i); c.append(elD('p', 'ie-sem-erro', 'Último erro (' + ult.dia + '): ' + o.slice(0, 220) + (o.length > 220 ? '…' : ''))); if (muda) c.append(elD('p', 'ie-sem-muda', 'O que muda: ' + muda.slice(0, 200) + (muda.length > 200 ? '…' : ''))); }
+          w.append(c);
+        });
+      }).catch(() => { car.textContent = 'Não abriu a reavaliação. Confere a internet.'; });
+      return w;
+    };
     const pinta = () => {
       cabecalho({ icone: 'pin', sub: abertos().length + ' planejadas · ' + daTela('revisao').length + ' na revisão', acao: { icone: 'plus', rotulo: 'Novo pedido', fn: novaTarefa } });
       nav.replaceChildren(); tr.replaceChildren();
-      abas.forEach(([id, rot]) => { const n = TELAS[id] ? daTela(id).length : feitos().length, b = elD('button', aba === id ? 'on' : '', rot + ' · ' + n); b.type = 'button'; b.onclick = () => { if (aba === id) return; const dir = abas.findIndex(a => a[0] === id) > abas.findIndex(a => a[0] === aba) ? 1 : -1; aba = id; pinta(); entraDoLado(tr, dir); }; nav.append(b); });
+      abas.forEach(([id, rot]) => { const n = id === 'semana' ? '' : TELAS[id] ? daTela(id).length : feitos().length, b = elD('button', aba === id ? 'on' : '', rot + (n === '' ? '' : ' · ' + n)); b.type = 'button'; b.onclick = () => { if (aba === id) return; const dir = abas.findIndex(a => a[0] === id) > abas.findIndex(a => a[0] === aba) ? 1 : -1; aba = id; pinta(); entraDoLado(tr, dir); }; nav.append(b); });
       const termo = busca.value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       if (termo) {   // procurando: uma lista só com tudo que bate, aberto ou concluído
         const q = elD('div', 'ie-quadro'), sem = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -5465,6 +5491,7 @@ function abreIdeias(m) {
         q.addEventListener('click', e => { const el = e.target.closest('.ie-post'); if (!el) return; const p = d.postits.find(x => x.id === el.dataset.id); if (p) detalhe(p); });
         return;
       }
+      if (aba === 'semana') { tr.append(semanaRobos()); return; }
       const q = elD('div', 'ie-quadro' + (TELAS[aba] ? ' ie-colunas' : ''));
       if (TELAS[aba]) TELAS[aba].forEach(([e, rot]) => {   // duas colunas lado a lado: Esperando e Fazendo (May 15:26); na Revisão, Aguardando e Revisando (May 16:48)
         const col = elD('div', 'ie-col'), lst = elD('div', 'ie-lista'), ps = daTela(aba).filter(x => x.estado === e); col.dataset.estado = e;
