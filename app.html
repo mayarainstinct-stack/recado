@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-12.294">
-<meta name="app-novidade" content="Fechou sem querer? Abre em menos de 1 minuto e volta onde estava">
+<meta name="app-versao" content="2026-11-12.295">
+<meta name="app-novidade" content="Treino marcado fica guardado no arquivo, e se não gravar a tela volta como estava">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -5404,9 +5404,9 @@ function abreIdeias(m) {
     };
     const CAMPOS_T = [{ nome: 'texto', rotulo: 'O que fazer', tipo: 'texto_longo', obrigatorio: true }, { nome: 'dono', rotulo: 'Quem faz', tipo: 'escolha', opcoes: [['', 'Sem dono (o Sigma escolhe)'], ...ROBOS_IE.map(r => [r, r.charAt(0).toUpperCase() + r.slice(1)])] }, { nome: 'prioridade', rotulo: 'Prioridade', tipo: 'escolha', padrao: '3', opcoes: [['1', 'Altíssima'], ['2', 'Alta'], ['3', 'Normal'], ['4', 'Baixa'], ['5', 'Sem pressa']] }, { nome: 'assunto', rotulo: 'Assunto', tipo: 'texto' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto_longo' }];
     const NOMEP2 = { 1: 'altíssima', 2: 'alta', 3: 'normal', 4: 'baixa', 5: 'sem pressa' };
-    const grvT = async (op, msg) => { edAplica(d.postits, op, false); pinta(); if (!(await gravaJson(arq, dd => edAplica(dd.postits, op, false), msg))) showNote('Não guardou: confere a internet.', true); };
+    const grvT = async (op, msg) => { const antes = JSON.parse(JSON.stringify(d.postits)); edAplica(d.postits, op, false); pinta(); if (await gravaJson(arq, dd => edAplica(dd.postits, op, false), msg)) return true; d.postits.splice(0, d.postits.length, ...antes); pinta(); showNote('Não guardou: voltou como estava. Confere a internet.', true); return false; };   // falhou: o quadro volta como estava (Sigma #151)
     const editaTarefa = p => edFormulario({ titulo: 'Editar pedido #' + p.id, campos: CAMPOS_T, v: p, aoSalvar: async v => { v.prioridade = +v.prioridade || 3; v.prioridadeNome = NOMEP2[v.prioridade]; await grvT({ tipo: 'edita', id: p.id, v, quando: agoraBr() }, 'Quadro: #' + p.id + ' editado pelo app'); }, aoApagar: () => apagaTarefa(p) });
-    const apagaTarefa = async p => { await grvT({ tipo: 'apaga', id: p.id, on: true, quando: agoraBr() }, 'Quadro: #' + p.id + ' apagado pelo app (fica guardado)'); edFaixaDesfazer('Pedido apagado', () => grvT({ tipo: 'apaga', id: p.id, on: false }, 'Quadro: #' + p.id + ' voltou')); };
+    const apagaTarefa = async p => { if (!(await grvT({ tipo: 'apaga', id: p.id, on: true, quando: agoraBr() }, 'Quadro: #' + p.id + ' apagado pelo app (fica guardado)'))) return; edFaixaDesfazer('Pedido apagado', () => grvT({ tipo: 'apaga', id: p.id, on: false }, 'Quadro: #' + p.id + ' voltou')); };
     const novaTarefa = () => edFormulario({ titulo: 'Novo pedido', campos: CAMPOS_T, aoSalvar: async v => {
       const t = String(v.texto).replace(/\s+/g, ' '), novo = dd => { const n = Math.max(0, ...dd.postits.map(x => parseInt(x.id, 10) || 0)) + 1, ord = Math.max(0, ...dd.postits.map(x => x.ordem)) + 1, pr = +v.prioridade || 3; const q = { id: String(n), texto: t, quando: agoraBr(), estado: 'esperando', dono: v.dono || '', ordem: ord, nota: v.nota || '', categoria: '', assunto: v.assunto || '', prioridade: pr, prioridadeNome: NOMEP2[pr] }; dd.postits.push(q); return q; };
       novo(d); aba = 'quadro'; pinta(); if (!(await gravaJson(arq, dd => { novo(dd); }, 'Pedido novo da May pelo app (formulário)'))) showNote('Não guardou: confere a internet.', true); } });
@@ -6091,7 +6091,8 @@ function abreItemMenu(m) {
 }
 // ---- Viagens: menu/viagens.json = { viagens: [{ id, nome, resumo, listas: [{ id, nome, grupos: [{ nome, itens: [[id, texto]] }] }] }] }
 // O que ela marca fica no próprio celular (localStorage), por viagem e por lista.
-const marcados = (v, l) => { if (v._json) { const s = new Set(), pre = v.id + ':' + l.id + ':'; Object.keys(v._feitos || {}).forEach(k => { if (k.startsWith(pre)) s.add(k.slice(pre.length)); }); return s; }   // Pós-cirurgia: o feito mora no JSON (feitos: viagem:lista:item = DD/MM/AAAA HH:MM)
+const dataFeito = q => { const m = String(q || '').match(/^(\d\d)\/(\d\d)\/(\d{4})/); return m ? m[3] + '-' + m[2] + '-' + m[1] : ''; };   // DD/MM/AAAA HH:MM -> AAAA-MM-DD
+const marcados = (v, l) => { if (v._json) { const s = new Set(), pre = v.id + ':' + l.id + ':', seg = v._semana ? segundaDe() : ''; Object.keys(v._feitos || {}).forEach(k => { if (k.startsWith(pre) && (!seg || dataFeito(v._feitos[k]) >= seg)) s.add(k.slice(pre.length)); }); return s; }   // Treino (Sigma #151, 12/11/2026): também no JSON, e só conta o feito desta semana (zera na segunda sozinho)   // Pós-cirurgia: o feito mora no JSON (feitos: viagem:lista:item = DD/MM/AAAA HH:MM)
   try { return new Set(JSON.parse(store.get('viagem:' + v.id + ':' + l.id) || '[]')); } catch (e) { return new Set(); } };
 const diaLocal = () => new Date().toLocaleDateString('sv');   // AAAA-MM-DD no fuso dela (toISOString virava o dia às 21h)
 const guardaMarcados = (v, l, s) => {
@@ -6099,11 +6100,14 @@ const guardaMarcados = (v, l, s) => {
     const pre = v.id + ':' + l.id + ':', antes = marcados(v, l), agora = edAgora(), mud = [];
     l.grupos.forEach(g => g.itens.filter(itemVivo).forEach(([id]) => { const t = s.has(id), era = antes.has(id); if (t && !era) mud.push([id, agora]); else if (!t && era) mud.push([id, null]); }));
     if (!mud.length) return;
+    const velhos = mud.map(([id]) => [id, v._feitos[pre + id]]);
     mud.forEach(([id, q]) => { if (q) v._feitos[pre + id] = q; else delete v._feitos[pre + id]; });
-    gravaJson(v._arq, d => { d.feitos = d.feitos || {}; mud.forEach(([id, q]) => { if (q) d.feitos[pre + id] = q; else delete d.feitos[pre + id]; }); }, 'Marcado pelo app', null).then(ok => { if (!ok) showNote('Não guardou: confere a internet e tenta de novo.', true); });
-    return;
-  }
-  store.set('viagem:' + v.id + ':' + l.id, s.size ? JSON.stringify([...s]) : '');
+    gravaJson(v._arq, d => { d.feitos = d.feitos || {}; mud.forEach(([id, q]) => { if (q) d.feitos[pre + id] = q; else delete d.feitos[pre + id]; }); }, 'Marcado pelo app', null).then(ok => {
+      if (ok) return;
+      velhos.forEach(([id, q]) => { if (q) v._feitos[pre + id] = q; else delete v._feitos[pre + id]; }); mud.forEach(([id, q]) => q ? s.delete(id) : s.add(id));   // falhou: a tela volta como estava (Sigma #151), igual o Planos
+      showNote('Não guardou: voltou como estava. Confere a internet e tenta de novo.', true); if (pilha.length) desenhaTela();
+    });
+  } else store.set('viagem:' + v.id + ':' + l.id, s.size ? JSON.stringify([...s]) : '');
   if (v._arq !== 'menu/treino.json') return;
   if (s.size) { const m = diasMarcados(); m[diaLocal()] = l.nome; store.set('treino-dias', JSON.stringify(m)); }
   // treino em andamento (May, 27/10): marcou 1 item = a tela do treino fica aberta até marcar tudo
@@ -6210,7 +6214,12 @@ function abreViagens(m) {
     const p = skCarga(); c.append(p);
     let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
     p.remove();
-    if (m.arq === 'menu/treino.json') { d.viagens.forEach(v => { v._arq = m.arq; }); return montaTreino(c, d); }
+    if (m.arq === 'menu/treino.json') {   // feito do treino no JSON (Sigma #151, 12/11/2026): passa as marcas desta semana guardadas no aparelho uma vez
+      d.feitos = d.feitos || {}; const novos = {};
+      d.viagens.forEach(v => { v._arq = m.arq; v._json = true; v._semana = true; v._feitos = d.feitos; v.listas.forEach(l => { const ant = store.get('viagem:' + v.id + ':' + l.id); if (!ant) return; try { JSON.parse(ant).forEach(id => { const k = v.id + ':' + l.id + ':' + id; if (dataFeito(d.feitos[k]) < segundaDe()) { d.feitos[k] = edAgora(); novos[k] = d.feitos[k]; } }); } catch (e) {} }); });
+      if (Object.keys(novos).length) gravaJson(m.arq, dd => { dd.feitos = dd.feitos || {}; Object.assign(dd.feitos, novos); }, 'Marcas do treino passadas pro arquivo', null).then(ok => { if (ok) d.viagens.forEach(v => v.listas.forEach(l => store.set('viagem:' + v.id + ':' + l.id, ''))); });
+      return montaTreino(c, d);
+    }
     if (d.feito_no_json) {   // feito no JSON (sai do localStorage): liga as viagens ao objeto feitos e passa as marcas antigas deste aparelho uma vez
       d.feitos = d.feitos || {}; const novos = {};
       d.viagens.forEach(v => { v._json = true; v._feitos = d.feitos; v._arq = m.arq; v.listas.forEach(l => { const ant = store.get('viagem:' + v.id + ':' + l.id); if (!ant) return; try { JSON.parse(ant).forEach(id => { const k = v.id + ':' + l.id + ':' + id; if (!d.feitos[k]) { d.feitos[k] = edAgora(); novos[k] = d.feitos[k]; } }); } catch (e) {} }); });
@@ -6414,14 +6423,14 @@ function abreChecklist(v, l) {
       c.append(nv);
     }
     const cont = document.createElement('div'); c.append(cont);
-    // Treino editável pelo app (May, 09/11/2026): lança, edita e apaga exercício direto no menu/treino.json; item é [id, texto, { apagado }]; a marcação da semana continua neste aparelho
-    const muda = (g, fn, msg) => { fn(g); total = totalItens(l); conta(); desenha(); return gravaJson(v._arq, dd => { const vv = (dd.viagens || []).find(x => x.id === v.id), ll = vv && vv.listas.find(x => x.id === l.id), gg = ll && ll.grupos.find(x => x.nome === g.nome); if (gg) fn(gg); }, msg, null).then(ok => { if (!ok) showNote('Não guardou: confere a internet e tenta de novo.', true); }); };
+    // Treino editável pelo app (May, 09/11/2026): lança, edita e apaga exercício direto no menu/treino.json; item é [id, texto, { apagado }]; a marcação da semana vai pro feitos do JSON (12/11/2026)
+    const muda = (g, fn, msg) => { const antes = JSON.parse(JSON.stringify(g.itens)); fn(g); total = totalItens(l); conta(); desenha(); return gravaJson(v._arq, dd => { const vv = (dd.viagens || []).find(x => x.id === v.id), ll = vv && vv.listas.find(x => x.id === l.id), gg = ll && ll.grupos.find(x => x.nome === g.nome); if (gg) fn(gg); }, msg, null).then(ok => { if (ok) return true; g.itens.splice(0, g.itens.length, ...antes); total = totalItens(l); conta(); desenha(); showNote('Não guardou: voltou como estava. Confere a internet e tenta de novo.', true); return false; }); };   // falhou: volta como estava (Sigma #151)
     const camposEx = [{ nome: 'texto', rotulo: 'Exercício', tipo: 'texto_longo', obrigatorio: true }];
     const novoEx = g => { const k = Date.now().toString(36); edFormulario({ titulo: 'Novo exercício', campos: camposEx, aoSalvar: async f => { await muda(g, gg => { if (!gg.itens.some(it => it[0] === 'u-' + k)) gg.itens.push(['u-' + k, f.texto, { criado: edAgora() }]); }, 'Exercício novo pelo app'); } }); };
     const editaEx = (g, it) => edFormulario({ titulo: 'Editar exercício', campos: camposEx, v: { texto: it[1] }, aoSalvar: async f => { await muda(g, gg => { const x = gg.itens.find(y => y[0] === it[0]); if (x) x[1] = f.texto; }, 'Exercício editado pelo app'); }, aoApagar: () => apagaEx(g, it) });
     const apagaEx = async (g, it) => {
       feitos.delete(it[0]); guardaMarcados(v, l, feitos);
-      await muda(g, gg => { const x = gg.itens.find(y => y[0] === it[0]); if (x) x[2] = Object.assign({}, x[2], { apagado: edAgora() }); }, 'Exercício apagado pelo app (fica guardado)');
+      if (!(await muda(g, gg => { const x = gg.itens.find(y => y[0] === it[0]); if (x) x[2] = Object.assign({}, x[2], { apagado: edAgora() }); }, 'Exercício apagado pelo app (fica guardado)'))) return;
       edFaixaDesfazer('Exercício apagado', () => muda(g, gg => { const x = gg.itens.find(y => y[0] === it[0]); if (x && x[2]) { delete x[2].apagado; } }, 'Apagado desfeito pelo app'));
     };
     const desenha = () => {
