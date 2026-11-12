@@ -1964,3 +1964,7 @@ html:has(body.modo-trab) { background: #F8FAFC; }   /* Trabalho e claro mesmo co
 .zoom.saindo .zpalco img { animation: zoom-sai .2s cubic-bezier(.5,0,.8,.4) forwards; } .zoom.saindo .zbarra { animation: zoom-barra .2s ease-in forwards; }
 @keyframes zoom-sai { to { transform: translateY(90px) scale(.8); } } @keyframes zoom-barra { to { transform: translateY(120%); } }
 @media (prefers-reduced-motion: reduce) { .p-fantasma { display: none; } .tela-dir, .tela-esq, .zoom.saindo .zpalco img, .zoom.saindo .zbarra { animation: none; } }
+/* Pós-cirurgia e telas rosa (Sigma #151 rodada 2): caixinha e lápis na cor da tela, "+ Item" discreto no fim do grupo */
+.painel.tema-rosa .check input { accent-color: #DB2777; color-scheme: light; }
+.painel.tema-rosa .tr-ed .ed-mini { color: #DB2777; }
+.painel.tema-rosa .tr-novo { width: auto; padding: 6px 14px; min-height: 0; line-height: 1.2; font-size: 14px; margin: 6px 0 0 auto; display: block; color: #DB2777; border-color: #F9A8D4; background: transparent; }

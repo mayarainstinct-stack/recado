@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-12.305">
-<meta name="app-novidade" content="Fechar o Menu, a foto e trocar de tela agora andam, nada some do nada">
+<meta name="app-versao" content="2026-11-12.306">
+<meta name="app-novidade" content="Obra: comprado com hora e valor; Exames: exame sem resultado aparece pra lançar">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-12.305"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-12.306"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3326,10 +3326,11 @@ function abreObra(m) {
         if (x.foto) { const im = elD('img'); im.alt = x.titulo || ''; im.loading = 'lazy'; el.append(im); fotoUrl(x.foto).then(u => { im.src = u; im.onclick = () => abreZoom(u, x.foto); }).catch(() => im.remove()); }
         el.append(elD('small', 'ob-tit', x.titulo || ''), elD('b', 'ob-modelo', x.modelo || ''));
         if (x.preco) el.append(elD('p', 'ob-sub', x.preco));
-        if (x.estado) el.append(elD('span', 'ob-chip' + (/escolhid|comprad/.test(x.estado) ? ' ok' : ''), x.comprado ? 'comprado em ' + x.comprado.slice(0, 5) : x.estado));
+        if (x.estado) el.append(elD('span', 'ob-chip' + (/escolhid|comprad/.test(x.estado) ? ' ok' : ''), x.comprado ? 'comprado ' + x.comprado.slice(0, 5) + ' às ' + x.comprado.slice(11, 16) + (x.valor_comprado ? ' · ' + x.valor_comprado : '') : x.estado));
         if (O) { const cb = elD('button', 'ob-anotar ob-comprei', x.comprado ? 'Desfazer comprado' : 'Marcar comprado'); cb.type = 'button';   // Compras: marcar comprado com dia e hora (Sigma #151, 12/11/2026); desfazer volta o estado de antes
-          cb.onclick = async ev => { ev.stopPropagation(); const antes = { estado: x.estado, comprado: x.comprado, estado_antes: x.estado_antes }, v = x.comprado ? { comprado: '', estado: x.estado_antes || 'escolhido', estado_antes: '' } : { comprado: edAgora(), estado_antes: x.estado || '', estado: 'comprado' };
-            Object.assign(x, v); pinta(0); O.aoMudar = () => { Object.assign(x, antes); pinta(0); }; await O.op({ tipo: 'edita', id: chaveC(x), v, quando: edAgora() }, x.comprado ? 'Obra: ' + (x.titulo || 'peça') + ' marcada comprada pelo app' : 'Obra: comprado desfeito pelo app'); };
+          const grava = async v => { const antes = { estado: x.estado, comprado: x.comprado, estado_antes: x.estado_antes, valor_comprado: x.valor_comprado }; Object.assign(x, v); pinta(0); O.aoMudar = () => { Object.assign(x, antes); pinta(0); }; await O.op({ tipo: 'edita', id: chaveC(x), v, quando: edAgora() }, x.comprado ? 'Obra: ' + (x.titulo || 'peça') + ' marcada comprada pelo app' : 'Obra: comprado desfeito pelo app'); };
+          cb.onclick = ev => { ev.stopPropagation(); if (x.comprado) return grava({ comprado: '', estado: x.estado_antes || 'escolhido', estado_antes: '', valor_comprado: '' });   // feito = dia e hora automáticos + valor opcional (regra da casa, Sigma #151 rodada 2)
+            edFormulario({ titulo: 'Comprado · ' + (x.titulo || 'peça'), campos: [{ nome: 'valor_comprado', rotulo: 'Quanto pagou (opcional)', tipo: 'valor' }], aoSalvar: async f => grava({ comprado: edAgora(), estado_antes: x.estado || '', estado: 'comprado', valor_comprado: String(f.valor_comprado || '').trim() }) }); };
           el.append(cb); }
         el.append(fonte(x.fonte));
       }
@@ -5180,6 +5181,7 @@ function abreExames(m) {
       x.pontos.filter(q => q.nota).forEach(q => corpo.append(elD('p', 'p-nota', '* ' + q.data + ': ' + q.nota)));
       abreFicha({ titulo: x.nome, corpo, contexto: m.nome + ' (' + x.nome + ')' }); };
     const cartao = x => {
+      if (!x.pontos.length) { const b = elD('div', 'sl-card ex-card'); b.setAttribute('role', 'button'); b.tabIndex = 0; b.onclick = () => ficha(x); const cab = elD('div', 'ex-cab'); cab.append(elD('h3', '', x.nome), elD('span', 'ex-selo', 'Sem resultado')); b.append(cab, elD('p', 'ex-tend', 'Toca pra lançar o primeiro resultado.')); return b; }   // exame sem resultado continua na lista (Sigma #151 rodada 2)
       const u = x.pontos[x.pontos.length - 1], [k, rot] = sit(x, u.v), b = elD('div', 'sl-card ex-card ' + k); b.setAttribute('role', 'button'); b.tabIndex = 0; b.onclick = () => ficha(x);
       const cab = elD('div', 'ex-cab'); cab.append(elD('h3', '', x.nome), elD('span', 'ex-selo ' + k, rot));
       const val = elD('div', 'ex-val'); val.append(elD('b', '', num(u.v)), elD('span', '', x.unidade + ' · ' + u.data));
@@ -5190,9 +5192,9 @@ function abreExames(m) {
     const pinta = () => {
       abasEl.replaceChildren(...d.abas.map(a => { const f = elD('button', 'sl-aba' + (a.id === aba ? ' on' : ''), a.nome); f.type = 'button'; f.onclick = () => { aba = a.id; store.set('ex-aba', aba); pinta(); }; return f; }));
       w.replaceChildren();
-      const lista = d.exames.filter(x => x.aba === aba && x.pontos.length);   // exame com todos os resultados apagados some até desfazer
+      const lista = d.exames.filter(x => x.aba === aba);
       if (lista.length) {
-        const fora = lista.filter(x => sit(x, x.pontos[x.pontos.length - 1].v)[0] !== 'ok').length;
+        const fora = lista.filter(x => x.pontos.length && sit(x, x.pontos[x.pontos.length - 1].v)[0] !== 'ok').length;
         cabecalho({ icone: 'chart', sub: lista.length + ' exames · ' + (fora ? fora + ' fora da faixa no último' : 'todos dentro no último') });
         if (aba === 'hormonios' && d.remedio) { const r = elD('section', 'sl-card ex-rem'); r.append(elD('h3', '', 'Remédio em cada época')); d.remedio.forEach(([q, n, t]) => { const l = elD('div', 'ex-rl'); l.append(elD('span', 'ex-quando', q), elD('b', '', n), elD('p', '', t)); r.append(l); }); w.append(r); }
         lista.forEach(x => w.append(cartao(x)));
