@@ -430,10 +430,10 @@ async function gravaGar(v, lista, fn, msg) {   // mesma mudança na cópia da te
   return !!ok;
 }
 const CAMPOS_G = {
-  abastecimentos: [{ nome: 'data', rotulo: 'Data (DD/MM/AAAA)', tipo: 'texto', obrigatorio: true, padrao: '^[0-9]{2}/[0-9]{2}/[0-9]{4}$', erro: 'Data no formato DD/MM/AAAA.' }, { nome: 'valor', rotulo: 'Valor (R$)', tipo: 'valor', obrigatorio: true }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto' }],
-  trocas_oleo: [{ nome: 'data', rotulo: 'Data (DD/MM/AAAA)', tipo: 'texto', obrigatorio: true, padrao: '^[0-9]{2}/[0-9]{2}/[0-9]{4}$', erro: 'Data no formato DD/MM/AAAA.' }, { nome: 'km', rotulo: 'Km', tipo: 'texto' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto' }],
-  usos: [{ nome: 'data', rotulo: 'Data (DD/MM/AAAA)', tipo: 'texto', obrigatorio: true, padrao: '^[0-9]{2}/[0-9]{2}/[0-9]{4}$', erro: 'Data no formato DD/MM/AAAA.' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto' }],
-  manutencao: [{ nome: 'item', rotulo: 'O que', tipo: 'texto', obrigatorio: true }, { nome: 'estado', rotulo: 'Estado', tipo: 'escolha', opcoes: ESTMAN.map(e => e[0]) }, { nome: 'data', rotulo: 'Data (agendado ou feito)', tipo: 'texto', padrao: '^[0-9]{2}/[0-9]{2}/[0-9]{4}$', erro: 'Data no formato DD/MM/AAAA.' }, { nome: 'valor', rotulo: 'Valor gasto (opcional)', tipo: 'valor' }]
+  abastecimentos: [{ nome: 'data', rotulo: 'Data (DD/MM/AAAA)', tipo: 'texto', obrigatorio: true, valida: 'data', erro: 'Data no formato DD/MM/AAAA, e que exista.' }, { nome: 'valor', rotulo: 'Valor (R$)', tipo: 'valor', obrigatorio: true }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto' }],
+  trocas_oleo: [{ nome: 'data', rotulo: 'Data (DD/MM/AAAA)', tipo: 'texto', obrigatorio: true, valida: 'data', erro: 'Data no formato DD/MM/AAAA, e que exista.' }, { nome: 'km', rotulo: 'Km', tipo: 'texto' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto' }],
+  usos: [{ nome: 'data', rotulo: 'Data (DD/MM/AAAA)', tipo: 'texto', obrigatorio: true, valida: 'data', erro: 'Data no formato DD/MM/AAAA, e que exista.' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto' }],
+  manutencao: [{ nome: 'item', rotulo: 'O que', tipo: 'texto', obrigatorio: true }, { nome: 'estado', rotulo: 'Estado', tipo: 'escolha', opcoes: ESTMAN.map(e => e[0]) }, { nome: 'data', rotulo: 'Data (agendado ou feito)', tipo: 'texto', valida: 'data', erro: 'Data no formato DD/MM/AAAA, e que exista.' }, { nome: 'valor', rotulo: 'Valor gasto (opcional)', tipo: 'valor' }]
 };
 function editaGar(v, lista, x, depois) {
   const id = idLista(lista, x);

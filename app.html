@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-12.303">
-<meta name="app-novidade" content="Por dentro: o visual do app foi pra um arquivo próprio, nada muda na tela">
+<meta name="app-versao" content="2026-11-12.304">
+<meta name="app-novidade" content="Conserto: prioridade, cor do post-it, seção da Agenda e etapa voltaram a gravar">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -3065,6 +3065,7 @@ function edPedeValor(titulo, sugestao) {
 // foto escolhida no celular: reduz, sobe pra recados-fotos/ (o mesmo envio da conversa) e devolve o caminho
 async function edSobeFoto(file) { const rd = await reduzir(file), nome = nomeArq('recados-fotos', new Date(), 0, rd.ext || 'jpg'); await apiOk(apiDe(nome), { method: 'PUT', body: JSON.stringify({ message: 'foto pelo app', content: rd.b64 }) }); return nome; }
 // formulário pelos campos: v = valores atuais (editar) ou {} (lançar); aoSalvar(valores); aoApagar opcional
+const VALIDA = { data: t => { const m = t.match(/^(\d{2})\/(\d{2})\/(\d{4})$/); if (!m) return false; const d = new Date(+m[3], +m[2] - 1, +m[1]); return d.getFullYear() === +m[3] && d.getMonth() === +m[2] - 1 && d.getDate() === +m[1] && +m[3] > 1900 && +m[3] < 2100; }, numero: t => /^-?\d+([.,]\d+)?$/.test(t) };
 function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar }) {
   const ov = elD('div', 'fixa-pop ed-pop'), card = elD('div', 'pp-card ed-card'), x = elD('button', 'pp-x'), form = elD('form', 'ed-form'), els = {};
   x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); };
@@ -3087,7 +3088,7 @@ function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar }) {
   form.onsubmit = async e => {
     e.preventDefault(); const out = {};
     for (const c of campos) { if (!els[c.nome]) continue; if (c.tipo === 'foto') { const f = els[c.nome].files && els[c.nome].files[0]; if (!f && c.obrigatorio && !els[c.nome].dataset.atual) { erro.textContent = 'Falta escolher a foto.'; erro.hidden = false; return; } out[c.nome] = els[c.nome].dataset.atual || ''; if (f) { try { ok.disabled = true; ok.textContent = 'Subindo a foto…'; out[c.nome] = await edSobeFoto(f); } catch (er) { ok.disabled = false; ok.textContent = 'Guardar'; erro.textContent = 'A foto não subiu. Confere a internet e tenta de novo.'; erro.hidden = false; return; } } continue; } let val = els[c.nome].value.trim(); if (c.tipo === 'numero' || c.tipo === 'valor') { const n = +val.replace(/\./g, '').replace(',', '.'); val = val === '' ? '' : (isNaN(n) ? val : n); } if (c.obrigatorio && val === '') { erro.textContent = 'Falta preencher: ' + edRotulo(c); erro.hidden = false; return; } out[c.nome] = val; }
-    for (const c of campos) if (c.padrao && out[c.nome] && !new RegExp(c.padrao).test(String(out[c.nome]).trim())) { erro.textContent = c.erro || ('Confere o campo ' + edRotulo(c) + '.'); erro.hidden = false; return; }   // campo com padrão (ex.: data DD/MM/AAAA da Garagem, Sigma #151)
+    for (const c of campos) if (c.valida && out[c.nome] && !VALIDA[c.valida](String(out[c.nome]).trim())) { erro.textContent = c.erro || ('Confere o campo ' + edRotulo(c) + '.'); erro.hidden = false; return; }   // campo com valida (data DD/MM/AAAA de verdade, número); "padrao" é o valor inicial, nunca regra (Sigma #151 rodada 2)
     ok.disabled = true; await aoSalvar(out); fecha();
   };
   card.append(form); ov.append(card); document.body.append(ov);
@@ -5146,7 +5147,7 @@ function abreExames(m) {
     // Exames editáveis (Sigma #151, 12/11/2026): lança, edita e apaga resultado direto no saude/exames.json; apagar só marca "apagado" (nada se apaga)
     const vivosEx = () => d.exames.forEach(x => { x._todos = x._todos || x.pontos; x.pontos = x._todos.filter(q => !q.apagado); });
     vivosEx(); d.exames = d.exames.filter(x => x.pontos.length || x._todos.length);
-    const camposPt = [{ nome: 'data', rotulo: 'Data (DD/MM/AAAA)', tipo: 'texto', obrigatorio: true, padrao: '^[0-9]{2}/[0-9]{2}/[0-9]{4}$', erro: 'Data no formato DD/MM/AAAA.' }, { nome: 'v', rotulo: 'Resultado (só o número)', tipo: 'numero', obrigatorio: true, padrao: '^-?[0-9]+([.,][0-9]+)?$', erro: 'Só o número, ex.: 38,1' }, { nome: 'lab', rotulo: 'Laboratório', tipo: 'texto' }, { nome: 'nota', rotulo: 'Nota (opcional)', tipo: 'texto' }];
+    const camposPt = [{ nome: 'data', rotulo: 'Data (DD/MM/AAAA)', tipo: 'texto', obrigatorio: true, valida: 'data', erro: 'Data no formato DD/MM/AAAA, e que exista.' }, { nome: 'v', rotulo: 'Resultado (só o número)', tipo: 'numero', obrigatorio: true, valida: 'numero', erro: 'Só o número, ex.: 38,1' }, { nome: 'lab', rotulo: 'Laboratório', tipo: 'texto' }, { nome: 'nota', rotulo: 'Nota (opcional)', tipo: 'texto' }];
     const deForm = f => { const q = { data: f.data.trim(), v: parseFloat(String(f.v).replace(',', '.')), lab: (f.lab || '').trim() }; if ((f.nota || '').trim()) q.nota = f.nota.trim(); return q; };
     const ordData = pts => pts.sort((a, b) => (a.data.split('/').reverse().join('')).localeCompare(b.data.split('/').reverse().join('')));
     const fechaFichas = () => document.querySelectorAll('.ficha').forEach(f => f.remove());
