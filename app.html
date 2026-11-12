@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-12.295">
-<meta name="app-novidade" content="Treino marcado fica guardado no arquivo, e se não gravar a tela volta como estava">
+<meta name="app-versao" content="2026-11-12.296">
+<meta name="app-novidade" content="Garagem: a data do Diário só aceita DD/MM/AAAA">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -5034,6 +5034,7 @@ function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar }) {
   form.onsubmit = async e => {
     e.preventDefault(); const out = {};
     for (const c of campos) { if (!els[c.nome]) continue; if (c.tipo === 'foto') { const f = els[c.nome].files && els[c.nome].files[0]; if (!f && c.obrigatorio && !els[c.nome].dataset.atual) { erro.textContent = 'Falta escolher a foto.'; erro.hidden = false; return; } out[c.nome] = els[c.nome].dataset.atual || ''; if (f) { try { ok.disabled = true; ok.textContent = 'Subindo a foto…'; out[c.nome] = await edSobeFoto(f); } catch (er) { ok.disabled = false; ok.textContent = 'Guardar'; erro.textContent = 'A foto não subiu. Confere a internet e tenta de novo.'; erro.hidden = false; return; } } continue; } let val = els[c.nome].value.trim(); if (c.tipo === 'numero' || c.tipo === 'valor') { const n = +val.replace(/\./g, '').replace(',', '.'); val = val === '' ? '' : (isNaN(n) ? val : n); } if (c.obrigatorio && val === '') { erro.textContent = 'Falta preencher: ' + edRotulo(c); erro.hidden = false; return; } out[c.nome] = val; }
+    for (const c of campos) if (c.padrao && out[c.nome] && !new RegExp(c.padrao).test(String(out[c.nome]).trim())) { erro.textContent = c.erro || ('Confere o campo ' + edRotulo(c) + '.'); erro.hidden = false; return; }   // campo com padrão (ex.: data DD/MM/AAAA da Garagem, Sigma #151)
     ok.disabled = true; await aoSalvar(out); fecha();
   };
   card.append(form); ov.append(card); document.body.append(ov);
