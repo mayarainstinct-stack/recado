@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-12.293">
-<meta name="app-novidade" content="Abre na hora mesmo com o 4G fraco">
+<meta name="app-versao" content="2026-11-12.294">
+<meta name="app-novidade" content="Fechou sem querer? Abre em menos de 1 minuto e volta onde estava">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -1492,7 +1492,7 @@ body.na-geral form textarea:focus { border-color: #FACC15; box-shadow: 0 0 0 3px
 .anexo { position: relative; flex: none; width: 72px; height: 72px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
 .anexo img { width: 100%; height: 100%; object-fit: cover; }
 .anexo.doc { width: 132px; display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 8px 30px 8px 10px; background: var(--bg); font-size: 12px; line-height: 1.25; }
-.anexo.doc b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.anexo.doc b { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; word-break: break-word; font-weight: 600; }
 .anexo.doc svg.i { width: 20px; height: 20px; }
 .anexo.doc > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .anexo.doc > div b { max-width: 100%; }
@@ -3887,6 +3887,23 @@ function responderUltima() {
   const it = [...lastItems].reverse().find(x => x.from !== 'may');
   if (it) responder(it); else box.focus();
   irProFim();
+}
+// Onde ela estava (May, 12/11/2026 08:59: "se fechar e abrir de novo em menos de um minuto volta onde tava"): guarda conversa e caminho das telas ao sair
+function guardaOndeEstava() { try { store.set('onde-estava', JSON.stringify({ ts: Date.now(), conv: FILE, caminho: painel.hidden ? [] : pilha.map(p => p[0]) })); } catch (e) {} }
+document.addEventListener('visibilitychange', () => { if (document.hidden) guardaOndeEstava(); });
+addEventListener('pagehide', guardaOndeEstava);
+function voltaOndeEstava() {
+  let o; try { o = JSON.parse(store.get('onde-estava') || 'null'); } catch (e) {}
+  if (!o || !o.conv || Date.now() - o.ts > 60000) return false;
+  store.set('onde-estava', '');
+  abrir(convPorArq(o.conv)).then(async () => {
+    const cam = (o.caminho || []).filter((x, i) => !(i === 0 && x === 'Menu')); if (!(o.caminho || []).length || abreMenu.hidden) return;
+    abreMenu.click();
+    let lista = JSON.parse(await lerArquivo(o.conv === TRAB.arq ? 'menu/menu-trabalho.json' : 'menu/menu.json')).itens || [];
+    const acha = (xs, n) => { for (const x of xs) { if (x.nome === n) return x; if (x.itens) { const y = acha(x.itens, n); if (y) return y; } } };
+    for (const n of cam) { const m = acha(lista, n); if (!m || m.tipo === 'pagina') break; abreItemMenu(m); lista = m.itens || []; await new Promise(r => setTimeout(r, 500)); }
+  }).catch(() => {});
+  return true;
 }
 function convPorArq(arq) { return arq === TRAB.arq ? TRAB : arq === GERAL.arq ? GERAL : (conversas.find(x => x.arq === arq) || GERAL); }   // a Geral é sempre o GERAL (o item da lista não tem participantes)
 function abreRespondendo(arq, foto) {
@@ -7859,7 +7876,8 @@ function start() {
   if (semRede && !MODO_WEB) { document.body.classList.remove('modo-trab'); abreMenu.click(); }   // sem internet: cai direto no Menu Geral, só a Saúde funciona (May, 10/11/2026)
   else setTimeout(guardaSaude, 6000);
   if (!start.guardando) { start.guardando = setInterval(() => { if (navigator.onLine !== false && !document.hidden) guardaSaude(); }, 15 * 60000); addEventListener('online', () => setTimeout(guardaSaude, 3000)); }   // aberto (Geral ou Trabalho): renova a cópia a cada 15 min e quando a internet volta (May, 10/11/2026)   // com internet: guarda a Saúde inteira no aparelho pra abrir sem rede
-  if (!veioDoPush && !semRede) { if (MODO_WEB) mostraLista(); else abrir(ultimaConv()).then(() => { if (CFG.telaInicial === 'menu' && painel.hidden && !abreMenu.hidden) abreMenu.click(); }).catch(() => {}); }   // celular: Trabalho no horário de trabalho, senão Geral
+  if (!veioDoPush && !semRede && !MODO_WEB && voltaOndeEstava()) {}   // fechou sem querer e abriu em menos de 1 min: volta onde tava (May, 12/11/2026 08:59)
+  else if (!veioDoPush && !semRede) { if (MODO_WEB) mostraLista(); else abrir(ultimaConv()).then(() => { if (CFG.telaInicial === 'menu' && painel.hidden && !abreMenu.hidden) abreMenu.click(); }).catch(() => {}); }   // celular: Trabalho no horário de trabalho, senão Geral
   if (!MODO_WEB && !veioDoPush) abreTreinoSeHora();   // na hora da academia, abre direto no treino de hoje (não se veio de notificação)
   // Conversa aberta: busca a cada 4 s (com 304 quase de graça); lista de conversas: a cada 15 s; status: 45-60 s (só com a página na tela).
   // Parado: chave vencida (401), limite do GitHub até o reset, GitHub fora (5xx) por 30 s.
