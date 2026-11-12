@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-12.298">
-<meta name="app-novidade" content="Exames: lança, edita e apaga resultado direto na ficha">
+<meta name="app-versao" content="2026-11-12.299">
+<meta name="app-novidade" content="Obra: marcar comprado nas Compras e editar a anotação do Diário">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -5269,7 +5269,11 @@ function abreObra(m) {
         if (x.foto) { const im = elD('img'); im.alt = x.titulo || ''; im.loading = 'lazy'; el.append(im); fotoUrl(x.foto).then(u => { im.src = u; im.onclick = () => abreZoom(u, x.foto); }).catch(() => im.remove()); }
         el.append(elD('small', 'ob-tit', x.titulo || ''), elD('b', 'ob-modelo', x.modelo || ''));
         if (x.preco) el.append(elD('p', 'ob-sub', x.preco));
-        if (x.estado) el.append(elD('span', 'ob-chip' + (/escolhid/.test(x.estado) ? ' ok' : ''), x.estado));
+        if (x.estado) el.append(elD('span', 'ob-chip' + (/escolhid|comprad/.test(x.estado) ? ' ok' : ''), x.comprado ? 'comprado em ' + x.comprado.slice(0, 5) : x.estado));
+        if (O) { const cb = elD('button', 'ob-anotar ob-comprei', x.comprado ? 'Desfazer comprado' : 'Marcar comprado'); cb.type = 'button';   // Compras: marcar comprado com dia e hora (Sigma #151, 12/11/2026); desfazer volta o estado de antes
+          cb.onclick = async ev => { ev.stopPropagation(); const antes = { estado: x.estado, comprado: x.comprado, estado_antes: x.estado_antes }, v = x.comprado ? { comprado: '', estado: x.estado_antes || 'escolhido', estado_antes: '' } : { comprado: edAgora(), estado_antes: x.estado || '', estado: 'comprado' };
+            Object.assign(x, v); pinta(0); O.aoMudar = () => { Object.assign(x, antes); pinta(0); }; await O.op({ tipo: 'edita', id: chaveC(x), v, quando: edAgora() }, x.comprado ? 'Obra: ' + (x.titulo || 'peça') + ' marcada comprada pelo app' : 'Obra: comprado desfeito pelo app'); };
+          el.append(cb); }
         el.append(fonte(x.fonte));
       }
       else if (x.tipo === 'foto') { const im = elD('img'); im.alt = x.legenda || ''; im.loading = 'lazy'; el.append(im, elD('small', 'ob-leg', x.legenda || '')); fotoUrl(x.arq).then(u => { im.src = u; el.onclick = () => abreZoom(u, x.arq, fotos); }).catch(() => el.remove()); }
@@ -5318,7 +5322,11 @@ function abreObra(m) {
           mostra.forEach((dia, k) => {
             const f = elD('div', 'ob-c ob-folha'), gr = GIRO[k % GIRO.length] / 2; f.dataset.r = gr; f.style.setProperty('--r', gr + 'deg');
             const cab = elD('div', 'ob-folha-cab'); cab.append(elD('b', 'ob-folha-data', dia.data.slice(0, 5)), elD('span', 'ob-tit', dia.titulo || '')); if (dia.maicon) cab.append(elD('span', 'ob-chip ok', 'Maicon ' + dia.maicon)); else if (!['feito', 'decidido', 'fotos'].some(c => (dia[c] || []).length)) cab.append(elD('span', 'ob-chip', 'não veio')); f.append(cab);   // só diz que não veio quando não tem nada do dia (não inventa)
-            const notasDe = sobre => (dia.notas || []).filter(n => n.sobre === sobre).map(n => { const e = elD('p', 'ob-anot', n.texto); e.title = n.quando || ''; e.append(elD('small', 'ob-anot-esp', 'o Orfeu passa a limpo')); return e; });   // a anotação dela fica até um robô passar pro texto do dia (May 18:35)
+            const mudaNota = async (n, fn, msg) => { const ok = await gravaJson(a.fonte, x2 => { const di = (x2.dias || []).find(z => z.data === dia.data), nn = di && (di.notas || []).find(y => y.quando === n.quando && y.texto === n.texto); if (nn) fn(nn); }, msg); if (!ok) { showNote('Não guardou: confere a internet e tenta de novo.', true); return false; } cacheFonte[a.fonte] = ok; monta(ok); return true; };   // Diário: a anotação dela também edita e apaga (Sigma #151, 12/11/2026); apagar só marca
+            const editaNota = n => edFormulario({ titulo: 'Editar anotação · ' + dia.data.slice(0, 5), campos: [{ nome: 'texto', rotulo: 'Anotação', tipo: 'texto_longo', obrigatorio: true }], v: { texto: n.texto },
+              aoSalvar: async f => { const t = String(f.texto || '').trim().replace(/\s+/g, ' '); if (t) await mudaNota(n, nn => { nn.texto = t; nn.editado = edAgora(); }, 'Diário da obra: anotação editada pela May em ' + dia.data); },
+              aoApagar: async () => { const q = edAgora(); if (await mudaNota(n, nn => { nn.apagado = q; }, 'Diário da obra: anotação apagada pela May (fica guardada)')) edFaixaDesfazer('Anotação apagada', () => mudaNota(Object.assign({}, n), nn => { delete nn.apagado; }, 'Apagado desfeito pela May')); } });
+            const notasDe = sobre => (dia.notas || []).filter(n => n.sobre === sobre && !n.apagado).map(n => { const e = elD('p', 'ob-anot', n.texto); e.title = n.quando || ''; e.append(elD('small', 'ob-anot-esp', 'o Orfeu passa a limpo'), edMini('note', 'Editar anotação', () => editaNota(n))); return e; });   // a anotação dela fica até um robô passar pro texto do dia (May 18:35)
             const lapis = (sobre, rot) => { const b = elD('button', 'ob-lapis'); b.type = 'button'; b.innerHTML = icone('pen'); b.setAttribute('aria-label', 'Anotar sobre ' + rot); b.onclick = ev => { ev.stopPropagation(); anota(dd, dia, sobre, rot); }; return b; };   // um botão em cada coisa pra ela anotar (May 17:56)
             const lista = (rot, itens, cls) => { if (!(itens || []).length) return; f.append(elD('small', 'ob-folha-rot', rot)); const ul = elD('ul', cls); itens.forEach(t => { const li = elD('li', ''), tx = elD('span', '', t); li.append(tx, lapis(t, t), ...notasDe(t)); ul.append(li); }); f.append(ul); };
             lista('Feito', dia.feito, 'ob-feito'); lista('Depois', dia.depois, 'ob-depois'); lista('Decidido', dia.decidido, 'ob-decidido');
