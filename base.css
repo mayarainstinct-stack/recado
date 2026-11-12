@@ -1955,3 +1955,12 @@ html:has(body.modo-trab) { background: #F8FAFC; }   /* Trabalho e claro mesmo co
 .p-grade.apps .bt-artes .ic { color: #EC008C; filter: none; } .p-grade.apps .bt-artes .t { color: #3B0A24; font-weight: 800; }
 .p-grade.apps .bt-planos { background: radial-gradient(circle at 0 50%, #22D3EE 0 4px, transparent 4.5px) 14px 10px / 8px 8px no-repeat, radial-gradient(circle at 50% 50%, #22D3EE 0 4px, transparent 4.5px) 36% 10px / 8px 8px no-repeat, radial-gradient(circle at 50% 50%, #22D3EE 0 4px, transparent 4.5px) 64% 10px / 8px 8px no-repeat, radial-gradient(circle at 50% 50%, transparent 0 2px, #22D3EE 2.5px 4px, transparent 4.5px) calc(100% - 14px) 10px / 8px 8px no-repeat, linear-gradient(#22D3EE, #22D3EE) 18px 13px / calc(100% - 36px) 2px no-repeat, linear-gradient(160deg, #0E3A47, #051A21); border: 1px solid #0891B2; border-radius: 10px; box-shadow: 0 6px 14px rgba(0,0,0,.35); padding-top: 24px; gap: 6px; }
 .p-grade.apps .bt-planos .ic { color: #67E8F9; }
+
+/* #110 (Sigma 12/11/2026): nada some do nada, sem fade */
+.painel.p-fantasma { position: fixed !important; z-index: 60; pointer-events: none; animation: p-desce .22s cubic-bezier(.5,0,.8,.4) forwards !important; }
+@keyframes p-desce { to { transform: translateY(100%); } }
+.tela-dir { animation: tela-dir .22s cubic-bezier(.2,.8,.3,1); } .tela-esq { animation: tela-esq .22s cubic-bezier(.2,.8,.3,1); }
+@keyframes tela-dir { from { transform: translateX(48px); } } @keyframes tela-esq { from { transform: translateX(-48px); } }
+.zoom.saindo .zpalco img { animation: zoom-sai .2s cubic-bezier(.5,0,.8,.4) forwards; } .zoom.saindo .zbarra { animation: zoom-barra .2s ease-in forwards; }
+@keyframes zoom-sai { to { transform: translateY(90px) scale(.8); } } @keyframes zoom-barra { to { transform: translateY(120%); } }
+@media (prefers-reduced-motion: reduce) { .p-fantasma { display: none; } .tela-dir, .tela-esq, .zoom.saindo .zpalco img, .zoom.saindo .zbarra { animation: none; } }

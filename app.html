@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-12.304">
-<meta name="app-novidade" content="Conserto: prioridade, cor do post-it, seção da Agenda e etapa voltaram a gravar">
+<meta name="app-versao" content="2026-11-12.305">
+<meta name="app-novidade" content="Fechar o Menu, a foto e trocar de tela agora andam, nada some do nada">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-12.302"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-12.305"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2542,6 +2542,7 @@ function cabecalho({ icone: ic, sub, acao } = {}) {
 }
 function cabecalhoGenerico() { pTopo.classList.remove('proprio'); pTopo.querySelector('.p-ic')?.remove(); pTopo.querySelector('.p-acao')?.remove(); pSub.textContent = ''; pSub.hidden = true; pMais.hidden = false; }
 function desenhaTela() {
+  const nAnt = desenhaTela.n || 0; desenhaTela.n = pilha.length; pCorpo.classList.remove('tela-dir', 'tela-esq'); if (pilha.length !== nAnt && nAnt) { void pCorpo.offsetWidth; pCorpo.classList.add(pilha.length > nAnt ? 'tela-dir' : 'tela-esq'); }   // trocar de tela anda pro lado (#110): tela nova vem da direita, voltar vem da esquerda
   const entrada = pilha[pilha.length - 1], [titulo, montar, rolou] = entrada, mae = pilha.length > 1 ? pilha[pilha.length - 2][3] : null; painel.classList.remove('tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude', 'tema-contraste');
   if (mae) mae.temas.forEach(c => painel.classList.add(c));   // tela filha herda o tema da mãe (May, 09/11/2026: "senão fica cagado"); a filha que quiser outro tema troca no montar   // o tema claro é só da tela que pedir (a Agenda, May 08/11 12:56)
   pTit.textContent = titulo; pCorpo.scrollTop = 0; pExtra.hidden = true;   /* só na raiz do Menu, também quando a tela abre direto pela notificação */ cabecalhoGenerico();
@@ -2551,14 +2552,16 @@ function desenhaTela() {
   if (pilha[pilha.length - 1] === entrada) { guardaTema(); Promise.resolve(r).then(() => { if (pilha[pilha.length - 1] === entrada && t.isConnected) guardaTema(); }).catch(() => {}); }
   if (rolou) Promise.resolve(r).then(() => { if (t.isConnected) pCorpo.scrollTop = rolou; });   // voltando: devolve a rolagem de onde ela estava
 }
-function fechaPainel() { const n = pilha.length; painel.hidden = true; pilha = []; if (n && history.state && history.state.painel) { fechandoPainel = true; try { history.go(-history.state.painel); } catch (e) { fechandoPainel = false; } } }
+// Nada some do nada (#110, Sigma 12/11/2026): o painel que fecha desce como um cartão (cópia por cima, 0,2 s); o painel em si some na hora, então quem confere painel.hidden não muda
+function painelDesce() { if (painel.hidden || !painel.getClientRects().length) return; const g = painel.cloneNode(true); g.removeAttribute('id'); g.classList.add('p-fantasma'); const r = painel.getBoundingClientRect(), bg = getComputedStyle(painel).backgroundColor; Object.assign(g.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', margin: '0', background: bg && bg !== 'rgba(0, 0, 0, 0)' ? bg : 'var(--bg)' }); g.setAttribute('aria-hidden', 'true'); g.inert = true; document.body.append(g); setTimeout(() => g.remove(), 320); }
+function fechaPainel() { const n = pilha.length; painelDesce(); painel.hidden = true; pilha = []; if (n && history.state && history.state.painel) { fechandoPainel = true; try { history.go(-history.state.painel); } catch (e) { fechandoPainel = false; } } }
 let fechandoPainel = false, ultimoPop = 0;
 addEventListener('popstate', () => {   // voltar do navegador (deslizar da borda) = o mesmo voltar do app
   ultimoPop = Date.now();
   if (fechandoPainel) { fechandoPainel = false; return; }
   if (history.state && history.state.painel && history.state.painel > pilha.length) { try { history.back(); } catch (e) {} return; }   // deslize pra FRENTE (direita pra esquerda no iPhone) refazia uma tela antiga e podia cair no Trabalho (May, 10/11/2026): pra frente não vale, desfaz na hora
   if (painel.hidden || !pilha.length) return;
-  pilha.pop(); if (pilha.length) desenhaTela(); else { painel.hidden = true; }
+  pilha.pop(); if (pilha.length) desenhaTela(); else { painelDesce(); painel.hidden = true; }
 });
 document.getElementById('p-anotar').onclick = () => { const caminho = pilha.map(p => p[0]).filter((x, i) => !(i === 0 && x === 'Menu')).join(' > ') || pTit.textContent; abreFicha({ titulo: 'Anotar · ' + caminho, contexto: caminho }); };   // o lápis vale em toda tela filha, com o caminho (ex.: Saúde > Perguntas pro médico); no Trabalho vai pra caixas/trabalho.md
 { let bx = null, by = 0;   // arrastar da borda esquerda pra direita = voltar, igual o iPhone
@@ -5800,7 +5803,7 @@ function abreZoom(src, path, listaFotos) {   // listaFotos: as fotos do álbum (
     } catch (err) { if (err && err.name !== 'AbortError') showNote('Não consegui salvar a foto.', true); }
   };
   x.onclick = e => { e.stopPropagation(); fecha(); };
-  const fecha = () => { z.remove(); document.removeEventListener('keydown', esc); };
+  const fecha = () => { document.removeEventListener('keydown', esc); if (z.classList.contains('saindo')) return; z.classList.add('saindo'); setTimeout(() => z.remove(), 200); };   // a foto desce e encolhe antes de sair (#110), nunca some do nada
   const esc = e => { if (e.key === 'Escape') fecha(); else if (e.key === 'ArrowLeft') vai(-1); else if (e.key === 'ArrowRight') vai(1); };
   let t0 = null;
   let horiz = null;   // a foto anda junto com o dedo pro lado e só troca quando solta (May, 07/11/2026 15:29: "a foto mexe junto com meu dedo")
