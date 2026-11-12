@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-12.299">
-<meta name="app-novidade" content="Obra: marcar comprado nas Compras e editar a anotação do Diário">
+<meta name="app-versao" content="2026-11-12.300">
+<meta name="app-novidade" content="A pergunta espera você terminar de digitar e não some no toque de fora">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -3957,10 +3957,12 @@ function mostraProximoLembrete() {
   const daConv = qs => ((new URLSearchParams(qs).get('conv') || GERAL.arq) === TRAB.arq) === trab;
   if (aberto) { if (aberto.dataset.qs && daConv(aberto.dataset.qs)) return; aberto.remove(); }
   const qs = lemTodos().find(daConv); if (!qs) return;
+  const digitando = (document.activeElement && /TEXTAREA|INPUT/.test(document.activeElement.tagName)) || Date.now() - tecladoFechouEm < 1500;   // teclado aberto: espera ela terminar (Sigma #99/#113, 12/11/2026)
+  if (digitando) { if (!mostraProximoLembrete.esperando) { mostraProximoLembrete.esperando = true; document.addEventListener('focusout', () => setTimeout(() => { mostraProximoLembrete.esperando = false; mostraProximoLembrete(); }, 1600), { once: true }); } return; }
   const h = new URLSearchParams(qs), conv = h.get('conv') || GERAL.arq;
   const perg = h.get('t') === 'pergunta', tela = perg ? 'Pergunta' : h.get('t') === 'fin' ? 'Finanças' : 'Checklist', cor = perg ? '#7C3AED' : h.get('t') === 'fin' ? '#16A34A' : '#1D4ED8';
   const ov = elD('div', 'fixa-pop lem-fundo'), card = elD('div', 'pp-card lem-card'); card.style.setProperty('--quem', cor); ov.dataset.qs = qs;
-  const esconde = () => ov.remove(); ov.onclick = e => { if (e.target === ov) esconde(); };   // fora = só esconde, continua na fila
+  const esconde = () => ov.remove(); ov.onclick = e => { if (e.target === ov && !perg) esconde(); };   // fora = só esconde, continua na fila; pergunta não fecha no toque de fora (era o toque pra baixar o teclado, Sigma #99/#113)
   const bts = elD('div', 'lem-bts'), bt = (txt, cls, fn) => { const b = elD('button', 'pp-op ' + cls, txt); b.type = 'button'; b.onclick = fn; bts.append(b); return b; };
   card.append(elD('small', 'lem-de', 'Lembrete · ' + tela), elD('div', 'pp-perg', h.get('q') || 'Lembrete'), bts);
   const resolvido = resp => { lemTira(qs); const lid = h.get('lid'); if (lid) { lemResp.add(lid); gravaJson('menu/lembretes.json', d => { const x = (d.itens || []).find(y => y.id === lid); if (x) { x.respondido = edAgora(); x.resposta = typeof resp === 'string' ? resp : ''; } }, 'Lembrete respondido pelo app', null); } esconde(); setTimeout(mostraProximoLembrete, 300); };
