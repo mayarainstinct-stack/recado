@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-12.296">
-<meta name="app-novidade" content="Garagem: a data do Diário só aceita DD/MM/AAAA">
+<meta name="app-versao" content="2026-11-12.297">
+<meta name="app-novidade" content="Pós-cirurgia: dá pra lançar, editar e apagar item">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -6409,7 +6409,7 @@ function abreViagem(v) {
 }
 function abreChecklist(v, l) {
   tela(semHojeFalso(l.nome), c => {
-    const feitos = marcados(v, l); let total = totalItens(l); const ehTreino = v._arq === 'menu/treino.json';
+    const feitos = marcados(v, l); let total = totalItens(l); const ehTreino = v._arq === 'menu/treino.json', editavel = ehTreino || v._arq === 'menu/pos-cirurgia.json', NOME_IT = ehTreino ? 'exercício' : 'item', NOME_IT_M = ehTreino ? 'Exercício' : 'Item';   // Pós-cirurgia também lança, edita e apaga (Sigma #151, 12/11/2026)
     const prog = document.createElement('p'); prog.className = 'p-nota';
     const conta = () => { prog.innerHTML = ''; prog.append(document.createTextNode(feitos.size + ' de ' + total + ' feitos')); if (feitos.size === total) { const ok = document.createElement('span'); ok.innerHTML = ' ' + icone('check'); ok.style.color = 'var(--accent)'; prog.append(ok); } };
     conta(); c.append(prog);
@@ -6426,13 +6426,13 @@ function abreChecklist(v, l) {
     const cont = document.createElement('div'); c.append(cont);
     // Treino editável pelo app (May, 09/11/2026): lança, edita e apaga exercício direto no menu/treino.json; item é [id, texto, { apagado }]; a marcação da semana vai pro feitos do JSON (12/11/2026)
     const muda = (g, fn, msg) => { const antes = JSON.parse(JSON.stringify(g.itens)); fn(g); total = totalItens(l); conta(); desenha(); return gravaJson(v._arq, dd => { const vv = (dd.viagens || []).find(x => x.id === v.id), ll = vv && vv.listas.find(x => x.id === l.id), gg = ll && ll.grupos.find(x => x.nome === g.nome); if (gg) fn(gg); }, msg, null).then(ok => { if (ok) return true; g.itens.splice(0, g.itens.length, ...antes); total = totalItens(l); conta(); desenha(); showNote('Não guardou: voltou como estava. Confere a internet e tenta de novo.', true); return false; }); };   // falhou: volta como estava (Sigma #151)
-    const camposEx = [{ nome: 'texto', rotulo: 'Exercício', tipo: 'texto_longo', obrigatorio: true }];
-    const novoEx = g => { const k = Date.now().toString(36); edFormulario({ titulo: 'Novo exercício', campos: camposEx, aoSalvar: async f => { await muda(g, gg => { if (!gg.itens.some(it => it[0] === 'u-' + k)) gg.itens.push(['u-' + k, f.texto, { criado: edAgora() }]); }, 'Exercício novo pelo app'); } }); };
-    const editaEx = (g, it) => edFormulario({ titulo: 'Editar exercício', campos: camposEx, v: { texto: it[1] }, aoSalvar: async f => { await muda(g, gg => { const x = gg.itens.find(y => y[0] === it[0]); if (x) x[1] = f.texto; }, 'Exercício editado pelo app'); }, aoApagar: () => apagaEx(g, it) });
+    const camposEx = [{ nome: 'texto', rotulo: NOME_IT_M, tipo: 'texto_longo', obrigatorio: true }];
+    const novoEx = g => { const k = Date.now().toString(36); edFormulario({ titulo: 'Novo ' + NOME_IT, campos: camposEx, aoSalvar: async f => { await muda(g, gg => { if (!gg.itens.some(it => it[0] === 'u-' + k)) gg.itens.push(['u-' + k, f.texto, { criado: edAgora() }]); }, NOME_IT_M + ' novo pelo app'); } }); };
+    const editaEx = (g, it) => edFormulario({ titulo: 'Editar ' + NOME_IT, campos: camposEx, v: { texto: it[1] }, aoSalvar: async f => { await muda(g, gg => { const x = gg.itens.find(y => y[0] === it[0]); if (x) x[1] = f.texto; }, NOME_IT_M + ' editado pelo app'); }, aoApagar: () => apagaEx(g, it) });
     const apagaEx = async (g, it) => {
       feitos.delete(it[0]); guardaMarcados(v, l, feitos);
-      if (!(await muda(g, gg => { const x = gg.itens.find(y => y[0] === it[0]); if (x) x[2] = Object.assign({}, x[2], { apagado: edAgora() }); }, 'Exercício apagado pelo app (fica guardado)'))) return;
-      edFaixaDesfazer('Exercício apagado', () => muda(g, gg => { const x = gg.itens.find(y => y[0] === it[0]); if (x && x[2]) { delete x[2].apagado; } }, 'Apagado desfeito pelo app'));
+      if (!(await muda(g, gg => { const x = gg.itens.find(y => y[0] === it[0]); if (x) x[2] = Object.assign({}, x[2], { apagado: edAgora() }); }, NOME_IT_M + ' apagado pelo app (fica guardado)'))) return;
+      edFaixaDesfazer(NOME_IT_M + ' apagado', () => muda(g, gg => { const x = gg.itens.find(y => y[0] === it[0]); if (x && x[2]) { delete x[2].apagado; } }, 'Apagado desfeito pelo app'));
     };
     const desenha = () => {
       cont.replaceChildren();
@@ -6448,9 +6448,9 @@ function abreChecklist(v, l) {
           const sp = document.createElement('span'); sp.textContent = String(texto).replace(/\s*✅\s*/g, ' ').trim();   // o ✅ do registro antigo não aparece como feito: quem diz feito é a caixa
           cb.onchange = () => { cb.checked ? feitos.add(id) : feitos.delete(id); guardaMarcados(v, l, feitos); conta(); ordena(); };
           lb.append(cb, sp);
-          if (ehTreino) { const li = elD('div', 'tr-ed'); li._i = i; li.append(lb, edMini('note', 'Editar exercício', () => editaEx(g, it))); box.append(li); } else box.append(lb);
+          if (editavel) { const li = elD('div', 'tr-ed'); li._i = i; li.append(lb, edMini('note', 'Editar ' + NOME_IT, () => editaEx(g, it))); box.append(li); } else box.append(lb);
         });
-        if (ehTreino) { const nv = document.createElement('button'); nv.type = 'button'; nv.className = 'gostei check-limpa tr-novo'; nv.textContent = '+ Exercício'; nv.onclick = () => novoEx(g); cont.append(nv); }
+        if (editavel) { const nv = document.createElement('button'); nv.type = 'button'; nv.className = 'gostei check-limpa tr-novo'; nv.textContent = '+ ' + NOME_IT_M; nv.onclick = () => novoEx(g); cont.append(nv); }
         ordena();
       });
     };
