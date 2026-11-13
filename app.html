@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.343">
-<meta name="app-novidade" content="Grade de fotos mostra a foto inteira">
+<meta name="app-versao" content="2026-11-13.344">
+<meta name="app-novidade" content="Planta: número do cômodo pequeno sempre dentro dele">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.343"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.344"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -4057,7 +4057,7 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
           return melhor && { ls, fs, x: melhor[0], y: melhor[1] }; };
         const opcoes = [[nomeU + ' · ' + area], [nomeU], pal.length > 1 ? [pal.slice(0, meio).join(' '), pal.slice(meio).join(' ')] : [nomeU]];
         let achou = null; for (const fs of [.15, .12, .1, .08]) { for (const ls of opcoes) { achou = procura(ls, fs); if (achou) break; } if (achou) break; }
-        if (!achou) { k.numerado = true; const nn = String(d.comodos.indexOf(k) + 1); for (const fs of [.13, .11, .09, .08]) { achou = procura([nn], fs); if (achou) break; } if (!achou) achou = { ls: [nn], fs: .08, x: k.x + .12, y: k.y + .12 }; }   // cômodo pequeno demais pro nome: vira número, e a lista de cômodos diz qual é (Sigma 00:27)
+        if (!achou) { k.numerado = true; const nn = String(d.comodos.indexOf(k) + 1); for (const fs of [.13, .11, .09, .08]) { achou = procura([nn], fs); if (achou) break; } if (!achou) achou = { ls: [nn], fs: Math.min(.13, k.w * .3, k.h * .3), x: k.x + k.w / 2, y: k.y + k.h / 2 }; }   // sem lugar livre: o número vai no meio do cômodo (no canto ele vazava pela parede, chip 4 do Banheiro externo, Sigma #196)   // cômodo pequeno demais pro nome: vira número, e a lista de cômodos diz qual é (Sigma 00:27)
         t.replaceChildren(); t.setAttribute('font-size', achou.fs.toFixed(3)); t.setAttribute('x', achou.x.toFixed(3)); t.setAttribute('y', (achou.y - (achou.ls.length - 1) * achou.fs * .62).toFixed(3));
         achou.ls.forEach((tx, i) => { const sp = ns('tspan', { x: achou.x.toFixed(3), dy: i ? (achou.fs * 1.25).toFixed(3) : 0 }); sp.textContent = tx; t.append(sp); }); t.classList.add('pequeno'); ar.remove(); k.rot = [t];
       }
