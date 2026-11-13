@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.349">
-<meta name="app-novidade" content="Toque no topo da Geral: reavaliação da semana">
+<meta name="app-versao" content="2026-11-13.350">
+<meta name="app-novidade" content="Saúde: o subtítulo acompanha o número editado">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.349"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.350"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -5938,6 +5938,7 @@ function abreVisual(m) {
       VE.itens.filter(y => y.bloco === bk && y.novo).forEach(y => its.push(Object.assign({ feito: '' }, y)));
       return { bk, its: its.filter(x => !x.apagado) };
     };
+    const subAtual = () => { let t = d.sub || ''; (d.abas || []).forEach(a => (a.blocos || []).forEach(b => { if (b.t !== 'numeros') return; const { its } = veItens(b, (b.itens || []).map(x => Object.assign({ chave: x.rotulo }, x))); (b.itens || []).forEach(x => { const y = its.find(z => z.chave === x.rotulo && !z.novo); if (y && x.valor && y.valor && y.valor !== x.valor && t.includes(x.valor)) t = t.split(x.valor).join(y.valor); }); })); return t; };   // o subtítulo lê o número editado no cartão (Sigma #223: 'Custo real' não pode ter 2 valores)
     const blocoEd = (b, w, base, campos, desenha, rotNovo) => {   // monta e redesenha o bloco; marcar = dia e hora; tocar no texto = editar ou apagar (com desfazer); + no fim = item novo
       const pinta = () => {
         const { bk, its } = veItens(b, base), ate = w.querySelector('.vs-ed-lista'); const lista = desenha(its, it => {
@@ -5947,7 +5948,7 @@ function abreVisual(m) {
         lista.classList.add('vs-ed-lista');
         const mais = elD('button', 'vs-ed-mais', '+ ' + rotNovo); mais.type = 'button';
         mais.onclick = () => edFormulario({ titulo: rotNovo.charAt(0).toUpperCase() + rotNovo.slice(1) + ' novo', campos, aoSalvar: async v => { const id = bk + '|novo-' + Date.now().toString(36), nv = { novo: true }; campos.forEach(k => { nv[k.nome] = String(v[k.nome] || '').trim(); }); veGrava(veMuda(id, bk, nv), 'Saúde: item novo pelo app').then(pinta); pinta(); } });
-        if (ate) { ate.nextElementSibling?.remove(); ate.replaceWith(lista); } else w.append(lista); lista.after(mais);
+        if (ate) { ate.nextElementSibling?.remove(); ate.replaceWith(lista); } else w.append(lista); lista.after(mais); if (d.sub && w.isConnected && typeof pSub !== 'undefined') pSub.textContent = subAtual();
       };
       pinta(); return w;
     };
@@ -6003,7 +6004,7 @@ function abreVisual(m) {
     const abas = d.abas || [];
     const monta = b => { const f = R[b.t]; if (!f) return null; try { return f(b); } catch (e) { return null; } };
     if (d.modo === 'trilha') {   // Preparo e pós: trilha de etapas, uma etapa por aba (Sigma #223: eram ~9.000 px de rolagem; tela longa no celular vira abas) e no fim o botão da próxima etapa
-      cabecalho({ icone: (abas[0] && abas[0].icone) || 'heart', sub: d.sub || '' });
+      cabecalho({ icone: (abas[0] && abas[0].icone) || 'heart', sub: subAtual() });
       let at = 0; try { at = Math.max(0, Math.min(+(store.get('vs-aba:' + m.arq) || 0), abas.length - 1)); } catch (e) {}
       const abasEl = elD('div', 'sl-abas vs-abas vs-trilha-abas'); abasEl.setAttribute('role', 'tablist'); const w = elD('div', 'vs-corpo vs-trilha'); c.append(abasEl, w);
       const vai = i => { if (i < 0 || i >= abas.length || i === at) return; at = i; try { store.set('vs-aba:' + m.arq, String(i)); } catch (e) {} pintaT(); const pc = document.querySelector('#p-corpo'); if (pc) pc.scrollTop = 0; };
@@ -6020,7 +6021,7 @@ function abreVisual(m) {
       pintaT(); return;
     }
     if (d.modo === 'slides') {   // Relatos: uma coisa por tela, passando com o dedo (May, 10/11/2026: "relatos slides")
-      cabecalho({ icone: (abas[0] && abas[0].icone) || 'heart', sub: d.sub || '' });
+      cabecalho({ icone: (abas[0] && abas[0].icone) || 'heart', sub: subAtual() });
       const itens = []; abas.forEach(a => (a.blocos || []).forEach(b => { const el = monta(b); if (el) itens.push([a.nome, el]); }));
       const trilho = elD('div', 'vs-slides'), cont = elD('div', 'vs-sl-cont'), ant = elD('button', 'vs-sl-b', '←'), prox = elD('button', 'vs-sl-b', '→'), info = elD('span', 'vs-sl-info');
       ant.type = prox.type = 'button'; ant.setAttribute('aria-label', 'Anterior'); prox.setAttribute('aria-label', 'Próximo');
@@ -6047,7 +6048,7 @@ function abreVisual(m) {
     deslizaAbas(w, () => aba, trocaAba);   // passar o dedo pro lado troca de aba (May, 10/11/2026: "página que tem abas tem que mudar no slider")
     const sem = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
     const pinta = () => {
-      cabecalho({ icone: (abas[aba] && abas[aba].icone) || 'heart', sub: d.sub || '' });
+      cabecalho({ icone: (abas[aba] && abas[aba].icone) || 'heart', sub: subAtual() });
       abasEl.replaceChildren(...abas.map((a, i) => { const f = elD('button', 'sl-aba' + (i === aba ? ' on' : ''), a.nome); f.type = 'button'; f.onclick = () => trocaAba(i); return f; }));
       abasEl.hidden = abas.length < 2 || q.length >= 2;
       requestAnimationFrame(() => { const on = abasEl.querySelector('.on'); if (on) abasEl.scrollTo({ left: on.offsetLeft - (abasEl.clientWidth - on.offsetWidth) / 2, behavior: 'smooth' }); });
