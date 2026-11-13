@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.341">
-<meta name="app-novidade" content="Fotos pra separar abrem numa grade só, com os botões embaixo de cada uma">
+<meta name="app-versao" content="2026-11-13.342">
+<meta name="app-novidade" content="Grade de fotos mostra a foto inteira">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.341"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.342"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2061,7 +2061,8 @@ function lemTelaLote(k, its, trab) {
     return gravaJson('menu/lembretes.json', d => { (d.itens || []).forEach(x => { if (lote[x.id] != null) { x.respondido = q; x.resposta = lote[x.id]; } }); }, 'Fotos respondidas pelo app (' + Object.keys(lote).length + ')', null).then(ok => { if (ok) Object.keys(lote).forEach(id => lemResp.add(id)); else { Object.assign(pend, lote); showNote('Não guardou as respostas. Confere a internet; tento de novo ao tocar em Pronto.', true); } return ok; }); };
   its.forEach((x, i) => {
     const c = elD('div', 'lote-c'), fb = elD('button', 'lote-foto esq'), im = elD('img'), ops = elD('div', 'lote-ops'); fb.type = 'button'; im.alt = 'Foto ' + (i + 1); im.loading = 'lazy'; fb.append(im, elD('span', 'lote-n', String(i + 1)));
-    fotoUrl(x.foto).then(u => { im.src = u; im.onload = () => fb.classList.remove('esq'); fb.onclick = () => fotoUrl(x.foto, true).then(o => abreZoom(o, x.foto)); }).catch(() => { fb.classList.add('falhou'); });
+    fb.onclick = () => fotoUrl(x.foto, true).then(o => abreZoom(o, x.foto)).catch(() => {});   // tocar abre a foto inteira desde o primeiro toque (Sigma 15:02)
+    fotoUrl(x.foto).then(u => { im.src = u; im.onload = () => fb.classList.remove('esq'); }).catch(() => { fb.classList.add('falhou'); });
     [].concat(x.ops || []).forEach(op => { const b = elD('button', 'lote-op', String(op).replace(/\s*\(.*$/, '')); b.type = 'button'; b.title = op;
       b.onclick = () => { resp[x.id] = op; pend[x.id] = op; ops.querySelectorAll('.lote-op').forEach(y => y.classList.toggle('on', y === b)); c.classList.add('feita'); conta(); clearTimeout(tm); tm = setTimeout(salva, 1500); };
       ops.append(b); });
