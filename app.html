@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.367">
-<meta name="app-novidade" content="Música: aba Tocar (2x por semana) e a Telecaster no lugar do contrabaixo">
+<meta name="app-versao" content="2026-11-13.368">
+<meta name="app-novidade" content="Viagens: bonequinho de quem foi junto e cena do hospital na cirurgia">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.367"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.368"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -4641,7 +4641,7 @@ function abrePlanos(m) {   // Planos desenhado (#211, May 11/11 e 12/11 22:07-22
     const passou = v => { if (fimV(v)) return fimV(v) < hoje(); const ds = [...quandoV(v).matchAll(/(\d{1,2})\/(\d{1,2})/g)]; if (!ds.length) return false; const u = ds[ds.length - 1]; return new Date(hoje().getFullYear(), +u[2] - 1, +u[1]) < hoje(); };
     const itensV = v => v.listas.reduce((s, l) => s + (l.grupos || []).reduce((t, g) => t + (g.itens || []).length, 0), 0);
     const feitosV = v => V.feito_no_json ? Object.keys(V.feitos).filter(k => k.startsWith(v.id + ':')).length : null;
-    const CHIBI = { may: 'may', gabriel: 'gabriel', gabi: 'gabriel', polly: 'polly' };
+    const CHIBI = { may: 'may', gabriel: 'gabriel', gabi: 'gabriel', polly: 'polly', mae: 'mae', ruiva: 'ruiva', nathy: 'nathy', rodrigo: 'rodrigo' };   // quem foi junto ganha o bonequinho (Sigma 13/11 16:48)
     const quem = txt => ['may', ...String(txt || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').split(/[^a-z]+/).map(w => CHIBI[w]).filter(Boolean)].filter((x, i, a) => a.indexOf(x) === i);
     const chibis = lista => { const s = elD('span', 'pl2-chibis'); lista.forEach(n => { const im = elD('img'); im.alt = n; im.src = 'arte/planos/chibi-' + n + '.svg'; s.append(im); }); return s; };
     const placa = (titulo, sub, selo, gente, extra, cls, arte) => { const k = elD('article', 'pl2-placa' + (cls ? ' ' + cls : '')), top = elD('div', 'pl2-top'), tx = elD('div'); if (arte) { const fig = elD('div', 'pl2-arte'), im = elD('img'); im.alt = ''; im.loading = 'lazy'; im.src = arte + '?v=' + encodeURIComponent(VERSAO); fig.append(im); k.append(fig); } tx.append(elD('b', '', titulo), elD('span', '', sub || '')); top.append(tx); if (selo) top.append(elD('span', 'pl2-selo', selo)); k.append(top); const pe = elD('div', 'pl2-pe'); pe.append(chibis(gente)); if (extra) pe.append(extra); k.append(pe); return k; };
