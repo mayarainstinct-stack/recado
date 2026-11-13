@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.332">
-<meta name="app-novidade" content="Música: botão do Menu com o fone do Estúdio JWA">
+<meta name="app-versao" content="2026-11-13.333">
+<meta name="app-novidade" content="Música: aba Cuidar com a manutenção das guitarras, violão e baixo">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.332"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.333"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3274,7 +3274,7 @@ function abreMusica(m) {
     const pinta = () => {
       const mus = vivos('musica'), naIdeia = mus.filter(x => (x.etapa || 1) === 1).length;
       rtx.replaceChildren(elD('b', '', mus.length + (mus.length === 1 ? ' música em andamento' : ' músicas em andamento')), elD('span', '', !mus.length ? 'toque no + pra começar' : naIdeia === mus.length ? 'todas ainda na etapa de ideia' : naIdeia + ' ainda na ideia'));
-      abas.replaceChildren(...[['musica', 'Músicas'], ['setup', 'Meu setup'], ['ideia', 'Ideias']].map(([id, rot]) => { const b = elD('button', 'tm-aba', rot); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(aba === id)); b.onclick = () => { aba = id; store.set('mus-aba', id); pinta(); }; return b; }));
+      abas.replaceChildren(...[['musica', 'Músicas'], ['manut', 'Cuidar'], ['setup', 'Setup'], ['ideia', 'Ideias']].map(([id, rot]) => { const b = elD('button', 'tm-aba', rot); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(aba === id)); b.onclick = () => { aba = id; store.set('mus-aba', id); pinta(); }; return b; }));
       corpo.replaceChildren();
       if (aba === 'musica') {
         corpo.append(gravador());
@@ -3293,13 +3293,24 @@ function abreMusica(m) {
           if (x.falta) { const f = elD('p', 'tm-falta'); f.append(elD('small', '', 'O que falta'), document.createTextNode(x.falta)); a.append(f); }
           corpo.append(a);
         });
+      } else if (aba === 'manut') {   // manutenção dos instrumentos (May 13/11 12:36): cada um com troca de corda, regulagem e limpeza, a última e a próxima; datas começam vazias (nada inventado), intervalo é sugestão editável
+        const SERV = [['cordas', 'Troca de cordas', 60], ['regulagem', 'Regulagem', 180], ['limpeza', 'Limpeza', 30]], inst = vivos('setup').filter(x => x.tipo === 'guitarra' || /viol[aã]o|baixo|guitarra/i.test(x.nome)), hoje = new Date();
+        const daData = t => { const m = String(t || '').match(/^(\d\d)\/(\d\d)\/(\d{4})/); return m ? new Date(+m[3], m[2] - 1, +m[1]) : null; }, br = d => String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
+        if (!inst.length) corpo.append(elD('div', 'tm-vazio', 'Nenhum instrumento no Setup ainda.'));
+        inst.forEach(x => { const a = elD('article', 'tm-aparelho tm-manut'), sl = elD('div', 'tm-slot'), tx = elD('div'); sl.innerHTML = '<svg viewBox="0 0 40 40" aria-hidden="true">' + MUS_ICONES.guitarra + '</svg>'; tx.append(elD('h3', '', x.nome));
+          SERV.forEach(([sv, rot, dias]) => { const reg = d.itens.find(y => y.secao === 'manut' && y.instrumento === x.id && y.servico === sv && !y.apagado) || null, cada = reg && reg.cada_dias ? +reg.cada_dias : dias, ult = reg ? daData(reg.ultima) : null, prox = ult ? new Date(ult.getTime() + cada * 864e5) : null, atras = prox && prox < hoje;
+            const li = elD('div', 'tm-mt' + (atras ? ' atras' : '') + (!ult ? ' sem' : '')); li.append(elD('b', '', rot), elD('small', '', ult ? 'última ' + br(ult) + ' · próxima ' + br(prox) + (atras ? ' (atrasada)' : '') : 'sem data ainda · a cada ' + cada + ' dias'));
+            const fiz = elD('button', 'tm-fiz', 'Fiz hoje'); fiz.type = 'button'; fiz.onclick = () => grava(l => { const r = l.find(y => y.secao === 'manut' && y.instrumento === x.id && y.servico === sv && !y.apagado); const q = br(new Date()); if (r) { r.ultima = q; r.atualizado = edAgora(); } else l.push({ id: 'manut-' + x.id + '-' + sv, secao: 'manut', instrumento: x.id, servico: sv, ultima: q, cada_dias: cada, criado: edAgora() }); }, 'Música: ' + rot + ' de ' + x.nome + ' feita hoje pelo app');
+            const ed = edMini('note', 'Editar ' + rot + ' de ' + x.nome, () => edFormulario({ titulo: rot + ' · ' + x.nome, campos: [{ nome: 'ultima', rotulo: 'Última vez (DD/MM/AAAA)', tipo: 'texto', valida: 'data', erro: 'Data no formato DD/MM/AAAA, e que exista.' }, { nome: 'cada_dias', rotulo: 'Fazer a cada quantos dias', tipo: 'numero', valida: 'numero' }], v: { ultima: reg ? reg.ultima || '' : '', cada_dias: String(cada) }, aoSalvar: async f => { await grava(l => { const r = l.find(y => y.secao === 'manut' && y.instrumento === x.id && y.servico === sv && !y.apagado); const v = { ultima: (f.ultima || '').trim(), cada_dias: +String(f.cada_dias).replace(',', '.') || cada }; if (r) Object.assign(r, v, { atualizado: edAgora() }); else l.push(Object.assign({ id: 'manut-' + x.id + '-' + sv, secao: 'manut', instrumento: x.id, servico: sv, criado: edAgora() }, v)); }, 'Música: ' + rot + ' de ' + x.nome + ' editada pelo app'); } })); ed.classList.add('tm-ed');
+            const lin = elD('div', 'tm-mt-l'); lin.append(li, fiz, ed); tx.append(lin); });
+          a.append(sl, tx); corpo.append(a); });
       } else if (aba === 'setup') {
         agrupa(vivos('setup')).forEach(([g, l]) => { corpo.append(elD('div', 'tm-grupo', g || 'Outros')); l.forEach(x => { const a = elD('article', 'tm-aparelho'), sl = elD('div', 'tm-slot'), tx = elD('div'); sl.innerHTML = '<svg viewBox="0 0 40 40" aria-hidden="true">' + (MUS_ICONES[x.tipo] || MUS_ICONES.interface) + '</svg>'; tx.append(lapis('setup', x), elD('h3', '', x.nome)); if (x.texto) tx.append(elD('p', '', x.texto)); tx.append(elD('span', 'tm-selo' + (x.certeza === 'talvez' ? ' talvez' : ''), x.certeza === 'talvez' ? 'Provável' : 'Confirmado')); a.append(sl, tx); corpo.append(a); }); });
         const ant = elD('button', 'tm-mais', 'Anotações do inventário (14/08)'); ant.type = 'button'; ant.onclick = () => abreItemMenu({ tipo: 'saudelista', cartoes: true, icone: 'headphones', nome: 'Anotações do setup', arq: 'categorias/musica/meu-setup.json' }); corpo.append(ant);   // as notas e perguntas antigas do inventário continuam a um toque
       } else {
         agrupa(vivos('ideia')).forEach(([g, l]) => { corpo.append(elD('div', 'tm-grupo', g || 'Outras')); const pa = elD('div', 'tm-pauta'), ul = elD('ul'); l.forEach(x => { const li = elD('li'), tx = elD('div'); tx.append(lapis('ideia', x), document.createTextNode(x.nome)); if (x.texto) tx.append(elD('small', '', x.texto)); li.append(tx); ul.append(li); }); pa.append(ul); corpo.append(pa); });
       }
-      const mais = elD('button', 'tm-mais', '+ ' + { musica: 'Música', setup: 'Aparelho ou pessoa', ideia: 'Ideia' }[aba]); mais.type = 'button'; mais.onclick = () => form(aba, null); corpo.append(mais);
+      if (aba !== 'manut') { const mais = elD('button', 'tm-mais', '+ ' + { musica: 'Música', setup: 'Aparelho ou pessoa', ideia: 'Ideia' }[aba]); mais.type = 'button'; mais.onclick = () => form(aba, null); corpo.append(mais); }
     };
     pinta();
   });

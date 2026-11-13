@@ -2153,3 +2153,10 @@ body.na-geral .painel.tema-musica .p-topo::after, .painel.tema-musica .p-topo::a
 .bt-musica .ic { color: #FFD60A !important; background: rgba(0,0,0,.6); border-radius: 14px; }
 .bt-musica .ic .im { width: 52px; height: 52px; }
 .bt-musica .t { color: #fff !important; text-shadow: 0 1px 3px #000; }
+.t-musica .tm-abas { grid-template-columns: repeat(4, 1fr) !important; }
+.t-musica .tm-manut .tm-mt-l { display: flex; align-items: center; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #3A3533; }
+.t-musica .tm-mt { flex: 1; min-width: 0; display: flex; flex-direction: column; } .t-musica .tm-mt b { font-size: 14px; } .t-musica .tm-mt small { color: #BDB5AF; font-size: 12px; }
+.t-musica .tm-mt.atras small { color: #FF6B76; font-weight: 700; } .t-musica .tm-mt.sem small { color: #8F8780; }
+.t-musica .tm-fiz { flex: none; padding: 6px 10px; border-radius: 10px; border: 1px solid #FFD60A; background: #000; color: #FFD60A; font-weight: 700; font-size: 13px; }
+.t-musica .tm-manut .tm-ed { float: none; margin: 0; }
+.t-musica .tm-fiz { white-space: nowrap; }
