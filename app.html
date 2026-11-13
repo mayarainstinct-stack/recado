@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.329">
+<meta name="app-versao" content="2026-11-13.330">
 <meta name="app-novidade" content="Artes: tinta escorrendo de verdade, logo da Contraste no topo">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -4452,7 +4452,7 @@ function abrePlanos(m) {   // Planos desenhado (#211, May 11/11 e 12/11 22:07-22
     const cena = elD('div', 'pl2-cena'), ci = elD('img'); ci.alt = ''; cena.append(ci);
     const nav = elD('nav', 'pl2-abas'), corpo = elD('div', 'pl2-corpo'); c.append(cena, nav, corpo);
     let E, V; try { [E, V] = await Promise.all([edAbre({ arq: m.arq }), lerArquivo(m.viagens || 'menu/viagens.json').then(t => JSON.parse(t)).catch(() => ({ viagens: [] }))]); } catch (e) { corpo.append(elD('p', 'p-nota', 'Não abriu. Confere a internet.')); return; }
-    ci.src = (E.base.cena || 'arte/planos/bh.svg') + '?v=' + encodeURIComponent(VERSAO);   // a cena do topo é a do plano em destaque (planos.json: cena)
+    ci.src = (E.base.cena || 'arte/planos/planos.svg') + '?v=' + encodeURIComponent(VERSAO);   // a cena do topo é a do plano em destaque (planos.json: cena)
     const VARQ = m.viagens || 'menu/viagens.json'; V.feitos = V.feitos || {}; const novos = {};
     (V.viagens || []).forEach(v => { v._arq = VARQ; if (!V.feito_no_json) return; v._json = true; v._feitos = V.feitos; v.listas.forEach(l => { const ant = store.get('viagem:' + v.id + ':' + l.id); if (!ant) return; try { JSON.parse(ant).forEach(id => { const k = v.id + ':' + l.id + ':' + id; if (!V.feitos[k]) { V.feitos[k] = edAgora(); novos[k] = V.feitos[k]; } }); } catch (e) {} }); });
     if (Object.keys(novos).length) gravaJson(VARQ, dd => { dd.feitos = dd.feitos || {}; Object.assign(dd.feitos, novos); }, 'Marcas antigas do celular passadas pro arquivo', null).then(ok => { if (ok) V.viagens.forEach(v => v.listas.forEach(l => store.set('viagem:' + v.id + ':' + l.id, ''))); });
@@ -4473,7 +4473,7 @@ function abrePlanos(m) {   // Planos desenhado (#211, May 11/11 e 12/11 22:07-22
       const ex = elD('div', 'pl2-acoes'); ex.append(ok, lap);
       return placa(p.o_que_e, p.feito ? edRotuloFeito(p) : (p.proximo_passo || ''), p.quando || 'um dia', quem(p.com_quem), ex, p.feito ? 'feito' : '');
     };
-    const cartaoViagem = (v, foi) => { const f = feitosV(v), t = itensV(v), k = placa('Viagem · ' + (v.nome || ''), v.listas.length + ' listas pra levar e conferir', foi ? 'foi ' + quandoV(v) : (quandoV(v) || 'sem data'), quem(v.com), f == null ? null : barra(f, t), foi ? 'passou' : '', foi || v.arte === E.base.cena ? '' : v.arte); k.classList.add('toca'); k.onclick = () => abreViagem(v); return k; };
+    const cartaoViagem = (v, foi) => { const f = feitosV(v), t = itensV(v), k = placa('Viagem · ' + (v.nome || ''), v.listas.length + ' listas pra levar e conferir', foi ? 'foi ' + quandoV(v) : (quandoV(v) || 'sem data'), quem(v.com), f == null ? null : barra(f, t), foi ? 'passou' : '', foi ? '' : v.arte); k.classList.add('toca'); k.onclick = () => abreViagem(v); return k; };
     const ABAS = { agora: 'Agora', umdia: 'Um dia', viagens: 'Viagens' }; let aba = 'agora';
     const pinta = () => {
       nav.replaceChildren(...Object.entries(ABAS).map(([k, t]) => { const b = elD('button', k === aba ? 'on' : '', t); b.type = 'button'; b.onclick = () => { aba = k; pinta(); }; return b; }));
