@@ -1959,11 +1959,13 @@ html:has(body.modo-trab) { background: #F8FAFC; }   /* Trabalho e claro mesmo co
 /* #110 (Sigma 12/11/2026): nada some do nada, sem fade */
 .painel.p-fantasma { position: fixed !important; z-index: 60; pointer-events: none; animation: p-desce .22s cubic-bezier(.5,0,.8,.4) forwards !important; }
 @keyframes p-desce { to { transform: translateY(100%); } }
-.tela-dir { animation: tela-dir .22s cubic-bezier(.2,.8,.3,1); } .tela-esq { animation: tela-esq .22s cubic-bezier(.2,.8,.3,1); }
-@keyframes tela-dir { from { transform: translateX(48px); } } @keyframes tela-esq { from { transform: translateX(-48px); } }
-.zoom.saindo .zpalco img { animation: zoom-sai .2s cubic-bezier(.5,0,.8,.4) forwards; } .zoom.saindo .zbarra { animation: zoom-barra .2s ease-in forwards; }
-@keyframes zoom-sai { to { transform: translateY(90px) scale(.8); } } @keyframes zoom-barra { to { transform: translateY(120%); } }
-@media (prefers-reduced-motion: reduce) { .p-fantasma { display: none; } .tela-dir, .tela-esq, .zoom.saindo .zpalco img, .zoom.saindo .zbarra { animation: none; } }
+.tela-dir { animation: tela-dir .26s cubic-bezier(.2,.8,.3,1); } .tela-esq { animation: tela-esq .26s cubic-bezier(.2,.8,.3,1); }
+.tela-velha.tela-sai-esq { animation: tela-sai-esq .26s cubic-bezier(.2,.8,.3,1) forwards; } .tela-velha.tela-sai-dir { animation: tela-sai-dir .26s cubic-bezier(.2,.8,.3,1) forwards; }
+@keyframes tela-sai-esq { to { transform: translateX(-100%); } } @keyframes tela-sai-dir { to { transform: translateX(100%); } }
+@keyframes tela-dir { from { transform: translateX(100%); } } @keyframes tela-esq { from { transform: translateX(-100%); } }
+.zoom.saindo { animation: zoom-sai .24s cubic-bezier(.5,0,.8,.4) forwards; }   /* a foto e o fundo descem juntos e saem pela borda de baixo (Sigma 21:36) */
+@keyframes zoom-sai { to { transform: translateY(100%); } }
+@media (prefers-reduced-motion: reduce) { .p-fantasma { display: none; } .tela-dir, .tela-esq, .zoom.saindo, .tela-velha { animation: none; } }
 /* Pós-cirurgia e telas rosa (Sigma #151 rodada 2): caixinha e lápis na cor da tela, "+ Item" discreto no fim do grupo */
 .painel.tema-rosa .check input { accent-color: #DB2777; color-scheme: light; }
 .painel.tema-rosa .tr-ed .ed-mini { color: #DB2777; }

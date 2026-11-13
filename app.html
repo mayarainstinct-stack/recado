@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-12.309">
-<meta name="app-novidade" content="Por dentro: os 4 visuais da Música prontos pra você escolher">
+<meta name="app-versao" content="2026-11-12.310">
+<meta name="app-novidade" content="Trocar de tela: uma empurra a outra; a foto sai inteira por baixo">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-12.309"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-12.310"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2547,7 +2547,13 @@ function cabecalho({ icone: ic, sub, acao } = {}) {
 }
 function cabecalhoGenerico() { pTopo.classList.remove('proprio'); pTopo.querySelector('.p-ic')?.remove(); pTopo.querySelector('.p-acao')?.remove(); pSub.textContent = ''; pSub.hidden = true; pMais.hidden = false; }
 function desenhaTela() {
-  const nAnt = desenhaTela.n || 0; desenhaTela.n = pilha.length; pCorpo.classList.remove('tela-dir', 'tela-esq'); if (pilha.length !== nAnt && nAnt) { void pCorpo.offsetWidth; pCorpo.classList.add(pilha.length > nAnt ? 'tela-dir' : 'tela-esq'); }   // trocar de tela anda pro lado (#110): tela nova vem da direita, voltar vem da esquerda
+  const nAnt = desenhaTela.n || 0; desenhaTela.n = pilha.length; pCorpo.classList.remove('tela-dir', 'tela-esq');
+  if (pilha.length !== nAnt && nAnt && !painel.hidden && pCorpo.firstChild && !matchMedia('(prefers-reduced-motion: reduce)').matches) {   // trocar de tela: uma empurra a outra (#110, Sigma 21:36): a velha sai pro lado oposto enquanto a nova entra
+    const vai = pilha.length > nAnt ? 'tela-sai-esq' : 'tela-sai-dir', r = pCorpo.getBoundingClientRect(), g = pCorpo.cloneNode(true); g.removeAttribute('id'); g.classList.add('tela-velha', vai); g.setAttribute('aria-hidden', 'true'); g.inert = true;
+    Object.assign(g.style, { position: 'fixed', left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', margin: '0', zIndex: '53', pointerEvents: 'none', background: getComputedStyle(pCorpo).backgroundColor });
+    const st = pCorpo.scrollTop; document.body.append(g); g.scrollTop = st; setTimeout(() => g.remove(), 300);
+  }
+  if (pilha.length !== nAnt && nAnt) { void pCorpo.offsetWidth; pCorpo.classList.add(pilha.length > nAnt ? 'tela-dir' : 'tela-esq'); }
   const entrada = pilha[pilha.length - 1], [titulo, montar, rolou] = entrada, mae = pilha.length > 1 ? pilha[pilha.length - 2][3] : null; painel.classList.remove('tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude', 'tema-contraste', 'tema-musica', 'mus-a', 'mus-b', 'mus-c', 'mus-d');
   if (mae) mae.temas.forEach(c => painel.classList.add(c));   // tela filha herda o tema da mãe (May, 09/11/2026: "senão fica cagado"); a filha que quiser outro tema troca no montar   // o tema claro é só da tela que pedir (a Agenda, May 08/11 12:56)
   pTit.textContent = titulo; pCorpo.scrollTop = 0; pExtra.hidden = true;   /* só na raiz do Menu, também quando a tela abre direto pela notificação */ cabecalhoGenerico();
@@ -5820,7 +5826,7 @@ function abreZoom(src, path, listaFotos) {   // listaFotos: as fotos do álbum (
     } catch (err) { if (err && err.name !== 'AbortError') showNote('Não consegui salvar a foto.', true); }
   };
   x.onclick = e => { e.stopPropagation(); fecha(); };
-  const fecha = () => { document.removeEventListener('keydown', esc); if (z.classList.contains('saindo')) return; z.classList.add('saindo'); setTimeout(() => z.remove(), 200); };   // a foto desce e encolhe antes de sair (#110), nunca some do nada
+  const fecha = () => { document.removeEventListener('keydown', esc); if (z.classList.contains('saindo')) return; z.classList.add('saindo'); setTimeout(() => z.remove(), 260); };   // a foto desce e encolhe antes de sair (#110), nunca some do nada
   const esc = e => { if (e.key === 'Escape') fecha(); else if (e.key === 'ArrowLeft') vai(-1); else if (e.key === 'ArrowRight') vai(1); };
   let t0 = null;
   let horiz = null;   // a foto anda junto com o dedo pro lado e só troca quando solta (May, 07/11/2026 15:29: "a foto mexe junto com meu dedo")
