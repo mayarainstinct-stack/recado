@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.321">
+<meta name="app-versao" content="2026-11-13.322">
 <meta name="app-novidade" content="Música nova: grava ideia na hora, mesa com as etapas, cara do Estúdio JWA">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.321"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.322"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2554,12 +2554,12 @@ function desenhaTela() {
     const st = pCorpo.scrollTop; document.body.append(g); g.scrollTop = st; setTimeout(() => g.remove(), 300);
   }
   if (pilha.length !== nAnt && nAnt) { void pCorpo.offsetWidth; pCorpo.classList.add(pilha.length > nAnt ? 'tela-dir' : 'tela-esq'); }
-  const entrada = pilha[pilha.length - 1], [titulo, montar, rolou] = entrada, mae = pilha.length > 1 ? pilha[pilha.length - 2][3] : null; painel.classList.remove('tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude', 'tema-contraste', 'tema-musica');
+  const entrada = pilha[pilha.length - 1], [titulo, montar, rolou] = entrada, mae = pilha.length > 1 ? pilha[pilha.length - 2][3] : null; painel.classList.remove('tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude', 'tema-contraste', 'tema-planos', 'tema-musica');
   if (mae) mae.temas.forEach(c => painel.classList.add(c));   // tela filha herda o tema da mãe (May, 09/11/2026: "senão fica cagado"); a filha que quiser outro tema troca no montar   // o tema claro é só da tela que pedir (a Agenda, May 08/11 12:56)
   pTit.textContent = titulo; pCorpo.scrollTop = 0; pExtra.hidden = true;   /* só na raiz do Menu, também quando a tela abre direto pela notificação */ cabecalhoGenerico();
   pTopo.hidden = pilha.length === 1 && titulo === 'Menu'; painel.classList.toggle('sem-topo', pTopo.hidden);   // sem a barra, o Recados ganha respiro em cima (May 18:47: "colou em cima")   // o Menu começa direto em Recados, sem a barra de cima (May 18:40); voltar fica no botão de baixo e no deslize
   const t = document.createElement('div'); t.className = 'tela'; if (mae) mae.gr.forEach(c => t.classList.add(c)); pCorpo.replaceChildren(t);   // carga atrasada de tela que já saiu cai no invólucro velho
-  const r = montar(t); const guardaTema = () => { entrada[3] = { temas: ['tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude', 'tema-musica'].filter(c => painel.classList.contains(c)), gr: [...t.classList].filter(c => c.startsWith('gr-') && !c.startsWith('gr-grade')) }; };   // a filha herda daqui
+  const r = montar(t); const guardaTema = () => { entrada[3] = { temas: ['tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude', 'tema-planos', 'tema-musica'].filter(c => painel.classList.contains(c)), gr: [...t.classList].filter(c => c.startsWith('gr-') && !c.startsWith('gr-grade')) }; };   // a filha herda daqui
   if (pilha[pilha.length - 1] === entrada) { guardaTema(); Promise.resolve(r).then(() => { if (pilha[pilha.length - 1] === entrada && t.isConnected) guardaTema(); }).catch(() => {}); }
   if (rolou) Promise.resolve(r).then(() => { if (t.isConnected) pCorpo.scrollTop = rolou; });   // voltando: devolve a rolagem de onde ela estava
 }
@@ -4311,6 +4311,7 @@ function abreItemMenu(m) {
   if (m.tipo === 'agenda') return abreAgenda(m);
   if (m.tipo === 'checklist') return abreCheck(m);
   if (m.tipo === 'atelie') return abreAtelie(m);
+  if (m.tipo === 'planos') return abrePlanos(m);
   if (m.tipo === 'viagens') return abreViagens(m);
 }
 // ---- Viagens: menu/viagens.json = { viagens: [{ id, nome, resumo, listas: [{ id, nome, grupos: [{ nome, itens: [[id, texto]] }] }] }] }
@@ -4431,6 +4432,50 @@ function abreAtelie(m) {
       const nv = elD('button', 'at-conclui at-nova', '+ Obra nova'); nv.type = 'button'; nv.onclick = lanca; w.append(nv);
     };
     pinta();
+  });
+}
+function abrePlanos(m) {   // Planos desenhado (#211, May 11/11 e 12/11 22:07-22:12: Harvest Moon + MapleStory no inverno, chibis de cabeça quadrada pela ficha de Cennet; opção a do Sigma 13/11 11:09): planos e viagens juntos, viagem que passou vai pra "Já foi"
+  tela(m.nome, async c => {
+    painel.classList.add('tema-planos'); painel.style.setProperty('--c', '#6B4226'); c.classList.add('pl2-tela');
+    cabecalho({ icone: 'pin', sub: 'metas, passeios e viagens' });
+    const cena = elD('div', 'pl2-cena'), ci = elD('img'); ci.alt = ''; ci.src = 'arte/planos/cena.svg?v=' + encodeURIComponent(VERSAO); cena.append(ci);
+    const nav = elD('nav', 'pl2-abas'), corpo = elD('div', 'pl2-corpo'); c.append(cena, nav, corpo);
+    let E, V; try { [E, V] = await Promise.all([edAbre({ arq: m.arq }), lerArquivo(m.viagens || 'menu/viagens.json').then(t => JSON.parse(t)).catch(() => ({ viagens: [] }))]); } catch (e) { corpo.append(elD('p', 'p-nota', 'Não abriu. Confere a internet.')); return; }
+    const VARQ = m.viagens || 'menu/viagens.json'; V.feitos = V.feitos || {}; const novos = {};
+    (V.viagens || []).forEach(v => { v._arq = VARQ; if (!V.feito_no_json) return; v._json = true; v._feitos = V.feitos; v.listas.forEach(l => { const ant = store.get('viagem:' + v.id + ':' + l.id); if (!ant) return; try { JSON.parse(ant).forEach(id => { const k = v.id + ':' + l.id + ':' + id; if (!V.feitos[k]) { V.feitos[k] = edAgora(); novos[k] = V.feitos[k]; } }); } catch (e) {} }); });
+    if (Object.keys(novos).length) gravaJson(VARQ, dd => { dd.feitos = dd.feitos || {}; Object.assign(dd.feitos, novos); }, 'Marcas antigas do celular passadas pro arquivo', null).then(ok => { if (ok) V.viagens.forEach(v => v.listas.forEach(l => store.set('viagem:' + v.id + ':' + l.id, ''))); });
+    const hoje = () => { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); };
+    const quandoV = v => (v.sub || '').split('·')[0].trim();
+    const passou = v => { const ds = [...quandoV(v).matchAll(/(\d{1,2})\/(\d{1,2})/g)]; if (!ds.length) return false; const u = ds[ds.length - 1]; return new Date(hoje().getFullYear(), +u[2] - 1, +u[1]) < hoje(); };
+    const itensV = v => v.listas.reduce((s, l) => s + (l.grupos || []).reduce((t, g) => t + (g.itens || []).length, 0), 0);
+    const feitosV = v => V.feito_no_json ? Object.keys(V.feitos).filter(k => k.startsWith(v.id + ':')).length : null;
+    const CHIBI = { may: 'may', gabriel: 'gabriel', gabi: 'gabriel', polly: 'polly' };
+    const quem = txt => ['may', ...String(txt || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').split(/[^a-z]+/).map(w => CHIBI[w]).filter(Boolean)].filter((x, i, a) => a.indexOf(x) === i);
+    const chibis = lista => { const s = elD('span', 'pl2-chibis'); lista.forEach(n => { const im = elD('img'); im.alt = n; im.src = 'arte/planos/chibi-' + n + '.svg'; s.append(im); }); return s; };
+    const placa = (titulo, sub, selo, gente, extra, cls) => { const k = elD('article', 'pl2-placa' + (cls ? ' ' + cls : '')), top = elD('div', 'pl2-top'), tx = elD('div'); tx.append(elD('b', '', titulo), elD('span', '', sub || '')); top.append(tx); if (selo) top.append(elD('span', 'pl2-selo', selo)); k.append(top); const pe = elD('div', 'pl2-pe'); pe.append(chibis(gente)); if (extra) pe.append(extra); k.append(pe); return k; };
+    const barra = (f, t) => { const w = elD('div', 'pl2-barra-w'), b = elD('div', 'trilho-prog pl2-barra'), i = elD('i'); i.style.width = (t ? f / t * 100 : 0) + '%'; b.append(i); w.append(b, elD('small', '', t ? f + ' de ' + t + ' conferidos' : 'nenhum passo ainda')); return w; };
+    const form = p => edFormulario({ titulo: p ? 'Editar plano' : 'Plano novo', campos: E.campos, v: p || { prioridade: aba === 'umdia' ? 'um-dia' : 'agora' }, aoSalvar: async v => { if (p) await E.edita(p.id, v); else await E.lanca(v, 'Plano novo pelo app'); pinta(); }, aoApagar: p ? async () => { await E.apaga(p.id, true); pinta(); edFaixaDesfazer(p.o_que_e + ' apagado', async () => { await E.apaga(p.id, false); pinta(); }); } : null });
+    const cartaoPlano = p => {
+      const lap = elD('button', 'pl2-lapis'); lap.type = 'button'; lap.innerHTML = icone('pen'); lap.setAttribute('aria-label', 'Editar plano'); lap.onclick = e => { e.stopPropagation(); form(p); };
+      const ok = elD('button', 'pl2-feito', p.feito ? 'Feito' : 'Marcar feito'); ok.type = 'button'; ok.onclick = async e => { e.stopPropagation(); const on = !p.feito; await E.feito(p.id, on); pinta(); edFaixaDesfazer(on ? 'Plano marcado feito' : 'Plano desmarcado', async () => { await E.feito(p.id, !on); pinta(); }); };
+      const ex = elD('div', 'pl2-acoes'); ex.append(ok, lap);
+      return placa(p.o_que_e, p.feito ? edRotuloFeito(p) : (p.proximo_passo || ''), p.quando || 'um dia', quem(p.com_quem), ex, p.feito ? 'feito' : '');
+    };
+    const cartaoViagem = (v, foi) => { const f = feitosV(v), t = itensV(v), k = placa('Viagem · ' + (v.nome || ''), v.listas.length + ' listas pra levar e conferir', foi ? 'foi ' + quandoV(v) : (quandoV(v) || 'sem data'), ['may', 'gabriel'], f == null ? null : barra(f, t), foi ? 'passou' : ''); k.classList.add('toca'); k.onclick = () => abreViagem(v); return k; };
+    const ABAS = { agora: 'Agora', umdia: 'Um dia', viagens: 'Viagens' }; let aba = 'agora';
+    const pinta = () => {
+      nav.replaceChildren(...Object.entries(ABAS).map(([k, t]) => { const b = elD('button', k === aba ? 'on' : '', t); b.type = 'button'; b.onclick = () => { aba = k; pinta(); }; return b; }));
+      corpo.replaceChildren();
+      const vivos = E.itens.filter(p => !p.apagado), vg = V.viagens || [];
+      const lista = aba === 'agora' ? vivos.filter(p => p.prioridade === 'agora' && !p.feito) : aba === 'umdia' ? vivos.filter(p => p.prioridade !== 'agora' && !p.feito) : [];
+      const vAg = aba === 'agora' ? vg.filter(v => !passou(v)) : aba === 'viagens' ? vg.filter(v => !passou(v)) : [], vFoi = aba === 'viagens' ? vg.filter(passou) : [];
+      vAg.forEach(v => corpo.append(cartaoViagem(v, false))); lista.forEach(p => corpo.append(cartaoPlano(p)));
+      if (!vAg.length && !lista.length) corpo.append(elD('p', 'pl2-vazio', aba === 'viagens' ? 'Nenhuma viagem marcada.' : aba === 'agora' ? 'Nada pra agora. Toca em + Plano pra lançar o próximo.' : 'Nada guardado pra um dia.'));
+      if (vFoi.length) { corpo.append(elD('div', 'pl2-sec', 'Já foi')); vFoi.forEach(v => corpo.append(cartaoViagem(v, true))); }
+      const feitos = aba !== 'viagens' ? vivos.filter(p => p.feito && (aba === 'agora' ? p.prioridade === 'agora' : p.prioridade !== 'agora')) : []; if (feitos.length) { corpo.append(elD('div', 'pl2-sec', 'Feitos')); feitos.forEach(p => corpo.append(cartaoPlano(p))); }
+      if (aba !== 'viagens') { const mais = elD('button', 'pl2-mais', '+ Plano'); mais.type = 'button'; mais.onclick = () => form(null); corpo.append(mais); }
+    };
+    E.aoMudar = pinta; pinta();
   });
 }
 function abreViagens(m) {
