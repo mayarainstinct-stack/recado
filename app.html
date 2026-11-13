@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.355">
-<meta name="app-novidade" content="Avaliação da semana: botão nos Dados do grupo, cartões iguais ao do robô">
+<meta name="app-versao" content="2026-11-13.356">
+<meta name="app-novidade" content="Troféu da semana mostra os feitos que fizeram ganhar">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.355"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.356"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -6237,6 +6237,7 @@ async function abreReavaliacao() {
       fotoUrl('house-bridge/assets/emocoes/' + k + '-feliz.png', true).then(u => { av.style.backgroundImage = 'url(' + u + ')'; }).catch(() => { if (g.foto) fotoUrl(g.foto, true).then(u => { av.style.backgroundImage = 'url(' + u + ')'; }).catch(() => {}); });
       const ehMes = rm && rm.ganhador === k, vt = ehMes && rm.votos ? Object.values(rm.votos).reduce((a, b) => a + b, 0) : 0;
       tx.append(elD('small', '', ehMes ? 'Robô do mês' + (t.mes ? ' · ' + t.mes : '') : 'Troféu da semana'), elD('b', '', t.nome), elD('span', '', String(g.nome || k).replace(/\s*\(PC\d\)$/i, '') + (ehMes && vt ? ' · ' + rm.votos[k] + ' de ' + vt + ' votos' : '')));
+      const feitos = t.motivo || (ehMes && rm.motivo) || ''; if (feitos) tx.append(elD('p', 'rv-tr-mot', feitos.replace(/^Robô do mês \(\d+º\):\s*/, '').replace(/^\d+ de \d+ votos \(([^)]*)\)\.\s*/, 'Votaram: $1. ')));
       l.append(av, tx, ic); box.append(l); });
     if (rm && rm.segundo) box.append(elD('p', 'rv-tr-seg', '2º lugar: ' + String(rm.segundo).replace(/^./, c => c.toUpperCase())));
     return box;
