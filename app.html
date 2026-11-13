@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.358">
-<meta name="app-novidade" content="Avaliação: insígnias grandes e troféu com o robô em destaque">
+<meta name="app-versao" content="2026-11-13.359">
+<meta name="app-novidade" content="Avaliação da semana: cada robô fechado, abre no toque">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.358"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.359"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -6201,7 +6201,7 @@ function rvInsigniaGrande(tp, i, f, g) {   // insígnia grande pra ver os detalh
 async function abreReavaliacao() {
   if (document.querySelector('.rv-tela')) return;
   const tl = elD('div', 'rv-tela'), topo = elD('div', 'rv-topo'), tit = elD('div', 'rv-tit'), x = elD('button', 'rv-x'), trilho = elD('div', 'rv-trilho'), pontos = elD('div', 'rv-pontos'); x.type = 'button'; x.setAttribute('aria-label', 'Fechar'); x.innerHTML = icone('close');
-  tit.append(elD('b', '', 'Reavaliação da semana'), elD('small', '', 'carregando…')); topo.append(tit, x); tl.append(topo, trilho, pontos); document.body.append(tl);
+  tit.append(elD('b', '', 'Avaliação da semana'), elD('small', '', 'carregando…')); topo.append(tit, x); tl.append(topo, trilho, pontos); document.body.append(tl);
   const fecha = () => { tl.classList.add('saindo'); setTimeout(() => tl.remove(), 220); }; x.onclick = fecha;
   let R, F;
   try { [R, F] = await Promise.all([lerArquivo('casa/reavaliacao.json').then(JSON.parse), FICHA ? Promise.resolve(FICHA) : lerArquivo('casa/fichas.json').then(JSON.parse)]); FICHA = FICHA || F; await garanteGrupoTrab(); }
@@ -6234,7 +6234,9 @@ async function abreReavaliacao() {
     const ganhos = Array.isArray(n.insignias_semana) || Array.isArray(n.trofeus_semana) ? [...(n.insignias_semana || []).map(nm => ['ins', acha(f.insignias, nm)]), ...(n.trofeus_semana || []).map(nm => ['tr', acha(f.trofeus, typeof nm === 'string' ? nm : (nm || {}).nome)])]
       : [...(f.insignias || []).map(i => ['ins', i]), ...(f.trofeus || []).map(t => ['tr', t])].filter(([, i]) => { const d = daBr(i.data); return d && d >= w.de && d <= ate; });
     if (ganhos.length) { const gw = elD('div', 'rv-ganhos'); gw.append(elD('div', 'ct-tit', 'Ganhou na semana')); const gl = elD('div', 'rv-glista'); ganhos.forEach(([tp, i]) => { const d = elD('button', 'rv-med' + (tp === 'tr' ? ' trofeu' : '')), m = elD('div', 'rv-med-ic'); d.type = 'button'; d.onclick = () => rvInsigniaGrande(tp, i, f, g); m.innerHTML = tp === 'tr' ? svgTrofeu(i) : svgInsignia(i); d.append(m, elD('b', '', i.nome)); if (i.data) d.append(elD('small', '', String(i.data).slice(0, 5))); gl.append(d); }); gw.append(gl); corpo.append(gw); }
-    cin.append(corpo); face.append(cin); c.append(face); return c;
+    const abre = elD('button', 'rv-abre', mud.length ? 'Ver o que mudou (' + mud.length + ')' : 'Ver as notas'); abre.type = 'button';   // fechado só com avatar, nota e o +/-: a tela tinha ~6.000 px (Sigma 18:16); toque abre
+    const vira = () => { const on = c.classList.toggle('aberto'); abre.textContent = on ? 'Fechar' : mud.length ? 'Ver o que mudou (' + mud.length + ')' : 'Ver as notas'; }; abre.onclick = e => { e.stopPropagation(); vira(); }; vcab.onclick = vira; placa.onclick = vira;
+    cin.append(abre, corpo); face.append(cin); c.append(face); return c;
   };
   const trofeus = w => {   // card geral da semana em cima dos cards (May 13/11 17:23 e 17:24): robô do mês e os troféus de cada um, dourados como os dos Jogos
     const rm = w.robo_do_mes || null, lista = [], achaT = (k, nm) => ((FICHA[k] || {}).trofeus || []).find(i => i.nome === nm || String(nm).startsWith(i.nome + ' ')) || { nome: nm };

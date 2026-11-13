@@ -2317,3 +2317,8 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 .rv-tr-bloco .rv-tr { background: none; align-items: center; } .rv-tr-bloco .rv-tr-feitos { margin: 0; padding: 2px 16px 14px 34px; }
 .rv-tr-bloco .rv-tr { gap: 14px; padding: 14px; } .rv-tr-av { width: 88px; height: 88px; border-width: 3px; } .rv-tr-ic svg { width: 88px; height: 88px; }
 .rv-tr-tx b { font-size: 21px; line-height: 1.15; } .rv-tr-tx span { font-size: 15px; font-weight: 800; color: #3A2400; }
+.rv-ct .rv-corpo { display: none; } .rv-ct.aberto .rv-corpo { display: block; }
+.rv-ct .rv-vcab, .rv-ct .rv-placa { cursor: pointer; }
+.rv-abre { display: block; width: calc(100% - 28px) !important; height: auto !important; margin: 10px 14px 14px; padding: 10px; border-radius: 12px !important; border: 1px solid rgba(255,255,255,.22); background: rgba(0,0,0,.3); color: #fff; font: inherit; font-size: 14px; font-weight: 800; letter-spacing: .02em; text-shadow: none; cursor: pointer; }
+.rv-ct.aberto .rv-abre { margin-bottom: 0; }
+.rv-ct .rv-motivo { font-size: 14px; line-height: 1.45; color: rgba(255,255,255,.94); font-weight: 600; }
