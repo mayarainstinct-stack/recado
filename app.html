@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.369">
-<meta name="app-novidade" content="Toda tela com abas troca de aba com o dedo pro lado">
+<meta name="app-versao" content="2026-11-13.370">
+<meta name="app-novidade" content="Polly de chapéu de bruxa em São Thomé">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.369"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.370"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -4644,7 +4644,7 @@ function abrePlanos(m) {   // Planos desenhado (#211, May 11/11 e 12/11 22:07-22
     const feitosV = v => V.feito_no_json ? Object.keys(V.feitos).filter(k => k.startsWith(v.id + ':')).length : null;
     const CHIBI = { may: 'may', gabriel: 'gabriel', gabi: 'gabriel', polly: 'polly', mae: 'mae', ruiva: 'ruiva', nathy: 'nathy', rodrigo: 'rodrigo' };   // quem foi junto ganha o bonequinho (Sigma 13/11 16:48)
     const quem = txt => ['may', ...String(txt || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').split(/[^a-z]+/).map(w => CHIBI[w]).filter(Boolean)].filter((x, i, a) => a.indexOf(x) === i);
-    const chibis = lista => { const s = elD('span', 'pl2-chibis'); lista.forEach(n => { const im = elD('img'); im.alt = n; im.src = 'arte/planos/chibi-' + n + '.svg'; s.append(im); }); return s; };
+    const chibis = lista => { const s = elD('span', 'pl2-chibis'); lista.forEach(n => { const im = elD('img'); im.alt = n.split('-')[0]; im.src = 'arte/planos/chibi-' + n + '.svg'; s.append(im); }); return s; };
     const placa = (titulo, sub, selo, gente, extra, cls, arte) => { const k = elD('article', 'pl2-placa' + (cls ? ' ' + cls : '')), top = elD('div', 'pl2-top'), tx = elD('div'); if (arte) { const fig = elD('div', 'pl2-arte'), im = elD('img'); im.alt = ''; im.loading = 'lazy'; im.src = arte + '?v=' + encodeURIComponent(VERSAO); fig.append(im); k.append(fig); } tx.append(elD('b', '', titulo), elD('span', '', sub || '')); top.append(tx); if (selo) top.append(elD('span', 'pl2-selo', selo)); k.append(top); const pe = elD('div', 'pl2-pe'); pe.append(chibis(gente)); if (extra) pe.append(extra); k.append(pe); return k; };
     const barra = (f, t) => { const w = elD('div', 'pl2-barra-w'), b = elD('div', 'trilho-prog pl2-barra'), i = elD('i'); i.style.width = (t ? f / t * 100 : 0) + '%'; b.append(i); w.append(b, elD('small', '', t ? f + ' de ' + t + ' conferidos' : 'nenhum passo ainda')); return w; };
     const form = p => edFormulario({ titulo: p ? 'Editar plano' : 'Plano novo', campos: E.campos, v: p || { prioridade: aba === 'umdia' ? 'um-dia' : 'agora' }, aoSalvar: async v => { if (p) await E.edita(p.id, v); else await E.lanca(v, 'Plano novo pelo app'); pinta(); }, aoApagar: p ? async () => { await E.apaga(p.id, true); pinta(); edFaixaDesfazer(p.o_que_e + ' apagado', async () => { await E.apaga(p.id, false); pinta(); }); } : null });
@@ -4655,7 +4655,7 @@ function abrePlanos(m) {   // Planos desenhado (#211, May 11/11 e 12/11 22:07-22
       return placa(p.o_que_e, p.feito ? edRotuloFeito(p) : (p.proximo_passo || ''), p.quando || 'um dia', quem(p.com_quem), ex, p.feito ? 'feito' : '');
     };
     const comTx = v => { const n = String(v.com || '').trim(); return n ? 'com ' + n : 'sozinha'; };
-    const cartaoViagem = (v, foi) => { const f = feitosV(v), t = itensV(v), fotos = v.lembrancas || [], k = placa(v.nome || '', foi && fotos.length ? fotos.length + (fotos.length === 1 ? ' foto' : ' fotos') : v.listas.length + ' listas pra levar e conferir', foi ? 'foi ' + quandoV(v) : (quandoV(v) || 'sem data'), quem(v.com), f == null || !t || foi ? null : barra(f, t), foi ? 'passou' : '', foi ? '' : v.arte); k.querySelector('.pl2-top > div').append(elD('span', 'pl2-com', comTx(v)));   // quem foi junto escrito no cartão (May 13/11 13:51)
+    const cartaoViagem = (v, foi) => { const f = feitosV(v), t = itensV(v), fotos = v.lembrancas || [], k = placa(v.nome || '', foi && fotos.length ? fotos.length + (fotos.length === 1 ? ' foto' : ' fotos') : v.listas.length + ' listas pra levar e conferir', foi ? 'foi ' + quandoV(v) : (quandoV(v) || 'sem data'), quem(v.com).map(n => (v.chibis || {})[n] || n), f == null || !t || foi ? null : barra(f, t), foi ? 'passou' : '', foi ? '' : v.arte); k.querySelector('.pl2-top > div').append(elD('span', 'pl2-com', comTx(v)));   // quem foi junto escrito no cartão (May 13/11 13:51)
     if (foi && fotos.length) { const capa = elD('div', 'pl2-pilha'); fotos.slice(0, 3).forEach((l, i) => { const p = elD('span', 'pl2-polaroide mini'), im = elD('img'); im.alt = ''; im.loading = 'lazy'; p.style.setProperty('--gira', [-7, 4, -1][i] + 'deg'); p.append(im); fotoUrl(l.foto).then(u => { im.src = u; }).catch(() => p.remove()); capa.append(p); }); const ab = elD('button', 'pl2-abre-album', 'Abrir o álbum · ' + fotos.length + (fotos.length === 1 ? ' foto' : ' fotos')); ab.type = 'button'; capa.append(ab); k.append(capa); }   // capa do álbum: 3 polaroides empilhadas (May 13/11 16:19: "num álbum bonito, não só jogadas")
     k.classList.add('toca'); k.onclick = () => (foi && fotos.length ? abreAlbumViagem(v, comTx(v)) : abreViagem(v)); return k; };
     const ABAS = { viagens: 'Viagens', agora: 'Agora', umdia: 'Um dia' }; let aba = 'viagens';   // a tela virou Viagens (May 13/11 13:50); metas ficam nas outras abas
