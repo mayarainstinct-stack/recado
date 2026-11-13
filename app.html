@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.353">
-<meta name="app-novidade" content="Reavaliação mostra as insígnias e troféus da semana">
+<meta name="app-versao" content="2026-11-13.354">
+<meta name="app-novidade" content="Reavaliação: troféus da semana em cima e cada robô com a emoção dele">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.353"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.354"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -6203,24 +6203,43 @@ async function abreReavaliacao() {
   const dif = (d, cls) => { const s = elD('span', 'rv-dif ' + (d > 0 ? 'rv-sobe' : 'rv-desce') + (cls ? ' ' + cls : ''), (d > 0 ? '+' : '−') + Math.abs(d)); return s; };
   const card = (w, k) => {
     const n = w.notas[k], g = k === 'may' ? EU : GRUPO[k] || {}, f = FICHA[k] || {}, c = elD('article', 'rv-card'); c.style.setProperty('--quem', g.cor || '#64748B'); c.style.setProperty('--quem-fg', g.texto || '#fff');
-    const cab = elD('div', 'rv-cab'), av = elD('div', 'rv-av', g.foto ? '' : (g.nome || k).charAt(0).toUpperCase()), quem = elD('div', 'rv-quem'), nv = elD('div', 'rv-nivel');
-    if (g.foto) fotoUrl(g.foto, true).then(u => { av.style.backgroundImage = 'url(' + u + ')'; }).catch(() => {});
+    const cab = elD('div', 'rv-cab'), av = elD('div', 'rv-av rv-emo', g.foto ? '' : (g.nome || k).charAt(0).toUpperCase()), quem = elD('div', 'rv-quem'), nv = elD('div', 'rv-nivel');
+    const antes0 = n.primeira_vez ? null : nivelAntes(w, k), ganhouTr = (n.trofeus_semana || []).length || (w.robo_do_mes && w.robo_do_mes.ganhador === k), emo = ganhouTr || (antes0 != null && n.nivel > antes0) ? 'feliz' : antes0 != null && n.nivel < antes0 ? 'pensando' : 'calmo';   // emoção que combina com a avaliação: troféu ou subiu = feliz, desceu = sem graça, igual = calmo
+    av.dataset.emo = emo; av.title = emo;
+    fotoUrl('house-bridge/assets/emocoes/' + k + '-' + emo + '.png', true).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.textContent = ''; }).catch(() => { if (g.foto) fotoUrl(g.foto, true).then(u => { av.style.backgroundImage = 'url(' + u + ')'; }).catch(() => {}); });
     quem.append(elD('b', '', String(g.nome || k).replace(/\s*\(PC\d\)$/i, '')), elD('small', '', f.cargo || f.classe || ''));
-    const antes = n.primeira_vez ? null : nivelAntes(w, k); nv.append(elD('b', '', String(n.nivel)));
+    const antes = antes0, nb = elD('b', 'rv-conta', String(antes != null ? antes : n.nivel)); nb.dataset.de = String(antes != null ? antes : n.nivel); nb.dataset.ate = String(n.nivel); nv.append(nb);
     if (antes != null && antes !== n.nivel) { nv.append(elD('small', 'rv-antes', 'era ' + antes)); nv.append(dif(n.nivel - antes, 'grande')); } else nv.append(elD('small', 'rv-antes', n.primeira_vez ? 'primeira vez' : 'igual'));
     cab.append(av, quem, nv); c.append(cab);
     const at = Object.entries(n.atributos || {}), mud = at.filter(([, a]) => a.antes != null && a.nota !== a.antes), igual = at.filter(([, a]) => a.antes == null || a.nota === a.antes), corpo = elD('div', 'rv-corpo');
     if (mud.length) mud.forEach(([nome, a]) => { const l = elD('div', 'rv-linha'), t = elD('div', 'rv-lt'); t.append(elD('b', '', nome), elD('span', 'rv-de', a.antes + ' → ' + a.nota), dif(a.nota - a.antes)); l.append(t); if (a.motivo) l.append(elD('p', 'rv-motivo', a.motivo)); corpo.append(l); });
     else corpo.append(elD('p', 'rv-nada', n.primeira_vez ? 'Primeira avaliação: as notas de partida estão abaixo.' : 'Nenhum atributo mudou nesta semana.'));
     if (igual.length) { const dt = elD('details', 'rv-iguais'), sm = elD('summary', '', (n.primeira_vez ? 'Notas' : 'Sem mudança') + ' (' + igual.length + ')'), ul = elD('div', 'rv-chips'); igual.forEach(([nome, a]) => { const ch = elD('span', 'rv-chip'); ch.append(nome + ' ', elD('b', '', String(a.nota))); if (a.motivo && n.primeira_vez) ch.title = a.motivo; ul.append(ch); }); dt.append(sm, ul); corpo.append(dt); }
-    const ate = w.ate, acha = (lista, nome) => (lista || []).find(i => i.nome === nome) || { nome };   // a lista da semana vem do reavaliacao.json (insignias_semana / trofeus_semana, Lyra 13/11 17:16); sem ela, o que tem data dentro da semana no cartão
+    const ate = w.ate, acha = (lista, nome) => (lista || []).find(i => i.nome === nome || String(nome).startsWith(i.nome + ' ')) || { nome };   // a lista da semana vem do reavaliacao.json (insignias_semana / trofeus_semana, Lyra 13/11 17:16); sem ela, o que tem data dentro da semana no cartão
     const ganhos = Array.isArray(n.insignias_semana) || Array.isArray(n.trofeus_semana) ? [...(n.insignias_semana || []).map(nm => ['ins', acha(f.insignias, nm)]), ...(n.trofeus_semana || []).map(nm => ['tr', acha(f.trofeus, nm)])]
       : [...(f.insignias || []).map(i => ['ins', i]), ...(f.trofeus || []).map(t => ['tr', t])].filter(([, i]) => { const d = daBr(i.data); return d && d >= w.de && d <= ate; });
     if (ganhos.length) { const gw = elD('div', 'rv-ganhos'); gw.append(elD('small', 'rv-gt', 'Ganhou na semana')); const gl = elD('div', 'rv-glista'); ganhos.forEach(([tp, i]) => { const d = elD('div', 'rv-g' + (tp === 'tr' ? ' trofeu' : '')); d.innerHTML = tp === 'tr' ? svgTrofeu(i) : svgInsignia(i); d.append(elD('span', '', i.nome)); gl.append(d); }); gw.append(gl); corpo.append(gw); }
     c.append(corpo); return c;
   };
-  semanas.forEach(w => { const pg = elD('section', 'rv-pagina'); pg.append(elD('p', 'rv-semana', 'Semana de ' + br(w.de) + ' a ' + br(w.ate) + (w.avaliacao ? ' · avaliada em ' + br(w.avaliacao.slice(0, 10)) : ''))); RV_ORDEM.concat(Object.keys(w.notas).filter(k => !RV_ORDEM.includes(k))).filter(k => w.notas[k]).forEach(k => pg.append(card(w, k))); trilho.append(pg); });
+  const trofeus = w => {   // card geral da semana em cima dos cards (May 13/11 17:23 e 17:24): robô do mês e os troféus de cada um, dourados como os dos Jogos
+    const rm = w.robo_do_mes || null, lista = [], achaT = (k, nm) => ((FICHA[k] || {}).trofeus || []).find(i => i.nome === nm || String(nm).startsWith(i.nome + ' ')) || { nome: nm };
+    Object.entries(w.notas).forEach(([k, n]) => (n.trofeus_semana || []).forEach(nm => lista.push({ k, t: achaT(k, nm) })));
+    if (rm && rm.ganhador && !lista.some(x => x.k === rm.ganhador)) lista.unshift({ k: rm.ganhador, t: achaT(rm.ganhador, rm.trofeu || 'Robô do mês') });
+    const box = elD('section', 'rv-geral'); box.append(elD('h3', 'rv-tr-tit', 'Troféus da semana'));
+    if (!lista.length) { box.append(elD('p', 'rv-nada', 'Nenhum troféu nesta semana.')); return box; }
+    lista.forEach(({ k, t }) => { const g = k === 'may' ? EU : GRUPO[k] || {}, l = elD('div', 'rv-tr'), ic = elD('div', 'rv-tr-ic'), av = elD('div', 'rv-av rv-tr-av'), tx = elD('div', 'rv-tr-tx'); ic.innerHTML = svgTrofeu(t);
+      fotoUrl('house-bridge/assets/emocoes/' + k + '-feliz.png', true).then(u => { av.style.backgroundImage = 'url(' + u + ')'; }).catch(() => { if (g.foto) fotoUrl(g.foto, true).then(u => { av.style.backgroundImage = 'url(' + u + ')'; }).catch(() => {}); });
+      const ehMes = rm && rm.ganhador === k, vt = ehMes && rm.votos ? Object.values(rm.votos).reduce((a, b) => a + b, 0) : 0;
+      tx.append(elD('small', '', ehMes ? 'Robô do mês' + (t.mes ? ' · ' + t.mes : '') : 'Troféu da semana'), elD('b', '', t.nome), elD('span', '', String(g.nome || k).replace(/\s*\(PC\d\)$/i, '') + (ehMes && vt ? ' · ' + rm.votos[k] + ' de ' + vt + ' votos' : '')));
+      l.append(av, tx, ic); box.append(l); });
+    if (rm && rm.segundo) box.append(elD('p', 'rv-tr-seg', '2º lugar: ' + String(rm.segundo).replace(/^./, c => c.toUpperCase())));
+    return box;
+  };
+  const conta = el => { if (el.dataset.feito) return; el.dataset.feito = '1'; const de = +el.dataset.de, ate = +el.dataset.ate; if (de === ate) return; const t0 = performance.now(), d = 900; const passo = t => { const f = Math.min(1, (t - t0) / d); el.textContent = String(Math.round(de + (ate - de) * (1 - Math.pow(1 - f, 3)))); if (f < 1) requestAnimationFrame(passo); else el.closest('.rv-card')?.classList.add('contou'); }; requestAnimationFrame(passo); };
+  const olho = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { conta(e.target); olho.unobserve(e.target); } }), { threshold: .6 }) : null;
+  semanas.forEach(w => { const pg = elD('section', 'rv-pagina'); pg.append(elD('p', 'rv-semana', 'Semana de ' + br(w.de) + ' a ' + br(w.ate) + (w.avaliacao ? ' · avaliada em ' + br(w.avaliacao.slice(0, 10)) : ''))); pg.append(trofeus(w)); RV_ORDEM.concat(Object.keys(w.notas).filter(k => !RV_ORDEM.includes(k))).filter(k => w.notas[k]).forEach(k => pg.append(card(w, k))); trilho.append(pg); });
   semanas.forEach((w, i) => { const p = elD('i', i ? '' : 'on'); pontos.append(p); });
+  trilho.querySelectorAll('.rv-conta').forEach(el => { if (olho) olho.observe(el); else conta(el); });
   const mostra = i => { tit.lastChild.textContent = semanas.length > 1 ? (i ? 'semana anterior · ' : 'semana mais nova · ') + br(semanas[i].de) + ' a ' + br(semanas[i].ate) + (i < semanas.length - 1 ? ' · deslize pra ver a anterior' : '') : br(semanas[i].de) + ' a ' + br(semanas[i].ate); [...pontos.children].forEach((p, j) => p.classList.toggle('on', j === i)); };
   let t0; trilho.addEventListener('scroll', () => { clearTimeout(t0); t0 = setTimeout(() => mostra(Math.round(trilho.scrollLeft / trilho.clientWidth)), 80); }, { passive: true });
   pontos.hidden = semanas.length < 2; mostra(0);

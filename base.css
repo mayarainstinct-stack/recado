@@ -2250,3 +2250,19 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 .rv-pagina { display: block; } .rv-pagina > * + * { margin-top: 12px; } .rv-card { flex: none; }
 .ctb-port { display: block; } .ctb-cli { margin: 0 0 18px; padding: 16px; border: 2px solid #000; border-radius: 16px; background: #fff; } .ctb-cli h3 { margin: 0 0 12px; font-size: 19px; font-weight: 900; letter-spacing: .02em; color: #000; }
 .ctb-cli .ctb-peca { border: 0; border-radius: 0; margin: 0 0 16px; background: none; overflow: visible; } .ctb-cli .ctb-peca:last-child { margin-bottom: 0; } .ctb-cli .ctb-peca img { width: 100%; height: auto; aspect-ratio: auto; object-fit: contain; border-radius: 10px; border: 1px solid #E2E2E2; background: #F4F4F4; } .ctb-cli .ctb-peca figcaption { padding: 8px 2px 0; font-size: 15px; line-height: 1.35; color: #333; }
+.rv-geral { border-radius: 22px; padding: 14px; background: linear-gradient(150deg, #FBE931 0%, #FAD703 22%, #F3BA15 48%, #DE960B 72%, #CF8002 88%, #995905 100%); color: #2B1A00; box-shadow: 0 8px 22px rgba(222,150,11,.35), inset 0 1px 0 rgba(255,255,255,.6); }
+.rv-tr-tit { margin: 0 0 10px; font-size: 18px; font-weight: 900; letter-spacing: .02em; text-align: center; text-shadow: 0 1px 0 rgba(255,255,255,.5); }
+.rv-tr { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 16px; background: rgba(255,255,255,.55); }
+.rv-tr + .rv-tr { margin-top: 8px; }
+.rv-tr-av { width: 62px; height: 62px; border-color: #995905; background-color: #FFF7CC; animation: rvPula 1.4s ease-in-out infinite; }
+.rv-tr-tx { flex: 1; min-width: 0; } .rv-tr-tx small { display: block; font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: #7A4A00; } .rv-tr-tx b { display: block; font-size: 18px; } .rv-tr-tx span { display: block; font-size: 13px; color: #5A3700; }
+.rv-tr-ic svg { width: 52px; height: 52px; display: block; filter: drop-shadow(0 2px 2px rgba(0,0,0,.25)); }
+.rv-tr-seg { margin: 10px 0 0; text-align: center; font-size: 13px; font-weight: 700; color: #4A2D00; }
+.rv-geral .rv-nada { color: #4A2D00; text-align: center; }
+.rv-emo { width: 60px; height: 60px; background-color: rgba(255,255,255,.18); }
+.rv-emo[data-emo="feliz"] { animation: rvPula 1.4s ease-in-out infinite; }
+.rv-emo[data-emo="pensando"] { animation: rvBalanca 2.4s ease-in-out infinite; }
+@keyframes rvPula { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes rvBalanca { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
+.rv-conta { font-variant-numeric: tabular-nums; }
+.rv-card.contou .rv-nivel > b { animation: rvEstoura .5s ease-out; } @keyframes rvEstoura { 50% { transform: scale(1.18); } }
