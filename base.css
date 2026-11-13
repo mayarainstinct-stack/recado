@@ -2135,3 +2135,5 @@ body.na-geral .painel.tema-musica .p-topo::after, .painel.tema-musica .p-topo::a
 .t-musica .tm-grava-bt { width: auto !important; height: 52px !important; border-radius: 26px !important; white-space: nowrap; flex-shrink: 0; }
 
 .lem-outra { display: flex; flex-direction: column; gap: 8px; margin: 10px 0 4px; } .lem-outra textarea { width: 100%; box-sizing: border-box; min-height: 64px; resize: none; border-radius: 12px; border: 1px solid var(--line, #ccc); padding: 8px 10px; font: inherit; background: var(--paper, #fff); color: var(--fg, #111); } .lem-outra button { width: 100%; }
+
+.t-musica .tm-hoje { margin: 6px 0 10px; padding: 12px 14px; border-radius: 16px; background: #FFD60A; color: #120C00; display: flex; flex-direction: column; gap: 2px; box-shadow: 0 6px 14px rgba(0,0,0,.5); } .t-musica .tm-hoje small { font-weight: 800; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; } .t-musica .tm-hoje b { font-size: 16px; } .t-musica .tm-hoje span { font-size: 14px; }

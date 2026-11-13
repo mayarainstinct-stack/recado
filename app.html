@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.325">
-<meta name="app-novidade" content="Toda pergunta do app tem espaço pra você escrever a tua resposta">
+<meta name="app-versao" content="2026-11-13.326">
+<meta name="app-novidade" content="Música: o cartão Hoje, 15 minutos te diz qual música pegar">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.324"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.326"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3276,6 +3276,8 @@ function abreMusica(m) {
       corpo.replaceChildren();
       if (aba === 'musica') {
         corpo.append(gravador());
+        const quando = x => { const m = String(x.atualizado || x.criado || '').match(/^(\d\d)\/(\d\d)\/(\d{4})/); return m ? m[3] + m[2] + m[1] : '0'; }, parada = vivos('musica').filter(x => (x.etapa || 1) < 5).sort((a, b) => quando(a).localeCompare(quando(b)))[0];
+        if (parada) { const h = elD('div', 'tm-hoje'); h.append(elD('small', '', 'Hoje, 15 minutos'), elD('b', '', parada.nome), elD('span', '', parada.falta ? 'Falta: ' + parada.falta : 'Próximo passo: ' + ET[Math.min(4, (parada.etapa || 1))])); corpo.append(h); }   // ideia da Lyra 13/11: puxa a música mais parada e o que falta, pra ela pegar 15 min
         const l = vivos('musica'); if (!l.length) corpo.append(elD('div', 'tm-vazio', 'Nenhuma música ainda.'));
         l.forEach((x, n) => {
           const e = Math.min(5, Math.max(1, x.etapa || 1)), a = elD('article', 'tm-faixa'), topo = elD('div', 'tm-faixa-topo'), tx = elD('div');
