@@ -2194,3 +2194,4 @@ body.na-geral .painel.tema-musica .p-topo::after, .painel.tema-musica .p-topo::a
 button.vs-n { padding: 0; font: inherit; font-weight: 800; font-size: 13px; cursor: pointer; }
 .vs-ed-mais { margin-top: 10px; padding: 6px 12px; border-radius: 999px; border: 1px dashed var(--vs-m); background: transparent; color: var(--vs-c); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 .vs-tela .vs-ed-mais { display: inline-flex; align-items: center; width: auto !important; height: auto !important; min-width: 0 !important; border-radius: 999px !important; box-shadow: none !important; }
+body.modo-trab .painel.tema-saude .sl-aba.on { background: var(--vs-c, #D61F69); border-color: var(--vs-c, #D61F69); color: #FFFFFF; } body.modo-trab .painel.tema-saude .sl-aba { border-radius: 14px; }
