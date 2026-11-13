@@ -2323,3 +2323,9 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 .rv-ct.aberto .rv-abre { margin-bottom: 0; }
 .rv-ct .rv-motivo { font-size: 14px; line-height: 1.45; color: rgba(255,255,255,.94); font-weight: 600; }
 .rv-emo-tx { white-space: nowrap; } .rv-dif.rv-sobe { background: #15803D; color: #FFFFFF; border: 1px solid #22C55E; }
+.rv-dif.rv-sobe { background: #DCFCE7; color: #14532D; border: 1px solid #FFFFFF; box-shadow: 0 0 10px rgba(187,247,208,.9); animation: rvBrilha 1.4s ease-in-out infinite; }
+@keyframes rvBrilha { 0%, 100% { box-shadow: 0 0 4px rgba(255,255,255,.6); transform: scale(1); } 50% { box-shadow: 0 0 16px #FFFFFF, 0 0 26px rgba(187,247,208,.9); transform: scale(1.1); } }
+.rv-ct .ct-seg i.rv-acende { background: #FFFFFF !important; animation: rvAcendeClaro 1.4s ease-in-out infinite; }
+@keyframes rvAcendeClaro { 0%, 100% { box-shadow: 0 0 6px #FFFFFF; } 50% { box-shadow: 0 0 14px #FFFFFF, 0 0 22px color-mix(in srgb, var(--quem) 80%, #fff); } }
+.rv-bar em { display: inline-flex; align-items: center; gap: 2px; } .rv-bar .rv-dif { font-size: 12px; min-width: 26px; padding: 0 6px; }
+.rv-ct .rv-resumo { margin: 12px 14px 0; padding: 12px 14px; border-radius: 14px; background: rgba(0,0,0,.3); border-left: 3px solid var(--claro); font-size: 14px; line-height: 1.5; font-weight: 600; color: rgba(255,255,255,.95); text-shadow: none; }

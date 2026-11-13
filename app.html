@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.360">
-<meta name="app-novidade" content="Avaliação da semana: cada robô fechado, abre no toque">
+<meta name="app-versao" content="2026-11-13.362">
+<meta name="app-novidade" content="Avaliação: o bom brilha claro e cada atributo com +1/-1">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.360"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.362"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -6222,9 +6222,9 @@ async function abreReavaliacao() {
     vcab.append(av, vnome, elD('span', 'ct-id', 'Nº ' + (f.id || '---'))); cin.append(vcab);
     const placa = elD('div', 'ct-nivel rv-placa'), nb = elD('b', 'rv-conta', 'Nv. ' + (antes != null ? antes : n.nivel)); nb.dataset.de = String(antes != null ? antes : n.nivel); nb.dataset.ate = String(n.nivel);
     const sub = elD('span'); sub.append(antes != null && antes !== n.nivel ? 'era ' + antes + ' ' : n.primeira_vez ? 'primeira avaliação ' : 'igual à semana passada '); if (antes != null && antes !== n.nivel) sub.append(dif(n.nivel - antes));
-    const bi = elD('i'); bi.style.setProperty('--p', Math.max(0, Math.min(100, n.nivel)) + '%'); placa.append(nb, sub, bi); cin.append(placa);
+    const bi = elD('i'); bi.style.setProperty('--p', Math.max(0, Math.min(100, n.nivel)) + '%'); placa.append(nb, sub, bi); cin.append(placa); if (n.resumo) cin.append(elD('p', 'rv-resumo', n.resumo));
     const at = Object.entries(n.atributos || {}), mud = at.filter(([, a]) => a.antes != null && a.nota !== a.antes), igual = at.filter(([, a]) => a.antes == null || a.nota === a.antes), corpo = elD('div', 'rv-corpo');
-    const barra = (nome, a, comMotivo) => { const b = elD('div', 'ct-bar rv-bar'), sg = elD('div', 'ct-seg'), d = a.antes == null ? 0 : a.nota - a.antes; b.append(elD('span', '', nome), elD('em', '', (a.antes != null && d ? a.antes + ' → ' : '') + a.nota + '/10'));
+    const barra = (nome, a, comMotivo) => { const b = elD('div', 'ct-bar rv-bar'), sg = elD('div', 'ct-seg'), d = a.antes == null ? 0 : a.nota - a.antes; const em = elD('em', '', (a.antes != null && d ? a.antes + ' → ' : '') + a.nota + '/10'); if (d) em.append(dif(d)); b.append(elD('span', '', nome), em);   // +1/-1 em cada atributo (May 18:22)
       for (let q = 0; q < 10; q++) { const ganhou = d > 0 && q >= a.antes && q < a.nota, perdeu = d < 0 && q >= a.nota && q < a.antes, seg = elD('i', q < a.nota ? 'on' + (ganhou ? ' rv-acende' : '') : perdeu ? 'rv-apaga' : ''); seg.style.setProperty('--i', q); sg.append(seg); }
       b.append(sg); if (comMotivo && a.motivo) b.append(elD('p', 'rv-motivo', a.motivo)); return b; };
     if (mud.length) { corpo.append(elD('div', 'ct-tit', 'O que mudou nesta semana')); mud.forEach(([nome, a]) => corpo.append(barra(nome, a, true))); }
