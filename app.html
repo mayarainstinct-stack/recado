@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.366">
-<meta name="app-novidade" content="Avaliação da semana: cada robô já aberto com o que mudou">
+<meta name="app-versao" content="2026-11-13.367">
+<meta name="app-novidade" content="Música: aba Tocar (2x por semana) e a Telecaster no lugar do contrabaixo">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.366"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.367"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3305,18 +3305,20 @@ function abreSaudeLista(m, soGrupo) {   // soGrupo: tela filha com um grupo só 
 const MUS_ICONES = { amp: '<rect x="6" y="8" width="28" height="24" rx="3"/><circle cx="20" cy="22" r="6"/><circle cx="12" cy="13" r="1.4"/><circle cx="18" cy="13" r="1.4"/><circle cx="24" cy="13" r="1.4"/>', pedal: '<rect x="9" y="5" width="22" height="30" rx="3"/><circle cx="20" cy="13" r="3.5"/><circle cx="20" cy="27" r="3"/>', teclas: '<rect x="4" y="10" width="32" height="20" rx="2"/><path d="M12 20v10M20 20v10M28 20v10M10 14h20"/>', mic: '<rect x="15" y="4" width="10" height="18" rx="5"/><path d="M10 18a10 10 0 0020 0M20 28v6M14 34h12"/>', interface: '<rect x="5" y="12" width="30" height="16" rx="3"/><circle cx="13" cy="20" r="3"/><circle cx="23" cy="20" r="3"/><path d="M30 17v6"/>', guitarra: '<path d="M30 5l5 5M27 8l5 5M30 10L18 22"/><path d="M17 21c-4-1-9 2-8 7 1 4 5 6 8 4 3-1 4-6 1-11z"/>', gente: '<circle cx="20" cy="14" r="6"/><path d="M8 34c0-7 5-11 12-11s12 4 12 11"/>' };
 // Desenho de cada instrumento na aba Cuidar (May 13/11 13:00 "ícones bonitinho q lembrem as guitarras"): formato pelo campo desenho e pintura pelo acabamento do musica.json, tirados do inventário do quarto gamer (luz normal)
 function musGuitarra(it, uid) {
-  const n = it.nome || '', tipo = it.desenho || (/viol[aã]o/i.test(n) ? 'violao' : /baixo/i.test(n) ? 'baixo' : /les ?paul/i.test(n) ? 'lespaul' : 'superstrat');
-  const ac = it.acabamento || (/adesiv/i.test(n) ? 'adesivos' : /vermelh/i.test(n) ? 'vermelho' : /pret/i.test(n) ? 'preto' : /branc/i.test(n) ? 'branco' : tipo === 'violao' ? 'natural' : tipo === 'baixo' ? 'sunburst' : 'preto');
+  const n = it.nome || '', tipo = it.desenho || (/telecaster/i.test(n) ? 'telecaster' : /viol[aã]o/i.test(n) ? 'violao' : /baixo/i.test(n) ? 'baixo' : /les ?paul/i.test(n) ? 'lespaul' : 'superstrat');
+  const ac = it.acabamento || (/respingo/i.test(n) ? 'respingos' : /adesiv/i.test(n) ? 'adesivos' : /vermelh/i.test(n) ? 'vermelho' : /pret/i.test(n) ? 'preto' : /branc/i.test(n) ? 'branco' : tipo === 'violao' ? 'natural' : tipo === 'baixo' ? 'sunburst' : 'preto');
   const g = 'mg' + uid, CORPO = {
     superstrat: 'M8 32C6 18 14 9 26 11C34 12 40 19 50 18L60 13C66 7 76 8 78 13C79 18 72 22 69 27V37C72 42 79 46 78 51C76 56 66 57 60 51L50 46C40 45 34 52 26 53C14 55 6 46 8 32Z',
     lespaul: 'M8 32C8 16 20 9 34 11C44 12 48 18 56 19C60 15 66 13 70 17C73 21 70 25 68 28V36C72 42 72 52 62 54C54 56 48 50 40 54C26 60 8 50 8 32Z',
     violao: 'M5 32C5 13 18 7 30 10C38 12 42 18 50 18C55 18 59 13 65 13C69 13 71 17 69 21C74 23 76 28 76 32C76 41 72 49 64 51C58 52 54 46 50 46C42 46 38 52 30 54C18 57 5 51 5 32Z',
-    baixo: 'M6 32C4 17 13 8 26 10C34 11 41 19 51 18L60 12C66 6 76 7 77 13C78 18 71 22 68 27V37C71 42 78 46 77 51C75 57 66 58 60 52L51 46C41 45 34 53 26 54C13 56 4 47 6 32Z'
+    baixo: 'M6 32C4 17 13 8 26 10C34 11 41 19 51 18L60 12C66 6 76 7 77 13C78 18 71 22 68 27V37C71 42 78 46 77 51C75 57 66 58 60 52L51 46C41 45 34 53 26 54C13 56 4 47 6 32Z',
+    telecaster: 'M8 32C7 17 16 10 29 11C41 12 47 17 57 17L67 15C71 15 72 19 70 24V40C71 44 70 47 66 47C58 48 51 46 43 50C32 55 9 51 8 32Z'
   }, CABECA = {
     superstrat: 'M186 28.5L214 22L217 26L202 38L186 35.5Z',
     lespaul: 'M186 28.5L206 25C213 24 215 27 212 32C215 37 213 40 206 39L186 35.5Z',
     violao: 'M186 28L211 25Q216 32 211 39L186 36Z',
-    baixo: 'M196 28.5L214 24C218 23 219 26 216 29L207 38L196 35.5Z'
+    baixo: 'M196 28.5L214 24C218 23 219 26 216 29L207 38L196 35.5Z',
+    telecaster: 'M186 28.5L210 26C215 25.5 216 28 214 31L208 37.5L186 35.5Z'
   }, corte = tipo === 'baixo' ? 34 : 44, fimBraco = (tipo === 'baixo' ? 196 : 186) - corte, inicioBraco = tipo === 'violao' ? 72 : 64, cordas = tipo === 'baixo' ? 4 : 6;
   const TINTA = {
     vermelho: `<linearGradient id="${g}c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF3A4A"/><stop offset=".55" stop-color="#C8102E"/><stop offset="1" stop-color="#7A0716"/></linearGradient>`,
@@ -3326,23 +3328,25 @@ function musGuitarra(it, uid) {
     sunburst: `<radialGradient id="${g}c" cx=".42" cy=".5" r=".62"><stop offset="0" stop-color="#F6C04A"/><stop offset=".45" stop-color="#C9661E"/><stop offset=".8" stop-color="#4A1C0C"/><stop offset="1" stop-color="#150905"/></radialGradient>`,
     marmore: `<linearGradient id="${g}c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2F6FD6"/><stop offset=".5" stop-color="#173C8C"/><stop offset="1" stop-color="#0A1838"/></linearGradient>`
   };
-  TINTA.adesivos = TINTA.preto;
+  TINTA.adesivos = TINTA.preto; TINTA.respingos = TINTA.branco;
   const corpo = CORPO[tipo] || CORPO.superstrat, ouro = tipo === 'lespaul', ferr = ouro ? '#E8BE45' : '#D2D6DC', pas = ac === 'marmore' ? 'marmore' : ac;
   let s = `<svg viewBox="0 0 ${220 - corte} 64" class="tc-gtr" role="img" aria-label="${n.replace(/"/g, '')}"><defs>${TINTA[pas] || TINTA.preto}<linearGradient id="${g}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5A3A24"/><stop offset="1" stop-color="#2A170C"/></linearGradient><linearGradient id="${g}l" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="${g}k"><path d="${corpo}"/></clipPath></defs>`;
   s += `<rect x="${inicioBraco}" y="28.5" width="${fimBraco - inicioBraco + 2}" height="7" rx="1.5" fill="url(#${g}b)"/>`;
   for (let x = inicioBraco + 14, i = 0; x < fimBraco - 4; i++, x += Math.max(6, 15 - i * 0.6)) s += `<path d="M${x.toFixed(1)} 28.5v7" stroke="#C9CDD2" stroke-width=".5" opacity=".7"/>`;
   [0.3, 0.5, 0.66, 0.8].forEach(f => { s += `<circle cx="${(inicioBraco + (fimBraco - inicioBraco) * f).toFixed(1)}" cy="32" r="1" fill="#F2E8D2"/>`; });
   s += `<path transform="translate(${-corte} 0)" d="${CABECA[tipo] || CABECA.superstrat}" fill="${tipo === 'violao' ? '#3B2416' : ac === 'branco' ? '#E9E5DF' : '#111'}" stroke="#000" stroke-width=".6"/>`;
-  const cab = tipo === 'baixo' ? [[200, 26.5], [204, 25.6], [208, 24.7], [212, 23.8]] : tipo === 'superstrat' ? [[190, 27.5], [195, 26.4], [200, 25.2], [205, 24], [210, 22.9], [214, 24]] : [[192, 27], [199, 26], [206, 25.2], [192, 37], [199, 38], [206, 38.8]];
+  const cab = tipo === 'telecaster' ? [[190, 27.6], [194.5, 27.2], [199, 26.8], [203.5, 26.4], [208, 26], [212.5, 26.3]] : tipo === 'baixo' ? [[200, 26.5], [204, 25.6], [208, 24.7], [212, 23.8]] : tipo === 'superstrat' ? [[190, 27.5], [195, 26.4], [200, 25.2], [205, 24], [210, 22.9], [214, 24]] : [[192, 27], [199, 26], [206, 25.2], [192, 37], [199, 38], [206, 38.8]];
   cab.forEach(([x, y]) => { s += `<circle cx="${x - corte}" cy="${y}" r="1.5" fill="${ferr}" stroke="#000" stroke-width=".4"/>`; });
   s += `<path d="${corpo}" fill="url(#${g}c)" stroke="${ouro ? '#F3E7C9' : '#000'}" stroke-width="${ouro ? 1.6 : 0.8}"/>`;
   s += `<g clip-path="url(#${g}k)">`;
   if (ac === 'marmore') s += '<path d="M2 20C16 12 22 30 36 22S56 14 70 24M4 40C18 30 26 48 42 38S60 30 76 42M10 52C22 46 34 56 48 48" fill="none" stroke="#050A18" stroke-width="3" opacity=".7"/><path d="M6 28C18 22 26 36 40 30S58 22 72 32" fill="none" stroke="#7FB2FF" stroke-width="1" opacity=".55"/>';
   if (tipo === 'baixo') s += '<path d="M20 44C30 50 44 48 52 44L58 50C62 54 70 54 72 48L66 38H38C30 38 24 40 20 44Z" fill="#E6D3A3" opacity=".92"/>';
   s += `<ellipse cx="36" cy="18" rx="30" ry="6" fill="url(#${g}l)"/></g>`;
+  if (ac === 'respingos') s += '<g><circle cx="20" cy="20" r="3" fill="#22C55E"/><circle cx="27" cy="16" r="1.4" fill="#EC4899"/><circle cx="44" cy="44" r="3.4" fill="#EC4899"/><circle cx="52" cy="20" r="2" fill="#22C55E"/><circle cx="60" cy="46" r="1.6" fill="#22C55E"/><circle cx="14" cy="42" r="2.2" fill="#EC4899"/><circle cx="36" cy="24" r="1.2" fill="#22C55E"/><path d="M20 20l4 3M44 44l-3 4M52 20l3-3" stroke="#22C55E" stroke-width="1"/></g>';
   if (ac === 'adesivos') s += '<g><rect x="16" y="18" width="16" height="7" rx="1.5" fill="#F7F7F2" transform="rotate(-12 24 21)"/><text x="24" y="23.6" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="5.6" font-weight="900" fill="#111" transform="rotate(-12 24 21)">PAZ</text><circle cx="40" cy="44" r="5" fill="#5DC43A"/><circle cx="38.3" cy="43" r="1.3" fill="#fff"/><circle cx="41.7" cy="43" r="1.3" fill="#fff"/><circle cx="38.5" cy="43.2" r=".6" fill="#000"/><circle cx="41.9" cy="43.2" r=".6" fill="#000"/><path d="M38 46.4q2 1.4 4 0" stroke="#173B0E" stroke-width=".7" fill="none"/><circle cx="58" cy="44" r="4" fill="none" stroke="#FF6A2A" stroke-width="1.4"/><path d="M58 41.6v4.8M56 44.6l2-2 2 2" stroke="#FF6A2A" stroke-width=".9" fill="none"/><rect x="50" y="20" width="6" height="4" rx="1" fill="#FFD60A" transform="rotate(14 53 22)"/><rect x="12" y="38" width="6" height="5" rx="1" fill="#3FA9F5" transform="rotate(-20 15 40)"/><circle cx="66" cy="18" r="2.4" fill="#FF4FA3"/></g>';
   if (tipo === 'violao') s += '<circle cx="58" cy="32" r="8" fill="none" stroke="#3B2416" stroke-width="1.6"/><circle cx="58" cy="32" r="6" fill="#140B05"/><rect x="18" y="26" width="6" height="12" rx="2" fill="#3B2416"/><circle cx="6.5" cy="32" r="1.6" fill="#C9CDD2" stroke="#000" stroke-width=".4"/>';
   else if (tipo === 'lespaul') s += `<rect x="13" y="27" width="3" height="10" rx="1.2" fill="${ferr}"/><rect x="20" y="27.5" width="2" height="9" rx=".8" fill="${ferr}"/><rect x="25" y="25" width="8" height="14" rx="1.5" fill="${ferr}" stroke="#8A6514" stroke-width=".6"/><rect x="45" y="25" width="8" height="14" rx="1.5" fill="${ferr}" stroke="#8A6514" stroke-width=".6"/><circle cx="20" cy="45" r="2.2" fill="${ferr}"/><circle cx="28" cy="48" r="2.2" fill="${ferr}"/><circle cx="17" cy="51" r="2.2" fill="${ferr}"/><circle cx="25" cy="54" r="2.2" fill="${ferr}"/>`;
+  else if (tipo === 'telecaster') s += `<path d="M30 40C38 38 52 40 62 42L68 46C60 49 50 47 42 50C36 52 30 50 28 46Z" fill="#F5F5F0" stroke="#000" stroke-width=".4"/><rect x="11" y="24" width="12" height="16" rx="1.5" fill="${ferr}" stroke="#555" stroke-width=".5"/><rect x="15" y="25" width="4" height="14" rx="2" fill="#111" transform="rotate(-8 17 32)"/><rect x="46" y="27" width="6" height="10" rx="2" fill="${ferr}" stroke="#555" stroke-width=".5"/><circle cx="30" cy="46" r="2" fill="${ferr}"/><circle cx="36" cy="47" r="2" fill="${ferr}"/>`;
   else if (tipo === 'baixo') s += `<rect x="13" y="26" width="6" height="12" rx="1" fill="${ferr}" stroke="#555" stroke-width=".5"/><rect x="36" y="25" width="6" height="7.5" rx="1.5" fill="#111"/><rect x="40" y="32" width="6" height="7.5" rx="1.5" fill="#111"/><circle cx="24" cy="47" r="2.2" fill="${ferr}"/><circle cx="31" cy="49" r="2.2" fill="${ferr}"/>`;
   else s += `<rect x="13" y="25" width="7" height="14" rx="1.2" fill="${ferr}" stroke="#555" stroke-width=".5"/><rect x="23" y="25" width="7" height="14" rx="1.5" fill="#0A0A0A" stroke="#444" stroke-width=".5"/><rect x="37" y="26" width="4" height="12" rx="2" fill="#0A0A0A" stroke="#444" stroke-width=".5"/><rect x="49" y="25" width="7" height="14" rx="1.5" fill="#0A0A0A" stroke="#444" stroke-width=".5"/><circle cx="28" cy="47" r="2" fill="${ferr}"/><circle cx="36" cy="49" r="2" fill="${ferr}"/><path d="M16 39l-6 7" stroke="${ferr}" stroke-width="1" stroke-linecap="round"/>`;
   const ini = tipo === 'violao' ? 20 : tipo === 'lespaul' ? 14 : 15, passo = tipo === 'baixo' ? 1.9 : 1.1, y0 = 32 - passo * (cordas - 1) / 2;
@@ -3360,6 +3364,21 @@ function abreMusica(m) {
     p.remove();
     const ET = d.etapas || ['Ideia', 'Rascunho', 'Gravar', 'Mixar', 'Finalizar'], vivos = sec => d.itens.filter(i => i.secao === sec && !i.apagado);
     let aba = store.get('mus-aba') || 'musica';
+    const formPratica = (x, inst, equip) => {
+      const ov = elD('div', 'fixa-pop tm-pr-pop'), card = elD('div', 'pp-card tm-pr-card'), xb = elD('button', 'pp-x'); xb.type = 'button'; xb.innerHTML = icone('close'); xb.setAttribute('aria-label', 'Fechar');
+      let qual = x ? x.instrumento : (store.get('mus-pr-inst') || (inst[0] || {}).id), usei = new Set(x ? x.usei || [] : JSON.parse(store.get('mus-pr-usei') || '[]'));
+      const linhaI = elD('div', 'tm-pr-chips'), linhaE = elD('div', 'tm-pr-chips'), ta = elD('textarea'), q = elD('input'); ta.rows = 3; ta.placeholder = 'O que tocou, como foi (opcional)'; ta.value = x ? x.nota || '' : ''; q.type = 'text'; q.value = x ? x.quando : edAgora(); q.setAttribute('aria-label', 'Quando');
+      const pinta = () => { linhaI.replaceChildren(...inst.map(i => { const b = elD('button', 'tm-pr-chip' + (i.id === qual ? ' on' : ''), i.nome); b.type = 'button'; b.onclick = () => { qual = i.id; pinta(); }; return b; }));
+        linhaE.replaceChildren(...equip.map(e => { const b = elD('button', 'tm-pr-chip' + (usei.has(e.id) ? ' on' : ''), e.nome); b.type = 'button'; b.onclick = () => { usei.has(e.id) ? usei.delete(e.id) : usei.add(e.id); pinta(); }; return b; })); };
+      pinta();
+      const ok = elD('button', 'pp-op rec', 'Guardar'); ok.type = 'button';
+      ok.onclick = async () => { if (!qual) return; const v = { instrumento: qual, usei: [...usei], nota: ta.value.trim(), quando: q.value.trim() || edAgora() }; try { store.set('mus-pr-inst', qual); store.set('mus-pr-usei', JSON.stringify(v.usei)); } catch (e) {} ov.remove();
+        await grava(l => { if (x) { const r = l.find(y => y.id === x.id); if (r) Object.assign(r, v, { atualizado: edAgora() }); } else l.push(Object.assign({ id: 'pratica-' + Date.now().toString(36), secao: 'pratica', criado: edAgora() }, v)); }, x ? 'Música: prática editada pelo app' : 'Música: toquei hoje (pelo app)'); };
+      const bts = elD('div', 'lem-bts'); bts.append(ok);
+      if (x) { const ap = elD('button', 'pp-op depois', 'Apagar'); ap.type = 'button'; ap.onclick = async () => { ov.remove(); const qd = edAgora(); if (await grava(l => { const r = l.find(y => y.id === x.id); if (r) r.apagado = qd; }, 'Música: prática apagada pelo app (fica guardada)')) edFaixaDesfazer('Prática apagada', () => grava(l => { const r = l.find(y => y.id === x.id); if (r) delete r.apagado; }, 'Música: prática de volta')); }; bts.append(ap); }
+      card.append(xb, elD('b', 'tm-pr-tit', x ? 'Editar a prática' : 'Toquei hoje'), elD('small', 'tm-pr-rot', 'Instrumento'), linhaI, elD('small', 'tm-pr-rot', 'O que usei'), linhaE, elD('small', 'tm-pr-rot', 'Quando'), q, elD('small', 'tm-pr-rot', 'Anotação'), ta, bts);
+      xb.onclick = () => ov.remove(); ov.append(card); document.body.append(ov);
+    };
     const grava = async (fn, msg) => { const antes = JSON.parse(JSON.stringify(d.itens)); fn(d.itens); pinta(); if (await gravaJson(m.arq, dd => { dd.itens = dd.itens || []; fn(dd.itens); }, msg, null)) return true; d.itens.splice(0, d.itens.length, ...antes); pinta(); showNote('Não guardou: voltou como estava. Confere a internet.', true); return false; };
     const CAMPOS = { musica: [{ nome: 'nome', rotulo: 'Música', tipo: 'texto', obrigatorio: true }, { nome: 'texto', rotulo: 'Sobre', tipo: 'texto_longo' }, { nome: 'falta', rotulo: 'O que falta', tipo: 'texto' }, { nome: 'etapa', rotulo: 'Etapa', tipo: 'escolha', opcoes: ET.map((t, k) => [String(k + 1), t]), padrao: '1' }],
       setup: [{ nome: 'nome', rotulo: 'Aparelho ou pessoa', tipo: 'texto', obrigatorio: true }, { nome: 'grupo', rotulo: 'Grupo (Som, Instrumentos...)', tipo: 'texto', obrigatorio: true }, { nome: 'texto', rotulo: 'Detalhe', tipo: 'texto_longo' }, { nome: 'tipo', rotulo: 'Ícone', tipo: 'escolha', opcoes: [['amp', 'Amplificador'], ['pedal', 'Pedaleira'], ['teclas', 'Teclado'], ['mic', 'Microfone'], ['interface', 'Interface'], ['guitarra', 'Guitarra'], ['gente', 'Pessoa']], padrao: 'interface' }, { nome: 'desenho', rotulo: 'Desenho do instrumento (aba Cuidar)', tipo: 'escolha', opcoes: [['', 'Pelo nome'], ['superstrat', 'Superstrat'], ['lespaul', 'Les Paul'], ['violao', 'Violão'], ['baixo', 'Contrabaixo']], padrao: '' }, { nome: 'acabamento', rotulo: 'Pintura do instrumento', tipo: 'escolha', opcoes: [['', 'Pelo nome'], ['vermelho', 'Vermelha'], ['preto', 'Preta'], ['adesivos', 'Preta com adesivos'], ['marmore', 'Marmorizada azul'], ['natural', 'Madeira natural'], ['sunburst', 'Sunburst'], ['branco', 'Branca']], padrao: '' }, { nome: 'certeza', rotulo: 'Certeza', tipo: 'escolha', opcoes: [['sim', 'Confirmado'], ['talvez', 'Provável']], padrao: 'sim' }],
@@ -3397,7 +3416,7 @@ function abreMusica(m) {
     const pinta = () => {
       const mus = vivos('musica'), naIdeia = mus.filter(x => (x.etapa || 1) === 1).length;
       rtx.replaceChildren(elD('b', '', mus.length + (mus.length === 1 ? ' música em andamento' : ' músicas em andamento')), elD('span', '', !mus.length ? 'toque no + pra começar' : naIdeia === mus.length ? 'todas ainda na etapa de ideia' : naIdeia + ' ainda na ideia'));
-      abas.replaceChildren(...[['musica', 'Músicas'], ['manut', 'Cuidar'], ['setup', 'Setup'], ['ideia', 'Ideias']].map(([id, rot]) => { const b = elD('button', 'tm-aba', rot); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(aba === id)); b.onclick = () => { aba = id; store.set('mus-aba', id); pinta(); }; return b; }));
+      abas.replaceChildren(...[['musica', 'Músicas'], ['pratica', 'Tocar'], ['manut', 'Cuidar'], ['setup', 'Setup'], ['ideia', 'Ideias']].map(([id, rot]) => { const b = elD('button', 'tm-aba', rot); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(aba === id)); b.onclick = () => { aba = id; store.set('mus-aba', id); pinta(); }; return b; }));
       corpo.replaceChildren();
       if (aba === 'musica') {
         corpo.append(gravador());
@@ -3416,8 +3435,23 @@ function abreMusica(m) {
           if (x.falta) { const f = elD('p', 'tm-falta'); f.append(elD('small', '', 'O que falta'), document.createTextNode(x.falta)); a.append(f); }
           corpo.append(a);
         });
+      } else if (aba === 'pratica') {   // tocar 2x por semana e anotar (May 13/11 18:53): instrumento, o que usou e uma nota; conta a semana de segunda a domingo
+        const inst = vivos('setup').filter(x => x.tipo === 'guitarra' || /viol[aã]o|baixo|guitarra|telecaster/i.test(x.nome)), equip = vivos('setup').filter(x => ['amp', 'pedal', 'interface', 'mic', 'teclas'].includes(x.tipo));
+        const daQ = t => { const m = String(t || '').match(/^(\d\d)\/(\d\d)\/(\d{4})(?: (\d\d):(\d\d))?/); return m ? new Date(+m[3], m[2] - 1, +m[1], +(m[4] || 0), +(m[5] || 0)) : null; };
+        const seg = new Date(); seg.setHours(0, 0, 0, 0); seg.setDate(seg.getDate() - ((seg.getDay() + 6) % 7));
+        const vezes = vivos('pratica').map(x => Object.assign({ _d: daQ(x.quando) }, x)).filter(x => x._d).sort((a, b) => b._d - a._d), semana = vezes.filter(x => x._d >= seg).length, meta = +(d.meta_pratica || 2);
+        const topo = elD('section', 'tm-pr-topo'), pts = elD('div', 'tm-pr-pts');
+        for (let i = 0; i < Math.max(meta, semana); i++) pts.append(elD('i', i < semana ? 'on' : ''));
+        topo.append(elD('b', 'tm-pr-num', semana + ' de ' + meta), elD('span', '', semana >= meta ? 'meta da semana batida' : 'vezes nesta semana (segunda a domingo)'), pts);
+        const bt = elD('button', 'tm-pr-bt', 'Toquei hoje'); bt.type = 'button'; bt.onclick = () => formPratica(null, inst, equip); topo.append(bt); corpo.append(topo);
+        if (!vezes.length) corpo.append(elD('div', 'tm-vazio', 'Quando tocar, toca em "Toquei hoje" e escolhe o instrumento e o que usou.'));
+        vezes.forEach(x => { const a = elD('article', 'tm-aparelho tm-pr'), sl = elD('div', 'tm-slot'), tx = elD('div'), ins = inst.find(i => i.id === x.instrumento); sl.innerHTML = '<svg viewBox="0 0 40 40" aria-hidden="true">' + MUS_ICONES.guitarra + '</svg>';
+          tx.append(elD('h3', '', ins ? ins.nome : (x.instrumento_nome || 'Instrumento')), elD('small', 'tm-pr-q', x.quando));
+          const us = (x.usei || []).map(id => (equip.find(e => e.id === id) || {}).nome).filter(Boolean); if (us.length) tx.append(elD('p', '', 'Usei: ' + us.join(', ')));
+          if (x.nota) tx.append(elD('p', 'tm-pr-nota', x.nota));
+          const ed = edMini('note', 'Editar', () => formPratica(x, inst, equip)); ed.classList.add('tm-ed'); a.append(sl, tx, ed); corpo.append(a); });
       } else if (aba === 'manut') {   // manutenção dos instrumentos (May 13/11 12:36, layout 13:00): cada um com o desenho dele e 3 cuidados em quadros (cordas, regulagem, limpeza) com quantos dias faltam; datas começam vazias (nada inventado), intervalo é sugestão editável
-        const SERV = [['cordas', 'Cordas', 60], ['regulagem', 'Regulagem', 180], ['limpeza', 'Limpeza', 30]], inst = vivos('setup').filter(x => x.tipo === 'guitarra' || /viol[aã]o|baixo|guitarra/i.test(x.nome)), hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+        const SERV = [['cordas', 'Cordas', 60], ['regulagem', 'Regulagem', 180], ['limpeza', 'Limpeza', 30]], inst = vivos('setup').filter(x => x.tipo === 'guitarra' || /viol[aã]o|baixo|guitarra|telecaster/i.test(x.nome)), hoje = new Date(); hoje.setHours(0, 0, 0, 0);
         const daData = t => { const m = String(t || '').match(/^(\d\d)\/(\d\d)\/(\d{4})/); return m ? new Date(+m[3], m[2] - 1, +m[1]) : null; }, br = d => String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
         const achaReg = (l, x, sv) => l.find(y => y.secao === 'manut' && y.instrumento === x.id && y.servico === sv && !y.apagado);
         const estado = (x, sv, dias) => { const reg = achaReg(d.itens, x, sv) || null, cada = reg && reg.cada_dias ? +reg.cada_dias : dias, ult = reg ? daData(reg.ultima) : null, falta = ult ? Math.round((ult.getTime() + cada * 864e5 - hoje) / 864e5) : null; return { reg, cada, ult, falta }; };
@@ -3444,7 +3478,7 @@ function abreMusica(m) {
       } else {
         agrupa(vivos('ideia')).forEach(([g, l]) => { corpo.append(elD('div', 'tm-grupo', g || 'Outras')); const pa = elD('div', 'tm-pauta'), ul = elD('ul'); l.forEach(x => { const li = elD('li'), tx = elD('div'); tx.append(lapis('ideia', x), document.createTextNode(x.nome)); if (x.texto) tx.append(elD('small', '', x.texto)); li.append(tx); ul.append(li); }); pa.append(ul); corpo.append(pa); });
       }
-      if (aba !== 'manut') { const mais = elD('button', 'tm-mais', '+ ' + { musica: 'Música', setup: 'Aparelho ou pessoa', ideia: 'Ideia' }[aba]); mais.type = 'button'; mais.onclick = () => form(aba, null); corpo.append(mais); }
+      if (aba !== 'manut' && aba !== 'pratica') { const mais = elD('button', 'tm-mais', '+ ' + { musica: 'Música', setup: 'Aparelho ou pessoa', ideia: 'Ideia' }[aba]); mais.type = 'button'; mais.onclick = () => form(aba, null); corpo.append(mais); }
     };
     pinta();
   });
