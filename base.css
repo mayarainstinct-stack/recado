@@ -967,6 +967,19 @@ img.esq { min-height: 140px; }
 .gr-grade.gr-grade-cinema .gr-item .t { font-family: Georgia, 'Times New Roman', serif; font-size: 15px; font-weight: 900; letter-spacing: .3px; text-transform: uppercase; color: #B3261E; text-shadow: 1px 1px 0 #2B1A0E; text-align: center; }
 .gr-grade.gr-grade-cinema .gr-item .gr-sub { font-family: Georgia, serif; font-style: italic; font-size: 13px; color: #5A4127; text-align: center; line-height: 1.25; }
 @media (prefers-reduced-motion: reduce) { .gr-grade.gr-grade-cinema::after { animation: none; } }
+/* #215: as filhas da Mídia (Imagens, Animações, Vídeos) herdam o cinema da mãe; a tela já recebe gr-cinema do grupo */
+#p-corpo:has(> .tela.gr-cinema) { padding-left: 34px; padding-right: 34px; color: #2B1A0E; background: repeating-linear-gradient(180deg, transparent 0 9px, #F3E6C8 9px 19px, transparent 19px 28px) 6px 0 / 9px 28px repeat-y local, repeating-linear-gradient(180deg, transparent 0 9px, #F3E6C8 9px 19px, transparent 19px 28px) calc(100% - 6px) 0 / 9px 28px repeat-y local, linear-gradient(90deg, #2B1A0E 0 20px, transparent 20px calc(100% - 20px), #2B1A0E calc(100% - 20px)) local, radial-gradient(120% 90% at 50% 40%, #F3E6C8 55%, #D2B88C 100%) fixed; }
+.tela.gr-cinema :is(.item, .cine-card, .estudio-tile, .estudio-hero) { background: #F7EEDB; border: 4px solid #2B1A0E; border-radius: 6px; box-shadow: 6px 7px 0 #2B1A0E; color: #2B1A0E; padding: 10px; box-sizing: border-box; }
+.tela.gr-cinema .cine-card { display: block; margin: 0 0 24px; }
+.tela.gr-cinema :is(.item, .cine-card, .estudio-tile, .estudio-hero) :is(img, video, .cine-capa, .ph) { border-radius: 2px; }
+.tela.gr-cinema :is(.cine-wrap, .estudio-grade) { gap: 22px; }
+.tela.gr-cinema :is(.det, .p-nota, .leg, .sk) { color: #5A4127; }
+.tela.gr-cinema .estudio-hero .leg { background: #F7EEDB; color: #5A4127; text-shadow: none; }
+.tela.gr-cinema .estudio-hero .leg * { text-shadow: none; } .tela.gr-cinema .estudio-hero small { color: #5A4127; }
+.tela.gr-cinema .qtd { background: #2B1A0E; color: #F7EEDB; border-color: #F7EEDB; }
+.tela.gr-cinema :is(.cine-card, .item, .estudio-tile, .estudio-hero) :is(b, strong, h2, h3, .t, .tit, .cp) { font-family: Georgia, 'Times New Roman', serif; color: #B3261E; }
+.tela.gr-cinema .chip { background: #2B1A0E; color: #F7EEDB; border-color: #2B1A0E; }
+.tela.gr-cinema :is(.dur, .ed-mini) { background: #2B1A0E; color: #F7EEDB; }
 /* Ateliê: estúdio antigo (anos 30 a 60) igual à Mídia; letreiro de filme mudo, cartão de produção com carimbo e tira de filme de 4 quadros pra etapa (May 08/11 14:52, Sigma 15:18). Hermes */
 .at-tela { position: relative; flex-shrink: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; margin: -6px -16px 0; padding: 22px 34px calc(16px + env(safe-area-inset-bottom)); min-height: calc(100dvh - env(safe-area-inset-top) - 66px); background: repeating-linear-gradient(180deg, transparent 0 9px, #F3E6C8 9px 19px, transparent 19px 28px) 6px 0 / 9px 100% no-repeat, repeating-linear-gradient(180deg, transparent 0 9px, #F3E6C8 9px 19px, transparent 19px 28px) calc(100% - 6px) 0 / 9px 100% no-repeat, linear-gradient(90deg, #2B1A0E 0 20px, transparent 20px calc(100% - 20px), #2B1A0E calc(100% - 20px)), radial-gradient(120% 90% at 50% 30%, #F3E6C8 55%, #D2B88C 100%); color: #2B1A0E; }
 .at-letreiro { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 18px 16px 16px; border-radius: 6px; background: #2B1A0E; color: #F7EEDB; text-align: center; box-shadow: inset 0 0 0 4px #2B1A0E, inset 0 0 0 6px #E8D2A6, inset 0 0 0 9px #2B1A0E, 6px 7px 0 #B3261E; }
