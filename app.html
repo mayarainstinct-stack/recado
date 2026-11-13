@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.336">
-<meta name="app-novidade" content="Vídeo na conversa sobe inteiro e toca no balão">
+<meta name="app-versao" content="2026-11-13.337">
+<meta name="app-novidade" content="Consulta: lança e apaga pergunta, e salvar sem mexer não muda a hora">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.336"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.337"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3079,7 +3079,7 @@ async function edAbre(cfg) {
     fila = fila.then(async () => {
       if (desfeito) return;
       let ok = false; try { ok = await gravaJson(alvo, d => { d[lista] = d[lista] || []; edAplica(d[lista], op, !!cfg.edicoes); }, msg || 'Edição pelo app', { itens: [] }); } catch (e) {}
-      if (!ok) { desfeito = antes; m.itens.splice(0, m.itens.length, ...antes); showNote('Não guardou: voltou como estava. Confere a internet e tenta de novo.', true); if (m.aoMudar) try { m.aoMudar(); } catch (e) {} }
+      if (!ok) { desfeito = antes; m.itens.splice(0, m.itens.length, ...antes); document.querySelector('.ed-faixa')?.remove(); showNote('Não guardou: voltou como estava. Confere a internet e tenta de novo.', true); if (m.aoMudar) try { m.aoMudar(); } catch (e) {} }
     }).then(() => { if (--pend === 0) desfeito = null; });
     m.enviando = fila;
     return Promise.resolve(true);
@@ -3236,7 +3236,7 @@ function abreSaudeLista(m, soGrupo) {   // soGrupo: tela filha com um grupo só 
             if (abertoR === x.id) {
               const cx = elD('div', 'sl-resp-ed'), ta = elD('textarea'), bs = elD('div', 'sl-resp-bt'), sv = elD('button', 'sl-resp-salva', 'Salvar'), ca = elD('button', 'sl-resp-cancela', 'Cancelar');
               ta.value = x.resposta || ''; ta.rows = 4; ta.placeholder = 'Escreva a resposta. Pode usar o microfone do teclado.'; ta.setAttribute('aria-label', 'Resposta'); sv.type = ca.type = 'button';
-              sv.onclick = async () => { const v = ta.value.trim(); abertoR = ''; await E.edita(x.id, v ? { resposta: v, respondida: edAgora() } : { resposta: '', respondida: '' }); pinta(); };
+              sv.onclick = async () => { const v = ta.value.trim(); abertoR = ''; if (v === (x.resposta || '').trim()) { pinta(); return; } await E.edita(x.id, v ? { resposta: v, respondida: x.resposta && x.respondida ? x.respondida : edAgora() } : { resposta: '', respondida: '' }); pinta(); };   // salvar sem mexer não regrava a hora; corrigir o texto mantém a hora da consulta (Sigma #224)
               ca.onclick = () => { abertoR = ''; pinta(); }; bs.append(sv, ca); cx.append(ta, bs); tx.append(cx);
               setTimeout(() => { try { ta.focus(); } catch (e) {} }, 60);
             } else if (x.resposta) {
@@ -5717,8 +5717,9 @@ function blocoPerguntasDia(b, tit, tx) {
       if (aberto === x.id) {   // escrever a resposta: o mesmo campo da tela Perguntas pro médico (resposta + respondida)
         const cx = elD('div', 'sl-resp-ed'), ta = elD('textarea'), bs = elD('div', 'sl-resp-bt'), sv = elD('button', 'sl-resp-salva', 'Salvar'), ca = elD('button', 'sl-resp-cancela', 'Cancelar');
         ta.value = x.resposta || ''; ta.rows = 4; ta.placeholder = 'Escreva a resposta. Pode usar o microfone do teclado.'; ta.setAttribute('aria-label', 'Resposta'); sv.type = ca.type = 'button';
-        sv.onclick = async () => { const v = ta.value.trim(); aberto = ''; await E.edita(x.id, v ? { resposta: v, respondida: edAgora() } : { resposta: '', respondida: '' }); pinta(); };
-        ca.onclick = () => { aberto = ''; pinta(); }; bs.append(sv, ca); cx.append(ta, bs); li.append(cx);
+        sv.onclick = async () => { const v = ta.value.trim(); aberto = ''; if (v === (x.resposta || '').trim()) { pinta(); return; } await E.edita(x.id, v ? { resposta: v, respondida: x.resposta && x.respondida ? x.respondida : edAgora() } : { resposta: '', respondida: '' }); pinta(); };   // salvar sem mexer não regrava a hora; corrigir o texto mantém a hora da consulta (Sigma #224)
+        const ap = elD('button', 'sl-resp-apaga', 'Apagar pergunta'); ap.type = 'button'; ap.onclick = async () => { aberto = ''; await E.apaga(x.id, true); pinta(); edFaixaDesfazer('Pergunta apagada', async () => { await E.apaga(x.id, false); pinta(); }); };
+        ca.onclick = () => { aberto = ''; pinta(); }; bs.append(sv, ca, ap); cx.append(ta, bs); li.append(cx);
         setTimeout(() => { try { ta.focus(); } catch (e) {} }, 60);
       } else if (x.resposta) {
         const rs = elD('button', 'sl-resposta'); rs.type = 'button'; rs.setAttribute('aria-label', 'Editar a resposta'); const rt = elD('span', 'sl-resp-t'); slNeg(rt, x.resposta);
@@ -5728,6 +5729,9 @@ function blocoPerguntasDia(b, tit, tx) {
     });
     lista(its, false);
     if (!its.length) corpo.append(elD('p', 'p-nota', 'Nenhuma pergunta por aqui.'));
+    const nova = elD('button', 'sl-escreve vs-pd-nova', '+ Nova pergunta'); nova.type = 'button';   // lançar pergunta direto na consulta, sem Claude (Sigma #224)
+    nova.onclick = () => edFormulario({ titulo: 'Nova pergunta', campos: [{ nome: 'texto', rotulo: 'Pergunta', tipo: 'texto_longo', obrigatorio: true }], aoSalvar: async v => { await E.lanca({ texto: v.texto, grupo: b.grupo, subgrupo: '', tipo: 'item' }, 'Consulta: pergunta nova pelo app'); pinta(); } });
+    corpo.append(nova);
     if (outras.length) {
       const dt = elD('details', 'vs-pd-outras'), sm = elD('summary', '', (b.outrasTitulo || 'Outras perguntas') + ' (' + outras.length + ')'); dt.open = outrasAberto; dt.ontoggle = () => { outrasAberto = dt.open; };
       dt.append(sm); corpo.append(dt); alvo = dt; sub = null; card = null; lista(outras, true);
