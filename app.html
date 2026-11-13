@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.317">
-<meta name="app-novidade" content="Exames: a aba Únicos também lança, edita e apaga">
+<meta name="app-versao" content="2026-11-13.318">
+<meta name="app-novidade" content="Finanças: pagamento com data na frente aparece como Vai pagar em">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -3923,7 +3923,8 @@ const finIso = s => { const d = finData(s); return d ? d.getFullYear() + '-' + p
 const finChaveDe = s => { const d = finData(s); return d ? finChave(d) : ''; };
 const finDiaMes = (ano, mes0, dia) => new Date(ano, mes0, Math.min(+dia, new Date(ano, mes0 + 1, 0).getDate()));
 const finTs = y => { const d = finData(y.data); const h = String(y.quando || '').match(/(\d\d):(\d\d)$/); return (d ? d.getTime() : 0) + (h ? (+h[1] * 60 + +h[2]) * 6e4 : 0); };
-const finPagoTxt = (y, lado) => (lado === 'receber' ? 'Recebido em ' : 'Pago em ') + (y.quando ? edQuando(y.quando) : String(y.data).slice(0, 5)) + (y.valor !== '' && y.valor != null ? ' · ' + reaisFin(y.valor) : '') + (y.forma ? ' · ' + y.forma : '');
+const finFuturo = y => { const m = String(y.data || '').match(/^(\d\d)\/(\d\d)\/(\d{4})/); return !y.quando && !!m && new Date(+m[3], m[2] - 1, +m[1]) > new Date(); };   // data na frente de hoje = combinado, ainda não pago (Sigma 13/11: 'Vô · dia 20' dizia 'Pago em 20/11' no dia 13)
+const finPagoTxt = (y, lado) => (finFuturo(y) ? (lado === 'receber' ? 'Vai receber em ' : 'Vai pagar em ') : lado === 'receber' ? 'Recebido em ' : 'Pago em ') + (y.quando ? edQuando(y.quando) : String(y.data).slice(0, 5)) + (y.valor !== '' && y.valor != null ? ' · ' + reaisFin(y.valor) : '') + (y.forma ? ' · ' + y.forma : '');
 const finNum = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
 function finAplicaLanc(d, l) {   // o LANCAMENTOS.md antigo (o que ela lançou antes do .241) continua valendo
   if (/^nova-/.test(l.tipo)) { const ld = l.tipo === 'nova-pagar' ? d.pagar : d.receber; if (!ld.some(y => [y.nome, y.chave].some(n => n && n.toLowerCase() === l.nome.toLowerCase()))) { const lem = (l.nota.match(/lembrar (\d\d\/\d\d\/\d{4})/) || [])[1] || null; ld.push({ nome: l.nome, chave: l.nome, dia: null, total: l.valor, pago: 0, falta: l.valor, como: l.nota.replace(/\s*lembrar \d\d\/\d\d\/\d{4}\s*·?\s*/, '').trim(), pagamentos: [], lembrar: lem, desde: l.data }); } return; }
