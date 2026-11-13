@@ -633,6 +633,10 @@ body.na-geral .painel.tema-claro .p-topo::after { background: #8FD3C7; box-shado
 .vg-lnome { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .vg-barra { height: 8px; background: #2A2A2E; clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%); overflow: hidden; }
 .vg-barra i { display: block; height: 100%; background: repeating-linear-gradient(-55deg, var(--c) 0 6px, color-mix(in srgb, var(--c) 55%, black) 6px 9px); box-shadow: 0 0 8px var(--c); }
+/* #42: toda barra de PROGRESSO é o trilho tracejado do guia (uma barra, pontas chanfradas, listra inclinada), na cor e no fundo do tema de cada tela */
+.trilho-prog.trilho-prog { position: relative; display: block; height: 10px; border-radius: 0; overflow: hidden; background: var(--trilho-fundo, rgba(0,0,0,.15)); clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px); }
+.trilho-prog.trilho-prog > i { display: block; height: 100%; border-radius: 0; box-shadow: none; background: repeating-linear-gradient(-45deg, rgba(255,255,255,.35) 0 5px, transparent 5px 10px), var(--trilho-cor, var(--c)); clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%, 0 5px); }
+.pos-barra.trilho-prog { --trilho-cor: #E75480; --trilho-fundo: #FCE4EE; } .fm-barra.trilho-prog { --trilho-cor: #1A6640; --trilho-fundo: #E6F5EC; } .ob-barra.trilho-prog { --trilho-cor: #16A34A; --trilho-fundo: rgba(0,0,0,.18); } .vg-barra.trilho-prog { --trilho-fundo: #2A2A2E; }
 .vg-q { font: italic 16px Impact, 'Arial Narrow', sans-serif; color: var(--c); text-align: right; }
 
 .p-grade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }

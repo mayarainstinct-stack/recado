@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.314">
+<meta name="app-versao" content="2026-11-13.315">
 <meta name="app-novidade" content="Exames: a aba Únicos também lança, edita e apaga">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.314"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.315"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3331,7 +3331,7 @@ function abreObra(m) {
       if (x.tipo === 'nota') { el.style.setProperty('--p', PAPEL[x.cor] || PAPEL.amarelo); const ul = elD('ul'); (x.linhas || []).forEach(l => ul.append(elD('li', '', l))); el.append(elD('b', 'ob-tit', x.titulo || ''), ul, fonte(x.fonte)); }
       else if (x.tipo === 'valor') {
         el.append(elD('span', 'ob-furo'), elD('small', 'ob-tit', x.titulo || ''), elD('b', 'ob-num', x.valor || ''), elD('p', 'ob-sub', x.sub || ''));
-        if (x.vivo === 'maicon' && vivo.pago) { const b = elD('div', 'ob-barra'), f = elD('i'); f.style.width = Math.min(100, vivo.pago.pago * 100 / (vivo.pago.total || 1)) + '%'; b.append(f); el.append(b, elD('small', 'ob-sub', 'pago ' + rs(vivo.pago.pago) + ' · falta ' + rs(vivo.pago.falta))); }
+        if (x.vivo === 'maicon' && vivo.pago) { const b = elD('div', 'ob-barra trilho-prog'), f = elD('i'); f.style.width = Math.min(100, vivo.pago.pago * 100 / (vivo.pago.total || 1)) + '%'; b.append(f); el.append(b, elD('small', 'ob-sub', 'pago ' + rs(vivo.pago.pago) + ' · falta ' + rs(vivo.pago.falta))); }
         el.append(fonte(x.fonte));
       }
       else if (x.tipo === 'peca') {
@@ -3353,7 +3353,7 @@ function abreObra(m) {
         el.append(elD('p', 'ob-sub', ds.length ? veio + ' dia' + (veio === 1 ? '' : 's') + ' de obra em ' + ds.length + ' sábado' + (ds.length === 1 ? '' : 's') : 'Carregando os dias…'));
         const ul = elD('ul', 'ob-dias');
         ds.slice().reverse().forEach(z => { const li = elD('li', z.veio ? 'veio' : 'faltou'); li.append(elD('b', '', z.data.slice(0, 5)), elD('span', '', z.veio ? [z.chegou && z.saiu ? z.chegou + ' às ' + z.saiu : z.chegou ? 'desde ' + z.chegou : '', z.fez || ''].filter(Boolean).join(' · ') : 'não veio')); ul.append(li); });
-        if (vivo.pago) { const b = elD('div', 'ob-barra'), f = elD('i'); f.style.width = Math.min(100, vivo.pago.pago * 100 / (vivo.pago.total || 1)) + '%'; b.append(f); el.append(b, elD('small', 'ob-sub ob-pagofalta', 'pago ' + rs(vivo.pago.pago) + ' · falta ' + rs(vivo.pago.falta) + ' de ' + rs(vivo.pago.total))); }   // quanto já pagou e quanto falta (May 18:37), das Pendências
+        if (vivo.pago) { const b = elD('div', 'ob-barra trilho-prog'), f = elD('i'); f.style.width = Math.min(100, vivo.pago.pago * 100 / (vivo.pago.total || 1)) + '%'; b.append(f); el.append(b, elD('small', 'ob-sub ob-pagofalta', 'pago ' + rs(vivo.pago.pago) + ' · falta ' + rs(vivo.pago.falta) + ' de ' + rs(vivo.pago.total))); }   // quanto já pagou e quanto falta (May 18:37), das Pendências
         el.append(ul, fonte(x.fonte));
       }
       if (x.tipo !== 'maicon' && CAMPOS_OB[x.tipo]) el.append(edMini('note', 'Editar cartão', () => editaC(x)));
@@ -4079,7 +4079,7 @@ function abreFinancas(m) {
       const c2 = elD('button', 'fm-card'); c2.type = 'button'; c2.onclick = () => detalhe(x); const pct = x.total ? Math.min(100, Math.round(x.pago / x.total * 100)) : 0, h = elD('div', 'fm-nome');
       h.innerHTML = '<svg viewBox="0 0 16 16"><circle cx="8" cy="5.5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M3 13.5c.6-2.6 2.6-3.8 5-3.8s4.4 1.2 5 3.8" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>'; h.append(document.createTextNode(x.nome)); c2.append(h);
       [['Total', reaisFin(x.total), ''], [lado === 'pagar' ? 'Pago' : 'Recebido', reaisFin(x.pago), 'ok'], ['Falta', x.falta > 0 ? reaisFin(x.falta) : 'quitado', x.falta > 0 ? 'falta' : 'ok']].forEach(([t, v, cl]) => { const l = elD('div', 'fm-lin'); l.append(elD('span', '', t), elD('b', cl, v)); c2.append(l); });
-      const bar = elD('div', 'fm-barra'), i = elD('i'); i.style.width = pct + '%'; bar.append(i); c2.append(bar, elD('small', 'fm-pct', pct + '%'));
+      const bar = elD('div', 'fm-barra trilho-prog'), i = elD('i'); i.style.width = pct + '%'; bar.append(i); c2.append(bar, elD('small', 'fm-pct', pct + '%'));
       const ult = x.pagamentos[x.pagamentos.length - 1]; if (ult) c2.append(elD('small', 'fin-ult', finPagoTxt(ult, lado)));
       return c2;
     };
@@ -4335,7 +4335,7 @@ function montaPos(c, v) {   // Pós-cirurgia em Outubro Rosa (May 08/11 12:59: "
   const trilha = elD('div', 'pos-trilha'); w.append(trilha);
   v.listas.forEach((l, k) => {
     const feitos = marcados(v, l).size, total = totalItens(l), b = elD('button', 'pos-etapa' + (total && feitos === total ? ' feita' : ''));
-    b.type = 'button'; b.innerHTML = '<span class="pos-no"></span><span class="pos-tx"><b></b><small></small><span class="pos-barra"><i></i></span></span>';
+    b.type = 'button'; b.innerHTML = '<span class="pos-no"></span><span class="pos-tx"><b></b><small></small><span class="pos-barra trilho-prog"><i></i></span></span>';
     b.querySelector('.pos-no').textContent = String(k + 1); b.querySelector('b').textContent = semHojeFalso(l.nome);
     b.querySelector('small').textContent = feitos + ' de ' + total + ' feitos' + (l.sub ? ' · ' + semHojeFalso(l.sub) : '');
     b.querySelector('.pos-barra i').style.width = (total ? Math.round(feitos / total * 100) : 0) + '%';
@@ -4375,7 +4375,7 @@ function montaViagens(c, d) {   // Viagens com cara própria (May 08/11 12:18: "
     (v.listas || []).forEach(l => {
       const f = marcados(v, l).size, t = totalItens(l), x = document.createElement('button'); x.type = 'button'; x.className = 'vg-lista'; x.onclick = () => abreChecklist(v, l);
       const n = document.createElement('span'); n.className = 'vg-lnome'; n.textContent = semHojeFalso(l.nome);
-      const bar = document.createElement('span'); bar.className = 'vg-barra'; const i = document.createElement('i'); i.style.width = (t ? f / t * 100 : 0) + '%'; bar.append(i);
+      const bar = document.createElement('span'); bar.className = 'vg-barra trilho-prog'; const i = document.createElement('i'); i.style.width = (t ? f / t * 100 : 0) + '%'; bar.append(i);
       const q = document.createElement('span'); q.className = 'vg-q'; q.textContent = f + '/' + t;
       x.append(n, bar, q); canhoto.append(x);
     });
