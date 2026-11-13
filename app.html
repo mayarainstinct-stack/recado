@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.348">
-<meta name="app-novidade" content="Saúde: números e tabelas também dá pra editar">
+<meta name="app-versao" content="2026-11-13.349">
+<meta name="app-novidade" content="Toque no topo da Geral: reavaliação da semana">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.348"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.349"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2771,7 +2771,7 @@ function abreInfoConversa() {
     });
   });
 }
-[tituloEl.parentElement, logoEl, convAv].forEach(e => e.addEventListener('click', () => { if (FILE) abreInfoConversa(); }));
+{ let rvT = null; [tituloEl.parentElement, logoEl, convAv].forEach(e => e.addEventListener('click', ev => { if (!FILE) return; if (FILE !== GERAL.arq) { abreInfoConversa(); return; } clearTimeout(rvT); if (ev.detail > 1) return; rvT = setTimeout(() => { if (painel.hidden && FILE === GERAL.arq) abreReavaliacao(); }, 420); })); }   // na Geral o toque no topo abre a reavaliação da semana (May 13/11, #226; os dados do grupo ficam no botão Grupo dela); dois toques continua sendo o Menu
 { let gx = null, gy = 0, gt = 0;   // na Geral, deslizar da direita pra esquerda abre o Menu: atalho de uma mão só, o ícone de cima continua (May, 07/11/2026 16:46)
   feed.addEventListener('touchstart', e => { const t = e.touches[0]; gx = e.touches.length === 1 && (FILE === GERAL.arq || FILE === TRAB.arq) && !abreMenu.hidden && painel.hidden && !document.querySelector('.fixa-pop') && !e.target.closest('.player, input, textarea, .opcoes') ? t.clientX : null; gy = t.clientY; gt = Date.now(); }, { passive: true });
   feed.addEventListener('touchend', e => { if (gx === null) return; const t = e.changedTouches[0], dx = t.clientX - gx, dy = t.clientY - gy; gx = null; if (dx < -70 && Math.abs(dy) < -dx * .6 && Date.now() - gt < 700) { abreMenu.click(); if (painel.animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) painel.animate([{ transform: 'translateX(100%)' }, { transform: 'none' }], { duration: 260, easing: 'cubic-bezier(.2,.8,.2,1)' }); } }, { passive: true });
@@ -6183,6 +6183,43 @@ let ocultosConversa = null;   // dentro do Menu mostra as 3 opções; ao voltar 
 document.getElementById('p-mais').onclick = e => { e.stopPropagation(); document.body.append(menu); menu.classList.add('no-painel');
   if (!ocultosConversa) ocultosConversa = [irGeral.hidden, irTrab.hidden, abreMenu.hidden];
   irTrab.hidden = abreMenu.hidden = false; irGeral.hidden = escondeGeral(); menu.hidden = !menu.hidden; };
+// Reavaliação semanal (May 13/11 16:1x e 16:3x, #226): toque no topo da Geral abre; um card por pessoa no estilo do cartão dela; abre na semana mais nova e deslizar pra esquerda mostra a anterior. Só lê casa/reavaliacao.json e casa/fichas.json
+const RV_ORDEM = ['may', 'lyra', 'orfeu', 'nyx', 'vega', 'hermes', 'sigma', 'gabriel'];
+async function abreReavaliacao() {
+  if (document.querySelector('.rv-tela')) return;
+  const tl = elD('div', 'rv-tela'), topo = elD('div', 'rv-topo'), tit = elD('div', 'rv-tit'), x = elD('button', 'rv-x'), trilho = elD('div', 'rv-trilho'), pontos = elD('div', 'rv-pontos'); x.type = 'button'; x.setAttribute('aria-label', 'Fechar'); x.innerHTML = icone('close');
+  tit.append(elD('b', '', 'Reavaliação da semana'), elD('small', '', 'carregando…')); const gr = elD('button', 'rv-grupo', 'Grupo'); gr.type = 'button'; gr.onclick = () => { tl.remove(); abreInfoConversa(); }; topo.append(tit, gr, x); tl.append(topo, trilho, pontos); document.body.append(tl);
+  const fecha = () => { tl.classList.add('saindo'); setTimeout(() => tl.remove(), 220); }; x.onclick = fecha;
+  let R, F;
+  try { [R, F] = await Promise.all([lerArquivo('casa/reavaliacao.json').then(JSON.parse), FICHA ? Promise.resolve(FICHA) : lerArquivo('casa/fichas.json').then(JSON.parse)]); FICHA = FICHA || F; await garanteGrupoTrab(); }
+  catch (e) { tit.lastChild.textContent = 'Não abriu. Confere a internet.'; return; }
+  const semanas = (R.semanas || []).filter(w => w.feita && w.notas && Object.keys(w.notas).length).sort((a, b) => b.de.localeCompare(a.de)), hist = (R.historico || []).slice().sort((a, b) => a.dia.localeCompare(b.dia));
+  if (!semanas.length) { tit.lastChild.textContent = 'Nenhuma semana avaliada ainda.'; return; }
+  const br = iso => iso.slice(8, 10) + '/' + iso.slice(5, 7), daBr = t => { const m = String(t || '').match(/^(\d\d)\/(\d\d)\/(\d{4})/); return m ? m[3] + '-' + m[2] + '-' + m[1] : ''; };
+  const nivelAntes = (w, k) => { const i = semanas.indexOf(w), ant = semanas[i + 1]; if (ant && ant.notas[k] && ant.notas[k].nivel != null) return ant.notas[k].nivel; const h = hist.filter(y => y.dia < w.de && y.niveis && y.niveis[k] != null).pop(); return h ? h.niveis[k] : null; };
+  const dif = (d, cls) => { const s = elD('span', 'rv-dif ' + (d > 0 ? 'rv-sobe' : 'rv-desce') + (cls ? ' ' + cls : ''), (d > 0 ? '+' : '−') + Math.abs(d)); return s; };
+  const card = (w, k) => {
+    const n = w.notas[k], g = k === 'may' ? EU : GRUPO[k] || {}, f = FICHA[k] || {}, c = elD('article', 'rv-card'); c.style.setProperty('--quem', g.cor || '#64748B'); c.style.setProperty('--quem-fg', g.texto || '#fff');
+    const cab = elD('div', 'rv-cab'), av = elD('div', 'rv-av', g.foto ? '' : (g.nome || k).charAt(0).toUpperCase()), quem = elD('div', 'rv-quem'), nv = elD('div', 'rv-nivel');
+    if (g.foto) fotoUrl(g.foto, true).then(u => { av.style.backgroundImage = 'url(' + u + ')'; }).catch(() => {});
+    quem.append(elD('b', '', String(g.nome || k).replace(/\s*\(PC\d\)$/i, '')), elD('small', '', f.cargo || f.classe || ''));
+    const antes = n.primeira_vez ? null : nivelAntes(w, k); nv.append(elD('b', '', String(n.nivel)));
+    if (antes != null && antes !== n.nivel) { nv.append(elD('small', 'rv-antes', 'era ' + antes)); nv.append(dif(n.nivel - antes, 'grande')); } else nv.append(elD('small', 'rv-antes', n.primeira_vez ? 'primeira vez' : 'igual'));
+    cab.append(av, quem, nv); c.append(cab);
+    const at = Object.entries(n.atributos || {}), mud = at.filter(([, a]) => a.antes != null && a.nota !== a.antes), igual = at.filter(([, a]) => a.antes == null || a.nota === a.antes), corpo = elD('div', 'rv-corpo');
+    if (mud.length) mud.forEach(([nome, a]) => { const l = elD('div', 'rv-linha'), t = elD('div', 'rv-lt'); t.append(elD('b', '', nome), elD('span', 'rv-de', a.antes + ' → ' + a.nota), dif(a.nota - a.antes)); l.append(t); if (a.motivo) l.append(elD('p', 'rv-motivo', a.motivo)); corpo.append(l); });
+    else corpo.append(elD('p', 'rv-nada', n.primeira_vez ? 'Primeira avaliação: as notas de partida estão abaixo.' : 'Nenhum atributo mudou nesta semana.'));
+    if (igual.length) { const dt = elD('details', 'rv-iguais'), sm = elD('summary', '', (n.primeira_vez ? 'Notas' : 'Sem mudança') + ' (' + igual.length + ')'), ul = elD('div', 'rv-chips'); igual.forEach(([nome, a]) => { const ch = elD('span', 'rv-chip'); ch.append(nome + ' ', elD('b', '', String(a.nota))); if (a.motivo && n.primeira_vez) ch.title = a.motivo; ul.append(ch); }); dt.append(sm, ul); corpo.append(dt); }
+    const ate = w.ate, ganhos = [...(f.insignias || []).map(i => ['ins', i]), ...(f.trofeus || []).map(t => ['tr', t])].filter(([, i]) => { const d = daBr(i.data); return d && d >= w.de && d <= ate; });
+    if (ganhos.length) { const gw = elD('div', 'rv-ganhos'); gw.append(elD('small', 'rv-gt', 'Ganhou na semana')); const gl = elD('div', 'rv-glista'); ganhos.forEach(([tp, i]) => { const d = elD('div', 'rv-g' + (tp === 'tr' ? ' trofeu' : '')); d.innerHTML = tp === 'tr' ? svgTrofeu(i) : svgInsignia(i); d.append(elD('span', '', i.nome)); gl.append(d); }); gw.append(gl); corpo.append(gw); }
+    c.append(corpo); return c;
+  };
+  semanas.forEach(w => { const pg = elD('section', 'rv-pagina'); pg.append(elD('p', 'rv-semana', 'Semana de ' + br(w.de) + ' a ' + br(w.ate) + (w.avaliacao ? ' · avaliada em ' + br(w.avaliacao.slice(0, 10)) : ''))); RV_ORDEM.concat(Object.keys(w.notas).filter(k => !RV_ORDEM.includes(k))).filter(k => w.notas[k]).forEach(k => pg.append(card(w, k))); trilho.append(pg); });
+  semanas.forEach((w, i) => { const p = elD('i', i ? '' : 'on'); pontos.append(p); });
+  const mostra = i => { tit.lastChild.textContent = semanas.length > 1 ? (i ? 'semana anterior · ' : 'semana mais nova · ') + br(semanas[i].de) + ' a ' + br(semanas[i].ate) + (i < semanas.length - 1 ? ' · deslize pra ver a anterior' : '') : br(semanas[i].de) + ' a ' + br(semanas[i].ate); [...pontos.children].forEach((p, j) => p.classList.toggle('on', j === i)); };
+  let t0; trilho.addEventListener('scroll', () => { clearTimeout(t0); t0 = setTimeout(() => mostra(Math.round(trilho.scrollLeft / trilho.clientWidth)), 80); }, { passive: true });
+  pontos.hidden = semanas.length < 2; mostra(0);
+}
 // Toque duplo (May, 09/11/2026): troca entre o Menu e a conversa. Na conversa, toque duplo no nome ou no logo abre o Menu; no Menu, toque duplo no título ou na faixa de cima volta pra conversa.
 function toqueDuplo(el, fn) {
   if (!el) return; let t0 = 0, x0 = 0, y0 = 0;
