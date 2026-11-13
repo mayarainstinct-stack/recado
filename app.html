@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.350">
+<meta name="app-versao" content="2026-11-13.351">
 <meta name="app-novidade" content="Saúde: o subtítulo acompanha o número editado">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.350"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.351"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3494,7 +3494,8 @@ function abreContraste(m) {
         const pagos = E.itens.filter(p => !p.apagado && p.feito); if (pagos.length) { corpo.append(elD('div', 'ctb-sec', 'Pagos')); pagos.slice().reverse().forEach(p => corpo.append(cartao(p))); }
         const mais = elD('button', 'ctb-mais', '+ Pedido'); mais.type = 'button'; mais.onclick = () => form(null); corpo.append(mais);
       } else if (aba === 'portfolio') {
-        const g = elD('div', 'ctb-port'); (d.portfolio || []).forEach(p => { const k = elD('figure', 'ctb-peca'), im = elD('img'); im.alt = p.peca || ''; im.loading = 'lazy'; fotoUrl(p.arquivos[0]).then(u => { im.src = u; }).catch(() => {}); im.onclick = () => im.src && abreZoom(im.src, p.arquivos[0], p.arquivos); const cap = elD('figcaption'); cap.append(elD('b', '', p.cliente), elD('span', '', p.peca + ' · ' + p.data + (p.arquivos.length > 1 ? ' · ' + p.arquivos.length + ' versões' : ''))); k.append(im, cap); g.append(k); });
+        const g = elD('div', 'ctb-port'), clientes = {};   // um cartão por cliente, a peça inteira sem cortar e o texto maior (May 13/11 12:39-12:45)
+        (d.portfolio || []).forEach(p => { if (!clientes[p.cliente]) { const c = elD('section', 'ctb-cli'); c.append(elD('h3', '', p.cliente)); clientes[p.cliente] = c; g.append(c); } const k = elD('figure', 'ctb-peca'), im = elD('img'); im.alt = p.peca || ''; im.loading = 'lazy'; fotoUrl(p.arquivos[0]).then(u => { im.src = u; }).catch(() => {}); im.onclick = () => im.src && abreZoom(im.src, p.arquivos[0], p.arquivos); const cap = elD('figcaption', '', [p.peca, p.data, p.arquivos.length > 1 ? p.arquivos.length + ' versões' : ''].filter(Boolean).join(' · ')); k.append(im, cap); clientes[p.cliente].append(k); });
         corpo.append(g, elD('p', 'ctb-nota', 'Só entra peça com a marca da Contraste no canto. Os originais ficam na pasta da rede, fora do app.'));
       } else {
         const hero = elD('div', 'ctr-hero so-logo'), im = elD('img'); im.alt = d.nome || ''; fotoUrl(d.logo).then(u => { im.src = u; }).catch(() => {});   // a marca sozinha e inteira, sem texto nem caixas de cor embaixo (May 13/11 16:20, Sigma 16:22)
