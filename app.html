@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.337">
-<meta name="app-novidade" content="Consulta: lança e apaga pergunta, e salvar sem mexer não muda a hora">
+<meta name="app-versao" content="2026-11-13.338">
+<meta name="app-novidade" content="Preparo e pós: uma etapa por aba, com a próxima no fim">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.337"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.338"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -5908,13 +5908,22 @@ function abreVisual(m) {
     if (d.modo === 'virar') R.cartoes = b => { const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-grade vs-flips'); (b.itens || []).forEach(x => { const k = elD('div', 'vs-flip'); k.setAttribute('role', 'button'); k.tabIndex = 0; const inn = elD('div', 'vs-flip-in'); const fr = elD('div', 'vs-face vs-frente'); fr.append(ic(x.icone), tx('h4', '', x.titulo), elD('small', '', 'toque pra ver')); const tr = elD('div', 'vs-face vs-verso'); tr.append(tx('h4', '', x.titulo), tx('p', '', x.texto)); inn.append(fr, tr); k.append(inn); k.onclick = () => k.classList.toggle('virado'); g.append(k); }); w.append(g); return w; };   // Dicas: cartões que viram ao tocar (May, 10/11/2026: "dicas são cartões")
     const abas = d.abas || [];
     const monta = b => { const f = R[b.t]; if (!f) return null; try { return f(b); } catch (e) { return null; } };
-    if (d.modo === 'trilha') {   // Preparo e pós: uma trilha só, descendo fase por fase, sem abas
+    if (d.modo === 'trilha') {   // Preparo e pós: trilha de etapas, uma etapa por aba (Sigma #223: eram ~9.000 px de rolagem; tela longa no celular vira abas) e no fim o botão da próxima etapa
       cabecalho({ icone: (abas[0] && abas[0].icone) || 'heart', sub: d.sub || '' });
-      const w = elD('div', 'vs-corpo vs-trilha'); c.append(w);
-      abas.forEach((a, i) => { const est = elD('div', 'vs-estacao'); est.append(elD('span', 'vs-est-n', String(i + 1)), ic(a.icone || 'heart', 'vs-ic-p'), elD('h2', '', a.nome)); w.append(est); const sec = elD('div', 'vs-trecho'); (a.blocos || []).forEach(b => { const el = monta(b); if (el) sec.append(el); }); w.append(sec); });
-      w.append(elD('div', 'vs-chegada', 'Chegou no fim da trilha'));
-      if (d.atualizado) w.append(elD('p', 'vs-rodape', 'Atualizado em ' + d.atualizado));
-      return;
+      let at = 0; try { at = Math.max(0, Math.min(+(store.get('vs-aba:' + m.arq) || 0), abas.length - 1)); } catch (e) {}
+      const abasEl = elD('div', 'sl-abas vs-abas vs-trilha-abas'); abasEl.setAttribute('role', 'tablist'); const w = elD('div', 'vs-corpo vs-trilha'); c.append(abasEl, w);
+      const vai = i => { if (i < 0 || i >= abas.length || i === at) return; at = i; try { store.set('vs-aba:' + m.arq, String(i)); } catch (e) {} pintaT(); const pc = document.querySelector('#p-corpo'); if (pc) pc.scrollTop = 0; };
+      deslizaAbas(w, () => at, vai);
+      const pintaT = () => {
+        abasEl.replaceChildren(...abas.map((a, i) => { const f = elD('button', 'sl-aba' + (i === at ? ' on' : '') + (i < at ? ' feita' : '')); f.type = 'button'; f.append(elD('span', 'vs-est-n', String(i + 1)), a.nome); f.onclick = () => vai(i); return f; }));
+        const a = abas[at] || {}, est = elD('div', 'vs-estacao'), sec = elD('div', 'vs-trecho'); est.append(elD('span', 'vs-est-n', String(at + 1)), ic(a.icone || 'heart', 'vs-ic-p'), elD('h2', '', a.nome || '')); (a.blocos || []).forEach(b => { const el = monta(b); if (el) sec.append(el); });
+        w.replaceChildren(est, sec);
+        if (at < abas.length - 1) { const nx = elD('button', 'vs-prox-etapa'); nx.type = 'button'; nx.append(elD('small', '', 'Próxima etapa'), elD('b', '', (at + 2) + '. ' + abas[at + 1].nome + ' →')); nx.onclick = () => vai(at + 1); w.append(nx); }
+        else w.append(elD('div', 'vs-chegada', 'Chegou no fim da trilha'));
+        if (d.atualizado) w.append(elD('p', 'vs-rodape', 'Atualizado em ' + d.atualizado));
+        abasEl.querySelector('.on')?.scrollIntoView({ block: 'nearest', inline: 'center' });
+      };
+      pintaT(); return;
     }
     if (d.modo === 'slides') {   // Relatos: uma coisa por tela, passando com o dedo (May, 10/11/2026: "relatos slides")
       cabecalho({ icone: (abas[0] && abas[0].icone) || 'heart', sub: d.sub || '' });
