@@ -103,7 +103,7 @@ const gh=(p,raw)=>fetch(apiDe(p),{cache:"no-cache",headers:{Authorization:"Beare
 const ROBO={orfeu:["Orfeu","#E31B23","avatares/orfeu-96.png"],nyx:["Nyx","#6FCF00","avatares/nyx-96.png"],vega:["Vega","#1D4ED8","avatares/vega-96.png"],hermes:["Hermes","#FFCB05","avatares/hermes-96.png"]}
 const MARCA={ps1:"PlayStation",ps2:"PlayStation",ps4:"PlayStation",ps5:"PlayStation",switch:"Nintendo","3ds":"Nintendo",snes:"Nintendo",n64:"Nintendo",x360:"Xbox"}
 const CURTO={ps1:"PS1",ps2:"PS2",ps4:"PS4",switch:"Switch","3ds":"3DS",snes:"SNES",x360:"360"}
-const SELO={"3ds":"portátil",switch:"híbrido"}   // geração vem do casa/maquinas.json (campo geracao, fonte única, #165)
+// geração e selo (portátil, híbrido) vêm do casa/maquinas.json (campos geracao e selo, fonte única, #165)
 const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
 const fotos={}
 // Papel de parede de cada console (May 18:54: "fundo do PlayStation azul e X, bolinha, triângulo de branco, tipo wallpaper oficial de console").
@@ -243,7 +243,7 @@ function monta(i){
   requestAnimationFrame(()=>{const a=fila.children[i];if(a)fila.scrollTo({left:Math.max(0,a.offsetLeft-20),behavior:"smooth"})})
   const p=el("div","palco"),se=el("div","selos")
   const mc=m.robo?(ROBO[m.robo]?ROBO[m.robo][0]+(m.ativo===false?" vai morar aqui":" mora aqui"):"PC"):MARCA[m.console]
-  if(mc)se.append(el("span","selo marca",mc));if(m.geracao)se.append(el("span","selo",m.geracao));if(SELO[m.console]&&SELO[m.console]!==m.geracao)se.append(el("span","selo",SELO[m.console]))
+  if(mc)se.append(el("span","selo marca",mc));if(m.geracao)se.append(el("span","selo",m.geracao));if(m.selo&&m.selo!==m.geracao)se.append(el("span","selo",m.selo))
   p.append(se,el("h1","",m.nome));if(m.apelido||m.papel)p.append(el("p","apelido",m.robo?m.papel||m.apelido:m.apelido||m.papel));app.append(p)
   const pags=[],vid=(t)=>{const v=el("section","vidro");v.append(el("h2","",t));pags.push([t,v]);return v}
   const st=m.stats
