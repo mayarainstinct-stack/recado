@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.356">
-<meta name="app-novidade" content="Troféu da semana mostra os feitos que fizeram ganhar">
+<meta name="app-versao" content="2026-11-13.357">
+<meta name="app-novidade" content="Troféu da semana com a lista dos feitos e a foto do robô">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.356"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.357"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -6222,22 +6222,22 @@ async function abreReavaliacao() {
     else corpo.append(elD('p', 'rv-nada', n.primeira_vez ? 'Primeira avaliação: as notas de partida estão abaixo.' : 'Nenhum atributo mudou nesta semana.'));
     if (igual.length) { const dt = elD('details', 'rv-iguais'), sm = elD('summary', '', (n.primeira_vez ? 'Notas' : 'Sem mudança') + ' (' + igual.length + ')'); dt.append(sm); igual.forEach(([nome, a]) => dt.append(barra(nome, a, n.primeira_vez))); corpo.append(dt); }
     const ate = w.ate, acha = (lista, nome) => (lista || []).find(i => i.nome === nome || String(nome).startsWith(i.nome + ' ')) || { nome };
-    const ganhos = Array.isArray(n.insignias_semana) || Array.isArray(n.trofeus_semana) ? [...(n.insignias_semana || []).map(nm => ['ins', acha(f.insignias, nm)]), ...(n.trofeus_semana || []).map(nm => ['tr', acha(f.trofeus, nm)])]
+    const ganhos = Array.isArray(n.insignias_semana) || Array.isArray(n.trofeus_semana) ? [...(n.insignias_semana || []).map(nm => ['ins', acha(f.insignias, nm)]), ...(n.trofeus_semana || []).map(nm => ['tr', acha(f.trofeus, typeof nm === 'string' ? nm : (nm || {}).nome)])]
       : [...(f.insignias || []).map(i => ['ins', i]), ...(f.trofeus || []).map(t => ['tr', t])].filter(([, i]) => { const d = daBr(i.data); return d && d >= w.de && d <= ate; });
     if (ganhos.length) { const gw = elD('div', 'rv-ganhos'); gw.append(elD('div', 'ct-tit', 'Ganhou na semana')); const gl = elD('div', 'rv-glista'); ganhos.forEach(([tp, i]) => { const d = elD('div', 'rv-med' + (tp === 'tr' ? ' trofeu' : '')), m = elD('div', 'rv-med-ic'); m.innerHTML = tp === 'tr' ? svgTrofeu(i) : svgInsignia(i); d.append(m, elD('b', '', i.nome)); if (i.data) d.append(elD('small', '', String(i.data).slice(0, 5))); gl.append(d); }); gw.append(gl); corpo.append(gw); }
     cin.append(corpo); face.append(cin); c.append(face); return c;
   };
   const trofeus = w => {   // card geral da semana em cima dos cards (May 13/11 17:23 e 17:24): robô do mês e os troféus de cada um, dourados como os dos Jogos
     const rm = w.robo_do_mes || null, lista = [], achaT = (k, nm) => ((FICHA[k] || {}).trofeus || []).find(i => i.nome === nm || String(nm).startsWith(i.nome + ' ')) || { nome: nm };
-    Object.entries(w.notas).forEach(([k, n]) => (n.trofeus_semana || []).forEach(nm => lista.push({ k, t: achaT(k, nm) })));
+    Object.entries(w.notas).forEach(([k, n]) => (n.trofeus_semana || []).forEach(nm => { const o = typeof nm === 'string' ? { nome: nm } : nm || {}; lista.push({ k, t: achaT(k, o.nome), feitosW: o.feitos }); }));   // trofeus_semana: nome ou { nome, feitos[] } (Sigma 17:58)
     if (rm && rm.ganhador && !lista.some(x => x.k === rm.ganhador)) lista.unshift({ k: rm.ganhador, t: achaT(rm.ganhador, rm.trofeu || 'Robô do mês') });
     const box = elD('section', 'rv-geral'); box.append(elD('h3', 'rv-tr-tit', 'Troféus da semana'));
     if (!lista.length) { box.append(elD('p', 'rv-nada', 'Nenhum troféu nesta semana.')); return box; }
-    lista.forEach(({ k, t }) => { const g = k === 'may' ? EU : GRUPO[k] || {}, l = elD('div', 'rv-tr'), ic = elD('div', 'rv-tr-ic'), av = elD('div', 'rv-av rv-tr-av'), tx = elD('div', 'rv-tr-tx'); ic.innerHTML = svgTrofeu(t);
-      fotoUrl('house-bridge/assets/emocoes/' + k + '-feliz.png', true).then(u => { av.style.backgroundImage = 'url(' + u + ')'; }).catch(() => { if (g.foto) fotoUrl(g.foto, true).then(u => { av.style.backgroundImage = 'url(' + u + ')'; }).catch(() => {}); });
+    lista.forEach(({ k, t, feitosW }) => { const g = k === 'may' ? EU : GRUPO[k] || {}, l = elD('div', 'rv-tr'), ic = elD('div', 'rv-tr-ic'), av = elD('div', 'rv-av rv-tr-av'), tx = elD('div', 'rv-tr-tx'); ic.innerHTML = svgTrofeu(t);
+      if (g.foto) fotoUrl(g.foto, true).then(u => { av.style.backgroundImage = 'url(' + u + ')'; }).catch(() => {});   // no troféu a foto do robô sem expressão (May 17:58)
       const ehMes = rm && rm.ganhador === k, vt = ehMes && rm.votos ? Object.values(rm.votos).reduce((a, b) => a + b, 0) : 0;
       tx.append(elD('small', '', ehMes ? 'Robô do mês' + (t.mes ? ' · ' + t.mes : '') : 'Troféu da semana'), elD('b', '', t.nome), elD('span', '', String(g.nome || k).replace(/\s*\(PC\d\)$/i, '') + (ehMes && vt ? ' · ' + rm.votos[k] + ' de ' + vt + ' votos' : '')));
-      const feitos = t.motivo || (ehMes && rm.motivo) || ''; if (feitos) tx.append(elD('p', 'rv-tr-mot', feitos.replace(/^Robô do mês \(\d+º\):\s*/, '').replace(/^\d+ de \d+ votos \(([^)]*)\)\.\s*/, 'Votaram: $1. ')));
+      const feitos = Array.isArray(feitosW) && feitosW.length ? '' : t.motivo || (ehMes && rm.motivo) || ''; if (Array.isArray(feitosW) && feitosW.length) { const ul = elD('ul', 'rv-tr-feitos'); feitosW.forEach(x => ul.append(elD('li', '', x))); tx.append(ul); } if (feitos) tx.append(elD('p', 'rv-tr-mot', feitos.replace(/^Robô do mês \(\d+º\):\s*/, '').replace(/^\d+ de \d+ votos \(([^)]*)\)\.\s*/, 'Votaram: $1. ')));
       l.append(av, tx, ic); box.append(l); });
     if (rm && rm.segundo) box.append(elD('p', 'rv-tr-seg', '2º lugar: ' + String(rm.segundo).replace(/^./, c => c.toUpperCase())));
     return box;
