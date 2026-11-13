@@ -2145,7 +2145,7 @@ body.na-geral .painel.tema-musica .p-topo::after, .painel.tema-musica .p-topo::a
 .painel.tema-contraste .p-topo { padding-bottom: 12px; }   /* respiro embaixo da barra, nada colado na linha (May 13/11 11:47) */
 .painel.tema-contraste .p-ic.ctb-logo { background: #fff; padding: 0; overflow: hidden; border-radius: 50%; } .painel.tema-contraste .p-ic.ctb-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .painel.tema-contraste .p-topo .p-sub, .painel.tema-contraste #p-sub { color: #CFCFCF !important; }
-.painel.tema-contraste { background: #fff !important; }   /* embaixo da tela (safe-area) fica branco como o corpo, não a faixa preta (May 13/11 12:34) */
+.painel.tema-contraste { background: linear-gradient(#000 0 50%, #fff 50% 100%) !important; } .painel.tema-contraste .p-corpo { overscroll-behavior-y: none; }   /* embaixo da tela (safe-area) fica branco como o corpo, não a faixa preta (May 13/11 12:34) */
 
 /* azulejo da Música = a frente da caixa de som do Estúdio JWA (May 13/11 12:35) */
 .bt-musica { background-color: #0A0A0A !important; background-image: radial-gradient(circle at 35% 35%, rgba(255,255,255,.3) 0 .7px, transparent 1.2px), radial-gradient(circle at 35% 35%, rgba(255,255,255,.3) 0 .7px, transparent 1.2px), radial-gradient(circle, #000 0 2.2px, transparent 2.7px), radial-gradient(circle, #000 0 2.2px, transparent 2.7px), linear-gradient(115deg, #6a6a6a, #262626 45%, #0d0d0d) !important; background-size: 8px 8px, 8px 8px, 8px 8px, 8px 8px, 100% 100% !important; background-position: 0 0, 4px 4px, 0 0, 4px 4px, 0 0 !important; border: 2px solid #F0283A !important; }
