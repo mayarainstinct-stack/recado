@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.368">
-<meta name="app-novidade" content="Viagens: bonequinho de quem foi junto e cena do hospital na cirurgia">
+<meta name="app-versao" content="2026-11-13.369">
+<meta name="app-novidade" content="Toda tela com abas troca de aba com o dedo pro lado">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.368"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.369"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2701,6 +2701,7 @@ function entraDoLado(el, dir) {   // a aba nova entra deslizando do lado do gest
 }
 function arrastaAbas(el, atual, vai, n) {
   let x0 = null, y0 = 0;
+  el.dataset.gesto = '1';
   el.addEventListener('touchstart', e => { const t = e.touches[0]; x0 = t.clientX; y0 = t.clientY; }, { passive: true });
   el.addEventListener('touchend', e => { if (x0 === null) return; const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0; x0 = null; if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return; const i = atual() + (dx < 0 ? 1 : -1); if (i >= 0 && i < n) { vai(i); entraDoLado(el, dx < 0 ? 1 : -1); } }, { passive: true });
 }
@@ -5164,7 +5165,7 @@ function montaCalendario(cal, c, opc) {   // opc (Agenda do Trabalho): { marcas:
       const hk = hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0') + '-' + String(hoje.getDate()).padStart(2, '0');
       if (sel <= hk) { const [a, mm, d] = sel.split('-'), g2 = elD('button', 'ag-tudo ag-geral', 'Recados da Geral desse dia'); g2.type = 'button'; g2.onclick = () => abreGeralAntiga({ nome: 'Geral de ' + d + '/' + mm, dia: d + '-' + mm + '-' + a }); cal.append(g2); } }   // a Geral antiga mora aqui agora (May 08/11 16:55: "tira geral antiga, dilui ela em algo", menu de 12)
   };
-  let x0 = null, y0 = 0;
+  let x0 = null, y0 = 0; cal.dataset.gesto = '1';
   cal.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
   cal.addEventListener('touchend', e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null;
     if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return; e.stopPropagation(); const dir = dx < 0 ? 1 : -1; mes += dir; if (mes < 0) { mes = 11; ano--; } if (mes > 11) { mes = 0; ano++; } desenhar(); entraDoLado(cal.querySelector('.ag-grade'), dir); }, { passive: true });
@@ -5627,8 +5628,18 @@ function abreExames(m) {
 }
 function deslizaAbas(el, atual, troca) {   // dedo pro lado no meio da tela troca de aba; a borda (28 px) continua sendo o voltar
   let x0 = null, y0 = 0;
+  el.dataset.gesto = '1';
   el.addEventListener('touchstart', e => { const t = e.touches[0]; x0 = (e.touches.length === 1 && t.clientX > 28 && !e.target.closest('input, textarea, .md-tab-w, .vs-slides')) ? t.clientX : null; y0 = t.clientY; }, { passive: true });
-  el.addEventListener('touchend', e => { if (x0 == null) return; const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0; x0 = null; if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.6) troca(atual() + (dx < 0 ? 1 : -1)); }, { passive: true });
+  el.addEventListener('touchend', e => { if (x0 == null) return; const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0; x0 = null; if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.6) { const d = dx < 0 ? 1 : -1; troca(atual() + d); vemDoLado(el, d); } }, { passive: true });
+}
+function vemDoLado(el, dir) { if (!el || matchMedia('(prefers-reduced-motion: reduce)').matches) return; el.classList.remove('aba-vem-dir', 'aba-vem-esq'); void el.offsetWidth; el.classList.add(dir > 0 ? 'aba-vem-dir' : 'aba-vem-esq'); el.addEventListener('animationend', () => el.classList.remove('aba-vem-dir', 'aba-vem-esq'), { once: true }); }
+{ let x0 = null, y0 = 0;   // toda tela com abas troca de aba com o dedo pro lado e a aba nova entra deslizando (May, 13/11/2026 19:51); tela com gesto próprio marca data-gesto
+  const rolaLado = n => { for (; n && n !== pCorpo; n = n.parentElement) { const o = getComputedStyle(n).overflowX; if ((o === 'auto' || o === 'scroll') && n.scrollWidth > n.clientWidth + 4) return true; } return false; };
+  pCorpo.addEventListener('touchstart', e => { const t = e.touches[0]; x0 = (e.touches.length === 1 && t.clientX > 28 && !e.target.closest('[data-gesto], input, textarea, select, .vs-slides, .md-tab-w') && !rolaLado(e.target)) ? t.clientX : null; y0 = t.clientY; }, { passive: true });
+  pCorpo.addEventListener('touchend', e => { if (x0 == null) return; const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0; x0 = null; if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.6) return;
+    const barra = [...pCorpo.querySelectorAll('[class*="-abas"], [role="tablist"]')].find(b => b.offsetParent && !b.closest('[data-gesto]')); if (!barra) return;
+    const bts = [...barra.querySelectorAll('button')].filter(b => b.offsetParent && !b.disabled), i = bts.findIndex(b => b.classList.contains('on') || b.classList.contains('sel') || b.getAttribute('aria-selected') === 'true'); if (i < 0) return;
+    const dir = dx < 0 ? 1 : -1, nb = bts[i + dir]; if (!nb) return; nb.click(); const cp = barra.nextElementSibling; vemDoLado(cp && !/-abas/.test(cp.className) ? cp : barra.parentElement, dir); }, { passive: true });
 }
 // Pasta cinza: PDFs (baixa pela API com o token, folha de compartilhar do iPhone; sem suporte, baixa o arquivo)
 const pdfsBaixados = {};
