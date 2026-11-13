@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-12.308">
-<meta name="app-novidade" content="Exames: perguntas pra levar dá pra lançar, editar e apagar">
+<meta name="app-versao" content="2026-11-12.309">
+<meta name="app-novidade" content="Por dentro: os 4 visuais da Música prontos pra você escolher">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-12.306"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-12.309"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2548,12 +2548,12 @@ function cabecalho({ icone: ic, sub, acao } = {}) {
 function cabecalhoGenerico() { pTopo.classList.remove('proprio'); pTopo.querySelector('.p-ic')?.remove(); pTopo.querySelector('.p-acao')?.remove(); pSub.textContent = ''; pSub.hidden = true; pMais.hidden = false; }
 function desenhaTela() {
   const nAnt = desenhaTela.n || 0; desenhaTela.n = pilha.length; pCorpo.classList.remove('tela-dir', 'tela-esq'); if (pilha.length !== nAnt && nAnt) { void pCorpo.offsetWidth; pCorpo.classList.add(pilha.length > nAnt ? 'tela-dir' : 'tela-esq'); }   // trocar de tela anda pro lado (#110): tela nova vem da direita, voltar vem da esquerda
-  const entrada = pilha[pilha.length - 1], [titulo, montar, rolou] = entrada, mae = pilha.length > 1 ? pilha[pilha.length - 2][3] : null; painel.classList.remove('tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude', 'tema-contraste');
+  const entrada = pilha[pilha.length - 1], [titulo, montar, rolou] = entrada, mae = pilha.length > 1 ? pilha[pilha.length - 2][3] : null; painel.classList.remove('tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude', 'tema-contraste', 'tema-musica', 'mus-a', 'mus-b', 'mus-c', 'mus-d');
   if (mae) mae.temas.forEach(c => painel.classList.add(c));   // tela filha herda o tema da mãe (May, 09/11/2026: "senão fica cagado"); a filha que quiser outro tema troca no montar   // o tema claro é só da tela que pedir (a Agenda, May 08/11 12:56)
   pTit.textContent = titulo; pCorpo.scrollTop = 0; pExtra.hidden = true;   /* só na raiz do Menu, também quando a tela abre direto pela notificação */ cabecalhoGenerico();
   pTopo.hidden = pilha.length === 1 && titulo === 'Menu'; painel.classList.toggle('sem-topo', pTopo.hidden);   // sem a barra, o Recados ganha respiro em cima (May 18:47: "colou em cima")   // o Menu começa direto em Recados, sem a barra de cima (May 18:40); voltar fica no botão de baixo e no deslize
   const t = document.createElement('div'); t.className = 'tela'; if (mae) mae.gr.forEach(c => t.classList.add(c)); pCorpo.replaceChildren(t);   // carga atrasada de tela que já saiu cai no invólucro velho
-  const r = montar(t); const guardaTema = () => { entrada[3] = { temas: ['tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude'].filter(c => painel.classList.contains(c)), gr: [...t.classList].filter(c => c.startsWith('gr-') && !c.startsWith('gr-grade')) }; };   // a filha herda daqui
+  const r = montar(t); const guardaTema = () => { entrada[3] = { temas: ['tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude', 'tema-musica', 'mus-a', 'mus-b', 'mus-c', 'mus-d'].filter(c => painel.classList.contains(c)), gr: [...t.classList].filter(c => c.startsWith('gr-') && !c.startsWith('gr-grade')) }; };   // a filha herda daqui
   if (pilha[pilha.length - 1] === entrada) { guardaTema(); Promise.resolve(r).then(() => { if (pilha[pilha.length - 1] === entrada && t.isConnected) guardaTema(); }).catch(() => {}); }
   if (rolou) Promise.resolve(r).then(() => { if (t.isConnected) pCorpo.scrollTop = rolou; });   // voltando: devolve a rolagem de onde ela estava
 }
@@ -2945,7 +2945,8 @@ function abreGrupo(m) {
     const cor = (COR_ASSUNTO.find(([re]) => re.test(m.nome)) || [])[1] || 'var(--accent)'; painel.style.setProperty('--c', cor);
     cabecalho({ icone: m.icone, sub: m.sub || '' });   // o título aparece uma vez só, no cabeçalho do sistema (Sigma 12:19 item 1)
     if (m.estilo) c.classList.add('gr-' + m.estilo);
-    if (m.estilo === 'saude') painel.classList.add('tema-saude');   // Saúde clara em rosa, barra de cima clara (May 14:42, Hermes)   // grupo com cara própria (ex.: Saúde rosa)
+    if (m.estilo === 'saude') painel.classList.add('tema-saude');
+    if (m.estilo === 'musica') painel.classList.add('tema-musica', 'mus-' + (/^[abcd]$/.test(m.variante || '') ? m.variante : 'a'));   // Música e produção (May 11/11 15:05: vermelho, preto, branco e amarelo): 4 variantes, ela escolhe pelo campo variante do menu.json (#210)   // Saúde clara em rosa, barra de cima clara (May 14:42, Hermes)   // grupo com cara própria (ex.: Saúde rosa)
     const g = elD('div', 'gr-grade' + (m.estilo ? ' gr-grade-' + m.estilo : '')); c.append(g);
     const chave = 'grupo-ordem:' + m.nome; let ordem = []; try { ordem = JSON.parse(store.get(chave) || '[]'); } catch (e) {}
     const pos = x => { const i = ordem.indexOf(x.nome); return i < 0 ? 999 : i; }, itensG = (m.itens || []).map((x, i) => [x, i]).sort((a, b) => pos(a[0]) - pos(b[0]) || a[1] - b[1]).map(a => a[0]);   // a ordem que ela arrumou arrastando (neste aparelho); item novo vai pro fim
