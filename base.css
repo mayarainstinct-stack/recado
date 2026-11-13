@@ -708,6 +708,7 @@ img.esq { min-height: 140px; }
 .pcd-top b { display: block; font-size: 16px; } .pcd-top span { font-size: 12px; color: var(--muted); } .pcd-top div { flex: 1; min-width: 0; }
 .pcd-est { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; white-space: nowrap; background: color-mix(in srgb, var(--ec) 18%, transparent); color: var(--ec); }
 .pcd-res { margin: 10px 0 4px; } .pcd-num { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0; }
+.pcd-disco { margin: 10px 0 6px; padding: 10px 12px; border-radius: 10px; background: color-mix(in srgb, var(--rc) 8%, transparent); } .pcd-disco-tx { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 7px; } .pcd-disco-tx span { font-size: 12px; color: var(--muted); text-align: right; } .pcd-disco .trilho-prog { --trilho-cor: var(--rc); } .pcd-disco.aperto .trilho-prog { --trilho-cor: #E5484D; } .pcd-disco.aperto .pcd-disco-tx b { color: #FF6B6F; }
 .pcd-num div { background: color-mix(in srgb, var(--rc) 8%, transparent); border-radius: 10px; padding: 6px 9px; } .pcd-num span { display: block; font-size: 11px; color: var(--muted); } .pcd-num b { font-size: 14px; }
 .pcd h4 { margin: 10px 0 2px; font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); } .pcd ul { margin: 2px 0; padding-left: 18px; } .pcd li { margin: 3px 0; }
 .pcd h4.peca { color: #EF4444; }
