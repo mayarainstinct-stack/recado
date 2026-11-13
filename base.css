@@ -366,6 +366,27 @@ button:disabled { opacity: .45; cursor: default; }
   body.web.lado .conv.ativa { background: color-mix(in srgb, var(--accent) 14%, transparent); }
   body.web.lado .desce { right: max(24px, calc(50vw - 676px)); }
 }
+/* Versão PC (1024px+, plano do Hermes 13/11 com o ok do Sigma): Menu fixo à esquerda, conversa e telas no miolo até 1400px */
+.lado-menu { display: none; }
+body.web.lado { --lm: 236px; }
+body.web.lado .lado-menu { display: flex; flex-direction: column; gap: 2px; position: fixed; top: 0; bottom: 0; left: 0; width: var(--lm); z-index: 60; overflow-y: auto; padding: 20px 12px 28px; background: var(--head); color: var(--head-fg); border-right: 1px solid color-mix(in srgb, var(--head-fg) 12%, transparent); }
+.lado-menu .lm-sec { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .55; padding: 16px 12px 6px; }
+.lado-menu .lm-sec:first-child { padding-top: 4px; }
+.lado-menu .lm-item { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 44px; padding: 8px 12px; border-radius: 12px; background: none; color: inherit; font: 600 15px/1.2 inherit; text-align: left; cursor: pointer; }
+.lado-menu .lm-item:hover { background: color-mix(in srgb, var(--head-fg) 8%, transparent); }
+.lado-menu .lm-item.on { background: color-mix(in srgb, var(--c, var(--accent)) 26%, transparent); box-shadow: inset 3px 0 0 var(--c, var(--accent)); }
+.lado-menu .lm-item .ic { flex: none; width: 30px; height: 30px; display: grid; place-items: center; color: color-mix(in srgb, var(--c, var(--head-fg)) 70%, white); }
+.lado-menu .lm-item .ic svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
+.lado-menu .lm-item .ic svg.im { width: 30px; height: 30px; }
+.lado-menu .lm-item .ic svg.im .f1 { fill: color-mix(in srgb, var(--c) 28%, transparent); }
+.lado-menu .lm-item .ic svg.im .f2 { fill: color-mix(in srgb, var(--c) 85%, white); stroke: none; }
+.lado-menu .lm-item .ic svg.im .ouro { fill: #F6C709; stroke: #8a5a03; stroke-width: 1; }
+.lado-menu .lm-item .t { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+body.web.lado .app { left: var(--lm); }
+body.web.lado #nova { left: calc(var(--lm) + max(16px, (100vw - var(--lm) - 1400px) / 2 + 16px)); }
+body.web.lado .painel { left: var(--lm); }
+body.web.lado .painel .p-topo { padding-left: max(20px, (100vw - var(--lm) - 1400px) / 2 + 20px); padding-right: max(20px, (100vw - var(--lm) - 1400px) / 2 + 20px); }
+body.web.lado .painel .p-corpo { padding-left: max(24px, (100vw - var(--lm) - 1400px) / 2 + 24px); padding-right: max(24px, (100vw - var(--lm) - 1400px) / 2 + 24px); }
 .zoom { position: fixed; inset: 0; z-index: 1100; background: #000; display: flex; flex-direction: column; padding: env(safe-area-inset-top, 0px) 0 0; }
 .zoom .zpalco { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 16px; overflow: hidden; }
 .zoom img { max-width: 100%; max-height: 100%; object-fit: contain; touch-action: pinch-zoom; border-radius: 6px; }

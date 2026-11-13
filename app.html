@@ -2355,10 +2355,10 @@ const logoEl = document.getElementById('logo'), tituloEl = document.getElementBy
 const MODO_WEB = new URLSearchParams(location.search).get('web') === 'true';   // versão web: ...?web=true
 if (MODO_WEB) document.body.classList.add('web');
 // lista e conversa lado a lado só quando a ÁREA VISÍVEL da página tem 700px+ (painel lateral do navegador fica no modo celular)
-const largo = () => MODO_WEB && document.documentElement.clientWidth >= 700;
+const largo = () => MODO_WEB && document.documentElement.clientWidth >= 1024;   // 1024, não 700: com o menu fixo do lado a Agenda em 7 colunas não cabe antes (Sigma 13/11 19:54); de 700 a 1023 fica o celular centrado
 let eraLargo = null;
 function aplicaLargura() {
-  const l = largo(); document.body.classList.toggle('lado', l);
+  const l = largo(); document.body.classList.toggle('lado', l); if (l) montaLadoMenu();
   if (eraLargo !== null && l !== eraLargo && token) { if (FILE) abrir({ arq: FILE, nome: nomeConv, foto: fotoConv }).catch(() => {}); else mostraLista(); }
   eraLargo = l;
 }
@@ -2472,6 +2472,7 @@ function abrir(c) {
   if (typeof ocultosConversa !== 'undefined') ocultosConversa = null;
   document.body.classList.toggle('na-geral', c.arq === GERAL.arq);   // a Geral tem cara de casa (grafite, gamer); o Trabalho fica simples e sério (May, 07/11/2026 12:00)
   FILE = c.arq; API = apiDe(c.arq); nomeConv = c.nome; fotoConv = c.foto || (conversas.find(x => x.arq === c.arq) || {}).foto || '';
+  if (largo()) montaLadoMenu();
   logoEl.style.backgroundImage = ''; convAv.style.backgroundImage = ''; convAv.hidden = true;
   if (fotoConv) fotoUrl(fotoConv).then(u => { if (FILE === c.arq) { logoEl.style.backgroundImage = 'url(' + u + ')'; convAv.style.backgroundImage = 'url(' + u + ')'; convAv.hidden = false; } }).catch(() => {});
   else if (c.arq === GERAL.arq) { logoEl.style.backgroundImage = convAv.style.backgroundImage = 'url(' + FOTO_GERAL + ')'; convAv.hidden = false; }
@@ -2803,6 +2804,23 @@ abreMenu.onclick = () => {
       });
   });
 };
+// Versão PC (?web=true com 1024px+; plano do Hermes 13/11 19:34, ok do Sigma 19:54): o Menu fica fixo à esquerda (ícone + nome) e a tela abre no miolo, a mesma do celular
+var ladoMenuEl = null, ladoMenuDe = null;
+function montaLadoMenu() {
+  if (!ladoMenuEl) { ladoMenuEl = document.createElement('nav'); ladoMenuEl.className = 'lado-menu'; ladoMenuEl.setAttribute('aria-label', 'Menu'); document.body.append(ladoMenuEl); }
+  const trab = FILE === TRAB.arq, chave = trab ? 'trab' : 'geral'; if (ladoMenuDe === chave) return; ladoMenuDe = chave;
+  const item = (ic, nome, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'lm-item'; b.dataset.nome = nome; const cor = (COR_ASSUNTO.find(([re]) => re.test(nome)) || [])[1]; if (cor) b.style.setProperty('--c', cor); b.innerHTML = '<span class="ic"></span><span class="t"></span>'; b.querySelector('.ic').innerHTML = ic; b.querySelector('.t').textContent = nome; b.onclick = () => { ladoMenuEl.querySelectorAll('.lm-item.on').forEach(x => x.classList.remove('on')); b.classList.add('on'); fn(); }; return b; };
+  const sec = t => { const s = document.createElement('div'); s.className = 'lm-sec'; s.textContent = t; return s; };
+  const conversa = btn => () => { if (!painel.hidden) { painel.hidden = true; pilha = []; } btn.click(); };
+  ladoMenuEl.replaceChildren(sec('Recados'), item(icone('msg'), 'Geral', conversa(irGeral)), item(icone('work'), 'Trabalho', conversa(irTrab)), sec('Menu'));
+  ladoMenuEl.querySelector('.lm-item[data-nome="' + (trab ? 'Trabalho' : 'Geral') + '"]').classList.add('on');
+  lerArquivo(trab ? 'menu/menu-trabalho.json' : 'menu/menu.json').then(t => JSON.parse(t).itens).catch(() => [{ tipo: 'catalogo', icone: 'bag', nome: 'Catálogo' }]).then(itens => {
+    if (ladoMenuDe !== chave) return;
+    let ordem = []; try { ordem = JSON.parse(store.get(trab ? 'menu-ordem-trab' : 'menu-ordem') || '[]'); } catch (e) {}
+    const pos = n => { const i = ordem.indexOf(n); return i < 0 ? 999 : i; };
+    itens.map((m, i) => [m, i]).sort((a, b) => pos(a[0].nome) - pos(b[0].nome) || a[1] - b[1]).forEach(([m]) => ladoMenuEl.append(item(iconeMenu(m.nome) || icone(m.icone), m.nome, () => { menu.hidden = true; painel.hidden = false; pilha = []; painel.style.removeProperty('--c'); Som.pagina(); abreItemMenu(m); })));
+  });
+}
 // Diagnóstico (05/11/2026): só leitura, pra "tá lento / não chega" virar dado
 // Saúde dos PCs (May, 06/11/2026 21:10 e 21:26): casa/diagnostico-pcs.json = { dias: [{ data, quem, comparar: [{ nome, v: [[texto, tom] x3] }], pcs: [...] }] }, o mais novo primeiro.
 // Em cima a data; embaixo as abas Comparar / PC1 / PC2 / PC3, que deslizam (arrasta pro lado ou toca na aba). O Orfeu junta o que cada robô mediu.
