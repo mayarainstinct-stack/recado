@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.338">
-<meta name="app-novidade" content="Preparo e pós: uma etapa por aba, com a próxima no fim">
+<meta name="app-versao" content="2026-11-13.339">
+<meta name="app-novidade" content="Saúde: listas e passos dá pra marcar, editar, acrescentar e apagar">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.338"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.339"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -5862,6 +5862,8 @@ function abreVisual(m) {
     c.classList.add('sl-tela', 'vs-tela');
     const p = skCarga(); c.append(p); let d;
     try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não abriu. Confere a internet.'; return; }
+    const edArq = m.arq.replace(/[^/]+$/, 'edicoes/') + m.arq.split('/').pop();   // listas e passos marcáveis e editáveis sem Claude (Sigma #223): a edição mora à parte (saude/visual/edicoes/<tela>.json), o JSON da tela continua só o que veio da fonte
+    let VE = { itens: [] }; try { VE = JSON.parse(await lerArquivo(edArq)); VE.itens = VE.itens || []; } catch (e) { VE = { itens: [] }; }
     p.remove();
     (d.pre || []).forEach(a => { fotoUrl(a).catch(() => {}); });   // imagens da pasta ficam guardadas no aparelho já na 1ª abertura (funciona sem internet depois)
     painel.classList.add('tema-saude');   // dentro da Saúde tudo é rosa, mesmo quando a tela abre direto (sem a Saúde como mãe) ou de dentro do Trabalho (May 11/11)
@@ -5870,12 +5872,41 @@ function abreVisual(m) {
     const tx = (tag, cls, s) => { const e = elD(tag, cls); mdInline(e, s || ''); return e; };
     const ic = (k, cls) => { const s = elD('span', cls || 'vs-ic'); s.innerHTML = icone(k || 'heart'); return s; };
     const tit = (b, w) => { if (b.titulo) w.append(tx('h3', 'vs-tit', b.titulo)); };
+    const slugV = t => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 48);
+    const veGrava = (fn, msg) => { const antes = JSON.parse(JSON.stringify(VE.itens)); fn(VE.itens); return gravaJson(edArq, dd => { dd.itens = dd.itens || []; fn(dd.itens); }, msg, { itens: [] }).catch(() => false).then(ok => { if (!ok) { VE.itens.splice(0, VE.itens.length, ...antes); showNote('Não guardou: voltou como estava. Confere a internet.', true); } return ok; }); };
+    const veMuda = (id, bk, v) => { const q = edAgora(); return l => { let r = l.find(y => y.id === id); if (!r) { r = { id, bloco: bk, criado: q }; l.push(r); } Object.assign(r, v); }; };
+    const veItens = (b, base) => {   // base: [{ chave, ...campos }] da fonte; a edição (texto, feito, apagado) vai por cima e os itens novos dela entram no fim
+      const bk = slugV((b.titulo || b.t) + ' ' + String(base[0] ? base[0].chave : '').slice(0, 40));
+      const its = base.map(x => { const id = bk + '|' + slugV(x.chave), r = VE.itens.find(y => y.id === id) || {}; return Object.assign({}, x, r, { id, feito: 'feito' in r ? r.feito : (x.estado === 'feito' ? 'sim' : '') }); });
+      VE.itens.filter(y => y.bloco === bk && y.novo).forEach(y => its.push(Object.assign({ feito: '' }, y)));
+      return { bk, its: its.filter(x => !x.apagado) };
+    };
+    const blocoEd = (b, w, base, campos, desenha, rotNovo) => {   // monta e redesenha o bloco; marcar = dia e hora; tocar no texto = editar ou apagar (com desfazer); + no fim = item novo
+      const pinta = () => {
+        const { bk, its } = veItens(b, base), ate = w.querySelector('.vs-ed-lista'); const lista = desenha(its, it => {
+          const on = !it.feito; veGrava(veMuda(it.id, bk, { feito: on ? edAgora() : '' }), on ? 'Saúde: marcado pelo app' : 'Saúde: desmarcado pelo app').then(pinta); pinta();
+        }, it => edFormulario({ titulo: 'Editar', campos, v: it, aoSalvar: async v => { const nv = {}; campos.forEach(k => { nv[k.nome] = String(v[k.nome] || '').trim(); }); nv.atualizado = edAgora(); veGrava(veMuda(it.id, bk, nv), 'Saúde: item editado pelo app').then(pinta); pinta(); },
+          aoApagar: async () => { const pr = veGrava(veMuda(it.id, bk, { apagado: edAgora() }), 'Saúde: item apagado pelo app (fica guardado)'); pinta(); if (await pr) edFaixaDesfazer('Item apagado', () => { veGrava(veMuda(it.id, bk, { apagado: '' }), 'Saúde: apagado desfeito pelo app').then(pinta); pinta(); }); else pinta(); } }));
+        lista.classList.add('vs-ed-lista');
+        const mais = elD('button', 'vs-ed-mais', '+ ' + rotNovo); mais.type = 'button';
+        mais.onclick = () => edFormulario({ titulo: rotNovo.charAt(0).toUpperCase() + rotNovo.slice(1) + ' novo', campos, aoSalvar: async v => { const id = bk + '|novo-' + Date.now().toString(36), nv = { novo: true }; campos.forEach(k => { nv[k.nome] = String(v[k.nome] || '').trim(); }); veGrava(veMuda(id, bk, nv), 'Saúde: item novo pelo app').then(pinta); pinta(); } });
+        if (ate) { ate.nextElementSibling?.remove(); ate.replaceWith(lista); } else w.append(lista); lista.after(mais);
+      };
+      pinta(); return w;
+    };
     const R = {
       destaque: b => { const s = elD('section', 'vs-dest' + (/^(contorno|papel|faixa)$/.test(tema.estilo || '') ? ' est-' + tema.estilo : '')); s.append(ic(b.icone || 'heart', 'vs-dest-ic'), tx('h2', '', b.titulo), tx('p', '', b.texto)); if (DECOR[tema.decor]) s.insertAdjacentHTML('afterbegin', '<svg class="vs-decor" viewBox="0 0 150 110" aria-hidden="true">' + DECOR[tema.decor] + '</svg>'); if (!tema.decor || tema.decor === 'pulso') s.insertAdjacentHTML('beforeend', '<svg class="vs-pulso" viewBox="0 0 200 30" preserveAspectRatio="none" aria-hidden="true"><path d="M0 15h70l6-10 8 20 8-26 8 26 6-10h94" fill="none" stroke="currentColor" stroke-width="2"/></svg>'); return s; },
       cartoes: b => { const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-grade'); (b.itens || []).forEach(x => { const k = elD('div', 'vs-card' + (x.tom ? ' tom-' + x.tom : '')); k.append(ic(x.icone), tx('h4', '', x.titulo), tx('p', '', x.texto)); g.append(k); }); w.append(g); return w; },
-      passos: b => { const w = elD('section', 'vs-bloco'); tit(b, w); const ol = elD('ol', 'vs-passos'); (b.itens || []).forEach((x, i) => { const li = elD('li', x.estado ? 'est-' + x.estado : ''); li.append(elD('span', 'vs-n', x.estado === 'feito' ? '✓' : String(i + 1))); const cx = elD('div'); if (x.data) cx.append(elD('span', 'vs-data', x.data)); cx.append(tx('h4', '', x.titulo)); if (x.texto) cx.append(tx('p', '', x.texto)); li.append(cx); ol.append(li); }); w.append(ol); return w; },
+      passos: b => { const w = elD('section', 'vs-bloco'); tit(b, w); return blocoEd(b, w, (b.itens || []).map(x => Object.assign({ chave: x.titulo }, x)), [{ nome: 'titulo', rotulo: 'Passo', tipo: 'texto', obrigatorio: true }, { nome: 'texto', rotulo: 'Detalhe', tipo: 'texto_longo' }], (its, marca, edita) => {
+        const ol = elD('ol', 'vs-passos'); its.forEach((x, i) => { const li = elD('li', x.feito ? 'est-feito' : x.estado && x.estado !== 'feito' ? 'est-' + x.estado : ''), n = elD('button', 'vs-n', x.feito ? '✓' : String(i + 1)); n.type = 'button'; n.setAttribute('aria-label', x.feito ? 'Desmarcar' : 'Marcar feito'); n.onclick = () => marca(x); li.append(n);
+          const cx = elD('div', 'vs-ed-tx'); cx.onclick = () => edita(x); if (x.data) cx.append(elD('span', 'vs-data', x.data)); cx.append(tx('h4', '', x.titulo)); if (x.texto) cx.append(tx('p', '', x.texto)); if (x.feito && x.feito !== 'sim') cx.append(elD('small', 'vs-ed-q', 'feito ' + edQuando(x.feito))); li.append(cx); ol.append(li); });
+        return ol; }, 'passo'); },
       numeros: b => { const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-nums'); (b.itens || []).forEach(x => { const k = elD('div', 'vs-num'); k.append(elD('b', '', x.valor), tx('span', '', x.rotulo)); g.append(k); }); w.append(g); return w; },
-      lista: b => { const w = elD('section', 'vs-bloco vs-cx'); if (b.titulo) { const h = elD('h3', 'vs-tit'); if (b.icone) h.append(ic(b.icone, 'vs-ic-p')); mdInline(h, b.titulo); w.append(h); } const ul = elD('ul', 'vs-lista'); (b.itens || []).forEach(s => ul.append(tx('li', '', s))); w.append(ul); return w; },
+      lista: b => { const w = elD('section', 'vs-bloco vs-cx'); if (b.titulo) { const h = elD('h3', 'vs-tit'); if (b.icone) h.append(ic(b.icone, 'vs-ic-p')); mdInline(h, b.titulo); w.append(h); }
+        return blocoEd(b, w, (b.itens || []).map(t => ({ chave: t, texto: t })), [{ nome: 'texto', rotulo: 'Item', tipo: 'texto_longo', obrigatorio: true }], (its, marca, edita) => {
+          const ul = elD('ul', 'vs-lista vs-lista-ck'); its.forEach(x => { const li = elD('li', x.feito ? 'feito' : ''), ck = elD('button', 'vs-ck'); ck.type = 'button'; ck.setAttribute('aria-pressed', String(!!x.feito)); ck.setAttribute('aria-label', x.feito ? 'Desmarcar' : 'Marcar feito'); ck.innerHTML = x.feito ? icone('check') : ''; ck.onclick = () => marca(x);
+            const t = tx('span', 'vs-ed-tx', x.texto); t.onclick = () => edita(x); li.append(ck, t); if (x.feito && x.feito !== 'sim') li.append(elD('small', 'vs-ed-q', 'feito ' + edQuando(x.feito))); ul.append(li); });
+          return ul; }, 'item'); },
       frase: b => { const s = elD('figure', 'vs-frase'); s.append(tx('blockquote', '', b.texto)); if (b.autor) s.append(elD('figcaption', '', b.autor)); return s; },
       aviso: b => { const s = elD('section', 'vs-aviso tom-' + (b.tom || 'info')); s.append(ic({ bom: 'check', atencao: 'warn', alerta: 'warn', info: 'sparkle' }[b.tom] || 'sparkle')); const cx = elD('div'); if (b.titulo) cx.append(tx('h4', '', b.titulo)); cx.append(tx('p', '', b.texto)); s.append(cx); return s; },
       perguntas: b => { const w = elD('section', 'vs-bloco'); tit(b, w); (b.itens || []).forEach(x => { const k = elD('div', 'vs-qa'); const h = elD('h4'); h.append(elD('span', 'vs-q', '?')); const ht = elD('span'); mdInline(ht, x.p); h.append(ht); k.append(h, tx('p', '', x.r)); w.append(k); }); return w; },   // tudo aberto, nada retraído (May, 10/11/2026: "nada de saúde abre retraído")
