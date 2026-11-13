@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-12.307">
-<meta name="app-novidade" content="Vídeo vira quadros por tela: pega tela curta e não repete a que volta">
+<meta name="app-versao" content="2026-11-12.308">
+<meta name="app-novidade" content="Exames: perguntas pra levar dá pra lançar, editar e apagar">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -5208,8 +5208,17 @@ function abreExames(m) {
         d.umavez.forEach(g => { const s = elD('section', 'sl-card'); s.append(elD('h3', '', g.data + ' · ' + g.lab)); const t = elD('table', 'ex-tab');
           g.itens.forEach(([n, v, f, ok]) => { const tr = elD('tr', ok ? 'ex-ok' : ''); tr.append(elD('td', '', n), elD('td', '', v), elD('td', 'ex-fxc', f)); t.append(tr); }); s.append(t); w.append(s); });
       } else if (aba === 'perguntas') {
-        cabecalho({ icone: 'chart', sub: d.perguntas.length + ' perguntas pra levar' });
-        d.perguntas.forEach(([t, q], i) => { const s = elD('section', 'sl-card ex-perg'); s.append(elD('span', 'ex-n', String(i + 1)), elD('div')); s.lastChild.append(elD('h3', '', t), elD('p', '', q)); w.append(s); });
+        const vivasP = d.perguntas.filter(p => !(p[2] && p[2].apagado));   // pergunta editável (Sigma #151): [tema, texto, { apagado, criado }]; apagar só marca
+        cabecalho({ icone: 'chart', sub: vivasP.length + ' perguntas pra levar' });
+        const camposPg = [{ nome: 't', rotulo: 'Assunto', tipo: 'texto', obrigatorio: true }, { nome: 'q', rotulo: 'Pergunta', tipo: 'texto_longo', obrigatorio: true }];
+        const gravaPg = async (fn, msg) => { const antes = JSON.parse(JSON.stringify(d.perguntas)); fn(d.perguntas); pinta(); if (await gravaJson(m.arq, dd => { dd.perguntas = dd.perguntas || []; fn(dd.perguntas); }, msg, null)) return true; d.perguntas.splice(0, d.perguntas.length, ...antes); pinta(); showNote('Não guardou: voltou como estava. Confere a internet.', true); return false; };
+        const acha = (ps, q) => ps.findIndex(p => p[0] === q[0] && p[1] === q[1] && !(p[2] && p[2].apagado));
+        vivasP.forEach((pg, i) => { const [t, q] = pg, s = elD('section', 'sl-card ex-perg'); s.append(elD('span', 'ex-n', String(i + 1)), elD('div')); s.lastChild.append(elD('h3', '', t), elD('p', '', q));
+          s.append(edMini('note', 'Editar pergunta', () => edFormulario({ titulo: 'Editar pergunta', campos: camposPg, v: { t, q },
+            aoSalvar: async f => { await gravaPg(ps => { const k = acha(ps, pg); if (k >= 0) ps[k] = [f.t.trim(), f.q.trim(), Object.assign({}, ps[k][2], { editado: edAgora() })]; }, 'Exames: pergunta editada pelo app'); },
+            aoApagar: async () => { const quando = edAgora(); if (await gravaPg(ps => { const k = acha(ps, pg); if (k >= 0) ps[k] = [ps[k][0], ps[k][1], Object.assign({}, ps[k][2], { apagado: quando })]; }, 'Exames: pergunta apagada pelo app (fica guardada)')) edFaixaDesfazer('Pergunta apagada', () => gravaPg(ps => { const y = ps.find(z => z[2] && z[2].apagado === quando && z[1] === q); if (y) delete y[2].apagado; }, 'Apagado desfeito pelo app')); } })));
+          w.append(s); });
+        const nova = elD('button', 'gostei check-limpa tr-novo', '+ Pergunta'); nova.type = 'button'; nova.onclick = () => edFormulario({ titulo: 'Nova pergunta', campos: camposPg, aoSalvar: async f => { await gravaPg(ps => ps.push([f.t.trim(), f.q.trim(), { criado: edAgora() }]), 'Exames: pergunta nova pelo app'); } }); w.append(nova);
         if (d.duvidas) { const s = elD('section', 'sl-card'); s.append(elD('h3', '', 'Conferir no papel')); const ul = elD('ul'); d.duvidas.forEach(t => ul.append(elD('li', '', t))); s.append(ul); w.append(s); }
       }
     };
