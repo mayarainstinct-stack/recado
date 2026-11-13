@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-12.310">
-<meta name="app-novidade" content="Trocar de tela: uma empurra a outra; a foto sai inteira por baixo">
+<meta name="app-versao" content="2026-11-12.311">
+<meta name="app-novidade" content="Exames: a aba Únicos também lança, edita e apaga">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -5212,8 +5212,17 @@ function abreExames(m) {
         lista.forEach(x => w.append(cartao(x)));
       } else if (aba === 'umavez') {
         cabecalho({ icone: 'chart', sub: 'exames sem repetição' });
+        // Únicos editáveis (Sigma #151): item = [nome, valor, faixa, ok, { apagado }]; lança exame num dia que já existe ou num dia novo; apagar só marca
+        const camposU = [{ nome: 'n', rotulo: 'Exame', tipo: 'texto', obrigatorio: true }, { nome: 'v', rotulo: 'Resultado (com unidade)', tipo: 'texto', obrigatorio: true }, { nome: 'f', rotulo: 'Faixa de referência', tipo: 'texto' }, { nome: 'ok', rotulo: 'Dentro da faixa?', tipo: 'escolha', opcoes: [['1', 'Sim'], ['0', 'Não']], padrao: '1' }];
+        const gravaU = async (fn, msg) => { const antes = JSON.parse(JSON.stringify(d.umavez)); fn(d.umavez); pinta(); if (await gravaJson(m.arq, dd => { dd.umavez = dd.umavez || []; fn(dd.umavez); }, msg, null)) return true; d.umavez.splice(0, d.umavez.length, ...antes); pinta(); showNote('Não guardou: voltou como estava. Confere a internet.', true); return false; };
+        const achaG = (gs, g) => gs.find(x => x.data === g.data && x.lab === g.lab), achaI = (its, it) => its.findIndex(y => y[0] === it[0] && y[1] === it[1] && !(y[4] && y[4].apagado));
+        const formU = (g, it) => edFormulario({ titulo: (it ? 'Editar · ' : 'Novo exame · ') + g.data, campos: camposU, v: it ? { n: it[0], v: it[1], f: it[2], ok: it[3] ? '1' : '0' } : {},
+          aoSalvar: async f => { const novo = [f.n.trim(), f.v.trim(), (f.f || '').trim(), f.ok === '0' ? 0 : 1]; await gravaU(gs => { const gg = achaG(gs, g); if (!gg) return; if (it) { const k = achaI(gg.itens, it); if (k >= 0) gg.itens[k] = novo.concat([Object.assign({}, gg.itens[k][4], { editado: edAgora() })]); } else gg.itens.push(novo.concat([{ criado: edAgora() }])); }, 'Exames: resultado único ' + (it ? 'editado' : 'novo') + ' pelo app'); },
+          aoApagar: it ? async () => { const quando = edAgora(); if (await gravaU(gs => { const gg = achaG(gs, g), k = gg ? achaI(gg.itens, it) : -1; if (k >= 0) gg.itens[k] = gg.itens[k].slice(0, 4).concat([Object.assign({}, gg.itens[k][4], { apagado: quando })]); }, 'Exames: resultado único apagado pelo app (fica guardado)')) edFaixaDesfazer('Resultado apagado', () => gravaU(gs => { const gg = achaG(gs, g), y = gg && gg.itens.find(z => z[4] && z[4].apagado === quando); if (y) delete y[4].apagado; }, 'Apagado desfeito pelo app')); } : null });
         d.umavez.forEach(g => { const s = elD('section', 'sl-card'); s.append(elD('h3', '', g.data + ' · ' + g.lab)); const t = elD('table', 'ex-tab');
-          g.itens.forEach(([n, v, f, ok]) => { const tr = elD('tr', ok ? 'ex-ok' : ''); tr.append(elD('td', '', n), elD('td', '', v), elD('td', 'ex-fxc', f)); t.append(tr); }); s.append(t); w.append(s); });
+          g.itens.filter(it => !(it[4] && it[4].apagado)).forEach(it => { const [n, v, f, ok] = it, tr = elD('tr', ok ? 'ex-ok' : ''), ed = elD('td', 'ex-ed'); ed.append(edMini('note', 'Editar ' + n, () => formU(g, it))); tr.append(elD('td', '', n), elD('td', '', v), elD('td', 'ex-fxc', f), ed); t.append(tr); });
+          const mais = elD('button', 'gostei check-limpa tr-novo', '+ Exame neste dia'); mais.type = 'button'; mais.onclick = () => formU(g, null); s.append(t, mais); w.append(s); });
+        const dia = elD('button', 'gostei check-limpa tr-novo', '+ Dia novo'); dia.type = 'button'; dia.onclick = () => edFormulario({ titulo: 'Dia novo de exame', campos: [{ nome: 'data', rotulo: 'Data (DD/MM/AAAA)', tipo: 'texto', obrigatorio: true, valida: 'data', erro: 'Data no formato DD/MM/AAAA, e que exista.' }, { nome: 'lab', rotulo: 'Laboratório', tipo: 'texto', obrigatorio: true }], aoSalvar: async f => { await gravaU(gs => { if (!gs.some(x => x.data === f.data.trim() && x.lab === f.lab.trim())) gs.push({ data: f.data.trim(), lab: f.lab.trim(), itens: [], criado: edAgora() }); }, 'Exames: dia novo de exame pelo app'); } }); w.append(dia);
       } else if (aba === 'perguntas') {
         const vivasP = d.perguntas.filter(p => !(p[2] && p[2].apagado));   // pergunta editável (Sigma #151): [tema, texto, { apagado, criado }]; apagar só marca
         cabecalho({ icone: 'chart', sub: vivasP.length + ' perguntas pra levar' });
