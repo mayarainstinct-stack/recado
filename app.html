@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-12.306">
-<meta name="app-novidade" content="Obra: comprado com hora e valor; Exames: exame sem resultado aparece pra lançar">
+<meta name="app-versao" content="2026-11-12.307">
+<meta name="app-novidade" content="Vídeo vira quadros por tela: pega tela curta e não repete a que volta">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -1612,25 +1612,30 @@ function desenhaBandeja() {
   syncBtn();
 }
 // Vídeo vira quadros no próprio celular (May, 07/11/2026 16:02: "aceitar vídeo sem encher meu git"; os vídeos dela são gravação de tela pra tirar quadro):
-// até 12 quadros espalhados, pula o quase igual ao anterior e o tremido (May 15:47: "não adianta quadro tremido"); só as imagens sobem, o vídeo não
-async function quadrosDoVideo(file, maxQ = 12) {
+// olha o vídeo a cada ~0,4 s, junta os quadros parecidos em CENAS e fica com o mais nítido de cada (May 15:47: "não adianta quadro tremido");
+// cena que volta (A, B, A) não repete: compara com TODAS as já guardadas (Sigma #145, 12/11/2026); só as imagens sobem, o vídeo não
+async function quadrosDoVideo(file, maxQ = 20) {
   const url = URL.createObjectURL(file), v = document.createElement('video'); v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url;
+  const vai = t => new Promise(ok => { v.onseeked = ok; v.currentTime = t; setTimeout(ok, 3000); });
   try {
     await new Promise((ok, erro) => { v.onloadeddata = ok; v.onerror = erro; setTimeout(erro, 20000); });
-    const dur = v.duration || 0, passo = Math.max(.8, dur / maxQ), k = Math.min(1, 1400 / Math.max(v.videoWidth, v.videoHeight));
-    const c = document.createElement('canvas'), cx = c.getContext('2d'), mini = document.createElement('canvas'), mx = mini.getContext('2d', { willReadFrequently: true }), cand = []; let ant = null;
-    c.width = Math.round(v.videoWidth * k); c.height = Math.round(v.videoHeight * k); mini.width = 160; mini.height = Math.max(1, Math.round(160 * v.videoHeight / Math.max(1, v.videoWidth)));
-    for (let t = Math.min(.3, dur / 2); t < dur && cand.length < maxQ * 2; t += passo) {
-      await new Promise(ok => { v.onseeked = ok; v.currentTime = t; setTimeout(ok, 3000); });
-      mx.drawImage(v, 0, 0, mini.width, mini.height); const px = mx.getImageData(0, 0, mini.width, mini.height).data, w = mini.width, h = mini.height, g = new Float32Array(w * h);
+    const dur = v.duration || 0, passo = Math.max(.4, dur / 150), k = Math.min(1, 1400 / Math.max(v.videoWidth, v.videoHeight));
+    const c = document.createElement('canvas'), cx = c.getContext('2d'), mini = document.createElement('canvas'), mx = mini.getContext('2d', { willReadFrequently: true });
+    c.width = Math.round(v.videoWidth * k); c.height = Math.round(v.videoHeight * k); mini.width = 120; mini.height = Math.max(1, Math.round(120 * v.videoHeight / Math.max(1, v.videoWidth)));
+    const w = mini.width, h = mini.height, dif = (a, b) => { let d = 0; for (let i = 0; i < a.length; i++) d += Math.abs(a[i] - b[i]); return d / a.length; };
+    const cenas = []; let cur = null;
+    for (let t = Math.min(.3, dur / 2); t < dur; t += passo) {
+      await vai(t); mx.drawImage(v, 0, 0, w, h); const px = mx.getImageData(0, 0, w, h).data, g = new Float32Array(w * h);
       for (let i = 0; i < w * h; i++) g[i] = px[i * 4] * .3 + px[i * 4 + 1] * .59 + px[i * 4 + 2] * .11;
-      if (ant) { let dif = 0; for (let i = 0; i < g.length; i++) dif += Math.abs(g[i] - ant[i]); if (dif / g.length < 5) continue; }   // quase igual ao anterior: pula
       let nit = 0; for (let y = 0; y < h - 1; y++) for (let x = 0; x < w - 1; x++) { const i = y * w + x; nit += Math.abs(g[i + 1] - g[i]) + Math.abs(g[i + w] - g[i]); }   // nitidez: borda forte = quadro parado
-      ant = g; cx.drawImage(v, 0, 0, c.width, c.height);
-      const b = await new Promise(ok => c.toBlob(ok, 'image/jpeg', .86)); if (b) cand.push({ b, nit });
+      if (cur && dif(g, cur.ref) < 5) { if (nit > cur.nit) Object.assign(cur, { nit, t, g }); continue; }   // mesma cena: fica o mais nítido
+      cur = { ref: g, g, nit, t }; cenas.push(cur);
     }
-    const corte = cand.length ? cand.map(x => x.nit).sort((a, b) => a - b)[Math.floor(cand.length / 2)] * .55 : 0;
-    return cand.filter(x => x.nit >= corte).slice(0, maxQ).map((x, n) => new File([x.b], 'quadro-' + (n + 1) + '.jpg', { type: 'image/jpeg' }));
+    const corte = cenas.length ? cenas.map(x => x.nit).sort((a, b) => a - b)[Math.floor(cenas.length / 2)] * .55 : 0, guardadas = [];
+    cenas.filter(x => x.nit >= corte).forEach(x => { const igual = guardadas.find(y => dif(x.g, y.g) < 5); if (!igual) guardadas.push(x); else if (x.nit > igual.nit) Object.assign(igual, x); });   // A, B, A: a volta não repete
+    const out = [];
+    for (const x of guardadas.slice(0, maxQ)) { await vai(x.t); cx.drawImage(v, 0, 0, c.width, c.height); const b = await new Promise(ok => c.toBlob(ok, 'image/jpeg', .86)); if (b) out.push(new File([b], 'quadro-' + (out.length + 1) + '.jpg', { type: 'image/jpeg' })); }
+    return out;
   } finally { URL.revokeObjectURL(url); }
 }
 arquivo.addEventListener('change', async () => {
