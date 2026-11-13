@@ -2266,3 +2266,39 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 @keyframes rvBalanca { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
 .rv-conta { font-variant-numeric: tabular-nums; }
 .rv-card.contou .rv-nivel > b { animation: rvEstoura .5s ease-out; } @keyframes rvEstoura { 50% { transform: scale(1.18); } }
+.ig-avaliacao { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 12px; align-items: center; width: 100% !important; height: auto !important; margin: 12px 0 4px; padding: 12px 14px; border: 0; border-radius: 16px !important; background: linear-gradient(150deg, #FBE931 0%, #FAD703 30%, #F3BA15 60%, #DE960B 100%); color: #2B1A00; text-align: left; font: inherit; cursor: pointer; box-shadow: 0 4px 14px rgba(222,150,11,.3); }
+.ig-av-ic { grid-row: 1 / span 2; font-size: 28px; line-height: 1; } .ig-avaliacao b { font-size: 16px; } .ig-avaliacao small { font-size: 12.5px; color: #5A3700; }
+.ig-av-ic svg { width: 40px; height: 40px; display: block; }
+.rv-pagina > .ct { width: 100%; animation: none; }
+.rv-ct .ct-face { grid-area: auto; }
+.rv-ct .ct-quem { grid-template-columns: 112px 1fr; gap: 12px; padding: 12px 14px 4px; }
+.rv-ct .ct-av { width: 112px; height: 112px; }
+.rv-ct .ct-nome { font-size: 24px; }
+.rv-ct .ct-av[data-emo="feliz"] { animation: rvPula 1.4s ease-in-out infinite; } .rv-ct .ct-av[data-emo="pensando"] { animation: rvBalanca 2.4s ease-in-out infinite; }
+.rv-emo-tag { display: inline-block; margin-top: 6px; padding: 2px 10px; border-radius: 999px; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.25); font-size: 11.5px; letter-spacing: .04em; }
+.rv-ct .rv-nivel { justify-items: start; margin-top: 8px; } .rv-ct .rv-nivel > b { font-size: 34px; } .rv-ct .rv-dif.grande { margin: 2px 0 0; }
+.rv-ct .rv-corpo { padding: 8px 12px 14px; text-shadow: none; font-weight: 400; }
+.rv-ct .rv-linha { background: rgba(0,0,0,.35); } .rv-ct .rv-lt b { font-weight: 800; } .rv-ct .rv-motivo { color: #D7DEE8; }
+.rv-ct .rv-chip { background: rgba(0,0,0,.35); } .rv-ct .rv-g { background: rgba(0,0,0,.35); color: #fff; } .rv-ct .rv-ganhos { border-top-color: rgba(255,255,255,.2); } .rv-ct .rv-gt, .rv-ct .rv-nada, .rv-ct .rv-iguais summary { color: #D7DEE8; }
+.rv-ct .rv-face { padding: 6px; }
+.rv-ct .rv-vcab { grid-template-columns: 76px 1fr auto; }
+.rv-ct .rv-vcab .ct-av { width: 76px; height: 76px; border-radius: 0; background-size: contain; background-color: transparent; filter: drop-shadow(0 3px 8px rgba(0,0,0,.5)); }
+.rv-ct .rv-vcab b { font-size: 20px; }
+.rv-ct .rv-placa { margin: 12px 14px 0; } .rv-ct .rv-placa b { font-size: 34px; } .rv-ct .rv-placa span { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.rv-ct .rv-corpo { padding: 4px 14px 16px; display: block; }
+.rv-ct .rv-corpo > .ct-tit, .rv-ct .rv-ganhos > .ct-tit { margin-top: 16px; }
+.rv-ct .rv-bar { cursor: default; } .rv-ct .rv-motivo { grid-column: 1 / -1; margin: 2px 0 0; font-size: 12.5px; font-weight: 500; line-height: 1.4; color: rgba(255,255,255,.78); text-shadow: none; }
+.rv-ct .ct-seg i.rv-acende { animation: rvAcende 1.2s ease-in-out infinite; }
+.rv-ct .ct-seg i.rv-apaga { background: #0B0B0F; border: 1px solid rgba(248,113,113,.7); animation: rvApaga 1.2s ease-in-out infinite; }
+@keyframes rvAcende { 0%, 100% { filter: brightness(1.6); box-shadow: 0 0 10px #fff; } 50% { filter: brightness(1); } }
+@keyframes rvApaga { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+.rv-ct .rv-iguais { margin-top: 14px; } .rv-ct .rv-iguais summary { color: rgba(255,255,255,.75); font-size: 13px; font-weight: 700; }
+.rv-ct .rv-ganhos { border-top: 0; padding-top: 0; }
+.rv-ct .rv-g { background: rgba(0,0,0,.34); border: 1px solid rgba(255,255,255,.12); font-weight: 700; }
+.rv-pagina > .rv-ct { margin-left: auto; margin-right: auto; }
+.rv-ct .rv-glista { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 14px 8px; margin-top: 10px; }
+.rv-med { position: relative; display: grid; justify-items: center; gap: 4px; text-align: center; }
+.rv-med + .rv-med::before { content: ""; position: absolute; left: -8px; top: 28px; width: 8px; height: 3px; border-radius: 2px; background: var(--quem); }
+.rv-med-ic svg { width: 58px; height: 58px; display: block; filter: drop-shadow(0 3px 6px rgba(0,0,0,.45)); }
+.rv-med b { font-size: 13px; line-height: 1.2; } .rv-med small { font-size: 11.5px; color: rgba(255,255,255,.7); letter-spacing: .04em; }
+.rv-med.trofeu b { color: #FAD703; }
