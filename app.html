@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.322">
-<meta name="app-novidade" content="Música nova: grava ideia na hora, mesa com as etapas, cara do Estúdio JWA">
+<meta name="app-versao" content="2026-11-13.323">
+<meta name="app-novidade" content="Toda pergunta do app tem espaço pra você escrever a tua resposta">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.322"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.323"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2026,6 +2026,9 @@ function mostraProximoLembrete() {
   if (perg) {   // pergunta com 2 a 4 alternativas (#lembrete=t=pergunta&q=texto&ops=A|B|C): tocar numa grava a resposta na conversa; "Depois" mantém na fila
     bts.classList.add('pergunta'); const q = h.get('q') || 'Pergunta', ops = (h.get('ops') || '').split('|').map(x => x.trim()).filter(Boolean).slice(0, 4);
     ops.forEach(alt => { const b = bt(alt, 'rec', async () => { bts.querySelectorAll('button').forEach(x => { x.disabled = true; }); const linha = '- [' + stamp(new Date()) + '] @Lyra ' + alt + ' ⟪re: ' + q.replace(/[⟪⟫:\n]/g, ' ').slice(0, 60) + '⟫'; if (await gravaLinha(conv, linha)) { resolvido(alt); showNote('Resposta enviada: ' + alt); } else { bts.querySelectorAll('button').forEach(x => { x.disabled = false; }); showNote('Não enviou: confere a internet.', true); } }); });
+    const outra = elD('div', 'lem-outra'), ta = elD('textarea'); ta.rows = 2; ta.placeholder = 'Ou escreve a tua resposta aqui…';   // espaço pra ela digitar a própria resposta (May 13/11 11:22)
+    const manda = elD('button', 'pp-op rec', 'Mandar'); manda.type = 'button'; outra.append(ta, manda); bts.before(outra);
+    manda.onclick = async () => { const t = ta.value.trim().replace(/\s+/g, ' '); if (!t) { ta.focus(); return; } manda.disabled = true; manda.textContent = 'Mandando…'; const linha = '- [' + stamp(new Date()) + '] ' + t + ' ⟪re: ' + q.replace(/[⟪⟫:\n]/g, ' ').slice(0, 60) + '⟫'; if (await gravaLinha(conv, linha)) { resolvido(t); showNote('Resposta enviada.'); } else { manda.disabled = false; manda.textContent = 'Mandar'; showNote('Não enviou: confere a internet.', true); } };
     bt('Depois', 'depois', esconde); ov.append(card); document.body.append(ov); return;
   }
   const sim = bt('Sim', 'rec', async () => {
