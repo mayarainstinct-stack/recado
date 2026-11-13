@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.335">
+<meta name="app-versao" content="2026-11-13.336">
 <meta name="app-novidade" content="Música: aba Cuidar com o desenho de cada instrumento">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.335"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.336"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -4544,7 +4544,8 @@ function abrePlanos(m) {   // Planos desenhado (#211, May 11/11 e 12/11 22:07-22
       const ex = elD('div', 'pl2-acoes'); ex.append(ok, lap);
       return placa(p.o_que_e, p.feito ? edRotuloFeito(p) : (p.proximo_passo || ''), p.quando || 'um dia', quem(p.com_quem), ex, p.feito ? 'feito' : '');
     };
-    const cartaoViagem = (v, foi) => { const f = feitosV(v), t = itensV(v), k = placa('Viagem · ' + (v.nome || ''), v.listas.length + ' listas pra levar e conferir', foi ? 'foi ' + quandoV(v) : (quandoV(v) || 'sem data'), quem(v.com), f == null ? null : barra(f, t), foi ? 'passou' : '', foi ? '' : v.arte); k.classList.add('toca'); k.onclick = () => abreViagem(v); return k; };
+    const cartaoViagem = (v, foi) => { const f = feitosV(v), t = itensV(v), k = placa(v.nome || '', v.listas.length + ' listas pra levar e conferir', foi ? 'foi ' + quandoV(v) : (quandoV(v) || 'sem data'), quem(v.com), f == null ? null : barra(f, t), foi ? 'passou' : '', foi ? '' : v.arte); if (foi && (v.lembrancas || []).length) { const tira = elD('div', 'pl2-lembra'); v.lembrancas.forEach(l => { const im = elD('img'); im.alt = l.legenda || ''; im.loading = 'lazy'; fotoUrl(l.foto).then(u => { im.src = u; }).catch(() => im.remove()); im.onclick = e => { e.stopPropagation(); if (im.src) abreZoom(im.src, l.foto, v.lembrancas.map(x => x.foto)); }; tira.append(im); }); k.append(tira); }   // lembranças da viagem que já foi (May 13/11 13:07)
+    k.classList.add('toca'); k.onclick = () => abreViagem(v); return k; };
     const ABAS = { agora: 'Agora', umdia: 'Um dia', viagens: 'Viagens' }; let aba = 'agora';
     const pinta = () => {
       nav.replaceChildren(...Object.entries(ABAS).map(([k, t]) => { const b = elD('button', k === aba ? 'on' : '', t); b.type = 'button'; b.onclick = () => { aba = k; pinta(); }; return b; }));
