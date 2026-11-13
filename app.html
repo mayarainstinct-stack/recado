@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.346">
+<meta name="app-versao" content="2026-11-13.347">
 <meta name="app-novidade" content="Saúde: números e tabelas também dá pra editar">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.346"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.347"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -4620,10 +4620,9 @@ function abrePlanos(m) {   // Planos desenhado (#211, May 11/11 e 12/11 22:07-22
       return placa(p.o_que_e, p.feito ? edRotuloFeito(p) : (p.proximo_passo || ''), p.quando || 'um dia', quem(p.com_quem), ex, p.feito ? 'feito' : '');
     };
     const comTx = v => { const n = String(v.com || '').trim(); return n ? 'com ' + n : 'sozinha'; };
-    const cartaoViagem = (v, foi) => { const f = feitosV(v), t = itensV(v), fotos = v.lembrancas || [], k = placa(v.nome || '', foi && !v.listas.length ? fotos.length + (fotos.length === 1 ? ' foto' : ' fotos') : v.listas.length + ' listas pra levar e conferir', foi ? 'foi ' + quandoV(v) : (quandoV(v) || 'sem data'), quem(v.com), f == null || !t ? null : barra(f, t), foi ? 'passou' : '', foi ? '' : v.arte); k.querySelector('.pl2-top > div').append(elD('span', 'pl2-com', comTx(v)));   // quem foi junto escrito no cartão (May 13/11 13:51)
-    const album = l => fotoUrl(l.foto, true).then(u => abreZoom(u, l.foto, fotos.map(x => x.foto))).catch(() => {});
-    if (foi && fotos.length) { const tira = elD('div', 'pl2-lembra'); fotos.slice(0, 4).forEach((l, i) => { const im = elD('img'); im.alt = l.legenda || ''; im.loading = 'lazy'; fotoUrl(l.foto).then(u => { im.src = u; }).catch(() => im.remove()); im.onclick = e => { e.stopPropagation(); album(l); }; tira.append(im); }); if (fotos.length > 4) { const mais = elD('button', 'pl2-mais-fotos', '+' + (fotos.length - 4)); mais.type = 'button'; mais.setAttribute('aria-label', 'Ver o álbum inteiro'); mais.onclick = e => { e.stopPropagation(); album(fotos[4]); }; tira.append(mais); } k.append(tira); }   // álbum da viagem que já foi (May 13/11 13:07): 4 na tira, o resto no zoom
-    k.classList.add('toca'); k.onclick = () => (foi && !v.listas.length ? (fotos.length && album(fotos[0])) : abreViagem(v)); return k; };
+    const cartaoViagem = (v, foi) => { const f = feitosV(v), t = itensV(v), fotos = v.lembrancas || [], k = placa(v.nome || '', foi && fotos.length ? fotos.length + (fotos.length === 1 ? ' foto' : ' fotos') : v.listas.length + ' listas pra levar e conferir', foi ? 'foi ' + quandoV(v) : (quandoV(v) || 'sem data'), quem(v.com), f == null || !t || foi ? null : barra(f, t), foi ? 'passou' : '', foi ? '' : v.arte); k.querySelector('.pl2-top > div').append(elD('span', 'pl2-com', comTx(v)));   // quem foi junto escrito no cartão (May 13/11 13:51)
+    if (foi && fotos.length) { const capa = elD('div', 'pl2-pilha'); fotos.slice(0, 3).forEach((l, i) => { const p = elD('span', 'pl2-polaroide mini'), im = elD('img'); im.alt = ''; im.loading = 'lazy'; p.style.setProperty('--gira', [-7, 4, -1][i] + 'deg'); p.append(im); fotoUrl(l.foto).then(u => { im.src = u; }).catch(() => p.remove()); capa.append(p); }); const ab = elD('button', 'pl2-abre-album', 'Abrir o álbum · ' + fotos.length + (fotos.length === 1 ? ' foto' : ' fotos')); ab.type = 'button'; capa.append(ab); k.append(capa); }   // capa do álbum: 3 polaroides empilhadas (May 13/11 16:19: "num álbum bonito, não só jogadas")
+    k.classList.add('toca'); k.onclick = () => (foi && fotos.length ? abreAlbumViagem(v, comTx(v)) : abreViagem(v)); return k; };
     const ABAS = { viagens: 'Viagens', agora: 'Agora', umdia: 'Um dia' }; let aba = 'viagens';   // a tela virou Viagens (May 13/11 13:50); metas ficam nas outras abas
     const pinta = () => {
       nav.replaceChildren(...Object.entries(ABAS).map(([k, t]) => { const b = elD('button', k === aba ? 'on' : '', t); b.type = 'button'; b.onclick = () => { aba = k; pinta(); }; return b; }));
@@ -4638,6 +4637,23 @@ function abrePlanos(m) {   // Planos desenhado (#211, May 11/11 e 12/11 22:07-22
       if (aba !== 'viagens') { const mais = elD('button', 'pl2-mais', '+ Plano'); mais.type = 'button'; mais.onclick = () => form(null); corpo.append(mais); }
     };
     E.aoMudar = pinta; pinta();
+  });
+}
+function abreAlbumViagem(v, comTx) {   // álbum da viagem que já foi (May 13/11 16:19): polaroides com a legenda escrita embaixo, cada foto só carrega quando chega perto da tela; tocar abre o zoom com o álbum inteiro
+  tela(v.nome || 'Álbum', c => {
+    painel.classList.add('tema-planos'); painel.style.setProperty('--c', '#6B4226'); c.classList.add('pl2-tela', 'pl2-album');
+    const fotos = v.lembrancas || [];
+    cabecalho({ icone: 'pin', sub: fotos.length + (fotos.length === 1 ? ' foto' : ' fotos') + ' · ' + comTx });
+    const capa = elD('div', 'pl2-alb-capa'); capa.append(elD('b', '', v.nome || ''), elD('span', '', (v.sub || '').split('·').map(s => s.trim()).filter(Boolean).join(' · ')));
+    const grade = elD('div', 'pl2-alb-grade'); c.append(capa, grade);
+    const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.unobserve(e.target); e.target.carrega(); } }), { rootMargin: '400px' }) : null;
+    fotos.forEach((l, i) => {
+      const f = elD('figure', 'pl2-polaroide'), im = elD('img'); im.alt = l.legenda || ''; f.style.setProperty('--gira', [-2, 1.6, -.8, 2.2][i % 4] + 'deg');
+      f.append(im); if (l.legenda) f.append(elD('figcaption', '', l.legenda));
+      f.carrega = () => fotoUrl(l.foto).then(u => { im.src = u; }).catch(() => f.classList.add('sem'));
+      f.onclick = () => fotoUrl(l.foto, true).then(u => abreZoom(u, l.foto, fotos.map(x => x.foto))).catch(() => {});
+      grade.append(f); if (io) io.observe(f); else f.carrega();
+    });
   });
 }
 function abreViagens(m) {
