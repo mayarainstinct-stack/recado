@@ -2334,3 +2334,4 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 .rv-tr-bloco .rv-tr { display: grid; grid-template-columns: auto auto; justify-content: center; align-items: center; column-gap: 22px; row-gap: 8px; }
 .rv-tr-bloco .rv-tr-av { grid-column: 1; grid-row: 1; } .rv-tr-bloco .rv-tr-ic { grid-column: 2; grid-row: 1; }
 .rv-tr-bloco .rv-tr-tx { grid-column: 1 / -1; grid-row: 2; text-align: center; }
+.rv-ct .rv-corpo, .rv-ct:not(.aberto) .rv-corpo { display: block; } .rv-ct .rv-abre { display: none; } .rv-ct .rv-vcab, .rv-ct .rv-placa { cursor: default; }   /* o card já vem aberto com o que mudou (May 13/11 18:51) */
