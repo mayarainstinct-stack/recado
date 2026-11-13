@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.319">
-<meta name="app-novidade" content="Finanças: pagamento com data na frente aparece como Vai pagar em">
+<meta name="app-versao" content="2026-11-13.320">
+<meta name="app-novidade" content="Música nova: grava ideia na hora, mesa com as etapas, cara do Estúdio JWA">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.317"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.320"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2554,12 +2554,12 @@ function desenhaTela() {
     const st = pCorpo.scrollTop; document.body.append(g); g.scrollTop = st; setTimeout(() => g.remove(), 300);
   }
   if (pilha.length !== nAnt && nAnt) { void pCorpo.offsetWidth; pCorpo.classList.add(pilha.length > nAnt ? 'tela-dir' : 'tela-esq'); }
-  const entrada = pilha[pilha.length - 1], [titulo, montar, rolou] = entrada, mae = pilha.length > 1 ? pilha[pilha.length - 2][3] : null; painel.classList.remove('tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude', 'tema-contraste', 'tema-musica', 'mus-a', 'mus-b', 'mus-c', 'mus-d');
+  const entrada = pilha[pilha.length - 1], [titulo, montar, rolou] = entrada, mae = pilha.length > 1 ? pilha[pilha.length - 2][3] : null; painel.classList.remove('tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude', 'tema-contraste', 'tema-musica');
   if (mae) mae.temas.forEach(c => painel.classList.add(c));   // tela filha herda o tema da mãe (May, 09/11/2026: "senão fica cagado"); a filha que quiser outro tema troca no montar   // o tema claro é só da tela que pedir (a Agenda, May 08/11 12:56)
   pTit.textContent = titulo; pCorpo.scrollTop = 0; pExtra.hidden = true;   /* só na raiz do Menu, também quando a tela abre direto pela notificação */ cabecalhoGenerico();
   pTopo.hidden = pilha.length === 1 && titulo === 'Menu'; painel.classList.toggle('sem-topo', pTopo.hidden);   // sem a barra, o Recados ganha respiro em cima (May 18:47: "colou em cima")   // o Menu começa direto em Recados, sem a barra de cima (May 18:40); voltar fica no botão de baixo e no deslize
   const t = document.createElement('div'); t.className = 'tela'; if (mae) mae.gr.forEach(c => t.classList.add(c)); pCorpo.replaceChildren(t);   // carga atrasada de tela que já saiu cai no invólucro velho
-  const r = montar(t); const guardaTema = () => { entrada[3] = { temas: ['tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude', 'tema-musica', 'mus-a', 'mus-b', 'mus-c', 'mus-d'].filter(c => painel.classList.contains(c)), gr: [...t.classList].filter(c => c.startsWith('gr-') && !c.startsWith('gr-grade')) }; };   // a filha herda daqui
+  const r = montar(t); const guardaTema = () => { entrada[3] = { temas: ['tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude', 'tema-musica'].filter(c => painel.classList.contains(c)), gr: [...t.classList].filter(c => c.startsWith('gr-') && !c.startsWith('gr-grade')) }; };   // a filha herda daqui
   if (pilha[pilha.length - 1] === entrada) { guardaTema(); Promise.resolve(r).then(() => { if (pilha[pilha.length - 1] === entrada && t.isConnected) guardaTema(); }).catch(() => {}); }
   if (rolou) Promise.resolve(r).then(() => { if (t.isConnected) pCorpo.scrollTop = rolou; });   // voltando: devolve a rolagem de onde ela estava
 }
@@ -2957,7 +2957,6 @@ function abreGrupo(m) {
     cabecalho({ icone: m.icone, sub: m.sub || '' });   // o título aparece uma vez só, no cabeçalho do sistema (Sigma 12:19 item 1)
     if (m.estilo) c.classList.add('gr-' + m.estilo);
     if (m.estilo === 'saude') painel.classList.add('tema-saude');
-    if (m.estilo === 'musica') painel.classList.add('tema-musica', 'mus-' + (/^[abcd]$/.test(m.variante || '') ? m.variante : 'a'));   // Música e produção (May 11/11 15:05: vermelho, preto, branco e amarelo): 4 variantes, ela escolhe pelo campo variante do menu.json (#210)   // Saúde clara em rosa, barra de cima clara (May 14:42, Hermes)   // grupo com cara própria (ex.: Saúde rosa)
     const g = elD('div', 'gr-grade' + (m.estilo ? ' gr-grade-' + m.estilo : '')); c.append(g);
     const chave = 'grupo-ordem:' + m.nome; let ordem = []; try { ordem = JSON.parse(store.get(chave) || '[]'); } catch (e) {}
     const pos = x => { const i = ordem.indexOf(x.nome); return i < 0 ? 999 : i; }, itensG = (m.itens || []).map((x, i) => [x, i]).sort((a, b) => pos(a[0]) - pos(b[0]) || a[1] - b[1]).map(a => a[0]);   // a ordem que ela arrumou arrastando (neste aparelho); item novo vai pro fim
@@ -3220,6 +3219,84 @@ function abreSaudeLista(m, soGrupo) {   // soGrupo: tela filha com um grupo só 
   });
 }
 // Contraste Artes Gráficas (tela filha de Artes): preto + faixas CMYK da marca (marca/contraste/IDENTIDADE.md e ESTILO.md)
+// Música e produção (#210, May 12/11 22:05: "baseada no que eu te falei da JWA"): layout v2 de 11/11 (fone da JWA, fundo de caixa de som, abas = canais da mesa, música = fader de etapa).
+// Fonte única: menu/musica.json (secao musica, setup ou ideia). Tudo editável pelo app: lança, edita, apaga (marca apagado, com desfazer) e toca no fader pra subir a etapa; falhou = volta como estava.
+const MUS_ICONES = { amp: '<rect x="6" y="8" width="28" height="24" rx="3"/><circle cx="20" cy="22" r="6"/><circle cx="12" cy="13" r="1.4"/><circle cx="18" cy="13" r="1.4"/><circle cx="24" cy="13" r="1.4"/>', pedal: '<rect x="9" y="5" width="22" height="30" rx="3"/><circle cx="20" cy="13" r="3.5"/><circle cx="20" cy="27" r="3"/>', teclas: '<rect x="4" y="10" width="32" height="20" rx="2"/><path d="M12 20v10M20 20v10M28 20v10M10 14h20"/>', mic: '<rect x="15" y="4" width="10" height="18" rx="5"/><path d="M10 18a10 10 0 0020 0M20 28v6M14 34h12"/>', interface: '<rect x="5" y="12" width="30" height="16" rx="3"/><circle cx="13" cy="20" r="3"/><circle cx="23" cy="20" r="3"/><path d="M30 17v6"/>', guitarra: '<path d="M30 5l5 5M27 8l5 5M30 10L18 22"/><path d="M17 21c-4-1-9 2-8 7 1 4 5 6 8 4 3-1 4-6 1-11z"/>', gente: '<circle cx="20" cy="14" r="6"/><path d="M8 34c0-7 5-11 12-11s12 4 12 11"/>' };
+// Marca do Estúdio JWA desenhada do zero pela foto da logo antiga que ela mandou (12/11 22:09): arco vinho, almofadas vermelho-alaranjadas, pulso e nome em amarelo; cores tiradas dos pixels da foto
+const MUS_MARCA = '<svg class="tm-marca" viewBox="0 0 120 90" role="img" aria-label="Estúdio JWA"><path d="M22 52V40a38 34 0 0 1 76 0v12" fill="none" stroke="#7A0E0A" stroke-width="7" stroke-linecap="round"/><rect x="14" y="40" width="16" height="30" rx="7" fill="#9B2F07"/><rect x="90" y="40" width="16" height="30" rx="7" fill="#9B2F07"/><rect x="24" y="44" width="7" height="22" rx="3" fill="#5D0D09"/><rect x="89" y="44" width="7" height="22" rx="3" fill="#5D0D09"/><polyline points="34,56 46,56 50,47 55,64 60,40 65,60 69,52 86,52" fill="none" stroke="#D9D31F" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><text x="60" y="86" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-style="italic" font-size="15" fill="#D9D31F" transform="skewX(-8) translate(10 0)">ESTUDIO JWA</text></svg>';
+function abreMusica(m) {
+  tela(m.nome, async c => {
+    painel.classList.add('tema-musica'); c.classList.add('t-musica');
+    const p = skCarga(); c.append(p); let d;
+    try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não abriu. Confere a internet.'; return; }
+    p.remove();
+    const ET = d.etapas || ['Ideia', 'Rascunho', 'Gravar', 'Mixar', 'Finalizar'], vivos = sec => d.itens.filter(i => i.secao === sec && !i.apagado);
+    let aba = store.get('mus-aba') || 'musica';
+    const grava = async (fn, msg) => { const antes = JSON.parse(JSON.stringify(d.itens)); fn(d.itens); pinta(); if (await gravaJson(m.arq, dd => { dd.itens = dd.itens || []; fn(dd.itens); }, msg, null)) return true; d.itens.splice(0, d.itens.length, ...antes); pinta(); showNote('Não guardou: voltou como estava. Confere a internet.', true); return false; };
+    const CAMPOS = { musica: [{ nome: 'nome', rotulo: 'Música', tipo: 'texto', obrigatorio: true }, { nome: 'texto', rotulo: 'Sobre', tipo: 'texto_longo' }, { nome: 'falta', rotulo: 'O que falta', tipo: 'texto' }, { nome: 'etapa', rotulo: 'Etapa', tipo: 'escolha', opcoes: ET.map((t, k) => [String(k + 1), t]), padrao: '1' }],
+      setup: [{ nome: 'nome', rotulo: 'Aparelho ou pessoa', tipo: 'texto', obrigatorio: true }, { nome: 'grupo', rotulo: 'Grupo (Som, Instrumentos...)', tipo: 'texto', obrigatorio: true }, { nome: 'texto', rotulo: 'Detalhe', tipo: 'texto_longo' }, { nome: 'tipo', rotulo: 'Ícone', tipo: 'escolha', opcoes: [['amp', 'Amplificador'], ['pedal', 'Pedaleira'], ['teclas', 'Teclado'], ['mic', 'Microfone'], ['interface', 'Interface'], ['guitarra', 'Guitarra'], ['gente', 'Pessoa']], padrao: 'interface' }, { nome: 'certeza', rotulo: 'Certeza', tipo: 'escolha', opcoes: [['sim', 'Confirmado'], ['talvez', 'Provável']], padrao: 'sim' }],
+      ideia: [{ nome: 'nome', rotulo: 'Ideia', tipo: 'texto', obrigatorio: true }, { nome: 'grupo', rotulo: 'Grupo (Cards, Reels...)', tipo: 'texto', obrigatorio: true }, { nome: 'texto', rotulo: 'Detalhe', tipo: 'texto_longo' }] };
+    const NOME_SEC = { musica: 'música', setup: 'setup', ideia: 'ideia' };
+    const form = (sec, it) => edFormulario({ titulo: (it ? 'Editar' : 'Novo') + ' · ' + NOME_SEC[sec], campos: CAMPOS[sec], v: it ? Object.assign({}, it, { etapa: String(it.etapa || 1) }) : {},
+      aoSalvar: async f => { const v = Object.assign({}, f); if (v.etapa) v.etapa = +v.etapa; if (it) await grava(l => { const x = l.find(y => y.id === it.id); if (x) Object.assign(x, v, { atualizado: edAgora() }); }, 'Música: item editado pelo app'); else await grava(l => l.push(Object.assign({ id: edNovoId(v.nome), secao: sec }, v, { criado: edAgora() })), 'Música: item novo pelo app'); },
+      aoApagar: it ? async () => { const q = edAgora(); if (await grava(l => { const x = l.find(y => y.id === it.id); if (x) x.apagado = q; }, 'Música: item apagado pelo app (fica guardado)')) edFaixaDesfazer('Apagado', () => grava(l => { const x = l.find(y => y.id === it.id); if (x) delete x.apagado; }, 'Apagado desfeito pelo app')); } : null });
+    const agrupa = l => { const g = new Map(); l.forEach(i => { const k = i.grupo || ''; if (!g.has(k)) g.set(k, []); g.get(k).push(i); }); return [...g]; };
+    const lapis = (sec, x) => { const b = edMini('note', 'Editar ' + x.nome, () => form(sec, x)); b.classList.add('tm-ed'); return b; };
+    // Gravar ideia na hora (útil de verdade, May 12/11 22:10): grava, sobe o áudio pra musica/audios/ e já cria a música na etapa Ideia; falhou = avisa e não cria nada
+    let rec = null, partes = [], t0 = 0, relogio = null, tocando = null;
+    const gravador = () => {
+      const w = elD('div', 'tm-grava'), bt = elD('button', 'tm-grava-bt' + (rec ? ' on' : '')), dica = elD('small', '', rec ? 'Gravando… toque pra parar e guardar' : 'Teve um riff, uma letra, uma melodia? Grava agora.'); bt.type = 'button';
+      bt.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg><span>' + (rec ? '0:00' : 'Gravar ideia') + '</span>';
+      const sp = bt.querySelector('span'); if (rec) { clearInterval(relogio); relogio = setInterval(() => { if (!sp.isConnected) return clearInterval(relogio); const s = Math.floor((Date.now() - t0) / 1000); sp.textContent = Math.floor(s / 60) + ':' + pad(s % 60); }, 250); }
+      bt.onclick = async () => {
+        if (rec) { rec.stop(); return; }
+        if (!navigator.mediaDevices || !window.MediaRecorder) { showNote('Este navegador não grava áudio. Abre pelo ícone da tela de início.', true); return; }
+        try {
+          const stream = await pegaMic(), tipo = tipoAudio(); rec = new MediaRecorder(stream, tipo ? { mimeType: tipo } : undefined); partes = [];
+          rec.ondataavailable = e => { if (e.data.size) partes.push(e.data); };
+          rec.onstop = async () => { soltaMicStream(); clearInterval(relogio); const g = rec, dur = Math.round((Date.now() - t0) / 1000); rec = null; pinta(); const blob = new Blob(partes, { type: g.mimeType || tipo || 'audio/mp4' }); if (blob.size < 1500) { showNote('Áudio curto demais.', true); return; }
+            showNote('Guardando a ideia…'); const quando = new Date(), nome = nomeArq('musica/audios', quando, 0, /webm/.test(blob.type) ? 'webm' : 'm4a');
+            try { const b64 = await new Promise((ok, erro) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1] || ''); fr.onerror = erro; fr.readAsDataURL(blob); }); await apiOk(apiDe(nome), { method: 'PUT', body: JSON.stringify({ message: 'Música: ideia gravada pelo app', content: b64 }) }); }
+            catch (e) { showNote('O áudio não subiu: confere a internet e grava de novo.', true); return; }
+            if (await grava(l => l.unshift({ id: edNovoId('ideia-' + edAgora()), secao: 'musica', nome: 'Ideia gravada ' + edAgora().slice(0, 5) + ' às ' + edAgora().slice(11, 16), etapa: 1, audio: nome, dur, falta: 'ouvir de novo e dar um nome', criado: edAgora() }), 'Música: ideia gravada vira música (Ideia)')) showNote('Ideia guardada: tá no topo, na etapa Ideia.'); };
+          rec.start(); t0 = Date.now(); if (CFG.vibracao !== false && navigator.vibrate) navigator.vibrate(20); pinta();
+        } catch (e) { rec = null; soltaMicStream(); pinta(); showNote(e && e.name === 'NotAllowedError' ? 'Sem acesso ao microfone. Libera em Ajustes → Apps → Safari → Microfone (Permitir).' : 'Microfone não abriu (' + ((e && e.name) || 'erro') + ').', true); }
+      };
+      w.append(bt, dica); return w;
+    };
+    const resumo = elD('div', 'tm-resumo'), rtx = elD('div'); resumo.innerHTML = MUS_MARCA; resumo.append(rtx);
+    const abas = elD('div', 'tm-abas'); abas.setAttribute('role', 'tablist'); const corpo = elD('div', 'tm-painel'); c.append(resumo, abas, corpo);
+    const pinta = () => {
+      const mus = vivos('musica'), naIdeia = mus.filter(x => (x.etapa || 1) === 1).length;
+      rtx.replaceChildren(elD('b', '', mus.length + (mus.length === 1 ? ' música em andamento' : ' músicas em andamento')), elD('span', '', !mus.length ? 'toque no + pra começar' : naIdeia === mus.length ? 'todas ainda na etapa de ideia' : naIdeia + ' ainda na ideia'));
+      abas.replaceChildren(...[['musica', 'Músicas'], ['setup', 'Meu setup'], ['ideia', 'Ideias']].map(([id, rot]) => { const b = elD('button', 'tm-aba', rot); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(aba === id)); b.onclick = () => { aba = id; store.set('mus-aba', id); pinta(); }; return b; }));
+      corpo.replaceChildren();
+      if (aba === 'musica') {
+        corpo.append(gravador());
+        const l = vivos('musica'); if (!l.length) corpo.append(elD('div', 'tm-vazio', 'Nenhuma música ainda.'));
+        l.forEach((x, n) => {
+          const e = Math.min(5, Math.max(1, x.etapa || 1)), a = elD('article', 'tm-faixa'), topo = elD('div', 'tm-faixa-topo'), tx = elD('div');
+          tx.append(lapis('musica', x), elD('h3', '', x.nome)); if (x.texto) tx.append(elD('p', '', x.texto)); topo.append(elD('div', 'tm-num', String(n + 1).padStart(2, '0')), tx); a.append(topo);
+          if (x.audio) { const ou = elD('button', 'tm-ouvir', '▶ Ouvir a ideia' + (x.dur ? ' · ' + Math.floor(x.dur / 60) + ':' + pad(x.dur % 60) : '')); ou.type = 'button'; ou.onclick = async () => { if (tocando) { tocando.pause(); tocando = null; ou.textContent = '▶ Ouvir a ideia'; return; } ou.textContent = 'Abrindo…'; try { const u = await fotoUrl(x.audio, true); tocando = new Audio(u); tocando.onended = () => { tocando = null; ou.textContent = '▶ Ouvir a ideia'; }; await tocando.play(); ou.textContent = '■ Parar'; } catch (e) { tocando = null; ou.textContent = '▶ Ouvir a ideia'; showNote('Não tocou: confere a internet.', true); } }; a.append(ou); }
+          const fd = elD('div', 'tm-fader'); fd.setAttribute('role', 'button'); fd.setAttribute('aria-label', 'Subir a etapa de ' + x.nome);
+          for (let k = 1; k <= 5; k++) fd.append(elD('i', (k <= e ? 'on' : '') + (k === 5 && e === 5 ? ' pico' : '')));
+          const bt = elD('b', 'tm-botao'); bt.style.left = ((e - .5) * 20) + '%'; fd.append(bt);
+          fd.onclick = () => { const nova = e >= 5 ? 1 : e + 1; grava(ll => { const y = ll.find(z => z.id === x.id); if (y) { y.etapa = nova; y.atualizado = edAgora(); } }, 'Música: etapa de ' + x.nome + ' foi pra ' + ET[nova - 1] + ' pelo app'); };   // tocar no fader sobe uma etapa (depois de Finalizar volta pra Ideia)
+          const et = elD('div', 'tm-etapas'); ET.forEach((t, k) => et.append(elD('span', k + 1 === e ? 'atual' : '', t))); a.append(fd, et);
+          if (x.falta) { const f = elD('p', 'tm-falta'); f.append(elD('small', '', 'O que falta'), document.createTextNode(x.falta)); a.append(f); }
+          corpo.append(a);
+        });
+      } else if (aba === 'setup') {
+        agrupa(vivos('setup')).forEach(([g, l]) => { corpo.append(elD('div', 'tm-grupo', g || 'Outros')); l.forEach(x => { const a = elD('article', 'tm-aparelho'), sl = elD('div', 'tm-slot'), tx = elD('div'); sl.innerHTML = '<svg viewBox="0 0 40 40" aria-hidden="true">' + (MUS_ICONES[x.tipo] || MUS_ICONES.interface) + '</svg>'; tx.append(lapis('setup', x), elD('h3', '', x.nome)); if (x.texto) tx.append(elD('p', '', x.texto)); tx.append(elD('span', 'tm-selo' + (x.certeza === 'talvez' ? ' talvez' : ''), x.certeza === 'talvez' ? 'Provável' : 'Confirmado')); a.append(sl, tx); corpo.append(a); }); });
+        const ant = elD('button', 'tm-mais', 'Anotações do inventário (14/08)'); ant.type = 'button'; ant.onclick = () => abreItemMenu({ tipo: 'saudelista', cartoes: true, icone: 'headphones', nome: 'Anotações do setup', arq: 'categorias/musica/meu-setup.json' }); corpo.append(ant);   // as notas e perguntas antigas do inventário continuam a um toque
+      } else {
+        agrupa(vivos('ideia')).forEach(([g, l]) => { corpo.append(elD('div', 'tm-grupo', g || 'Outras')); const pa = elD('div', 'tm-pauta'), ul = elD('ul'); l.forEach(x => { const li = elD('li'), tx = elD('div'); tx.append(lapis('ideia', x), document.createTextNode(x.nome)); if (x.texto) tx.append(elD('small', '', x.texto)); li.append(tx); ul.append(li); }); pa.append(ul); corpo.append(pa); });
+      }
+      const mais = elD('button', 'tm-mais', '+ ' + { musica: 'Música', setup: 'Aparelho ou pessoa', ideia: 'Ideia' }[aba]); mais.type = 'button'; mais.onclick = () => form(aba, null); corpo.append(mais);
+    };
+    pinta();
+  });
+}
 function abreContraste(m) {
   tela(m.nome, async c => {
     painel.classList.add('tema-contraste'); painel.style.setProperty('--c', '#EC008C'); c.classList.add('ct-tela');
@@ -4177,6 +4254,7 @@ function abreItemMenu(m) {
   if (m.tipo === 'lista') return abreLista(m);
   if (m.tipo === 'saudelista') return abreSaudeLista(m);
   if (m.tipo === 'contraste') return abreContraste(m);
+  if (m.tipo === 'musica') return abreMusica(m);
   if (m.tipo === 'planta') return abrePlanta(m);
   if (m.tipo === 'obra') return abreObra(m);
   if (m.tipo === 'financas') return m.aba === 'contas' ? abreContasMes(m) : abreFinancas(m);
