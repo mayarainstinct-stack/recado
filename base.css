@@ -2329,3 +2329,5 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 @keyframes rvAcendeClaro { 0%, 100% { box-shadow: 0 0 6px #FFFFFF; } 50% { box-shadow: 0 0 14px #FFFFFF, 0 0 22px color-mix(in srgb, var(--quem) 80%, #fff); } }
 .rv-bar em { display: inline-flex; align-items: center; gap: 2px; } .rv-bar .rv-dif { font-size: 12px; min-width: 26px; padding: 0 6px; }
 .rv-ct .rv-resumo { margin: 12px 14px 0; padding: 12px 14px; border-radius: 14px; background: rgba(0,0,0,.3); border-left: 3px solid var(--claro); font-size: 14px; line-height: 1.5; font-weight: 600; color: rgba(255,255,255,.95); text-shadow: none; }
+.rv-tr-tx small { white-space: nowrap; font-size: 11px; letter-spacing: .04em; }
+.rv-tr-rot { display: block; padding: 12px 16px 0; text-align: center; font-size: 12px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; color: #7A4A00; }
