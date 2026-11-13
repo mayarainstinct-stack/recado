@@ -2195,3 +2195,18 @@ button.vs-n { padding: 0; font: inherit; font-weight: 800; font-size: 13px; curs
 .vs-ed-mais { margin-top: 10px; padding: 6px 12px; border-radius: 999px; border: 1px dashed var(--vs-m); background: transparent; color: var(--vs-c); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 .vs-tela .vs-ed-mais { display: inline-flex; align-items: center; width: auto !important; height: auto !important; min-width: 0 !important; border-radius: 999px !important; box-shadow: none !important; }
 body.modo-trab .painel.tema-saude .sl-aba.on { background: var(--vs-c, #D61F69); border-color: var(--vs-c, #D61F69); color: #FFFFFF; } body.modo-trab .painel.tema-saude .sl-aba { border-radius: 14px; }
+.lem-foto { display: block; width: 100%; margin: 6px 0 10px; padding: 0; border: 0; border-radius: 14px; overflow: hidden; background: #0002; min-height: 180px; cursor: zoom-in; }
+.lem-foto img { display: block; width: 100%; max-height: 52vh; object-fit: contain; background: #000; }
+.lem-card:has(.lem-foto) { max-height: 92dvh; overflow-y: auto; }
+.lote-tela { position: fixed; inset: 0; z-index: 1050; display: flex; flex-direction: column; height: 100dvh; background: var(--bg, #F8FAFC); color: var(--fg, #1E293B); }
+.lote-topo { flex: none; display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 10px; padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 10px; border-bottom: 1px solid var(--line, #E2E8F0); background: var(--paper, #FFFFFF); }
+.lote-topo b { font-size: 16px; } .lote-cont { grid-column: 1; grid-row: 2; color: var(--muted, #64748B); font-size: 13px; }
+.lote-fecha { grid-column: 2; grid-row: 1 / span 2; padding: 10px 18px; border: 0; border-radius: 22px; background: #7C3AED; color: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer; }
+.lote-grade { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px)); align-content: start; }
+.lote-c { display: flex; flex-direction: column; gap: 6px; padding: 6px; border-radius: 14px; background: var(--paper, #FFFFFF); border: 2px solid var(--line, #E2E8F0); }
+.lote-c.feita { border-color: #7C3AED; }
+.lote-foto { position: relative; display: block; width: 100%; aspect-ratio: 3 / 4; padding: 0; border: 0; border-radius: 10px; overflow: hidden; background: #E2E8F0; cursor: zoom-in; }
+.lote-foto img { width: 100%; height: 100%; object-fit: cover; display: block; } .lote-n { position: absolute; left: 6px; top: 6px; padding: 2px 8px; border-radius: 10px; background: rgba(0,0,0,.6); color: #fff; font-size: 12px; font-weight: 700; }
+.lote-ops { display: flex; flex-wrap: wrap; gap: 4px; } .lote-op { flex: 1 1 auto; min-width: 0; padding: 7px 4px; border-radius: 10px; border: 1px solid #C4B5FD; background: #F5F3FF; color: #5B21B6; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+.lote-op.on { background: #7C3AED; border-color: #7C3AED; color: #FFFFFF; }
+.lote-tela .lote-foto { height: auto !important; width: 100% !important; aspect-ratio: 3 / 4; min-height: 0 !important; padding: 0 !important; border-radius: 10px !important; } .lote-tela .lote-fecha { width: auto !important; height: auto !important; min-width: 0 !important; border-radius: 22px !important; } .lote-tela .lote-op { width: auto !important; height: auto !important; min-height: 34px; border-radius: 10px !important; }

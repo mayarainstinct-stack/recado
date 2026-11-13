@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.340">
-<meta name="app-novidade" content="Saúde fica rosa também aberta pelo Trabalho">
+<meta name="app-versao" content="2026-11-13.341">
+<meta name="app-novidade" content="Fotos pra separar abrem numa grade só, com os botões embaixo de cada uma">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.340"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.341"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2041,20 +2041,59 @@ function trataHashLembrete() {
   document.querySelectorAll('.lem-fundo').forEach(o => o.remove()); mostraProximoLembrete();
   return true;
 }
+// Lote de fotos (Sigma 13/11 13:50: "47 popups seguidos é castigo"): 3 ou mais perguntas com foto do mesmo lote (id sem o número do fim) viram UM popup que abre uma grade; cada toque grava a resposta no lembretes.json e no fim vai 1 linha de resumo pra Lyra
+const lemLoteAdiado = new Set();
+const lemLoteDe = x => x && x.foto && x.t === 'pergunta' ? String(x.id).replace(/-?\d+$/, '') : '';
+function lemLotes(trab) { const g = {}; lemArq.filter(x => !lemResp.has(x.id) && (x.conv === 'trabalho') === trab && lemLoteDe(x)).forEach(x => (g[lemLoteDe(x)] = g[lemLoteDe(x)] || []).push(x)); Object.keys(g).forEach(k => { if (g[k].length < 3) delete g[k]; }); return g; }
+const lemLoteTitulo = its => String(its[0].q || 'Fotos').replace(/,?\s*foto \d+ de \d+/i, '').replace(/\s*:\s*/, ': ').trim();
+function lemPopupLote(k, its, trab) {
+  const ov = elD('div', 'fixa-pop lem-fundo'), card = elD('div', 'pp-card lem-card'); card.style.setProperty('--quem', '#7C3AED'); ov.dataset.qs = 'lote=' + k;
+  const bts = elD('div', 'lem-bts'), abre = elD('button', 'pp-op rec', 'Abrir as ' + its.length + ' fotos'), dep = elD('button', 'pp-op depois', 'Depois'); abre.type = dep.type = 'button';
+  dep.onclick = () => { lemLoteAdiado.add(k); ov.remove(); setTimeout(mostraProximoLembrete, 300); };
+  abre.onclick = () => { ov.remove(); lemTelaLote(k, its, trab); };
+  bts.append(abre, dep); card.append(elD('small', 'lem-de', 'Lembrete · Fotos'), elD('div', 'pp-perg', lemLoteTitulo(its)), bts); ov.append(card); document.body.append(ov);
+}
+function lemTelaLote(k, its, trab) {
+  const tl = elD('div', 'lote-tela'), topo = elD('div', 'lote-topo'), cont = elD('small', 'lote-cont'), fecha = elD('button', 'lote-fecha', 'Pronto'), grade = elD('div', 'lote-grade'); fecha.type = 'button';
+  const resp = {}, pend = {}; let tm = null;
+  const conta = () => { const n = Object.keys(resp).length; cont.textContent = n + ' de ' + its.length + ' respondidas'; };
+  const salva = () => { clearTimeout(tm); const lote = Object.assign({}, pend); if (!Object.keys(lote).length) return Promise.resolve(true); Object.keys(lote).forEach(id => delete pend[id]); const q = edAgora();
+    return gravaJson('menu/lembretes.json', d => { (d.itens || []).forEach(x => { if (lote[x.id] != null) { x.respondido = q; x.resposta = lote[x.id]; } }); }, 'Fotos respondidas pelo app (' + Object.keys(lote).length + ')', null).then(ok => { if (ok) Object.keys(lote).forEach(id => lemResp.add(id)); else { Object.assign(pend, lote); showNote('Não guardou as respostas. Confere a internet; tento de novo ao tocar em Pronto.', true); } return ok; }); };
+  its.forEach((x, i) => {
+    const c = elD('div', 'lote-c'), fb = elD('button', 'lote-foto esq'), im = elD('img'), ops = elD('div', 'lote-ops'); fb.type = 'button'; im.alt = 'Foto ' + (i + 1); im.loading = 'lazy'; fb.append(im, elD('span', 'lote-n', String(i + 1)));
+    fotoUrl(x.foto).then(u => { im.src = u; im.onload = () => fb.classList.remove('esq'); fb.onclick = () => fotoUrl(x.foto, true).then(o => abreZoom(o, x.foto)); }).catch(() => { fb.classList.add('falhou'); });
+    [].concat(x.ops || []).forEach(op => { const b = elD('button', 'lote-op', String(op).replace(/\s*\(.*$/, '')); b.type = 'button'; b.title = op;
+      b.onclick = () => { resp[x.id] = op; pend[x.id] = op; ops.querySelectorAll('.lote-op').forEach(y => y.classList.toggle('on', y === b)); c.classList.add('feita'); conta(); clearTimeout(tm); tm = setTimeout(salva, 1500); };
+      ops.append(b); });
+    c.append(fb, ops); grade.append(c);
+  });
+  fecha.onclick = async () => { fecha.disabled = true; fecha.textContent = 'Guardando…'; const ok = await salva(); fecha.disabled = false; fecha.textContent = 'Pronto'; if (!ok) return;
+    const n = Object.keys(resp).length; tl.remove();
+    if (n) { const soma = {}; Object.values(resp).forEach(r => { const t = String(r).replace(/\s*\(.*$/, ''); soma[t] = (soma[t] || 0) + 1; }); gravaLinha(trab ? TRAB.arq : GERAL.arq, '- [' + stamp(new Date()) + '] @Lyra ' + lemLoteTitulo(its) + ' respondi ' + n + ' de ' + its.length + ' fotos no app (' + Object.entries(soma).map(([a, b]) => a + ': ' + b).join(', ') + '); as respostas estão no menu/lembretes.json'); }
+    if (n < its.length) lemLoteAdiado.add(k); setTimeout(mostraProximoLembrete, 400); };
+  topo.append(elD('b', '', lemLoteTitulo(its)), cont, fecha); tl.append(topo, grade); conta(); document.body.append(tl);
+}
 function mostraProximoLembrete() {
-  if (!token || chaveVencida) return;
+  if (!token || chaveVencida || document.querySelector('.lote-tela')) return;
   const trab = document.body.classList.contains('modo-trab'), aberto = document.querySelector('.lem-fundo');
   const daConv = qs => ((new URLSearchParams(qs).get('conv') || GERAL.arq) === TRAB.arq) === trab;
   if (aberto) { if (aberto.dataset.qs && daConv(aberto.dataset.qs)) return; aberto.remove(); }
-  const qs = lemTodos().find(daConv); if (!qs) return;
+  const lotes = lemLotes(trab), noLote = new Set(Object.values(lotes).flat().map(x => x.id));
+  const qs = lemTodos().find(q => daConv(q) && !noLote.has(new URLSearchParams(q).get('lid'))), lk = Object.keys(lotes).find(k => !lemLoteAdiado.has(k));
+  if (!qs && !lk) return;
   const digitando = (document.activeElement && /TEXTAREA|INPUT/.test(document.activeElement.tagName)) || Date.now() - tecladoFechouEm < 1500;   // teclado aberto: espera ela terminar (Sigma #99/#113, 12/11/2026)
   if (digitando) { if (!mostraProximoLembrete.esperando) { mostraProximoLembrete.esperando = true; document.addEventListener('focusout', () => setTimeout(() => { mostraProximoLembrete.esperando = false; mostraProximoLembrete(); }, 1600), { once: true }); } return; }
+  if (lk) { lemPopupLote(lk, lotes[lk], trab); return; }
   const h = new URLSearchParams(qs), conv = h.get('conv') || GERAL.arq;
   const perg = h.get('t') === 'pergunta', tela = perg ? 'Pergunta' : h.get('t') === 'fin' ? 'Finanças' : 'Checklist', cor = perg ? '#7C3AED' : h.get('t') === 'fin' ? '#16A34A' : '#1D4ED8';
   const ov = elD('div', 'fixa-pop lem-fundo'), card = elD('div', 'pp-card lem-card'); card.style.setProperty('--quem', cor); ov.dataset.qs = qs;
   const esconde = () => ov.remove(); ov.onclick = e => { if (e.target === ov && !perg) esconde(); };   // fora = só esconde, continua na fila; pergunta não fecha no toque de fora (era o toque pra baixar o teclado, Sigma #99/#113)
   const bts = elD('div', 'lem-bts'), bt = (txt, cls, fn) => { const b = elD('button', 'pp-op ' + cls, txt); b.type = 'button'; b.onclick = fn; bts.append(b); return b; };
   card.append(elD('small', 'lem-de', 'Lembrete · ' + tela), elD('div', 'pp-perg', h.get('q') || 'Lembrete'), bts);
+  if (h.get('foto')) {   // pergunta com foto (Lyra 13/11, fotos de Capitólio uma por uma): a foto vem em cima da pergunta, do tamanho da tela; toque amplia
+    const fb = elD('button', 'lem-foto esq'); fb.type = 'button'; fb.setAttribute('aria-label', 'Ver a foto maior'); const im = elD('img'); im.alt = 'Foto da pergunta'; fb.append(im); card.querySelector('.pp-perg').before(fb);
+    fotoUrl(h.get('foto'), true).then(u => { im.src = u; im.onload = () => fb.classList.remove('esq'); fb.onclick = () => abreZoom(u, h.get('foto')); }).catch(() => { fb.replaceWith(elD('small', 'lem-de', 'A foto não carregou.')); });
+  }
   const resolvido = resp => { lemTira(qs); const lid = h.get('lid'); if (lid) { lemResp.add(lid); gravaJson('menu/lembretes.json', d => { const x = (d.itens || []).find(y => y.id === lid); if (x) { x.respondido = edAgora(); x.resposta = typeof resp === 'string' ? resp : ''; } }, 'Lembrete respondido pelo app', null); } esconde(); setTimeout(mostraProximoLembrete, 300); };
   const ver = () => { resolvido('Ver'); lerArquivo(conv === TRAB.arq ? 'menu/menu-trabalho.json' : 'menu/menu.json').then(x => JSON.parse(x).itens).then(its => { const m = its.find(i => h.get('t') === 'fin' ? i.tipo === 'financas' : i.tipo === 'checklist'); if (m) { menu.hidden = true; painel.hidden = false; pilha = []; abreItemMenu(m); } }).catch(() => {}); };
   if (perg) {   // pergunta com 2 a 4 alternativas (#lembrete=t=pergunta&q=texto&ops=A|B|C): tocar numa grava a resposta na conversa; "Depois" mantém na fila
