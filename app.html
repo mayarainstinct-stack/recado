@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.351">
-<meta name="app-novidade" content="Saúde: o subtítulo acompanha o número editado">
+<meta name="app-versao" content="2026-11-13.352">
+<meta name="app-novidade" content="Reavaliação mostra as insígnias e troféus da semana">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.351"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.352"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -6212,7 +6212,9 @@ async function abreReavaliacao() {
     if (mud.length) mud.forEach(([nome, a]) => { const l = elD('div', 'rv-linha'), t = elD('div', 'rv-lt'); t.append(elD('b', '', nome), elD('span', 'rv-de', a.antes + ' → ' + a.nota), dif(a.nota - a.antes)); l.append(t); if (a.motivo) l.append(elD('p', 'rv-motivo', a.motivo)); corpo.append(l); });
     else corpo.append(elD('p', 'rv-nada', n.primeira_vez ? 'Primeira avaliação: as notas de partida estão abaixo.' : 'Nenhum atributo mudou nesta semana.'));
     if (igual.length) { const dt = elD('details', 'rv-iguais'), sm = elD('summary', '', (n.primeira_vez ? 'Notas' : 'Sem mudança') + ' (' + igual.length + ')'), ul = elD('div', 'rv-chips'); igual.forEach(([nome, a]) => { const ch = elD('span', 'rv-chip'); ch.append(nome + ' ', elD('b', '', String(a.nota))); if (a.motivo && n.primeira_vez) ch.title = a.motivo; ul.append(ch); }); dt.append(sm, ul); corpo.append(dt); }
-    const ate = w.ate, ganhos = [...(f.insignias || []).map(i => ['ins', i]), ...(f.trofeus || []).map(t => ['tr', t])].filter(([, i]) => { const d = daBr(i.data); return d && d >= w.de && d <= ate; });
+    const ate = w.ate, acha = (lista, nome) => (lista || []).find(i => i.nome === nome) || { nome };   // a lista da semana vem do reavaliacao.json (insignias_semana / trofeus_semana, Lyra 13/11 17:16); sem ela, o que tem data dentro da semana no cartão
+    const ganhos = Array.isArray(n.insignias_semana) || Array.isArray(n.trofeus_semana) ? [...(n.insignias_semana || []).map(nm => ['ins', acha(f.insignias, nm)]), ...(n.trofeus_semana || []).map(nm => ['tr', acha(f.trofeus, nm)])]
+      : [...(f.insignias || []).map(i => ['ins', i]), ...(f.trofeus || []).map(t => ['tr', t])].filter(([, i]) => { const d = daBr(i.data); return d && d >= w.de && d <= ate; });
     if (ganhos.length) { const gw = elD('div', 'rv-ganhos'); gw.append(elD('small', 'rv-gt', 'Ganhou na semana')); const gl = elD('div', 'rv-glista'); ganhos.forEach(([tp, i]) => { const d = elD('div', 'rv-g' + (tp === 'tr' ? ' trofeu' : '')); d.innerHTML = tp === 'tr' ? svgTrofeu(i) : svgInsignia(i); d.append(elD('span', '', i.nome)); gl.append(d); }); gw.append(gl); corpo.append(gw); }
     c.append(corpo); return c;
   };
