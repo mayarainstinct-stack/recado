@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
 <meta name="app-versao" content="2026-11-13.336">
-<meta name="app-novidade" content="Música: aba Cuidar com o desenho de cada instrumento">
+<meta name="app-novidade" content="Vídeo na conversa sobe inteiro e toca no balão">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -1012,6 +1012,11 @@ function render(items, manterPosicao) {
         } catch (err) { if (err && err.name !== 'AbortError') showNote('Não consegui baixar as fotos.', true); }
       });
       alb.append(grade, bt); el.append(alb);
+    } else if (it.foto && /\.(mp4|mov|webm)$/i.test(it.foto)) {   // vídeo da conversa sobe inteiro (Sigma #221, May 13/11 13:07): toca no balão, baixa só quando ela der play
+      const v = document.createElement('video'); v.className = 'foto video'; v.controls = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'none';
+      const tampa = elD('button', 'video-tampa'); tampa.type = 'button'; tampa.innerHTML = icone('video') + ' Ver o vídeo';
+      tampa.onclick = e => { e.stopPropagation(); tampa.textContent = 'Carregando o vídeo…'; fotoUrl(it.foto, true).then(u => { v.src = u; tampa.remove(); v.play().catch(() => {}); }).catch(er => { tampa.textContent = er.status === 404 ? 'Vídeo apagado' : 'Não carregou o vídeo'; }); };
+      const caixa = elD('div', 'video-caixa'); caixa.append(v, tampa); el.append(caixa);
     } else if (it.foto) {
       const img = document.createElement('img'); img.className = 'foto esq'; img.alt = 'Foto enviada'; img.loading = 'lazy'; img.decoding = 'async'; img.addEventListener('load', () => img.classList.remove('esq'), { once: true });
       img.addEventListener('click', e => { e.stopPropagation(); if (img.src) abreZoom(img.src, it.foto); });
@@ -1248,10 +1253,10 @@ async function enviar(p, el) {
         // 1) fotos (uma linha "📷 caminho" por foto; o texto vai junto da primeira); a que já subiu não sobe de novo
         for (let k = 0; k < p.fotos.length; k++) {
           const ft = p.fotos[k]; if (ft.nome || !ft.b64) continue;
-          const doc = ft.rot !== undefined;   // zip/pdf (📎): vai pra recados-arquivos/, sem reduzir; tempo cresce com o tamanho (4G fraco)
-          infoPend(el, p.fotos.length > 1 ? (doc ? 'arquivo ' : 'foto ') + (k + 1) + '/' + p.fotos.length : doc ? 'subindo arquivo' : 'subindo foto');
-          const nome = nomeArq(doc ? 'recados-arquivos' : 'recados-fotos', new Date(), k + 1, ft.ext || 'jpg');
-          await apiOk(apiDe(nome), { method: 'PUT', body: JSON.stringify({ message: doc ? 'arquivo do iPhone' : 'foto do iPhone', content: ft.b64 }), ...(doc ? { tempo: 90000 + Math.round(ft.b64.length / 25) } : {}) });
+          const doc = ft.rot !== undefined, vid = !!ft.video;   // zip/pdf (📎): vai pra recados-arquivos/, vídeo inteiro pra recados-videos/ (#221), sem reduzir; tempo cresce com o tamanho (4G fraco)
+          infoPend(el, p.fotos.length > 1 ? (doc ? 'arquivo ' : vid ? 'vídeo ' : 'foto ') + (k + 1) + '/' + p.fotos.length : doc ? 'subindo arquivo' : vid ? 'subindo vídeo' : 'subindo foto');
+          const nome = nomeArq(doc ? 'recados-arquivos' : vid ? 'recados-videos' : 'recados-fotos', new Date(), k + 1, ft.ext || 'jpg');
+          await apiOk(apiDe(nome), { method: 'PUT', body: JSON.stringify({ message: doc ? 'arquivo do iPhone' : vid ? 'vídeo do iPhone' : 'foto do iPhone', content: ft.b64 }), ...(doc || vid ? { tempo: 90000 + Math.round(ft.b64.length / 25) } : {}) });
           ft.nome = nome; delete ft.b64; guardaPendente(p);   // caminho da foto que subiu já fica no aparelho
         }
         p.fotos = p.fotos.filter(x => x.nome);
@@ -1508,6 +1513,8 @@ async function carregar() {
 const fotos = {};
 function tipoDe(path) {
   if (/\.mp4$/i.test(path)) return 'video/mp4';
+  if (/\.mov$/i.test(path)) return 'video/quicktime';
+  if (/^recados-videos\/.*\.webm$/i.test(path)) return 'video/webm';
   if (/\.m4a$/i.test(path)) return 'audio/mp4';
   if (/\.webm$/i.test(path)) return 'audio/webm';
   if (/\.png$/i.test(path)) return 'image/png';
@@ -1602,7 +1609,8 @@ function desenhaBandeja() {
   bandeja.replaceChildren();
   anexos.forEach((a, i) => {
     const d = document.createElement('div'); d.className = 'anexo';
-    let im; if (a.rot !== undefined) { d.classList.add('doc'); im = document.createElement('div'); im.innerHTML = icone('doc'); const [nm, tm] = a.rot.split(' · '); im.append(elD('b', '', nm || 'Arquivo'), elD('span', '', tm || '')); }
+    let im; if (a.video) { im = document.createElement('video'); im.muted = true; im.playsInline = true; im.setAttribute('playsinline', ''); im.preload = 'metadata'; im.src = a.url + '#t=0.3'; d.classList.add('vid'); }
+    else if (a.rot !== undefined) { d.classList.add('doc'); im = document.createElement('div'); im.innerHTML = icone('doc'); const [nm, tm] = a.rot.split(' · '); im.append(elD('b', '', nm || 'Arquivo'), elD('span', '', tm || '')); }
     else { im = document.createElement('img'); im.src = a.url; im.alt = 'Foto ' + (i + 1); }
     const x = document.createElement('button'); x.type = 'button'; x.innerHTML = icone('close'); x.setAttribute('aria-label', a.rot !== undefined ? 'Tirar este arquivo' : 'Tirar esta foto');
     x.onclick = () => { if (a.url) URL.revokeObjectURL(a.url); anexos.splice(i, 1); desenhaBandeja(); };
@@ -1614,6 +1622,27 @@ function desenhaBandeja() {
 // Vídeo vira quadros no próprio celular (May, 07/11/2026 16:02: "aceitar vídeo sem encher meu git"; os vídeos dela são gravação de tela pra tirar quadro):
 // olha o vídeo a cada ~0,4 s, junta os quadros parecidos em CENAS e fica com o mais nítido de cada (May 15:47: "não adianta quadro tremido");
 // cena que volta (A, B, A) não repete: compara com TODAS as já guardadas (Sigma #145, 12/11/2026); só as imagens sobem, o vídeo não
+// Vídeo acima do limite: toca escondido num canvas de até 720p e regrava com o MediaRecorder (~2 Mbps, com o som); demora o tempo do vídeo
+async function encolheVideo(file, aviso) {
+  const url = URL.createObjectURL(file), v = document.createElement('video'); v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'auto'; v.src = url;
+  try {
+    await new Promise((ok, erro) => { v.onloadedmetadata = ok; v.onerror = erro; setTimeout(erro, 20000); });
+    const k = Math.min(1, 1280 / Math.max(v.videoWidth, v.videoHeight)), c = document.createElement('canvas'), cx = c.getContext('2d');
+    c.width = Math.round(v.videoWidth * k / 2) * 2; c.height = Math.round(v.videoHeight * k / 2) * 2;
+    const st = c.captureStream(30), Ctx = window.AudioContext || window.webkitAudioContext; let ac = null;
+    try { ac = new Ctx(); const src = ac.createMediaElementSource(v), dst = ac.createMediaStreamDestination(); src.connect(dst); dst.stream.getAudioTracks().forEach(t => st.addTrack(t)); } catch (e) {}
+    const tipo = ['video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp8,opus', 'video/webm'].find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t)) || '';
+    const rec = new MediaRecorder(st, Object.assign({ videoBitsPerSecond: 2000000, audioBitsPerSecond: 96000 }, tipo ? { mimeType: tipo } : {})), partes = [];
+    rec.ondataavailable = e => { if (e.data && e.data.size) partes.push(e.data); };
+    const fim = new Promise(ok => { rec.onstop = ok; });
+    let vivo = true; const pinta = () => { if (!vivo) return; cx.drawImage(v, 0, 0, c.width, c.height); if (v.duration) aviso && aviso(Math.min(99, Math.round(v.currentTime / v.duration * 100))); requestAnimationFrame(pinta); };
+    rec.start(1000); await v.play().catch(() => { v.muted = true; return v.play(); }); pinta();   // iPhone pode barrar o play com som fora do toque: vai sem som
+    await new Promise(ok => { v.onended = ok; });
+    vivo = false; rec.stop(); await fim; if (ac) ac.close().catch(() => {});
+    const mt = (rec.mimeType || tipo || 'video/mp4').split(';')[0];
+    return new File(partes, 'video.' + (/webm/.test(mt) ? 'webm' : 'mp4'), { type: mt });
+  } finally { URL.revokeObjectURL(url); }
+}
 async function quadrosDoVideo(file, maxQ = 20) {
   const url = URL.createObjectURL(file), v = document.createElement('video'); v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url;
   const vai = t => new Promise(ok => { v.onseeked = ok; v.currentTime = t; setTimeout(ok, 3000); });
@@ -1648,12 +1677,17 @@ arquivo.addEventListener('change', async () => {
       catch (e) { showNote('Não consegui abrir ' + f.name + '.', true); }
       continue;
     }
-    if (/^video\//.test(f.type)) {
-      showNote('Tirando os quadros do vídeo…');
-      let qs = []; try { qs = await quadrosDoVideo(f); } catch (e) {}
-      if (!qs.length) { showNote('Não consegui tirar quadros desse vídeo.', true); continue; }
+    if (/^video\//.test(f.type) || /\.(mov|mp4|m4v|webm)$/i.test(f.name || '')) {   // vídeo sobe INTEIRO em recados-videos/ (Sigma #221, May 13/11 13:07: "tinha q aceitar inteiro e tirar quadro depois"); os quadros vêm depois, de extra
+      let vid = f;
+      if (f.size > LIMITE_ARQ) { showNote('O vídeo tem ' + tamanhoLegivel(f.size) + '; diminuindo pra caber (deixa o app aberto)…'); try { vid = await encolheVideo(f, pc => showNote('Diminuindo o vídeo… ' + pc + '%')); } catch (e) { vid = null; } }
+      if (!vid || vid.size > LIMITE_ARQ) { showNote('Não consegui deixar o vídeo abaixo de ' + tamanhoLegivel(LIMITE_ARQ) + '. Corta em partes menores no iPhone e manda de novo.', true); continue; }
+      showNote('Preparando o vídeo…');
+      try { const b64 = await new Promise((ok, erro) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1] || ''); fr.onerror = erro; fr.readAsDataURL(vid); }); const ext = /quicktime/i.test(vid.type) || /\.mov$/i.test(vid.name || '') ? 'mov' : /webm/i.test(vid.type) ? 'webm' : 'mp4'; anexos.push({ b64, ext, url: URL.createObjectURL(vid), video: true, tam: vid.size }); desenhaBandeja(); }
+      catch (e) { showNote('Não consegui abrir o vídeo.', true); continue; }
+      showNote('Vídeo pronto. Tirando os quadros de extra…');
+      let qs = []; try { qs = await quadrosDoVideo(f, 8); } catch (e) {}
       for (const q of qs) { try { const rd = await reduzir(q); anexos.push({ b64: rd.b64, ext: rd.ext, url: URL.createObjectURL(q) }); } catch (e) {} }
-      showNote(qs.length + ' quadro' + (qs.length > 1 ? 's' : '') + ' do vídeo prontos (o vídeo não sobe)'); continue;
+      showNote('Vídeo inteiro' + (qs.length ? ' + ' + qs.length + ' quadro' + (qs.length > 1 ? 's' : '') : '') + ' prontos pra enviar'); continue;
     }
     try { const rd = await reduzir(f); anexos.push({ b64: rd.b64, ext: rd.ext, url: URL.createObjectURL(f) }); }
     catch (e) { showNote('Uma das fotos não abriu.', true); }
