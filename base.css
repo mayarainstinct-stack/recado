@@ -2154,9 +2154,23 @@ body.na-geral .painel.tema-musica .p-topo::after, .painel.tema-musica .p-topo::a
 .bt-musica .ic .im { width: 52px; height: 52px; }
 .bt-musica .t { color: #fff !important; text-shadow: 0 1px 3px #000; }
 .t-musica .tm-abas { grid-template-columns: repeat(4, 1fr) !important; }
-.t-musica .tm-manut .tm-mt-l { display: flex; align-items: center; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #3A3533; }
-.t-musica .tm-mt { flex: 1; min-width: 0; display: flex; flex-direction: column; } .t-musica .tm-mt b { font-size: 14px; } .t-musica .tm-mt small { color: #BDB5AF; font-size: 12px; }
-.t-musica .tm-mt.atras small { color: #FF6B76; font-weight: 700; } .t-musica .tm-mt.sem small { color: #8F8780; }
-.t-musica .tm-fiz { flex: none; padding: 6px 10px; border-radius: 10px; border: 1px solid #FFD60A; background: #000; color: #FFD60A; font-weight: 700; font-size: 13px; }
-.t-musica .tm-manut .tm-ed { float: none; margin: 0; }
-.t-musica .tm-fiz { white-space: nowrap; }
+.t-musica .tc-resumo { margin: 8px 0 12px; padding: 12px 14px; border-radius: 16px; background: #0B0A0A; border: 1px solid var(--tm-linha); border-left: 4px solid #FFD60A; }
+.t-musica .tc-resumo.atras { border-left-color: #F0283A; }
+.t-musica .tc-resumo b { display: block; font-size: 15px; } .t-musica .tc-resumo span { display: block; margin-top: 2px; color: var(--tm-mudo); font-size: 12.5px; }
+.t-musica .tc-card { margin: 0 0 14px; border-radius: 18px; overflow: hidden; background: linear-gradient(#1C1917, #121010); border: 1px solid var(--tm-linha); box-shadow: 0 6px 18px rgba(0,0,0,.45); }
+.t-musica .tc-arte { height: 104px; display: grid; place-items: center; background: radial-gradient(ellipse 60% 70% at 38% 55%, #3B2C23 0, #17110E 60%, #0A0807 100%); border-bottom: 1px solid #2A2523; }
+.t-musica .tc-gtr { width: auto; height: 86px; max-width: 96%; filter: drop-shadow(0 6px 6px rgba(0,0,0,.7)); }
+.t-musica .tc-nome { padding: 10px 14px 0; } .t-musica .tc-nome h3 { margin: 0; font-size: 16px; font-weight: 800; } .t-musica .tc-nome small { display: block; margin-top: 2px; color: var(--tm-mudo); font-size: 12px; line-height: 1.35; }
+.t-musica .tc-serv { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 10px 12px 12px; }
+.t-musica .tc-s { min-width: 0; display: flex; flex-direction: column; gap: 3px; padding: 8px; border-radius: 14px; background: #0B0A0A; border: 1px solid #2E2927; }
+.t-musica .tc-s.atras { border-color: #F0283A; box-shadow: inset 0 0 0 1px rgba(240,40,58,.35); }
+.t-musica .tc-s-top { display: flex; align-items: center; justify-content: space-between; min-height: 26px; }
+.t-musica .tc-s-ic svg { width: 20px; height: 20px; fill: none; stroke: #FFD60A; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; display: block; }
+.t-musica .tc-s .ed-mini { width: 26px; height: 26px; padding: 0; margin: 0; color: #BDB5AF; }
+.t-musica .tc-s-nome { font-size: 12.5px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.t-musica .tc-s-num { font-size: 24px; font-weight: 900; line-height: 1.05; color: #fff; white-space: nowrap; } .t-musica .tc-s-num small { margin-left: 3px; font-size: 11px; font-weight: 700; color: var(--tm-mudo); }
+.t-musica .tc-s.atras .tc-s-num { color: #FF6B76; } .t-musica .tc-s.sem .tc-s-num { color: #5E5853; }
+.t-musica .tc-s-sub, .t-musica .tc-s-ult { font-size: 11px; color: #8F8780; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .t-musica .tc-s.atras .tc-s-sub { color: #FF6B76; font-weight: 700; }
+.t-musica .tc-bar { height: 5px; margin: 2px 0; border-radius: 3px; background: #2A2523; overflow: hidden; } .t-musica .tc-bar i { display: block; height: 100%; border-radius: inherit; background: #FFD60A; } .t-musica .tc-s.atras .tc-bar i { background: #F0283A; }
+.t-musica .tc-fiz { margin-top: 4px; width: 100%; padding: 8px 0; border-radius: 10px; border: 1px solid #FFD60A; background: #FFD60A; color: #111; font: inherit; font-size: 12.5px; font-weight: 800; white-space: nowrap; cursor: pointer; }
+.t-musica .tc-fiz.feito { background: transparent; color: #FFD60A; opacity: .8; }
