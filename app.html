@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.347">
+<meta name="app-versao" content="2026-11-13.348">
 <meta name="app-novidade" content="Saúde: números e tabelas também dá pra editar">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.347"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.348"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3497,11 +3497,8 @@ function abreContraste(m) {
         const g = elD('div', 'ctb-port'); (d.portfolio || []).forEach(p => { const k = elD('figure', 'ctb-peca'), im = elD('img'); im.alt = p.peca || ''; im.loading = 'lazy'; fotoUrl(p.arquivos[0]).then(u => { im.src = u; }).catch(() => {}); im.onclick = () => im.src && abreZoom(im.src, p.arquivos[0], p.arquivos); const cap = elD('figcaption'); cap.append(elD('b', '', p.cliente), elD('span', '', p.peca + ' · ' + p.data + (p.arquivos.length > 1 ? ' · ' + p.arquivos.length + ' versões' : ''))); k.append(im, cap); g.append(k); });
         corpo.append(g, elD('p', 'ctb-nota', 'Só entra peça com a marca da Contraste no canto. Os originais ficam na pasta da rede, fora do app.'));
       } else {
-        const hero = elD('div', 'ctr-hero'), im = elD('img'); im.alt = d.nome || ''; fotoUrl(d.logo).then(u => { im.src = u; }).catch(() => {});
-        const faixas = elD('div', 'ctr-faixas'); ['#FFF200', '#EC008C', '#00AEEF'].forEach(k => { const s = elD('i'); s.style.background = k; faixas.append(s); });
-        hero.append(im, faixas); corpo.append(hero, elD('p', 'ctr-frase', d.frase || ''));
-        const cores = elD('div', 'ctr-cores'); (d.cores || []).forEach(k => { const b = elD('div', 'ctr-cor'), s = elD('span'); s.style.background = k.hex; b.append(s, elD('b', '', k.nome), elD('small', '', k.hex)); cores.append(b); }); corpo.append(cores);
-        (d.cartoes || []).forEach(k => { const cd = elD('article', 'ctr-card'); cd.append(elD('h3', '', k.titulo), elD('p', '', k.texto)); corpo.append(cd); });
+        const hero = elD('div', 'ctr-hero so-logo'), im = elD('img'); im.alt = d.nome || ''; fotoUrl(d.logo).then(u => { im.src = u; }).catch(() => {});   // a marca sozinha e inteira, sem texto nem caixas de cor embaixo (May 13/11 16:20, Sigma 16:22)
+        hero.append(im); corpo.append(hero);
       }
     };
     E.aoMudar = pinta; pinta();
