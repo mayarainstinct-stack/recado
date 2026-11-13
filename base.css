@@ -2211,3 +2211,4 @@ body.modo-trab .painel.tema-saude .sl-aba.on { background: var(--vs-c, #D61F69);
 .lote-op.on { background: #7C3AED; border-color: #7C3AED; color: #FFFFFF; }
 .lote-tela .lote-foto { height: auto !important; width: 100% !important; aspect-ratio: 3 / 4; min-height: 0 !important; padding: 0 !important; border-radius: 10px !important; } .lote-tela .lote-fecha { width: auto !important; height: auto !important; min-width: 0 !important; border-radius: 22px !important; } .lote-tela .lote-op { width: auto !important; height: auto !important; min-height: 34px; border-radius: 10px !important; }
 .lote-tela .lote-foto { background: #111; } .lote-foto img { object-fit: contain; }
+.pl2-top span.pl2-com { margin-top: 6px; font-weight: 800; color: #3B2A4A; } .pl2-mais-fotos { flex: none; width: 64px; height: 92px; border-radius: 10px; border: 3px solid #3B2A4A; background: #3B2A4A; color: #FFD34D; font: inherit; font-size: 18px; font-weight: 900; }
