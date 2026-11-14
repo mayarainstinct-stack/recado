@@ -2421,3 +2421,14 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 .sl-abas { padding-left: 2px; padding-right: 2px; }
 .tela.gr-cinema .midia-tipo { margin: 22px 2px 10px; font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 900; letter-spacing: .5px; text-transform: uppercase; color: #B3261E; text-shadow: 1px 1px 0 #2B1A0E; } .tela.gr-cinema .midia-tipo:first-of-type { margin-top: 6px; }   /* #299: título de cada tipo de álbum */
 .zoom .zx { position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); right: 16px; z-index: 2; }   /* #307: o fechar do zoom no canto de cima à direita, igual aos popups (Sigma 02:22) */
+.ctb-rev-sec { margin: 0 0 30px; }
+.ctb-rev-cap { position: relative; margin: 8px 0 14px; font-family: Impact, 'Arial Black', sans-serif; font-weight: 400; font-size: 52px; line-height: .92; letter-spacing: .01em; text-transform: uppercase; color: #000; overflow-wrap: anywhere; }
+.ctb-rev-cap span { position: relative; display: inline-block; isolation: isolate; } .ctb-rev-cap span::before, .ctb-rev-cap span::after { content: attr(data-t); position: absolute; left: 0; top: 0; z-index: -1; mix-blend-mode: multiply; } .ctb-rev-cap span::before { color: #00AEEF; transform: translate(-3px, 2px); } .ctb-rev-cap span::after { color: #EC008C; transform: translate(3px, -2px); }
+.ctb-rev-cap small { display: block; margin-top: 8px; font-family: inherit; font-family: system-ui, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .18em; line-height: 1.5; color: #5C5C5C; text-transform: uppercase; }
+.ctb-rev-gr { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 0 4px 4px 0; }
+.ctb-rev .ctb-peca { margin: 0; display: flex; flex-direction: column; border: 2px solid #000; border-radius: 0; box-shadow: 4px 4px 0 #000; background: #111; overflow: hidden; }
+.ctb-rev .ctb-peca.grande { grid-column: 1 / -1; }
+.ctb-rev .ctb-peca img { display: block; width: 100%; height: 190px; aspect-ratio: auto; object-fit: contain; background: #111; border: 0; border-radius: 0; }
+.ctb-rev .ctb-peca.grande img { height: auto; max-height: 520px; }
+.ctb-rev .ctb-peca figcaption { margin-top: auto; padding: 8px 10px 10px; background: #000; color: #fff; }
+.ctb-rev .ctb-peca figcaption b { display: block; font-size: 14px; } .ctb-rev .ctb-peca figcaption span { display: block; margin-top: 2px; font-size: 12px; line-height: 1.3; color: #CFCFCF; }
