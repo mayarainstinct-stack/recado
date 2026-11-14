@@ -2348,3 +2348,23 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 .rv-med + .rv-med::before { display: none; }   /* sem o tracinho entre as insígnias (May 14/11 00:20) */
 .rv-med:not(.trofeu) .rv-med-ic .a { fill: var(--quem); stroke: none; } .rv-med-ic .b { fill: rgba(0,0,0,.32); } .rv-med-ic .c { fill: #fff; }   /* insígnia da Avaliação na cor do cartão do robô, igual ao crachá (May 14/11 00:26) */
 .rv-ct .rv-glista { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 22px; } .rv-ct .rv-glista .rv-med { flex: 0 1 130px; }   /* insígnias da semana centralizadas no card (May 14/11 00:27) */
+/* aba Poderes mais visual: desenho de cada poder, texto só no toque (May 14/11 00:22). pa = fichas, pb = selos redondos, pc = etiquetas, pd = colmeia */
+.ct-poderes:is(.pa, .pb, .pc, .pd) dd { display: none; }
+.ct-poderes.pa { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.ct-poderes.pa > div { grid-column: auto; display: grid; grid-template-columns: 1fr; justify-items: center; align-content: center; gap: 8px; padding: 14px 6px 12px; min-height: 92px; border-radius: 16px; text-align: center; background: linear-gradient(160deg, color-mix(in srgb, var(--quem) 38%, transparent), rgba(0,0,0,.35)); border: 1px solid color-mix(in srgb, var(--quem) 55%, transparent); }
+.ct-poderes.pa svg { width: 30px; height: 30px; grid-row: auto; color: #fff; filter: drop-shadow(0 2px 3px rgba(0,0,0,.4)); }
+.ct-poderes.pa dt { font-size: 11.5px; font-weight: 700; line-height: 1.2; letter-spacing: 0; text-transform: none; color: #fff; }
+.ct-poderes.pb { grid-template-columns: repeat(3, 1fr); gap: 14px 8px; }
+.ct-poderes.pb > div { grid-column: auto; display: grid; grid-template-columns: 1fr; justify-items: center; gap: 6px; padding: 4px 0; background: none; text-align: center; }
+.ct-poderes.pb svg { box-sizing: border-box; width: 62px; height: 62px; padding: 15px; grid-row: auto; border-radius: 50%; color: #fff; background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--quem) 85%, #fff), var(--quem) 55%, color-mix(in srgb, var(--quem) 60%, #000)); box-shadow: 0 0 0 3px rgba(255,255,255,.18), 0 6px 14px rgba(0,0,0,.45); }
+.ct-poderes.pb dt { font-size: 11.5px; font-weight: 700; line-height: 1.2; text-transform: none; letter-spacing: 0; color: #fff; }
+.ct-poderes.pc { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.ct-poderes.pc > div { display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px 8px 10px; border-radius: 999px; background: color-mix(in srgb, var(--quem) 22%, rgba(0,0,0,.4)); border: 1.5px solid var(--quem); }
+.ct-poderes.pc svg { width: 18px; height: 18px; grid-row: auto; color: var(--claro, #fff); }
+.ct-poderes.pc dt { font-size: 13px; font-weight: 700; text-transform: none; letter-spacing: 0; color: #fff; }
+.ct-poderes.pd { grid-template-columns: repeat(3, 1fr); gap: 6px 6px; padding: 10px 6px; }
+.ct-poderes.pd > div { grid-column: auto; display: grid; grid-template-columns: 1fr; justify-items: center; align-content: center; gap: 4px; aspect-ratio: 1 / 1.08; padding: 12px 10px; text-align: center; border-radius: 0; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); background: linear-gradient(180deg, color-mix(in srgb, var(--quem) 70%, #fff 0%), color-mix(in srgb, var(--quem) 55%, #000)); }
+.ct-poderes.pd > div:nth-child(6n+4), .ct-poderes.pd > div:nth-child(6n+5), .ct-poderes.pd > div:nth-child(6n+6) { transform: translateX(calc(50% + 3px)); }
+.ct-poderes.pd svg { width: 26px; height: 26px; grid-row: auto; color: #fff; }
+.ct-poderes.pd dt { font-size: 10.5px; font-weight: 800; line-height: 1.15; text-transform: none; letter-spacing: 0; color: #fff; }
+.rv-tr-bloco .rv-tr-feitos { text-align: center; }   /* feitos do troféu centralizados (May 14/11 00:32) */

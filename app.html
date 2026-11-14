@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-14.382">
+<meta name="app-versao" content="2026-11-14.383">
 <meta name="app-novidade" content="Avaliação: insígnia na cor do cartão de cada robô">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-14.382"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-14.383"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -461,6 +461,9 @@ const ICO_FICHA = {
 };
 const INSIGNIA = '<svg viewBox="0 0 40 40" aria-hidden="true"><path class="a" d="M20 2l15 8.5v19L20 38 5 29.5v-19z"/><path class="b" d="M20 7l11 6.3v13.4L20 33 9 26.7V13.3z"/><path class="c" d="M20 12.5l2.3 4.7 5.2.8-3.8 3.7.9 5.2-4.6-2.4-4.6 2.4.9-5.2-3.8-3.7 5.2-.8z"/></svg>';
 // cada insígnia com o ícone e a moldura dela (fichas.json: icone, moldura); sem eles, o hexágono com estrela de antes
+// cada poder com o desenho dele e o texto só no toque (May, 14/11/2026 00:22: "mais visual, menos texto, mais amor")
+const PODER_ESTILO = '';   // '' = lista de antes; pa/pb/pc/pd = os 4 estilos novos, esperando a May escolher (#280)
+const ICO_PODER = [[/sonopl|mixag|fl studio|trilha|melodyne|áudio|audio/i, 'fone'], [/guitarr|viol|baixo/i, 'guitarra'], [/teclado|canto|piano|música|musica/i, 'nota'], [/git/i, 'git'], [/servidor|rede|house bridge|wi-?fi/i, 'servidor'], [/defeito|revis|pronto|placar|caça/i, 'lupa'], [/prioridade|roi/i, 'trofeu'], [/design|desenho|colorimetria|corel|pincel|arte/i, 'pincel'], [/modelagem|3d/i, 'cubo'], [/edição|edicao|vídeo|video|ia/i, 'filme'], [/reforma|marcenaria/i, 'martelo'], [/flutter|apk|celular/i, 'camadas'], [/sql|oracle|postgres|delphi|banco/i, 'disquete'], [/java|html|css|react|electron|powershell|código|codigo/i, 'engrenagem'], [/jogo|game|launcher|emula/i, 'controle'], [/foto|print|câmera|camera/i, 'camera'], [/limpe|faxina/i, 'vassoura']];
 const ICO_INSIGNIA = {
   gato: '<path d="M5 20V9l2.5-5L11 8h2l3.5-4L19 9v11z"/><circle cx="9.5" cy="13" r=".9"/><circle cx="14.5" cy="13" r=".9"/><path d="M11 16.5h2M12 16.5v1.2M7 15.5H4M17 15.5h3"/>',   // troféu do Stray (May 07/11 13:01: "tipo um gatinho")
   nota: '<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>',
@@ -589,8 +592,8 @@ async function abreCracha(chave) {
   atr.forEach(([n, val], ix) => { if (atr.length === 10 && (ix === 0 || ix === 5)) pAtr.append(el('div', 'ct-tit', ix ? 'Especiais: o que faz de melhor' : 'Comuns: iguais pra todo mundo')); const b = el('div', 'ct-bar'); b.setAttribute('role', 'meter'); b.setAttribute('aria-label', n); b.setAttribute('aria-valuemin', 0); b.setAttribute('aria-valuemax', 10); b.setAttribute('aria-valuenow', val); b.append(el('span', '', n), el('em', '', val + '/10')); const s = el('div', 'ct-seg'); for (let i = 0; i < 10; i++) { const q = el('i', i < val ? 'on' : ''); q.style.setProperty('--i', i); s.append(q); } b.append(s); pAtr.append(b); });
   if (f.forte || f.fraco) { const ff = el('div', 'ct-ff'); [['forte', 'Forte', 'sobe'], ['fraco', 'Fraco', 'desce']].forEach(([c, r, i]) => { if (!f[c]) return; const d = el('div', c), t = ic(i, 'ct-tit', r); d.append(t, f[c]); ff.append(d); }); pJeito.append(bloco('Forte × fraco', ff)); }
   const pHab = el('div');
-  if (f.hab) { const lista = el('dl', 'ct-dados ct-poderes'), curto = t => String(t || '').split(/(?<=\.)\s/)[0];
-    f.hab.forEach(n => { const w = el('div'); w.innerHTML = ICO_FICHA.estrela; w.append(el('dt', '', n), el('dd', '', curto((f.explica || {})[n]) || 'Uma das habilidades de ' + nome + '.')); lista.append(w); });
+  if (f.hab) { const lista = el('dl', 'ct-dados ct-poderes ' + PODER_ESTILO), curto = t => String(t || '').split(/(?<=\.)\s/)[0];
+    f.hab.forEach(n => { const w = el('div'), ic = (ICO_PODER.find(([re]) => re.test(n)) || [0, 'raio'])[1]; w.innerHTML = PODER_ESTILO ? '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + (ICO_INSIGNIA[ic] || ICO_INSIGNIA.raio) + '</svg>' : ICO_FICHA.estrela; w.append(el('dt', '', n), el('dd', '', curto((f.explica || {})[n]) || 'Uma das habilidades de ' + nome + '.')); lista.append(w); });
     pHab.append(bloco('Habilidades', lista)); }
   if (f.olhar) pJeito.append(bloco('Como eu vejo as coisas', el('div', 'ct-olhar', f.olhar)));
   if (f.jeito && f.jeito.length) { const dl = el('dl', 'ct-dados ct-jeito'); f.jeito.forEach(([t, v]) => { const w = el('div'); w.innerHTML = ICO_FICHA.jeito; w.append(el('dt', '', t), el('dd', '', v)); dl.append(w); }); pJeito.append(bloco('Personalidade', dl)); }   // aba Jeito cheia (May, 06/11/2026)
