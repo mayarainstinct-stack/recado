@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-14.401">
+<meta name="app-versao" content="2026-11-14.402">
 <meta name="app-novidade" content="Música: grade com buracos maiores e vinheta preta">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-14.401"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-14.402"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2811,11 +2811,17 @@ function cartaoPc(p) {
   const top = elD('div', 'pcd-top'), nm = elD('div'); const gn = g.nome.replace(/\s*\(.*\)/, ''); nm.append(elD('b', '', gn.toLowerCase().startsWith(String(p.pc).toLowerCase()) ? gn : p.pc + ' · ' + gn), elD('span', '', p.papel || ''));   // sem "Checklist · Checklist" (projetos do Trabalho, 09/11)
   const es = elD('span', 'pcd-est', en); es.style.setProperty('--ec', ec); top.append(fotoRobo(g), nm, es); d.append(top);
   const md0 = p.medido, vez = (n, um, muitos) => n == 1 ? '1 ' + um : n + ' ' + muitos, virg = x => String(x).replace('.', ',');
-  const resumo = md0 && md0.disco_c_livre_gb != null ? `Nos últimos 30 dias ${md0.desligou_na_marra_30d ? 'desligou na marra ' + vez(md0.desligou_na_marra_30d, 'vez', 'vezes') : 'nenhum desligamento na marra'} e ${md0.erro_hardware_30d ? vez(md0.erro_hardware_30d, 'erro', 'erros') + ' de hardware' : 'nenhum erro de hardware'}; ${Math.round(md0.disco_c_livre_gb)} GB livres no disco C${md0.ram_livre_gb != null ? ` e ${virg(md0.ram_livre_gb)} GB de RAM livres de ${virg(md0.ram_gb)}` : ''}.` : p.resumo;   // com o medido, o texto sai dele (Sigma #42 13/11)
+  const resumo = md0 && md0.disco_c_livre_gb != null ? `Nos últimos 30 dias ${md0.desligou_na_marra_30d ? 'desligou na marra ' + vez(md0.desligou_na_marra_30d, 'vez', 'vezes') : 'nenhum desligamento na marra'} e ${md0.erro_hardware_30d ? vez(md0.erro_hardware_30d, 'erro', 'erros') + ' de hardware' : 'nenhum erro de hardware'}${md0.ram_livre_gb != null ? `; ${virg(md0.ram_livre_gb)} GB de RAM livres de ${virg(md0.ram_gb)}` : ''}.` : p.resumo;   // com o medido, o texto sai dele (Sigma #42 13/11)
   if (resumo) d.append(elD('p', 'pcd-res', resumo));
-  if (p.medido && p.medido.disco_c_livre_gb != null && p.medido.disco_c_total_gb) { const md = p.medido, livre = md.disco_c_livre_gb, tot = md.disco_c_total_gb, uso = Math.min(100, Math.max(0, (tot - livre) / tot * 100)), aperto = livre < 30 || livre / tot < .15, bx = elD('div', 'pcd-disco' + (aperto ? ' aperto' : '')), tx = elD('div', 'pcd-disco-tx'), bar = elD('div', 'trilho-prog'), f = elD('i'); tx.append(elD('b', '', 'Disco C'), elD('span', '', livre + ' GB livres de ' + tot + ' · medido ' + (md.medido || ''))); f.style.width = uso + '%'; bar.append(f); bx.append(tx, bar); d.append(bx); }
+  if (p.medido && p.medido.disco_c_livre_gb != null && p.medido.disco_c_total_gb) {   // cada disco com a barra dele e o livre (May 14/11 01:47: PC2 e PC3 têm 2); número com vírgula (#300)
+    const md = p.medido, vols = (md.volumes && md.volumes.length ? md.volumes : [{ letra: 'C:', livre_gb: md.disco_c_livre_gb, total_gb: md.disco_c_total_gb }]).filter(v => v.total_gb);
+    vols.forEach(v => { const livre = v.livre_gb, tot = v.total_gb, uso = Math.min(100, Math.max(0, (tot - livre) / tot * 100)), aperto = livre < 30 || livre / tot < .15, bx = elD('div', 'pcd-disco' + (aperto ? ' aperto' : '')), tx = elD('div', 'pcd-disco-tx'), bar = elD('div', 'trilho-prog'), f = elD('i'), tipo = { SSD: 'SSD', HDD: 'HD' }[v.tipo] || '';
+      tx.append(elD('b', '', 'Disco ' + v.letra.replace(':', '') + (tipo ? ' · ' + tipo : '')), elD('span', '', virg(livre) + ' GB livres de ' + tot)); f.style.width = uso + '%'; bar.append(f); bx.append(tx, bar); d.append(bx); });
+    if (md.medido) d.append(elD('small', 'pcd-disco-quando', 'Medido ' + md.medido));
+  }
   if (p.medido && p.medido.ram_livre_gb != null && p.medido.ram_gb) { const md = p.medido, uso = Math.min(100, Math.max(0, (md.ram_gb - md.ram_livre_gb) / md.ram_gb * 100)), aperto = md.ram_livre_gb < 1.5 || md.ram_livre_gb / md.ram_gb < .1, bx = elD('div', 'pcd-disco' + (aperto ? ' aperto' : '')), tx = elD('div', 'pcd-disco-tx'), bar = elD('div', 'trilho-prog'), f = elD('i'); tx.append(elD('b', '', 'RAM'), elD('span', '', Math.round(uso) + '% em uso na medida')); f.style.width = uso + '%'; bar.append(f); bx.append(tx, bar); d.append(bx); }   // #42: disco do medido (casa/diagnostico/medido/<PC>.json) na barra tracejada da casa, na cor do robô; apertado (menos de 30 GB ou 15%) fica vermelho
-  if ((p.numeros || []).length) { const n = elD('div', 'pcd-num'); p.numeros.forEach(([k, v]) => { const b = elD('div'); b.append(elD('span', '', k), elD('b', '', v)); n.append(b); }); d.append(n); }
+  const nums = (p.numeros || []).filter(([k]) => !(p.medido && /^C: livre/.test(k)));   // o disco já tem a barra: 1 número só (#300, Sigma 01:25)
+  if (nums.length) { const n = elD('div', 'pcd-num'); nums.forEach(([k, v]) => { const b = elD('div'); b.append(elD('span', '', k), elD('b', '', v)); n.append(b); }); d.append(n); }
   [['feito', 'Feito', ''], ['falta', 'Falta', ''], ['peca', 'Só peça resolve', 'peca']].forEach(([k, t, cls]) => { if (!(p[k] || []).length) return; d.append(elD('h4', cls, t)); const ul = elD('ul'); p[k].forEach(i => ul.append(elD('li', '', i))); d.append(ul); });
   return d;
 }

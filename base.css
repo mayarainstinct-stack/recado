@@ -738,6 +738,7 @@ img.esq { min-height: 140px; }
 .pcd-dias-bar.aprox::after { opacity: .5; } .pcd-dias-bar.vazio { cursor: default; } .pcd-dias-bar.vazio::after { content: none; }
 .pcd-dias-num { text-align: right; } .pcd-dias-num b { font-size: 20px; font-weight: 900; color: var(--fg); white-space: nowrap; }
 .pcd-dias-nota { margin: 0; font-size: 12px; color: var(--muted); }
+.pcd-disco-quando { display: block; margin: -4px 0 12px; font-size: 12px; color: var(--muted); }
 .pcd-cmp { --rc: var(--accent); } .pcd-lin { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
 .pcd-cab div { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 6px; border-radius: 10px; background: color-mix(in srgb, var(--rc) 16%, transparent); border-bottom: 3px solid var(--rc); font-size: 14px; }
 .pcd-cab img { width: 24px; height: 24px; border-radius: 8px; background: #0E0F12; }
