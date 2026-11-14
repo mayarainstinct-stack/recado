@@ -995,10 +995,12 @@ img.esq { min-height: 140px; }
 .tela.gr-cinema .item .ph:has(img) > :not(img) { display: none; }
 .album-grade { display: grid; grid-template-columns: 1fr 1fr; grid-auto-flow: row dense; gap: 22px 14px; }
 .album-grade > .item { grid-column: 1 / -1; margin: 0; }
-.album-grade > .item.em-pe { grid-column: auto; }
-.tela.gr-cinema .album-grade > .item.em-pe .ph { margin: 4px auto 14px; } .tela.gr-cinema .album-grade > .item.em-pe .ph img { max-height: 210px; }
-.tela.gr-cinema .album-grade > .item.em-pe .i-corpo { padding-right: 0; }
-.tela.gr-cinema .album-grade > .item.em-pe h3 { font-size: 16px; }
+.album-grade > .item:is(.em-pe, .par) { grid-column: auto; }
+.tela.gr-cinema .album-grade > .item:is(.em-pe, .par) .ph { margin: 4px auto 14px; } .tela.gr-cinema .album-grade > .item:is(.em-pe, .par) .ph img { max-height: 210px; }
+.tela.gr-cinema .album-grade > .item:is(.em-pe, .par) .i-corpo { padding-right: 0; }
+.tela.gr-cinema .album-grade > .item:is(.em-pe, .par) h3 { font-size: 16px; }
+.tela.gr-cinema .album-grade > .item:is(.em-pe, .par) h3 { -webkit-line-clamp: unset; line-clamp: unset; display: block; overflow: visible; white-space: normal; }
+.tela.gr-cinema .album-grade > .item.par { display: flex; flex-direction: column; } .tela.gr-cinema .album-grade > .item.par > .ph { margin-top: auto; } .tela.gr-cinema .album-grade > .item.par > .i-corpo { margin-bottom: auto; }
 .tela.gr-cinema .item .i-corpo { padding-right: 40px; }
 .tela.gr-cinema .item > .ed-mini { position: absolute; top: 10px; right: 10px; opacity: 1; z-index: 1; box-shadow: 0 0 0 2px #F7EEDB; }
 .painel:has(#p-corpo > .tela.gr-cinema) { --c: #B3261E !important; }
