@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.377">
-<meta name="app-novidade" content="Setinha de voltar igual e no meio do círculo em todas as telas">
+<meta name="app-versao" content="2026-11-14.378">
+<meta name="app-novidade" content="Agora dá pra mandar música pela conversa, com player no cartão">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.377"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-14.378"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -58,7 +58,7 @@
     <button type="button" id="foto" class="clip" aria-label="Enviar foto da galeria">
       <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M21 12.5 12.6 20.9a5.5 5.5 0 0 1-7.8-7.8l8.5-8.5a3.7 3.7 0 0 1 5.2 5.2l-8.5 8.5a1.8 1.8 0 0 1-2.6-2.6l7.8-7.8"/></svg>
     </button>
-    <input type="file" id="arquivo" accept="image/*,video/*,.zip,application/zip,application/x-zip-compressed,.pdf,application/pdf" multiple hidden>
+    <input type="file" id="arquivo" accept="image/*,video/*,.zip,application/zip,application/x-zip-compressed,.pdf,application/pdf,audio/*,.mp3,.m4a,.wav,.aac,.ogg,.flac" multiple hidden>
     <textarea id="texto" rows="1" placeholder="Escreve sua ideia…" aria-label="Recado" enterkeyhint="send"></textarea>
     <div class="gravando" id="gravando" hidden><span class="rec"></span><span id="rec-tempo">0:00</span><span class="dica">solta pra enviar · arrasta pro lado pra cancelar</span></div>
     <button type="button" id="rec-x" class="clip" aria-label="Cancelar áudio" hidden data-i="close"></button>
@@ -899,7 +899,8 @@ function cartaoArquivo(a) {
     catch (er) { sm.textContent = 'Não baixou, toca de novo'; showNote(msgErro(er, 'baixar o arquivo'), true); }
     finally { b.removeAttribute('aria-busy'); }
   });
-  return b;
+  if (!EXT_MUSICA.test(a.caminho)) return b;
+  const w = elD('div', 'arq-musica'), pl = playerAudio(a.caminho), mc = pl.querySelector('.mic-av'); if (mc) mc.innerHTML = icone('headphones'); w.append(pl, b); return w;   // música: toca ali mesmo e ainda dá pra baixar
 }
 function render(items, manterPosicao) {
   renderizando = true; setTimeout(() => { renderizando = false; }, 100);
@@ -1598,7 +1599,8 @@ function reduzir(file) {   // devolve { b64, mime, ext }
 }
 const arquivo = document.getElementById('arquivo');
 const LIMITE_ARQ = 50 * 1024 * 1024;   // a API de conteúdo do GitHub não aceita bem acima disso; passou = avisa, não tenta
-const ehDocEnvio = f => /\.(zip|pdf)$/i.test(f.name || '') || /^application\/(pdf|zip|x-zip-compressed)$/i.test(f.type || '');
+const EXT_MUSICA = /\.(mp3|m4a|wav|aac|ogg|flac)$/i;   // música pela conversa (May, 14/11/2026 00:07): vai inteira como arquivo, com player no cartão
+const ehDocEnvio = f => /\.(zip|pdf)$/i.test(f.name || '') || EXT_MUSICA.test(f.name || '') || /^(application\/(pdf|zip|x-zip-compressed)|audio\/)/i.test(f.type || '');
 const tamanhoLegivel = n => n >= 1048576 ? (n / 1048576).toFixed(1).replace('.', ',') + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
 // Colar imagem (Ctrl+V / colar) com a conversa aberta: vai como foto, igual escolher da galeria
 document.addEventListener('paste', e => {
@@ -1681,7 +1683,7 @@ arquivo.addEventListener('change', async () => {
     if (ehDocEnvio(f)) {   // zip/pdf pela conversa (May, 12/11/2026 18:15): sobe inteiro em recados-arquivos/
       if (f.size > LIMITE_ARQ) { showNote(f.name + ' tem ' + tamanhoLegivel(f.size) + '; o limite é ' + tamanhoLegivel(LIMITE_ARQ) + '. Divide em partes menores e manda de novo.', true); continue; }
       showNote('Preparando ' + f.name + '…');
-      try { const b64 = await new Promise((ok, erro) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1] || ''); fr.onerror = erro; fr.readAsDataURL(f); }); anexos.push({ b64, ext: (f.name.match(/\.(zip|pdf)$/i) || [0, /pdf/i.test(f.type) ? 'pdf' : 'zip'])[1].toLowerCase(), url: '', rot: f.name.replace(/[\[\]·\r\n]/g, ' ').trim() + ' · ' + tamanhoLegivel(f.size) }); showNote(''); }
+      try { const b64 = await new Promise((ok, erro) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1] || ''); fr.onerror = erro; fr.readAsDataURL(f); }); anexos.push({ b64, ext: (f.name.match(/\.(zip|pdf|mp3|m4a|wav|aac|ogg|flac)$/i) || [0, /pdf/i.test(f.type) ? 'pdf' : /^audio\//i.test(f.type) ? ((f.type.split('/')[1] || 'mp3').replace(/^mpeg$/, 'mp3').replace(/^(x-)?m4a$|^mp4$/, 'm4a')) : 'zip'])[1].toLowerCase(), url: '', rot: f.name.replace(/[\[\]·\r\n]/g, ' ').trim() + ' · ' + tamanhoLegivel(f.size) }); showNote(''); }
       catch (e) { showNote('Não consegui abrir ' + f.name + '.', true); }
       continue;
     }
