@@ -986,10 +986,19 @@ img.esq { min-height: 140px; }
 .tela.gr-cinema :is(.cine-card, .item, .estudio-tile, .estudio-hero) :is(b, strong, h2, h3, .t, .tit, .cp) { font-family: Georgia, 'Times New Roman', serif; color: #B3261E; }
 .tela.gr-cinema .chip { background: #2B1A0E; color: #F7EEDB; border-color: #2B1A0E; }
 .tela.gr-cinema :is(.dur, .ed-mini) { background: #2B1A0E; color: #F7EEDB; }
-/* #292: foto da Mídia com moldura de fotografia antiga (borda marrom, passe-partout creme, sombra igual à do cartão), nada solto no branco (May 14/11 01:02) */
+/* #292: foto da Mídia com moldura branca colada nela e sombra, sem fundo marrom (May 14/11 01:20); o quadro tem altura fixa e a foto entra inteira no tamanho dela */
 .tela.gr-cinema .item { position: relative; }
-.tela.gr-cinema .item .ph { margin: 6px 8px 14px; padding: 6px; border-radius: 3px; overflow: visible; background: #E8D2A6; border: 3px solid #2B1A0E; box-shadow: 4px 5px 0 #2B1A0E; }
-.tela.gr-cinema .item .ph img { inset: 6px; width: calc(100% - 12px); height: calc(100% - 12px); background: #2B1A0E; border-radius: 1px; }
+.tela.gr-cinema .item .ph { display: block; position: relative; width: fit-content; max-width: calc(100% - 16px); margin: 8px auto 16px; aspect-ratio: auto; border-radius: 2px; overflow: hidden; background: #FFFDF6; border: 6px solid #FFFDF6; box-shadow: 0 6px 14px rgba(43,26,14,.45), 0 1px 3px rgba(43,26,14,.35); }
+.tela.gr-cinema .item .ph:not(:has(img.ok)) { width: 100%; height: 200px; box-sizing: border-box; }
+.tela.gr-cinema .item .ph img { position: static; inset: auto; display: block; width: auto; height: auto; max-width: 100%; max-height: 230px; border-radius: 1px; background: none; }
+.tela.gr-cinema .item .ph::after { content: ''; position: absolute; inset: 0; border-radius: 1px; box-shadow: inset 0 0 0 1px rgba(43,26,14,.25), inset 0 2px 12px rgba(0,0,0,.55); pointer-events: none; }
+.tela.gr-cinema .item .ph:has(img) > :not(img) { display: none; }
+.album-grade { display: grid; grid-template-columns: 1fr 1fr; grid-auto-flow: row dense; gap: 22px 14px; }
+.album-grade > .item { grid-column: 1 / -1; margin: 0; }
+.album-grade > .item.em-pe { grid-column: auto; }
+.tela.gr-cinema .album-grade > .item.em-pe .ph { margin: 4px auto 14px; } .tela.gr-cinema .album-grade > .item.em-pe .ph img { max-height: 210px; }
+.tela.gr-cinema .album-grade > .item.em-pe .i-corpo { padding-right: 0; }
+.tela.gr-cinema .album-grade > .item.em-pe h3 { font-size: 16px; }
 .tela.gr-cinema .item .i-corpo { padding-right: 40px; }
 .tela.gr-cinema .item > .ed-mini { position: absolute; top: 10px; right: 10px; opacity: 1; z-index: 1; box-shadow: 0 0 0 2px #F7EEDB; }
 .painel:has(#p-corpo > .tela.gr-cinema) { --c: #B3261E !important; }
