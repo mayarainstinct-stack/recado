@@ -90,6 +90,28 @@ body.maq-inativa #fundo{filter:grayscale(1) brightness(.8)}body.maq-inativa .pal
 .ed-acoes{display:flex;gap:10px;align-items:center;margin-top:6px}.ed-ok{flex:1;height:46px;border-radius:999px;border:0;background:var(--k1);color:#fff;font-weight:800;font-size:15px;cursor:pointer}.ed-link{background:none;border:0;color:#ff8a8a;font:inherit;font-weight:700;padding:10px;cursor:pointer}.ed-erro{color:#ff8a8a;font-size:13px;margin:4px 0}
 .ed-faixa{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:60;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#222842;color:#fff;border-radius:14px;padding:12px 14px;border:1px solid var(--borda)}.ed-faixa button{background:none;border:0;color:#9fb4ff;font-weight:800;font:inherit;cursor:pointer}
 .falta li{display:list-item}.falta .ok-bt{margin-left:8px;border:1px solid var(--borda);background:var(--vidro);color:var(--texto2);border-radius:999px;font-size:11px;padding:2px 8px;cursor:pointer}.desc li{color:var(--texto3);font-size:13px;margin:3px 0 3px 18px;text-decoration:line-through}.desc li small{text-decoration:none;display:inline-block;margin-left:6px}
+/* #322 Máquinas como painel de hardware (análise externa 14/11 08:06): cada cartão ganha uma parte de hardware com dado real (estado, modelo, geração, zerados/jogos); o fundo de cada console continua (Nyx) */
+.hw{position:relative;display:flex;align-items:center;gap:8px;margin-top:8px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;line-height:1.2}
+.hw .led{flex:none;width:9px;height:9px;border-radius:50%;background:#3A3F4B;box-shadow:inset 0 1px 1px rgba(0,0,0,.6)}
+.hw .led.ok{background:#39E87A;box-shadow:0 0 8px #39E87A,0 0 2px #fff inset}.hw .led.atencao{background:#FFB020;box-shadow:0 0 8px #FFB020,0 0 2px #fff inset}.hw .led.mal{background:#FF4B4B;box-shadow:0 0 8px #FF4B4B,0 0 2px #fff inset}
+.hw .pl{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hw .vis{flex:none;font-family:Consolas,"Cascadia Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:.06em}
+.hw .vu{display:flex;gap:2px;flex:1}.hw .vu i{flex:1;height:7px;border-radius:2px;background:rgba(255,255,255,.14)}.hw .vu i.on{background:var(--vc,#39E87A);box-shadow:0 0 6px var(--vc,#39E87A)}
+/* a) rack: placa de metal escovado com 2 parafusos, LED, modelo gravado e visor âmbar */
+.hw-a .hw{margin:8px -12px -12px;padding:8px 22px;background:linear-gradient(180deg,#3B3F48,#22252C 55%,#191B20);border-top:1px solid rgba(255,255,255,.22);color:#C9CED8;text-shadow:0 1px 0 rgba(0,0,0,.8)}
+.hw-a .hw::before,.hw-a .hw::after{content:"";position:absolute;top:50%;width:5px;height:5px;margin-top:-2.5px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#E6E9EF,#6B7080)}.hw-a .hw::before{left:8px}.hw-a .hw::after{right:8px}
+.hw-a .hw .vis{padding:2px 6px;border-radius:4px;background:#0B0703;color:#FFB020;font-size:12px;text-shadow:0 0 6px rgba(255,176,32,.8);box-shadow:inset 0 1px 3px #000}
+/* b) visor LCD: faixa de cristal verde com letra escura, como tela de portátil antigo */
+.hw-b .hw{padding:6px 10px;border-radius:8px;background:linear-gradient(180deg,#B4C98A,#9BB46E);color:#1E2B12;border:2px solid #20231C;box-shadow:inset 0 2px 4px rgba(0,0,0,.35),0 2px 6px rgba(0,0,0,.4);font-family:Consolas,"Cascadia Mono",ui-monospace,monospace;letter-spacing:.04em}
+.hw-b .hw .led{border:1px solid rgba(0,0,0,.4)}.hw-b .hw .vis{font-size:12px}
+/* c) etiqueta de patrimônio: adesivo prateado colado torto no canto, com código de barras */
+.hw-c .hw{position:absolute;top:10px;right:10px;margin:0;flex-direction:column;align-items:flex-start;gap:3px;padding:6px 8px 5px;border-radius:4px;background:linear-gradient(135deg,#F4F5F7,#C9CDD4);color:#1B1E24;transform:rotate(-3deg);box-shadow:0 3px 8px rgba(0,0,0,.45);font-size:9px;max-width:112px}
+.hw-c .hw .lin{display:flex;align-items:center;gap:5px}.hw-c .hw .cb{width:84px;height:12px;background:repeating-linear-gradient(90deg,#1B1E24 0 1px,transparent 1px 3px,#1B1E24 3px 5px,transparent 5px 6px)}
+.hw-c .hw .pl{max-width:96px}.hw-c .card.inativo .hw{top:42px}
+.hw-a .card img.rob,.hw-b .card img.rob{bottom:52px;width:50px;height:50px}.hw-d .card img.rob{bottom:40px;width:50px;height:50px}
+.hw-a .card:not(.diag-largo) b,.hw-b .card:not(.diag-largo) b,.hw-d .card:not(.diag-largo) b{padding-right:52px}.hw-a .card:not(.diag-largo) small,.hw-b .card:not(.diag-largo) small,.hw-d .card:not(.diag-largo) small{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;padding-right:52px}
+/* d) HUD: LED e estado no alto, medidor de segmentos zerados/jogos embaixo */
+.hw-d .hw{flex-wrap:wrap;color:#E8ECF4;text-shadow:0 1px 4px rgba(0,0,0,.8)}.hw-d .hw .pl{flex:1}.hw-d .hw .vis{font-size:11px}.hw-d .hw .vu{flex-basis:100%;order:3}
 </style>
 </head>
 <body>
@@ -211,12 +233,21 @@ async function inicio(){
 }
 const LAPIS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>'
 function anota(tela){const b=el("button","anota");b.type="button";b.setAttribute("aria-label","Escrever sobre esta tela");b.innerHTML=LAPIS;b.onclick=()=>{if(window.Socorro&&Socorro.compoe)Socorro.compoe(tela,"Orfeu","#4F46E5")};return b}   // mandar recado sem sair da tela, no mesmo lugar do app (May 08/11 12:50)
+// #322: parte de hardware do cartão, com dado real (Nyx 14/11). Estilo pelo endereço (#hw=a|b|c|d) até a May escolher.
+const HW=(location.hash.match(/hw=([abcd])/)||[])[1]||"a"
+function estadoLed(x){if(x.ativo===false)return["","parado"];const e=String(x.estado||"").toLowerCase();if(/desmont|defeito|quebrad/.test(e))return["mal","defeito"];if(/olho|teste|fr[aá]gil|piscando|sem driver/.test(e))return["atencao","de olho"];if(/funcionando/.test(e))return["ok","ok"];return["",""]}
+function hwFaixa(x){const [cl,nome]=estadoLed(x),st=x.stats||{},h=el("span","hw"),led=el("i","led"+(cl?" "+cl:""));led.title=x.estado||"";led.setAttribute("aria-label",nome||"sem estado")
+  const mod=String(x.modelo||"").split(/ · |,| \(/)[0],pl=[mod,x.geracao&&!/^none$/i.test(x.geracao)?x.geracao:""].filter(Boolean).join(" · ")
+  const z=st.zerados||0,j=st.jogos||0,vis=el("span","vis",j?String(z).padStart(2,"0")+"/"+String(j).padStart(2,"0"):"--/--")
+  if(HW==="c"){const l1=el("span","lin");l1.append(led,el("span","",nome||"máquina"));h.append(l1,el("span","pl",x.id.toUpperCase()+" · "+(mod||x.nome)),el("i","cb"));return h}
+  if(HW==="d"){const vu=el("span","vu"),n=10,on=j?Math.round(z/j*n):0;for(let i=0;i<n;i++)vu.append(el("i",i<on?"on":""));h.append(led,el("span","pl",nome||mod),vis,vu);return h}
+  h.append(led,el("span","pl",nome||"sem estado"),vis);return h}
 function grade(){
   document.documentElement.style.setProperty("--k1","#4F46E5");fundo.style.backgroundImage="none";app.replaceChildren()
   const topo=el("div","topo"),ms2=el("div","marca-sis");ms2.append(el("i"),"Minha coleção");const t=D.total||{}
   const nv=el("button","ed-bt","+");nv.type="button";nv.setAttribute("aria-label","Máquina nova");nv.onclick=lancaMaq
   topo.append(VB,ms2,el("span","tot",D.maquinas.length+" máquinas · "+(t.zerados??"–")+(t.zerados===1?" zerado":" zerados")),nv,anota("Máquinas"));app.append(topo)
-  const g=el("div","grade")
+  const g=el("div","grade hw-"+HW)
   {const b=el("button","card diag-largo"),ic=el("span","diag-ic"),tx=el("span","diag-tx"),res=el("small","","a saúde dos PCs");b.style.setProperty("--c","#8B5CF6")
     ic.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="19" height="13" rx="2"/><path d="M8 20.5h8M12 16.5v4"/><path d="M5.5 10h3l1.5-3 2.5 6 1.5-3h4.5"/></svg>'
     tx.append(el("b","","Diagnóstico"),res);const robs=el("span","diag-robs");D.maquinas.filter(x=>x.robo&&ROBO[x.robo]&&x.ativo!==false).forEach(x=>{const im=el("img");im.alt="";im.src=ROBO[x.robo][2];im.dataset.pc=x.nome;im.style.setProperty("--rc",ROBO[x.robo][1]);robs.append(im)});b.append(tx,robs);b.onclick=()=>{location.href="app.html#diagnostico"};g.append(b)   // #301 (May 14/11 01:27): cartão no estilo dos PCs, fundo desenhado de monitores com batimento e os robôs de cada PC
@@ -226,6 +257,8 @@ function grade(){
     {const w=wallpaper(x);if(w){b.style.setProperty("--c",w.cor);aplicaFundo(b,x,w,false)}}
     if(x.robo&&ROBO[x.robo]){const im=el("img","rob");im.alt="";im.src=ROBO[x.robo][2];b.append(im)}
     const st=x.stats;b.append(el("b","",x.nome),el("small","",st?(st.zerados||0)+(st.zerados===1?" zerado · ":" zerados · ")+(st.jogos||0)+(st.jogos===1?" jogo":" jogos"):(x.modelo||x.papel||"")))   // o nome uma vez só; geração e portátil ficam nos selos de dentro (May 20:28, Sigma 20:33)
+    if(HW!=="c"){const sm=b.querySelector("small");if(sm&&x.modelo)sm.textContent=[String(x.modelo).split(" · ").slice(0,2).join(" · "),x.geracao&&!/^none$/i.test(x.geracao)?x.geracao:""].filter(Boolean).join(" · ")}   // com visor, a linha de baixo do nome mostra o modelo
+    b.append(hwFaixa(x))   // #322
     if(x.ativo===false){b.classList.add("inativo");b.append(el("span","selo-inativo","ainda não tá ativo"))}   // máquina parada fica toda cinza (May 19:36)
     b.onclick=()=>monta(j);g.append(b)})})
   app.append(g)
