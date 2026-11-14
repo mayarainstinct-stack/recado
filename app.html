@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-14.399">
+<meta name="app-versao" content="2026-11-14.400">
 <meta name="app-novidade" content="Música: grade com buracos maiores e vinheta preta">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-14.399"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-14.400"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -5040,7 +5040,7 @@ function abreAlbum(g, m) {
     };
     caixa.append(bt); c.append(caixa);
     const grade = elD('div', 'album-grade'); c.append(grade);   // #292 (May 01:20): foto em pé vai 2 por linha, lado a lado
-    const pares = () => { const its = [...grade.children]; its.forEach(x => x.classList.remove('par')); if (its.filter(x => x.classList.contains('em-pe')).length % 2) { const d = its.reverse().find(x => !x.classList.contains('em-pe')); if (d) d.classList.add('par'); } };   // em pé sozinha ganha a última deitada do lado: sempre 2 (May 01:42)
+    const pares = () => { const pe = [...grade.children].filter(x => x.classList.contains('em-pe')); pe.forEach(x => x.classList.remove('so')); if (pe.length % 2) pe[pe.length - 1].classList.add('so'); };   // lado a lado só 2 em pé; a que sobra sozinha ocupa a linha inteira (May 01:49)
     g.imagens.forEach(im => {
       fotoUrl(im.arq).then(u => fetch(u)).then(r => r.blob()).then(bl => { prontos[im.arq] = new File([bl], im.arq.split('/').pop(), { type: bl.type || tipoDe(im.arq) }); }).catch(() => {});
       const el = document.createElement('div'); el.className = 'item';

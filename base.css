@@ -995,13 +995,12 @@ img.esq { min-height: 140px; }
 .tela.gr-cinema .item .ph:has(img) > :not(img) { display: none; }
 .album-grade { display: grid; grid-template-columns: 1fr 1fr; grid-auto-flow: row dense; gap: 22px 14px; }
 .album-grade > .item { grid-column: 1 / -1; margin: 0; }
-.album-grade > .item:is(.em-pe, .par) { grid-column: auto; }
-.tela.gr-cinema .album-grade > .item:is(.em-pe, .par) .ph { margin: 4px auto 14px; } .tela.gr-cinema .album-grade > .item:is(.em-pe, .par) .ph img { max-height: 210px; }
-.tela.gr-cinema .album-grade > .item:is(.em-pe, .par) .i-corpo { padding-right: 0; }
-.tela.gr-cinema .album-grade > .item:is(.em-pe, .par) h3 { font-size: 16px; }
-.tela.gr-cinema .album-grade > .item:is(.em-pe, .par) h3 { -webkit-line-clamp: unset; line-clamp: unset; display: block; overflow: visible; white-space: normal; }
-.tela.gr-cinema .album-grade > .item:is(.em-pe, .par) { align-self: start; }   /* cada cartão do par na altura dele, sem sobra vazia (Sigma 01:46) */
-.tela.gr-cinema .album-grade > .item.par > .ph { width: auto; max-width: none; margin: 4px 0 14px; } .tela.gr-cinema .album-grade > .item.par > .ph img { width: 100%; max-height: none; }
+.album-grade > .item.em-pe:not(.so) { grid-column: auto; }
+.tela.gr-cinema .album-grade > .item.em-pe:not(.so) .ph { margin: 4px auto 14px; } .tela.gr-cinema .album-grade > .item.em-pe:not(.so) .ph img { max-height: 210px; }
+.tela.gr-cinema .album-grade > .item.em-pe:not(.so) .i-corpo { padding-right: 0; }
+.tela.gr-cinema .album-grade > .item.em-pe:not(.so) h3 { font-size: 16px; }
+.tela.gr-cinema .album-grade > .item.em-pe:not(.so) h3 { -webkit-line-clamp: unset; line-clamp: unset; display: block; overflow: visible; white-space: normal; }
+.tela.gr-cinema .album-grade > .item.em-pe.so .ph img { max-height: 340px; }   /* em pé sozinha: linha inteira e maior (May 01:49) */
 .tela.gr-cinema .item .i-corpo { padding-right: 40px; }
 .tela.gr-cinema .item > .ed-mini { position: absolute; top: 10px; right: 10px; opacity: 1; z-index: 1; box-shadow: 0 0 0 2px #F7EEDB; }
 .painel:has(#p-corpo > .tela.gr-cinema) { --c: #B3261E !important; }
