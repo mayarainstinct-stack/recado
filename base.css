@@ -2347,3 +2347,4 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 .rv-tr-feitos, .rv-tr-bloco .rv-tr-feitos { list-style: none; padding: 2px 20px 16px; } .rv-tr-feitos li + li { margin-top: 8px; }   /* feitos do troféu sem marcador na frente (May 14/11 00:20) */
 .rv-med + .rv-med::before { display: none; }   /* sem o tracinho entre as insígnias (May 14/11 00:20) */
 .rv-med:not(.trofeu) .rv-med-ic .a { fill: var(--quem); stroke: none; } .rv-med-ic .b { fill: rgba(0,0,0,.32); } .rv-med-ic .c { fill: #fff; }   /* insígnia da Avaliação na cor do cartão do robô, igual ao crachá (May 14/11 00:26) */
+.rv-ct .rv-glista { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 22px; } .rv-ct .rv-glista .rv-med { flex: 0 1 130px; }   /* insígnias da semana centralizadas no card (May 14/11 00:27) */
