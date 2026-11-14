@@ -2326,6 +2326,7 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 .rv-tr-bloco .rv-tr { display: grid; grid-template-columns: auto auto; justify-content: center; align-items: center; column-gap: 22px; row-gap: 8px; }
 .rv-tr-bloco .rv-tr-av { grid-column: 1; grid-row: 1; } .rv-tr-bloco .rv-tr-ic { grid-column: 2; grid-row: 1; }
 .rv-tr-bloco .rv-tr-tx { grid-column: 1 / -1; grid-row: 2; text-align: center; }
+.rv-tr-bloco .rv-tr-av { width: 132px; height: 132px; border: 0; border-radius: 0; background-color: transparent; background-size: contain; }   /* a imagem do robô já vem com a bolinha dela: sem a segunda em volta e maior (May 13/11 22:52, #254) */
 .rv-ct .rv-corpo, .rv-ct:not(.aberto) .rv-corpo { display: block; } .rv-ct .rv-abre { display: none; } .rv-ct .rv-vcab, .rv-ct .rv-placa { cursor: default; }   /* o card já vem aberto com o que mudou (May 13/11 18:51) */
 .t-musica .tm-abas { grid-template-columns: repeat(5, 1fr) !important; } .t-musica .tm-aba { font-size: 13.5px; padding-left: 2px; padding-right: 2px; }
 .t-musica .tm-pr-topo { display: grid; justify-items: center; gap: 6px; margin: 8px 0 14px; padding: 16px; border-radius: 18px; background: #0B0A0A; border: 1px solid var(--tm-linha); text-align: center; }
