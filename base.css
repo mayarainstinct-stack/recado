@@ -2419,3 +2419,4 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 .t-musica .tm-abas { display: flex !important; } .t-musica .tm-aba { flex: 1 1 auto; width: auto; height: auto; padding: 0 8px; white-space: nowrap; }   /* cada aba na largura do nome dela, nada encostando na borda */
 .vs-prox-etapa { width: auto; height: auto; }
 .sl-abas { padding-left: 2px; padding-right: 2px; }
+.tela.gr-cinema .midia-tipo { margin: 22px 2px 10px; font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 900; letter-spacing: .5px; text-transform: uppercase; color: #B3261E; text-shadow: 1px 1px 0 #2B1A0E; } .tela.gr-cinema .midia-tipo:first-of-type { margin-top: 6px; }   /* #299: título de cada tipo de álbum */

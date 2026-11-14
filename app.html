@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-14.404">
+<meta name="app-versao" content="2026-11-14.405">
 <meta name="app-novidade" content="Música: grade com buracos maiores e vinheta preta">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-14.404"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-14.405"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -4985,7 +4985,8 @@ function abreImagens(m) {
     p.textContent = 'Toca num álbum pra abrir.';
     cabecalho({ sub: d.grupos.length + ' álbuns', acao: { icone: 'plus', rotulo: 'Imagem nova', fn: () => edFormulario({ titulo: 'Imagem nova', campos: [{ nome: 'grupo', rotulo: 'Álbum', tipo: 'escolha', opcoes: d.grupos.map(g => g.nome), obrigatorio: true }, { nome: 'arq', rotulo: 'Foto', tipo: 'foto', obrigatorio: true }, { nome: 'titulo', rotulo: 'Título', tipo: 'texto' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto_longo' }], aoSalvar: async v => { await O.op({ tipo: 'lanca', item: { id: v.arq, novo: true, ...v, criado: edAgora() } }, 'Imagem nova pelo app'); desenhaTela(); } }) } });
     if (m.estilo === 'estudio') return estudio(c, d.grupos.filter(g => g.imagens.length), m, p);
-    d.grupos.forEach(g => {
+    const tipos = [...new Set(d.grupos.filter(g => g.imagens.length).map(g => g.tipo || 'Outras'))];   // #299 (May 14/11 01:24): os álbuns separados por tipo, cada bloco com título
+    tipos.forEach(tp => { if (tipos.length > 1) c.append(elD('h3', 'midia-tipo', tp)); d.grupos.filter(g => (g.tipo || 'Outras') === tp).forEach(g => {
       if (!g.imagens.length) return;
       const el = document.createElement('div'); el.className = 'item';
       el.append(fotoDe({ nome: g.nome, foto: g.capa || g.imagens[0].arq }, { icone: m.icone }, false));   // capa: opcional no json
@@ -4993,7 +4994,7 @@ function abreImagens(m) {
       const h = document.createElement('h3'); h.textContent = g.nome; b.append(h);
       const n = document.createElement('div'); n.className = 'det'; n.textContent = g.imagens.length + (g.imagens.length > 1 ? ' imagens' : ' imagem'); b.append(n);
       el.append(b); el.onclick = () => abreAlbum(g, m); c.append(el);
-    });
+    }); });
   });
 }
 function estudio(c, gs, m, p) {
