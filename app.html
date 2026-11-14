@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.376">
+<meta name="app-versao" content="2026-11-13.377">
 <meta name="app-novidade" content="Setinha de voltar igual e no meio do círculo em todas as telas">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.376"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.377"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -1375,11 +1375,18 @@ function animaAnel(v) {
   anelQuadro = requestAnimationFrame(passo);
 }
 anelDesenha(0); semanaEl.hidden = false;
+function anelSemDado() {   // sem leitura do limite o anel fica no Trabalho mesmo assim: é a porta dos 2 toques pra Geral (Sigma #143, 14/11/2026)
+  if (FILE !== TRAB.arq) { semanaEl.hidden = true; return; }
+  cancelAnimationFrame(anelQuadro); anelValor = 0; anelDesenha(0); semanaEl.querySelector('b').textContent = '–';
+  ['ok', 'alto', 'estouro'].forEach(x => semanaEl.classList.remove(x)); semanaEl.classList.add('sem-dado');
+  semanaEl.title = 'Limite de 7 dias: sem leitura agora'; semanaEl.hidden = false;
+}
 function mostraSemana(lista) {
   // número de antes da semana zerar não vale (o Vega parado desde 11:54 deixava 93% no anel depois do zerar das 15h, May 06/11/2026 19:21)
   const agora = Date.now() / 1000, fresco = p => p.semanaReset ? p.semanaReset > agora : Date.now() - Date.parse(p.ultimaAtualizacao || 0) < 6 * 3600e3;
   const c = (lista || []).filter(p => typeof p.semana === 'number' && fresco(p)).sort((a, b) => b.semana - a.semana)[0];   // o maior: o uso da semana só sobe, e um painel parado mostrava número velho (Sigma, 05/11/2026)
-  if (!c) { semanaEl.hidden = true; return; }
+  if (!c) { anelSemDado(); return; }
+  semanaEl.classList.remove('sem-dado');
   const v = Math.max(0, Math.min(100, Math.round(c.semana)));
   const R = 17.5, C = 2 * Math.PI * R;
   animaAnel(v);
@@ -1395,7 +1402,7 @@ async function semanaTrabalho() {   // Geral e Trabalho mostram o MESMO anel: é
   const ks = GERAL.participantes.filter(k => k !== 'may');
   const lista = await lerOnlines(ks).then(l => l.map(p => p.falhou || !p.ultimaAtualizacao && Object.keys(p).length === 1 ? null : p), () => []);
   if (FILE === TRAB.arq) { const ok = lista.filter(Boolean); if (ok.length) { mostraSemana(ok); return; } }
-  try { const r = await api('https://api.github.com/repos/' + REPO + '/contents/casa/online/online-lyra.json?ref=online', RAW); if (!r.ok) throw 0; if (FILE === TRAB.arq) mostraSemana([{ chave: 'lyra', ...JSON.parse(await r.text()) }]); } catch (e) { if (FILE === TRAB.arq) semanaEl.hidden = true; }
+  try { const r = await api('https://api.github.com/repos/' + REPO + '/contents/casa/online/online-lyra.json?ref=online', RAW); if (!r.ok) throw 0; if (FILE === TRAB.arq) mostraSemana([{ chave: 'lyra', ...JSON.parse(await r.text()) }]); } catch (e) { if (FILE === TRAB.arq) anelSemDado(); }
 }
 function fmtVisto(iso) {
   const t = Date.parse(iso || '');
