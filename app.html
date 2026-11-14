@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-13.372">
-<meta name="app-novidade" content="Ícone do Finanças virou um F">
+<meta name="app-versao" content="2026-11-13.373">
+<meta name="app-novidade" content="Tarefas: sem a aba Semana e abas com respiro">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-13.372"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-13.373"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3749,7 +3749,7 @@ function abreIdeias(m) {
     let d; try { d = JSON.parse(await lerArquivo(arq)); } catch (e) { nota.textContent = 'Não consegui abrir o quadro. Confere a internet.'; return; }
     nota.remove();
     const TELAS = { quadro: [['esperando', 'Esperando'], ['fazendo', 'Fazendo']], revisao: [['aguardando', 'Aguardando'], ['revisando', 'Revisando']] }, NOME_EST = { concluido: 'concluído', aguardando: 'aguardando revisão', revisando: 'Sigma revisando' };
-    const abas = [['quadro', 'Planejado'], ['revisao', 'Revisão'], ['feitos', 'Concluído'], ['semana', 'Semana']], nav = elD('nav', 'ie-abas'), tr = elD('div', 'ie-trilho'), busca = elD('input', 'ie-busca'); busca.type = 'search'; busca.placeholder = 'Procurar em todas as tarefas (até nas concluídas)'; busca.enterKeyHint = 'search';
+    const abas = [['quadro', 'Planejado'], ['revisao', 'Revisão'], ['feitos', 'Concluído']], nav = elD('nav', 'ie-abas'), tr = elD('div', 'ie-trilho'), busca = elD('input', 'ie-busca'); busca.type = 'search'; busca.placeholder = 'Procurar em todas as tarefas (até nas concluídas)'; busca.enterKeyHint = 'search';
     const caixa = elD('div', 'id-nova ie-nova'), ta = elD('textarea'); ta.rows = 1; ta.placeholder = 'Novo pedido (@Orfeu manda direto)'; ta.enterKeyHint = 'send';
     const env = elD('button'); env.type = 'button'; env.setAttribute('aria-label', 'Pregar o post-it'); env.innerHTML = icone('reply'); caixa.append(ta, env);
     c.append(nav, busca, tr, caixa);
@@ -3836,27 +3836,10 @@ function abreIdeias(m) {
       else if (antesO) avisa(d.postits.find(y => y.id === movido), antesO);
     };
     // Aba Semana (post-it #206, Sigma 12/11/2026: a May tirou o relatório da Agenda na .267): cartão por robô com a barra de entregou x errou, o último erro e o que muda, lido do casa/reavaliacao.json
-    const semanaRobos = () => {
-      const w = elD('div', 'ie-quadro ie-semana'), car = skCarga(); w.append(car);
-      lerArquivo('casa/reavaliacao.json').then(t => { const r = JSON.parse(t), s = r.semanas[r.semanas.length - 1]; car.remove();
-        const dbr = x => String(x || '').split('-').reverse().slice(0, 2).join('/');
-        w.append(elD('p', 'p-nota', 'Semana de ' + dbr(s.de) + ' a ' + dbr(s.ate) + (s.feita ? ' · reavaliada' : ' · a reavaliação é sexta, com a Lyra')));
-        Object.entries(s.robos).filter(([k, v]) => k !== 'may' && ((v.entregou || []).length || (v.errou || []).length)).forEach(([k, v]) => {
-          const g = GRUPO[k] || { nome: k, cor: '#888' }, ent = (v.entregou || []).length, err = (v.errou || []).length, c = elD('section', 'sl-card ie-sem');
-          c.style.setProperty('--quem', g.cor); c.style.borderLeft = '6px solid ' + g.cor; c.append(elD('h3', '', (g.nome || k).replace(/ \(PC\d\)$/, '')));
-          const barra = elD('div', 'ie-sem-barra'), bo = elD('i', 'ok'), be = elD('i', 'erro'); bo.style.width = (ent / Math.max(1, ent + err) * 100) + '%'; be.style.width = (err / Math.max(1, ent + err) * 100) + '%'; barra.append(bo, be);
-          c.append(barra, elD('p', 'ie-sem-n', ent + ' entrega' + (ent === 1 ? '' : 's') + ' · ' + err + ' erro' + (err === 1 ? '' : 's')));
-          const ult = (v.errou || [])[err - 1];
-          if (ult) { const [o, muda] = String(ult.texto).split(/\s*(?:Daqui pra frente|O que muda)[:,]?\s*/i); c.append(elD('p', 'ie-sem-erro', 'Último erro (' + ult.dia + '): ' + o.slice(0, 220) + (o.length > 220 ? '…' : ''))); if (muda) c.append(elD('p', 'ie-sem-muda', 'O que muda: ' + muda.slice(0, 200) + (muda.length > 200 ? '…' : ''))); }
-          w.append(c);
-        });
-      }).catch(() => { car.textContent = 'Não abriu a reavaliação. Confere a internet.'; });
-      return w;
-    };
     const pinta = () => {
       cabecalho({ icone: 'pin', sub: abertos().length + ' planejadas · ' + daTela('revisao').length + ' na revisão', acao: { icone: 'plus', rotulo: 'Novo pedido', fn: novaTarefa } });
       nav.replaceChildren(); tr.replaceChildren();
-      abas.forEach(([id, rot]) => { const n = id === 'semana' ? '' : TELAS[id] ? daTela(id).length : feitos().length, b = elD('button', aba === id ? 'on' : '', rot + (n === '' ? '' : ' · ' + n)); b.type = 'button'; b.onclick = () => { if (aba === id) return; const dir = abas.findIndex(a => a[0] === id) > abas.findIndex(a => a[0] === aba) ? 1 : -1; aba = id; pinta(); entraDoLado(tr, dir); }; nav.append(b); });
+      abas.forEach(([id, rot]) => { const n = TELAS[id] ? daTela(id).length : feitos().length, b = elD('button', aba === id ? 'on' : '', rot + ' · ' + n); b.type = 'button'; b.onclick = () => { if (aba === id) return; const dir = abas.findIndex(a => a[0] === id) > abas.findIndex(a => a[0] === aba) ? 1 : -1; aba = id; pinta(); entraDoLado(tr, dir); }; nav.append(b); });
       const termo = busca.value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       if (termo) {   // procurando: uma lista só com tudo que bate, aberto ou concluído
         const q = elD('div', 'ie-quadro'), sem = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -3866,7 +3849,6 @@ function abreIdeias(m) {
         q.addEventListener('click', e => { const el = e.target.closest('.ie-post'); if (!el) return; const p = d.postits.find(x => x.id === el.dataset.id); if (p) detalhe(p); });
         return;
       }
-      if (aba === 'semana') { tr.append(semanaRobos()); return; }
       const q = elD('div', 'ie-quadro' + (TELAS[aba] ? ' ie-colunas' : ''));
       if (TELAS[aba]) TELAS[aba].forEach(([e, rot]) => {   // duas colunas lado a lado: Esperando e Fazendo (May 15:26); na Revisão, Aguardando e Revisando (May 16:48)
         const col = elD('div', 'ie-col'), lst = elD('div', 'ie-lista'), ps = daTela(aba).filter(x => x.estado === e); col.dataset.estado = e;
