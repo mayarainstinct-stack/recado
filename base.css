@@ -2364,7 +2364,6 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 .ct-poderes.pc dt { font-size: 13px; font-weight: 700; text-transform: none; letter-spacing: 0; color: #fff; }
 .ct-poderes.pd { grid-template-columns: repeat(3, 1fr); gap: 6px 6px; padding: 10px 6px; }
 .ct-poderes.pd > div { grid-column: auto; display: grid; grid-template-columns: 1fr; justify-items: center; align-content: center; gap: 4px; aspect-ratio: 1 / 1.08; padding: 12px 10px; text-align: center; border-radius: 0; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); background: linear-gradient(180deg, color-mix(in srgb, var(--quem) 70%, #fff 0%), color-mix(in srgb, var(--quem) 55%, #000)); }
-.ct-poderes.pd > div:nth-child(6n+4), .ct-poderes.pd > div:nth-child(6n+5), .ct-poderes.pd > div:nth-child(6n+6) { transform: translateX(calc(50% + 3px)); }
 .ct-poderes.pd svg { width: 26px; height: 26px; grid-row: auto; color: #fff; }
 .ct-poderes.pd dt { font-size: 10.5px; font-weight: 800; line-height: 1.15; text-transform: none; letter-spacing: 0; color: #fff; }
 .rv-tr-bloco .rv-tr-feitos { text-align: center; }   /* feitos do troféu centralizados (May 14/11 00:32) */
