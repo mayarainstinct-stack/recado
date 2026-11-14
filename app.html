@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-14.409">
+<meta name="app-versao" content="2026-11-14.410">
 <meta name="app-novidade" content="Música: grade com buracos maiores e vinheta preta">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-14.409"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-14.410"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -1902,7 +1902,7 @@ function abrePergunta(it, g, alts, k, conta) {   // padrão aprovado no HOUSE-BR
   const nm = document.createElement('div'); nm.className = 'pp-quem'; nm.textContent = (g.nome || 'Robô').replace(/\s*\(.*\)$/, '') + (conta ? ' · pergunta ' + conta : '');
   let q = String(it.text || '').replace(/^(?:\s*@[\wÀ-ÿ]+)*\s*❓\s*/, '').replace(/@May\b\s*/i, '');
   const m0 = q.match(/(?:^|[\s(:;])a\)\s/i); if (m0) q = q.slice(0, m0.index).trim();
-  const perg = document.createElement('div'); perg.className = 'pp-perg' + (q.length > 120 ? ' longa' : ''); perg.textContent = q;
+  const perg = document.createElement('div'); perg.className = 'pp-perg' + (q.length > 120 ? ' longa' : ''); perg.textContent = q.charAt(0).toLocaleUpperCase('pt-BR') + q.slice(1);   // frase começa com maiúscula, mesmo quando o recado veio com o @ na frente
   const fecha = () => { fixaPopVista.add(k); ov.classList.add('saindo'); document.removeEventListener('keydown', esc); setTimeout(() => { ov.remove(); if (FILE === GERAL.arq) render(lastItems, true); }, 180); };
   const adia = () => { pergsNaFila.forEach(x => fixaPopVista.add(x)); fecha(); };   // fechou ou tocou fora = não quer responder agora: as que já estavam na fila param de saltar; pergunta NOVA que chegar depois salta na hora, sem reabrir o app (May, 07/11/2026 11:18 e 11:35)
   const esc = (e) => { if (e.key === 'Escape') adia(); };
