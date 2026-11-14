@@ -2368,3 +2368,4 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 .ct-poderes.pd svg { width: 26px; height: 26px; grid-row: auto; color: #fff; }
 .ct-poderes.pd dt { font-size: 10.5px; font-weight: 800; line-height: 1.15; text-transform: none; letter-spacing: 0; color: #fff; }
 .rv-tr-bloco .rv-tr-feitos { text-align: center; }   /* feitos do troféu centralizados (May 14/11 00:32) */
+.rv-med-ic svg, .rv-tr-ic svg { stroke: none; }   /* o troféu herdava o contorno branco de botão: virava pontinho branco nos rebites (May 14/11 00:34) */
