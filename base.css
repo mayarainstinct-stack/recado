@@ -751,6 +751,16 @@ img.esq { min-height: 140px; }
 .pcd-rot { margin: 12px 0 4px; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
 .pcd-val { padding: 7px 8px; border-radius: 10px; font-size: 13px; font-weight: 600; line-height: 1.3; background: color-mix(in srgb, var(--ec) 14%, transparent); border-left: 3px solid var(--ec); }
 .pcd-val.neutro { background: color-mix(in srgb, var(--fg) 6%, transparent); border-left-color: transparent; }
+/* #37 (Hermes 14/11): Diagnóstico com o canto chanfrado do House Bridge; borda de 1 px na cor do robô seguindo o chanfro */
+.pcd-trilho { overflow-y: hidden; transition: height .24s ease; } .pcd-roscas { margin: 12px 0 6px; } .pcd-roscas .rel-rosca svg { width: 76px; height: 76px; } .pcd-app { margin-top: 2px; }
+body:not(.modo-trab) :is(.pcd, .pcd-abas, .rel-kpi, .rel-rosca) { --k: 14px; position: relative; isolation: isolate; border: 0 !important; border-radius: 0; box-shadow: none; background: var(--cb); clip-path: polygon(var(--k) 0, 100% 0, 100% calc(100% - var(--k)), calc(100% - var(--k)) 100%, 0 100%, 0 var(--k)); }
+body:not(.modo-trab) :is(.pcd, .pcd-abas, .rel-kpi, .rel-rosca)::before { content: ''; position: absolute; inset: 1px; z-index: -1; pointer-events: none; background: var(--fill); clip-path: polygon(calc(var(--k) - .4px) 0, 100% 0, 100% calc(100% - var(--k) + .4px), calc(100% - var(--k) + .4px) 100%, 0 100%, 0 calc(var(--k) - .4px)); }
+body:not(.modo-trab) .pcd { --cb: linear-gradient(var(--rc), color-mix(in srgb, var(--rc) 35%, var(--line)) 120px); --fill: linear-gradient(180deg, color-mix(in srgb, var(--rc) 14%, var(--paper)), var(--paper) 110px); padding: 14px 15px; }
+body:not(.modo-trab) .pcd-abas { --k: 12px; --cb: color-mix(in srgb, var(--fg) 16%, transparent); --fill: color-mix(in srgb, var(--paper) 88%, transparent); }
+body:not(.modo-trab) .pcd-dq { border-radius: 0; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+body:not(.modo-trab) .rel-kpi { --k: 12px; --cb: color-mix(in srgb, var(--ec) 55%, transparent); --fill: linear-gradient(135deg, color-mix(in srgb, var(--ec) 22%, var(--paper)), var(--paper) 75%); }
+body:not(.modo-trab) .rel-rosca { --k: 12px; --cb: color-mix(in srgb, var(--rc) 40%, transparent); --fill: color-mix(in srgb, var(--rc) 9%, var(--paper)); }
+body:not(.modo-trab) .rel { border-radius: 0; clip-path: polygon(18px 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%, 0 18px); }
 @media (prefers-reduced-motion: reduce) { .pcd-dq { transition: none; } }
 .rel { position: relative; overflow: hidden; border-radius: 20px; padding: 14px; border: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
   background: radial-gradient(120% 60% at 0% 0%, rgba(227,27,35,.16), transparent 60%), radial-gradient(120% 60% at 100% 0%, rgba(59,130,246,.18), transparent 60%), radial-gradient(90% 50% at 50% 100%, rgba(111,207,0,.12), transparent 70%), linear-gradient(180deg, color-mix(in srgb, var(--paper) 92%, #000), var(--paper));
