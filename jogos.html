@@ -833,9 +833,9 @@ if(!ORDN[ord])ord="pct"
 const ORDEM_CONS=["switch2","switch","pc","3ds","n64","playstation","snes","snes-hacks"]
 const chaveCons=c=>{const id=consId(c);if(id=="playstation"&&!/PS1|PlayStation 1\b/.test(c||""))return"x:"+c;return id&&ORDEM_CONS.includes(id)?id:"x:"+(c||"Sem console")}
 const nomeCons=k=>{if(!k.startsWith("x:")){const c=window.CONS&&window.CONS.por[k];return c?c.nome_launcher:k.toUpperCase()}return k.slice(2).replace(/\s*\(emulador no PC\)/,"").toUpperCase()}
-const posCons=k=>{const i=ORDEM_CONS.indexOf(k);return i<0?99:i}
+const abcCons=(a,b)=>nomeCons(a).localeCompare(nomeCons(b),"pt",{numeric:true,sensitivity:"base"})
 const porTitulo=(a,b)=>a.titulo.localeCompare(b.titulo,"pt-BR")
-const srt=l=>l.slice().sort(ord=="recente"?(a,b)=>ultimoDia(b)-ultimoDia(a):ord=="nome"?porTitulo:ord=="console"?(a,b)=>posCons(chaveCons(a.console))-posCons(chaveCons(b.console))||(b.pct??-1)-(a.pct??-1):(a,b)=>(b.pct??-1)-(a.pct??-1))
+const srt=l=>l.slice().sort(ord=="recente"?(a,b)=>ultimoDia(b)-ultimoDia(a):ord=="nome"?porTitulo:ord=="console"?(a,b)=>abcCons(chaveCons(a.console),chaveCons(b.console))||(b.pct??-1)-(a.pct??-1):(a,b)=>(b.pct??-1)-(a.pct??-1))
 const andamento=J.filter(j=>(j.pct!=null&&j.pct>0&&j.pct<100)||j.status=="jogando"||j.status=="quer_terminar")
 let jog=srt(andamento)
 if(!jogExp){const pr=jog.filter(j=>j.principal);jog=pr.length?pr:jog.slice(0,6)}
@@ -843,7 +843,7 @@ if(!jogExp){const pr=jog.filter(j=>j.principal);jog=pr.length?pr:jog.slice(0,6)}
 let soJ=false;try{soJ=localStorage.getItem("jogos-so-joguei")=="1"}catch(e){}
 const temSB=J.some(j=>"so_biblioteca" in j),soBib=j=>temSB?!!j.so_biblioteca:j.status=="nao_comecou",nBib=J.filter(soBib).length
 const linhas={};J.filter(j=>!soJ||!(soBib(j)||/nao_comecou|espiou/.test(j.status))).forEach(j=>{const k=chaveCons(j.console);(linhas[k]=linhas[k]||[]).push(j)})
-const ks=Object.keys(linhas).sort((a,b)=>posCons(a)-posCons(b)||nomeCons(a).localeCompare(nomeCons(b)))
+const ks=Object.keys(linhas).sort(abcCons)
 document.getElementById("sub").textContent=`${J.length-nBib} jogados · ${nBib} só na biblioteca · ${andamento.length} jogando`
 // ordem da fileira (Lyra/May 08:46): jogados primeiro, depois os da biblioteca nunca começados, e no FINAL os que ela não joga mais
 const FILA_MAX=20,NUNCA=/nao_comecou|espiou/,PAROU=/nao_joga_mais|largado|abandonado|parou_de_jogar/,grau=j=>PAROU.test(j.status||"")||j.nao_joga_mais?2:NUNCA.test(j.status||"")?1:0,filaOrdenada=k=>linhas[k].slice().sort((a,b)=>grau(a)-grau(b)||porTitulo(a,b))
