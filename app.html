@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-14.391">
+<meta name="app-versao" content="2026-11-14.392">
 <meta name="app-novidade" content="Música: grade com buracos maiores e vinheta preta">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-14.391"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-14.392"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2923,9 +2923,9 @@ function abreDiagnostico(m) {
     sp.append(elD('div', 'p-sec', (m && m.secao) || 'Saúde dos PCs'), datas, nota, caixa);
     const t2 = document.createElement('div'); t2.className = 'p-sec'; t2.textContent = 'Este app'; const x = document.createElement('div'); x.className = 'p-texto'; if (!soDados) c.append(t2, x);
     lerArquivo(arqD).then(t => JSON.parse(t)).then(dg => {
-      const dias = dg.dias || [dg], escolhe = i => { datas.querySelectorAll('button').forEach((b, j) => b.classList.toggle('ativa', j === i)); nota.textContent = dias[i].quem || ''; nota.hidden = !dias[i].quem; montaDiaPcs(caixa, dias[i]); };
+      const dias = dg.dias || [dg]; let di = 0; const escolhe = i => { di = i; datas.querySelectorAll('button').forEach((b, j) => b.classList.toggle('ativa', j === i)); nota.textContent = dias[i].quem || ''; nota.hidden = !dias[i].quem; montaDiaPcs(caixa, dias[i]); };
       dias.forEach((d, i) => { const b = elD('button', '', d.data); b.type = 'button'; b.onclick = () => escolhe(i); datas.append(b); }); escolhe(0);
-      if (!soDados) Promise.all((dias[0].pcs || []).map(p => lerArquivo('casa/diagnostico/medido/' + p.pc + '.json').then(t => { p.medido = JSON.parse(t); }).catch(() => {}))).then(() => { if (dias[0].pcs.some(p => p.medido)) escolhe(0); });
+      if (!soDados) (dias[0].pcs || []).forEach((p, k) => lerArquivo('casa/diagnostico/medido/' + p.pc + '.json').then(t => { p.medido = JSON.parse(t); const pg = di === 0 && caixa.querySelectorAll('.pcd-pag')[k + 1], y = pCorpo.scrollTop; if (pg) { pg.replaceChildren(cartaoPc(p)); pCorpo.scrollTop = y; } }).catch(() => {}));   // #297 (Sigma 01:18): cada medição que chega troca só o cartão daquele PC, sem mexer na aba nem na rolagem
     }).catch(() => { nota.textContent = soDados ? 'Ainda sem relatório dos projetos.' : 'Não consegui abrir o diagnóstico dos PCs. Confere a internet.'; });
     const linha = (t, v) => { const p = document.createElement('p'), b = document.createElement('b'); b.textContent = t + ': '; p.append(b, v); x.append(p); };
     const perm = window.Notification ? { granted: 'ligada', denied: 'bloqueada (Ajustes → Notificações)', default: 'ainda não pedida' }[Notification.permission] || Notification.permission : 'este navegador não tem';
