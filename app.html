@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-14.410">
+<meta name="app-versao" content="2026-11-14.411">
 <meta name="app-novidade" content="Música: grade com buracos maiores e vinheta preta">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-14.410"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-14.411"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -1261,7 +1261,7 @@ async function enviar(p, el) {
           const ft = p.fotos[k]; if (ft.nome || !ft.b64) continue;
           const doc = ft.rot !== undefined, vid = !!ft.video;   // zip/pdf (📎): vai pra recados-arquivos/, vídeo inteiro pra recados-videos/ (#221), sem reduzir; tempo cresce com o tamanho (4G fraco)
           infoPend(el, p.fotos.length > 1 ? (doc ? 'arquivo ' : vid ? 'vídeo ' : 'foto ') + (k + 1) + '/' + p.fotos.length : doc ? 'subindo arquivo' : vid ? 'subindo vídeo' : 'subindo foto');
-          const nome = nomeArq(doc ? 'recados-arquivos' : vid ? 'recados-videos' : 'recados-fotos', new Date(), k + 1, ft.ext || 'jpg');
+          const nome = comTirada(nomeArq(doc ? 'recados-arquivos' : vid ? 'recados-videos' : 'recados-fotos', new Date(), k + 1, ft.ext || 'jpg'), !doc && !vid && ft.tirada);
           await apiOk(apiDe(nome), { method: 'PUT', body: JSON.stringify({ message: doc ? 'arquivo do iPhone' : vid ? 'vídeo do iPhone' : 'foto do iPhone', content: ft.b64 }), ...(doc || vid ? { tempo: 90000 + Math.round(ft.b64.length / 25) } : {}) });
           ft.nome = nome; delete ft.b64; guardaPendente(p);   // caminho da foto que subiu já fica no aparelho
         }
@@ -1573,6 +1573,25 @@ function formatoFoto(tipoOrigem, temAlfa) {
   return { mime: 'image/jpeg', ext: 'jpg' };
 }
 const MAX_BYTES_PNG = 1500000;   // PNG com alfa passando disso: reduz a resolução (nunca troca por JPEG)
+async function horaTirada(file) {   // #228 (May 13/11 17:0x): a data/hora em que a foto foi tirada (EXIF DateTimeOriginal), lida antes de recomprimir; "AAAAMMDD-HHMMSS" ou ''
+  try {
+    const v = new DataView(await file.slice(0, 131072).arrayBuffer()); if (v.getUint16(0) !== 0xFFD8) return '';
+    for (let o = 2; o + 4 < v.byteLength;) {
+      const mk = v.getUint16(o), tam = v.getUint16(o + 2); if ((mk & 0xFF00) !== 0xFF00) return '';
+      if (mk === 0xFFE1 && v.getUint32(o + 4) === 0x45786966) {
+        const b = o + 10, le = v.getUint16(b) === 0x4949, u16 = x => v.getUint16(x, le), u32 = x => v.getUint32(x, le);
+        const ifd = (ini, tag) => { const n = u16(ini); for (let i = 0; i < n; i++) { const e = ini + 2 + i * 12; if (u16(e) === tag) return e; } return 0; };
+        const ifd0 = b + u32(b + 4), ex = ifd(ifd0, 0x8769), alvo = ex ? ifd(b + u32(ex + 8), 0x9003) || ifd(b + u32(ex + 8), 0x9004) : ifd(ifd0, 0x0132);
+        if (!alvo) return '';
+        let s = ''; const ini = b + u32(alvo + 8); for (let i = 0; i < 19; i++) s += String.fromCharCode(v.getUint8(ini + i));
+        const m = /^(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2}):(\d{2})$/.exec(s); return m && m[1] !== '0000' ? m[1] + m[2] + m[3] + '-' + m[4] + m[5] + m[6] : '';
+      }
+      o += 2 + tam;
+    }
+  } catch (e) {}
+  return '';
+}
+const comTirada = (nome, tirada) => tirada ? nome.replace(/(\.\w+)$/, '-t' + tirada + '$1') : nome;   // a hora tirada vai no fim do nome, com "t"
 function reduzir(file) {   // devolve { b64, mime, ext }
   return new Promise((ok, erro) => {
     const img = new Image(); const url = URL.createObjectURL(file);
@@ -1700,10 +1719,10 @@ arquivo.addEventListener('change', async () => {
       catch (e) { showNote('Não consegui abrir o vídeo.', true); continue; }
       showNote('Vídeo pronto. Tirando os quadros de extra…');
       let qs = []; try { qs = await quadrosDoVideo(f, 8); } catch (e) {}
-      for (const q of qs) { try { const rd = await reduzir(q); anexos.push({ b64: rd.b64, ext: rd.ext, url: URL.createObjectURL(q) }); } catch (e) {} }
+      for (const q of qs) { try { const rd = await reduzir(q); anexos.push({ b64: rd.b64, ext: rd.ext, url: URL.createObjectURL(q), tirada: await horaTirada(q) }); } catch (e) {} }
       showNote('Vídeo inteiro' + (qs.length ? ' + ' + qs.length + ' quadro' + (qs.length > 1 ? 's' : '') : '') + ' prontos pra enviar'); continue;
     }
-    try { const rd = await reduzir(f); anexos.push({ b64: rd.b64, ext: rd.ext, url: URL.createObjectURL(f) }); }
+    try { const rd = await reduzir(f); anexos.push({ b64: rd.b64, ext: rd.ext, url: URL.createObjectURL(f), tirada: await horaTirada(f) }); }
     catch (e) { showNote('Uma das fotos não abriu.', true); }
   }
   desenhaBandeja(); box.focus();
@@ -3211,7 +3230,7 @@ function edPedeValor(titulo, sugestao) {
   });
 }
 // foto escolhida no celular: reduz, sobe pra recados-fotos/ (o mesmo envio da conversa) e devolve o caminho
-async function edSobeFoto(file) { const rd = await reduzir(file), nome = nomeArq('recados-fotos', new Date(), 0, rd.ext || 'jpg'); await apiOk(apiDe(nome), { method: 'PUT', body: JSON.stringify({ message: 'foto pelo app', content: rd.b64 }) }); return nome; }
+async function edSobeFoto(file) { const rd = await reduzir(file), nome = comTirada(nomeArq('recados-fotos', new Date(), 0, rd.ext || 'jpg'), await horaTirada(file)); await apiOk(apiDe(nome), { method: 'PUT', body: JSON.stringify({ message: 'foto pelo app', content: rd.b64 }) }); return nome; }
 // formulário pelos campos: v = valores atuais (editar) ou {} (lançar); aoSalvar(valores); aoApagar opcional
 const VALIDA = { data: t => { const m = t.match(/^(\d{2})\/(\d{2})\/(\d{4})$/); if (!m) return false; const d = new Date(+m[3], +m[2] - 1, +m[1]); return d.getFullYear() === +m[3] && d.getMonth() === +m[2] - 1 && d.getDate() === +m[1] && +m[3] > 1900 && +m[3] < 2100; }, numero: t => /^-?\d+([.,]\d+)?$/.test(t) };
 function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar }) {
