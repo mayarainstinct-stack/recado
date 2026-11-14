@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-14.378">
-<meta name="app-novidade" content="Agora dá pra mandar música pela conversa, com player no cartão">
+<meta name="app-versao" content="2026-11-14.379">
+<meta name="app-novidade" content="Avaliação: insígnia com o galho embaixo e cartão com as 3 mais novas">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-14.378"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-14.379"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -561,7 +561,7 @@ async function abreCracha(chave) {
   pills.append(st); if (atr.length) pills.append(el('span', 'ct-pill', 'Nv. ' + atr.reduce((a, x) => a + x[1], 0))); lado.append(pills);   // "nível" = soma dos atributos, só pra brincar
   quem.append(avatar(true), lado);
   const maq = el('div', 'ct-maq'), pcTxt = f.pcCurto || f.pc || ''; if (pcTxt && !String(f.classe || '').toLowerCase().includes(pcTxt.toLowerCase()) && !(k === 'sigma' && /itinerante/i.test(pcTxt))) maq.append(ic('maq', null, pcTxt)); if (hb.ip) maq.append(ic('ip', null, hb.ip));
-  const insBox = el('div', 'ct-ins'), fila = el('div', 'ct-ins-fila'); [0, 1, 2].forEach(i => fila.append(insignia(ins[ins.length - 1 - i])));
+  const insBox = el('div', 'ct-ins'), fila = el('div', 'ct-ins-fila'); const dIns = it => { const p = String(it.data || '').split('/'); return p.length === 3 ? p[2] + p[1] + p[0] : ''; }, insNovas = ins.map((it, i) => [it, i]).sort((a, b) => dIns(a[0]).localeCompare(dIns(b[0])) || a[1] - b[1]).map(x => x[0]); [0, 1, 2].forEach(i => fila.append(insignia(insNovas[insNovas.length - 1 - i])));   // as 3 últimas que ganhou pela data, não pela ordem do arquivo (May 14/11 00:21)
   insBox.append(el('div', 'ct-tit', 'Insígnias'), fila);
   const pe = el('div', 'ct-pe');
   const gente = k === 'may' || /^humano/i.test(f.classe || '');
@@ -4646,7 +4646,7 @@ function abrePlanos(m) {   // Planos desenhado (#211, May 11/11 e 12/11 22:07-22
       return placa(p.o_que_e, p.feito ? edRotuloFeito(p) : (p.proximo_passo || ''), p.quando || 'um dia', quem(p.com_quem), ex, p.feito ? 'feito' : '');
     };
     const comTx = v => { const n = String(v.com || '').trim(); return n ? 'com ' + n : 'sozinha'; };
-    const cartaoViagem = (v, foi) => { const f = feitosV(v), t = itensV(v), fotos = v.lembrancas || [], k = placa(v.nome || '', foi && fotos.length ? fotos.length + (fotos.length === 1 ? ' foto' : ' fotos') : v.listas.length + ' listas pra levar e conferir', foi ? 'foi ' + quandoV(v) : (quandoV(v) || 'sem data'), quem(v.com).map(n => (v.chibis || {})[n] || n), f == null || !t || foi ? null : barra(f, t), foi ? 'passou' : '', v.arte); k.querySelector('.pl2-top > div').append(elD('span', 'pl2-com', comTx(v)));   // quem foi junto escrito no cartão (May 13/11 13:51)
+    const cartaoViagem = (v, foi) => { const f = feitosV(v), t = itensV(v), fotos = (v.lembrancas || []).filter(l => !l.apagado), k = placa(v.nome || '', foi && fotos.length ? fotos.length + (fotos.length === 1 ? ' foto' : ' fotos') : v.listas.length + ' listas pra levar e conferir', foi ? 'foi ' + quandoV(v) : (quandoV(v) || 'sem data'), quem(v.com).map(n => (v.chibis || {})[n] || n), f == null || !t || foi ? null : barra(f, t), foi ? 'passou' : '', v.arte); k.querySelector('.pl2-top > div').append(elD('span', 'pl2-com', comTx(v)));   // quem foi junto escrito no cartão (May 13/11 13:51)
     if (foi && fotos.length) { const capa = elD('div', 'pl2-pilha'); fotos.slice(0, 3).forEach((l, i) => { const p = elD('span', 'pl2-polaroide mini'), im = elD('img'); im.alt = ''; im.loading = 'lazy'; p.style.setProperty('--gira', [-7, 4, -1][i] + 'deg'); p.append(im); fotoUrl(l.foto).then(u => { im.src = u; }).catch(() => p.remove()); capa.append(p); }); const ab = elD('button', 'pl2-abre-album', 'Abrir o álbum · ' + fotos.length + (fotos.length === 1 ? ' foto' : ' fotos')); ab.type = 'button'; capa.append(ab); k.append(capa); }   // capa do álbum: 3 polaroides empilhadas (May 13/11 16:19: "num álbum bonito, não só jogadas")
     k.classList.add('toca'); k.onclick = () => (foi && fotos.length ? abreAlbumViagem(v, comTx(v)) : abreViagem(v)); return k; };
     const ABAS = { viagens: 'Viagens', agora: 'Agora', umdia: 'Um dia' }; let aba = 'viagens';   // a tela virou Viagens (May 13/11 13:50); metas ficam nas outras abas
@@ -4668,7 +4668,7 @@ function abrePlanos(m) {   // Planos desenhado (#211, May 11/11 e 12/11 22:07-22
 function abreAlbumViagem(v, comTx) {   // álbum da viagem que já foi (May 13/11 16:19): polaroides com a legenda escrita embaixo, cada foto só carrega quando chega perto da tela; tocar abre o zoom com o álbum inteiro
   tela(v.nome || 'Álbum', c => {
     painel.classList.add('tema-planos'); painel.style.setProperty('--c', '#6B4226'); c.classList.add('pl2-tela', 'pl2-album');
-    const fotos = v.lembrancas || [];
+    const fotos = (v.lembrancas || []).filter(l => !l.apagado);   // foto tirada fica no JSON com "apagado" e a data, só some da tela (regra Nada se apaga)
     cabecalho({ icone: 'pin', sub: fotos.length + (fotos.length === 1 ? ' foto' : ' fotos') + ' · ' + comTx });
     const capa = elD('div', 'pl2-alb-capa'); capa.append(elD('b', '', v.nome || ''), elD('span', '', (v.sub || '').split('·').map(s => s.trim()).filter(Boolean).join(' · ')));
     const grade = elD('div', 'pl2-alb-grade'); c.append(capa, grade);
@@ -6269,7 +6269,7 @@ async function abreReavaliacao() {
     const ate = w.ate, acha = (lista, nome) => (lista || []).find(i => i.nome === nome || String(nome).startsWith(i.nome + ' ')) || { nome };
     const ganhos = Array.isArray(n.insignias_semana) || Array.isArray(n.trofeus_semana) ? [...(n.insignias_semana || []).map(nm => ['ins', acha(f.insignias, nm)]), ...(n.trofeus_semana || []).map(nm => ['tr', acha(f.trofeus, typeof nm === 'string' ? nm : (nm || {}).nome)])]
       : [...(f.insignias || []).map(i => ['ins', i]), ...(f.trofeus || []).map(t => ['tr', t])].filter(([, i]) => { const d = daBr(i.data); return d && d >= w.de && d <= ate; });
-    if (ganhos.length) { const gw = elD('div', 'rv-ganhos'); gw.append(elD('div', 'ct-tit', 'Ganhou na semana')); const gl = elD('div', 'rv-glista'); ganhos.forEach(([tp, i]) => { const d = elD('button', 'rv-med' + (tp === 'tr' ? ' trofeu' : '')), m = elD('div', 'rv-med-ic'); d.type = 'button'; d.onclick = () => rvInsigniaGrande(tp, i, f, g); m.innerHTML = tp === 'tr' ? svgTrofeu(i) : svgInsignia(i); d.append(m, elD('b', '', i.nome)); if (i.data) d.append(elD('small', '', String(i.data).slice(0, 5))); gl.append(d); }); gw.append(gl); corpo.append(gw); }
+    if (ganhos.length) { const gw = elD('div', 'rv-ganhos'); gw.append(elD('div', 'ct-tit', 'Ganhou na semana')); const gl = elD('div', 'rv-glista'); ganhos.forEach(([tp, i]) => { const d = elD('button', 'rv-med' + (tp === 'tr' ? ' trofeu' : '')), m = elD('div', 'rv-med-ic'); d.type = 'button'; d.onclick = () => rvInsigniaGrande(tp, i, f, g); m.innerHTML = tp === 'tr' ? svgTrofeu(i) : svgInsignia(i); const gal = tp === 'tr' ? 'Troféu' : ((f.arvores || []).find(a => (a.insignias || []).includes(i.nome)) || {}).nome; d.append(m, elD('b', '', i.nome)); if (gal) d.append(elD('span', 'rv-med-galho', gal)); if (i.data) d.append(elD('small', '', String(i.data).slice(0, 5))); gl.append(d); }); gw.append(gl); corpo.append(gw); }
     const abre = elD('button', 'rv-abre', mud.length ? 'Ver o que mudou (' + mud.length + ')' : 'Ver as notas'); abre.type = 'button';   // fechado só com avatar, nota e o +/-: a tela tinha ~6.000 px (Sigma 18:16); toque abre
     const vira = () => { const on = c.classList.toggle('aberto'); abre.textContent = on ? 'Fechar' : mud.length ? 'Ver o que mudou (' + mud.length + ')' : 'Ver as notas'; }; abre.onclick = e => { e.stopPropagation(); vira(); }; vcab.onclick = vira; placa.onclick = vira;
     cin.append(abre, corpo); face.append(cin); c.append(face); return c;
