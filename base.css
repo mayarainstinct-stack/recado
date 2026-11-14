@@ -738,6 +738,12 @@ img.esq { min-height: 140px; }
 .pcd-dias-bar.aprox::after { opacity: .5; } .pcd-dias-bar.vazio { cursor: default; } .pcd-dias-bar.vazio::after { content: none; }
 .pcd-dias-num { text-align: right; } .pcd-dias-num b { font-size: 20px; font-weight: 900; color: var(--fg); white-space: nowrap; }
 .pcd-dias-nota { margin: 0; font-size: 12px; color: var(--muted); }
+.pcd-dias-topo { display: flex; flex-direction: column; gap: 10px; } .pcd-dias-tit { font-size: 15px; font-weight: 800; color: var(--fg); } .pcd-dias-corpo { display: flex; flex-direction: column; gap: 10px; }
+.pcd-dias-graf .pcd-dias-cols { height: 58px; grid-template-columns: repeat(30, minmax(0, 1fr)); gap: 2px; } .pcd-dias-graf .pcd-dias-bar { border-radius: 2px; } .pcd-dias-graf .pcd-dias-bar::after { left: 0; right: 0; border-radius: 2px 2px 1px 1px; }
+.pcd-dias-graf .pcd-dias-cab small { white-space: nowrap; overflow: visible; font-size: 10px; } .pcd-dias-num { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; } .pcd-dias-num small { font-size: 12px; font-weight: 800; white-space: nowrap; } .pcd-dias-num .melhor { color: #3FB950; } .pcd-dias-num .pior { color: #F85149; } .pcd-dias-num .igual { color: var(--muted); } .pcd-dias-graf .pcd-dias-cab .pcd-dias-cols { height: auto; } .pcd-dias-graf .pcd-dias-pc img, .pcd-dias-graf .pcd-dias-pc svg { width: 30px; height: 30px; }
+.pcd-val.com-bar { display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 800; } .pcd-val-bar { display: block; height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--rc) var(--w), color-mix(in srgb, var(--fg) 8%, transparent) var(--w)); }
+.pcd-ver { display: block; width: 100%; height: auto; margin: 14px 0 4px; padding: 12px 14px; border-radius: 12px; border: 1px dashed var(--line); background: none; color: var(--fg); font: inherit; font-size: 14px; font-weight: 700; text-align: left; } .pcd-ver::after { content: ' ▾'; color: var(--muted); } .pcd-ver.aberto::after { content: ' ▴'; }
+.pcd-listas { padding: 4px 2px; }
 .pcd-disco-quando { display: block; margin: -4px 0 12px; font-size: 12px; color: var(--muted); }
 .pcd-cmp { --rc: var(--accent); } .pcd-lin { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
 .pcd-cab div { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 6px; border-radius: 10px; background: color-mix(in srgb, var(--rc) 16%, transparent); border-bottom: 3px solid var(--rc); font-size: 14px; }

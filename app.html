@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-14.402">
+<meta name="app-versao" content="2026-11-14.403">
 <meta name="app-novidade" content="Música: grade com buracos maiores e vinheta preta">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-14.402"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-14.403"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2812,7 +2812,7 @@ function cartaoPc(p) {
   const es = elD('span', 'pcd-est', en); es.style.setProperty('--ec', ec); top.append(fotoRobo(g), nm, es); d.append(top);
   const md0 = p.medido, vez = (n, um, muitos) => n == 1 ? '1 ' + um : n + ' ' + muitos, virg = x => String(x).replace('.', ',');
   const resumo = md0 && md0.disco_c_livre_gb != null ? `Nos últimos 30 dias ${md0.desligou_na_marra_30d ? 'desligou na marra ' + vez(md0.desligou_na_marra_30d, 'vez', 'vezes') : 'nenhum desligamento na marra'} e ${md0.erro_hardware_30d ? vez(md0.erro_hardware_30d, 'erro', 'erros') + ' de hardware' : 'nenhum erro de hardware'}${md0.ram_livre_gb != null ? `; ${virg(md0.ram_livre_gb)} GB de RAM livres de ${virg(md0.ram_gb)}` : ''}.` : p.resumo;   // com o medido, o texto sai dele (Sigma #42 13/11)
-  if (resumo) d.append(elD('p', 'pcd-res', resumo));
+  if (resumo && !md0) d.append(elD('p', 'pcd-res', resumo));   // medido: os números já estão nos cartões, sem o parágrafo (May 14/11 02:05: pouco texto)
   if (p.medido && p.medido.disco_c_livre_gb != null && p.medido.disco_c_total_gb) {   // cada disco com a barra dele e o livre (May 14/11 01:47: PC2 e PC3 têm 2); número com vírgula (#300)
     const md = p.medido, vols = (md.volumes && md.volumes.length ? md.volumes : [{ letra: 'C:', livre_gb: md.disco_c_livre_gb, total_gb: md.disco_c_total_gb }]).filter(v => v.total_gb);
     vols.forEach(v => { const livre = v.livre_gb, tot = v.total_gb, uso = Math.min(100, Math.max(0, (tot - livre) / tot * 100)), aperto = livre < 30 || livre / tot < .15, bx = elD('div', 'pcd-disco' + (aperto ? ' aperto' : '')), tx = elD('div', 'pcd-disco-tx'), bar = elD('div', 'trilho-prog'), f = elD('i'), tipo = { SSD: 'SSD', HDD: 'HD' }[v.tipo] || '';
@@ -2822,7 +2822,12 @@ function cartaoPc(p) {
   if (p.medido && p.medido.ram_livre_gb != null && p.medido.ram_gb) { const md = p.medido, uso = Math.min(100, Math.max(0, (md.ram_gb - md.ram_livre_gb) / md.ram_gb * 100)), aperto = md.ram_livre_gb < 1.5 || md.ram_livre_gb / md.ram_gb < .1, bx = elD('div', 'pcd-disco' + (aperto ? ' aperto' : '')), tx = elD('div', 'pcd-disco-tx'), bar = elD('div', 'trilho-prog'), f = elD('i'); tx.append(elD('b', '', 'RAM'), elD('span', '', Math.round(uso) + '% em uso na medida')); f.style.width = uso + '%'; bar.append(f); bx.append(tx, bar); d.append(bx); }   // #42: disco do medido (casa/diagnostico/medido/<PC>.json) na barra tracejada da casa, na cor do robô; apertado (menos de 30 GB ou 15%) fica vermelho
   const nums = (p.numeros || []).filter(([k]) => !(p.medido && /^C: livre/.test(k)));   // o disco já tem a barra: 1 número só (#300, Sigma 01:25)
   if (nums.length) { const n = elD('div', 'pcd-num'); nums.forEach(([k, v]) => { const b = elD('div'); b.append(elD('span', '', k), elD('b', '', v)); n.append(b); }); d.append(n); }
-  [['feito', 'Feito', ''], ['falta', 'Falta', ''], ['peca', 'Só peça resolve', 'peca']].forEach(([k, t, cls]) => { if (!(p[k] || []).length) return; d.append(elD('h4', cls, t)); const ul = elD('ul'); p[k].forEach(i => ul.append(elD('li', '', i))); d.append(ul); });
+  const listas = [['feito', 'Feito', ''], ['falta', 'Falta', ''], ['peca', 'Só peça resolve', 'peca']].filter(([k]) => (p[k] || []).length);
+  if (listas.length) {   // o que foi feito e o que falta só no toque (May 14/11 02:05, Sigma 02:06)
+    const bt = elD('button', 'pcd-ver', listas.map(([k, t]) => t + ' (' + p[k].length + ')').join(' · ')), cx = elD('div', 'pcd-listas'); bt.type = 'button'; cx.hidden = true;
+    listas.forEach(([k, t, cls]) => { cx.append(elD('h4', cls, t)); const ul = elD('ul'); p[k].forEach(i => ul.append(elD('li', '', i))); cx.append(ul); });
+    bt.onclick = () => { cx.hidden = !cx.hidden; bt.classList.toggle('aberto', !cx.hidden); }; d.append(bt, cx);
+  }
   return d;
 }
 // Relatório dos PCs no Comparar (May, 07/11/2026 09:51 "bem Power BI", 09:56 "mais gamer", 09:57 áudio "rosca, progressão, degradê, cara de PS4/Xbox";
@@ -2885,38 +2890,47 @@ function comparaPcs(dia) {   // os 3 lado a lado, uma linha por medida; a cor di
   const sit = { nome: 'Situação', v: dia.pcs.map(p => [(EST_PC[p.estado] || EST_PC.atencao)[0], { ok: 'ok', peca: 'ruim', investigando: 'investigando' }[p.estado] || 'atencao']) };
   [sit, ...(dia.comparar || [])].forEach(l => {
     d.append(elD('div', 'pcd-rot', l.nome)); const ln = elD('div', 'pcd-lin');
-    l.v.forEach(([t, tom]) => { const c = elD('div', 'pcd-val', t); if (TOM_PC[tom]) c.style.setProperty('--ec', TOM_PC[tom]); else c.classList.add('neutro'); ln.append(c); }); d.append(ln);
+    const ns = l.v.map(([t]) => { const m = String(t).match(/^(\d+(?:[.,]\d+)?)/); return m ? parseFloat(m[1].replace(',', '.')) : null; }), num = ns.every(x => x != null), mx = Math.max(1e-9, ...ns.filter(x => x != null));   // linha de número vira barra lado a lado na cor do robô (May 14/11 02:05, Sigma 02:07)
+    l.v.forEach(([t, tom], i) => { const c = elD('div', 'pcd-val', t); if (TOM_PC[tom]) c.style.setProperty('--ec', TOM_PC[tom]); else c.classList.add('neutro'); if (num) { const g = GRUPO[dia.pcs[i] && dia.pcs[i].robo] || TRAB_NEUTRO, br = elD('i', 'pcd-val-bar'); c.classList.add('com-bar'); br.style.setProperty('--w', Math.max(4, ns[i] / mx * 100) + '%'); br.style.setProperty('--rc', g.cor); c.append(br); } ln.append(c); }); d.append(ln);
   });
   return d;
 }
-const MEDIDAS_DIAS = [['disco_c_livre_gb', 'Disco C livre', ' GB'], ['ram_livre_gb', 'RAM livre', ' GB'], ['desligou_na_marra_30d', 'Desligou na marra', ''], ['erro_hardware_30d', 'Erro de hardware', ''], ['driver_caiu_30d', 'Driver de vídeo caiu', '']];
-function painelDias(pcs) {   // #302 (May 14/11 01:46): os dias lado a lado em gráfico, 1 medida por vez (Sigma 01:49), 7 dias, cor do robô de cada PC
-  const d = elD('div', 'pcd-dias'), sel = elD('div', 'pcd-dias-sel'), graf = elD('div', 'pcd-dias-graf'), hist = {};
+const MEDIDAS_DIAS = [['disco_c_livre_gb', 'Disco C livre', ' GB', 1], ['ram_livre_gb', 'RAM livre', ' GB', 1], ['desligou_na_marra_30d', 'Desligou na marra', '', -1], ['erro_hardware_30d', 'Erro de hardware', '', -1], ['driver_caiu_30d', 'Driver de vídeo caiu', '', -1]];   // 4º: 1 = quanto mais melhor, -1 = quanto menos melhor
+function painelDias(pcs) {   // #302 (May 14/11 01:46 e 02:05): só gráfico, os 7 dias lado a lado na cor do robô de cada PC; Disco e RAM sempre, os problemas com seletor (Sigma 01:49 e 02:06)
+  const d = elD('div', 'pcd-dias'), hist = {}, desenhos = [];
   const fmt = (v, u) => v == null ? '–' : String(Math.round(v * 10) / 10).replace('.', ',') + u;
-  const hoje = new Date(), dias = [...Array(7)].map((_, i) => { const x = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - 6 + i); return String(x.getDate()).padStart(2, '0') + '/' + String(x.getMonth() + 1).padStart(2, '0') + '/' + x.getFullYear(); });
-  let med = MEDIDAS_DIAS[0];
-  const desenha = () => {
-    sel.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.k === med[0]));
-    const vals = pcs.map(p => dias.map(dd => { const x = (hist[p.pc] || []).find(y => y.dia === dd); return x && x[med[0]] != null ? x : null; }));
-    const mx = Math.max(1, ...vals.flat().filter(Boolean).map(x => x[med[0]]));
-    const cab = elD('div', 'pcd-dias-lin pcd-dias-cab'); cab.append(elD('span')); const cd = elD('div', 'pcd-dias-cols'); dias.forEach(dd => cd.append(elD('small', '', dd.slice(0, 2)))); cab.append(cd, elD('span')); graf.replaceChildren(cab);
-    pcs.forEach((p, i) => {
-      const g = GRUPO[p.robo] || TRAB_NEUTRO, ln = elD('div', 'pcd-dias-lin'), nm = elD('div', 'pcd-dias-pc'), cols = elD('div', 'pcd-dias-cols');
-      ln.style.setProperty('--rc', g.cor); nm.append(fotoRobo(g), elD('b', '', p.pc));
-      vals[i].forEach((x, j) => {
-        const b = elD('button', x ? 'pcd-dias-bar' : 'pcd-dias-bar vazio'); b.type = 'button';
-        if (x) { b.style.setProperty('--h', Math.max(6, x[med[0]] / mx * 100) + '%'); b.setAttribute('aria-label', p.pc + ' ' + dias[j] + ': ' + fmt(x[med[0]], med[2])); b.onclick = () => showNote(p.pc + ' · ' + dias[j].slice(0, 5) + ': ' + fmt(x[med[0]], med[2]) + (x.aprox ? ' (aprox.)' : '')); if (x.aprox) b.classList.add('aprox'); }
-        else { b.disabled = true; b.setAttribute('aria-label', p.pc + ' ' + dias[j] + ': sem medida'); }
-        cols.append(b);
+  const hoje = new Date(), dias = [...Array(30)].map((_, i) => { const x = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - 29 + i);   // o mês inteiro na tela pra ver se melhora ou piora (May 14/11 02:09)
+    return String(x.getDate()).padStart(2, '0') + '/' + String(x.getMonth() + 1).padStart(2, '0') + '/' + x.getFullYear(); });
+  const grafico = (opcoes, titulo) => {
+    const bl = elD('div', 'pcd-dias-graf'), topo = elD('div', 'pcd-dias-topo'), graf = elD('div', 'pcd-dias-corpo'); let med = opcoes[0];
+    if (titulo) topo.append(elD('b', 'pcd-dias-tit', titulo));
+    const sel = elD('div', 'pcd-dias-sel'); sel.dataset.gesto = '1';
+    if (opcoes.length > 1) opcoes.forEach(m => { const b = elD('button', '', m[1]); b.type = 'button'; b.dataset.k = m[0]; b.onclick = () => { med = m; desenha(); }; sel.append(b); });
+    else topo.append(elD('b', 'pcd-dias-tit', opcoes[0][1]));
+    const desenha = () => {
+      sel.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.k === med[0]));
+      const vals = pcs.map(p => dias.map(dd => { const x = (hist[p.pc] || []).find(y => y.dia === dd); return x && x[med[0]] != null ? x : null; }));
+      const mx = Math.max(1, ...vals.flat().filter(Boolean).map(x => x[med[0]]));
+      const cab = elD('div', 'pcd-dias-lin pcd-dias-cab'); cab.append(elD('span')); const cd = elD('div', 'pcd-dias-cols'); dias.forEach((dd, k) => cd.append(elD('small', '', k % 7 === 1 || k === 29 ? dd.slice(0, 5) : ''))); cab.append(cd, elD('span')); graf.replaceChildren(cab);
+      pcs.forEach((p, i) => {
+        const g = GRUPO[p.robo] || TRAB_NEUTRO, ln = elD('div', 'pcd-dias-lin'), nm = elD('div', 'pcd-dias-pc'), cols = elD('div', 'pcd-dias-cols');
+        ln.style.setProperty('--rc', g.cor); nm.append(fotoRobo(g), elD('b', '', p.pc));
+        vals[i].forEach((x, j) => {
+          const b = elD('button', x ? 'pcd-dias-bar' : 'pcd-dias-bar vazio'); b.type = 'button';
+          if (x) { b.style.setProperty('--h', Math.max(6, x[med[0]] / mx * 100) + '%'); b.setAttribute('aria-label', p.pc + ' ' + dias[j] + ': ' + fmt(x[med[0]], med[2])); b.onclick = () => showNote(p.pc + ' · ' + dias[j].slice(0, 5) + ': ' + fmt(x[med[0]], med[2]) + (x.aprox ? ' (aprox.)' : '')); if (x.aprox) b.classList.add('aprox'); }
+          else { b.disabled = true; b.setAttribute('aria-label', p.pc + ' ' + dias[j] + ': sem medida'); }
+          cols.append(b);
+        });
+        const ult = [...vals[i]].reverse().find(Boolean), pri = vals[i].find(Boolean), n = elD('div', 'pcd-dias-num'); n.append(elD('b', '', ult ? fmt(ult[med[0]], med[2]) : '–'));
+        if (ult && pri && ult !== pri) { const dv = ult[med[0]] - pri[med[0]], bom = dv * med[3] > 0, s = elD('small', dv === 0 ? 'igual' : bom ? 'melhor' : 'pior', dv === 0 ? '= igual' : (dv > 0 ? '▲ ' : '▼ ') + fmt(Math.abs(dv), med[2])); s.setAttribute('aria-label', (dv === 0 ? 'igual' : bom ? 'melhorou' : 'piorou') + ' desde ' + pri.dia.slice(0, 5)); n.append(s); }   // a seta compara com o 1º dia do mês que tem medida
+        ln.append(nm, cols, n); graf.append(ln);
       });
-      const ult = [...vals[i]].reverse().find(Boolean), n = elD('div', 'pcd-dias-num'); n.append(elD('b', '', ult ? fmt(ult[med[0]], med[2]) : '–'));
-      ln.append(nm, cols, n); graf.append(ln);
-    });
+    };
+    if (opcoes.length > 1) topo.append(sel);
+    bl.append(topo, graf); desenhos.push(desenha); desenha(); return bl;
   };
-  MEDIDAS_DIAS.forEach(m => { const b = elD('button', '', m[1]); b.type = 'button'; b.dataset.k = m[0]; b.onclick = () => { med = m; desenha(); }; sel.append(b); });
-  sel.dataset.gesto = '1'; d.append(sel, graf, elD('p', 'pcd-dias-nota', 'Toca na barra pra ver o dia. Barra clara: tirada das medidas antigas (aprox.).'));
-  desenha();
-  Promise.all(pcs.map(p => lerArquivo('casa/diagnostico/historico/' + p.pc + '.json').then(t => { hist[p.pc] = JSON.parse(t).dias || []; }).catch(() => {}))).then(desenha);
+  d.append(grafico([MEDIDAS_DIAS[0]]), grafico([MEDIDAS_DIAS[1]]), grafico(MEDIDAS_DIAS.slice(2), 'Problemas em 30 dias'), elD('p', 'pcd-dias-nota', 'Últimos 30 dias. A seta compara com o 1º dia medido: verde melhorou, vermelho piorou. Toca na barra pra ver o dia.'));
+  Promise.all(pcs.map(p => lerArquivo('casa/diagnostico/historico/' + p.pc + '.json').then(t => { hist[p.pc] = JSON.parse(t).dias || []; }).catch(() => {}))).then(() => desenhos.forEach(f => f()));
   return d;
 }
 function montaDiaPcs(caixa, dia) {
@@ -2939,7 +2953,7 @@ function abreDiagnostico(m) {
   const arqD = (m && m.arq) || 'casa/diagnostico-pcs.json', soDados = !!(m && m.arq);   // Diagnóstico dos projetos (Trabalho, May 09/11/2026): mesma tela dos PCs, outro arquivo
   tela((m && m.nome) || 'Diagnóstico', async c => {
     const sp = elD('div', 'p-lista'), datas = elD('div', 'pcd-datas'), nota = skCarga(), caixa = elD('div', 'p-lista'); c.append(sp);
-    sp.append(elD('div', 'p-sec', (m && m.secao) || 'Saúde dos PCs'), datas, nota, caixa);
+    sp.append(elD('div', 'p-sec', (m && m.secao) || 'Saúde dos PCs'), datas, nota, caixa); if (!soDados) { datas.hidden = true; nota.style.display = 'none'; }   // PCs: só o dia de agora, sem as pílulas de data nem o parágrafo (Sigma 02:06)
     const t2 = document.createElement('div'); t2.className = 'p-sec'; t2.textContent = 'Este app'; const x = document.createElement('div'); x.className = 'p-texto'; if (!soDados) c.append(t2, x);
     lerArquivo(arqD).then(t => JSON.parse(t)).then(dg => {
       const dias = dg.dias || [dg]; let di = 0; const escolhe = i => { di = i; datas.querySelectorAll('button').forEach((b, j) => b.classList.toggle('ativa', j === i)); nota.classList.remove('sk'); nota.textContent = dias[i].quem || ''; nota.hidden = !dias[i].quem; montaDiaPcs(caixa, dias[i]); };
