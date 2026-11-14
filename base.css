@@ -723,6 +723,21 @@ img.esq { min-height: 140px; }
 .pcd-trilho { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; align-items: flex-start; overscroll-behavior-x: contain; }
 .pcd-trilho::-webkit-scrollbar, .pcd-datas::-webkit-scrollbar { display: none; }
 .pcd-pag { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; scroll-snap-stop: always; padding-bottom: 8px; }   /* espaço do tamanho das abas de baixo: nada fica escondido atrás delas (Sigma 14:25) */
+/* #302: aba Dias do Diagnóstico, 1 medida por vez, 7 dias lado a lado na cor do robô de cada PC */
+.pcd-dias { display: flex; flex-direction: column; gap: 14px; padding: 4px 2px 8px; }
+.pcd-dias-sel { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 6px; scrollbar-width: none; } .pcd-dias-sel::-webkit-scrollbar { display: none; }
+.pcd-dias-sel button { flex: none; width: auto; display: block; height: auto; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: none; color: var(--fg); font: inherit; font-size: 13px; font-weight: 700; white-space: nowrap; }
+.pcd-dias-sel button.on { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.pcd-dias-graf { display: flex; flex-direction: column; gap: 12px; padding: 14px 12px; border-radius: 16px; background: var(--paper); border: 1px solid var(--line); }
+.pcd-dias-lin { display: grid; grid-template-columns: 64px minmax(0, 1fr) 70px; align-items: end; gap: 10px; }
+.pcd-dias-cab { align-items: center; } .pcd-dias-cab small { text-align: center; font-size: 11px; color: var(--muted); }
+.pcd-dias-pc { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; } .pcd-dias-pc img, .pcd-dias-pc svg { width: 34px; height: 34px; border-radius: 50%; box-shadow: 0 0 0 2px var(--rc); }
+.pcd-dias-cols { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; height: 76px; align-items: end; } .pcd-dias-cab .pcd-dias-cols { height: auto; }
+.pcd-dias-bar { position: relative; display: block; height: 100%; width: 100%; padding: 0; border: 0; border-radius: 4px; background: color-mix(in srgb, var(--fg) 6%, transparent); cursor: pointer; }
+.pcd-dias-bar::after { content: ''; position: absolute; left: 2px; right: 2px; bottom: 0; height: var(--h); border-radius: 4px 4px 2px 2px; background: var(--rc); }
+.pcd-dias-bar.aprox::after { opacity: .5; } .pcd-dias-bar.vazio { cursor: default; } .pcd-dias-bar.vazio::after { content: none; }
+.pcd-dias-num { text-align: right; } .pcd-dias-num b { font-size: 20px; font-weight: 900; color: var(--fg); white-space: nowrap; }
+.pcd-dias-nota { margin: 0; font-size: 12px; color: var(--muted); }
 .pcd-cmp { --rc: var(--accent); } .pcd-lin { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
 .pcd-cab div { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 6px; border-radius: 10px; background: color-mix(in srgb, var(--rc) 16%, transparent); border-bottom: 3px solid var(--rc); font-size: 14px; }
 .pcd-cab img { width: 24px; height: 24px; border-radius: 8px; background: #0E0F12; }

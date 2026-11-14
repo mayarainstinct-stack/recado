@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-14.400">
+<meta name="app-versao" content="2026-11-14.401">
 <meta name="app-novidade" content="Música: grade com buracos maiores e vinheta preta">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-14.400"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-14.401"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2883,13 +2883,43 @@ function comparaPcs(dia) {   // os 3 lado a lado, uma linha por medida; a cor di
   });
   return d;
 }
+const MEDIDAS_DIAS = [['disco_c_livre_gb', 'Disco C livre', ' GB'], ['ram_livre_gb', 'RAM livre', ' GB'], ['desligou_na_marra_30d', 'Desligou na marra', ''], ['erro_hardware_30d', 'Erro de hardware', ''], ['driver_caiu_30d', 'Driver de vídeo caiu', '']];
+function painelDias(pcs) {   // #302 (May 14/11 01:46): os dias lado a lado em gráfico, 1 medida por vez (Sigma 01:49), 7 dias, cor do robô de cada PC
+  const d = elD('div', 'pcd-dias'), sel = elD('div', 'pcd-dias-sel'), graf = elD('div', 'pcd-dias-graf'), hist = {};
+  const fmt = (v, u) => v == null ? '–' : String(Math.round(v * 10) / 10).replace('.', ',') + u;
+  const hoje = new Date(), dias = [...Array(7)].map((_, i) => { const x = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - 6 + i); return String(x.getDate()).padStart(2, '0') + '/' + String(x.getMonth() + 1).padStart(2, '0') + '/' + x.getFullYear(); });
+  let med = MEDIDAS_DIAS[0];
+  const desenha = () => {
+    sel.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.k === med[0]));
+    const vals = pcs.map(p => dias.map(dd => { const x = (hist[p.pc] || []).find(y => y.dia === dd); return x && x[med[0]] != null ? x : null; }));
+    const mx = Math.max(1, ...vals.flat().filter(Boolean).map(x => x[med[0]]));
+    const cab = elD('div', 'pcd-dias-lin pcd-dias-cab'); cab.append(elD('span')); const cd = elD('div', 'pcd-dias-cols'); dias.forEach(dd => cd.append(elD('small', '', dd.slice(0, 2)))); cab.append(cd, elD('span')); graf.replaceChildren(cab);
+    pcs.forEach((p, i) => {
+      const g = GRUPO[p.robo] || TRAB_NEUTRO, ln = elD('div', 'pcd-dias-lin'), nm = elD('div', 'pcd-dias-pc'), cols = elD('div', 'pcd-dias-cols');
+      ln.style.setProperty('--rc', g.cor); nm.append(fotoRobo(g), elD('b', '', p.pc));
+      vals[i].forEach((x, j) => {
+        const b = elD('button', x ? 'pcd-dias-bar' : 'pcd-dias-bar vazio'); b.type = 'button';
+        if (x) { b.style.setProperty('--h', Math.max(6, x[med[0]] / mx * 100) + '%'); b.setAttribute('aria-label', p.pc + ' ' + dias[j] + ': ' + fmt(x[med[0]], med[2])); b.onclick = () => showNote(p.pc + ' · ' + dias[j].slice(0, 5) + ': ' + fmt(x[med[0]], med[2]) + (x.aprox ? ' (aprox.)' : '')); if (x.aprox) b.classList.add('aprox'); }
+        else { b.disabled = true; b.setAttribute('aria-label', p.pc + ' ' + dias[j] + ': sem medida'); }
+        cols.append(b);
+      });
+      const ult = [...vals[i]].reverse().find(Boolean), n = elD('div', 'pcd-dias-num'); n.append(elD('b', '', ult ? fmt(ult[med[0]], med[2]) : '–'));
+      ln.append(nm, cols, n); graf.append(ln);
+    });
+  };
+  MEDIDAS_DIAS.forEach(m => { const b = elD('button', '', m[1]); b.type = 'button'; b.dataset.k = m[0]; b.onclick = () => { med = m; desenha(); }; sel.append(b); });
+  sel.dataset.gesto = '1'; d.append(sel, graf, elD('p', 'pcd-dias-nota', 'Toca na barra pra ver o dia. Barra clara: tirada das medidas antigas (aprox.).'));
+  desenha();
+  Promise.all(pcs.map(p => lerArquivo('casa/diagnostico/historico/' + p.pc + '.json').then(t => { hist[p.pc] = JSON.parse(t).dias || []; }).catch(() => {}))).then(desenha);
+  return d;
+}
 function montaDiaPcs(caixa, dia) {
   const nav = elD('nav', 'pcd-abas'), dq = elD('span', 'pcd-dq'), trilho = elD('div', 'pcd-trilho'); nav.setAttribute('aria-label', 'Abas do diagnóstico'); nav.append(dq);
-  [['Comparar', null], ...dia.pcs.map(p => [p.pc, p])].forEach(([rot, p], i) => {
-    const g = p && (GRUPO[p.robo] || TRAB_NEUTRO), b = elD('button'); b.type = 'button'; b.dataset.cor = g ? g.cor : '';
-    if (g) b.append(fotoRobo(g)); else b.insertAdjacentHTML('beforeend', icone('chart')); b.append(elD('span', '', rot));
+  [['Dias', 'dias'], ['Comparar', null], ...dia.pcs.map(p => [p.pc, p])].forEach(([rot, p], i) => {
+    const g = p && p !== 'dias' && (GRUPO[p.robo] || TRAB_NEUTRO), b = elD('button'); b.type = 'button'; b.dataset.cor = g ? g.cor : '';
+    if (g) b.append(fotoRobo(g)); else b.insertAdjacentHTML('beforeend', icone(p === 'dias' ? 'calendar' : 'chart')); b.append(elD('span', '', rot));
     b.onclick = () => trilho.scrollTo({ left: i * trilho.clientWidth, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); nav.append(b);
-    const pg = elD('div', 'pcd-pag'); if (p) pg.append(cartaoPc(p)); else { const bi = painelPcs(dia); pg.className += ' p-lista'; if (bi) pg.append(bi); pg.append(comparaPcs(dia)); } trilho.append(pg);
+    const pg = elD('div', 'pcd-pag'); if (p === 'dias') { pg.className += ' p-lista'; pg.append(painelDias(dia.pcs)); } else if (p) pg.append(cartaoPc(p)); else { const bi = painelPcs(dia); pg.className += ' p-lista'; if (bi) pg.append(bi); pg.append(comparaPcs(dia)); } trilho.append(pg);
   });
   let at = -1; const marca = i => {   // o destaque desliza até a aba da página que tá na tela
     const bs = nav.querySelectorAll('button'), b = bs[i]; if (!b || i === at) return; at = i;
@@ -2906,9 +2936,9 @@ function abreDiagnostico(m) {
     sp.append(elD('div', 'p-sec', (m && m.secao) || 'Saúde dos PCs'), datas, nota, caixa);
     const t2 = document.createElement('div'); t2.className = 'p-sec'; t2.textContent = 'Este app'; const x = document.createElement('div'); x.className = 'p-texto'; if (!soDados) c.append(t2, x);
     lerArquivo(arqD).then(t => JSON.parse(t)).then(dg => {
-      const dias = dg.dias || [dg]; let di = 0; const escolhe = i => { di = i; datas.querySelectorAll('button').forEach((b, j) => b.classList.toggle('ativa', j === i)); nota.textContent = dias[i].quem || ''; nota.hidden = !dias[i].quem; montaDiaPcs(caixa, dias[i]); };
+      const dias = dg.dias || [dg]; let di = 0; const escolhe = i => { di = i; datas.querySelectorAll('button').forEach((b, j) => b.classList.toggle('ativa', j === i)); nota.classList.remove('sk'); nota.textContent = dias[i].quem || ''; nota.hidden = !dias[i].quem; montaDiaPcs(caixa, dias[i]); };
       dias.forEach((d, i) => { const b = elD('button', '', d.data); b.type = 'button'; b.onclick = () => escolhe(i); datas.append(b); }); escolhe(0);
-      if (!soDados) (dias[0].pcs || []).forEach((p, k) => lerArquivo('casa/diagnostico/medido/' + p.pc + '.json').then(t => { p.medido = JSON.parse(t); const pg = di === 0 && caixa.querySelectorAll('.pcd-pag')[k + 1], y = pCorpo.scrollTop; if (pg) { pg.replaceChildren(cartaoPc(p)); pCorpo.scrollTop = y; } }).catch(() => {}));   // #297 (Sigma 01:18): cada medição que chega troca só o cartão daquele PC, sem mexer na aba nem na rolagem
+      if (!soDados) (dias[0].pcs || []).forEach((p, k) => lerArquivo('casa/diagnostico/medido/' + p.pc + '.json').then(t => { p.medido = JSON.parse(t); const pg = di === 0 && caixa.querySelectorAll('.pcd-pag')[k + 2], y = pCorpo.scrollTop; if (pg) { pg.replaceChildren(cartaoPc(p)); pCorpo.scrollTop = y; } }).catch(() => {}));   // #297 (Sigma 01:18): cada medição que chega troca só o cartão daquele PC, sem mexer na aba nem na rolagem
     }).catch(() => { nota.textContent = soDados ? 'Ainda sem relatório dos projetos.' : 'Não consegui abrir o diagnóstico dos PCs. Confere a internet.'; });
     const linha = (t, v) => { const p = document.createElement('p'), b = document.createElement('b'); b.textContent = t + ': '; p.append(b, v); x.append(p); };
     const perm = window.Notification ? { granted: 'ligada', denied: 'bloqueada (Ajustes → Notificações)', default: 'ainda não pedida' }[Notification.permission] || Notification.permission : 'este navegador não tem';
