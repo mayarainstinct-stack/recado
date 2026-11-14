@@ -433,6 +433,7 @@ const CAMPOS_G = {
   abastecimentos: [{ nome: 'data', rotulo: 'Data (DD/MM/AAAA)', tipo: 'texto', obrigatorio: true, valida: 'data', erro: 'Data no formato DD/MM/AAAA, e que exista.' }, { nome: 'valor', rotulo: 'Valor (R$)', tipo: 'valor', obrigatorio: true }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto' }],
   trocas_oleo: [{ nome: 'data', rotulo: 'Data (DD/MM/AAAA)', tipo: 'texto', obrigatorio: true, valida: 'data', erro: 'Data no formato DD/MM/AAAA, e que exista.' }, { nome: 'km', rotulo: 'Km', tipo: 'texto' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto' }],
   usos: [{ nome: 'data', rotulo: 'Data (DD/MM/AAAA)', tipo: 'texto', obrigatorio: true, valida: 'data', erro: 'Data no formato DD/MM/AAAA, e que exista.' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto' }],
+  observacoes: [{ nome: 'texto', rotulo: 'O que você notou', tipo: 'texto_longo', obrigatorio: true }],
   manutencao: [{ nome: 'item', rotulo: 'O que', tipo: 'texto', obrigatorio: true }, { nome: 'estado', rotulo: 'Estado', tipo: 'escolha', opcoes: ESTMAN.map(e => e[0]) }, { nome: 'data', rotulo: 'Data (agendado ou feito)', tipo: 'texto', valida: 'data', erro: 'Data no formato DD/MM/AAAA, e que exista.' }, { nome: 'valor', rotulo: 'Valor gasto (opcional)', tipo: 'valor' }]
 };
 function editaGar(v, lista, x, depois) {
@@ -445,6 +446,23 @@ function editaGar(v, lista, x, depois) {
     } });
 }
 function botaoMais(rot, fn) { const b = elD('button', 'gr-mais', '+'); b.type = 'button'; b.setAttribute('aria-label', rot); b.onclick = fn; return b; }
+function observacoes(v, depois) {   // #248 (May 13/11 22:37): observação solta do carro, em texto livre; "Vira item" transforma em manutenção a fazer (pelo app, sem depender de robô)
+  const l = vivos(v.observacoes).filter(x => !x.virou), k = cartao('Observações', l.length ? String(l.length) : ''), hoje = () => new Date().toLocaleDateString('pt-BR');
+  k.firstChild.append(botaoMais('Anotar observação do carro', () => edFormulario({ titulo: 'Observação do carro', campos: CAMPOS_G.observacoes, v: {},
+    aoSalvar: async f => { await gravaGar(v, 'observacoes', arr => arr.push({ id: 'obs-' + Date.now().toString(36), texto: f.texto, data: hoje() }), 'Garagem: observação anotada pelo app'); depois(); } })));
+  if (!l.length) k.append(elD('p', 'gr-vazio', 'Anota aqui o que notar no carro; um toque vira item de manutenção.'));
+  const ul = elD('ul', 'gr-lista');
+  l.forEach(x => {
+    const li = elD('li', 'gr-item gr-obs'), bt = elD('button', 'gr-feito-bt', 'Vira item'); bt.type = 'button';
+    bt.onclick = async () => { const id = idLista('observacoes', x), q = hoje(), item = { id: 'man-' + Date.now().toString(36), item: x.texto, estado: 'a fazer', desde: q };
+      const ok = await gravaJson(ARQ_GAR, d => { const vv = (d.veiculos || []).find(y => y.id === v.id); if (!vv) return; poeItem(vv.manutencao = vv.manutencao || [], 'manutencao', Object.assign({}, item)); const o = achaG(vv.observacoes || [], 'observacoes', id); if (o) { o.id = id; o.virou = q; } }, 'Garagem: observação virou item de manutenção pelo app', null);
+      if (!ok) { showNote('Não guardou: confere a internet e tenta de novo.', true); return; }
+      poeItem(v.manutencao = v.manutencao || [], 'manutencao', item); const o = achaG(v.observacoes || [], 'observacoes', id); if (o) { o.id = id; o.virou = q; } showNote('Virou item de manutenção.'); depois(); };
+    li.append(elD('span', 'gr-peca', x.texto), elD('span', 'gr-man-dt', 'anotado em ' + dataBr(x.data || '')), bt, edMini('note', 'Editar', () => editaGar(v, 'observacoes', x, depois))); ul.append(li);
+  });
+  if (l.length) k.append(ul);
+  return k;
+}
 function manutencao(v, lanca, edita) {
   const l = vivos(v.manutencao), k = cartao('Manutenção', l.length ? String(l.length) : '');
   k.firstChild.append(botaoMais('Lançar manutenção, abastecimento ou óleo', () => lanca('manutencao')));
@@ -547,7 +565,7 @@ function pagina(v, i, tot, raiz) {
   const tunar = () => { if (v.projeto && v.projeto.length) return [projeto(v)]; const k = cartao('Tunar'); k.append(elD('p', 'gr-vazio', 'nada anotado ainda')); return [k]; };
   const lanca = (t, it) => folhaLancar(raiz, v, t, it, null, tp => { bs[tp === 'manutencao' ? 2 : 3].click(); showNote('Lançado.'); });
   const edita = (lista, x) => editaGar(v, lista, x, () => { const on = bs.findIndex(b => b.classList.contains('on')); bs[on < 0 ? 0 : on].click(); });
-  const AB = [['Ficha', ficha], ['Tunar', tunar], ['Manutenção', () => [manutencao(v, lanca, edita)]], ['Diário', () => [diario(v, lanca, edita)]]];
+  const AB = [['Ficha', ficha], ['Tunar', tunar], ['Manutenção', () => [observacoes(v, () => bs[2].click()), manutencao(v, lanca, edita)]], ['Diário', () => [diario(v, lanca, edita)]]];
   const bs = AB.map(([t, f], n) => { const b = elD('button', 'gr-aba', t); b.type = 'button'; b.onclick = () => { bs.forEach((x, q) => x.classList.toggle('on', q === n)); corpo.replaceChildren(...f()); }; abas.append(b); return b; });
   bs[0].click(); ro.append(abas, corpo);
   pg.append(pal, ctl, nm, ro); return pg;
