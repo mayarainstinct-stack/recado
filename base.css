@@ -986,6 +986,12 @@ img.esq { min-height: 140px; }
 .tela.gr-cinema :is(.cine-card, .item, .estudio-tile, .estudio-hero) :is(b, strong, h2, h3, .t, .tit, .cp) { font-family: Georgia, 'Times New Roman', serif; color: #B3261E; }
 .tela.gr-cinema .chip { background: #2B1A0E; color: #F7EEDB; border-color: #2B1A0E; }
 .tela.gr-cinema :is(.dur, .ed-mini) { background: #2B1A0E; color: #F7EEDB; }
+/* #292: foto da Mídia com moldura de fotografia antiga (borda marrom, passe-partout creme, sombra igual à do cartão), nada solto no branco (May 14/11 01:02) */
+.tela.gr-cinema .item { position: relative; }
+.tela.gr-cinema .item .ph { margin: 6px 8px 14px; padding: 6px; border-radius: 3px; overflow: visible; background: #E8D2A6; border: 3px solid #2B1A0E; box-shadow: 4px 5px 0 #2B1A0E; }
+.tela.gr-cinema .item .ph img { inset: 6px; width: calc(100% - 12px); height: calc(100% - 12px); background: #2B1A0E; border-radius: 1px; }
+.tela.gr-cinema .item .i-corpo { padding-right: 40px; }
+.tela.gr-cinema .item > .ed-mini { position: absolute; top: 10px; right: 10px; opacity: 1; z-index: 1; box-shadow: 0 0 0 2px #F7EEDB; }
 .painel:has(#p-corpo > .tela.gr-cinema) { --c: #B3261E !important; }
 /* Ateliê: estúdio antigo (anos 30 a 60) igual à Mídia; letreiro de filme mudo, cartão de produção com carimbo e tira de filme de 4 quadros pra etapa (May 08/11 14:52, Sigma 15:18). Hermes */
 .at-tela { position: relative; flex-shrink: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; margin: -6px -16px 0; padding: 22px 34px calc(16px + env(safe-area-inset-bottom)); min-height: calc(100dvh - env(safe-area-inset-top) - 66px); background: repeating-linear-gradient(180deg, transparent 0 9px, #F3E6C8 9px 19px, transparent 19px 28px) 6px 0 / 9px 100% no-repeat, repeating-linear-gradient(180deg, transparent 0 9px, #F3E6C8 9px 19px, transparent 19px 28px) calc(100% - 6px) 0 / 9px 100% no-repeat, linear-gradient(90deg, #2B1A0E 0 20px, transparent 20px calc(100% - 20px), #2B1A0E calc(100% - 20px)), radial-gradient(120% 90% at 50% 30%, #F3E6C8 55%, #D2B88C 100%); color: #2B1A0E; }
