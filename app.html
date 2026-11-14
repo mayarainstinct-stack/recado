@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-14.395">
+<meta name="app-versao" content="2026-11-14.396">
 <meta name="app-novidade" content="Música: grade com buracos maiores e vinheta preta">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-14.395"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-14.396"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3507,8 +3507,8 @@ function abreContraste(m) {
     const gotas = elD('div', 'ctb-gotas');   // escorrido de tinta como no logo da Contraste (May 13/11 11:46): cada cor é uma camada com a borda ondulada que escorre em gotas de grossura e comprimento diferentes, ponta redonda e respingos, sem contorno
     gotas.innerHTML = '<svg viewBox="0 0 390 70" preserveAspectRatio="none" aria-hidden="true">'
       + '<path fill="#FFF200" d="M0 0H134V7C126 9 121 8 116 12C111 16 112 34 106 36C100 38 99 22 95 13C91 7 84 9 79 11C73 13 71 22 68 23C64 24 64 14 57 10C48 6 36 11 30 15C25 19 27 44 19 47C11 50 13 30 10 19C8 12 3 9 0 9Z"/><circle fill="#FFF200" cx="20" cy="56" r="3.2"/><circle fill="#FFF200" cx="112" cy="43" r="2"/>'
-      + '<path fill="#EC008C" d="M130 0H262V9C255 11 251 9 246 14C240 20 243 46 234 50C225 54 227 27 223 18C220 12 212 11 205 13C199 15 199 27 194 28C189 29 190 17 183 14C175 11 167 16 162 18C156 21 158 60 148 63C138 66 141 36 139 24C137 15 134 11 130 11Z"/><circle fill="#EC008C" cx="149" cy="69" r="2.4"/><circle fill="#EC008C" cx="236" cy="58" r="2.8"/><circle fill="#EC008C" cx="196" cy="35" r="1.6"/>'
-      + '<path fill="#00AEEF" d="M258 0H390V12C384 12 380 14 377 18C372 25 374 38 367 40C360 42 361 28 358 21C355 15 348 13 342 15C335 17 336 30 330 33C324 36 324 23 320 18C315 12 305 13 300 17C294 22 297 52 287 55C277 58 279 32 276 22C274 15 266 12 258 12Z"/><circle fill="#00AEEF" cx="288" cy="63" r="3.4"/><circle fill="#00AEEF" cx="368" cy="47" r="2.2"/><circle fill="#00AEEF" cx="331" cy="40" r="1.5"/>'
+      + '<path fill="#EC008C" d="M134 0H262V9C255 11 251 9 246 14C240 20 243 46 234 50C225 54 227 27 223 18C220 12 212 11 205 13C199 15 199 27 194 28C189 29 190 17 183 14C175 11 167 16 162 18C156 21 158 60 148 63C138 66 141 36 139 24C137 15 136 9 134 7Z"/><circle fill="#EC008C" cx="149" cy="69" r="2.4"/><circle fill="#EC008C" cx="236" cy="58" r="2.8"/><circle fill="#EC008C" cx="196" cy="35" r="1.6"/>'
+      + '<path fill="#00AEEF" d="M262 0H390V12C384 12 380 14 377 18C372 25 374 38 367 40C360 42 361 28 358 21C355 15 348 13 342 15C335 17 336 30 330 33C324 36 324 23 320 18C315 12 305 13 300 17C294 22 297 52 287 55C277 58 279 32 276 22C274 15 266 11 262 9Z"/><circle fill="#00AEEF" cx="288" cy="63" r="3.4"/><circle fill="#00AEEF" cx="368" cy="47" r="2.2"/><circle fill="#00AEEF" cx="331" cy="40" r="1.5"/>'
       + '</svg>';
     const nav = elD('nav', 'ctb-abas'), corpo = elD('div', 'ctb-corpo'); c.append(gotas, nav, corpo);
     const hoje = () => { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); };
