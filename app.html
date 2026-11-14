@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-14.387">
-<meta name="app-novidade" content="Poderes do cartão em colmeia, cada um com o seu desenho">
+<meta name="app-versao" content="2026-11-14.388">
+<meta name="app-novidade" content="A última insígnia ganha brilha no cartão">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-14.387"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-14.388"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -565,7 +565,7 @@ async function abreCracha(chave) {
   pills.append(st); if (atr.length) pills.append(el('span', 'ct-pill', 'Nv. ' + atr.reduce((a, x) => a + x[1], 0))); lado.append(pills);   // "nível" = soma dos atributos, só pra brincar
   quem.append(avatar(true), lado);
   const maq = el('div', 'ct-maq'), pcTxt = f.pcCurto || f.pc || ''; if (pcTxt && !String(f.classe || '').toLowerCase().includes(pcTxt.toLowerCase()) && !(k === 'sigma' && /itinerante/i.test(pcTxt))) maq.append(ic('maq', null, pcTxt)); if (hb.ip) maq.append(ic('ip', null, hb.ip));
-  const insBox = el('div', 'ct-ins'), fila = el('div', 'ct-ins-fila'); const dIns = it => { const p = String(it.data || '').split('/'); return p.length === 3 ? p[2] + p[1] + p[0] : ''; }, insNovas = ins.map((it, i) => [it, i]).sort((a, b) => dIns(a[0]).localeCompare(dIns(b[0])) || a[1] - b[1]).map(x => x[0]); [0, 1, 2].forEach(i => fila.append(insignia(insNovas[insNovas.length - 1 - i])));   // as 3 últimas que ganhou pela data, não pela ordem do arquivo (May 14/11 00:21)
+  const insBox = el('div', 'ct-ins'), fila = el('div', 'ct-ins-fila'); const dIns = it => { const p = String(it.data || '').split('/'); return p.length === 3 ? p[2] + p[1] + p[0] : ''; }, insNovas = ins.map((it, i) => [it, i]).sort((a, b) => dIns(a[0]).localeCompare(dIns(b[0])) || a[1] - b[1]).map(x => x[0]); [0, 1, 2].forEach(i => { const d = insignia(insNovas[insNovas.length - 1 - i]); if (!i && insNovas.length) d.classList.add('ct-nova'); fila.append(d); });   // as 3 últimas que ganhou pela data, não pela ordem do arquivo (May 14/11 00:21)
   insBox.append(el('div', 'ct-tit', 'Insígnias'), fila);
   const pe = el('div', 'ct-pe');
   const gente = k === 'may' || /^humano/i.test(f.classe || '');

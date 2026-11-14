@@ -2368,3 +2368,6 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 .ct-poderes.pd dt { font-size: 10.5px; font-weight: 800; line-height: 1.15; text-transform: none; letter-spacing: 0; color: #fff; }
 .rv-tr-bloco .rv-tr-feitos { text-align: center; }   /* feitos do troféu centralizados (May 14/11 00:32) */
 .rv-med-ic svg, .rv-tr-ic svg { stroke: none; }   /* o troféu herdava o contorno branco de botão: virava pontinho branco nos rebites (May 14/11 00:34) */
+@keyframes ctNovaBrilho { 0%, 100% { filter: drop-shadow(0 2px 4px rgba(0,0,0,.5)) drop-shadow(0 0 0 transparent); } 50% { filter: drop-shadow(0 2px 4px rgba(0,0,0,.5)) drop-shadow(0 0 12px var(--quem)) brightness(1.25); } }
+.ct-in1.ct-nova svg { animation: ctNovaBrilho 1.8s ease-in-out infinite; }   /* a última insígnia ganha acende e apaga devagar (May 14/11 01:00) */
+@media (prefers-reduced-motion: reduce) { .ct-in1.ct-nova svg { animation: none; filter: drop-shadow(0 0 8px var(--quem)); } }
