@@ -316,6 +316,7 @@ html body #ficha.premium .bloco small,html body #ficha.premium .bloco .k,html bo
 .ini.j2{background:radial-gradient(circle at 50% 42%,color-mix(in srgb,var(--cor,#3C3C5A) 55%,transparent),transparent 72%),linear-gradient(color-mix(in srgb,var(--cor,#3C3C5A) 35%,#0a0a0a),#0a0a0a)}
 .ini.j2 .j2img{width:62%;max-width:180px;height:auto}
 .capa,.linha .mini,.carta-capa,.placa .moldura{isolation:isolate}.ini.j2.txt{position:absolute;inset:0;z-index:0;background:linear-gradient(160deg,var(--cor,#3C3C5A),color-mix(in srgb,var(--cor,#3C3C5A) 55%,#000));display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;padding:8px;color:#fff;text-align:center}.ini.j2.txt b{font-size:clamp(11px,3.4vw,17px);font-weight:800;line-height:1.15;text-shadow:0 1px 3px rgba(0,0,0,.55);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}.ini.j2.txt small{font-size:clamp(9px,2.6vw,12px);font-weight:600;opacity:.85;letter-spacing:.02em}.linha .mini .ini.j2.txt{padding:3px}.linha .mini .ini.j2.txt b{font-size:8px;-webkit-line-clamp:3}.linha .mini .ini.j2.txt small{display:none}
+.leve>.ini.j2.txt{display:none}
 .selo-j2{background:none;border:0;box-shadow:none;padding:0}.selo-j2 .j2img{height:34px;width:auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
 #abertura .espera .j2img{height:56px}
 .topo .dados{min-width:0;flex:1 1 auto}.pills{overflow:hidden}.topo .dados h2{overflow-wrap:anywhere}
@@ -703,7 +704,7 @@ document.addEventListener("load",e=>{const im=e.target;if(!(im instanceof HTMLIm
 function hidrata(raiz){(raiz||document).querySelectorAll("img[data-p]").forEach(im=>{if(vista&&!im.classList.contains("borra"))vista.observe(im);perto&&!im.closest("#zoom,#pop,.topo")?perto.observe(im):poe(im)})}
 const ehPriv=u=>u&&!/^(https?:|data:|blob:)/.test(u)
 const escA=x=>String(x).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")
-function srcAttr(u){return ehPriv(u)?`data-p="${escA(u)}"`:`src="${escA(u)}"`}
+function srcAttr(u){return ehPriv(u)?`data-p="${escA(u)}"`:`src="${escA(u)}"`+(/^https:\/\/upload\.wikimedia\.org\//.test(u)?' crossorigin="anonymous"':"")}
 const MIN_CAPA=200,MIN_PRINT=1280   // print: regra da Nyx (REGRAS-IMAGENS.md), mínimo 1280x720; capa menor fica (ela anota), só some se for miniatura
 document.addEventListener("load",e=>{const im=e.target;if(im.tagName!="IMG")return;im.classList.add("ok");const w=im.naturalWidth||0
 if(im.classList.contains("inteira")&&Math.max(w,im.naturalHeight||0)<MIN_CAPA){const c=im.parentElement;c.querySelectorAll("img.borra,img.inteira").forEach(x=>x.remove());const l=c.querySelector(".ini.j2");if(l)l.style.zIndex="";return}
