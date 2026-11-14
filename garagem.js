@@ -63,6 +63,7 @@ const CSS = `
 .gr-tela .gr-ad { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: #141518; touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: ew-resize; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
 .gr-tela .gr-ad img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; -webkit-user-drag: none; }
 .gr-tela .gr-ad .gr-dep { clip-path: inset(0 0 0 var(--x, 50%)); will-change: clip-path; }
+.gr-tela .gr-ad-abas { display: flex; gap: 8px; margin: 0 0 10px; } .gr-tela .gr-ad-abas button { width: auto; height: auto; min-height: 36px; padding: 0 16px; border-radius: 0; clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%); border: 2px solid #3A3D44; background: #1B1C20; color: #E8E8E8; font: inherit; font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; } .gr-tela .gr-ad-abas button.on { background: var(--gr-am); border-color: var(--gr-am); color: #111; }
 .gr-tela .gr-ad-sem { position: absolute; inset: 0; display: grid; place-items: center; color: #8A8F98; font-weight: 700; font-size: 13px; }
 .gr-tela .gr-div { position: absolute; top: 0; bottom: 0; left: var(--x, 50%); width: 4px; margin-left: -2px; background: var(--gr-am); box-shadow: 0 0 0 1px #111; pointer-events: none; }
 .gr-tela .gr-div::after { content: ''; position: absolute; top: 50%; left: 50%; width: 38px; height: 38px; margin: -19px 0 0 -19px; background: var(--gr-am) no-repeat center / 22px 22px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6 3 12l6 6M15 6l6 6-6 6'/%3E%3C/svg%3E"); border: 2px solid #111; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); }
@@ -292,7 +293,11 @@ function antesDepois(v) {
   arrasta(ad, poe);
   inp.addEventListener('input', () => poe(+inp.value));
   const carrega = (img, cam) => cam ? fotoUrl(cam).then(u => new Promise((ok, erro) => { img.onload = ok; img.onerror = erro; img.src = u; })) : Promise.reject();
-  Promise.allSettled([carrega(ia, v.antes), carrega(idp, v.depois)]).then(r => { const f = r.filter(x => x.status === 'rejected').length; if (!f) sem.remove(); else sem.textContent = f === 2 ? 'As fotos não abriram. Confere a internet.' : 'Uma das fotos não abriu.'; });
+  const pares = (v.pares || []).length ? v.pares : [{ antes: v.antes, depois: v.depois }];   // vários pares do mesmo lugar (frente, trás), um por vez (May 14/11 08:27 e 09:00)
+  const mostra = q => { if (!sem.isConnected) ad.prepend(sem); sem.textContent = 'Abrindo as fotos…'; ia.removeAttribute('src'); idp.removeAttribute('src'); poe(50);
+    Promise.allSettled([carrega(ia, q.antes), carrega(idp, q.depois)]).then(r => { const f = r.filter(x => x.status === 'rejected').length; if (!f) sem.remove(); else sem.textContent = f === 2 ? 'As fotos não abriram. Confere a internet.' : 'Uma das fotos não abriu.'; }); };
+  if (pares.length > 1) { const ab = elD('div', 'gr-ad-abas'); pares.forEach((q, i) => { const b = elD('button', i ? '' : 'on', q.nome || 'Par ' + (i + 1)); b.type = 'button'; b.onclick = () => { ab.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); mostra(q); }; ab.append(b); }); k.insertBefore(ab, ad); }
+  mostra(pares[0]);
   return k;
 }
 function projeto(v) {
@@ -561,7 +566,7 @@ function pagina(v, i, tot, raiz) {
   const ro = elD('div', 'gr-rola');
   const ctl = elevador(v, vet);
   const abas = elD('div', 'gr-abas'), corpo = elD('div', 'gr-corpo');
-  const ficha = () => { const l = []; if (v.antes || v.depois) l.push(antesDepois(v)); if (v.odometro) l.push(odometro(v)); l.push(datas(v), pendentes(v)); if (v.cor_nota) l.push(elD('span', 'gr-cornota', v.cor_nota)); if (v.fonte) l.push(elD('p', 'gr-fonte', 'fonte: ' + v.fonte)); return l; };
+  const ficha = () => { const l = []; if ((v.pares || []).length || v.antes || v.depois) l.push(antesDepois(v)); if (v.odometro) l.push(odometro(v)); l.push(datas(v), pendentes(v)); if (v.cor_nota) l.push(elD('span', 'gr-cornota', v.cor_nota)); if (v.fonte) l.push(elD('p', 'gr-fonte', 'fonte: ' + v.fonte)); return l; };
   const tunar = () => { if (v.projeto && v.projeto.length) return [projeto(v)]; const k = cartao('Tunar'); k.append(elD('p', 'gr-vazio', 'nada anotado ainda')); return [k]; };
   const lanca = (t, it) => folhaLancar(raiz, v, t, it, null, tp => { bs[tp === 'manutencao' ? 2 : 3].click(); showNote('Lançado.'); });
   const edita = (lista, x) => editaGar(v, lista, x, () => { const on = bs.findIndex(b => b.classList.contains('on')); bs[on < 0 ? 0 : on].click(); });

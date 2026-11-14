@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"><script src="socorro.js?v=5"></script>
+<meta charset="utf-8"><script src="socorro.js?v=7"></script>
 <meta http-equiv="Cache-Control" content="no-cache">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Jogos</title>
@@ -134,20 +134,8 @@ nav button.on{background:rgba(0,255,140,.12);color:var(--verde);box-shadow:inset
 .prints img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;border:1px solid var(--borda);display:block}
 .pend{font-size:12px;line-height:1.45;color:#FFE3A3;padding:10px 12px;border-radius:12px;background:rgba(255,200,70,.08);border:1px dashed rgba(255,200,70,.5);margin-top:8px}
 .fab{position:absolute;z-index:6;right:16px;bottom:max(18px,env(safe-area-inset-bottom));height:56px;padding:0 20px 0 16px;border-radius:18px;display:flex;align-items:center;gap:9px;background:var(--verde);color:#062012;font-weight:700;font-size:14px;box-shadow:0 8px 26px rgba(0,255,140,.35),0 2px 0 rgba(0,0,0,.4)}
-#envio{position:fixed;inset:0;z-index:8;display:none;align-items:flex-end;background:rgba(4,2,12,.6)}
-#envio.on{display:flex}
-#envio .folha{width:100%;padding:16px 16px max(16px,env(safe-area-inset-bottom));border-radius:22px 22px 0 0;background:#1A0D33;border-top:1px solid rgba(0,255,140,.5)}
-#envio .alca{width:44px;height:4px;border-radius:2px;background:rgba(255,255,255,.25);margin:0 auto 12px}
-#envio h4{font-size:15px;font-weight:700}
-#envio p{font-size:12px;color:var(--texto3);margin:3px 0 12px}
-#envio textarea{width:100%;min-height:96px;resize:none;border-radius:14px;padding:12px;background:rgba(0,0,0,.4);border:1px solid var(--borda);color:var(--texto);font:inherit;font-size:15px;outline:none}
-#envio textarea:focus{border-color:var(--verde)}
-#envio .acoes{display:flex;gap:8px;margin-top:10px;align-items:center}
-#envio .acoes button.ic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:var(--vidro);border:1px solid var(--borda)}
-#envio .acoes .env{flex:1;height:48px;border-radius:14px;background:var(--verde);color:#062012;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}
 #aviso{position:fixed;z-index:14;left:16px;right:16px;bottom:96px;padding:14px 16px;border-radius:16px;background:#0E2A1C;border:1px solid #00FF8C;color:#fff;font-size:14px;font-weight:700;display:none;box-shadow:0 10px 30px rgba(0,0,0,.5);animation:sobeP .3s ease-out}
 header .anotar{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.35);margin-left:auto;margin-right:8px}
-#e-pra{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}#e-pra button{padding:7px 11px;border-radius:999px;font-size:12px;font-weight:700;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22)}#e-pra button.on{background:color-mix(in srgb,var(--cor) 55%,#0a0a0a);border-color:color-mix(in srgb,var(--cor) 80%,#fff)}
 .tile.pc{border-color:#B09B71}.tile.pc .tarja{background:linear-gradient(90deg,#4A4E52,#1A1B1D);box-shadow:inset 0 -2px 0 #B09B71;color:#fff}.tile.pc .tarja svg{color:#B09B71;stroke:#B09B71}
 .tile.t-claro .tarja{color:#151515;text-shadow:none}.tile.t-claro .tarja svg{color:#151515;stroke:#151515}
 nav button#tab-concluidos.on{background:linear-gradient(#F5D237,#B8860B);color:#1a1300;text-shadow:0 1px 0 rgba(255,255,255,.35);box-shadow:inset 0 2px 0 rgba(255,255,255,.45),inset 0 -3px 0 rgba(0,0,0,.25),0 0 16px rgba(245,210,55,.35)}nav button#tab-concluidos.on svg{stroke:#1a1300}
@@ -366,7 +354,6 @@ html body #ficha.premium .bloco small,html body #ficha.premium .bloco .k,html bo
 #ficha.tri.pagclara::after{background:linear-gradient(transparent,var(--cp) 72%)}
 .plats{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.plat{font-size:9px;font-weight:600;letter-spacing:.2px;line-height:1.3;padding:2px 7px;border-radius:999px;background:color-mix(in srgb,var(--pc) 30%,rgba(0,0,0,.35));border:1px solid color-mix(in srgb,var(--pc) 70%,transparent);color:#fff}
 #aviso.erro{background:#3A0E12;border-color:#FF5A5A}
-#e-env.indo{opacity:.75}
 .giro{display:inline-block;width:16px;height:16px;margin-right:8px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:gira .7s linear infinite;vertical-align:-3px}
 @keyframes gira{to{transform:rotate(360deg)}}
 #abertura{position:fixed;inset:0;z-index:20;display:none;place-items:center;background:var(--contorno);overflow:hidden}
@@ -484,17 +471,9 @@ nav button{height:58px;border-radius:22px;font-size:14px}
 #lista.sai-d{animation:saiD .18s cubic-bezier(.5,0,.8,.4) both}#lista.sai-e{animation:saiE .18s cubic-bezier(.5,0,.8,.4) both}
 @keyframes saiD{to{transform:translateX(-100%)}}@keyframes saiE{to{transform:translateX(100%)}}
 nav .nav-dq{position:absolute;z-index:0;top:7px;bottom:7px;left:0;width:0;border-radius:22px;background:linear-gradient(color-mix(in srgb,#00FF8C 34%,#07040f),color-mix(in srgb,#00FF8C 14%,#07040f));box-shadow:inset 0 2px 0 rgba(255,255,255,.18),inset 0 -3px 0 rgba(0,0,0,.35),0 0 0 1px rgba(0,255,140,.5);transition:transform .36s cubic-bezier(.2,.9,.3,1.12),width .36s}
-#pop,#envio{align-items:center!important;justify-content:center;padding:calc(env(safe-area-inset-top) + 44px) 30px calc(env(safe-area-inset-bottom) + 44px)}
+#pop{align-items:center!important;justify-content:center;padding:calc(env(safe-area-inset-top) + 44px) 30px calc(env(safe-area-inset-bottom) + 44px)}
 #pop .pc{padding:16px 18px 18px;border-radius:18px}
-#envio .folha{position:relative;padding:22px 16px 16px!important;text-align:center;border:2px solid color-mix(in srgb,var(--cor) 70%,transparent)!important}
-#envio h4{font-size:16px;padding:0 40px}
-#envio p{margin:4px 0 12px}
-#envio .pra{justify-content:center}
-#envio textarea{font-size:16px;text-align:left;margin-top:2px}
-#envio textarea:focus{border-color:var(--cor);box-shadow:0 0 0 3px color-mix(in srgb,var(--cor) 25%,transparent)}
-#envio .acoes .env{border-radius:999px;background:var(--cor);min-height:46px}
-#envio .e-x{position:absolute;left:12px;top:12px;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(0,0,0,.25);border:1.5px solid color-mix(in srgb,var(--cor) 70%,#fff)}
-#pop .folha,#envio .folha{width:100%;max-height:100%;overflow-y:auto;border-radius:24px!important;box-shadow:0 0 0 1px rgba(255,255,255,.18),0 24px 60px rgba(0,0,0,.7)}
+#pop .folha{width:100%;max-height:100%;overflow-y:auto;border-radius:24px!important;box-shadow:0 0 0 1px rgba(255,255,255,.18),0 24px 60px rgba(0,0,0,.7)}
 nav .nav-dq.ouro{background:var(--ouro-metal);box-shadow:inset 0 2px 0 rgba(255,255,255,.45),inset 0 -3px 0 rgba(0,0,0,.25),0 0 16px rgba(250,215,3,.45)}
 nav button{position:relative;z-index:1}nav button.on{background:none!important;box-shadow:none!important}
 @media (prefers-reduced-motion:reduce){nav .nav-dq{transition:none}#lista.sai-d,#lista.sai-e{animation:none}}
@@ -525,14 +504,12 @@ nav button{position:relative;z-index:1}nav button.on{background:none!important;b
 .capa:has(img.inteira:not([src]):not([data-p]):not([data-s]))::after,.mini:has(img.inteira:not([src]):not([data-p]):not([data-s]))::after,.moldura:has(img.inteira:not([src]):not([data-p]):not([data-s]))::after,.prints img:not([src]),.ev img:not([src]){content:"";position:absolute;inset:0;z-index:2;background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.14) 50%,transparent 80%);animation:brilhoEsq 1.1s ease-in-out infinite}
 .prints img:not([src]),.ev img:not([src]){position:relative;min-height:90px;background-color:rgba(255,255,255,.06)}
 /* ficha só na cor do console, sem o roxo do app nem o verde (May, 06/11/2026 00:43: "switch a ficha é toda vermelha") */
-#ficha,#pop,#envio{--linha:2px;--verde2:color-mix(in srgb,var(--cor) 50%,#fff);--fundo:color-mix(in srgb,var(--cor2,var(--cor)) 16%,#050505);--fundo2:var(--fundo);--painel:color-mix(in srgb,var(--cor2,var(--cor)) 20%,#070707);--texto2:color-mix(in srgb,var(--cor) 12%,#e4e4e4);--texto3:color-mix(in srgb,var(--cor) 20%,#9a9a9a);--verde:color-mix(in srgb,var(--cor) 55%,#fff);--vidro:color-mix(in srgb,var(--cor) 14%,rgba(255,255,255,.05));--borda:color-mix(in srgb,var(--cor) 40%,transparent)}
+#ficha,#pop{--linha:2px;--verde2:color-mix(in srgb,var(--cor) 50%,#fff);--fundo:color-mix(in srgb,var(--cor2,var(--cor)) 16%,#050505);--fundo2:var(--fundo);--painel:color-mix(in srgb,var(--cor2,var(--cor)) 20%,#070707);--texto2:color-mix(in srgb,var(--cor) 12%,#e4e4e4);--texto3:color-mix(in srgb,var(--cor) 20%,#9a9a9a);--verde:color-mix(in srgb,var(--cor) 55%,#fff);--vidro:color-mix(in srgb,var(--cor) 14%,rgba(255,255,255,.05));--borda:color-mix(in srgb,var(--cor) 40%,transparent)}
 #ficha .bloco,#ficha .painel .bloco{background:linear-gradient(color-mix(in srgb,var(--cor2,var(--cor)) 30%,#080808),color-mix(in srgb,var(--cor2,var(--cor)) 12%,#080808))}
 #ficha .poke,#ficha .it,#ficha .sv,#ficha .fps div,#ficha .cartao,#ficha .selo,#ficha .tags span,#ficha .pend{background:linear-gradient(color-mix(in srgb,var(--cor2,var(--cor)) 38%,#060606),color-mix(in srgb,var(--cor2,var(--cor)) 18%,#060606))}
 #ficha .abas-f button.on{background:linear-gradient(color-mix(in srgb,var(--cor) 60%,#060606),color-mix(in srgb,var(--cor) 30%,#060606));border-color:color-mix(in srgb,var(--cor) 70%,#fff 10%);color:#fff}
 #ficha .tempo::before{background:linear-gradient(var(--verde),color-mix(in srgb,var(--cor) 15%,transparent))}
 #pop{background:color-mix(in srgb,var(--cor) 10%,rgba(0,0,0,.65))}
-#envio .folha{background:color-mix(in srgb,var(--cor) 18%,#0a0a0a);border-top-color:color-mix(in srgb,var(--cor) 60%,transparent)}
-#envio .acoes .env{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
 #ficha .fab{background:linear-gradient(color-mix(in srgb,var(--cor) 85%,#fff 15%),var(--cor));color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5);box-shadow:0 8px 26px color-mix(in srgb,var(--cor) 45%,transparent),0 2px 0 rgba(0,0,0,.4)}
 #ficha .fab svg{stroke:#fff}
 #ficha.neutro{--fundo:color-mix(in srgb,var(--cor2) 55%,#050505);--painel:color-mix(in srgb,var(--cor2) 70%,#070707);--texto2:#e6e6e6;--texto3:#a8a8ad;--vidro:rgba(255,255,255,.07)}
@@ -655,18 +632,6 @@ nav button{position:relative;z-index:1}nav button.on{background:none!important;b
 <main id="f-corpo"></main>
 <button class="fab" id="f-msg"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 11h7M8.5 14h4"/></svg><span>Mandar algo</span></button>
 </section>
-<div id="envio">
-<div class="folha">
-<button class="e-x" id="e-x" aria-label="Fechar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-<h4 id="e-tt">Mandar algo sobre este jogo</h4>
-<p>Vai pra Geral. Escolhe quem precisa ver:</p>
-<div class="pra" id="e-pra"><button data-q="Hermes" class="on">Tela (Hermes)</button><button data-q="Orfeu" class="on">História e dados (Orfeu)</button><button data-q="Nyx">Capa e imagens (Nyx)</button></div>
-<textarea id="e-txt" placeholder="vai q lembra de algo..."></textarea>
-<div class="acoes">
-<button class="env" id="e-env"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l16-8-6 16-2.5-6.5z"/></svg>Enviar</button>
-</div>
-</div>
-</div>
 <div id="edj" role="dialog" aria-modal="true" aria-label="Editar jogo"><div class="folha">
 <button id="edj-x" aria-label="Fechar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
 <h4 id="edj-tt">Editar jogo</h4>
@@ -952,7 +917,6 @@ botoes.forEach(b=>b.onclick=ev=>{ev.stopPropagation();abaFicha=b.dataset.af;marc
 const m=document.getElementById("h-mais");if(m)m.onclick=()=>{histTodos=true;desenhaFicha()}
 sobreJogo(j)
 fc.querySelectorAll("[data-poke]").forEach(el=>{const n=el.dataset.poke;if(/^\(/.test(n))return;(POKE[n]||(POKE[n]=pokeInfo(n))).then(i=>{if(!i||!el.isConnected)return;if(i.img){const im=el.querySelector("i");im.outerHTML=`<img class="spr" src="${escA(i.img)}" alt="">`}el.querySelector(".tipo").textContent=" · "+i.tipos.map(t=>TIPO[t]||t).join("/")})})
-document.getElementById("e-tt").textContent="Mandar algo sobre "+j.titulo
 }
 let POP=[]
 const pk=f=>`data-pop="${POP.push(f)-1}"`
@@ -988,13 +952,13 @@ return{t:p.nome,h:`<div class="pop-poke"><p class="pop-p">Buscando na Pokédex�
 function abrePop(o){const b=document.getElementById("pop");b.style.setProperty("--cor",fichaAtual?paleta(fichaAtual.console).base:"#3C3C5A");b.querySelector("h4").textContent=o.t;const c=b.querySelector(".pc");c.innerHTML=o.h;hidrata(c);c.onclick=e=>{const im=e.target.closest("img[data-z]");if(im&&im.src)abreZoom([im.src],0)};b.classList.add("on");b.querySelector(".folha").scrollTop=0;if(o.depois)o.depois(c)}
 function sobreJogo(j){const s=((window.EXT||{}).sobre||{})[j.id];const b=document.getElementById("f-sobre");const pt=s&&s.lingua=="en"?(window.SOBREPT||{})[j.id]:s&&s.texto;if(!pt||!b)return;b.querySelector("p").textContent=pt;const a=b.querySelector("a");a.href=s.url||"#";a.textContent=`Fonte: Wikipédia${s.lingua=="en"?" em inglês (traduzido)":""}`;b.hidden=false}
 function rotuloStatus(s){return{jogando:"Jogando agora",quer_terminar:"Parou, mas quer terminar",parado:"Começou e parou",zerado:"Zerado · parede da vitória",largado:"Largado",nao_comecou:"Ainda não começou",espiou:"Só espiou",bloqueado:"Bloqueado por acesso",nao_funciona:"Não funciona mais",casual:"Casual, sem %",assistiu:"Do Gabriel, ela assistiu",colecao:"Coleção por nostalgia",memoria:"Memória antiga",de_olho:"De olho"}[s]||"Sem status"}
-function deslizar(el,vai){let x0=null,y0=0;el.addEventListener("touchstart",e=>{if(e.touches.length!=1||e.target.closest(".prateleira,.abas-f,.pager,.deck,#pop,#zoom,#envio,textarea")){x0=null;return}x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});el.addEventListener("touchend",e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.6)vai(dx<0?1:-1)},{passive:true})}
+function deslizar(el,vai){let x0=null,y0=0;el.addEventListener("touchstart",e=>{if(e.touches.length!=1||e.target.closest(".prateleira,.abas-f,.pager,.deck,#pop,#zoom,.sc-comp,textarea")){x0=null;return}x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});el.addEventListener("touchend",e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.6)vai(dx<0?1:-1)},{passive:true})}
 const fechaFicha=()=>{const f=document.getElementById("ficha");if(!f.classList.contains("on")||f.classList.contains("sai"))return;history.replaceState(null,"","#"+aba);const fim=()=>{f.classList.remove("on","sai");document.getElementById("ficha-veu").classList.remove("on");document.getElementById("f-corpo").replaceChildren();document.getElementById("f-fundo").style.backgroundImage=""};if(matchMedia("(prefers-reduced-motion:reduce)").matches)return fim();f.classList.add("sai");setTimeout(fim,240)}
 document.getElementById("ficha-veu").onclick=fechaFicha
 function voltaEPuxa(el,volta,puxa){let x0=null,y0=0,topo=false,lateral=false;el.addEventListener("touchstart",e=>{if(e.touches.length!=1){x0=null;return}x0=e.touches[0].clientX;y0=e.touches[0].clientY;topo=(e.currentTarget.scrollTop||0)<=0;lateral=el.id=="f-corpo"&&!e.target.closest(".abas-f,.prateleira,.prints,.serie,.pager,textarea,input")},{passive:true});el.addEventListener("touchend",e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;if((x0<24||lateral)&&dx>80&&Math.abs(dx)>Math.abs(dy)*1.4)volta();else if(puxa&&topo&&dy>90&&dy>Math.abs(dx)*1.5)puxa();x0=null},{passive:true})}
 voltaEPuxa(document.getElementById("f-corpo"),fechaFicha,fechaFicha)
 voltaEPuxa(document.getElementById("lista"),()=>{location.href="app.html#menu"},null)
-document.addEventListener("keydown",e=>{if(e.key!="Escape"||document.getElementById("zoom").classList.contains("on"))return;for(const id of["pop","envio"]){const el=document.getElementById(id);if(el.classList.contains("on")){el.classList.remove("on");return}}if(document.getElementById("ficha").classList.contains("on"))fechaFicha()})
+document.addEventListener("keydown",e=>{if(e.key!="Escape"||document.getElementById("zoom").classList.contains("on"))return;for(const id of["pop"]){const el=document.getElementById(id);if(el.classList.contains("on")){el.classList.remove("on");return}}if(document.getElementById("ficha").classList.contains("on"))fechaFicha()})
 const ABAS_L=["jogando","concluidos"]
 const posDq=()=>{const b=document.querySelector("nav button.on"),q=document.querySelector("nav .nav-dq");if(b&&q){q.classList.toggle("ouro",b.id=="tab-concluidos");q.style.width=b.offsetWidth+"px";q.style.transform=`translateX(${b.offsetLeft}px)`}}
 window.posDqJ=posDq
@@ -1006,9 +970,8 @@ document.getElementById("f-voltar").onclick=fechaFicha
 document.getElementById("ficha").addEventListener("click",e=>{const b=e.target.closest("[data-ir]");if(b&&POR[b.dataset.ir]){e.stopPropagation();abrir(b.dataset.ir);document.getElementById("f-corpo").scrollTop=0}})
 document.getElementById("f-corpo").addEventListener("scroll",e=>document.getElementById("f-msg").classList.toggle("mini",e.target.scrollTop>60),{passive:true})
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>trocaAba(b.dataset.aba,Math.sign(ABAS_L.indexOf(b.dataset.aba)-ABAS_L.indexOf(aba))))
-let envioTela=""
-document.getElementById("j-anotar").onclick=()=>{envioTela=aba=="concluidos"?"Parede da Vitória":"Jogos";document.getElementById("envio").style.setProperty("--cor",aba=="concluidos"?"#CF8002":"#12a05f");document.getElementById("e-tt").textContent="Escrever sobre esta tela";document.getElementById("envio").classList.add("on");setTimeout(()=>document.getElementById("e-txt").focus(),50)}   // o mesmo lápis do app, no mesmo lugar, manda sem sair da tela (May 08/11 12:50)
-document.getElementById("f-msg").onclick=()=>{envioTela="";if(fichaAtual)document.getElementById("e-tt").textContent="Mandar algo sobre "+fichaAtual.titulo;document.getElementById("envio").classList.add("on");setTimeout(()=>document.getElementById("e-txt").focus(),50)}
+document.getElementById("j-anotar").onclick=()=>{const dourado=aba=="concluidos";Socorro.compoe(dourado?"Parede da Vitória":"Jogos","Hermes",dourado?"#CF8002":"#12a05f",{quem:[["Hermes","Tela (Hermes)",1],["Orfeu","História e dados (Orfeu)",1],["Nyx","Capa e imagens (Nyx)",0]]})}   // #153: o mesmo popup de mandar recado do app inteiro (socorro.js)
+document.getElementById("f-msg").onclick=()=>{if(fichaAtual)Socorro.compoe("","Hermes",paleta(fichaAtual.console).cor,{titulo:"Mandar algo sobre "+fichaAtual.titulo,sobre:"sobre o jogo "+fichaAtual.titulo+":",quem:[["Hermes","Tela (Hermes)",1],["Orfeu","História e dados (Orfeu)",1],["Nyx","Capa e imagens (Nyx)",0]]})}
 // Edição dos jogos pelo app (May, 09/11/2026: "tudo editável, até jogos"): a situação, a nota e a capa por link. Grava num arquivo pequeno à parte (categorias/games/edicoes-jogos.json = { edicoes: { <id jogo>: {status, quero, parei, observacao, capa_url, quando, aplicado} } }), que a tela soma por cima do tela-jogos.json; o Orfeu passa pro jogos.json com aplicar_edicoes.py (o jogos.json tem 3 MB, passa do limite de leitura da API e o Orfeu mexe nele por script).
 const EDJ_ARQ="categorias/games/edicoes-jogos.json",STAT_OP=[["jogando","Jogando"],["zerado","Zerado"],["quer_terminar","Quero terminar"],["parado","Parado"],["nao_comecou","Ainda não comecei"],["quero","Quero jogar"]]
 const b64u=t=>btoa(unescape(encodeURIComponent(t))),ub64=t=>decodeURIComponent(escape(atob(t.replace(/\s/g,""))))
@@ -1031,15 +994,6 @@ const simpl=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"
 const lancaNovo=async()=>{const nome=tit.value.trim();if(!nome){er.textContent="Põe o nome do jogo.";er.hidden=false;return}const ja=window.JOGOS.jogos.find(j=>simpl(j.titulo)==simpl(nome)&&(!cons.value.trim()||simpl(j.console)==simpl(cons.value)));if(ja&&ok.dataset.conf!==nome){er.textContent=`${ja.titulo} (${ja.console}) já tá na lista. Toca em Lançar de novo se é outro.`;er.hidden=false;ok.dataset.conf=nome;return}delete ok.dataset.conf;const u=cp.value.trim();if(u&&!/^https?:\/\//i.test(u)){er.textContent="O link da capa precisa começar com https://";er.hidden=false;return}const base=nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"jogo";let id=base;const usados=new Set([...window.JOGOS.jogos.map(j=>j.id),...Object.keys(window.APAGADOS||{})]);for(let n=2;usados.has(id);n++)id=base+"-"+n;const sel=st.value,v={novo:{titulo:nome,console:cons.value.trim()},status:sel=="quero"?"nao_comecou":sel,quero:sel=="quero",parei:pa.value.trim(),observacao:ob.value.trim()};if(u)v.capa_url=u;ok.disabled=true;ok.textContent="Lançando…";const bom=await gravaEdj(id,v);if(!bom){er.textContent="Não lançou: confere a internet e toca de novo.";er.hidden=false;ok.disabled=false;ok.textContent="Lançar";return}const n=jogoNovo(id,v.novo);aplicaEdj1(n,v);poeJogo(n);window.EDJ[id]=v;ed.classList.remove("on");recarrega();avisoDesf(nome+" entrou na lista.",async()=>{const volta=await gravaEdj(id,{apagado:agoraBr()});if(!volta)return avisoErro("Não desfez: confere a internet e toca de novo.");window.APAGADOS[id]=n;tiraJogo(id);recarrega()})}
 ok.onclick=async()=>{if(edjModo=="novo")return lancaNovo();const j=fichaAtual;if(!j)return;const sel=st.value,v={status:sel=="quero"?"nao_comecou":sel,quero:sel=="quero",parei:pa.value.trim(),observacao:ob.value.trim()};const u=cp.value.trim();if(u&&!/^https?:\/\//i.test(u)){er.textContent="O link da capa precisa começar com https://";er.hidden=false;return}if(u)v.capa_url=u;ok.disabled=true;ok.textContent="Guardando…";const bom=await gravaEdj(j.id,v);if(!bom){er.textContent="Não guardou: confere a internet e toca de novo.";er.hidden=false;ok.disabled=false;ok.textContent="Guardar";return}
 window.EDJ=window.EDJ||{};window.EDJ[j.id]={...(window.EDJ[j.id]||{}),...v};aplicaEdj1(j,v);ed.classList.remove("on");Object.keys(PAINEIS).forEach(k=>delete PAINEIS[k]);chaveL=null;render();desenhaFicha()}}
-document.getElementById("envio").onclick=e=>{if(e.target.id=="envio")e.currentTarget.classList.remove("on")}
-document.getElementById("e-x").onclick=()=>document.getElementById("envio").classList.remove("on")
-let enviando=false
-document.querySelectorAll("#e-pra button").forEach(x=>x.onclick=e=>{e.stopPropagation();x.classList.toggle("on")})
-document.getElementById("e-env").onclick=async()=>{const t=document.getElementById("e-txt").value.trim();if(!t||enviando)return;enviando=true;const b=document.getElementById("e-env"),a=document.getElementById("aviso"),n=new Date(),p=x=>String(x).padStart(2,"0"),rot=b.innerHTML;b.disabled=true;b.classList.add("indo");b.innerHTML='<span class="giro"></span>Enviando…';document.getElementById("e-txt").readOnly=true
-const pra=[...document.querySelectorAll("#e-pra button.on")].map(x=>"@"+x.dataset.q).join(" ")||"@Hermes"
-const linha=`- [${p(n.getDate())}/${p(n.getMonth()+1)}/${n.getFullYear()} ${p(n.getHours())}:${p(n.getMinutes())}] ${envioTela?`📝 ${envioTela}: ${pra}`:`${pra} sobre o jogo ${fichaAtual.titulo}:`} ${t.replace(/\r?\n/g,"\\n")}`
-let ok=false;for(let k=0;k<4&&!ok;k++){try{const f=await(await gh("CAIXA-DE-ENTRADA.md")).json();const md=decodeURIComponent(escape(atob(f.content.replace(/\n/g,""))));if(!md.includes("## Recados")||md.length<200)break;const novo=md.replace(/\s*$/,"")+"\n"+linha+"\n";const r=await gh("CAIXA-DE-ENTRADA.md",{method:"PUT",body:JSON.stringify({message:"recado do iPhone (jogos)",content:btoa(unescape(encodeURIComponent(novo))),sha:f.sha})});if(r.ok)ok=true;else if(r.status!==409)break;else await new Promise(z=>setTimeout(z,600))}catch(e){break}}
-enviando=false;b.disabled=false;b.classList.remove("indo");b.innerHTML=rot;document.getElementById("e-txt").readOnly=false;a.classList.toggle("erro",!ok);if(ok){document.getElementById("e-txt").value="";document.getElementById("envio").classList.remove("on");a.textContent="Mandado pra Geral."}else a.textContent="Não foi. Toca em Enviar pra tentar de novo (o texto continua aí).";a.style.display="block";setTimeout(()=>a.style.display="none",3200)}
 function aberturaJogos(pronto,parar){const el=document.getElementById("abertura"),rm=matchMedia("(prefers-reduced-motion: reduce)").matches;if(rm){el.classList.remove("on","j2","v6");pronto();return}el.classList.add("on");let fim=false,ab=null;const sai=()=>{if(fim)return;fim=true;window.J2FIM=true;el.classList.add("sai");setTimeout(()=>{el.classList.remove("on","sai","j2","v6");try{const cv=el.querySelector(".j2-canvas");if(cv){cv.width=cv.height=0;cv.remove()}window.J2AB=null;window.J2SRC=null}catch(e){}const t=document.getElementById("troca");t.classList.remove("on");void t.offsetWidth;t.classList.add("on");pronto()},300)};const pula=()=>window.J2AB&&!window.J2PULOU?(window.J2PULOU=true,window.J2AB.pular()):sai();el.onclick=pula;el.onkeydown=e=>{if(e.key=="Enter"||e.key==" "||e.key=="Escape")pula()}
 setTimeout(sai,9000)
 // a J2 já começou a tocar no carregamento (J2TOCA); aqui só espera ela acabar. Se em 3 s ela nem começou, vai direto pra lista (Sigma, 06/11 00:57)

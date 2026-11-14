@@ -1,14 +1,14 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"><script src="socorro.js?v=5"></script>
+<meta charset="utf-8"><script src="socorro.js?v=7"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Recados">
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-14.414">
+<meta name="app-versao" content="2026-11-14.415">
 <meta name="app-novidade" content="Música: grade com buracos maiores e vinheta preta">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-14.414"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-14.415"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -571,11 +571,7 @@ async function abreCracha(chave) {
   const pe = el('div', 'ct-pe');
   const gente = k === 'may' || /^humano/i.test(f.classe || '');
   if (!gente) { const chama = el('button', 'ct-chama', 'Mandar recado ' + (['orfeu', 'vega', 'hermes', 'sigma'].includes(k) ? 'pro ' : 'pra ') + nome); chama.type = 'button'; chama.onclick = e => {   // o recado sai dali mesmo, num popup, sem jogar pra Geral (May, 07/11/2026 16:43 e 16:44: regra pra todo "mandar recado")
-    e.stopPropagation(); const ov = el('div', 'fixa-pop ct-rec'), card = el('div', 'pp-card'); card.style.setProperty('--quem', g.cor || 'var(--accent)'); const x = el('button', 'pp-x'), ta = el('textarea'), pp = ['orfeu', 'vega', 'hermes', 'sigma'].includes(k) ? 'pro ' : 'pra ', b = el('button', 'pp-op rec', 'Mandar ' + pp + nome);
-    x.type = b.type = 'button'; x.innerHTML = icone('close'); ta.rows = 4; ta.placeholder = 'Recado ' + pp + nome + '…';
-    const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = ev => { if (ev.target === ov) fecha(); };
-    b.onclick = async () => { const t = ta.value.trim(); if (!t) { ta.focus(); return; } await enviarComentario('@' + nome + ' ' + t, b, fecha); };
-    card.append(x, el('div', 'pp-perg', 'Recado ' + pp + nome), ta, b); ov.append(card); document.body.append(ov); fechaPuxando(ov, fecha, () => card, () => card); ta.focus();
+    e.stopPropagation(); recadoPop('', nome, g.cor, { titulo: 'Recado ' + (['orfeu', 'vega', 'hermes', 'sigma'].includes(k) ? 'pro ' : 'pra ') + nome });
   }; pe.append(chama); }
   pe.append(dica('Arrasta pro lado pra virar o cartão'));
   fi.append(cab, quem, el('div', 'ct-faz', f.faz), maq); if (gente && f.olhar) fi.append(el('div', 'ct-olhar', f.olhar));   // ela não tem o botão de recado: o olhar ocupa o lugar
@@ -1639,6 +1635,41 @@ document.getElementById('foto').onclick = () => { if (!sending) arquivo.click();
 // Fotos ficam numa bandeja em cima da caixa (igual WhatsApp): dá pra pôr várias, escrever o texto e só vai ao tocar em Enviar.
 let anexos = [];   // { b64, url }
 const bandeja = document.getElementById('anexos');
+const TESOURA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/></svg>';
+function abreCorte(blob) {   // #325: corte em tela cheia, moldura arrastável pelos cantos e pelo meio, formatos e girar; devolve um Blob JPEG ou null
+  return new Promise(async fim => {
+    let bmp; try { bmp = await createImageBitmap(blob); } catch (e) { showNote('Não abri essa foto pra cortar.', true); fim(null); return; }
+    const ov = elD('div', 'corte'), area = elD('div', 'corte-area'), cv = document.createElement('canvas'), caixa = elD('div', 'corte-caixa'), barra = elD('div', 'corte-forma'), bts = elD('div', 'corte-bts');
+    ['nw', 'ne', 'sw', 'se'].forEach(k => { const h = elD('i', 'corte-h ' + k); h.dataset.k = k; caixa.append(h); });
+    area.append(cv, caixa); ov.append(elD('b', 'corte-tit', 'Cortar a foto'), area, barra, bts); document.body.append(ov);
+    let fonte = bmp, prop = 0, esc = 1, ox = 0, oy = 0, r = null, cw = 0, ch = 0;
+    const pinta = () => { const W = area.clientWidth, H = area.clientHeight, dpr = devicePixelRatio || 1; esc = Math.min(W / fonte.width, H / fonte.height); cw = Math.round(fonte.width * esc); ch = Math.round(fonte.height * esc); cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr); Object.assign(cv.style, { width: cw + 'px', height: ch + 'px' }); ox = (W - cw) / 2; oy = (H - ch) / 2; cv.style.left = ox + 'px'; cv.style.top = oy + 'px'; cv.getContext('2d').drawImage(fonte, 0, 0, cv.width, cv.height); };   // nítido na tela retina
+    const cheia = () => { let w = cw, h = ch; if (prop) { if (w / h > prop) w = h * prop; else h = w / prop; } r = { x: (cw - w) / 2, y: (ch - h) / 2, w, h }; poe(); };
+    const poe = () => { Object.assign(caixa.style, { left: ox + r.x + 'px', top: oy + r.y + 'px', width: r.w + 'px', height: r.h + 'px' }); };
+    const lim = (v, a, b) => Math.max(a, Math.min(b, v));
+    let arr = null;
+    caixa.addEventListener('pointerdown', e => { e.preventDefault(); caixa.setPointerCapture(e.pointerId); arr = { k: e.target.dataset.k || 'm', x: e.clientX, y: e.clientY, r: Object.assign({}, r) }; });
+    caixa.addEventListener('pointermove', e => {
+      if (!arr) return; const dx = e.clientX - arr.x, dy = e.clientY - arr.y, o = arr.r, MIN = 40;
+      if (arr.k === 'm') { r.x = lim(o.x + dx, 0, cw - o.w); r.y = lim(o.y + dy, 0, ch - o.h); poe(); return; }
+      let x1 = o.x, y1 = o.y, x2 = o.x + o.w, y2 = o.y + o.h;
+      if (arr.k.includes('w')) x1 = lim(o.x + dx, 0, x2 - MIN); else x2 = lim(x2 + dx, x1 + MIN, cw);
+      if (arr.k.includes('n')) y1 = lim(o.y + dy, 0, y2 - MIN); else y2 = lim(y2 + dy, y1 + MIN, ch);
+      if (prop) { let w = x2 - x1, h = w / prop; if (arr.k.includes('n')) { y1 = y2 - h; if (y1 < 0) { y1 = 0; h = y2; w = h * prop; } } else { y2 = y1 + h; if (y2 > ch) { y2 = ch; h = y2 - y1; w = h * prop; } } if (arr.k.includes('w')) x1 = x2 - w; else x2 = x1 + w; }
+      r = { x: x1, y: y1, w: x2 - x1, h: y2 - y1 }; poe();
+    });
+    const solta = () => { arr = null; }; caixa.addEventListener('pointerup', solta); caixa.addEventListener('pointercancel', solta);
+    [['Livre', 0], ['1:1', 1], ['4:5', .8], ['16:9', 16 / 9]].forEach(([n, v], k) => { const b = elD('button', k ? '' : 'on', n); b.type = 'button'; b.onclick = () => { prop = v; barra.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); cheia(); }; barra.append(b); });
+    const gira = elD('button', 'corte-gira', 'Girar'); gira.type = 'button'; gira.onclick = () => { const c = document.createElement('canvas'); c.width = fonte.height; c.height = fonte.width; const g = c.getContext('2d'); g.translate(c.width, 0); g.rotate(Math.PI / 2); g.drawImage(fonte, 0, 0); fonte = c; pinta(); cheia(); }; barra.append(gira);
+    const fecha = v => { removeEventListener('resize', reaj); fim(v); try { const an = ov.animate([{ transform: 'none' }, { transform: 'translateY(100%)' }], { duration: 220, easing: 'cubic-bezier(.5,0,.8,.4)', fill: 'forwards' }); an.onfinish = () => ov.remove(); } catch (e) { ov.remove(); } };   // desce pra baixo ao sair, nada some do nada (Sigma 14/11)
+    const cx = elD('button', 'corte-x', 'Cancelar'), ok = elD('button', 'corte-ok', 'Pronto'); cx.type = ok.type = 'button'; cx.onclick = () => fecha(null);
+    ok.onclick = () => { const c = document.createElement('canvas'); c.width = Math.round(r.w / esc); c.height = Math.round(r.h / esc); c.getContext('2d').drawImage(fonte, r.x / esc, r.y / esc, r.w / esc, r.h / esc, 0, 0, c.width, c.height); c.toBlob(b => fecha(b), 'image/jpeg', .92); };
+    bts.append(cx, ok);
+    const reaj = () => { const fx = r ? { x: r.x / cw, y: r.y / ch, w: r.w / cw, h: r.h / ch } : null; pinta(); if (fx) { r = { x: fx.x * cw, y: fx.y * ch, w: fx.w * cw, h: fx.h * ch }; poe(); } else cheia(); };
+    addEventListener('resize', reaj); requestAnimationFrame(() => { pinta(); cheia(); });
+    try { ov.animate([{ transform: 'translateY(100%)' }, { transform: 'none' }], { duration: 260, easing: 'cubic-bezier(.2,.8,.2,1)' }); } catch (e) {}
+  });
+}
 function desenhaBandeja() {
   bandeja.replaceChildren();
   anexos.forEach((a, i) => {
@@ -1648,7 +1679,11 @@ function desenhaBandeja() {
     else { im = document.createElement('img'); im.src = a.url; im.alt = 'Foto ' + (i + 1); }
     const x = document.createElement('button'); x.type = 'button'; x.innerHTML = icone('close'); x.setAttribute('aria-label', a.rot !== undefined ? 'Tirar este arquivo' : 'Tirar esta foto');
     x.onclick = () => { if (a.url) URL.revokeObjectURL(a.url); anexos.splice(i, 1); desenhaBandeja(); };
-    d.append(im, x); bandeja.append(d);
+    d.append(im, x);
+    if (!a.video && a.rot === undefined) { const c = document.createElement('button'); c.type = 'button'; c.className = 'anexo-corta'; c.setAttribute('aria-label', 'Cortar esta foto'); c.innerHTML = TESOURA;   // #325 (May 14/11 08:29): cortar antes de enviar
+      c.onclick = async () => { const fonte = a.orig || await (await fetch(a.url)).blob(), novo = await abreCorte(fonte); if (!novo) return; try { const rd = await reduzir(novo); URL.revokeObjectURL(a.url); Object.assign(a, { b64: rd.b64, ext: rd.ext, url: URL.createObjectURL(novo), orig: novo }); desenhaBandeja(); } catch (e) { showNote('Não consegui cortar essa foto.', true); } };
+      d.append(c); }
+    bandeja.append(d);
   });
   bandeja.hidden = !anexos.length || form.hidden;
   syncBtn();
@@ -1686,16 +1721,19 @@ async function quadrosDoVideo(file, maxQ = 20) {
     const c = document.createElement('canvas'), cx = c.getContext('2d'), mini = document.createElement('canvas'), mx = mini.getContext('2d', { willReadFrequently: true });
     c.width = Math.round(v.videoWidth * k); c.height = Math.round(v.videoHeight * k); mini.width = 120; mini.height = Math.max(1, Math.round(120 * v.videoHeight / Math.max(1, v.videoWidth)));
     const w = mini.width, h = mini.height, dif = (a, b) => { let d = 0; for (let i = 0; i < a.length; i++) d += Math.abs(a[i] - b[i]); return d / a.length; };
+    const sg = document.createElement('canvas'), sx = sg.getContext('2d', { willReadFrequently: true }); sg.width = 16; sg.height = Math.max(1, Math.round(16 * h / w));   // a cena é comparada numa miniatura 16 px borrada e sem o brilho médio: aguenta a câmera tremendo na mão (Sigma #145, 14/11)
+    const assina = () => { sx.drawImage(mini, 0, 0, sg.width, sg.height); const q = sx.getImageData(0, 0, sg.width, sg.height).data, s = new Float32Array(sg.width * sg.height); let m = 0; for (let i = 0; i < s.length; i++) { s[i] = q[i * 4] * .3 + q[i * 4 + 1] * .59 + q[i * 4 + 2] * .11; m += s[i]; } m /= s.length; for (let i = 0; i < s.length; i++) s[i] -= m; return s; }, LIM = window.LIM_CENA || 14;
     const cenas = []; let cur = null;
     for (let t = Math.min(.3, dur / 2); t < dur; t += passo) {
       await vai(t); mx.drawImage(v, 0, 0, w, h); const px = mx.getImageData(0, 0, w, h).data, g = new Float32Array(w * h);
       for (let i = 0; i < w * h; i++) g[i] = px[i * 4] * .3 + px[i * 4 + 1] * .59 + px[i * 4 + 2] * .11;
       let nit = 0; for (let y = 0; y < h - 1; y++) for (let x = 0; x < w - 1; x++) { const i = y * w + x; nit += Math.abs(g[i + 1] - g[i]) + Math.abs(g[i + w] - g[i]); }   // nitidez: borda forte = quadro parado
-      if (cur && dif(g, cur.ref) < 5) { if (nit > cur.nit) Object.assign(cur, { nit, t, g }); continue; }   // mesma cena: fica o mais nítido
-      cur = { ref: g, g, nit, t }; cenas.push(cur);
+      const s = assina();
+      if (cur && dif(s, cur.ref) < LIM) { if (nit > cur.nit) Object.assign(cur, { nit, t, s }); continue; }   // mesma cena: fica o mais nítido
+      cur = { ref: s, s, nit, t }; cenas.push(cur);
     }
     const corte = cenas.length ? cenas.map(x => x.nit).sort((a, b) => a - b)[Math.floor(cenas.length / 2)] * .55 : 0, guardadas = [];
-    cenas.filter(x => x.nit >= corte).forEach(x => { const igual = guardadas.find(y => dif(x.g, y.g) < 5); if (!igual) guardadas.push(x); else if (x.nit > igual.nit) Object.assign(igual, x); });   // A, B, A: a volta não repete
+    cenas.filter(x => x.nit >= corte).forEach(x => { const igual = guardadas.find(y => dif(x.s, y.s) < LIM); if (!igual) guardadas.push(x); else if (x.nit > igual.nit) Object.assign(igual, x); });   // A, B, A: a volta não repete
     const out = [];
     for (const x of guardadas.slice(0, maxQ)) { await vai(x.t); cx.drawImage(v, 0, 0, c.width, c.height); const b = await new Promise(ok => c.toBlob(ok, 'image/jpeg', .86)); if (b) out.push(new File([b], 'quadro-' + (out.length + 1) + '.jpg', { type: 'image/jpeg' })); }
     return out;
@@ -1723,7 +1761,7 @@ arquivo.addEventListener('change', async () => {
       for (const q of qs) { try { const rd = await reduzir(q); anexos.push({ b64: rd.b64, ext: rd.ext, url: URL.createObjectURL(q), tirada: await horaTirada(q) }); } catch (e) {} }
       showNote('Vídeo inteiro' + (qs.length ? ' + ' + qs.length + ' quadro' + (qs.length > 1 ? 's' : '') : '') + ' prontos pra enviar'); continue;
     }
-    try { const rd = await reduzir(f); anexos.push({ b64: rd.b64, ext: rd.ext, url: URL.createObjectURL(f), tirada: await horaTirada(f) }); }
+    try { const rd = await reduzir(f); anexos.push({ b64: rd.b64, ext: rd.ext, url: URL.createObjectURL(f), tirada: await horaTirada(f), orig: f }); }
     catch (e) { showNote('Uma das fotos não abriu.', true); }
   }
   desenhaBandeja(); box.focus();
@@ -2670,7 +2708,7 @@ addEventListener('popstate', () => {   // voltar do navegador (deslizar da borda
   if (painel.hidden || !pilha.length) return;
   pilha.pop(); if (pilha.length) desenhaTela(); else { painelDesce(); painel.hidden = true; }
 });
-document.getElementById('p-anotar').onclick = () => { const caminho = pilha.map(p => p[0]).filter((x, i) => !(i === 0 && x === 'Menu')).join(' > ') || pTit.textContent; abreFicha({ titulo: 'Anotar · ' + caminho, contexto: caminho }); };   // o lápis vale em toda tela filha, com o caminho (ex.: Saúde > Perguntas pro médico); no Trabalho vai pra caixas/trabalho.md
+document.getElementById('p-anotar').onclick = () => { const caminho = pilha.map(p => p[0]).filter((x, i) => !(i === 0 && x === 'Menu')).join(' > ') || pTit.textContent; const dest = destinoNota(); recadoPop(caminho, nomeRobo(dest), (GRUPO[dest] || {}).cor); };   // o lápis vale em toda tela filha, com o caminho (ex.: Saúde > Perguntas pro médico); no Trabalho vai pra caixas/trabalho.md
 { let bx = null, by = 0;   // arrastar da borda esquerda pra direita = voltar, igual o iPhone
   painel.addEventListener('touchstart', e => { const t = e.touches[0]; bx = t.clientX < 28 ? t.clientX : null; by = t.clientY; }, { passive: true });
   painel.addEventListener('touchend', e => { if (bx === null) return; const t = e.changedTouches[0], dx = t.clientX - bx, dy = t.clientY - by; bx = null; if (dx > 70 && Math.abs(dy) < dx * .7) setTimeout(() => { if (Date.now() - ultimoPop > 600 && !painel.hidden) document.getElementById('p-voltar').click(); }, 350); }, { passive: true }); }   // o iPhone também volta sozinho no deslize da borda: os dois juntos voltavam 2 telas e caíam no menu do Trabalho (May, 10/11/2026: "não pode acontecer de jeito nenhum"); só volta por aqui se o do iPhone não voltou
@@ -2813,7 +2851,7 @@ abreMenu.onclick = () => {
         let ordem = []; try { ordem = JSON.parse(store.get(FILE === TRAB.arq ? 'menu-ordem-trab' : 'menu-ordem') || '[]').map(n => n === 'Ideias' ? 'Tarefas' : n); } catch (e) {}   // Ideias virou Tarefas (May 16:16): a ordem que ela arrumou continua valendo
         lista.querySelectorAll('.sk-bt').forEach(x => x.remove());
         const pos = n => { const i = ordem.indexOf(n); return i < 0 ? 999 : i; };
-        itens.map((m, i) => [m, i]).sort((a, b) => pos(a[0].nome) - pos(b[0].nome) || a[1] - b[1]).forEach(([m]) => { const b = botaoGrade(m.icone, m.nome, m.sub, () => { if (navigator.onLine === false && !SEM_REDE_OK.includes(m.nome)) { showNote('Sem internet: abrem a Saúde, a Agenda, o Checklist e os Planos.'); return; } conta(m.nome); abreItemMenu(m); }); b.dataset.nome = m.nome; if (navigator.onLine === false && !SEM_REDE_OK.includes(m.nome)) b.classList.add('sem-rede'); if (FILE !== TRAB.arq) vesteBotao(b, m.nome); else if (ICONE_TRAB[m.icone]) b.querySelector('.ic').innerHTML = '<svg class="lp" viewBox="0 0 24 24" aria-hidden="true">' + ICONE_TRAB[m.icone] + '</svg>';   // Trabalho: só ícone limpo, sem número do dia nem enfeite (May 09/11)
+        itens.filter(m => !m.apagado).map((m, i) => [m, i]).sort((a, b) => pos(a[0].nome) - pos(b[0].nome) || a[1] - b[1]).forEach(([m]) => { const b = botaoGrade(m.icone, m.nome, m.sub, () => { if (navigator.onLine === false && !SEM_REDE_OK.includes(m.nome)) { showNote('Sem internet: abrem a Saúde, a Agenda, o Checklist e os Planos.'); return; } conta(m.nome); abreItemMenu(m); }); b.dataset.nome = m.nome; if (navigator.onLine === false && !SEM_REDE_OK.includes(m.nome)) b.classList.add('sem-rede'); if (FILE !== TRAB.arq) vesteBotao(b, m.nome); else if (ICONE_TRAB[m.icone]) b.querySelector('.ic').innerHTML = '<svg class="lp" viewBox="0 0 24 24" aria-hidden="true">' + ICONE_TRAB[m.icone] + '</svg>';   // Trabalho: só ícone limpo, sem número do dia nem enfeite (May 09/11)
  lista.append(b); });
         arrumaArrastando(lista);
       });
@@ -3108,7 +3146,7 @@ function abreGrupo(m) {
     if (m.estilo === 'saude') painel.classList.add('tema-saude');
     const g = elD('div', 'gr-grade' + (m.estilo ? ' gr-grade-' + m.estilo : '')); c.append(g);
     const chave = 'grupo-ordem:' + m.nome; let ordem = []; try { ordem = JSON.parse(store.get(chave) || '[]'); } catch (e) {}
-    const pos = x => { const i = ordem.indexOf(x.nome); return i < 0 ? 999 : i; }, itensG = (m.itens || []).map((x, i) => [x, i]).sort((a, b) => pos(a[0]) - pos(b[0]) || a[1] - b[1]).map(a => a[0]);   // a ordem que ela arrumou arrastando (neste aparelho); item novo vai pro fim
+    const pos = x => { const i = ordem.indexOf(x.nome); return i < 0 ? 999 : i; }, itensG = (m.itens || []).filter(x => !x.apagado).map((x, i) => [x, i]).sort((a, b) => pos(a[0]) - pos(b[0]) || a[1] - b[1]).map(a => a[0]);   // a ordem que ela arrumou arrastando (neste aparelho); item novo vai pro fim
     arrumaArrastando(g, { sel: '.gr-item', chave, aviso: 'Pastas arrumadas: ficam assim neste celular' });
     itensG.forEach(x => { const b = botaoGrade(x.icone, x.nome, x.sub, () => abreItemMenu(x)); b.classList.add('gr-item'); b.dataset.nome = x.nome; b.style.setProperty('--c', x.cor || cor); if (x.cor) b.classList.add('cor-propria'); if (!m.estilo || m.estilo === 'cinema') { const sb = elD('small', 'gr-sub', x.sub || ''); b.append(sb); } g.append(b); });
   });
@@ -3424,6 +3462,18 @@ function musGuitarra(it, uid) {
 const MUS_CUIDADOS = { cordas: '<path d="M6 3c2 6-2 12 0 18M12 3c2 6-2 12 0 18M18 3c2 6-2 12 0 18"/>', regulagem: '<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/>', limpeza: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>' };
 // Marca do Estúdio JWA desenhada do zero pela foto da logo antiga que ela mandou (12/11 22:09): arco vinho, almofadas vermelho-alaranjadas, pulso e nome em amarelo; cores tiradas dos pixels da foto
 const MUS_MARCA = '<svg class="tm-marca" viewBox="0 0 120 90" role="img" aria-label="Estúdio JWA"><path d="M22 52V40a38 34 0 0 1 76 0v12" fill="none" stroke="#7A0E0A" stroke-width="7" stroke-linecap="round"/><rect x="14" y="40" width="16" height="30" rx="7" fill="#9B2F07"/><rect x="90" y="40" width="16" height="30" rx="7" fill="#9B2F07"/><rect x="24" y="44" width="7" height="22" rx="3" fill="#5D0D09"/><rect x="89" y="44" width="7" height="22" rx="3" fill="#5D0D09"/><polyline points="34,56 46,56 50,47 55,64 60,40 65,60 69,52 86,52" fill="none" stroke="#D9D31F" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><text x="60" y="86" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-style="italic" font-size="15" fill="#D9D31F" transform="skewX(-8) translate(10 0)">ESTUDIO JWA</text></svg>';
+const MUS_BARRAS = 60, MUS_ONDAS = {};
+function ondaDe(caminho) {   // picos do áudio em 60 barras (0 a 1), decodificado uma vez por sessão
+  return MUS_ONDAS[caminho] || (MUS_ONDAS[caminho] = (async () => {
+    try {
+      const u = await fotoUrl(caminho, true), buf = await (await fetch(u)).arrayBuffer(), Ctx = window.AudioContext || window.webkitAudioContext, ctx = new Ctx();
+      const au = await new Promise((ok, erro) => { const r = ctx.decodeAudioData(buf, ok, erro); if (r && r.then) r.then(ok, erro); }); try { ctx.close(); } catch (e) {}
+      const ch = au.getChannelData(0), passo = Math.floor(ch.length / MUS_BARRAS) || 1, pk = [];
+      for (let k = 0; k < MUS_BARRAS; k++) { let s = 0; for (let i = k * passo, f = Math.min(ch.length, i + passo); i < f; i++) s += ch[i] * ch[i]; pk.push(Math.sqrt(s / passo)); }
+      const mx = Math.max(...pk) || 1; return pk.map(v => v / mx);
+    } catch (e) { delete MUS_ONDAS[caminho]; return null; }
+  })());
+}
 function abreMusica(m) {
   tela(m.nome, async c => {
     painel.classList.add('tema-musica'); c.classList.add('t-musica');
@@ -3495,9 +3545,11 @@ function abreMusica(m) {
           const e = Math.min(5, Math.max(1, x.etapa || 1)), a = elD('article', 'tm-faixa'), topo = elD('div', 'tm-faixa-topo'), tx = elD('div');
           tx.append(lapis('musica', x), elD('h3', '', x.nome)); if (x.texto) tx.append(elD('p', '', x.texto)); topo.append(elD('div', 'tm-num', String(n + 1).padStart(2, '0')), tx); a.append(topo);
           if (x.audio) { const ou = elD('button', 'tm-ouvir', '▶ Ouvir a ideia' + (x.dur ? ' · ' + Math.floor(x.dur / 60) + ':' + pad(x.dur % 60) : '')); ou.type = 'button'; ou.onclick = async () => { if (tocando) { tocando.pause(); tocando = null; ou.textContent = '▶ Ouvir a ideia'; return; } ou.textContent = 'Abrindo…'; try { const u = await fotoUrl(x.audio, true); tocando = new Audio(u); tocando.onended = () => { tocando = null; ou.textContent = '▶ Ouvir a ideia'; }; await tocando.play(); ou.textContent = '■ Parar'; } catch (e) { tocando = null; ou.textContent = '▶ Ouvir a ideia'; showNote('Não tocou: confere a internet.', true); } }; a.append(ou); }
-          const fd = elD('div', 'tm-fader'); fd.setAttribute('role', 'button'); fd.setAttribute('aria-label', 'Subir a etapa de ' + x.nome);
-          for (let k = 1; k <= 5; k++) fd.append(elD('i', (k <= e ? 'on' : '') + (k === 5 && e === 5 ? ' pico' : '')));
-          const bt = elD('b', 'tm-botao'); bt.style.left = ((e - .5) * 20) + '%'; fd.append(bt);
+          const fd = elD('div', 'tm-onda' + (x.audio ? '' : ' muda')); fd.setAttribute('role', 'button'); fd.setAttribute('aria-label', 'Subir a etapa de ' + x.nome);   // #321 (análise externa 14/11): a forma de onda do próprio áudio da ideia no lugar da barra; sem áudio = linha reta, nada inventado
+          const barras = []; for (let k = 0; k < MUS_BARRAS; k++) { const r = elD('i', (k + 1) / MUS_BARRAS <= e / 5 + 1e-9 ? (e === 5 ? 'on pico' : 'on') : ''); barras.push(r); fd.append(r); }
+          if (x.audio) ondaDe(x.audio).then(pk => { if (pk) barras.forEach((r, k) => { r.style.height = Math.max(8, Math.round(pk[k] * 100)) + '%'; }); });
+          const bt = elD('b', 'tm-botao'); bt.style.left = (e * 20) + '%'; fd.append(bt);
+          if (!x.audio) fd.append(elD('small', 'tm-onda-sem', 'Sem áudio ainda'));
           fd.onclick = () => { const nova = e >= 5 ? 1 : e + 1; grava(ll => { const y = ll.find(z => z.id === x.id); if (y) { y.etapa = nova; y.atualizado = edAgora(); } }, 'Música: etapa de ' + x.nome + ' foi pra ' + ET[nova - 1] + ' pelo app'); };   // tocar no fader sobe uma etapa (depois de Finalizar volta pra Ideia)
           const et = elD('div', 'tm-etapas'); ET.forEach((t, k) => et.append(elD('span', k + 1 === e ? 'atual' : '', t))); a.append(fd, et);
           if (x.falta) { const f = elD('p', 'tm-falta'); f.append(elD('small', '', 'O que falta'), document.createTextNode(x.falta)); a.append(f); }
@@ -3552,6 +3604,7 @@ function abreMusica(m) {
   });
 }
 const TIPOS_PECA = [['Cardápios', /card[aá]pio/i], ['Flyers', /flyer|promo|oferta/i], ['Convites', /convite/i], ['Placas e banners', /placa|banner|mural|tabela/i], ['Logos', /logo/i], ['Cartões', /cart[aã]o|cart[oõ]es/i]];
+const RV_SERV = [['<rect x="6" y="3" width="12" height="6" rx="1"/><rect x="3" y="9" width="18" height="8" rx="2"/><rect x="7" y="14" width="10" height="7" rx="1"/>', 'Impressão digital'], ['<path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.6-.9 1.2-1.8-.5-1-.1-2.2 1.2-2.2H17a4 4 0 0 0 4-4c0-5.5-4-10-9-10z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10" cy="7" r="1.2"/><circle cx="15" cy="7.5" r="1.2"/>', 'Design gráfico'], ['<rect x="3" y="6" width="14" height="10" rx="1.5"/><path d="M7 19h12a2 2 0 0 0 2-2V9"/>', 'Cartões e flyers'], ['<rect x="4" y="3" width="16" height="9" rx="1"/><path d="M8 12v9M16 12v9M6 21h4M14 21h4"/>', 'Banners e adesivos'], ['<rect x="3" y="9" width="18" height="12" rx="1.5"/><path d="M3 13h18M12 9v12M12 9c-2-4-6-4-6-1.5S10 9 12 9c2 0 6-.5 6-1.5S14 5 12 9z"/>', 'Personalizados']];   // os 5 serviços do modelo da May (14/11 08:01)
 const tipoPeca = nome => (TIPOS_PECA.find(x => x[1].test(nome || '')) || ['Outras peças'])[0];
 function abreContraste(m) {
   tela(m.nome, async c => {
@@ -3600,16 +3653,48 @@ function abreContraste(m) {
         const pagos = E.itens.filter(p => !p.apagado && p.feito); if (pagos.length) { corpo.append(elD('div', 'ctb-sec', 'Pagos')); pagos.slice().reverse().forEach(p => corpo.append(cartao(p))); }
         const mais = elD('button', 'ctb-mais', '+ Pedido'); mais.type = 'button'; mais.onclick = () => form(null); corpo.append(mais);
       } else if (aba === 'portfolio') {
-        const g = elD('div', 'ctb-port ctb-rev'), tipos = {};   // #291 (May 14/11 07:04, b) Revista): uma capa por tipo de peça, a 1ª grande e as outras 2 por linha, tipo tirado do nome da peça
+        const PALS = (d.paletas || {}).clientes || {}, maiusc = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+        const g = elD('div', 'ctb-port rv'), tipos = {}, ROT = [-2.4, 1.8, -1.2, 2.6, -2, 1.1];   // #291 v2 (May 14/11 08:01, referência): revista física, folhas sobrepostas caindo na mesa, índice que vira a página
         (d.portfolio || []).filter(p => !p.apagado).forEach(p => { const tp = tipoPeca(p.peca); (tipos[tp] = tipos[tp] || []).push(p); });
-        TIPOS_PECA.map(x => x[0]).concat('Outras peças').filter(tp => tipos[tp]).forEach(tp => {
-          const xs = tipos[tp], sec = elD('section', 'ctb-rev-sec'), cap = elD('h3', 'ctb-rev-cap'), w = elD('span', '', tp); w.dataset.t = tp;
-          cap.append(w, elD('small', '', xs.length + (xs.length > 1 ? ' peças · ' : ' peça · ') + [...new Set(xs.map(p => p.cliente))].join(', ')));
-          const gr = elD('div', 'ctb-rev-gr');
-          xs.forEach((p, k) => { const f = elD('figure', 'ctb-peca' + (k === 0 || (k === xs.length - 1 && xs.length % 2 === 0) ? ' grande' : '')), im = elD('img'); im.alt = p.peca || ''; im.loading = 'lazy'; fotoUrl(p.arquivos[0]).then(u => { im.src = u; }).catch(() => {}); im.onclick = () => im.src && abreZoom(im.src, p.arquivos[0], p.arquivos);
-            const fc = elD('figcaption'); fc.append(elD('b', '', p.cliente), elD('span', '', [p.peca, p.data, p.arquivos.length > 1 ? p.arquivos.length + ' versões' : ''].filter(Boolean).join(' · '))); f.append(im, fc); gr.append(f); });
-          sec.append(cap, gr); g.append(sec);
-        });
+        const lista = TIPOS_PECA.map(x => x[0]).concat('Outras peças').filter(tp => tipos[tp]), ind = elD('nav', 'pf-ind'), pag = elD('div', 'pf-pag');
+        const queda = f => { const r = parseFloat(f.style.getPropertyValue('--r')) || 0; f.animate([{ transform: 'translate(0, -70px) rotate(' + (r + 9) + 'deg) scale(1.07)', boxShadow: '0 40px 50px rgba(0,0,0,.28)' }, { transform: 'translate(0, 0) rotate(' + r + 'deg)' }], { duration: 650, delay: +f.dataset.d || 0, easing: 'cubic-bezier(.2,.9,.25,1)', fill: 'backwards' }); };
+        const olho = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { olho.unobserve(e.target); queda(e.target); } }), { root: pCorpo, threshold: .15 }) : null;
+        const paralaxe = () => { if (!pag.isConnected) { pCorpo.removeEventListener('scroll', rola); return; } const h = pCorpo.clientHeight; pag.querySelectorAll('.pf-folha').forEach((f, k) => { const b = f.getBoundingClientRect(), dy = (b.top + b.height / 2 - h / 2) / h; f.style.setProperty('--py', Math.max(-8, Math.min(8, dy * (k % 2 ? 10 : -7))).toFixed(1) + 'px'); }); };
+        let pede = 0; const rola = () => { if (!pede) pede = requestAnimationFrame(() => { pede = 0; paralaxe(); }); }; pCorpo.addEventListener('scroll', rola, { passive: true });
+        const tinta = () => { let s = 7; const rnd = () => (s = (s * 9301 + 49297) % 233280) / 233280, cor = ['#EC008C', '#00AEEF', '#FFF200', '#111111'], ns = 'http://www.w3.org/2000/svg', sv = document.createElementNS(ns, 'svg'); sv.setAttribute('viewBox', '0 0 200 160'); sv.setAttribute('class', 'pf-tinta'); sv.setAttribute('aria-hidden', 'true');   // respingo de tinta CMYK desenhado (mancha + gotas), sempre o mesmo
+          [[120, 60, 34, 0], [150, 48, 22, 1], [104, 90, 18, 2], [138, 92, 12, 3]].forEach(([cx, cy, r, c]) => { const pts = []; for (let k = 0; k < 14; k++) { const an = k / 14 * Math.PI * 2, rr = r * (.72 + rnd() * .5); pts.push([cx + Math.cos(an) * rr, cy + Math.sin(an) * rr]); } const pa = document.createElementNS(ns, 'path'); pa.setAttribute('d', 'M' + pts.map(q => q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join('L') + 'Z'); pa.setAttribute('fill', cor[c]); pa.setAttribute('stroke', cor[c]); pa.setAttribute('stroke-width', '6'); pa.setAttribute('stroke-linejoin', 'round'); sv.append(pa);
+            for (let k = 0; k < 9; k++) { const an = rnd() * Math.PI * 2, dd = r * (1.1 + rnd() * 1.4), ci = document.createElementNS(ns, 'circle'); ci.setAttribute('cx', (cx + Math.cos(an) * dd).toFixed(1)); ci.setAttribute('cy', (cy + Math.sin(an) * dd).toFixed(1)); ci.setAttribute('r', (1 + rnd() * r * .16).toFixed(1)); ci.setAttribute('fill', cor[c]); sv.append(ci); } });
+          return sv; };
+        const monta = (i, dir) => {
+          const tp = lista[i], xs = tipos[tp], cab = elD('div', 'pf-cab'), cm = elD('i', 'pf-cmyk'), capa = elD('div', 'pf-capa'); E.rvTipo = tp;   // a logo já está na barra de cima, não repete (May 14/11 08:26)
+          const tt = elD('div', 'pf-capa-t'); tt.append(elD('b', '', 'Portfólio'), elD('span', '', 'Sua ideia em excelente impressão')); capa.append(tinta(), tt, elD('i', 'pf-tiras'));   // textos do modelo da May (14/11 08:28: preenche os vazios com texto igual o modelo)
+          const sv = elD('div', 'pf-serv'); RV_SERV.forEach(([ic, nm]) => { const s = elD('span'), c = elD('i'); c.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + ic + '</svg>'; s.append(c, elD('small', '', nm)); sv.append(s); }); capa.append(sv);
+          ind.querySelectorAll('button').forEach((b, k) => b.classList.toggle('on', k === i));
+          cab.append(elD('span', 'pf-num', 'Nº ' + String(i + 1).padStart(2, '0') + ' de ' + String(lista.length).padStart(2, '0')), elD('h3', '', tp), elD('small', '', xs.length + (xs.length > 1 ? ' peças' : ' peça') + ' · ' + [...new Set(xs.map(p => p.cliente))].join(', ')), cm, elD('i', 'pf-reg r1'), elD('i', 'pf-reg r2'));
+          const mesa = elD('div', 'pf-mesa'), carga = [], figs = [];   // folha cheia ocupa a linha; as de meia página vão em 2 colunas, alternando
+          xs.forEach((p, k) => {
+            const f = elD('figure', 'pf-folha'), im = elD('img'); f.style.setProperty('--r', ROT[k % ROT.length] + 'deg'); f.style.zIndex = k + 1; f.dataset.d = Math.min(k, 4) * 110;
+            im.alt = p.peca || ''; im.loading = 'lazy'; fotoUrl(p.arquivos[0]).then(u => { im.src = u; }).catch(() => {}); f.onclick = () => im.src && abreZoom(im.src, p.arquivos[0], p.arquivos);
+            const fc = elD('figcaption'); fc.append(elD('b', '', p.cliente), elD('span', '', [maiusc(p.peca), p.data, p.arquivos.length > 1 ? p.arquivos.length + ' versões' : ''].filter(Boolean).join(' · ')), elD('em', '', 'pág. ' + String(k + 1).padStart(2, '0')));
+            const pal = elD('div', 'pf-pal'); ((PALS[p.cliente] || {}).cores || []).forEach(c => { const q = elD('i'); q.style.background = c; q.title = c; pal.append(q); });   // a paleta da identidade do cliente, uma só por cliente, do contraste.json (May 14/11 08:30, Sigma 14/11); sem paleta, não mostra
+            f.append(im, pal, fc); carga.push(new Promise(ok => { im.addEventListener('load', ok, { once: true }); im.addEventListener('error', ok, { once: true }); setTimeout(ok, 4000); }));
+            figs.push({ f, im }); if (olho) olho.observe(f);
+          });
+          const arruma = () => {   // foto deitada ocupa a linha inteira; as em pé vão de 2 em 2, alternando a coluna; sobrou uma em pé, ela fica cheia
+            mesa.replaceChildren(); let cols = null, n = 0;   // a dupla em pé fica junta mesmo com uma deitada no meio
+            const deitada = x => x.im.naturalWidth > x.im.naturalHeight * 1.1, emPe = figs.filter(x => !deitada(x));
+            figs.forEach((x, k) => {
+              const cheia = deitada(x) || (emPe.length % 2 && x === emPe[emPe.length - 1]) || (!x.im.naturalWidth && k % 3 === 0); x.f.classList.toggle('cheia', !!cheia); x.f.classList.toggle('sai', !!cheia && k % 2 === 1);
+              if (cheia) mesa.append(x.f); else { if (!cols || n >= 2) { const par = elD('div', 'pf-par'); cols = [elD('div', 'pf-col'), elD('div', 'pf-col')]; par.append(...cols); mesa.append(par); n = 0; } cols[n++].append(x.f); }
+            });
+          };
+          arruma();
+          const fr = elD('div', 'pf-frase'); fr.innerHTML = '<p>Qualidade,<br>Criatividade e<br>Compromisso!</p><svg viewBox="0 0 200 20" aria-hidden="true"><path d="M4 14 C60 6 130 4 196 7 C140 9 70 12 8 18 Z" fill="#EC008C"/></svg>'; mesa.append(fr); Promise.all(carga).then(() => { if (!mesa.isConnected) return; arruma(); mesa.append(fr); let melhor = null, dif = 90; mesa.querySelectorAll('.pf-par').forEach(par => { const [a, b] = par.children, d = Math.abs(a.offsetHeight - b.offsetHeight); if (d > dif) { dif = d; melhor = a.offsetHeight < b.offsetHeight ? a : b; } }); if (melhor && fr.isConnected) melhor.append(fr); });   // a frase vai pro vão da coluna mais curta
+          pag.replaceChildren(...(i === 0 ? [capa] : []), cab, mesa); paralaxe();   // a capa só no Nº 01; virar a página já cai no tipo (Sigma 14/11)
+          if (dir) { pag.style.transformOrigin = dir > 0 ? 'left center' : 'right center'; pag.animate([{ transform: 'perspective(1400px) rotateY(' + (dir > 0 ? -88 : 88) + 'deg)' }, { transform: 'none' }], { duration: 480, easing: 'cubic-bezier(.2,.8,.2,1)' }); }
+        };
+        lista.forEach((tp, k) => { const b = elD('button', '', tp); b.type = 'button'; b.append(elD('small', '', String(tipos[tp].length))); b.onclick = () => { const a = lista.indexOf(E.rvTipo); if (a !== k) { monta(k, k > a ? 1 : -1); pCorpo.scrollTop = 0; } }; ind.append(b); });
+        g.append(ind, pag); monta(Math.max(0, lista.indexOf(E.rvTipo)), 0);
         corpo.append(g, elD('p', 'ctb-nota', 'Só entra peça com a marca da Contraste no canto. Os originais ficam na pasta da rede, fora do app.'));
       } else {
         const hero = elD('div', 'ctr-hero so-logo'), im = elD('img'); im.alt = d.nome || ''; fotoUrl(d.logo).then(u => { im.src = u; }).catch(() => {});   // a marca sozinha e inteira, sem texto nem caixas de cor embaixo (May 13/11 16:20, Sigma 16:22)
@@ -5214,7 +5299,7 @@ function montaCalendario(cal, c, opc) {   // opc (Agenda do Trabalho): { marcas:
     for (let k = 0; k < primeiro; k++) g.append(elD('span'));
     for (let dd = de; dd <= total; dd++) {
       const chave = ano + '-' + String(mes + 1).padStart(2, '0') + '-' + String(dd).padStart(2, '0'), b = elD('button', 'ag-dia', String(dd)); b.type = 'button';
-      if (dias.has(chave)) { b.classList.add('tem'); const cs = corDia[chave].slice(0, 3); if (!opc && chave !== sel) { const pc = 100 / cs.length; b.style.background = cs.length === 1 ? cs[0] : 'conic-gradient(' + cs.map((x, k) => x + ' ' + k * pc + '% ' + (k + 1) * pc + '%').join(', ') + ')'; } }   // marca em círculo na cor do assunto (várias cores = fatias)   // um pontinho por tipo, na cor dele
+      if (dias.has(chave)) { b.classList.add('tem'); if (!opc && chave !== sel) b.style.background = '#1E293B'; }   // dia com compromisso: bolinha de uma cor só, sem borda (May 14/11 07:57), na tinta da Agenda: nenhuma cor da legenda, senão todo dia parece consulta (Sigma 14/11)   // um pontinho por tipo, na cor dele
       if (chave === sel) b.classList.add('sel');
       if (dd === hoje.getDate() && mes === hoje.getMonth() && ano === hoje.getFullYear()) b.classList.add('hoje');
       b.onclick = () => { if (opc) { sel = sel === chave ? '' : chave; desenhar(); opc.aoEscolher(sel); return; } sel = sel === chave ? '' : chave; filtra(); desenhar(); };
@@ -5569,13 +5654,13 @@ function destinoNota() {
   return donosTela.find(on) || robos.find(on) || donosTela[0] || 'orfeu';
 }
 const nomeRobo = k => (GRUPO[k] ? GRUPO[k].nome : 'Lyra').replace(/\s*\(.*\)$/, '');
-function notaBox(contexto, fecha) {
-  const nb = document.createElement('div'); nb.className = 'nota-box';
-  const trab = document.body.classList.contains('modo-trab'), dest = trab ? 'lyra' : destinoNota(), nome = trab ? 'Lyra' : nomeRobo(dest), art = trab || ['lyra', 'nyx', 'vega'].includes(dest) ? 'pra' : 'pro', pra = 'Mandar ' + art + ' ' + nome;   // Lyra, Nyx e Vega: pra (May 11/11/2026)   // Trabalho: tudo é pra Lyra, sem @ (May via Lyra, 09/11/2026)
-  nb.innerHTML = '<label>' + icone('note') + ' Escrever sobre isso</label><textarea rows="3" maxlength="600"></textarea><button type="button" class="manda" disabled></button>';
-  const ta = nb.querySelector('textarea'), mb = nb.querySelector('.manda'); ta.placeholder = 'Escreve aqui, vai ' + art + ' ' + nome; mb.textContent = pra;
-  ta.oninput = () => { mb.disabled = !ta.value.trim(); if (!mb.disabled) mb.textContent = pra; };
-  mb.onclick = async () => { const t = ta.value.trim(); if (t && await enviarComentario('📝 ' + contexto + ': ' + (trab ? '' : '@' + nome + ' ') + t, mb, fecha)) ta.value = ''; };
+function recadoPop(tela, robo, cor, o) {   // #153: todo "mandar recado" usa o popup único do socorro.js; no Trabalho grava em caixas/trabalho.md, pra Lyra sem @
+  const trab = document.body.classList.contains('modo-trab');
+  Socorro.compoe(tela, trab ? 'Lyra' : robo, trab ? '' : cor, Object.assign({ arq: trab ? TRAB.arq : GERAL.arq, semArroba: trab, depois: () => avisoCurto('Mandado') }, o || {}));
+}
+function notaBox(contexto) {   // dentro das fichas: um botão que abre o mesmo popup de mandar recado
+  const dest = destinoNota(), nb = document.createElement('div'), b = document.createElement('button'); nb.className = 'nota-box'; b.type = 'button'; b.className = 'manda';
+  b.innerHTML = icone('note'); b.append(' Escrever sobre isso'); b.onclick = () => recadoPop(contexto, nomeRobo(dest), (GRUPO[dest] || {}).cor); nb.append(b);
   return nb;
 }
 // Ficha: popup por cima de tudo, com o detalhe (foto grande, texto) e a caixinha de anotação embaixo
@@ -6665,6 +6750,6 @@ if (location.hash === '#menu' || (history.state && history.state.painel && !loca
 }
 window.appPronto = true;   // o script inteiro rodou: o modo de emergência do socorro.js não precisa abrir (#174)
 </script>
-<script src="garagem.js?v=8"></script>
+<script src="garagem.js?v=9"></script>
 </body>
 </html>

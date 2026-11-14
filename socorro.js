@@ -11,10 +11,10 @@
   const onde = () => { try { if (window.socorroOnde) return window.socorroOnde(); } catch (e) {} return pagina(); };
   const b64e = t => btoa(unescape(encodeURIComponent(t))), b64d = t => decodeURIComponent(escape(atob(String(t).replace(/\s/g, ''))));
   let motivo = '';
-  async function gravaLinha(linha, msg) {   // lê a caixa mais nova com o sha e acrescenta a linha no fim; 409 = alguém gravou junto, tenta de novo
+  async function gravaLinha(linha, msg, arq) {   // lê a caixa mais nova com o sha e acrescenta a linha no fim; 409 = alguém gravou junto, tenta de novo
     const token = ler('gh-token'); if (!token) { motivo = 'o app tá sem a chave'; return false; }
     if (navigator.onLine === false) { motivo = 'tá sem internet'; return false; }
-    const url = 'https://api.github.com/repos/' + REPO + '/contents/' + ARQ, h = { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' };
+    const url = 'https://api.github.com/repos/' + REPO + '/contents/' + (arq || ARQ), h = { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' };
     for (let t = 0; t < 4; t++) {
       try {
         const r = await fetch(url, { headers: h, cache: 'no-store' });
@@ -31,7 +31,7 @@
   }
   const estilo = () => { if (document.getElementById('socorro-css')) return; const s = document.createElement('style'); s.id = 'socorro-css';
     s.textContent = '.socorro-pop{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:16px;background:rgba(0,0,0,.6);font-family:inherit}.socorro-pop .sc-card{width:min(360px,100%);background:#171A21;color:#F1F2F4;border:2px solid #10B981;border-radius:28px;padding:22px 20px 18px;box-shadow:0 20px 50px rgba(0,0,0,.5);animation:sc-cresce .26s cubic-bezier(.2,.8,.2,1) both}.socorro-pop.nao .sc-card{border-color:#F87171}.socorro-pop p{margin:4px 4px 16px;font-size:17px;line-height:1.4;text-align:center}.socorro-pop button{display:block;width:100%;height:48px;border:0;border-radius:999px;background:#059669;color:#fff;font:inherit;font-size:17px;font-weight:700}.socorro-pop.nao button{background:#B91C1C}@keyframes sc-cresce{from{transform:scale(.6)}to{transform:none}}';
-    s.textContent += '.sc-comp{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:flex-end;background:rgba(0,0,0,.55);font-family:inherit}.sc-comp .sc-folha{width:100%;box-sizing:border-box;background:#171A21;color:#F1F2F4;border-top:2px solid var(--sc-cor,#10B981);border-radius:22px 22px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));display:grid;gap:10px}.sc-comp b{font-size:15px}.sc-comp textarea{width:100%;box-sizing:border-box;min-height:96px;border-radius:12px;border:1px solid #3A3F4B;background:#0F1116;color:#F1F2F4;font:inherit;font-size:16px;padding:10px 12px;resize:none}.sc-comp .sc-bts{display:flex;gap:8px}.sc-comp button{flex:1;min-height:46px;border:0;border-radius:12px;font:inherit;font-weight:700;font-size:15px}.sc-comp .sc-x{background:#2A2E38;color:#F1F2F4}.sc-comp .sc-ok{background:var(--sc-cor,#10B981);color:#05140E}.sc-comp .sc-ok:disabled{opacity:.45}.sc-comp .sc-msg{font-size:13px;color:#F59E0B;min-height:1em}';
+    s.textContent += '.sc-comp{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:flex-end;background:rgba(0,0,0,.55);font-family:inherit}.sc-comp .sc-folha{width:100%;box-sizing:border-box;background:#171A21;color:#F1F2F4;border-top:2px solid var(--sc-cor,#10B981);border-radius:22px 22px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));display:grid;gap:10px}.sc-comp b{touch-action:none;cursor:grab;display:block;padding-top:14px;position:relative;font-size:15px}.sc-comp b::before{content:"";position:absolute;top:0;left:50%;width:40px;height:4px;margin-left:-20px;border-radius:2px;background:#3A3F4B}.sc-comp textarea{width:100%;box-sizing:border-box;min-height:96px;border-radius:12px;border:1px solid #3A3F4B;background:#0F1116;color:#F1F2F4;font:inherit;font-size:16px;padding:10px 12px;resize:none}.sc-comp .sc-bts{display:flex;gap:8px}.sc-comp button{flex:1;min-height:46px;border:0;border-radius:12px;font:inherit;font-weight:700;font-size:15px}.sc-comp .sc-x{background:#2A2E38;color:#F1F2F4}.sc-comp .sc-ok{background:var(--sc-cor,#10B981);color:#fff}.sc-comp .sc-ok:disabled{opacity:.45}.sc-comp textarea:focus{outline:0;border-color:var(--sc-cor,#10B981);box-shadow:0 0 0 3px color-mix(in srgb,var(--sc-cor,#10B981) 30%,transparent)}.sc-comp .sc-msg{font-size:13px;color:#F59E0B;min-height:1em}.sc-comp .sc-quem{display:flex;flex-wrap:wrap;gap:8px}.sc-comp .sc-quem .sc-q{flex:0 1 auto;min-height:38px;padding:0 14px;border-radius:999px;border:2px solid #3A3F4B;background:transparent;color:#F1F2F4;font-size:14px}.sc-comp .sc-quem .sc-q.on{background:var(--sc-cor,#10B981);color:#fff;border-color:var(--sc-cor,#10B981)}';
     document.head.append(s); };
   const mostra = (foi, depois) => {
     estilo(); const ov = document.createElement('div'), card = document.createElement('div'), p = document.createElement('p'), ok = document.createElement('button');
@@ -64,18 +64,27 @@
   // chacoalhar DESLIGADO (May, 10/11/2026: "fica me pedindo permissão toda vez, desabilita"): não pede o sensor nem escuta o movimento; liga() e mov ficam aqui pra voltar se ela pedir
   void liga;
   setInterval(reenvia, 60000); addEventListener('online', () => setTimeout(reenvia, 3000));
-  function compoe(tela, robo, cor) {   // escrever pra Geral sem sair da tela, nas páginas separadas (May 08/11 12:50: "kd o botão de mandar msg em qualquer tela?"); a linha sai igual a do app: 📝 tela: @robô texto
-    estilo(); const ov = document.createElement('div'), f = document.createElement('div'), t = document.createElement('b'), ta = document.createElement('textarea'), msg = document.createElement('div'), bts = document.createElement('div'), x = document.createElement('button'), ok = document.createElement('button');
-    ov.className = 'sc-comp'; if (cor) ov.style.setProperty('--sc-cor', cor); f.className = 'sc-folha'; t.textContent = 'Escrever sobre ' + tela; ta.placeholder = 'Escreve aqui, vai pro ' + robo; ta.maxLength = 600;
-    msg.className = 'sc-msg'; bts.className = 'sc-bts'; x.type = ok.type = 'button'; x.className = 'sc-x'; ok.className = 'sc-ok'; x.textContent = 'Fechar'; ok.textContent = 'Mandar pro ' + robo; ok.disabled = true;
-    const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; ta.oninput = () => { ok.disabled = !ta.value.trim(); };
+  function compoe(tela, robo, cor, o) {   // #153: O popup de mandar recado, um elemento só pro app, Máquinas e Jogos (cartão do robô, lápis, fichas); a linha sai igual: 📝 tela: @robô texto
+    o = o || {}; estilo(); const ov = document.createElement('div'), f = document.createElement('div'), t = document.createElement('b'), ta = document.createElement('textarea'), msg = document.createElement('div'), bts = document.createElement('div'), x = document.createElement('button'), ok = document.createElement('button');
+    const art = n => /^(lyra|nyx|vega)$/i.test(n) ? 'pra ' : 'pro ', quem = (o.quem || []).map(q => { const b = document.createElement('button'); b.type = 'button'; b.className = 'sc-q' + (q[2] ? ' on' : ''); b.textContent = q[1]; b.dataset.q = q[0]; b.onclick = () => b.classList.toggle('on'); return b; });
+    const pra = () => { const on = quem.filter(b => b.classList.contains('on')).map(b => b.dataset.q); return on.length ? on : [robo]; }, rotOk = () => 'Mandar ' + (quem.length ? 'pra Geral' : art(robo) + robo);
+    ov.className = 'sc-comp'; if (cor) ov.style.setProperty('--sc-cor', cor); f.className = 'sc-folha'; t.textContent = o.titulo || 'Escrever sobre ' + tela; ta.placeholder = 'Escreve aqui, vai ' + (quem.length ? 'pra Geral' : art(robo) + robo); ta.maxLength = 600;
+    msg.className = 'sc-msg'; bts.className = 'sc-bts'; x.type = ok.type = 'button'; x.className = 'sc-x'; ok.className = 'sc-ok'; x.textContent = 'Fechar'; ok.textContent = rotOk(); ok.disabled = true;
+    let saindo = false; const fecha = () => { if (saindo) return; saindo = true; removeEventListener('keydown', esc, true); try { const an = f.animate([{ transform: getComputedStyle(f).transform === 'none' ? 'none' : getComputedStyle(f).transform }, { transform: 'translateY(100%)' }], { duration: 200, easing: 'cubic-bezier(.5,0,.8,.4)', fill: 'forwards' }); an.onfinish = () => ov.remove(); } catch (e) { ov.remove(); } }, esc = e => { if (e.key === 'Escape') { e.stopPropagation(); fecha(); } };
+    x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; ta.oninput = () => { ok.disabled = !ta.value.trim(); }; addEventListener('keydown', esc, true);
     ok.onclick = async () => {
       const txt = ta.value.trim(); if (!txt) return; ok.disabled = true; ok.textContent = 'Mandando…'; msg.textContent = '';
-      const foi = await gravaLinha('- [' + stamp(new Date()) + '] 📝 ' + tela + ': @' + robo + ' ' + txt.replace(/\s*\n+\s*/g, ' '), 'Recado da tela ' + tela);
-      if (foi) { fecha(); return; }
-      ok.disabled = false; ok.textContent = 'Mandar pro ' + robo; msg.textContent = 'Não foi: ' + (motivo || 'não consegui gravar') + '. Tenta de novo.';
+      const arrob = o.semArroba ? '' : pra().map(n => '@' + n).join(' ') + ' ', linha = '- [' + stamp(new Date()) + '] ' + (tela ? '📝 ' + tela + ': ' : '') + arrob + (o.sobre ? o.sobre + ' ' : '') + txt.replace(/\s*\n+\s*/g, ' ');
+      const foi = await gravaLinha(linha, 'Recado ' + (tela ? 'da tela ' + tela : art(robo) + robo), o.arq);
+      if (foi) { fecha(); try { if (window.socorroFoi) window.socorroFoi(); if (o.depois) o.depois(); } catch (e) {} return; }
+      ok.disabled = false; ok.textContent = rotOk(); msg.textContent = 'Não foi: ' + (motivo || 'não consegui gravar') + '. O texto continua aí, toca de novo.';
     };
-    bts.append(x, ok); f.append(t, ta, msg, bts); ov.append(f); document.body.append(ov); setTimeout(() => ta.focus(), 60);
+    const qd = document.createElement('div'); qd.className = 'sc-quem'; qd.append(...quem);
+    let puxa = null; t.addEventListener('pointerdown', e => { puxa = { y: e.clientY, d: 0 }; t.setPointerCapture(e.pointerId); });   // puxar a folha pra baixo fecha, igual ao popup antigo
+    t.addEventListener('pointermove', e => { if (!puxa) return; puxa.d = Math.max(0, e.clientY - puxa.y); f.style.transform = puxa.d ? 'translateY(' + puxa.d + 'px)' : ''; });
+    const solta = () => { if (!puxa) return; const d = puxa.d; puxa = null; if (d > 90) fecha(); else { try { f.animate([{ transform: 'translateY(' + d + 'px)' }, { transform: 'none' }], { duration: 160, easing: 'cubic-bezier(.2,.8,.2,1)' }); } catch (e) {} f.style.transform = ''; } };
+    t.addEventListener('pointerup', solta); t.addEventListener('pointercancel', solta);
+    bts.append(x, ok); f.append(t, ...(quem.length ? [qd] : []), ta, msg, bts); ov.append(f); document.body.append(ov); setTimeout(() => ta.focus(), 60);
     try { f.animate([{ transform: 'translateY(100%)' }, { transform: 'none' }], { duration: 220, easing: 'cubic-bezier(.2,.8,.2,1)' }); } catch (e) {}   // sobe de baixo; se a animação não rodar, a folha já tá no lugar
   }
   window.Socorro = { dispara, reenvia, compoe };
