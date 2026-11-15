@@ -2554,3 +2554,11 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
   body.web .treino-tela .p-lista { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)); }
   body.web .treino-tela .tr-corpo > .p-texto { max-width: 90ch; }
 }
+@media (min-width: 1280px) {   /* PC: a Mídia numa fileira só, cartão com a altura do conteúdo, e embaixo a prévia das últimas peças (Sigma #240, Hermes #332) */
+  body.web .gr-grade.gr-grade-cinema { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; grid-auto-rows: 250px; flex: none; height: auto; min-height: 0; align-content: start; }
+  body.web .gr-ultimas { margin: 26px 34px 30px; } body.web .gr-ult-tit { margin: 0 0 12px; font: 900 15px Georgia, 'Times New Roman', serif; letter-spacing: .3px; text-transform: uppercase; color: #B3261E; }
+  body.web .gr-ult-fila { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+  body.web .gr-ult { all: unset; cursor: pointer; display: flex; flex-direction: column; gap: 8px; padding: 8px 8px 10px; background: #F7EEDB; border: 2.5px solid #2B1A0E; border-radius: 6px; box-shadow: 3px 4px 0 #2B1A0E; }
+  body.web .gr-ult img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: #2B1A0E; border-radius: 3px; } body.web .gr-ult span { font: italic 13px Georgia, serif; color: #2B1A0E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  body.web .gr-ult:hover { transform: translate(-1px, -2px); box-shadow: 4px 6px 0 #2B1A0E; }
+}

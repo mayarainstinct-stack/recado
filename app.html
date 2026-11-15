@@ -3168,7 +3168,15 @@ function abreGrupo(m) {
     const pos = x => { const i = ordem.indexOf(x.nome); return i < 0 ? 999 : i; }, itensG = (m.itens || []).filter(x => !x.apagado).map((x, i) => [x, i]).sort((a, b) => pos(a[0]) - pos(b[0]) || a[1] - b[1]).map(a => a[0]);   // a ordem que ela arrumou arrastando (neste aparelho); item novo vai pro fim
     arrumaArrastando(g, { sel: '.gr-item', chave, aviso: 'Pastas arrumadas: ficam assim neste aparelho' });
     itensG.forEach(x => { const b = botaoGrade(x.icone, x.nome, x.sub, () => abreItemMenu(x)); b.classList.add('gr-item'); b.dataset.nome = x.nome; b.style.setProperty('--c', x.cor || cor); if (x.cor) b.classList.add('cor-propria'); if (!m.estilo || m.estilo === 'cinema') { const sb = elD('small', 'gr-sub', x.sub || ''); b.append(sb); } g.append(b); });
+    if (m.estilo === 'cinema' && document.body.classList.contains('web') && matchMedia('(min-width: 1280px)').matches) ultimasMidia(c, itensG);   // no PC, embaixo da fileira, a prévia das últimas peças (Sigma #240)
   });
+}
+async function ultimasMidia(c, itensG) {   // prévia das peças atuais da Mídia (menu/midia.json), da última pra primeira; tocar abre a vista dela (Hermes #332)
+  let d; try { d = JSON.parse(await lerArquivo('menu/midia.json')); } catch (e) { return; }
+  const VISTA = { imagens: 'Imagens', animacoes: 'Animações', videos: 'Vídeos' }, img = /\.(png|jpe?g|webp|gif)$/i;
+  const it = (d.itens || []).filter(x => !x.apagado && x.status === 'atual' && (x.capa || img.test(x.arq || ''))).slice(-8).reverse(); if (!it.length) return;
+  const sec = elD('section', 'gr-ultimas'), fila = elD('div', 'gr-ult-fila'); sec.append(elD('h2', 'gr-ult-tit', 'Últimas peças'), fila); c.append(sec);
+  it.forEach(x => { const b = elD('button', 'gr-ult'), im = elD('img'); b.type = 'button'; im.alt = ''; im.loading = 'lazy'; fotoUrl(x.capa || x.arq).then(u => { im.src = u; }).catch(() => {}); b.append(im, elD('span', '', x.titulo || x.versao || x.peca || '')); const alvo = itensG.find(g => g.nome === VISTA[(x.vistas || [])[0]]); if (alvo) b.onclick = () => abreItemMenu(alvo); fila.append(b); });
 }
 // Ideias (May via Sigma, 07/11/2026): anotar rápido ideia do app, da casa ou de conteúdo; vira pauta pros robôs. Arquivo: m.arq, uma linha por ideia, a mais nova embaixo
 async function gravaLinha(arq, linha) {   // acrescenta 1 linha no fim do arquivo do Inst (lê o mais novo com o sha; 409 = alguém gravou junto, tenta de novo)
