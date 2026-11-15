@@ -2574,3 +2574,7 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
   body.web .ob-grade-lado { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 12px; }
   body.web .ob-parede { font-size: 15px; }
 }
+@media (min-width: 1280px) {   /* Agenda no PC, volta do Sigma 14:18: compromisso em até 2 linhas, letra 12,5 px e rótulo enxuto */
+  body.web .ag-tela .ag-dia-ev { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; padding: 1px 5px; font-size: 12.5px; line-height: 1.22; border-radius: 5px; }
+  body.web .ag-tela .ag-dia { gap: 2px; padding: 5px 6px; }
+}
