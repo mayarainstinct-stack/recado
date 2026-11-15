@@ -2543,11 +2543,17 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
   body.web .tm-col .tm-mais { width: auto; padding: 0 22px; }
   body.web .t-musica button:hover { filter: brightness(1.15); } body.web .t-musica button:focus-visible, body.web .t-musica [tabindex]:focus-visible { outline: 2px solid #FFD400; outline-offset: 2px; }
 }
-@media (min-width: 1280px) {   /* PC: as abas da Artes viram colunas, Pedidos | Portfólio (mais largo) | Marca, mesmo conteúdo; + Pedido com tamanho de botão (Sigma #240, Hermes #332) */
+@media (min-width: 1280px) {   /* PC: a Artes como balcão: o Portfólio ocupa a tela e rola sozinho; à direita uma coluna com a Marca em cima e os Pedidos embaixo, + Pedido dentro dela (Sigma #240 e 15/11 11:55, Hermes #332) */
   body.web .ctb-abas:has(+ .ctb-corpo.ctb-colunas) { display: none; }
-  body.web .ctb-corpo.ctb-colunas { display: grid; grid-template-columns: minmax(300px, 1fr) minmax(0, 2fr) minmax(280px, 1fr); gap: 24px; align-items: start; margin-top: 64px; }
-  body.web .ctb-col { min-width: 0; } body.web .ctb-col-tit { margin: 0 0 12px; font-size: 13px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
-  body.web .ctb-mais { left: auto; right: 28px; width: auto; padding: 0 32px; }
+  body.web .ctb-corpo.ctb-colunas { display: grid; grid-template-columns: minmax(0, 1fr) 380px; grid-template-rows: auto minmax(0, 1fr); gap: 18px 26px; height: calc(100dvh - 160px); min-height: 520px; margin-top: 64px; padding-bottom: 0; }
+  body.web .ctb-col { min-width: 0; min-height: 0; } body.web .ctb-col-tit { margin: 0 0 12px; font-size: 13px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+  body.web .ctb-col-portfolio { grid-column: 1; grid-row: 1 / -1; overflow-y: auto; padding-right: 8px; scrollbar-width: thin; }
+  body.web .ctb-col-marca { grid-column: 2; grid-row: 1; padding: 14px 16px; border: 2px solid #000; border-radius: 16px; display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 14px; }
+  body.web .ctb-col-marca .ctb-col-tit { grid-column: 1 / -1; } body.web .ctb-col-marca .ctr-hero.so-logo { grid-column: 1 / -1; padding: 4px 0; border: 0; box-shadow: none; } body.web .ctb-col-marca .ctr-hero.so-logo img { max-width: 200px; max-height: min(160px, 18dvh); width: auto; }
+  body.web .ctb-col-pedidos { grid-column: 2; grid-row: 2; overflow-y: auto; padding: 16px; border: 2px solid #000; border-radius: 16px; display: flex; flex-direction: column; }
+  body.web .ctb-col-pedidos .ctb-nums b { font-size: 22px; } body.web .ctb-col-pedidos .ctb-vazio { font-size: 15px; }
+  body.web .ctb-col-pedidos .ctb-mais { position: static; margin-top: auto; width: 100%; height: 52px; }
+  body.web .ctb-col button:hover { filter: brightness(1.06); } body.web .ctb-col button:focus-visible { outline: 3px solid #EC008C; outline-offset: 2px; }
 }
 @media (min-width: 1280px) {   /* PC: o Treino como painel: à esquerda o título, as abas, a regra, Estatística e Hoje não vou; à direita os treinos em cartões grandes ocupando a altura toda (Sigma #240 e 15/11 11:55, Hermes #332) */
   body.web .p-corpo > .tela.treino-tela:has(.tr-corpo > .treino-est) { display: grid; grid-template-columns: 380px minmax(0, 1fr); grid-template-rows: auto auto auto auto 1fr; column-gap: 26px; row-gap: 14px; height: calc(100dvh - 88px); min-height: 560px; }
