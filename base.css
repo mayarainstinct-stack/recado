@@ -2550,3 +2550,12 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
   body.web .ag-tela .ag-leg { font-size: 13.5px; gap: 4px 14px; }
   body.web .ag-tela .ag.ag-n { padding: 10px 14px; } body.web .ag-tela .ag-n .cx { gap: 3px; } body.web .ag-tela .ag-tx { font-size: 15px; }
 }
+@media (min-width: 1280px) {   /* Finanças no PC, volta do Sigma 11:55: letra de PC, saldo negativo em vermelho, uma rolagem só, + Conta no topo */
+  body.web .fin { font-size: 15px; overflow-y: auto; }
+  body.web .fin :is(small, .cm-chip, .fin-est, .fm-pct, .fin-ult, .fm-sec, .cm-mes, .ok, .falta) { font-size: 13px !important; }
+  body.web .fin-kpi.neg { background: #B42318 !important; border-color: #B42318 !important; color: #fff !important; } body.web .fin-kpi.neg * { color: #fff !important; }
+  body.web .fin-kpi b { font-size: 26px !important; } body.web .fin-kpi span { font-size: 13px !important; }
+  body.web .p-corpo > .tela > .fin > .fin-trilho { flex: none; align-items: start; overflow: visible; }
+  body.web .fin-pag { overflow: visible !important; padding-bottom: 28px; }
+  body.web .fm-acoes { position: fixed; top: 6px; right: 112px; z-index: 6; padding: 0; } body.web .fm-acoes .fin-lancar, body.web .fm-acoes .fin-lancar.fin-nova { height: 36px; font-size: 15px; background: #FFFFFF !important; color: #1A6640 !important; border: 0 !important; font-weight: 800; }
+}
