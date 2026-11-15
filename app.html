@@ -3665,7 +3665,9 @@ function abreContraste(m) {
     const ABAS = { pedidos: 'Pedidos', portfolio: 'Portfólio', marca: 'Marca' }; let aba = 'pedidos';
     const pinta = () => {
       nav.replaceChildren(...Object.entries(ABAS).map(([k, t]) => { const b = elD('button', k === aba ? 'on' : '', t); b.type = 'button'; b.onclick = () => { aba = k; pinta(); }; return b; }));
-      corpo.replaceChildren();
+      const raiz = corpo, PC = document.body.classList.contains('web') && matchMedia('(min-width: 1280px)').matches;   // no PC as abas viram colunas: Pedidos, Portfólio e Marca lado a lado, mesmo conteúdo (Sigma #240)
+      raiz.replaceChildren(); raiz.classList.toggle('ctb-colunas', PC);
+      (PC ? Object.keys(ABAS) : [aba]).forEach(aba => { const corpo = PC ? elD('section', 'ctb-col ctb-col-' + aba) : raiz; if (PC) { corpo.append(elD('h2', 'ctb-col-tit', ABAS[aba])); raiz.append(corpo); }
       if (aba === 'pedidos') {
         const ab = abertos(), receber = ab.reduce((s, p) => s + (parseFloat(String(p.valor || 0).replace(',', '.')) || 0), 0), atras = ab.filter(p => prazoTx(p)[1] === 'atrasado').length;
         const nums = elD('div', 'ctb-nums'); [[ab.length, ab.length === 1 ? 'pedido aberto' : 'pedidos abertos'], [receber ? reais(receber) : 'R$ 0', 'a receber'], [atras, atras === 1 ? 'atrasado' : 'atrasados']].forEach(([n, t], j) => { const b = elD('div', j === 2 && atras ? 'alerta' : ''); b.append(elD('b', '', String(n)), elD('small', '', t)); nums.append(b); }); corpo.append(nums);
@@ -3722,6 +3724,7 @@ function abreContraste(m) {
         const hero = elD('div', 'ctr-hero so-logo'), im = elD('img'); im.alt = d.nome || ''; fotoUrl(d.logo).then(u => { im.src = u; }).catch(() => {});   // a marca sozinha e inteira, sem texto nem caixas de cor embaixo (May 13/11 16:20, Sigma 16:22)
         hero.append(im); corpo.append(hero);
       }
+      });
     };
     E.aoMudar = pinta; pinta();
   });

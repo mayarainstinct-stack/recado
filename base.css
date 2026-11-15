@@ -2541,3 +2541,9 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
   body.web .tm-col-tit { margin: 0 0 12px; font-size: 13px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; opacity: .75; }
   body.web .tm-col .tm-mais { width: auto; padding: 0 22px; }
 }
+@media (min-width: 1280px) {   /* PC: as abas da Artes viram colunas, Pedidos | Portfólio (mais largo) | Marca, mesmo conteúdo; + Pedido com tamanho de botão (Sigma #240, Hermes #332) */
+  body.web .ctb-abas:has(+ .ctb-corpo.ctb-colunas) { display: none; }
+  body.web .ctb-corpo.ctb-colunas { display: grid; grid-template-columns: minmax(300px, 1fr) minmax(0, 2fr) minmax(280px, 1fr); gap: 24px; align-items: start; margin-top: 64px; }
+  body.web .ctb-col { min-width: 0; } body.web .ctb-col-tit { margin: 0 0 12px; font-size: 13px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+  body.web .ctb-mais { left: auto; right: 28px; width: auto; padding: 0 32px; }
+}
