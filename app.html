@@ -3816,7 +3816,7 @@ function abreObra(m) {
       foto: [{ nome: 'legenda', rotulo: 'Legenda', tipo: 'texto' }] };
     const paraForm = x => ({ ...x, linhas: Array.isArray(x.linhas) ? x.linhas.join('\n') : x.linhas }), deForm = v => { const o = { ...v }; if ('linhas' in o) o.linhas = String(o.linhas || '').split(/\r?\n/).map(t => t.trim()).filter(Boolean); return o; };
     const editaC = x => edFormulario({ titulo: 'Editar cartão', campos: CAMPOS_OB[x.tipo] || [], v: paraForm(x), aoSalvar: async v => { v = deForm(v); Object.assign(x, v); if (O) await O.op({ tipo: 'edita', id: chaveC(x), v, quando: edAgora() }, 'Cartão da obra editado pelo app'); pinta(0); }, aoApagar: async () => { const a = abas.find(z => (z.cartoes || []).includes(x)), i = a.cartoes.indexOf(x); a.cartoes.splice(i, 1); if (O) await O.op({ tipo: 'apaga', id: chaveC(x), on: true, quando: edAgora() }, 'Cartão da obra apagado pelo app (fica guardado)'); pinta(0); edFaixaDesfazer('Cartão apagado', async () => { a.cartoes.splice(i, 0, x); if (O) await O.op({ tipo: 'apaga', id: chaveC(x), on: false, quando: edAgora() }, 'Apagado desfeito pelo app'); pinta(0); }); } });
-    const vivo = {}; Promise.all([lerArquivo('casa/fundo/maicon-dias.json').then(t => { vivo.dias = JSON.parse(t).dias || []; }).catch(() => {}), lerArquivo('contas/pendencias.json').then(t => { vivo.pago = (JSON.parse(t).pagar || []).find(x => /maicon/i.test(x.nome)); }).catch(() => {})]).then(() => { if (aba === 'agora' || aba === 'dinheiro') pinta(0); });
+    const vivo = {}; Promise.all([lerArquivo('casa/fundo/maicon-dias.json').then(t => { vivo.dias = JSON.parse(t).dias || []; }).catch(() => {}), lerArquivo('contas/pendencias.json').then(t => { vivo.pago = (JSON.parse(t).pagar || []).find(x => /maicon/i.test(x.nome)); }).catch(() => {})]).then(() => { if (aba === 'agora' || aba === 'dinheiro' || parede.classList.contains('ob-pc')) pinta(0); });
     cabecalho({ icone: 'ruler', sub: 'piscina e fundo · mural', acao: { icone: 'plus', rotulo: 'Cartão novo', fn: async () => { const a = abas.find(z => z.id === aba); if (!a || a.fonte) { showNote('Esta aba é o diário: usa Lançar um dia.'); return; } const t = await edEscolhe('Cartão novo', [['nota', 'Nota (papel colorido)'], ['valor', 'Valor (orçamento)'], ['peca', 'Peça (com foto)']]); if (!t) return; edFormulario({ titulo: 'Cartão novo', campos: CAMPOS_OB[t], v: { cor: 'amarelo' }, aoSalvar: async v => { v = deForm(v); const item = { id: edNovoId(v.titulo), tipo: t, ...v, aba: a.id, novo: true, criado: edAgora() }; a.cartoes.push({ ...item }); if (O) await O.op({ tipo: 'lanca', item }, 'Cartão novo da obra pelo app'); pinta(0); } }); } } });
     const nav = elD('nav', 'ob-abas'), parede = elD('div', 'ob-parede'), cacheFonte = {}; c.append(nav, parede);
     const abas = d.abas || []; let aba = (abas[0] || {}).id;
@@ -3862,6 +3862,8 @@ function abreObra(m) {
       const a = abas.find(z => z.id === aba) || abas[0]; if (!a) return;
       if (a.fonte) {   // Diário da obra (May 14:29): uma folha por dia, a mais nova em cima, com as fotos daquele dia
         const g = elD('div', 'ob-diario'); parede.append(g);
+        const pc = MODO_WEB && innerWidth >= 1280; parede.classList.toggle('ob-pc', pc);   // PC: o Diário no meio e Agora e Compras numa coluna à direita, sem trocar de aba (Sigma #240)
+        if (pc) { const lado = elD('div', 'ob-lado'); parede.append(lado); ['agora', 'pecas'].forEach(id => { const z = abas.find(q => q.id === id); if (!z) return; const sec = elD('section', 'ob-lado-sec'), gg = elD('div', 'ob-grade ob-grade-lado'); sec.append(elD('h3', 'ob-lado-tit', z.nome)); (z.cartoes || []).forEach((x, k) => gg.append(cartao(x, k, []))); sec.append(gg); lado.append(sec); }); }
         const anota = (dd, dia, sobre, rot) => {   // dia null = ela escolhe a data (lançar um dia que passou)   // o popup padrão do app, na cor da Obra: escreve e prega a anotação embaixo da coisa
           const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card ob-pop'), x = elD('button', 'pp-x'), ta = elD('textarea'), b = elD('button', 'pp-op rec', 'Anotar'); card.style.setProperty('--quem', '#F97316');
           x.type = b.type = 'button'; x.innerHTML = icone('close'); ta.rows = 3; ta.placeholder = dia ? 'Escreve aqui…' : 'O que teve nesse dia (quem veio, o que fez, o que comprou)…';
@@ -3906,6 +3908,7 @@ function abreObra(m) {
         if (dir) entraDoLado(parede, dir);
         return;
       }
+      parede.classList.remove('ob-pc');
       const fotos = (a.cartoes || []).filter(x => x.tipo === 'foto').map(x => x.arq);
       const g = elD('div', 'ob-grade' + (a.cartoes.every(x => x.tipo === 'foto') ? ' ob-fotos' : ''));
       a.cartoes.forEach((x, k) => g.append(cartao(x, k, fotos))); parede.append(g);

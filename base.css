@@ -2567,3 +2567,10 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
   body.web .ck-sec { break-after: avoid; } body.web .ck-item { break-inside: avoid; }
   body.web .ck-t { font-size: 15.5px; } body.web .ck-item small { font-size: 13px; }
 }
+@media (min-width: 1280px) {   /* Obra no PC: Diário no meio, Agora e Compras numa coluna à direita (Sigma #240) */
+  body.web .ob-parede.ob-pc { display: grid; grid-template-columns: minmax(0, 1fr) minmax(380px, 30%); gap: 24px; align-items: start; margin-inline: 0; }
+  body.web .ob-lado { position: sticky; top: 0; display: flex; flex-direction: column; gap: 18px; }
+  body.web .ob-lado-tit { margin: 0 0 8px; font-size: 15px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: #FDBA74; }
+  body.web .ob-grade-lado { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 12px; }
+  body.web .ob-parede { font-size: 15px; }
+}
