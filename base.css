@@ -2527,3 +2527,11 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 @media (min-width: 1280px) {   /* PC: as grades de pastas (Saúde e as outras) viram 4 ou mais por linha, sem cartão de 900 px (Sigma #240) */
   body.web .gr-grade { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important; gap: 14px !important; }
 }
+@media (min-width: 1024px) {   /* PC: base de web (Sigma #240, volta 11:55): balão de leitura, foto grande, hover e foco de teclado visíveis */
+  body.web #feed .msg { max-width: min(720px, 70%); font-size: 15.5px; line-height: 1.5; padding: 10px 14px 7px; }
+  body.web #feed .msg .foto { min-width: 360px; max-height: 560px; object-fit: contain; background: rgba(0,0,0,.18); }
+  body.web :is(button, a, [tabindex], input, textarea, select):focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  body.web :is(.ag, .ck-item, .gr-item, .conv, .cm-item, .fm-card, .ob-c, .msg) { transition: box-shadow .15s, transform .15s; }
+  body.web :is(.ag, .gr-item, .conv, .cm-item, .fm-card):hover { box-shadow: 0 8px 22px rgba(0,0,0,.16); transform: translateY(-1px); }
+  body.web button { cursor: pointer; } body.web button:hover:not(:disabled) { filter: brightness(1.06); }
+}
