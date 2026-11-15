@@ -3564,7 +3564,7 @@ function abreMusica(m) {
       abas.replaceChildren(...[['musica', 'Músicas'], ['pratica', 'Tocar'], ['manut', 'Cuidar'], ['setup', 'Setup'], ['ideia', 'Ideias']].map(([id, rot]) => { const b = elD('button', 'tm-aba', rot); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(aba === id)); b.onclick = () => { aba = id; store.set('mus-aba', id); pinta(); }; return b; }));
       const ABAS_M = [['musica', 'Músicas'], ['pratica', 'Tocar'], ['manut', 'Cuidar'], ['setup', 'Setup'], ['ideia', 'Ideias']], raiz = corpo, PC = document.body.classList.contains('web') && matchMedia('(min-width: 1280px)').matches;   // no PC as abas viram colunas, o mesmo conteúdo de cada uma lado a lado (Sigma #240)
       raiz.replaceChildren(); raiz.classList.toggle('tm-colunas', PC);
-      const GRUPO = { musica: 0, pratica: 1, manut: 1, setup: 2, ideia: 2 }, colunas = PC ? [0, 1, 2].map(() => { const s = elD('div', 'tm-coluna'); raiz.append(s); return s; }) : null;   // no PC: Músicas | Tocar e Cuidar | Setup e Ideias, cada coluna rolando sozinha (Sigma 15/11 11:55)
+      const GRUPO = { musica: 0, pratica: 1, manut: 1, setup: 2, ideia: 0 }, colunas = PC ? [0, 1, 2].map(() => { const s = elD('div', 'tm-coluna'); raiz.append(s); return s; }) : null;   // no PC: Músicas e Ideias | Tocar e Cuidar | Setup, cada coluna rolando sozinha (Sigma 15/11 11:55 e 14:18)
       (PC ? ABAS_M : ABAS_M.filter(([id]) => id === aba)).forEach(([aba, rot]) => { const corpo = PC ? elD('section', 'tm-col') : raiz; if (PC) { corpo.append(elD('h2', 'tm-col-tit', rot)); colunas[GRUPO[aba]].append(corpo); }
       if (aba === 'musica') {
         corpo.append(gravador());
