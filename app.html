@@ -2327,6 +2327,20 @@ document.addEventListener('keydown', e => {
   menu.hidden = true; mais.setAttribute('aria-expanded', 'false'); responder(null);
 });
 document.addEventListener('click', e => { if (!menu.contains(e.target)) menu.hidden = true; });
+document.addEventListener('keydown', async e => {   // Ctrl+K no PC: digita o nome da tela e abre direto (Sigma #240)
+  if (!MODO_WEB || !(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 'k' || !token) return;
+  e.preventDefault(); if (document.querySelector('.ck-busca-pop')) return;
+  let todos = []; try { todos = JSON.parse(await lerArquivo('menu/menu.json')).itens || []; } catch (er) { return; }
+  const lst = []; const junta = (xs, pai) => xs.filter(m => m && m.nome && !m.apagado).forEach(m => { lst.push([m, pai]); if (Array.isArray(m.itens)) junta(m.itens, m.nome); }); junta(todos, '');
+  const ov = elD('div', 'pop ck-busca-pop'), cx = elD('div', 'ck-busca-cx'), inp = document.createElement('input'), ul = elD('div', 'ck-busca-lst'); inp.type = 'search'; inp.placeholder = 'Abrir tela pelo nome'; cx.append(inp, ul); ov.append(cx); document.body.append(ov);
+  let achados = [], sel = 0; const fecha = () => ov.remove();
+  const vai = m => { fecha(); menu.hidden = true; painel.hidden = false; pilha = []; abreItemMenu(m); };
+  const sem = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const pinta = () => { const q = sem(inp.value.trim()); achados = lst.filter(([m]) => !q || sem(m.nome).includes(q)).slice(0, 8); sel = Math.min(sel, Math.max(0, achados.length - 1)); ul.replaceChildren(...achados.map(([m, pai], i) => { const b = elD('button', 'ck-busca-it' + (i === sel ? ' on' : '')); b.type = 'button'; const ic = elD('span', 'ck-busca-ic'); ic.innerHTML = icone(m.icone); b.append(ic, elD('b', '', m.nome)); if (pai) b.append(elD('small', '', pai)); b.onclick = () => vai(m); return b; })); };
+  inp.addEventListener('input', () => { sel = 0; pinta(); });
+  inp.addEventListener('keydown', k => { if (k.key === 'Escape') { k.stopPropagation(); fecha(); } else if (k.key === 'ArrowDown') { k.preventDefault(); sel = Math.min(achados.length - 1, sel + 1); pinta(); } else if (k.key === 'ArrowUp') { k.preventDefault(); sel = Math.max(0, sel - 1); pinta(); } else if (k.key === 'Enter' && achados[sel]) vai(achados[sel][0]); });
+  ov.addEventListener('click', k => { if (k.target === ov) fecha(); }); pinta(); requestAnimationFrame(() => inp.focus()); setTimeout(() => { if (document.activeElement !== inp) inp.focus(); }, 120);
+});
 
 // ---- Notificação push: a assinatura do iPhone vai pro repo (recados-push/iphone.json); o notebook manda o aviso.
 const VAPID_PUBLICA = 'BIx_prIdU34zWy_XRlpx9LFHWf3xtXp-LXn_X-eA5AghjosGa179cth7np_hL5dcLnSw_S030A8vVOsYPf1TU48';
