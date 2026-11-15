@@ -296,7 +296,8 @@ function antesDepois(v) {
   arrasta(ad, poe);
   inp.addEventListener('input', () => poe(+inp.value));
   const carrega = (img, cam) => cam ? fotoUrl(cam).then(u => new Promise((ok, erro) => { img.onload = ok; img.onerror = erro; img.src = u; })) : Promise.reject();
-  const pares = (v.pares || []).length ? v.pares : [{ antes: v.antes, depois: v.depois }];   // vários pares do mesmo lugar (frente, trás), um por vez (May 14/11 08:27 e 09:00)
+  const ordemPar = q => { const n = String(q.nome || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); return n.startsWith('frente') ? 0 : n.startsWith('lado') ? 1 : n.startsWith('tras') ? 2 : 3; };   // mesma ordem e mesma aba aberta nos 3 veículos: Frente, Lado, Trás (Sigma #334)
+  const pares = (v.pares || []).length ? v.pares.slice().sort((a, b) => ordemPar(a) - ordemPar(b)) : [{ antes: v.antes, depois: v.depois }];   // vários pares do mesmo lugar (frente, trás), um por vez (May 14/11 08:27 e 09:00)
   const mostra = q => { if (!sem.isConnected) ad.prepend(sem); sem.textContent = 'Abrindo as fotos…'; ia.removeAttribute('src'); idp.removeAttribute('src'); poe(50);
     Promise.allSettled([carrega(ia, q.antes), carrega(idp, q.depois)]).then(r => { const f = r.filter(x => x.status === 'rejected').length; if (!f) sem.remove(); else sem.textContent = f === 2 ? 'As fotos não abriram. Confere a internet.' : 'Uma das fotos não abriu.'; }); };
   if (pares.length > 1) { const ab = elD('div', 'gr-ad-abas'); pares.forEach((q, i) => { const b = elD('button', i ? '' : 'on', q.nome || 'Par ' + (i + 1)); b.type = 'button'; b.onclick = () => { ab.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); mostra(q); }; ab.append(b); }); k.insertBefore(ab, ad); }
@@ -606,12 +607,12 @@ window.abreGaragem = function (m) {
         if (i === atual) return; atual = i;
         [...pts.children].forEach((b, k) => b.classList.toggle('on', k === i));
         if (!aberto) return;
-        pgs.forEach((p, k) => { if (k !== i) p.classList.remove('gr-no-ar', 'gr-entra'); });
+        if (!(document.body.classList.contains('web') && innerWidth >= 1280)) pgs.forEach((p, k) => { if (k !== i) p.classList.remove('gr-no-ar', 'gr-entra'); });
         const p = pgs[i]; p.classList.remove('gr-entra'); void p.offsetWidth; p.classList.add('gr-no-ar', 'gr-entra');
       };
       let tq = 0; pager.addEventListener('scroll', () => { cancelAnimationFrame(tq); tq = requestAnimationFrame(() => { const w = pager.clientWidth || 1; ativa(Math.round(pager.scrollLeft / w)); }); }, { passive: true });
       ativa(0);
-      const sobe = () => { aberto = true; const i = atual; atual = -1; ativa(i); };
+      const sobe = () => { aberto = true; const i = atual; atual = -1; ativa(i); if (document.body.classList.contains('web') && innerWidth >= 1280) pgs.forEach(p => p.classList.add('gr-no-ar')); };   // no PC as 3 vagas aparecem juntas: todas sobem o elevador e giram o odômetro (Sigma #334)
       portao.addEventListener('animationend', () => { portao.remove(); }, { once: true });
       setTimeout(() => { if (!c.isConnected) return; portao.classList.add('gr-sobe'); setTimeout(sobe, 620); }, Math.max(0, 450 - (Date.now() - t0)));
       return;
