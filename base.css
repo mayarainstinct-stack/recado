@@ -2512,3 +2512,9 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
   body.web .ck-bloco > .ck-espiral, body.web .ck-bloco > .ck-cab { grid-column: 1 / -1; }
   body.web .ck-grupo { display: block; min-width: 0; padding-right: 12px; border-right: 1px dashed rgba(0,0,0,.12); } body.web .ck-grupo:last-child { border-right: 0; }
 }
+@media (min-width: 1280px) {   /* PC: as 4 abas das Finanças (Mês, A receber, A pagar, Contas fixas) lado a lado, cada uma rolando sozinha; + Conta com tamanho de botão (Sigma #240) */
+  body.web .fin-abas { display: none; }
+  body.web .fin-trilho { overflow-x: visible; scroll-snap-type: none; gap: 16px; }
+  body.web .fin-pag { flex: 1 1 0; padding-bottom: 24px; } body.web .fin-pag > * { max-width: 100%; }
+  body.web .fm-acoes { justify-content: flex-end; } body.web .fm-acoes .fin-lancar, body.web .fm-acoes .fin-lancar.fin-nova { flex: 0 0 auto; padding: 0 28px; }
+}
