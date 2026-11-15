@@ -10,6 +10,7 @@ const CSS = `
 .gr-tela .gr-portao-puxa { position: absolute; bottom: 6px; left: 50%; width: 70px; height: 12px; margin-left: -35px; z-index: 1; border-radius: 3px; background: linear-gradient(#E3E6EA, #8E949C); box-shadow: 0 2px 0 #1A1B1E; }
 .gr-tela .gr-seta { display: none; } body.web .gr-tela .gr-seta { display: grid; place-items: center; position: absolute; top: calc(var(--gr-palco) / 2 - 22px); z-index: 4; width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--gr-am); background: rgba(17,17,17,.78); color: var(--gr-am); cursor: pointer; } body.web .gr-tela .gr-seta-ant { left: 24px; } body.web .gr-tela .gr-seta-prox { right: 24px; } body.web .gr-tela .gr-seta svg { width: 22px; height: 22px; } body.web .gr-tela .gr-seta:hover { background: var(--gr-am); color: #111; }
 @media (min-width: 1280px) { body.web .gr-tela .gr-ad { width: 100%; aspect-ratio: auto; height: min(64dvh, 700px); } body.web .p-corpo > .tela.gr-tela { --gr-palco: 400px; } body.web .gr-tela .gr-vet { height: 240px; } body.web .gr-tela .gr-vet > svg { width: auto; height: 100%; max-width: 100%; left: 50%; transform: translateX(-50%); } body.web .gr-tela .gr-sombra { width: 560px; margin-left: -280px; } body.web .gr-tela :is(.gr-ang, .gr-legenda, .gr-fonte, .gr-cornota, .gr-modelo, small) { font-size: 13.5px !important; } body.web .gr-tela .gr-aba, body.web .gr-tela .gr-chip { font-size: 15px !important; } body.web .gr-tela .gr-ang { width: auto !important; min-width: 96px; padding: 6px 14px; } }   /* Garagem no PC: antes/depois cabe na tela e letra de PC (Sigma #240, volta 11:55) */
+@media (min-width: 1280px) { body.web .p-corpo > .tela.gr-tela { --gr-palco: 300px; } body.web .p-corpo > .tela.gr-tela > .gr-pager { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; overflow-x: hidden; overflow-y: auto; scroll-snap-type: none; padding: 0 14px 24px; align-items: start; } body.web .gr-tela .gr-pag { width: auto; height: auto; overflow: visible; border: 1px solid #3B3E45; } body.web .gr-tela .gr-seta, body.web .gr-tela .gr-pontos { display: none !important; } body.web .gr-tela .gr-fases { gap: 10px; flex-wrap: nowrap; } body.web .gr-tela .gr-olho { margin-left: 6px; } body.web .gr-tela .gr-vet { height: 170px; } body.web .gr-tela .gr-sombra { width: 380px; margin-left: -190px; } body.web .gr-tela .gr-ad { height: min(40dvh, 420px); } }   /* Garagem no PC: as 3 vagas lado a lado na mesma tela (May 15/11 15:31, #334) */
 .gr-tela .gr-portao.gr-sobe { animation: gr-portao 950ms cubic-bezier(.55,.06,.32,1) forwards; }
 @keyframes gr-portao { 0% { transform: translateY(0); } 7% { transform: translateY(5px); } 100% { transform: translateY(-104%); } }
 .p-corpo > .tela.gr-tela > .gr-pager { flex: 1 1 0; min-height: 0; display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
@@ -295,7 +296,8 @@ function antesDepois(v) {
   arrasta(ad, poe);
   inp.addEventListener('input', () => poe(+inp.value));
   const carrega = (img, cam) => cam ? fotoUrl(cam).then(u => new Promise((ok, erro) => { img.onload = ok; img.onerror = erro; img.src = u; })) : Promise.reject();
-  const pares = (v.pares || []).length ? v.pares : [{ antes: v.antes, depois: v.depois }];   // vários pares do mesmo lugar (frente, trás), um por vez (May 14/11 08:27 e 09:00)
+  const ordemPar = q => { const n = String(q.nome || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); return n.startsWith('frente') ? 0 : n.startsWith('lado') ? 1 : n.startsWith('tras') ? 2 : 3; };   // mesma ordem e mesma aba aberta nos 3 veículos: Frente, Lado, Trás (Sigma #334)
+  const pares = (v.pares || []).length ? v.pares.slice().sort((a, b) => ordemPar(a) - ordemPar(b)) : [{ antes: v.antes, depois: v.depois }];   // vários pares do mesmo lugar (frente, trás), um por vez (May 14/11 08:27 e 09:00)
   const mostra = q => { if (!sem.isConnected) ad.prepend(sem); sem.textContent = 'Abrindo as fotos…'; ia.removeAttribute('src'); idp.removeAttribute('src'); poe(50);
     Promise.allSettled([carrega(ia, q.antes), carrega(idp, q.depois)]).then(r => { const f = r.filter(x => x.status === 'rejected').length; if (!f) sem.remove(); else sem.textContent = f === 2 ? 'As fotos não abriram. Confere a internet.' : 'Uma das fotos não abriu.'; }); };
   if (pares.length > 1) { const ab = elD('div', 'gr-ad-abas'); pares.forEach((q, i) => { const b = elD('button', i ? '' : 'on', q.nome || 'Par ' + (i + 1)); b.type = 'button'; b.onclick = () => { ab.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); mostra(q); }; ab.append(b); }); k.insertBefore(ab, ad); }
@@ -605,12 +607,12 @@ window.abreGaragem = function (m) {
         if (i === atual) return; atual = i;
         [...pts.children].forEach((b, k) => b.classList.toggle('on', k === i));
         if (!aberto) return;
-        pgs.forEach((p, k) => { if (k !== i) p.classList.remove('gr-no-ar', 'gr-entra'); });
+        if (!(document.body.classList.contains('web') && innerWidth >= 1280)) pgs.forEach((p, k) => { if (k !== i) p.classList.remove('gr-no-ar', 'gr-entra'); });
         const p = pgs[i]; p.classList.remove('gr-entra'); void p.offsetWidth; p.classList.add('gr-no-ar', 'gr-entra');
       };
       let tq = 0; pager.addEventListener('scroll', () => { cancelAnimationFrame(tq); tq = requestAnimationFrame(() => { const w = pager.clientWidth || 1; ativa(Math.round(pager.scrollLeft / w)); }); }, { passive: true });
       ativa(0);
-      const sobe = () => { aberto = true; const i = atual; atual = -1; ativa(i); };
+      const sobe = () => { aberto = true; const i = atual; atual = -1; ativa(i); if (document.body.classList.contains('web') && innerWidth >= 1280) pgs.forEach(p => p.classList.add('gr-no-ar')); };   // no PC as 3 vagas aparecem juntas: todas sobem o elevador e giram o odômetro (Sigma #334)
       portao.addEventListener('animationend', () => { portao.remove(); }, { once: true });
       setTimeout(() => { if (!c.isConnected) return; portao.classList.add('gr-sobe'); setTimeout(sobe, 620); }, Math.max(0, 450 - (Date.now() - t0)));
       return;
