@@ -2566,11 +2566,15 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
   body.web .treino-tela .p-botao { position: relative; transition: transform .15s, box-shadow .15s; } body.web .treino-tela .p-botao:hover { transform: translateY(-2px); box-shadow: 0 0 0 2px #62B02A, 0 8px 24px rgba(98,176,42,.25); }
   body.web .treino-tela .p-botao:focus-visible, body.web .treino-tela .tr-aba:focus-visible { outline: 3px solid #A6F06B; outline-offset: 3px; }
 }
-@media (min-width: 1280px) {   /* PC: a Mídia numa fileira só, cartão com a altura do conteúdo, e embaixo a prévia das últimas peças (Sigma #240, Hermes #332) */
-  body.web .gr-grade.gr-grade-cinema { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; grid-auto-rows: 250px; flex: none; height: auto; min-height: 0; align-content: start; }
-  body.web .gr-ultimas { margin: 26px 34px 30px; } body.web .gr-ult-tit { margin: 0 0 12px; font: 900 15px Georgia, 'Times New Roman', serif; letter-spacing: .3px; text-transform: uppercase; color: #B3261E; }
-  body.web .gr-ult-fila { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
-  body.web .gr-ult { all: unset; cursor: pointer; display: flex; flex-direction: column; gap: 8px; padding: 8px 8px 10px; background: #F7EEDB; border: 2.5px solid #2B1A0E; border-radius: 6px; box-shadow: 3px 4px 0 #2B1A0E; }
-  body.web .gr-ult img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: #2B1A0E; border-radius: 3px; } body.web .gr-ult span { font: italic 13px Georgia, serif; color: #2B1A0E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  body.web .gr-ult:hover { transform: translate(-1px, -2px); box-shadow: 4px 6px 0 #2B1A0E; }
+@media (min-width: 1280px) {   /* PC: a Mídia como painel: as 4 pastas numa coluna de rolo de filme à esquerda e as peças grandes em grade 3x3 ocupando a altura toda (Sigma #240 e 15/11 11:55, Hermes #332) */
+  body.web .p-corpo > .tela.gr-cinema:has(.gr-ultimas) { display: grid; grid-template-columns: 320px minmax(0, 1fr); column-gap: 24px; height: calc(100dvh - 88px); min-height: 560px; }
+  body.web .gr-grade.gr-grade-cinema { grid-template-columns: 1fr !important; grid-auto-rows: 1fr; height: auto; min-height: 0; margin: 0; padding: 14px 30px; }
+  body.web .gr-grade.gr-grade-cinema .gr-item { gap: 6px; padding: 12px 18px; } body.web .gr-grade.gr-grade-cinema .gr-item .ic { width: 64px; height: 64px; flex: none; }
+  body.web .gr-grade.gr-grade-cinema .gr-item .t { font-size: 17px; } body.web .gr-grade.gr-grade-cinema .gr-item .gr-sub { font-size: 14px; }
+  body.web .gr-grade.gr-grade-cinema .gr-item:hover { transform: translate(-1px, -2px); filter: brightness(1.04); } body.web .gr-item:focus-visible, body.web .gr-ult:focus-visible { outline: 3px solid #B3261E; outline-offset: 3px; }
+  body.web .gr-ultimas { display: flex; flex-direction: column; min-height: 0; margin: 14px 4px 14px 0; } body.web .gr-ult-tit { margin: 0 0 12px; font: 900 17px Georgia, 'Times New Roman', serif; letter-spacing: .3px; text-transform: uppercase; color: #B3261E; }
+  body.web .gr-ult-fila { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 18px; }
+  body.web .gr-ult { all: unset; box-sizing: border-box; cursor: pointer; display: flex; flex-direction: column; gap: 10px; min-height: 0; padding: 10px 10px 12px; background: #F7EEDB; border: 2.5px solid #2B1A0E; border-radius: 6px; box-shadow: 3px 4px 0 #2B1A0E; transition: transform .15s, box-shadow .15s; }
+  body.web .gr-ult img { flex: 1; min-height: 0; width: 100%; object-fit: cover; background: #2B1A0E; border-radius: 3px; } body.web .gr-ult span { flex: none; font: italic 15px Georgia, serif; color: #2B1A0E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  body.web .gr-ult:hover { transform: translate(-2px, -3px); box-shadow: 5px 7px 0 #2B1A0E; }
 }

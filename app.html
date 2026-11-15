@@ -3174,7 +3174,7 @@ function abreGrupo(m) {
 async function ultimasMidia(c, itensG) {   // prévia das peças atuais da Mídia (menu/midia.json), da última pra primeira; tocar abre a vista dela (Hermes #332)
   let d; try { d = JSON.parse(await lerArquivo('menu/midia.json')); } catch (e) { return; }
   const VISTA = { imagens: 'Imagens', animacoes: 'Animações', videos: 'Vídeos' }, img = /\.(png|jpe?g|webp|gif)$/i;
-  const it = (d.itens || []).filter(x => !x.apagado && x.status === 'atual' && (x.capa || img.test(x.arq || ''))).slice(-8).reverse(); if (!it.length) return;
+  const comImg = x => !x.apagado && (x.capa || img.test(x.arq || '')), it = [...(d.itens || []).filter(x => comImg(x) && x.status === 'atual').reverse(), ...(d.itens || []).filter(x => comImg(x) && x.status !== 'atual').reverse()].slice(0, 9); if (!it.length) return;   // as atuais primeiro, completa com as do processo até 9 (grade 3x3 no PC)
   const sec = elD('section', 'gr-ultimas'), fila = elD('div', 'gr-ult-fila'); sec.append(elD('h2', 'gr-ult-tit', 'Últimas peças'), fila); c.append(sec);
   it.forEach(x => { const b = elD('button', 'gr-ult'), im = elD('img'); b.type = 'button'; im.alt = ''; im.loading = 'lazy'; fotoUrl(x.capa || x.arq).then(u => { im.src = u; }).catch(() => {}); b.append(im, elD('span', '', x.titulo || x.versao || x.peca || '')); const alvo = itensG.find(g => g.nome === VISTA[(x.vistas || [])[0]]); if (alvo) b.onclick = () => abreItemMenu(alvo); fila.append(b); });
 }
