@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-15.418">
-<meta name="app-novidade" content="Música: grade com buracos maiores e vinheta preta">
+<meta name="app-versao" content="2026-11-15.419">
+<meta name="app-novidade" content="App no PC: Agenda de parede, Checklist em colunas, Finanças e Obra lado a lado; ícone por assunto na Agenda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-15.418"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-15.419"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -89,8 +89,8 @@
 
 <template id="setup-tpl">
   <div class="setup">
-    <strong>Primeira vez neste celular</strong>
-    <span>Cola a chave do GitHub (token com acesso só ao repositório Inst). Ela fica guardada só neste iPhone.</span>
+    <strong>Primeira vez neste aparelho</strong>
+    <span>Cola a chave do GitHub (token com acesso só ao repositório Inst). Ela fica guardada só neste aparelho.</span>
     <input id="token" type="password" aria-label="Chave do GitHub" placeholder="github_pat_…" autocomplete="off">
     <button id="salvar-token" type="button">Salvar chave</button>
   </div>
@@ -2327,6 +2327,20 @@ document.addEventListener('keydown', e => {
   menu.hidden = true; mais.setAttribute('aria-expanded', 'false'); responder(null);
 });
 document.addEventListener('click', e => { if (!menu.contains(e.target)) menu.hidden = true; });
+document.addEventListener('keydown', async e => {   // Ctrl+K no PC: digita o nome da tela e abre direto (Sigma #240)
+  if (!MODO_WEB || !(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 'k' || !token) return;
+  e.preventDefault(); if (document.querySelector('.ck-busca-pop')) return;
+  let todos = []; try { todos = JSON.parse(await lerArquivo('menu/menu.json')).itens || []; } catch (er) { return; }
+  const lst = []; const junta = (xs, pai) => xs.filter(m => m && m.nome && !m.apagado).forEach(m => { lst.push([m, pai]); if (Array.isArray(m.itens)) junta(m.itens, m.nome); }); junta(todos, '');
+  const ov = elD('div', 'pop ck-busca-pop'), cx = elD('div', 'ck-busca-cx'), inp = document.createElement('input'), ul = elD('div', 'ck-busca-lst'); inp.type = 'search'; inp.placeholder = 'Abrir tela pelo nome'; cx.append(inp, ul); ov.append(cx); document.body.append(ov);
+  let achados = [], sel = 0; const fecha = () => ov.remove();
+  const vai = m => { fecha(); menu.hidden = true; painel.hidden = false; pilha = []; abreItemMenu(m); };
+  const sem = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const pinta = () => { const q = sem(inp.value.trim()); achados = lst.filter(([m]) => !q || sem(m.nome).includes(q)).slice(0, 8); sel = Math.min(sel, Math.max(0, achados.length - 1)); ul.replaceChildren(...achados.map(([m, pai], i) => { const b = elD('button', 'ck-busca-it' + (i === sel ? ' on' : '')); b.type = 'button'; const ic = elD('span', 'ck-busca-ic'); ic.innerHTML = icone(m.icone); b.append(ic, elD('b', '', m.nome)); if (pai) b.append(elD('small', '', pai)); b.onclick = () => vai(m); return b; })); };
+  inp.addEventListener('input', () => { sel = 0; pinta(); });
+  inp.addEventListener('keydown', k => { if (k.key === 'Escape') { k.stopPropagation(); fecha(); } else if (k.key === 'ArrowDown') { k.preventDefault(); sel = Math.min(achados.length - 1, sel + 1); pinta(); } else if (k.key === 'ArrowUp') { k.preventDefault(); sel = Math.max(0, sel - 1); pinta(); } else if (k.key === 'Enter' && achados[sel]) vai(achados[sel][0]); });
+  ov.addEventListener('click', k => { if (k.target === ov) fecha(); }); pinta(); requestAnimationFrame(() => inp.focus()); setTimeout(() => { if (document.activeElement !== inp) inp.focus(); }, 120);
+});
 
 // ---- Notificação push: a assinatura do iPhone vai pro repo (recados-push/iphone.json); o notebook manda o aviso.
 const VAPID_PUBLICA = 'BIx_prIdU34zWy_XRlpx9LFHWf3xtXp-LXn_X-eA5AghjosGa179cth7np_hL5dcLnSw_S030A8vVOsYPf1TU48';
@@ -2408,7 +2422,7 @@ function askToken() {
 // ---- Lista de conversas (igual WhatsApp): Geral em cima + as de caixas/. Tocar abre; "+ Nova conversa" cria.
 const lista = document.getElementById('lista'), novaBtn = document.getElementById('nova'), voltar = document.getElementById('voltar');
 const logoEl = document.getElementById('logo'), tituloEl = document.getElementById('titulo'), convAv = document.getElementById('convAv');
-const MODO_WEB = new URLSearchParams(location.search).get('web') === 'true';   // versão web: ...?web=true
+const MODO_WEB = new URLSearchParams(location.search).get('web') === 'true' || matchMedia('(min-width: 1024px) and (pointer: fine)').matches;   // versão web: liga sozinha no PC (tela larga + mouse); ?web=true só força (Sigma #240)
 if (MODO_WEB) document.body.classList.add('web');
 // lista e conversa lado a lado só quando a ÁREA VISÍVEL da página tem 700px+ (painel lateral do navegador fica no modo celular)
 const largo = () => MODO_WEB && document.documentElement.clientWidth >= 700;
@@ -2595,7 +2609,7 @@ function arrumaArrastando(grade, op) {   // op: { sel, chave, aviso } pra usar e
   const fim = e => {
     clearTimeout(seg); seg = null; if (!arr) return;
     const b = arr; arr = null; b.classList.remove('arrastando'); b.style.transform = '';
-    if (mexeu) { salva(); const para = ev => { ev.stopPropagation(); ev.preventDefault(); }; b.addEventListener('click', para, { capture: true, once: true }); showNote((op && op.aviso) || 'Menu arrumado: fica assim neste celular'); }
+    if (mexeu) { salva(); const para = ev => { ev.stopPropagation(); ev.preventDefault(); }; b.addEventListener('click', para, { capture: true, once: true }); showNote((op && op.aviso) || 'Menu arrumado: fica assim neste aparelho'); }
   };
   grade.addEventListener('touchmove', e => { if (arr) e.preventDefault(); }, { passive: false });   // arrastando: a tela não rola
   grade.addEventListener('pointerup', fim); grade.addEventListener('pointercancel', fim);
@@ -3152,7 +3166,7 @@ function abreGrupo(m) {
     const g = elD('div', 'gr-grade' + (m.estilo ? ' gr-grade-' + m.estilo : '')); c.append(g);
     const chave = 'grupo-ordem:' + m.nome; let ordem = []; try { ordem = JSON.parse(store.get(chave) || '[]'); } catch (e) {}
     const pos = x => { const i = ordem.indexOf(x.nome); return i < 0 ? 999 : i; }, itensG = (m.itens || []).filter(x => !x.apagado).map((x, i) => [x, i]).sort((a, b) => pos(a[0]) - pos(b[0]) || a[1] - b[1]).map(a => a[0]);   // a ordem que ela arrumou arrastando (neste aparelho); item novo vai pro fim
-    arrumaArrastando(g, { sel: '.gr-item', chave, aviso: 'Pastas arrumadas: ficam assim neste celular' });
+    arrumaArrastando(g, { sel: '.gr-item', chave, aviso: 'Pastas arrumadas: ficam assim neste aparelho' });
     itensG.forEach(x => { const b = botaoGrade(x.icone, x.nome, x.sub, () => abreItemMenu(x)); b.classList.add('gr-item'); b.dataset.nome = x.nome; b.style.setProperty('--c', x.cor || cor); if (x.cor) b.classList.add('cor-propria'); if (!m.estilo || m.estilo === 'cinema') { const sb = elD('small', 'gr-sub', x.sub || ''); b.append(sb); } g.append(b); });
     if (m.estilo === 'cinema' && document.body.classList.contains('web') && matchMedia('(min-width: 1280px)').matches) ultimasMidia(c, itensG);   // no PC, embaixo da fileira, a prévia das últimas peças (Sigma #240)
   });
@@ -3817,7 +3831,7 @@ function abreObra(m) {
       foto: [{ nome: 'legenda', rotulo: 'Legenda', tipo: 'texto' }] };
     const paraForm = x => ({ ...x, linhas: Array.isArray(x.linhas) ? x.linhas.join('\n') : x.linhas }), deForm = v => { const o = { ...v }; if ('linhas' in o) o.linhas = String(o.linhas || '').split(/\r?\n/).map(t => t.trim()).filter(Boolean); return o; };
     const editaC = x => edFormulario({ titulo: 'Editar cartão', campos: CAMPOS_OB[x.tipo] || [], v: paraForm(x), aoSalvar: async v => { v = deForm(v); Object.assign(x, v); if (O) await O.op({ tipo: 'edita', id: chaveC(x), v, quando: edAgora() }, 'Cartão da obra editado pelo app'); pinta(0); }, aoApagar: async () => { const a = abas.find(z => (z.cartoes || []).includes(x)), i = a.cartoes.indexOf(x); a.cartoes.splice(i, 1); if (O) await O.op({ tipo: 'apaga', id: chaveC(x), on: true, quando: edAgora() }, 'Cartão da obra apagado pelo app (fica guardado)'); pinta(0); edFaixaDesfazer('Cartão apagado', async () => { a.cartoes.splice(i, 0, x); if (O) await O.op({ tipo: 'apaga', id: chaveC(x), on: false, quando: edAgora() }, 'Apagado desfeito pelo app'); pinta(0); }); } });
-    const vivo = {}; Promise.all([lerArquivo('casa/fundo/maicon-dias.json').then(t => { vivo.dias = JSON.parse(t).dias || []; }).catch(() => {}), lerArquivo('contas/pendencias.json').then(t => { vivo.pago = (JSON.parse(t).pagar || []).find(x => /maicon/i.test(x.nome)); }).catch(() => {})]).then(() => { if (aba === 'agora' || aba === 'dinheiro') pinta(0); });
+    const vivo = {}; Promise.all([lerArquivo('casa/fundo/maicon-dias.json').then(t => { vivo.dias = JSON.parse(t).dias || []; }).catch(() => {}), lerArquivo('contas/pendencias.json').then(t => { vivo.pago = (JSON.parse(t).pagar || []).find(x => /maicon/i.test(x.nome)); }).catch(() => {})]).then(() => { if (aba === 'agora' || aba === 'dinheiro' || parede.classList.contains('ob-pc')) pinta(0); });
     cabecalho({ icone: 'ruler', sub: 'piscina e fundo · mural', acao: { icone: 'plus', rotulo: 'Cartão novo', fn: async () => { const a = abas.find(z => z.id === aba); if (!a || a.fonte) { showNote('Esta aba é o diário: usa Lançar um dia.'); return; } const t = await edEscolhe('Cartão novo', [['nota', 'Nota (papel colorido)'], ['valor', 'Valor (orçamento)'], ['peca', 'Peça (com foto)']]); if (!t) return; edFormulario({ titulo: 'Cartão novo', campos: CAMPOS_OB[t], v: { cor: 'amarelo' }, aoSalvar: async v => { v = deForm(v); const item = { id: edNovoId(v.titulo), tipo: t, ...v, aba: a.id, novo: true, criado: edAgora() }; a.cartoes.push({ ...item }); if (O) await O.op({ tipo: 'lanca', item }, 'Cartão novo da obra pelo app'); pinta(0); } }); } } });
     const nav = elD('nav', 'ob-abas'), parede = elD('div', 'ob-parede'), cacheFonte = {}; c.append(nav, parede);
     const abas = d.abas || []; let aba = (abas[0] || {}).id;
@@ -3863,6 +3877,8 @@ function abreObra(m) {
       const a = abas.find(z => z.id === aba) || abas[0]; if (!a) return;
       if (a.fonte) {   // Diário da obra (May 14:29): uma folha por dia, a mais nova em cima, com as fotos daquele dia
         const g = elD('div', 'ob-diario'); parede.append(g);
+        const pc = MODO_WEB && innerWidth >= 1280; parede.classList.toggle('ob-pc', pc);   // PC: o Diário no meio e Agora e Compras numa coluna à direita, sem trocar de aba (Sigma #240)
+        if (pc) { const lado = elD('div', 'ob-lado'); parede.append(lado); ['agora', 'pecas'].forEach(id => { const z = abas.find(q => q.id === id); if (!z) return; const sec = elD('section', 'ob-lado-sec'), gg = elD('div', 'ob-grade ob-grade-lado'); sec.append(elD('h3', 'ob-lado-tit', z.nome)); (z.cartoes || []).forEach((x, k) => gg.append(cartao(x, k, []))); sec.append(gg); lado.append(sec); }); }
         const anota = (dd, dia, sobre, rot) => {   // dia null = ela escolhe a data (lançar um dia que passou)   // o popup padrão do app, na cor da Obra: escreve e prega a anotação embaixo da coisa
           const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card ob-pop'), x = elD('button', 'pp-x'), ta = elD('textarea'), b = elD('button', 'pp-op rec', 'Anotar'); card.style.setProperty('--quem', '#F97316');
           x.type = b.type = 'button'; x.innerHTML = icone('close'); ta.rows = 3; ta.placeholder = dia ? 'Escreve aqui…' : 'O que teve nesse dia (quem veio, o que fez, o que comprou)…';
@@ -3907,6 +3923,7 @@ function abreObra(m) {
         if (dir) entraDoLado(parede, dir);
         return;
       }
+      parede.classList.remove('ob-pc');
       const fotos = (a.cartoes || []).filter(x => x.tipo === 'foto').map(x => x.arq);
       const g = elD('div', 'ob-grade' + (a.cartoes.every(x => x.tipo === 'foto') ? ' ob-fotos' : ''));
       a.cartoes.forEach((x, k) => g.append(cartao(x, k, fotos))); parede.append(g);
@@ -4742,14 +4759,15 @@ function abreCheck(m) {
         b.append(edMini('note', 'Editar', () => edita(x)));
         const mede = () => { const q = b.querySelector('.ck-t').getClientRects()[0]; if (q) b.style.setProperty('--rw', Math.round(q.width + 8) + 'px'); };
         b.onclick = async () => { mede(); await E.feito(x.id, !x.feito); pinta(); };
-        w.append(b); requestAnimationFrame(mede);
+        (ckAlvo || w).append(b); requestAnimationFrame(mede);
       };
+      let ckAlvo = null; const ckCols = elD('div', 'ck-colunas'); w.append(ckCols);   // cada seção num grupo dentro das colunas: no celular os dois somem (display: contents); no PC as seções correm em colunas de jornal, equilibradas (Sigma #240)
       grupos.forEach(([nome, cabe]) => {
         const lista = itens.filter(cabe).sort((a, b) => (a.data || '').localeCompare(b.data || ''));
         if (!lista.length) return;
-        w.append(elD('div', 'ck-sec' + (nome === 'Atrasado' ? ' atraso' : ''), nome)); lista.forEach(x => linha(x, nome));
+        ckAlvo = elD('div', 'ck-grupo'); ckCols.append(ckAlvo); ckAlvo.append(elD('div', 'ck-sec' + (nome === 'Atrasado' ? ' atraso' : ''), nome)); lista.forEach(x => linha(x, nome)); ckAlvo = null;
       });
-      if (feitos.length) { w.append(elD('div', 'ck-sec', 'Feitos')); feitos.sort((a, b) => String(b.feito).slice(6, 10).concat(String(b.feito).slice(3, 5), String(b.feito).slice(0, 2), String(b.feito).slice(11)).localeCompare(String(a.feito).slice(6, 10).concat(String(a.feito).slice(3, 5), String(a.feito).slice(0, 2), String(a.feito).slice(11)))).forEach(x => linha(x, 'Feitos')); }
+      if (feitos.length) { ckAlvo = elD('div', 'ck-grupo ck-feitos'); ckCols.append(ckAlvo); ckAlvo.append(elD('div', 'ck-sec', 'Feitos')); feitos.sort((a, b) => String(b.feito).slice(6, 10).concat(String(b.feito).slice(3, 5), String(b.feito).slice(0, 2), String(b.feito).slice(11)).localeCompare(String(a.feito).slice(6, 10).concat(String(a.feito).slice(3, 5), String(a.feito).slice(0, 2), String(a.feito).slice(11)))).forEach(x => linha(x, 'Feitos')); }
     };
     pinta();
     if (opsV.length) { opsV.forEach(op => edAplica(E.itens, op, false)); gravaJson(m.edicoes || m.arq, d => { d.itens = d.itens || []; opsV.forEach(op => edAplica(d.itens, op, !!m.edicoes)); }, 'Marcas antigas do Checklist passadas pro arquivo', { itens: [] }).then(ok => { if (ok) store.set('check-feitos', ''); pinta(); }); }
@@ -5321,6 +5339,11 @@ function montaCalendario(cal, c, opc) {   // opc (Agenda do Trabalho): { marcas:
     for (let dd = de; dd <= total; dd++) {
       const chave = ano + '-' + String(mes + 1).padStart(2, '0') + '-' + String(dd).padStart(2, '0'), b = elD('button', 'ag-dia', String(dd)); b.type = 'button';
       if (dias.has(chave)) { b.classList.add('tem'); if (!opc && chave !== sel) b.style.background = '#1E293B'; }   // dia com compromisso: bolinha de uma cor só, sem borda (May 14/11 07:57), na tinta da Agenda: nenhuma cor da legenda, senão todo dia parece consulta (Sigma 14/11)   // um pontinho por tipo, na cor dele
+      if (MODO_WEB && !opc && innerWidth >= 1280) {   // PC: o dia vira célula de calendário de parede, com o texto dos compromissos dentro na cor do assunto (Sigma #240, volta 11:55)
+        const evs = els.filter(e => e.dataset.dia === chave); b.textContent = ''; b.style.background = ''; b.append(elD('span', 'ag-dia-n', String(dd)));
+        evs.slice(0, 3).forEach(e => { const t = elD('span', 'ag-dia-ev', ((e.querySelector('.ag-tx') || e.querySelector('.cx') || e).textContent || '').replace(/\s+/g, ' ').trim()); t.title = t.textContent; t.style.setProperty('--tc', e.dataset.cor); b.append(t); });
+        if (evs.length > 3) b.append(elD('span', 'ag-dia-mais', '+' + (evs.length - 3) + ' mais'));
+      }
       if (chave === sel) b.classList.add('sel');
       if (dd === hoje.getDate() && mes === hoje.getMonth() && ano === hoje.getFullYear()) b.classList.add('hoje');
       b.onclick = () => { if (opc) { sel = sel === chave ? '' : chave; desenhar(); opc.aoEscolher(sel); return; } sel = sel === chave ? '' : chave; filtra(); desenhar(); };
@@ -5380,7 +5403,7 @@ function swAssuntoFn(F) {   // cor por ASSUNTO (menu/agenda.json › cores_por_a
   const fn = (it, txt) => {
     let k = it && it.assunto && CA[it.assunto] ? it.assunto : ch.find(x => re[x] && re[x].test(txt || (it && it.texto) || ''));
     if (!k && it && it.tipo) k = (CA._tipo_para_assunto || {})[it.tipo]; if (!k || !CA[k]) k = CA.outros ? 'outros' : ch[0];
-    return [k, CA[k].nome, CA[k].cor];
+    return [k, CA[k].nome, CA[k].cor, CA[k].icone];
   };
   fn.lista = ch.map(k => [k, CA[k].nome, CA[k].cor]); return fn;
 }
@@ -5618,7 +5641,7 @@ function abreAgenda(m) {
       }
       if (!novo && tp.textContent.trim()) cx.append(tp);
       const corpoEl = document.createElement('div'); neg(corpoEl, corpo);
-      let topoN = null; if (novo) { topoN = elD('div', 'ag-topo'); topoN.append(elD('span', 'ag-tipo', tipo[1])); cx.append(topoN); corpoEl.className = 'ag-tx'; }
+      let topoN = null; if (novo) { topoN = elD('div', 'ag-topo'); if (tipo[3]) { const ai = elD('span', 'ag-ico'); ai.innerHTML = icone(tipo[3]); topoN.append(ai); } topoN.append(elD('span', 'ag-tipo', tipo[1])); cx.append(topoN); corpoEl.className = 'ag-tx'; }
       cx.append(corpoEl);
       if (fotos.length) { const box = elD('div', fotos.length > 1 ? 'ag-fotos' : ''); fotos.forEach(fp => { const im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; im.decoding = 'async'; box.append(im); fotoUrl(fp).then(u => { im.src = u; im.onclick = e => { e.stopPropagation(); abreZoom(u, fp, fotos); }; }).catch(() => im.remove()); }); cx.append(box); }
       let feitoTxt = '';

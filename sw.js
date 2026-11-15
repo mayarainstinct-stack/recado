@@ -1,3 +1,4 @@
+// v419 (app no PC: base web, Agenda de parede, Checklist, Finanças, Garagem, Obra e Máquinas feitas pra web, Ctrl+K; ícone de traço por assunto na Agenda; #240 #328)
 // v418 (app no PC, telas do Hermes: Viagens, Música, Artes, Treino, Mídia e ficha do Jogos feitas pra web; #240 #332)
 // v417 (Jogos: a ficha voltou a abrir, o .415 tirou o #envio e a ficha ainda pintava ele; conserto urgente)
 // v416 (Diagnóstico: abas sempre no mesmo lugar, anel claro com vermelho só no aperto, 1 janela de tempo, aba Conexão; #3 #5 #37)

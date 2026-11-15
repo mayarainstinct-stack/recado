@@ -357,15 +357,15 @@ button:disabled { opacity: .45; cursor: default; }
   border-radius: 999px; padding: 0 20px; box-shadow: 0 6px 18px rgba(0,0,0,.22); z-index: 3; }
 /* Versão web (abrir com ?web=true): igual WhatsApp Web, lista de conversas à esquerda e a conversa aberta à direita */
 @media all {   /* "lado" = a área visível tem 700px ou mais (medido no JS, não na tela do monitor) */
-  body.web.lado .app { max-width: 1400px; display: grid; grid-template-columns: 360px 1fr; grid-template-rows: auto auto 1fr auto auto auto; }
+  body.web.lado .app { max-width: none; display: grid; grid-template-columns: 360px 1fr; grid-template-rows: auto auto 1fr auto auto auto; }
   body.web.lado header { grid-column: 1 / -1; border-radius: 0 0 18px 18px; }
   body.web.lado #lista { grid-column: 1; grid-row: 2 / -1; border-right: 1px solid var(--line); overflow-y: auto; display: block !important; padding-bottom: 80px; }
   body.web.lado #fixa, body.web.lado #feed, body.web.lado #note, body.web.lado #citando, body.web.lado #composer { grid-column: 2; }
   body.web.lado #fixa { grid-row: 2; } body.web.lado #feed { grid-row: 3; } body.web.lado #note { grid-row: 4; } body.web.lado #citando { grid-row: 5; } body.web.lado #composer { grid-row: 6; }
-  body.web.lado #nova { left: max(16px, calc(50vw - 684px)); right: auto; width: 328px; display: block !important; }
+  body.web.lado #nova { left: 16px; right: auto; width: 328px; display: block !important; }
   body.web.lado #voltar { display: none !important; }
   body.web.lado .conv.ativa { background: color-mix(in srgb, var(--accent) 14%, transparent); }
-  body.web.lado .desce { right: max(24px, calc(50vw - 676px)); }
+  body.web.lado .desce { right: 24px; }
 }
 .zoom { position: fixed; inset: 0; z-index: 1100; background: #000; display: flex; flex-direction: column; padding: env(safe-area-inset-top, 0px) 0 0; }
 .zoom .zpalco { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 16px; overflow: hidden; }
@@ -2008,6 +2008,7 @@ body .painel .ag-dia { width: 36px; height: 36px; aspect-ratio: 1 / 1; justify-s
 .painel.tema-claro .ag.ag-n[data-tipo].tem-ed { padding-right: 13px; }
 .ag-n .cx { display: flex; flex-direction: column; gap: 5px; }
 .ag-n .ag-topo { display: flex; align-items: center; gap: 8px; min-height: 28px; }
+.ag-n .ag-ico { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; color: color-mix(in srgb, var(--tc) 70%, black); } .ag-n .ag-ico svg { width: 18px; height: 18px; }
 .ag-n .ag-tipo { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .02em; color: color-mix(in srgb, var(--tc) 55%, black); }
 .ag-n .ag-ed { position: static; margin-left: auto; margin-right: -4px; }
 .ag-n .ag-tx { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-size: 14px; line-height: 1.38; color: #1E293B; }
@@ -2561,3 +2562,83 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
   body.web .gr-ult img { flex: 1; min-height: 0; width: 100%; object-fit: cover; background: #2B1A0E; border-radius: 3px; } body.web .gr-ult span { flex: none; font: italic 15px Georgia, serif; color: #2B1A0E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   body.web .gr-ult:hover { transform: translate(-2px, -3px); box-shadow: 5px 7px 0 #2B1A0E; }
 }
+@media (min-width: 1280px) {   /* PC: a Agenda vira 2 colunas, calendário à esquerda e a lista inteira à direita (Sigma #240) */
+  body.web .p-corpo > .tela.ag-tela { display: grid !important; grid-template-columns: minmax(380px, 40%) minmax(0, 1fr); grid-auto-rows: auto; grid-template-rows: auto auto auto 1fr; column-gap: 28px; }
+  body.web .ag-tela > .ag-cal { grid-column: 1; grid-row: 1 / span 4; align-self: start; padding: 18px 20px; } body.web .ag-tela > :not(.ag-cal) { grid-column: 2; }
+  body.web .ag-tela .ag-dia { width: 44px; height: 44px; font-size: 16px; } body.web .ag-tela .ag-grade { gap: 6px; row-gap: 6px; } body.web .ag-tela .ag-leg { font-size: 12.5px; }
+  body.web .p-corpo > .tela.ag-tela > .ag-rola { grid-row: 4; min-height: 0; } body.web .ag-tela .ag-tx { max-width: 90ch; }
+}
+.ck-grupo { display: contents; }
+@media (min-width: 1280px) {   /* PC: o Checklist vira colunas, uma por seção (Atrasado, Esta semana, Mais pra frente, Sem data, Feitos) (Sigma #240) */
+  body.web .ck-bloco { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); align-items: start; column-gap: 0; }
+  body.web .ck-bloco > .ck-espiral, body.web .ck-bloco > .ck-cab { grid-column: 1 / -1; }
+  body.web .ck-grupo { display: block; min-width: 0; padding-right: 12px; border-right: 1px dashed rgba(0,0,0,.12); } body.web .ck-grupo:last-child { border-right: 0; }
+}
+@media (min-width: 1280px) {   /* PC: as 4 abas das Finanças (Mês, A receber, A pagar, Contas fixas) lado a lado, cada uma rolando sozinha; + Conta com tamanho de botão (Sigma #240) */
+  body.web .fin-abas { display: none; }
+  body.web .fin-trilho { overflow-x: visible; scroll-snap-type: none; gap: 16px; }
+  body.web .fin-pag { flex: 1 1 0; padding-bottom: 24px; } body.web .fin-pag > * { max-width: 100%; }
+  body.web .fm-acoes { justify-content: flex-end; } body.web .fm-acoes .fin-lancar, body.web .fm-acoes .fin-lancar.fin-nova { flex: 0 0 auto; padding: 0 28px; }
+}
+.ck-busca-pop { position: fixed; inset: 0; z-index: 90; display: grid; justify-items: center; align-items: start; padding-top: 14vh; background: rgba(0,0,0,.45); }
+.ck-busca-cx { width: min(560px, calc(100vw - 32px)); padding: 14px; border-radius: 18px; background: var(--card, #fff); color: var(--ink, #111); box-shadow: 0 18px 48px rgba(0,0,0,.35); }
+.ck-busca-cx input { width: 100%; height: 48px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--line, #ccd); font: inherit; font-size: 17px; background: transparent; color: inherit; }
+.ck-busca-lst { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
+.ck-busca-it { display: flex; align-items: center; gap: 12px; width: 100%; height: 46px; padding: 0 12px; border: 0; border-radius: 10px; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; } .ck-busca-it.on, .ck-busca-it:hover { background: color-mix(in srgb, var(--accent, #2F8FB8) 16%, transparent); }
+.ck-busca-it small { margin-left: auto; opacity: .6; } .ck-busca-ic { display: inline-flex; width: 22px; height: 22px; } .ck-busca-ic svg { width: 22px; height: 22px; }
+@media (min-width: 1280px) {   /* PC: as grades de pastas (Saúde e as outras) viram 4 ou mais por linha, sem cartão de 900 px (Sigma #240) */
+  body.web .gr-grade { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important; gap: 14px !important; }
+}
+@media (min-width: 1024px) {   /* PC: base de web (Sigma #240, volta 11:55): balão de leitura, foto grande, hover e foco de teclado visíveis */
+  body.web #feed .msg { max-width: min(720px, 70%); font-size: 15.5px; line-height: 1.5; padding: 10px 14px 7px; }
+  body.web #feed .msg .foto { min-width: 360px; max-height: 560px; object-fit: contain; background: rgba(0,0,0,.18); }
+  body.web :is(button, a, [tabindex], input, textarea, select):focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  body.web :is(.ag, .ck-item, .gr-item, .conv, .cm-item, .fm-card, .ob-c, .msg) { transition: box-shadow .15s, transform .15s; }
+  body.web :is(.ag, .gr-item, .conv, .cm-item, .fm-card):hover { box-shadow: 0 8px 22px rgba(0,0,0,.16); transform: translateY(-1px); }
+  body.web button { cursor: pointer; } body.web button:hover:not(:disabled) { filter: brightness(1.06); }
+}
+@media (min-width: 1280px) {   /* PC, volta do Sigma 11:55: calendário de parede ocupando a altura, compromisso escrito dentro do dia; lista estreita ao lado */
+  body.web .p-corpo > .tela.ag-tela { grid-template-columns: minmax(0, 1.75fr) minmax(380px, 1fr); }
+  body.web .ag-tela > .ag-cal { align-self: start; display: flex; flex-direction: column; height: calc(100dvh - 92px); min-height: 560px; overflow: hidden; padding: 18px 20px 14px; }
+  body.web .ag-tela .ag-cal-topo b { font-size: 22px; }
+  body.web .ag-tela .ag-grade { flex: 1; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-template-rows: auto; grid-auto-rows: minmax(0, 1fr); min-height: 0; gap: 6px !important; }
+  body.web .ag-tela .ag-sem { font-size: 13px; padding-bottom: 2px; }
+  body.web .ag-tela .ag-dia { width: 100%; min-width: 0; max-width: 100%; height: 100%; min-height: 0; position: relative; transform: none !important; animation: none !important; opacity: 1 !important; border-radius: 12px; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 3px; padding: 6px 7px; overflow: hidden; text-align: left; background: rgba(255,255,255,.22) !important; color: #0F3B4F; font-size: 14px; box-shadow: none; }
+  body.web .ag-tela .ag-dia.tem { color: #0F3B4F; } body.web .ag-tela .ag-dia.sel { outline: 3px solid #0F3B4F; } body.web .ag-tela .ag-dia.hoje { background: rgba(255,255,255,.55) !important; }
+  body.web .ag-tela .ag-dia:hover { background: rgba(255,255,255,.45) !important; }
+  body.web .ag-tela .ag-dia-n { font-weight: 800; font-size: 15px; }
+  body.web .ag-tela .ag-dia-ev { display: block; max-width: 100%; min-width: 0; padding: 2px 6px; border-radius: 6px; border-left: 3px solid var(--tc); background: color-mix(in srgb, var(--tc) 18%, white); color: #1E293B; font-size: 12.5px; font-weight: 600; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  body.web .ag-tela .ag-dia-mais { font-size: 12px; font-weight: 700; color: #0F3B4F; }
+  body.web .ag-tela .ag-leg { font-size: 13.5px; gap: 4px 14px; }
+  body.web .ag-tela .ag.ag-n { padding: 10px 14px; } body.web .ag-tela .ag-n .cx { gap: 3px; } body.web .ag-tela .ag-tx { font-size: 15px; }
+}
+@media (min-width: 1280px) {   /* Finanças no PC, volta do Sigma 11:55: letra de PC, saldo negativo em vermelho, uma rolagem só, + Conta no topo */
+  body.web .fin { font-size: 15px; overflow-y: auto; }
+  body.web .fin :is(small, .cm-chip, .fin-est, .fm-pct, .fin-ult, .fm-sec, .cm-mes, .ok, .falta) { font-size: 13px !important; }
+  body.web .fin-kpi.neg { background: #B42318 !important; border-color: #B42318 !important; color: #fff !important; } body.web .fin-kpi.neg * { color: #fff !important; }
+  body.web .fin-kpi b { font-size: 26px !important; } body.web .fin-kpi span { font-size: 13px !important; }
+  body.web .p-corpo > .tela > .fin > .fin-trilho { flex: none; align-items: start; overflow: visible; }
+  body.web .fin-pag { overflow: visible !important; padding-bottom: 28px; }
+  body.web .fm-acoes { position: fixed; top: 6px; right: 112px; z-index: 6; padding: 0; } body.web .fm-acoes .fin-lancar, body.web .fm-acoes .fin-lancar.fin-nova { height: 36px; font-size: 15px; background: #FFFFFF !important; color: #1A6640 !important; border: 0 !important; font-weight: 800; }
+}
+.ck-colunas { display: contents; }
+@media (min-width: 1280px) {   /* Checklist no PC, volta do Sigma 11:55: caderno até o pé da tela e seções correndo em colunas de jornal, sem coluna vazia */
+  body.web .ck-bloco { display: block; min-height: calc(100dvh - 110px); margin-bottom: 16px; }
+  body.web .ck-colunas { display: block; columns: 4 320px; column-gap: 28px; column-rule: 1px dashed rgba(0,0,0,.12); }
+  body.web .ck-grupo { display: block; padding-right: 0; border-right: 0; }
+  body.web .ck-sec { break-after: avoid; } body.web .ck-item { break-inside: avoid; }
+  body.web .ck-t { font-size: 15.5px; } body.web .ck-item small { font-size: 13px; }
+}
+@media (min-width: 1280px) {   /* Obra no PC: Diário no meio, Agora e Compras numa coluna à direita (Sigma #240) */
+  body.web .ob-parede.ob-pc { display: grid; grid-template-columns: minmax(0, 1fr) minmax(380px, 30%); gap: 24px; align-items: start; margin-inline: 0; }
+  body.web .ob-lado { position: sticky; top: 0; display: flex; flex-direction: column; gap: 18px; }
+  body.web .ob-lado-tit { margin: 0 0 8px; font-size: 15px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: #FDBA74; }
+  body.web .ob-grade-lado { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 12px; }
+  body.web .ob-parede { font-size: 15px; }
+}
+@media (min-width: 1280px) {   /* Agenda no PC, volta do Sigma 14:18: compromisso em até 2 linhas, letra 12,5 px e rótulo enxuto */
+  body.web .ag-tela .ag-dia-ev { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; padding: 1px 5px; font-size: 12.5px; line-height: 1.22; border-radius: 5px; }
+  body.web .ag-tela .ag-dia { gap: 2px; padding: 5px 6px; }
+}
+@media (min-width: 1280px) { body.web .fm-lin :is(span, b) { font-size: 14px !important; } body.web .fin-kpis span, body.web .cm-topo span { font-size: 13px !important; } }   /* Finanças no PC: nada abaixo de 13 px (prova do Sigma 14:18) */
+@media (min-width: 1280px) { body.web .fin-res3 .neg b { color: #B42318 !important; } }   /* Sobra negativa do mês em vermelho, igual ao saldo do topo (Sigma 14:25) */
