@@ -8,6 +8,7 @@ const CSS = `
 .gr-tela .gr-portao::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 26px; background: linear-gradient(#4A4E55, #2B2E33); border-top: 2px solid #C9CED5; }
 .gr-tela .gr-portao-placa { padding: 10px 18px 8px; background: var(--gr-am); color: #111; font: 700 30px/1 var(--gr-imp); font-synthesis: none; letter-spacing: .06em; text-transform: uppercase; border: 3px solid #111; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
 .gr-tela .gr-portao-puxa { position: absolute; bottom: 6px; left: 50%; width: 70px; height: 12px; margin-left: -35px; z-index: 1; border-radius: 3px; background: linear-gradient(#E3E6EA, #8E949C); box-shadow: 0 2px 0 #1A1B1E; }
+.gr-tela .gr-seta { display: none; } body.web .gr-tela .gr-seta { display: grid; place-items: center; position: absolute; top: calc(var(--gr-palco) / 2 - 22px); z-index: 4; width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--gr-am); background: rgba(17,17,17,.78); color: var(--gr-am); cursor: pointer; } body.web .gr-tela .gr-seta-ant { left: 24px; } body.web .gr-tela .gr-seta-prox { right: 24px; } body.web .gr-tela .gr-seta svg { width: 22px; height: 22px; } body.web .gr-tela .gr-seta:hover { background: var(--gr-am); color: #111; }
 .gr-tela .gr-portao.gr-sobe { animation: gr-portao 950ms cubic-bezier(.55,.06,.32,1) forwards; }
 @keyframes gr-portao { 0% { transform: translateY(0); } 7% { transform: translateY(5px); } 100% { transform: translateY(-104%); } }
 .p-corpo > .tela.gr-tela > .gr-pager { flex: 1 1 0; min-height: 0; display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
@@ -595,6 +596,9 @@ window.abreGaragem = function (m) {
       pgs.forEach(p => p.addEventListener('scroll', () => { pts.style.top = 'calc(var(--gr-palco) - 16px - ' + p.scrollTop + 'px)'; pts.style.visibility = p.scrollTop > 240 ? 'hidden' : ''; }, { passive: true }));
       pgs.forEach((p, i) => { const b = elD('button', 'gr-ponto' + (i ? '' : ' on')); b.type = 'button'; b.setAttribute('aria-label', vs[i].nome); b.onclick = () => pager.scrollTo({ left: i * pager.clientWidth, behavior: 'smooth' }); pts.append(b); });
       c.prepend(pager, pts);
+      const vai = d => pager.scrollTo({ left: Math.max(0, Math.min(vs.length - 1, Math.round(pager.scrollLeft / (pager.clientWidth || 1)) + d)) * pager.clientWidth, behavior: 'smooth' });   // no PC troca de carro por seta (tela e teclado), sem precisar do dedo (Sigma #240)
+      if (vs.length > 1) { ['ant', 'prox'].forEach((k, j) => { const s = elD('button', 'gr-seta gr-seta-' + k); s.type = 'button'; s.setAttribute('aria-label', j ? 'Próximo veículo' : 'Veículo anterior'); s.innerHTML = icone(j ? 'chev' : 'back'); s.onclick = () => vai(j ? 1 : -1); c.append(s); });
+        const tecla = e => { if (!c.isConnected) return document.removeEventListener('keydown', tecla); if (e.target.closest && e.target.closest('input,textarea,[contenteditable]')) return; if (e.key === 'ArrowRight') vai(1); else if (e.key === 'ArrowLeft') vai(-1); }; document.addEventListener('keydown', tecla); }
       let aberto = false, atual = -1;
       const ativa = i => {
         if (i === atual) return; atual = i;

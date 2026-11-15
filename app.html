@@ -89,8 +89,8 @@
 
 <template id="setup-tpl">
   <div class="setup">
-    <strong>Primeira vez neste celular</strong>
-    <span>Cola a chave do GitHub (token com acesso só ao repositório Inst). Ela fica guardada só neste iPhone.</span>
+    <strong>Primeira vez neste aparelho</strong>
+    <span>Cola a chave do GitHub (token com acesso só ao repositório Inst). Ela fica guardada só neste aparelho.</span>
     <input id="token" type="password" aria-label="Chave do GitHub" placeholder="github_pat_…" autocomplete="off">
     <button id="salvar-token" type="button">Salvar chave</button>
   </div>
@@ -2408,7 +2408,7 @@ function askToken() {
 // ---- Lista de conversas (igual WhatsApp): Geral em cima + as de caixas/. Tocar abre; "+ Nova conversa" cria.
 const lista = document.getElementById('lista'), novaBtn = document.getElementById('nova'), voltar = document.getElementById('voltar');
 const logoEl = document.getElementById('logo'), tituloEl = document.getElementById('titulo'), convAv = document.getElementById('convAv');
-const MODO_WEB = new URLSearchParams(location.search).get('web') === 'true';   // versão web: ...?web=true
+const MODO_WEB = new URLSearchParams(location.search).get('web') === 'true' || matchMedia('(min-width: 1024px) and (pointer: fine)').matches;   // versão web: liga sozinha no PC (tela larga + mouse); ?web=true só força (Sigma #240)
 if (MODO_WEB) document.body.classList.add('web');
 // lista e conversa lado a lado só quando a ÁREA VISÍVEL da página tem 700px+ (painel lateral do navegador fica no modo celular)
 const largo = () => MODO_WEB && document.documentElement.clientWidth >= 700;
@@ -2595,7 +2595,7 @@ function arrumaArrastando(grade, op) {   // op: { sel, chave, aviso } pra usar e
   const fim = e => {
     clearTimeout(seg); seg = null; if (!arr) return;
     const b = arr; arr = null; b.classList.remove('arrastando'); b.style.transform = '';
-    if (mexeu) { salva(); const para = ev => { ev.stopPropagation(); ev.preventDefault(); }; b.addEventListener('click', para, { capture: true, once: true }); showNote((op && op.aviso) || 'Menu arrumado: fica assim neste celular'); }
+    if (mexeu) { salva(); const para = ev => { ev.stopPropagation(); ev.preventDefault(); }; b.addEventListener('click', para, { capture: true, once: true }); showNote((op && op.aviso) || 'Menu arrumado: fica assim neste aparelho'); }
   };
   grade.addEventListener('touchmove', e => { if (arr) e.preventDefault(); }, { passive: false });   // arrastando: a tela não rola
   grade.addEventListener('pointerup', fim); grade.addEventListener('pointercancel', fim);
@@ -3152,7 +3152,7 @@ function abreGrupo(m) {
     const g = elD('div', 'gr-grade' + (m.estilo ? ' gr-grade-' + m.estilo : '')); c.append(g);
     const chave = 'grupo-ordem:' + m.nome; let ordem = []; try { ordem = JSON.parse(store.get(chave) || '[]'); } catch (e) {}
     const pos = x => { const i = ordem.indexOf(x.nome); return i < 0 ? 999 : i; }, itensG = (m.itens || []).filter(x => !x.apagado).map((x, i) => [x, i]).sort((a, b) => pos(a[0]) - pos(b[0]) || a[1] - b[1]).map(a => a[0]);   // a ordem que ela arrumou arrastando (neste aparelho); item novo vai pro fim
-    arrumaArrastando(g, { sel: '.gr-item', chave, aviso: 'Pastas arrumadas: ficam assim neste celular' });
+    arrumaArrastando(g, { sel: '.gr-item', chave, aviso: 'Pastas arrumadas: ficam assim neste aparelho' });
     itensG.forEach(x => { const b = botaoGrade(x.icone, x.nome, x.sub, () => abreItemMenu(x)); b.classList.add('gr-item'); b.dataset.nome = x.nome; b.style.setProperty('--c', x.cor || cor); if (x.cor) b.classList.add('cor-propria'); if (!m.estilo || m.estilo === 'cinema') { const sb = elD('small', 'gr-sub', x.sub || ''); b.append(sb); } g.append(b); });
   });
 }
@@ -5364,7 +5364,7 @@ function swAssuntoFn(F) {   // cor por ASSUNTO (menu/agenda.json › cores_por_a
   const fn = (it, txt) => {
     let k = it && it.assunto && CA[it.assunto] ? it.assunto : ch.find(x => re[x] && re[x].test(txt || (it && it.texto) || ''));
     if (!k && it && it.tipo) k = (CA._tipo_para_assunto || {})[it.tipo]; if (!k || !CA[k]) k = CA.outros ? 'outros' : ch[0];
-    return [k, CA[k].nome, CA[k].cor];
+    return [k, CA[k].nome, CA[k].cor, CA[k].icone];
   };
   fn.lista = ch.map(k => [k, CA[k].nome, CA[k].cor]); return fn;
 }
@@ -5602,7 +5602,7 @@ function abreAgenda(m) {
       }
       if (!novo && tp.textContent.trim()) cx.append(tp);
       const corpoEl = document.createElement('div'); neg(corpoEl, corpo);
-      let topoN = null; if (novo) { topoN = elD('div', 'ag-topo'); topoN.append(elD('span', 'ag-tipo', tipo[1])); cx.append(topoN); corpoEl.className = 'ag-tx'; }
+      let topoN = null; if (novo) { topoN = elD('div', 'ag-topo'); if (tipo[3]) { const ai = elD('span', 'ag-ico'); ai.innerHTML = icone(tipo[3]); topoN.append(ai); } topoN.append(elD('span', 'ag-tipo', tipo[1])); cx.append(topoN); corpoEl.className = 'ag-tx'; }
       cx.append(corpoEl);
       if (fotos.length) { const box = elD('div', fotos.length > 1 ? 'ag-fotos' : ''); fotos.forEach(fp => { const im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; im.decoding = 'async'; box.append(im); fotoUrl(fp).then(u => { im.src = u; im.onclick = e => { e.stopPropagation(); abreZoom(u, fp, fotos); }; }).catch(() => im.remove()); }); cx.append(box); }
       let feitoTxt = '';
