@@ -2527,12 +2527,17 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 @media (min-width: 1280px) {   /* PC: as grades de pastas (Saúde e as outras) viram 4 ou mais por linha, sem cartão de 900 px (Sigma #240) */
   body.web .gr-grade { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important; gap: 14px !important; }
 }
-@media (min-width: 1280px) {   /* PC: as Viagens em grade de 2 ou 3 em vez de banner de largura cheia, desenho mais alto pra caber a turma; + Plano com tamanho de botão (Sigma #240, Hermes #332) */
-  body.web .pl2-cena { height: 150px; } body.web .pl2-abas { margin-bottom: 22px; } body.web .pl2-abas button { flex: 0 1 260px; }
-  body.web .pl2-corpo { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); gap: 22px 22px; align-items: start; }
-  body.web .pl2-corpo > .pl2-sec, body.web .pl2-corpo > .pl2-vazio { grid-column: 1 / -1; } body.web .pl2-corpo > .pl2-sec { margin: 12px 4px 0; }
-  body.web .pl2-placa { margin: 0; } body.web .pl2-arte { height: 230px; } body.web .pl2-top span { max-width: 90ch; }
+@media (min-width: 1280px) {   /* PC: as Viagens em linhas que se dividem sem buraco (2 próximas = metade cada, Já foi em até 4), desenho na altura da tela, letra de PC; + Plano com tamanho de botão (Sigma #240 e 15/11 11:55, Hermes #332) */
+  body.web .pl2-cena { height: 120px; } body.web .pl2-abas { margin-bottom: 22px; } body.web .pl2-abas button { flex: 0 1 260px; font-size: 15px; }
+  body.web .pl2-corpo { display: flex; flex-wrap: wrap; gap: 22px; align-items: stretch; }
+  body.web .pl2-corpo > .pl2-placa { flex: 1 1 calc(25% - 22px); min-width: 290px; margin: 0; display: flex; flex-direction: column; }
+  body.web .pl2-corpo > .pl2-sec, body.web .pl2-corpo > .pl2-vazio { flex: 0 0 100%; } body.web .pl2-corpo > .pl2-sec { margin: 10px 4px -6px; font-size: 13px; }
+  body.web .pl2-arte { height: clamp(190px, 25dvh, 300px); } body.web .pl2-pe { margin-top: auto; padding-top: 12px; }
+  body.web .pl2-top b { font-size: 20px; } body.web .pl2-top span { font-size: 15px; max-width: 90ch; } body.web .pl2-barra-w small, body.web .pl2-selo { font-size: 14px; }
+  body.web .pl2-placa { transition: transform .15s, box-shadow .15s; } body.web .pl2-placa:hover { transform: translateY(-3px); box-shadow: 0 9px 0 #3B2A4A; }
+  body.web .pl2-placa button:focus-visible, body.web .pl2-abas button:focus-visible { outline: 3px solid #3B2A4A; outline-offset: 2px; }
   body.web .pl2-mais { left: auto; right: 28px; width: auto; padding: 0 32px; }
+  body.web .pl2-pilha { flex-wrap: wrap; row-gap: 14px; } body.web .pl2-abre-album { flex: 1 1 170px; white-space: nowrap; }
 }
 @media (min-width: 1280px) {   /* PC: a Música em 3 colunas (Músicas | Tocar e Cuidar | Setup e Ideias), letra de PC, cada coluna rolando sozinha na altura da tela (Sigma #240 e 15/11 11:55, Hermes #332) */
   body.web .t-musica .tm-abas:has(+ .tm-painel.tm-colunas) { display: none !important; }
