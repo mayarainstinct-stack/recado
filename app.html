@@ -5364,7 +5364,7 @@ function swAssuntoFn(F) {   // cor por ASSUNTO (menu/agenda.json › cores_por_a
   const fn = (it, txt) => {
     let k = it && it.assunto && CA[it.assunto] ? it.assunto : ch.find(x => re[x] && re[x].test(txt || (it && it.texto) || ''));
     if (!k && it && it.tipo) k = (CA._tipo_para_assunto || {})[it.tipo]; if (!k || !CA[k]) k = CA.outros ? 'outros' : ch[0];
-    return [k, CA[k].nome, CA[k].cor];
+    return [k, CA[k].nome, CA[k].cor, CA[k].icone];
   };
   fn.lista = ch.map(k => [k, CA[k].nome, CA[k].cor]); return fn;
 }
@@ -5602,7 +5602,7 @@ function abreAgenda(m) {
       }
       if (!novo && tp.textContent.trim()) cx.append(tp);
       const corpoEl = document.createElement('div'); neg(corpoEl, corpo);
-      let topoN = null; if (novo) { topoN = elD('div', 'ag-topo'); topoN.append(elD('span', 'ag-tipo', tipo[1])); cx.append(topoN); corpoEl.className = 'ag-tx'; }
+      let topoN = null; if (novo) { topoN = elD('div', 'ag-topo'); if (tipo[3]) { const ai = elD('span', 'ag-ico'); ai.innerHTML = icone(tipo[3]); topoN.append(ai); } topoN.append(elD('span', 'ag-tipo', tipo[1])); cx.append(topoN); corpoEl.className = 'ag-tx'; }
       cx.append(corpoEl);
       if (fotos.length) { const box = elD('div', fotos.length > 1 ? 'ag-fotos' : ''); fotos.forEach(fp => { const im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; im.decoding = 'async'; box.append(im); fotoUrl(fp).then(u => { im.src = u; im.onclick = e => { e.stopPropagation(); abreZoom(u, fp, fotos); }; }).catch(() => im.remove()); }); cx.append(box); }
       let feitoTxt = '';

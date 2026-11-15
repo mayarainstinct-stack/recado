@@ -2008,6 +2008,7 @@ body .painel .ag-dia { width: 36px; height: 36px; aspect-ratio: 1 / 1; justify-s
 .painel.tema-claro .ag.ag-n[data-tipo].tem-ed { padding-right: 13px; }
 .ag-n .cx { display: flex; flex-direction: column; gap: 5px; }
 .ag-n .ag-topo { display: flex; align-items: center; gap: 8px; min-height: 28px; }
+.ag-n .ag-ico { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; color: color-mix(in srgb, var(--tc) 70%, black); } .ag-n .ag-ico svg { width: 18px; height: 18px; }
 .ag-n .ag-tipo { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .02em; color: color-mix(in srgb, var(--tc) 55%, black); }
 .ag-n .ag-ed { position: static; margin-left: auto; margin-right: -4px; }
 .ag-n .ag-tx { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-size: 14px; line-height: 1.38; color: #1E293B; }
