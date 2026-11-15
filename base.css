@@ -2535,3 +2535,18 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
   body.web :is(.ag, .gr-item, .conv, .cm-item, .fm-card):hover { box-shadow: 0 8px 22px rgba(0,0,0,.16); transform: translateY(-1px); }
   body.web button { cursor: pointer; } body.web button:hover:not(:disabled) { filter: brightness(1.06); }
 }
+@media (min-width: 1280px) {   /* PC, volta do Sigma 11:55: calendário de parede ocupando a altura, compromisso escrito dentro do dia; lista estreita ao lado */
+  body.web .p-corpo > .tela.ag-tela { grid-template-columns: minmax(0, 1.75fr) minmax(380px, 1fr); }
+  body.web .ag-tela > .ag-cal { align-self: start; display: flex; flex-direction: column; height: calc(100dvh - 92px); min-height: 560px; overflow: hidden; padding: 18px 20px 14px; }
+  body.web .ag-tela .ag-cal-topo b { font-size: 22px; }
+  body.web .ag-tela .ag-grade { flex: 1; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-template-rows: auto; grid-auto-rows: minmax(0, 1fr); min-height: 0; gap: 6px !important; }
+  body.web .ag-tela .ag-sem { font-size: 13px; padding-bottom: 2px; }
+  body.web .ag-tela .ag-dia { width: 100%; min-width: 0; max-width: 100%; height: 100%; min-height: 0; position: relative; transform: none !important; animation: none !important; opacity: 1 !important; border-radius: 12px; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 3px; padding: 6px 7px; overflow: hidden; text-align: left; background: rgba(255,255,255,.22) !important; color: #0F3B4F; font-size: 14px; box-shadow: none; }
+  body.web .ag-tela .ag-dia.tem { color: #0F3B4F; } body.web .ag-tela .ag-dia.sel { outline: 3px solid #0F3B4F; } body.web .ag-tela .ag-dia.hoje { background: rgba(255,255,255,.55) !important; }
+  body.web .ag-tela .ag-dia:hover { background: rgba(255,255,255,.45) !important; }
+  body.web .ag-tela .ag-dia-n { font-weight: 800; font-size: 15px; }
+  body.web .ag-tela .ag-dia-ev { display: block; max-width: 100%; min-width: 0; padding: 2px 6px; border-radius: 6px; border-left: 3px solid var(--tc); background: color-mix(in srgb, var(--tc) 18%, white); color: #1E293B; font-size: 12.5px; font-weight: 600; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  body.web .ag-tela .ag-dia-mais { font-size: 12px; font-weight: 700; color: #0F3B4F; }
+  body.web .ag-tela .ag-leg { font-size: 13.5px; gap: 4px 14px; }
+  body.web .ag-tela .ag.ag-n { padding: 10px 14px; } body.web .ag-tela .ag-n .cx { gap: 3px; } body.web .ag-tela .ag-tx { font-size: 15px; }
+}

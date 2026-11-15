@@ -5320,6 +5320,11 @@ function montaCalendario(cal, c, opc) {   // opc (Agenda do Trabalho): { marcas:
     for (let dd = de; dd <= total; dd++) {
       const chave = ano + '-' + String(mes + 1).padStart(2, '0') + '-' + String(dd).padStart(2, '0'), b = elD('button', 'ag-dia', String(dd)); b.type = 'button';
       if (dias.has(chave)) { b.classList.add('tem'); if (!opc && chave !== sel) b.style.background = '#1E293B'; }   // dia com compromisso: bolinha de uma cor só, sem borda (May 14/11 07:57), na tinta da Agenda: nenhuma cor da legenda, senão todo dia parece consulta (Sigma 14/11)   // um pontinho por tipo, na cor dele
+      if (MODO_WEB && !opc && innerWidth >= 1280) {   // PC: o dia vira célula de calendário de parede, com o texto dos compromissos dentro na cor do assunto (Sigma #240, volta 11:55)
+        const evs = els.filter(e => e.dataset.dia === chave); b.textContent = ''; b.style.background = ''; b.append(elD('span', 'ag-dia-n', String(dd)));
+        evs.slice(0, 3).forEach(e => { const t = elD('span', 'ag-dia-ev', ((e.querySelector('.ag-tx') || e.querySelector('.cx') || e).textContent || '').replace(/\s+/g, ' ').trim()); t.title = t.textContent; t.style.setProperty('--tc', e.dataset.cor); b.append(t); });
+        if (evs.length > 3) b.append(elD('span', 'ag-dia-mais', '+' + (evs.length - 3) + ' mais'));
+      }
       if (chave === sel) b.classList.add('sel');
       if (dd === hoje.getDate() && mes === hoje.getMonth() && ano === hoje.getFullYear()) b.classList.add('hoje');
       b.onclick = () => { if (opc) { sel = sel === chave ? '' : chave; desenhar(); opc.aoEscolher(sel); return; } sel = sel === chave ? '' : chave; filtra(); desenhar(); };
