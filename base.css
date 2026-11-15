@@ -2506,3 +2506,9 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
   body.web .ag-tela .ag-dia { width: 44px; height: 44px; font-size: 16px; } body.web .ag-tela .ag-grade { gap: 6px; row-gap: 6px; } body.web .ag-tela .ag-leg { font-size: 12.5px; }
   body.web .p-corpo > .tela.ag-tela > .ag-rola { grid-row: 4; min-height: 0; } body.web .ag-tela .ag-tx { max-width: 90ch; }
 }
+.ck-grupo { display: contents; }
+@media (min-width: 1280px) {   /* PC: o Checklist vira colunas, uma por seção (Atrasado, Esta semana, Mais pra frente, Sem data, Feitos) (Sigma #240) */
+  body.web .ck-bloco { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); align-items: start; column-gap: 0; }
+  body.web .ck-bloco > .ck-espiral, body.web .ck-bloco > .ck-cab { grid-column: 1 / -1; }
+  body.web .ck-grupo { display: block; min-width: 0; padding-right: 12px; border-right: 1px dashed rgba(0,0,0,.12); } body.web .ck-grupo:last-child { border-right: 0; }
+}
