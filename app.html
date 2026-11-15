@@ -3379,7 +3379,7 @@ function abreSaudeLista(m, soGrupo) {   // soGrupo: tela filha com um grupo só 
     const edita = x => edFormulario({ titulo: 'Editar', campos, v: x, aoSalvar: async v => { if (!v.tipo) v.tipo = 'item'; await E.edita(x.id, v); pinta(); }, aoApagar: () => apaga(x) });
     const pinta = () => {
       // item com "zera" (Autocuidado, May 08/11: creme toda noite, cabelo 2x por semana): o feito vale só pro dia ou pra semana; depois volta a aparecer pra marcar
-      const hojeZ = new Date(); hojeZ.setHours(0, 0, 0, 0); const segZ = new Date(hojeZ); segZ.setDate(hojeZ.getDate() - ((hojeZ.getDay() + 6) % 7));
+      const hojeZ = new Date(); hojeZ.setHours(0, 0, 0, 0); const segZ = new Date(hojeZ); segZ.setDate(hojeZ.getDate() - hojeZ.getDay());   // a semana do Autocuidado começa no domingo (May 15/11/2026 18:58)
       E.itens.forEach(x => { if (!x.zera || !x.feito) return; const m2 = String(x.feito).match(/(\d{2})\/(\d{2})\/(\d{4})/); if (!m2) return; const dF = new Date(+m2[3], +m2[2] - 1, +m2[1]); if (dF < (x.zera === 'semana' ? segZ : hojeZ)) x.feito = ''; });
       const todosVis = E.itens.filter(x => !x.apagado), vis = soGrupo != null ? todosVis.filter(x => (x.grupo || '') === soGrupo) : todosVis, grupos = [...new Set(vis.map(x => x.grupo || ''))], itensM = vis.filter(x => x.tipo !== 'nota');
       cabecalho({ sub: marcavel ? itensM.filter(x => x.feito).length + ' de ' + itensM.length + ' feitos' : vis.length + ' itens', acao: { icone: 'plus', rotulo: 'Novo', fn: lanca } });
