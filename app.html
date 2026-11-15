@@ -4743,13 +4743,13 @@ function abreCheck(m) {
         b.onclick = async () => { mede(); await E.feito(x.id, !x.feito); pinta(); };
         (ckAlvo || w).append(b); requestAnimationFrame(mede);
       };
-      let ckAlvo = null;   // cada seção num grupo: no celular o grupo some (display: contents), no PC vira coluna (Sigma #240)
+      let ckAlvo = null; const ckCols = elD('div', 'ck-colunas'); w.append(ckCols);   // cada seção num grupo dentro das colunas: no celular os dois somem (display: contents); no PC as seções correm em colunas de jornal, equilibradas (Sigma #240)
       grupos.forEach(([nome, cabe]) => {
         const lista = itens.filter(cabe).sort((a, b) => (a.data || '').localeCompare(b.data || ''));
         if (!lista.length) return;
-        ckAlvo = elD('div', 'ck-grupo'); w.append(ckAlvo); ckAlvo.append(elD('div', 'ck-sec' + (nome === 'Atrasado' ? ' atraso' : ''), nome)); lista.forEach(x => linha(x, nome)); ckAlvo = null;
+        ckAlvo = elD('div', 'ck-grupo'); ckCols.append(ckAlvo); ckAlvo.append(elD('div', 'ck-sec' + (nome === 'Atrasado' ? ' atraso' : ''), nome)); lista.forEach(x => linha(x, nome)); ckAlvo = null;
       });
-      if (feitos.length) { ckAlvo = elD('div', 'ck-grupo ck-feitos'); w.append(ckAlvo); ckAlvo.append(elD('div', 'ck-sec', 'Feitos')); feitos.sort((a, b) => String(b.feito).slice(6, 10).concat(String(b.feito).slice(3, 5), String(b.feito).slice(0, 2), String(b.feito).slice(11)).localeCompare(String(a.feito).slice(6, 10).concat(String(a.feito).slice(3, 5), String(a.feito).slice(0, 2), String(a.feito).slice(11)))).forEach(x => linha(x, 'Feitos')); }
+      if (feitos.length) { ckAlvo = elD('div', 'ck-grupo ck-feitos'); ckCols.append(ckAlvo); ckAlvo.append(elD('div', 'ck-sec', 'Feitos')); feitos.sort((a, b) => String(b.feito).slice(6, 10).concat(String(b.feito).slice(3, 5), String(b.feito).slice(0, 2), String(b.feito).slice(11)).localeCompare(String(a.feito).slice(6, 10).concat(String(a.feito).slice(3, 5), String(a.feito).slice(0, 2), String(a.feito).slice(11)))).forEach(x => linha(x, 'Feitos')); }
     };
     pinta();
     if (opsV.length) { opsV.forEach(op => edAplica(E.itens, op, false)); gravaJson(m.edicoes || m.arq, d => { d.itens = d.itens || []; opsV.forEach(op => edAplica(d.itens, op, !!m.edicoes)); }, 'Marcas antigas do Checklist passadas pro arquivo', { itens: [] }).then(ok => { if (ok) store.set('check-feitos', ''); pinta(); }); }

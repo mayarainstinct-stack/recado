@@ -2559,3 +2559,11 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
   body.web .fin-pag { overflow: visible !important; padding-bottom: 28px; }
   body.web .fm-acoes { position: fixed; top: 6px; right: 112px; z-index: 6; padding: 0; } body.web .fm-acoes .fin-lancar, body.web .fm-acoes .fin-lancar.fin-nova { height: 36px; font-size: 15px; background: #FFFFFF !important; color: #1A6640 !important; border: 0 !important; font-weight: 800; }
 }
+.ck-colunas { display: contents; }
+@media (min-width: 1280px) {   /* Checklist no PC, volta do Sigma 11:55: caderno até o pé da tela e seções correndo em colunas de jornal, sem coluna vazia */
+  body.web .ck-bloco { display: block; min-height: calc(100dvh - 110px); margin-bottom: 16px; }
+  body.web .ck-colunas { display: block; columns: 4 320px; column-gap: 28px; column-rule: 1px dashed rgba(0,0,0,.12); }
+  body.web .ck-grupo { display: block; padding-right: 0; border-right: 0; }
+  body.web .ck-sec { break-after: avoid; } body.web .ck-item { break-inside: avoid; }
+  body.web .ck-t { font-size: 15.5px; } body.web .ck-item small { font-size: 13px; }
+}
