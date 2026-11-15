@@ -2151,7 +2151,7 @@ body.na-geral .painel.tema-musica .p-topo::after, .painel.tema-musica .p-topo::a
 .t-musica .tm-aparelho h3{margin:0;font-size:15px;font-weight:800;line-height:1.25;overflow-wrap:anywhere}
 .t-musica .tm-aparelho p{margin:3px 0 0;color:var(--tm-mudo);font-size:13px}
 .t-musica .tm-selo{display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-size:12px;font-weight:700;color:var(--tm-texto)}
-.t-musica .tm-selo::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--tm-cor);box-shadow:0 0 6px var(--tm-cor)}
+.t-musica .tm-selo::before{content:"";width:8px;height:8px;border-radius:50%;background:#3DDC84;box-shadow:0 0 6px #3DDC84}   /* confirmado em verde: vermelho lido rápido parece problema; só o Provável ganha cor de alerta (Sigma 15/11 15:01) */
 .t-musica .tm-selo.talvez::before{background:var(--tm-ama);box-shadow:0 0 6px var(--tm-ama)}
 
 /* ideias = pauta */
