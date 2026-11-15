@@ -3554,7 +3554,9 @@ function abreMusica(m) {
       const mus = vivos('musica'), naIdeia = mus.filter(x => (x.etapa || 1) === 1).length;
       rtx.replaceChildren(elD('b', '', mus.length + (mus.length === 1 ? ' música em andamento' : ' músicas em andamento')), elD('span', '', !mus.length ? 'toque no + pra começar' : naIdeia === mus.length ? 'todas ainda na etapa de ideia' : naIdeia + ' ainda na ideia'));
       abas.replaceChildren(...[['musica', 'Músicas'], ['pratica', 'Tocar'], ['manut', 'Cuidar'], ['setup', 'Setup'], ['ideia', 'Ideias']].map(([id, rot]) => { const b = elD('button', 'tm-aba', rot); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(aba === id)); b.onclick = () => { aba = id; store.set('mus-aba', id); pinta(); }; return b; }));
-      corpo.replaceChildren();
+      const ABAS_M = [['musica', 'Músicas'], ['pratica', 'Tocar'], ['manut', 'Cuidar'], ['setup', 'Setup'], ['ideia', 'Ideias']], raiz = corpo, PC = document.body.classList.contains('web') && matchMedia('(min-width: 1280px)').matches;   // no PC as abas viram colunas, o mesmo conteúdo de cada uma lado a lado (Sigma #240)
+      raiz.replaceChildren(); raiz.classList.toggle('tm-colunas', PC);
+      (PC ? ABAS_M : ABAS_M.filter(([id]) => id === aba)).forEach(([aba, rot]) => { const corpo = PC ? elD('section', 'tm-col') : raiz; if (PC) { corpo.append(elD('h2', 'tm-col-tit', rot)); raiz.append(corpo); }
       if (aba === 'musica') {
         corpo.append(gravador());
         const quando = x => { const m = String(x.atualizado || x.criado || '').match(/^(\d\d)\/(\d\d)\/(\d{4})/); return m ? m[3] + m[2] + m[1] : '0'; }, parada = vivos('musica').filter(x => (x.etapa || 1) < 5).sort((a, b) => quando(a).localeCompare(quando(b)))[0];
@@ -3618,6 +3620,7 @@ function abreMusica(m) {
         agrupa(vivos('ideia')).forEach(([g, l]) => { corpo.append(elD('div', 'tm-grupo', g || 'Outras')); const pa = elD('div', 'tm-pauta'), ul = elD('ul'); l.forEach(x => { const li = elD('li'), tx = elD('div'); tx.append(lapis('ideia', x), document.createTextNode(x.nome)); if (x.texto) tx.append(elD('small', '', x.texto)); li.append(tx); ul.append(li); }); pa.append(ul); corpo.append(pa); });
       }
       if (aba !== 'manut' && aba !== 'pratica') { const mais = elD('button', 'tm-mais', '+ ' + { musica: 'Música', setup: 'Aparelho ou pessoa', ideia: 'Ideia' }[aba]); mais.type = 'button'; mais.onclick = () => form(aba, null); corpo.append(mais); }
+      });
     };
     pinta();
   });
