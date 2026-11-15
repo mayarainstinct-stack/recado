@@ -592,6 +592,17 @@ nav button{position:relative;z-index:1}nav button.on{background:none!important;b
 .prateleira{padding:30px 16px 40px;margin:-22px 0 -22px}
 .serie{padding-top:8px;padding-bottom:10px;margin-top:-8px;margin-bottom:-8px}
 #f-voltar{order:9}#zoom .zx{left:auto;right:14px}#envio .e-x{left:auto;right:12px}
+@media (min-width:1280px) and (pointer:fine){ /* PC: a ficha como página de PC: à esquerda a capa grande, o nome e o progresso presos; à direita as abas viram painéis em 2 colunas encaixadas, letra de PC (Sigma #240 e 15/11 11:55, Hermes #332) */
+#f-corpo{display:grid!important;grid-template-columns:360px minmax(0,1fr);column-gap:26px;align-items:start;padding:0 22px 0 4px}
+#ficha .topo{grid-column:1;position:sticky;top:0;flex-direction:column!important;align-items:stretch!important;padding:20px 0 28px 18px!important}
+#ficha .topo .capa{width:100%!important}#ficha .topo h2,#ficha .topo .nome{font-size:28px}
+#ficha .abas-f{display:none!important}
+#ficha .pager{grid-column:2;display:block!important;columns:2 400px;column-gap:0;overflow:visible!important;height:auto!important;padding-top:18px}
+#ficha .painel{display:inline-block;width:100%;break-inside:avoid;padding-bottom:18px}
+#ficha .painel::before{content:attr(data-nome);display:block;margin:6px 18px 10px;font-size:13px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--texto2)}
+#ficha .bloco{font-size:15px;line-height:1.5}#ficha .bloco h3{font-size:12.5px}#ficha .bloco p,#ficha .bloco li,#ficha .bloco dd{font-size:15px}
+#ficha .toca:hover,#ficha button:hover{filter:brightness(1.15)}#ficha button:focus-visible,#ficha .toca:focus-visible{outline:2px solid var(--cor);outline-offset:2px}
+}
 </style>
 </head>
 <body>
@@ -905,7 +916,7 @@ const pr=[...new Set((j.prints||[]).filter(p=>p.existe!==false).map(p=>corte(p.a
 if(pr.length)A.prints+=`<div class="bloco"><h3>${IC.img}Prints</h3><div class="prints">${pr.map(p=>`<img loading="lazy" data-z data-p="${esc(p)}" alt="">`).join("")}</div></div>`
 const NOMES={resumo:"Resumo",jogo:"Jogo",onde:"Onde jogo",eu:"Eu",hist:"História",poke:"Pokémon",inv:"Inventário",save:"Save",prints:"Prints"},tem=Object.keys(NOMES).filter(k=>A[k])
 if(!tem.includes(abaFicha))abaFicha="resumo"
-h+=`<div class="abas-f" role="tablist">${tem.map(k=>`<button role="tab" data-af="${k}" class="${k==abaFicha?"on":""}" aria-selected="${k==abaFicha}">${NOMES[k]}</button>`).join("")}</div><div class="pager">${tem.map(k=>`<section class="painel" data-aba="${k}">${A[k]}</section>`).join("")}</div>`
+h+=`<div class="abas-f" role="tablist">${tem.map(k=>`<button role="tab" data-af="${k}" class="${k==abaFicha?"on":""}" aria-selected="${k==abaFicha}">${NOMES[k]}</button>`).join("")}</div><div class="pager">${tem.map(k=>`<section class="painel" data-aba="${k}" data-nome="${NOMES[k]}">${A[k]}</section>`).join("")}</div>`
 const fc=document.getElementById("f-corpo");fc.innerHTML=h;fc.querySelectorAll(".topo .capa img.inteira").forEach(im=>im.setAttribute("data-z",""));hidrata(fc)
 fc.onclick=e=>{const pe=e.target.closest("[data-pop]");if(pe&&!e.target.closest("img[data-z],a,button")){abrePop(POP[+pe.dataset.pop]());return}const im=e.target.closest("img[data-z]");if(!im||!im.src)return;const todas=[...fc.querySelectorAll("img[data-z]")].filter(x=>x.src);abreZoom(todas.map(x=>x.src),todas.indexOf(im))}
 const pager=fc.querySelector(".pager"),paineis=[...pager.children],botoes=[...fc.querySelectorAll("[data-af]")]

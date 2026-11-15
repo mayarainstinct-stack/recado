@@ -1,3 +1,4 @@
+// v418 (app no PC, telas do Hermes: Viagens, Música, Artes, Treino, Mídia e ficha do Jogos feitas pra web; #240 #332)
 // v417 (Jogos: a ficha voltou a abrir, o .415 tirou o #envio e a ficha ainda pintava ele; conserto urgente)
 // v416 (Diagnóstico: abas sempre no mesmo lugar, anel claro com vermelho só no aperto, 1 janela de tempo, aba Conexão; #3 #5 #37)
 // v415 (#291 Portfólio revista, #325 cortar foto, #153 popup único de recado, #320 bolinha da Agenda, #319 menu respeita apagado, #326 Garagem em pares, #321 Música com onda do áudio, #145 mais quadros do vídeo; fonte Kaushan Script OFL)

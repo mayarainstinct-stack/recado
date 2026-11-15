@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-15.417">
+<meta name="app-versao" content="2026-11-15.418">
 <meta name="app-novidade" content="Música: grade com buracos maiores e vinheta preta">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-15.417"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-15.418"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3154,7 +3154,15 @@ function abreGrupo(m) {
     const pos = x => { const i = ordem.indexOf(x.nome); return i < 0 ? 999 : i; }, itensG = (m.itens || []).filter(x => !x.apagado).map((x, i) => [x, i]).sort((a, b) => pos(a[0]) - pos(b[0]) || a[1] - b[1]).map(a => a[0]);   // a ordem que ela arrumou arrastando (neste aparelho); item novo vai pro fim
     arrumaArrastando(g, { sel: '.gr-item', chave, aviso: 'Pastas arrumadas: ficam assim neste celular' });
     itensG.forEach(x => { const b = botaoGrade(x.icone, x.nome, x.sub, () => abreItemMenu(x)); b.classList.add('gr-item'); b.dataset.nome = x.nome; b.style.setProperty('--c', x.cor || cor); if (x.cor) b.classList.add('cor-propria'); if (!m.estilo || m.estilo === 'cinema') { const sb = elD('small', 'gr-sub', x.sub || ''); b.append(sb); } g.append(b); });
+    if (m.estilo === 'cinema' && document.body.classList.contains('web') && matchMedia('(min-width: 1280px)').matches) ultimasMidia(c, itensG);   // no PC, embaixo da fileira, a prévia das últimas peças (Sigma #240)
   });
+}
+async function ultimasMidia(c, itensG) {   // prévia das peças atuais da Mídia (menu/midia.json), da última pra primeira; tocar abre a vista dela (Hermes #332)
+  let d; try { d = JSON.parse(await lerArquivo('menu/midia.json')); } catch (e) { return; }
+  const VISTA = { imagens: 'Imagens', animacoes: 'Animações', videos: 'Vídeos' }, img = /\.(png|jpe?g|webp|gif)$/i;
+  const comImg = x => !x.apagado && (x.capa || img.test(x.arq || '')), it = [...(d.itens || []).filter(x => comImg(x) && x.status === 'atual').reverse(), ...(d.itens || []).filter(x => comImg(x) && x.status !== 'atual').reverse()].slice(0, 9); if (!it.length) return;   // as atuais primeiro, completa com as do processo até 9 (grade 3x3 no PC)
+  const sec = elD('section', 'gr-ultimas'), fila = elD('div', 'gr-ult-fila'); sec.append(elD('h2', 'gr-ult-tit', 'Últimas peças'), fila); c.append(sec);
+  it.forEach(x => { const b = elD('button', 'gr-ult'), im = elD('img'); b.type = 'button'; im.alt = ''; im.loading = 'lazy'; fotoUrl(x.capa || x.arq).then(u => { im.src = u; }).catch(() => {}); b.append(im, elD('span', '', x.titulo || x.versao || x.peca || '')); const alvo = itensG.find(g => g.nome === VISTA[(x.vistas || [])[0]]); if (alvo) b.onclick = () => abreItemMenu(alvo); fila.append(b); });
 }
 // Ideias (May via Sigma, 07/11/2026): anotar rápido ideia do app, da casa ou de conteúdo; vira pauta pros robôs. Arquivo: m.arq, uma linha por ideia, a mais nova embaixo
 async function gravaLinha(arq, linha) {   // acrescenta 1 linha no fim do arquivo do Inst (lê o mais novo com o sha; 409 = alguém gravou junto, tenta de novo)
@@ -3540,7 +3548,10 @@ function abreMusica(m) {
       const mus = vivos('musica'), naIdeia = mus.filter(x => (x.etapa || 1) === 1).length;
       rtx.replaceChildren(elD('b', '', mus.length + (mus.length === 1 ? ' música em andamento' : ' músicas em andamento')), elD('span', '', !mus.length ? 'toque no + pra começar' : naIdeia === mus.length ? 'todas ainda na etapa de ideia' : naIdeia + ' ainda na ideia'));
       abas.replaceChildren(...[['musica', 'Músicas'], ['pratica', 'Tocar'], ['manut', 'Cuidar'], ['setup', 'Setup'], ['ideia', 'Ideias']].map(([id, rot]) => { const b = elD('button', 'tm-aba', rot); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(aba === id)); b.onclick = () => { aba = id; store.set('mus-aba', id); pinta(); }; return b; }));
-      corpo.replaceChildren();
+      const ABAS_M = [['musica', 'Músicas'], ['pratica', 'Tocar'], ['manut', 'Cuidar'], ['setup', 'Setup'], ['ideia', 'Ideias']], raiz = corpo, PC = document.body.classList.contains('web') && matchMedia('(min-width: 1280px)').matches;   // no PC as abas viram colunas, o mesmo conteúdo de cada uma lado a lado (Sigma #240)
+      raiz.replaceChildren(); raiz.classList.toggle('tm-colunas', PC);
+      const GRUPO = { musica: 0, pratica: 1, manut: 1, setup: 2, ideia: 2 }, colunas = PC ? [0, 1, 2].map(() => { const s = elD('div', 'tm-coluna'); raiz.append(s); return s; }) : null;   // no PC: Músicas | Tocar e Cuidar | Setup e Ideias, cada coluna rolando sozinha (Sigma 15/11 11:55)
+      (PC ? ABAS_M : ABAS_M.filter(([id]) => id === aba)).forEach(([aba, rot]) => { const corpo = PC ? elD('section', 'tm-col') : raiz; if (PC) { corpo.append(elD('h2', 'tm-col-tit', rot)); colunas[GRUPO[aba]].append(corpo); }
       if (aba === 'musica') {
         corpo.append(gravador());
         const quando = x => { const m = String(x.atualizado || x.criado || '').match(/^(\d\d)\/(\d\d)\/(\d{4})/); return m ? m[3] + m[2] + m[1] : '0'; }, parada = vivos('musica').filter(x => (x.etapa || 1) < 5).sort((a, b) => quando(a).localeCompare(quando(b)))[0];
@@ -3604,6 +3615,7 @@ function abreMusica(m) {
         agrupa(vivos('ideia')).forEach(([g, l]) => { corpo.append(elD('div', 'tm-grupo', g || 'Outras')); const pa = elD('div', 'tm-pauta'), ul = elD('ul'); l.forEach(x => { const li = elD('li'), tx = elD('div'); tx.append(lapis('ideia', x), document.createTextNode(x.nome)); if (x.texto) tx.append(elD('small', '', x.texto)); li.append(tx); ul.append(li); }); pa.append(ul); corpo.append(pa); });
       }
       if (aba !== 'manut' && aba !== 'pratica') { const mais = elD('button', 'tm-mais', '+ ' + { musica: 'Música', setup: 'Aparelho ou pessoa', ideia: 'Ideia' }[aba]); mais.type = 'button'; mais.onclick = () => form(aba, null); corpo.append(mais); }
+      });
     };
     pinta();
   });
@@ -3648,7 +3660,9 @@ function abreContraste(m) {
     const ABAS = { pedidos: 'Pedidos', portfolio: 'Portfólio', marca: 'Marca' }; let aba = 'pedidos';
     const pinta = () => {
       nav.replaceChildren(...Object.entries(ABAS).map(([k, t]) => { const b = elD('button', k === aba ? 'on' : '', t); b.type = 'button'; b.onclick = () => { aba = k; pinta(); }; return b; }));
-      corpo.replaceChildren();
+      const raiz = corpo, PC = document.body.classList.contains('web') && matchMedia('(min-width: 1280px)').matches;   // no PC as abas viram colunas: Pedidos, Portfólio e Marca lado a lado, mesmo conteúdo (Sigma #240)
+      raiz.replaceChildren(); raiz.classList.toggle('ctb-colunas', PC);
+      (PC ? Object.keys(ABAS) : [aba]).forEach(aba => { const corpo = PC ? elD('section', 'ctb-col ctb-col-' + aba) : raiz; if (PC) { corpo.append(elD('h2', 'ctb-col-tit', ABAS[aba])); raiz.append(corpo); }
       if (aba === 'pedidos') {
         const ab = abertos(), receber = ab.reduce((s, p) => s + (parseFloat(String(p.valor || 0).replace(',', '.')) || 0), 0), atras = ab.filter(p => prazoTx(p)[1] === 'atrasado').length;
         const nums = elD('div', 'ctb-nums'); [[ab.length, ab.length === 1 ? 'pedido aberto' : 'pedidos abertos'], [receber ? reais(receber) : 'R$ 0', 'a receber'], [atras, atras === 1 ? 'atrasado' : 'atrasados']].forEach(([n, t], j) => { const b = elD('div', j === 2 && atras ? 'alerta' : ''); b.append(elD('b', '', String(n)), elD('small', '', t)); nums.append(b); }); corpo.append(nums);
@@ -3705,6 +3719,7 @@ function abreContraste(m) {
         const hero = elD('div', 'ctr-hero so-logo'), im = elD('img'); im.alt = d.nome || ''; fotoUrl(d.logo).then(u => { im.src = u; }).catch(() => {});   // a marca sozinha e inteira, sem texto nem caixas de cor embaixo (May 13/11 16:20, Sigma 16:22)
         hero.append(im); corpo.append(hero);
       }
+      });
     };
     E.aoMudar = pinta; pinta();
   });
@@ -4936,7 +4951,8 @@ function montaTreino(c, d) {
     d.viagens.forEach(v => {
       if (v.resumo) { const r = document.createElement('div'); r.className = 'p-texto'; r.textContent = v.resumo; corpo.append(r); }
       const lista = document.createElement('div'); lista.className = 'p-lista'; corpo.append(lista);
-      v.listas.forEach(l => lista.append(botao(l.icone, semHojeFalso(l.nome), marcados(v, l).size + ' de ' + totalItens(l) + ' feitos · ' + semHojeFalso(l.sub || ''), () => abreChecklist(v, l))));
+      const PC = document.body.classList.contains('web') && matchMedia('(min-width: 1280px)').matches;   // no PC o cartão grande mostra os exercícios do treino, o feito riscado (Sigma 15/11 11:55)
+      v.listas.forEach(l => { const b = botao(l.icone, semHojeFalso(l.nome), marcados(v, l).size + ' de ' + totalItens(l) + ' feitos · ' + semHojeFalso(l.sub || ''), () => abreChecklist(v, l)); if (PC) { const ul = elD('ul', 'tr-exs'), fez = marcados(v, l); l.grupos.forEach(g => g.itens.filter(itemVivo).forEach(it => ul.append(elD('li', fez.has(it[0]) ? 'feito' : '', String(it[1]).split(/,| \(/)[0])))); b.querySelector('.tx').append(ul); } lista.append(b); });
     });
     corpo.append(bf);   // "Hoje não vou" fica lá embaixo, depois dos treinos (May, 05/11/2026)
   };

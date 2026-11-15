@@ -2499,3 +2499,65 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 .t-musica .tm-onda .tm-botao::after{left:-5px;right:auto;top:-2px;width:12px;height:8px;margin:0;border-radius:2px;background:var(--tm-ama)}
 .t-musica .tm-onda-sem{position:absolute;right:8px;top:4px;font-size:11px;color:var(--tm-mudo)}
 .pf-folha.cheia figcaption { padding-bottom: 18px; }
+@media (min-width: 1280px) {   /* PC: as Viagens em linhas que se dividem sem buraco (2 próximas = metade cada, Já foi em até 4), desenho na altura da tela, letra de PC; + Plano com tamanho de botão (Sigma #240 e 15/11 11:55, Hermes #332) */
+  body.web .pl2-cena { height: 120px; } body.web .pl2-abas { margin-bottom: 22px; } body.web .pl2-abas button { flex: 0 1 260px; font-size: 15px; }
+  body.web .pl2-corpo { display: flex; flex-wrap: wrap; gap: 22px; align-items: stretch; }
+  body.web .pl2-corpo > .pl2-placa { flex: 1 1 calc(25% - 22px); min-width: 290px; margin: 0; display: flex; flex-direction: column; }
+  body.web .pl2-corpo > .pl2-sec, body.web .pl2-corpo > .pl2-vazio { flex: 0 0 100%; } body.web .pl2-corpo > .pl2-sec { margin: 10px 4px -6px; font-size: 13px; }
+  body.web .pl2-arte { height: clamp(190px, 25dvh, 300px); } body.web .pl2-pe { margin-top: auto; padding-top: 12px; }
+  body.web .pl2-top b { font-size: 20px; } body.web .pl2-top span { font-size: 15px; max-width: 90ch; } body.web .pl2-barra-w small, body.web .pl2-selo { font-size: 14px; }
+  body.web .pl2-placa { transition: transform .15s, box-shadow .15s; } body.web .pl2-placa:hover { transform: translateY(-3px); box-shadow: 0 9px 0 #3B2A4A; }
+  body.web .pl2-placa button:focus-visible, body.web .pl2-abas button:focus-visible { outline: 3px solid #3B2A4A; outline-offset: 2px; }
+  body.web .pl2-mais { left: auto; right: 28px; width: auto; padding: 0 32px; }
+  body.web .pl2-pilha { flex-wrap: wrap; row-gap: 14px; } body.web .pl2-abre-album { flex: 1 1 170px; white-space: nowrap; }
+}
+@media (min-width: 1280px) {   /* PC: a Música em 3 colunas (Músicas | Tocar e Cuidar | Setup e Ideias), letra de PC, cada coluna rolando sozinha na altura da tela (Sigma #240 e 15/11 11:55, Hermes #332) */
+  body.web .t-musica .tm-abas:has(+ .tm-painel.tm-colunas) { display: none !important; }
+  body.web .tm-painel.tm-colunas { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 26px; height: calc(100dvh - 222px); min-height: 520px; }
+  body.web .tm-coluna { min-height: 0; overflow-y: auto; padding: 4px 14px 30px 4px; zoom: 1.18; scrollbar-width: thin; }
+  body.web .tm-col + .tm-col { margin-top: 28px; }
+  body.web .tm-col-tit { position: sticky; top: 0; z-index: 2; margin: 0 0 12px; padding: 8px 0; font-size: 13px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; background: #0B0B0C; }
+  body.web .tm-col .tm-mais { width: auto; padding: 0 22px; }
+  body.web .t-musica button:hover { filter: brightness(1.15); } body.web .t-musica button:focus-visible, body.web .t-musica [tabindex]:focus-visible { outline: 2px solid #FFD400; outline-offset: 2px; }
+}
+@media (min-width: 1280px) {   /* PC: a Artes como balcão: o Portfólio ocupa a tela e rola sozinho; à direita uma coluna com a Marca em cima e os Pedidos embaixo, + Pedido dentro dela (Sigma #240 e 15/11 11:55, Hermes #332) */
+  body.web .ctb-abas:has(+ .ctb-corpo.ctb-colunas) { display: none; }
+  body.web .ctb-corpo.ctb-colunas { display: grid; grid-template-columns: minmax(0, 1fr) 380px; grid-template-rows: auto minmax(0, 1fr); gap: 18px 26px; height: calc(100dvh - 160px); min-height: 520px; margin-top: 64px; padding-bottom: 0; }
+  body.web .ctb-col { min-width: 0; min-height: 0; } body.web .ctb-col-tit { margin: 0 0 12px; font-size: 13px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+  body.web .ctb-col-portfolio { grid-column: 1; grid-row: 1 / -1; overflow-y: auto; padding-right: 8px; scrollbar-width: thin; }
+  body.web .ctb-col-marca { grid-column: 2; grid-row: 1; padding: 14px 16px; border: 2px solid #000; border-radius: 16px; display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 14px; }
+  body.web .ctb-col-marca .ctb-col-tit { grid-column: 1 / -1; } body.web .ctb-col-marca .ctr-hero.so-logo { grid-column: 1 / -1; padding: 4px 0; border: 0; box-shadow: none; } body.web .ctb-col-marca .ctr-hero.so-logo img { max-width: 200px; max-height: min(160px, 18dvh); width: auto; }
+  body.web .ctb-col-pedidos { grid-column: 2; grid-row: 2; overflow-y: auto; padding: 16px; border: 2px solid #000; border-radius: 16px; display: flex; flex-direction: column; }
+  body.web .ctb-col-pedidos .ctb-nums b { font-size: 22px; } body.web .ctb-col-pedidos .ctb-vazio { font-size: 15px; }
+  body.web .ctb-col-pedidos .ctb-mais { position: static; margin-top: auto; width: 100%; height: 52px; }
+  body.web .ctb-col button:hover { filter: brightness(1.06); } body.web .ctb-col button:focus-visible { outline: 3px solid #EC008C; outline-offset: 2px; }
+}
+@media (min-width: 1280px) {   /* PC: o Treino como painel: à esquerda o título, as abas, a regra, Estatística e Hoje não vou; à direita os treinos em cartões grandes ocupando a altura toda (Sigma #240 e 15/11 11:55, Hermes #332) */
+  body.web .p-corpo > .tela.treino-tela:has(.tr-corpo > .treino-est) { display: grid; grid-template-columns: 380px minmax(0, 1fr); grid-template-rows: auto auto auto auto 1fr; column-gap: 26px; row-gap: 14px; height: calc(100dvh - 88px); min-height: 560px; }
+  body.web .treino-tela:has(.tr-corpo > .treino-est) .tr-corpo { display: contents; }
+  body.web .treino-tela:has(.tr-corpo > .treino-est) .tr-cab { grid-column: 1; grid-row: 1; min-height: 170px; margin: 0; }
+  body.web .treino-tela:has(.tr-corpo > .treino-est) .tr-abas { grid-column: 1; grid-row: 2; }
+  body.web .treino-tela .tr-corpo > .p-texto { grid-column: 1; grid-row: 3; margin: 0; font-size: 14.5px; line-height: 1.5; }
+  body.web .treino-tela .tr-corpo > .treino-est { grid-column: 1; grid-row: 4; margin: 0; }
+  body.web .treino-tela .tr-corpo > :last-child:not(.p-lista):not(.p-texto) { grid-column: 1; grid-row: 5; align-self: start; margin: 0; }
+  body.web .treino-tela .tr-corpo > .p-lista { grid-column: 2; grid-row: 1 / -1; display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 18px; margin: 0; min-height: 0; }
+  body.web .treino-tela .p-lista .p-botao { height: 100%; min-height: 0; flex-direction: column; align-items: flex-start; justify-content: space-between; padding: 26px 24px 22px; text-align: left; }
+  body.web .treino-tela .p-lista .p-botao .ic { width: 64px; height: 64px; } body.web .treino-tela .p-lista .p-botao .ic svg { width: 34px; height: 34px; }
+  body.web .treino-tela .p-lista .p-botao .t { font-size: 24px; line-height: 1.1; } body.web .treino-tela .p-lista .p-botao small { display: block; margin-top: 10px; font-size: 15px; line-height: 1.45; }
+  body.web .treino-tela .p-lista .p-botao .chev { position: absolute; right: 22px; bottom: 26px; }
+  body.web .treino-tela .p-lista .p-botao .tx { width: 100%; min-height: 0; overflow: hidden; } body.web .tr-exs { list-style: none; margin: 16px 0 0; padding: 14px 0 0; border-top: 1px dashed rgba(98,176,42,.4); display: grid; gap: 7px; } body.web .tr-exs li { position: relative; padding-left: 20px; font-size: 15px; line-height: 1.35; color: #D6F5D6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } body.web .tr-exs li::before { content: ''; position: absolute; left: 0; top: .45em; width: 9px; height: 9px; border: 2px solid #62B02A; } body.web .tr-exs li.feito { color: #6F8F66; text-decoration: line-through; } body.web .tr-exs li.feito::before { background: #62B02A; }
+  body.web .treino-tela .p-botao { position: relative; transition: transform .15s, box-shadow .15s; } body.web .treino-tela .p-botao:hover { transform: translateY(-2px); box-shadow: 0 0 0 2px #62B02A, 0 8px 24px rgba(98,176,42,.25); }
+  body.web .treino-tela .p-botao:focus-visible, body.web .treino-tela .tr-aba:focus-visible { outline: 3px solid #A6F06B; outline-offset: 3px; }
+}
+@media (min-width: 1280px) {   /* PC: a Mídia como painel: as 4 pastas numa coluna de rolo de filme à esquerda e as peças grandes em grade 3x3 ocupando a altura toda (Sigma #240 e 15/11 11:55, Hermes #332) */
+  body.web .p-corpo > .tela.gr-cinema:has(.gr-ultimas) { display: grid; grid-template-columns: 320px minmax(0, 1fr); column-gap: 24px; height: calc(100dvh - 88px); min-height: 560px; }
+  body.web .gr-grade.gr-grade-cinema { grid-template-columns: 1fr !important; grid-auto-rows: 1fr; height: auto; min-height: 0; margin: 0; padding: 14px 30px; }
+  body.web .gr-grade.gr-grade-cinema .gr-item { gap: 6px; padding: 12px 18px; } body.web .gr-grade.gr-grade-cinema .gr-item .ic { width: 64px; height: 64px; flex: none; }
+  body.web .gr-grade.gr-grade-cinema .gr-item .t { font-size: 17px; } body.web .gr-grade.gr-grade-cinema .gr-item .gr-sub { font-size: 14px; }
+  body.web .gr-grade.gr-grade-cinema .gr-item:hover { transform: translate(-1px, -2px); filter: brightness(1.04); } body.web .gr-item:focus-visible, body.web .gr-ult:focus-visible { outline: 3px solid #B3261E; outline-offset: 3px; }
+  body.web .gr-ultimas { display: flex; flex-direction: column; min-height: 0; margin: 14px 4px 14px 0; } body.web .gr-ult-tit { margin: 0 0 12px; font: 900 17px Georgia, 'Times New Roman', serif; letter-spacing: .3px; text-transform: uppercase; color: #B3261E; }
+  body.web .gr-ult-fila { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 18px; }
+  body.web .gr-ult { all: unset; box-sizing: border-box; cursor: pointer; display: flex; flex-direction: column; gap: 10px; min-height: 0; padding: 10px 10px 12px; background: #F7EEDB; border: 2.5px solid #2B1A0E; border-radius: 6px; box-shadow: 3px 4px 0 #2B1A0E; transition: transform .15s, box-shadow .15s; }
+  body.web .gr-ult img { flex: 1; min-height: 0; width: 100%; object-fit: cover; background: #2B1A0E; border-radius: 3px; } body.web .gr-ult span { flex: none; font: italic 15px Georgia, serif; color: #2B1A0E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  body.web .gr-ult:hover { transform: translate(-2px, -3px); box-shadow: 5px 7px 0 #2B1A0E; }
+}
