@@ -4966,7 +4966,8 @@ function montaTreino(c, d) {
     d.viagens.forEach(v => {
       if (v.resumo) { const r = document.createElement('div'); r.className = 'p-texto'; r.textContent = v.resumo; corpo.append(r); }
       const lista = document.createElement('div'); lista.className = 'p-lista'; corpo.append(lista);
-      v.listas.forEach(l => lista.append(botao(l.icone, semHojeFalso(l.nome), marcados(v, l).size + ' de ' + totalItens(l) + ' feitos · ' + semHojeFalso(l.sub || ''), () => abreChecklist(v, l))));
+      const PC = document.body.classList.contains('web') && matchMedia('(min-width: 1280px)').matches;   // no PC o cartão grande mostra os exercícios do treino, o feito riscado (Sigma 15/11 11:55)
+      v.listas.forEach(l => { const b = botao(l.icone, semHojeFalso(l.nome), marcados(v, l).size + ' de ' + totalItens(l) + ' feitos · ' + semHojeFalso(l.sub || ''), () => abreChecklist(v, l)); if (PC) { const ul = elD('ul', 'tr-exs'), fez = marcados(v, l); l.grupos.forEach(g => g.itens.filter(itemVivo).forEach(it => ul.append(elD('li', fez.has(it[0]) ? 'feito' : '', String(it[1]).split(/,| \(/)[0])))); b.querySelector('.tx').append(ul); } lista.append(b); });
     });
     corpo.append(bf);   // "Hoje não vou" fica lá embaixo, depois dos treinos (May, 05/11/2026)
   };
