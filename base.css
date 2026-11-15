@@ -2547,3 +2547,10 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
   body.web .ctb-col { min-width: 0; } body.web .ctb-col-tit { margin: 0 0 12px; font-size: 13px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
   body.web .ctb-mais { left: auto; right: 28px; width: auto; padding: 0 32px; }
 }
+@media (min-width: 1280px) {   /* PC: os treinos em grade de 3 e a Estatística com o "Hoje não vou" numa coluna ao lado (Sigma #240, Hermes #332) */
+  body.web .treino-tela .tr-abas { max-width: 640px; }
+  body.web .treino-tela .tr-corpo:has(> .treino-est) { display: grid; grid-template-columns: minmax(0, 1fr) 360px; column-gap: 26px; grid-auto-flow: row dense; align-items: start; }
+  body.web .treino-tela .tr-corpo > * { grid-column: 1; } body.web .treino-tela .tr-corpo > .treino-est { grid-column: 2; grid-row: 1; } body.web .treino-tela .tr-corpo > :last-child:not(.p-lista):not(.p-texto) { grid-column: 2; grid-row: 2; }
+  body.web .treino-tela .p-lista { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  body.web .treino-tela .tr-corpo > .p-texto { max-width: 90ch; }
+}
