@@ -2500,3 +2500,9 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 .t-musica .tm-onda .tm-botao::after{left:-5px;right:auto;top:-2px;width:12px;height:8px;margin:0;border-radius:2px;background:var(--tm-ama)}
 .t-musica .tm-onda-sem{position:absolute;right:8px;top:4px;font-size:11px;color:var(--tm-mudo)}
 .pf-folha.cheia figcaption { padding-bottom: 18px; }
+@media (min-width: 1280px) {   /* PC: a Agenda vira 2 colunas, calendário à esquerda e a lista inteira à direita (Sigma #240) */
+  body.web .p-corpo > .tela.ag-tela { display: grid !important; grid-template-columns: minmax(380px, 40%) minmax(0, 1fr); grid-auto-rows: auto; grid-template-rows: auto auto auto 1fr; column-gap: 28px; }
+  body.web .ag-tela > .ag-cal { grid-column: 1; grid-row: 1 / span 4; align-self: start; padding: 18px 20px; } body.web .ag-tela > :not(.ag-cal) { grid-column: 2; }
+  body.web .ag-tela .ag-dia { width: 44px; height: 44px; font-size: 16px; } body.web .ag-tela .ag-grade { gap: 6px; row-gap: 6px; } body.web .ag-tela .ag-leg { font-size: 12.5px; }
+  body.web .p-corpo > .tela.ag-tela > .ag-rola { grid-row: 4; min-height: 0; } body.web .ag-tela .ag-tx { max-width: 90ch; }
+}
