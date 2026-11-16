@@ -6406,11 +6406,11 @@ function abreProjetosMay(m) {
         bloco('O que é', p.oque); bloco('Como está agora', p.status);
         const bt = elD('div', 'pjm-botoes');
         (p.botoes || []).forEach(x => {
-          const pinta2 = el => { el.style.background = k.destaque; el.style.color = k.sobreDestaque; bt.append(el); };
+          const pinta2 = el => { if (bt.children.length) { el.classList.add('sec'); el.style.borderColor = k.destaque; } else { el.style.background = k.destaque; el.style.color = k.sobreDestaque; } bt.append(el); };   // só o 1º botão cheio, os outros contornados (Sigma 12:42)
           if (x.whats) { const a = elD('a', 'pjm-bt', x.rotulo); a.href = 'https://wa.me/' + x.whats; a.target = '_blank'; a.rel = 'noopener'; pinta2(a); return; }
           if (x.compartilhar) { const b = elD('button', 'pjm-bt', x.rotulo); b.type = 'button'; b.onclick = async () => { try { if (navigator.share) await navigator.share({ url: x.compartilhar, title: p.nome }); else { await navigator.clipboard.writeText(x.compartilhar); showNote('Link copiado.'); } } catch (e) {} }; pinta2(b); return; }
           if (x.arquivo) { const b = elD('button', 'pjm-bt', x.rotulo); b.type = 'button'; b.onclick = async () => { const t0 = b.textContent; b.textContent = 'Baixando...'; b.disabled = true; try { const r = await api(apiDe(x.arquivo), { ...RAW, tempo: 120000 }); if (!r.ok) throw 0; const u = URL.createObjectURL(await r.blob()), a = elD('a'); a.href = u; a.download = x.arquivo.split('/').pop(); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 60000); } catch (e) { showNote('Não baixou: confere a internet.', true); } b.textContent = t0; b.disabled = false; }; pinta2(b); return; }
-          if (x.link) { const a = elD('a', 'pjm-bt', x.rotulo); a.href = x.link; a.target = '_blank'; a.rel = 'noopener'; a.style.background = k.destaque; a.style.color = k.sobreDestaque; bt.append(a); }
+          if (x.link) { const a = elD('a', 'pjm-bt', x.rotulo); a.href = x.link; a.target = '_blank'; a.rel = 'noopener'; pinta2(a); }
           else { const s = elD('span', 'pjm-bt off'); s.append(elD('b', '', x.rotulo), elD('small', '', x.motivo || 'Ainda sem link')); bt.append(s); }
         });
         if (bt.children.length) corpo.append(bt);
