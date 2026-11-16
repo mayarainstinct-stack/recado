@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-16.427">
+<meta name="app-versao" content="2026-11-16.428">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-16.427"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-16.428"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -6333,6 +6333,22 @@ const PJM_CAMPOS = [
   { nome: 'fundo', rotulo: 'Cor de fundo (ex.: #1F6B3A)' },
   { nome: 'destaque', rotulo: 'Cor de destaque (ex.: #C9A227)' }
 ];
+// Tema de cada projetinho (May 16/11 10:29: "cada um tem que ter o css do projeto, se tiver logomarca usa também"): estilo + logo no projetos.json (tema), a cara inteira muda por projeto
+let pjmFontes = false;
+const pjmCarregaFontes = () => { if (pjmFontes) return; pjmFontes = true; const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,600;0,800;0,900;1,800;1,900&family=Kalam:wght@700&display=swap'; document.head.append(l); };
+const PJM_SVG_PLANETA = '<svg class="pjm-planeta" viewBox="0 0 200 200" aria-hidden="true"><defs><radialGradient id="pjmPl" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#8E4FA0"/><stop offset=".55" stop-color="#3C243C"/><stop offset="1" stop-color="#120812"/></radialGradient><filter id="pjmBr"><feGaussianBlur stdDeviation="2.2"/></filter></defs><circle cx="100" cy="100" r="58" fill="url(#pjmPl)"/><ellipse cx="100" cy="104" rx="92" ry="22" transform="rotate(-18 100 104)" fill="none" stroke="#FC9CFC" stroke-width="5" opacity=".55" filter="url(#pjmBr)"/><ellipse cx="100" cy="104" rx="92" ry="22" transform="rotate(-18 100 104)" fill="none" stroke="#FFE3FF" stroke-width="1.6"/><circle cx="176" cy="80" r="3" fill="#fff"/></svg>';
+function pjmLogo(t, cls) { const im = elD('img', cls); im.alt = ''; im.hidden = true; if (t && t.logo) fotoUrl(t.logo).then(u => { im.src = u; im.hidden = false; }).catch(() => {}); return im; }
+function pjmHero(p, k) {
+  const t = p.tema || {}, h = elD('div', 'pjm-hero pjm-h-' + (t.estilo || 'padrao'));
+  if (t.estilo === 'midnight') {
+    h.innerHTML = '<span class="hud hud-a"></span><span class="hud hud-b"></span>' + PJM_SVG_PLANETA;
+    const lg = elD('div', 'mn-logo'); lg.append(elD('b', '', 'MIDNIGHT'), elD('small', '', 'FUNK • TECHNO • SUBMUNDO'));
+    const dt = elD('div', 'mn-data', (String(p.oque || '').match(/\d\d\/\d\d/) || [''])[0]);
+    h.append(lg, dt); if (t.slogan) h.append(elD('div', 'mn-faixa', t.slogan)); if (t.rodape) h.append(elD('div', 'mn-rodape', t.rodape));
+  } else if (t.logo) { h.append(pjmLogo(t, 'pjm-logo')); h.append(elD('small', 'pjm-hero-pra', p.pra || '')); }
+  else { h.style.background = k.fundo; h.style.color = k.texto; h.append(elD('b', '', p.nome), elD('small', '', p.pra || '')); }
+  return h;
+}
 function abreProjetosMay(m) {
   let D = null;
   const salva = async (muda, msg) => { const d = await gravaJson(m.arq, muda, msg, { projetos: [] }); if (d) { D = d; return true; } showNote('Não salvou: confere a internet.', true); return false; };
@@ -6349,12 +6365,12 @@ function abreProjetosMay(m) {
   const detalhe = id => tela((D.projetos.find(x => x.id === id) || {}).nome || 'Projeto', c => {
     const pinta = () => {
       const p = D.projetos.find(x => x.id === id); c.replaceChildren(); if (!p) { c.append(elD('p', 'p-nota', 'Este projeto foi apagado.')); return; }
-      const k = pjmCores(p); c.classList.add('pjm-tela');
+      const k = pjmCores(p); pjmCarregaFontes(); c.className = c.className.replace(/pjm-t-\S+/g, '').trim(); c.classList.add('pjm-tela', 'pjm-t-' + ((p.tema || {}).estilo || 'padrao')); c.append(pjmHero(p, k));
       const topo = elD('div', 'pjm-topo'); topo.style.background = k.fundo; topo.style.color = k.texto; topo.style.borderBottomColor = k.destaque;
       const ic = elD('span', 'pjm-ic'); ic.innerHTML = icone(p.icone || 'doc'); ic.style.color = k.destaque;
       const ttl = elD('div'); ttl.append(elD('b', '', p.nome), elD('small', '', p.pra || ''));
       topo.append(ic, ttl, edMini('pen', 'Editar ' + p.nome, () => edFormulario({ titulo: 'Editar projeto', campos: PJM_CAMPOS, v: doForm(p), aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) praProjeto(q, v); }, 'Projeto editado pelo app: ' + v.nome)) pinta(); }, aoApagar: async () => { if (!confirm('Apagar o projeto ' + p.nome + '?')) return; if (await salva(d => { d.projetos = d.projetos.filter(x => x.id !== id); }, 'Projeto apagado pelo app: ' + p.nome)) { history.back(); } } })));
-      c.append(topo);
+      if ((p.tema || {}).estilo) { const hero = c.querySelector('.pjm-hero'), lp = topo.querySelector('.ed-mini'); if (hero && lp) { lp.classList.add('pjm-hero-ed'); hero.append(lp); } } else c.append(topo);
       const bloco = (rot, txt) => { if (!txt) return; const b = elD('section', 'pjm-bloco'); b.append(elD('small', 'pjm-rot', rot), elD('p', '', txt)); c.append(b); };
       bloco('O que é', p.oque); bloco('Como está agora', p.status);
       const bt = elD('div', 'pjm-botoes');
@@ -6395,12 +6411,12 @@ function abreProjetosMay(m) {
     pinta();
   });
   tela(m.nome, async c => {
-    c.classList.add('pjm-tela'); const sk = skCarga(3); c.append(sk);
+    c.classList.add('pjm-tela'); pjmCarregaFontes(); const sk = skCarga(3); c.append(sk);
     try { D = JSON.parse(await lerArquivo(m.arq)); } catch (e) { sk.textContent = 'Não abriu. Confere a internet.'; return; }
     sk.remove(); cabecalho({ sub: (D.projetos || []).length + ' projetos' });
     const lista = elD('div', 'pjm-lista');
     (D.projetos || []).forEach(p => {
-      const k = pjmCores(p), b = elD('button', 'pjm-card'); b.type = 'button'; b.style.background = k.fundo; b.style.color = k.texto; b.style.borderLeftColor = k.destaque;
+      const k = pjmCores(p), est = (p.tema || {}).estilo || 'padrao', b = elD('button', 'pjm-card pjm-c-' + est); b.type = 'button'; b.style.background = k.fundo; b.style.color = k.texto; b.style.borderLeftColor = k.destaque; if (est === 'midnight') b.insertAdjacentHTML('beforeend', PJM_SVG_PLANETA); else if ((p.tema || {}).logo) b.append(pjmLogo(p.tema, 'pjm-card-logo'));
       const ic = elD('span', 'pjm-ic'); ic.innerHTML = icone(p.icone || 'doc'); ic.style.color = k.destaque;
       const tx = elD('span', 'pjm-cardtx'), ab = (p.falta || []).filter(x => !x.feito).length; tx.append(elD('b', '', p.nome), elD('small', '', p.pra || ''), elD('small', 'pjm-st', ab ? ab + (ab === 1 ? ' coisa falta' : ' coisas faltam') : 'Nada pendente'));
       b.append(ic, tx); b.onclick = () => detalhe(p.id); lista.append(b);

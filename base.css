@@ -2701,3 +2701,62 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 header { padding: calc(12px + env(safe-area-inset-top, 0px)) max(20px, env(safe-area-inset-right, 0px)) 12px max(20px, env(safe-area-inset-left, 0px)); gap: 10px; } .topo { gap: 14px; }
 .painel .p-topo { padding: calc(10px + env(safe-area-inset-top, 0px)) max(20px, env(safe-area-inset-right, 0px)) 10px max(20px, env(safe-area-inset-left, 0px)); gap: 14px; }
 body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
+/* Projetinhos: a cara de cada projeto (16/11/2026, Lyra) */
+.pjm-hero { position: relative; border-radius: 16px; overflow: hidden; margin-bottom: 14px; display: grid; justify-items: center; gap: 6px; padding: 18px 14px; text-align: center; }
+.pjm-logo { max-width: 100%; max-height: 190px; object-fit: contain; border-radius: 12px; }
+.pjm-hero-pra { font-weight: 700; opacity: .9; }
+.pjm-card { position: relative; overflow: hidden; }
+.pjm-card-logo { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); height: 56px; max-width: 38%; object-fit: contain; border-radius: 8px; opacity: .95; pointer-events: none; }
+.pjm-card .pjm-cardtx { position: relative; z-index: 1; padding-right: 34%; }
+/* E-controle: verde-folha e dourado da logo */
+.p-corpo:has(.pjm-t-econtrole) { background: linear-gradient(180deg, #0B3D1F 0%, #145A2E 45%, #0E4524 100%) !important; }
+.pjm-t-econtrole { color: #FFFFFF; font-family: 'Barlow', 'Segoe UI', system-ui, sans-serif; }
+.pjm-h-econtrole { background: radial-gradient(120% 90% at 50% 0%, #FFFFFF 0%, #F3F7EF 60%, #E2EEDA 100%); border: 3px solid #E6B422; box-shadow: 0 8px 20px rgba(0,0,0,.35); }
+.pjm-h-econtrole .pjm-hero-pra { color: #145A2E; }
+.pjm-t-econtrole .pjm-bloco { border-top-color: rgba(230,180,34,.45); }
+.pjm-t-econtrole .pjm-rot { color: #F5D06B; opacity: 1; }
+.pjm-c-econtrole { background: linear-gradient(135deg, #0B3D1F, #1F7A3A) !important; border-left-color: #E6B422 !important; }
+/* Azul Emprestimo: cinza claro geometrico, azul-marinho e verde do WhatsApp */
+.p-corpo:has(.pjm-t-azul) { background: repeating-linear-gradient(135deg, #EEF0F4 0 26px, #E6E9EF 26px 52px) !important; }
+.pjm-t-azul { color: #2C3255; font-family: 'Segoe UI', system-ui, sans-serif; }
+.pjm-h-azul { background: #FFFFFF; box-shadow: 0 6px 18px rgba(44,50,85,.18); padding: 0; }
+.pjm-h-azul .pjm-logo { max-height: 210px; border-radius: 0; width: 100%; object-fit: cover; }
+.pjm-h-azul .pjm-hero-pra { padding: 0 12px 12px; color: #254796; }
+.pjm-t-azul .pjm-bloco { border-top-color: rgba(37,71,150,.25); }
+.pjm-t-azul .pjm-rot { color: #254796; opacity: 1; }
+.pjm-t-azul .pjm-texto, .pjm-t-azul .pjm-bt.off { background: rgba(37,71,150,.1); }
+.pjm-t-azul .ed-mini { color: #2C3255; }
+.pjm-c-azul { background: linear-gradient(135deg, #254796, #2C3255) !important; }
+/* Sandro: por do sol laranja, azul-marinho, amarelo e letra a mao */
+.p-corpo:has(.pjm-t-sandro) { background: linear-gradient(180deg, #F59E0B 0%, #EA580C 38%, #7C2D12 70%, #0E2A6B 100%) !important; }
+.pjm-t-sandro { color: #FFFFFF; font-family: 'Barlow', 'Segoe UI', sans-serif; }
+.pjm-h-sandro { padding: 0; box-shadow: 0 8px 22px rgba(0,0,0,.35); }
+.pjm-h-sandro .pjm-logo { width: 100%; max-height: 230px; object-fit: cover; border-radius: 0; }
+.pjm-h-sandro .pjm-hero-pra { font-family: 'Kalam', cursive; font-size: 1.15rem; padding: 0 12px 12px; color: #F6C21C; }
+.pjm-h-sandro { background: #0E2A6B; }
+.pjm-t-sandro .pjm-rot { color: #F6C21C; opacity: 1; font-family: 'Kalam', cursive; letter-spacing: .02em; text-transform: none; font-size: 1.05rem; }
+.pjm-t-sandro .pjm-bloco { border-top-color: rgba(246,194,28,.4); }
+.pjm-c-sandro { background: linear-gradient(135deg, #EA580C, #0E2A6B) !important; }
+/* Midnight: espaco, planeta roxo com orbita, letra grossa italica, moldura HUD */
+.p-corpo:has(.pjm-t-midnight) { background: radial-gradient(1.5px 1.5px at 12% 18%, #FC9CFC 50%, transparent 51%), radial-gradient(1px 1px at 72% 9%, #FFFFFF 50%, transparent 51%), radial-gradient(1.5px 1.5px at 88% 46%, #CC6CCC 50%, transparent 51%), radial-gradient(1px 1px at 30% 64%, #FFFFFF 50%, transparent 51%), radial-gradient(1.5px 1.5px at 58% 82%, #FC84FC 50%, transparent 51%), radial-gradient(120% 60% at 100% 0%, #3C243C 0%, transparent 60%), radial-gradient(100% 50% at 0% 100%, #240C24 0%, transparent 60%), #0C0C0C; background-size: 220px 220px, 260px 260px, 300px 300px, 240px 240px, 280px 280px, auto, auto, auto !important; }
+.pjm-t-midnight { color: #FFFFFF; font-family: 'Barlow', 'Segoe UI', sans-serif; }
+.pjm-h-midnight { background: radial-gradient(80% 70% at 50% 40%, #2A1030 0%, #0C0C0C 75%); border: 1px solid rgba(252,156,252,.25); padding: 22px 14px 16px; }
+.pjm-h-midnight .hud { position: absolute; width: 22px; height: 22px; border-color: rgba(252,156,252,.7); border-style: solid; }
+.pjm-h-midnight .hud-a { left: 10px; top: 10px; border-width: 2px 0 0 2px; }
+.pjm-h-midnight .hud-b { right: 10px; bottom: 10px; border-width: 0 2px 2px 0; }
+.pjm-planeta { width: 170px; height: 170px; filter: drop-shadow(0 0 18px rgba(252,156,252,.45)); }
+.mn-logo { display: grid; justify-items: center; border: 2px solid #FC9CFC; border-radius: 10px; padding: 4px 18px 6px; transform: skewX(-12deg); margin-top: -6px; }
+.mn-logo b { font-weight: 900; font-style: italic; font-size: 2rem; letter-spacing: .02em; color: #FC9CFC; line-height: 1; }
+.mn-logo small { font-weight: 800; font-size: .62rem; letter-spacing: .18em; color: #FFFFFF; }
+.mn-data { font-weight: 900; font-style: italic; font-size: 3.2rem; line-height: 1; color: #FC9CFC; text-shadow: 0 0 18px rgba(252,156,252,.5); margin-top: 6px; }
+.mn-faixa { background: #8E3FA0; color: #FFFFFF; font-weight: 900; font-style: italic; letter-spacing: .04em; padding: 4px 14px; transform: skewX(-12deg); }
+.mn-rodape { font-weight: 800; font-size: .62rem; letter-spacing: .22em; opacity: .8; margin-top: 4px; }
+.pjm-t-midnight .pjm-rot { color: #FC9CFC; opacity: 1; font-style: italic; font-weight: 900; }
+.pjm-t-midnight .pjm-bloco { border-top-color: rgba(252,156,252,.25); }
+.pjm-t-midnight .pjm-texto { background: rgba(60,36,60,.55); border: 1px solid rgba(252,156,252,.2); }
+.pjm-t-midnight .pjm-copia { font-style: italic; font-weight: 900; }
+.pjm-c-midnight { background: radial-gradient(90% 120% at 100% 50%, #3C243C 0%, #0C0C0C 70%) !important; }
+.pjm-c-midnight .pjm-planeta { position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 92px; height: 92px; pointer-events: none; }
+.pjm-c-midnight .pjm-cardtx b { font-style: italic; font-weight: 900; letter-spacing: .02em; color: #FC9CFC; }
+.pjm-hero .pjm-hero-ed { position: absolute; right: 8px; top: 8px; z-index: 2; background: rgba(0,0,0,.45); color: #FFFFFF; border-radius: 50%; }
+.pjm-hero .pjm-hero-ed:hover { background: rgba(0,0,0,.65); }
