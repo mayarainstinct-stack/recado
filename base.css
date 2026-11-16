@@ -2810,3 +2810,4 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 .pjm-hero.mini .mn-data { font-size: 1.6rem; margin-top: 2px; }
 .pjm-hero.mini .mn-logo { margin-top: 0; }
 .pjm-hero.mini .pjm-logo { max-height: 84px; }
+.pjm-hero.mini.pjm-h-azul .pjm-logo, .pjm-hero.mini.pjm-h-sandro .pjm-logo { object-fit: contain; width: auto; max-width: 100%; }
