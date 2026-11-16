@@ -2811,3 +2811,13 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 .pjm-hero.mini .mn-logo { margin-top: 0; }
 .pjm-hero.mini .pjm-logo { max-height: 84px; }
 .pjm-hero.mini.pjm-h-azul .pjm-logo, .pjm-hero.mini.pjm-h-sandro .pjm-logo { object-fit: contain; width: auto; max-width: 100%; }
+
+.pjm-tela .pjm-bt { width: auto; height: auto; border: 0; font: inherit; font-weight: 700; }
+.pjm-conta { display: flex; align-items: baseline; justify-content: center; gap: 8px; padding: 8px 0 4px; }
+.pjm-conta b { font-size: 2.6rem; font-weight: 900; font-style: italic; }
+.pjm-cres { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.pjm-cst { display: inline-block; padding: 4px 10px; border-radius: 999px; background: rgba(127,127,127,.18); font-size: .85rem; font-weight: 700; }
+.pjm-tela button.pjm-cst { width: auto; height: auto; border: 0; color: inherit; cursor: pointer; flex: none; }
+.pjm-tela button.pjm-cst:hover { filter: brightness(1.15); }
+.pjm-novo-linha { grid-template-columns: 1fr auto; align-items: center; }
+.pjm-novo-linha input { width: 100%; box-sizing: border-box; border-radius: 10px; border: 1px solid rgba(127,127,127,.4); padding: 10px; font: inherit; background: rgba(255,255,255,.92); color: #1d1d1d; }
