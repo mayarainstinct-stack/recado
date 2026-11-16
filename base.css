@@ -2823,3 +2823,4 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 .pjm-novo-linha input { width: 100%; box-sizing: border-box; border-radius: 10px; border: 1px solid rgba(127,127,127,.4); padding: 10px; font: inherit; background: rgba(255,255,255,.92); color: #1d1d1d; }
 .pjm-abas { flex-wrap: wrap; overflow: visible; }
 .pjm-tela .pjm-bt.sec { background: transparent; color: inherit; border: 2px solid; }
+.pjm-bloco p { white-space: pre-line; }
