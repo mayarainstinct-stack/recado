@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-16.428">
+<meta name="app-versao" content="2026-11-16.429">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-16.428"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-16.429"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -6417,7 +6417,7 @@ function abreProjetosMay(m) {
     const lista = elD('div', 'pjm-lista');
     (D.projetos || []).forEach(p => {
       const k = pjmCores(p), est = (p.tema || {}).estilo || 'padrao', b = elD('button', 'pjm-card pjm-c-' + est); b.type = 'button'; b.style.background = k.fundo; b.style.color = k.texto; b.style.borderLeftColor = k.destaque; if (est === 'midnight') b.insertAdjacentHTML('beforeend', PJM_SVG_PLANETA); else if ((p.tema || {}).logo) b.append(pjmLogo(p.tema, 'pjm-card-logo'));
-      const ic = elD('span', 'pjm-ic'); ic.innerHTML = icone(p.icone || 'doc'); ic.style.color = k.destaque;
+      const ic = elD('span', 'pjm-ic'); ic.innerHTML = icone(p.icone || 'doc'); ic.style.color = k.destaque; if ((p.tema || {}).icone) { const im = pjmLogo({ logo: p.tema.icone }, 'pjm-ic-img'); im.onload = () => { ic.replaceChildren(im); }; ic.append(im); }   // ícone próprio do projeto à esquerda (May 12:30)
       const tx = elD('span', 'pjm-cardtx'), ab = (p.falta || []).filter(x => !x.feito).length; tx.append(elD('b', '', p.nome), elD('small', '', p.pra || ''), elD('small', 'pjm-st', ab ? ab + (ab === 1 ? ' coisa falta' : ' coisas faltam') : 'Nada pendente'));
       b.append(ic, tx); b.onclick = () => { if (p.abre) { location.href = p.abre + (p.abre.includes('?') ? '&' : '?') + 'v=' + encodeURIComponent(VERSAO); return; } detalhe(p.id); }; lista.append(b);   // projeto que É o documento (House Bridge = o manual, May 11:26): o cartão abre direto
     });

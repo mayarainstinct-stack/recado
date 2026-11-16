@@ -2773,3 +2773,10 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 .pjm-card .pjm-cardtx { padding-right: 40%; }
 .pjm-card-logo { height: 46px; max-width: 34%; }
 .pjm-h-sandro .pjm-logo { max-height: none; height: auto; object-fit: contain; }
+/* Projetinhos: logos do mesmo tamanho e ícone próprio (May 12:30) */
+.pjm-card .pjm-card-logo { width: 88px; height: 48px; max-width: none; object-fit: contain; background: rgba(255,255,255,.92); border-radius: 10px; padding: 4px 6px; box-sizing: border-box; }
+.pjm-ic-img { width: 34px; height: 34px; object-fit: contain; border-radius: 8px; }
+.pjm-h-housebridge { background: radial-gradient(90% 80% at 50% 30%, #2A2410 0%, #0A0A0B 75%); border: 1px solid rgba(255,203,5,.35); }
+.pjm-h-housebridge .pjm-logo { max-height: 150px; }
+.pjm-h-housebridge .pjm-hero-pra { color: #FFCB05; }
+.pjm-ic-img { background: rgba(255,255,255,.95); padding: 3px; box-sizing: border-box; }
