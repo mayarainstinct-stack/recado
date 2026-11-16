@@ -4810,6 +4810,179 @@ function abreAtelie(m) {
     pinta();
   });
 }
+// Mapa das viagens (May 16/11/2026): o Brasil inteiro por estado (contornos Natural Earth 1:50m, domínio público, ver arte/planos/MAPA-FONTE.md), casa em Paraíso, um pino por lugar, zoom pela distância. Hermes
+const MAPA_PROJ = (lat, lon) => ({ x: (lon + 74.5) * 24.15, y: (5.8 - lat) * 25 });   // a mesma conta do gerador do arte/planos/mapa-brasil.svg; "mapa": { x, y } do viagens.json é nessa medida
+const MAPA_BR = { x0: 12, y0: 13.6, x1: 958.6, y1: 988.6 };
+const MAPA_CIDADES = { 'São Sebastião do Paraíso': [-20.917, -46.991], 'Belo Horizonte': [-19.917, -43.934], 'Rio de Janeiro': [-22.907, -43.173], 'Capitólio': [-20.615, -46.05], 'São Thomé das Letras': [-21.722, -44.985], 'São Paulo': [-23.55, -46.633], 'Campinas': [-22.906, -47.061], 'Ribeirão Preto': [-21.178, -47.81], 'Franca': [-20.539, -47.401], 'Passos': [-20.719, -46.61], 'Poços de Caldas': [-21.788, -46.561], 'Pouso Alegre': [-22.23, -45.936], 'Varginha': [-21.551, -45.43], 'Lavras': [-21.245, -44.999], 'Divinópolis': [-20.139, -44.884], 'Ouro Preto': [-20.386, -43.503], 'Tiradentes': [-21.11, -44.178], 'São João del-Rei': [-21.136, -44.262], 'Juiz de Fora': [-21.764, -43.35], 'Uberlândia': [-18.918, -48.277], 'Uberaba': [-19.747, -47.932], 'Monte Verde': [-22.862, -46.04], 'Carrancas': [-21.489, -44.644], 'Delfinópolis': [-20.346, -46.851], 'São Roque de Minas': [-20.249, -46.364], 'Guaxupé': [-21.305, -46.712], 'Mococa': [-21.468, -47.004], 'Brasília': [-15.794, -47.882], 'Goiânia': [-16.686, -49.264], 'Vitória': [-20.315, -40.312], 'Curitiba': [-25.429, -49.271], 'Florianópolis': [-27.595, -48.548], 'Porto Alegre': [-30.035, -51.218], 'Gramado': [-29.379, -50.874], 'Foz do Iguaçu': [-25.547, -54.588], 'Salvador': [-12.971, -38.501], 'Porto Seguro': [-16.45, -39.065], 'Recife': [-8.048, -34.877], 'Fortaleza': [-3.732, -38.527], 'Natal': [-5.795, -35.209], 'João Pessoa': [-7.119, -34.845], 'Maceió': [-9.666, -35.735], 'Aracaju': [-10.947, -37.073], 'Teresina': [-5.089, -42.802], 'São Luís': [-2.53, -44.303], 'Belém': [-1.456, -48.49], 'Manaus': [-3.119, -60.022], 'Macapá': [0.035, -51.07], 'Boa Vista': [2.82, -60.673], 'Porto Velho': [-8.761, -63.9], 'Rio Branco': [-9.975, -67.825], 'Palmas': [-10.184, -48.333], 'Cuiabá': [-15.601, -56.097], 'Campo Grande': [-20.469, -54.62], 'Bonito': [-21.121, -56.482], 'Paraty': [-23.219, -44.713], 'Angra dos Reis': [-23.007, -44.318], 'Búzios': [-22.747, -41.882], 'Arraial do Cabo': [-22.966, -42.028], 'Petrópolis': [-22.505, -43.178], 'Ubatuba': [-23.434, -45.071], 'Santos': [-23.961, -46.333], 'Campos do Jordão': [-22.739, -45.591], 'Aparecida': [-22.847, -45.23] };   // cidade conhecida = ponto sozinho; cidade nova entra aqui ou ela marca no mapa pelo lápis da viagem
+const MAPA_CASA = { nome: 'Paraíso', ...MAPA_PROJ(-20.917, -46.991) };   // casa só como "Paraíso", nunca endereço (app público)
+const mapaPonto = v => v.mapa && isFinite(v.mapa.x) && isFinite(v.mapa.y) ? { x: +v.mapa.x, y: +v.mapa.y } : MAPA_CIDADES[v.cidade] ? MAPA_PROJ(...MAPA_CIDADES[v.cidade]) : null;
+let mapaSvgP = null;
+const mapaSvg = () => mapaSvgP || (mapaSvgP = fetch('arte/planos/mapa-brasil.svg?v=' + encodeURIComponent(VERSAO)).then(r => { if (!r.ok) throw new Error('mapa ' + r.status); return r.text(); }).catch(e => { mapaSvgP = null; throw e; }));
+const mpEsc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const MP_TINTA = '#3b2a4a';
+const mpPino = (foi, n) => `<ellipse cx="0" cy="1" rx="11" ry="4" fill="${MP_TINTA}" opacity=".28"/><path d="M0 0 L-8 -17 H8 Z" fill="${MP_TINTA}"/><circle cx="0" cy="-25" r="16" fill="${foi ? '#3E8F3A' : '#C48A55'}" stroke="${MP_TINTA}" stroke-width="3"/><circle cx="0" cy="-29" r="15" fill="${foi ? '#7CCF4A' : '#FFF4DC'}" stroke="${MP_TINTA}" stroke-width="3"${foi ? '' : ' stroke-dasharray="5 3.4"'}/>` + (foi ? `<path d="M-7 -29 l5 5 l9 -10" fill="none" stroke="${MP_TINTA}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M-7 -29 l5 5 l9 -10" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>` : `<path d="M-4 -19 V-39" stroke="${MP_TINTA}" stroke-width="2.6" stroke-linecap="round"/><path d="M-4 -39 L8 -34.5 L-4 -30 Z" fill="#FF6B57" stroke="${MP_TINTA}" stroke-width="2" stroke-linejoin="round"/>`) + (n > 1 ? `<circle cx="16" cy="-42" r="10" fill="${MP_TINTA}" stroke="#FFF4DC" stroke-width="2"/><text x="16" y="-37.5" text-anchor="middle" font-size="12.5" font-weight="900" fill="#FFD34D">${n}</text>` : '');
+const mpCasa = mais => `<ellipse cx="0" cy="1" rx="19" ry="5" fill="${MP_TINTA}" opacity=".28"/><rect x="7" y="-33" width="6" height="10" fill="#C48A55" stroke="${MP_TINTA}" stroke-width="2.4"/><path d="M-15 0 V-19 H15 V0 Z" fill="#FFF4DC" stroke="${MP_TINTA}" stroke-width="3" stroke-linejoin="round"/><path d="M-20 -17 L0 -35 L20 -17 Z" fill="#FF6B57" stroke="${MP_TINTA}" stroke-width="3" stroke-linejoin="round"/><rect x="-5" y="-11" width="9" height="11" fill="#C48A55" stroke="${MP_TINTA}" stroke-width="2.2"/><rect x="7" y="-14" width="6" height="6" fill="#7CCFE9" stroke="${MP_TINTA}" stroke-width="2"/>` + (mais ? `<rect x="12" y="-46" width="${mais > 9 ? 34 : 28}" height="20" rx="10" fill="${MP_TINTA}" stroke="#FFF4DC" stroke-width="2"/><text x="${mais > 9 ? 29 : 26}" y="-31.5" text-anchor="middle" font-size="12.5" font-weight="900" fill="#FFD34D">+${mais}</text>` : '');
+const mpMonte = n => `<ellipse cx="0" cy="1" rx="17" ry="4" fill="${MP_TINTA}" opacity=".22"/><circle cx="0" cy="-22" r="16" fill="#C9962F" stroke="${MP_TINTA}" stroke-width="3"/><circle cx="0" cy="-25" r="15" fill="#FFD34D" stroke="${MP_TINTA}" stroke-width="3"/><text x="0" y="-20" text-anchor="middle" font-size="15" font-weight="900" fill="${MP_TINTA}">${n}</text>`;
+const MP_ENFEITE = {   // os enfeites do mapa, desenhados em 24 px com o pé no ponto (sem pessoinha: só natureza e barquinho)
+  arvore: (c1, c2) => `<ellipse cx="0" cy="0" rx="9" ry="3" fill="${MP_TINTA}" opacity=".22"/><rect x="-2.5" y="-9" width="5" height="9" fill="#9A6A3C" stroke="${MP_TINTA}" stroke-width="2"/><circle cx="0" cy="-15" r="9" fill="${c1}" stroke="${MP_TINTA}" stroke-width="2.2"/><circle cx="-3" cy="-18" r="3.2" fill="${c2}"/>`,
+  pinheiro: () => `<ellipse cx="0" cy="0" rx="9" ry="3" fill="${MP_TINTA}" opacity=".22"/><rect x="-2" y="-12" width="4" height="12" fill="#9A6A3C" stroke="${MP_TINTA}" stroke-width="2"/><path d="M-12 -12 Q0 -24 12 -12 Z" fill="#3E8F3A" stroke="${MP_TINTA}" stroke-width="2.2" stroke-linejoin="round"/><path d="M-8 -18 Q0 -27 8 -18 Z" fill="#5FB04E" stroke="${MP_TINTA}" stroke-width="2.2" stroke-linejoin="round"/>`,
+  morro: (c1, c2) => `<path d="M-15 0 Q-6 -20 2 -6 Q8 -16 15 0 Z" fill="${c1}" stroke="${MP_TINTA}" stroke-width="2.2" stroke-linejoin="round"/><path d="M-9 -9 Q-6 -15 -2 -10" fill="none" stroke="${c2}" stroke-width="2.6" stroke-linecap="round"/>`,
+  cacto: () => `<ellipse cx="0" cy="0" rx="8" ry="2.6" fill="${MP_TINTA}" opacity=".22"/><path d="M-3 0 V-18 Q0 -22 3 -18 V0 Z M3 -9 H7 V-14 M-3 -7 H-7 V-12" fill="#5FB04E" stroke="${MP_TINTA}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`,
+  moita: () => `<path d="M-11 0 Q-12 -9 -5 -9 Q-3 -15 3 -12 Q11 -12 11 0 Z" fill="#6FBF5A" stroke="${MP_TINTA}" stroke-width="2.2" stroke-linejoin="round"/><circle cx="-4" cy="-6" r="1.8" fill="#FF8FB1"/><circle cx="4" cy="-8" r="1.8" fill="#FFD34D"/>`,
+  lago: () => `<ellipse cx="0" cy="-4" rx="14" ry="6" fill="#7CCFE9" stroke="${MP_TINTA}" stroke-width="2.2"/><path d="M-6 -5 h5 M2 -3 h5" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`,
+  onda: () => `<path d="M-12 -4 q3 -4 6 0 t6 0 t6 0" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".85"/>`,
+  barco: () => `<path d="M-11 -6 H11 L7 0 H-7 Z" fill="#FF6B57" stroke="${MP_TINTA}" stroke-width="2.2" stroke-linejoin="round"/><path d="M0 -7 V-22 L9 -9 Z" fill="#FFF4DC" stroke="${MP_TINTA}" stroke-width="2" stroke-linejoin="round"/>`,
+  nuvem: () => `<path d="M-16 0 Q-19 -8 -10 -9 Q-8 -17 0 -15 Q7 -20 12 -12 Q20 -11 17 0 Z" fill="#fff" stroke="${MP_TINTA}" stroke-width="2.2" stroke-linejoin="round"/>`
+};
+const MP_REGIAO = { AC: 'mata', AM: 'mata', RR: 'mata', AP: 'mata', PA: 'mata', RO: 'mata', MA: 'sertao', PI: 'sertao', CE: 'sertao', RN: 'sertao', PB: 'sertao', PE: 'sertao', AL: 'sertao', SE: 'sertao', BA: 'sertao', TO: 'cerrado', MT: 'cerrado', MS: 'cerrado', GO: 'cerrado', DF: 'cerrado', MG: 'minas', SP: 'campo', RJ: 'campo', ES: 'campo', PR: 'sul', SC: 'sul', RS: 'sul' };
+function mpSorteia(i, j, t) { let h = (i * 374761393 + j * 668265263 + t * 2147483647) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return () => { h = Math.imul(h ^ (h >>> 15), 2246822519) ^ Math.imul(h ^ (h >>> 13), 3266489917); h ^= h >>> 16; return (h >>> 0) / 4294967296; }; }
+function mpEnfeite(regiao, r) {   // o que nasce em cada canto do Brasil
+  const x = r();
+  if (!regiao) return x < .55 ? MP_ENFEITE.onda() : x < .72 ? MP_ENFEITE.nuvem() : x < .82 ? MP_ENFEITE.barco() : '';
+  if (x < .07) return MP_ENFEITE.lago();
+  if (regiao === 'mata') return x < .8 ? MP_ENFEITE.arvore(r() < .5 ? '#3E8F3A' : '#4FAF4A', '#8FD16A') : MP_ENFEITE.moita();
+  if (regiao === 'sertao') return x < .45 ? MP_ENFEITE.cacto() : x < .75 ? MP_ENFEITE.morro('#E2B65C', '#F6DC9A') : MP_ENFEITE.moita();
+  if (regiao === 'sul') return x < .55 ? MP_ENFEITE.pinheiro() : x < .8 ? MP_ENFEITE.morro('#8CC85E', '#C6E58A') : MP_ENFEITE.arvore('#4FAF4A', '#8FD16A');
+  if (regiao === 'minas') return x < .5 ? MP_ENFEITE.morro('#7CC35A', '#C6E58A') : x < .82 ? MP_ENFEITE.arvore('#4FAF4A', '#8FD16A') : MP_ENFEITE.moita();
+  return x < .45 ? MP_ENFEITE.arvore(r() < .5 ? '#4FAF4A' : '#5FB04E', '#8FD16A') : x < .7 ? MP_ENFEITE.morro('#8CC85E', '#C6E58A') : MP_ENFEITE.moita();
+}
+// o mapa em si: embaixo o desenho do Brasil (o zoom muda o viewBox), em cima uma camada em pixel da tela com caminhos, pinos, nomes e enfeites, que nunca crescem com o zoom
+// o = { lugares: () => [{ k, x, y, nome, foi, n, aoTocar }], vista: objeto que guarda o zoom entre uma pintura e outra, escolhe: true (marcar um ponto), inicio: { x, y }, aoMarcar(p) }
+function mapaBrasil(box, o = {}) {
+  const NS = 'http://www.w3.org/2000/svg', base = document.createElementNS(NS, 'svg'), cima = document.createElementNS(NS, 'svg'), ctl = elD('div', 'mp-ctl');
+  box.classList.add('mp-caixa'); base.setAttribute('class', 'mp-base'); base.setAttribute('preserveAspectRatio', 'none'); cima.setAttribute('class', 'mp-cima'); box.append(base, cima, ctl);
+  let W = 0, H = 0, lado = null, terra = [], siglas = [], anim = null, quadro = 0, marca = o.inicio || null, grupos = [];
+  const v = o.vista || {}, nasceu = new Map(), cacheTerra = new Map();
+  const sMax = 140, sMin = () => Math.min(W / (MAPA_BR.x1 - MAPA_BR.x0 + 40), H / (MAPA_BR.y1 - MAPA_BR.y0 + 40));
+  const prende = () => { v.s = Math.max(sMin(), Math.min(sMax, v.s)); v.cx = Math.max(MAPA_BR.x0, Math.min(MAPA_BR.x1, v.cx)); v.cy = Math.max(MAPA_BR.y0, Math.min(MAPA_BR.y1, v.cy)); };
+  const tela = (x, y) => ({ x: (x - v.cx) * v.s + W / 2, y: (y - v.cy) * v.s + H / 2 });
+  const doMapa = (x, y) => ({ x: v.cx + (x - W / 2) / v.s, y: v.cy + (y - H / 2) / v.s });
+  const PAD = { t: 56, r: 70, b: 92, l: 70 };
+  const enquadra = (pts, minS) => { const xs = pts.map(p => p.x), ys = pts.map(p => p.y), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys); let s = Math.min((W - PAD.l - PAD.r) / Math.max(x1 - x0, .01), (H - PAD.t - PAD.b) / Math.max(y1 - y0, .01)); s = Math.max(sMin(), Math.min(sMax, minS ? Math.min(s, minS) : s)); return { s, cx: (x0 + x1) / 2 + (PAD.r - PAD.l) / 2 / s, cy: (y0 + y1) / 2 + (PAD.b - PAD.t) / 2 / s }; };
+  const brasil = () => ({ s: sMin(), cx: (MAPA_BR.x0 + MAPA_BR.x1) / 2, cy: (MAPA_BR.y0 + MAPA_BR.y1) / 2 });
+  const lugares = () => (o.lugares ? o.lugares() : []);
+  const pertoDeCasa = () => { const ps = lugares().filter(l => Math.hypot(l.x - MAPA_CASA.x, l.y - MAPA_CASA.y) < 70); return enquadra([MAPA_CASA, ...ps], ps.length ? null : 14); };
+  const inicial = () => { if (o.escolhe) return marca ? { s: 18, cx: marca.x, cy: marca.y } : { s: 6, cx: MAPA_CASA.x, cy: MAPA_CASA.y }; const ps = lugares(); return ps.length ? enquadra([MAPA_CASA, ...ps]) : { s: 6, cx: MAPA_CASA.x, cy: MAPA_CASA.y }; };
+  const vai = (alvo, ms = 460) => { cancelAnimationFrame(anim); const de = { s: v.s, cx: v.cx, cy: v.cy }, t0 = performance.now(); const passo = t => { const k = Math.min(1, (t - t0) / ms), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2; v.s = Math.exp(Math.log(de.s) + (Math.log(alvo.s) - Math.log(de.s)) * e); v.cx = de.cx + (alvo.cx - de.cx) * e; v.cy = de.cy + (alvo.cy - de.cy) * e; prende(); pinta(); if (k < 1) anim = requestAnimationFrame(passo); }; anim = requestAnimationFrame(passo); };
+  const zoomEm = (px, py, f) => { const m = doMapa(px, py); v.s = Math.max(sMin(), Math.min(sMax, v.s * f)); v.cx = m.x - (px - W / 2) / v.s; v.cy = m.y - (py - H / 2) / v.s; prende(); };
+  const bt = (cls, txt, rot, fn) => { const b = elD('button', 'mp-bt ' + cls, txt); b.type = 'button'; b.setAttribute('aria-label', rot); b.onclick = e => { e.stopPropagation(); fn(); }; ctl.append(b); return b; };
+  bt('', '+', 'Aproximar', () => vai({ s: Math.min(sMax, v.s * 2), cx: v.cx, cy: v.cy }, 300));
+  bt('', '−', 'Afastar', () => vai({ s: Math.max(sMin(), v.s / 2), cx: v.cx, cy: v.cy }, 300));
+  bt('tx', 'Casa', 'Ver perto de casa', () => vai(pertoDeCasa()));
+  bt('tx', 'Brasil', 'Ver o Brasil inteiro', () => vai(brasil()));
+  const mede = (() => { const cv = document.createElement('canvas').getContext('2d'); return (t, px) => { cv.font = '800 ' + px + 'px ' + (getComputedStyle(box).fontFamily || 'sans-serif'); return cv.measureText(t).width; }; })();
+  const bate = (a, b, f = 5) => a.x0 < b.x1 + f && b.x0 < a.x1 + f && a.y0 < b.y1 + f && b.y0 < a.y1 + f;
+  const dentro = (x, y) => { for (const t of terra) { if (x < t.bx0 || x > t.bx1 || y < t.by0 || y > t.by1) continue; for (const r of t.aneis) { let d = false; for (let i = 0, j = r.length - 2; i < r.length; j = i, i += 2) { const yi = r[i + 1], yj = r[j + 1]; if ((yi > y) !== (yj > y) && x < (r[j] - r[i]) * (y - yi) / (yj - yi) + r[i]) d = !d; } if (d) return t.uf; } } return null; };
+  const idade = k => { const n = performance.now(); if (!nasceu.has(k)) nasceu.set(k, n); return n - nasceu.get(k); };
+  const brota = k => { const a = idade(k); return a < 320 ? ` class="mp-brota" style="animation-delay:-${Math.round(a)}ms"` : ''; };   // o que entra brota do chão (cresce de baixo), nunca fade
+  const nomeDe = g => g.casa ? 'Paraíso' : g.m.length > 1 ? g.m.length + ' lugares' : g.m[0].nome;
+  const caixaIcone = (g, p) => g.casa ? { x0: p.x - 21, y0: p.y - 47, x1: p.x + 21 + (g.m.length > 1 ? 26 : 0), y1: p.y + 5 } : g.m.length > 1 ? { x0: p.x - 18, y0: p.y - 43, x1: p.x + 18, y1: p.y + 5 } : { x0: p.x - 18, y0: p.y - 53, x1: p.x + 18 + (g.m[0].n > 1 ? 10 : 0), y1: p.y + 5 };
+  const caixaRot = (g, ib, p, lado, d = 0) => { const w = mede(nomeDe(g), 12.5) + 20, h = 24; if (lado === 'baixo') return { x0: p.x - w / 2, y0: ib.y1 + 3 + d, x1: p.x + w / 2, y1: ib.y1 + 3 + d + h }; if (lado === 'cima') return { x0: p.x - w / 2, y0: ib.y0 - 5 - d - h, x1: p.x + w / 2, y1: ib.y0 - 5 - d }; const cy = (ib.y0 + ib.y1) / 2; return lado === 'dir' ? { x0: ib.x1 + 5 + d, y0: cy - h / 2, x1: ib.x1 + 5 + d + w, y1: cy + h / 2 } : { x0: ib.x0 - 5 - d - w, y0: cy - h / 2, x1: ib.x0 - 5 - d, y1: cy + h / 2 }; };
+  const LADOS = [['baixo', 0], ['dir', 0], ['esq', 0], ['cima', 0], ['baixo', 34], ['dir', 40], ['esq', 40], ['cima', 30], ['baixo', 70], ['cima', 64], ['dir', 90], ['esq', 90], ['baixo', 110], ['cima', 104]];
+  const naTela = p => p.x > -10 && p.y > -10 && p.x < W + 10 && p.y < H + 10;
+  const arruma = () => {   // um pino por lugar; pino que encosta em pino vira montinho com o número (abre com o zoom); o nome procura um lado livre, longe com um fiozinho, e só se não couber em lugar nenhum junta com o vizinho
+    let gs = [{ casa: true, m: [{ k: 'casa', x: MAPA_CASA.x, y: MAPA_CASA.y, nome: 'Paraíso' }] }, ...lugares().map(l => ({ m: [l] }))];
+    const ctlR = ctl.getBoundingClientRect(), bxR = box.getBoundingClientRect(), zonaCtl = { x0: ctlR.left - bxR.left, y0: ctlR.top - bxR.top, x1: ctlR.right - bxR.left, y1: ctlR.bottom - bxR.top };
+    const cabe = b => b.x0 >= 6 && b.y0 >= 6 && b.x1 <= W - 6 && b.y1 <= H - 6;
+    const poe = g => { const ps = g.m.map(l => tela(l.x, l.y)); g.p = g.casa ? tela(MAPA_CASA.x, MAPA_CASA.y) : { x: ps.reduce((s, q) => s + q.x, 0) / ps.length, y: ps.reduce((s, q) => s + q.y, 0) / ps.length }; g.ib = caixaIcone(g, g.p); };
+    const junta = (a, b) => { a.casa = a.casa || b.casa; a.m.push(...b.m); gs = gs.filter(x => x !== b); };
+    for (let volta = 0; volta < 60; volta++) {
+      gs.forEach(poe); let par = null;
+      for (let i = 0; i < gs.length && !par; i++) for (let j = i + 1; j < gs.length && !par; j++) if (bate(gs[i].ib, gs[j].ib, 6)) par = [gs[i], gs[j]];
+      if (par) { junta(...par); continue; }
+      const fixos = gs.map(g => g.ib); let falta = null;
+      for (const g of gs) {
+        g.lb = null; g.linha = null;
+        if (!naTela(g.p)) { g.lb = caixaRot(g, g.ib, g.p, 'baixo'); continue; }
+        for (const [lado, d] of LADOS) { const lb = caixaRot(g, g.ib, g.p, lado, d); if (!cabe(lb) || bate(lb, zonaCtl, 2) || fixos.some(b => bate(lb, b))) continue; g.lb = lb; if (d) { const cx = (lb.x0 + lb.x1) / 2, cy = (lb.y0 + lb.y1) / 2, ix = (g.ib.x0 + g.ib.x1) / 2, iy = (g.ib.y0 + g.ib.y1) / 2; g.linha = lado === 'baixo' ? [ix, g.ib.y1, cx, lb.y0] : lado === 'cima' ? [ix, g.ib.y0, cx, lb.y1] : lado === 'dir' ? [g.ib.x1, iy, lb.x0, cy] : [g.ib.x0, iy, lb.x1, cy]; } break; }
+        if (!g.lb && g.sem) continue;
+        if (!g.lb) { falta = g; break; }
+        fixos.push(g.lb);
+      }
+      if (!falta) break;
+      const perto = gs.filter(x => x !== falta).sort((a, b) => Math.hypot(a.p.x - falta.p.x, a.p.y - falta.p.y) - Math.hypot(b.p.x - falta.p.x, b.p.y - falta.p.y))[0];
+      if (!perto || Math.hypot(perto.p.x - falta.p.x, perto.p.y - falta.p.y) > 120) { falta.sem = true; gs = gs.filter(x => x !== falta).concat(falta); continue; }   // longe de todo mundo e sem lugar pro nome: fica o pino sozinho, sem nome por cima de nada
+      junta(perto.casa ? perto : falta.casa ? falta : perto, perto.casa ? falta : falta.casa ? perto : falta);
+    }
+    return gs;
+  };
+  const pinta = () => {
+    if (!W || !H || !lado) return;
+    base.setAttribute('viewBox', [v.cx - W / 2 / v.s, v.cy - H / 2 / v.s, W / v.s, H / v.s].map(n => n.toFixed(3)).join(' '));
+    lado.setAttribute('transform', 'translate(0 ' + (7 / v.s).toFixed(4) + ')');   // a lateral da peça do Brasil (o "3D" do tabuleiro) fica sempre com 7 px
+    grupos = o.escolhe ? [{ casa: true, m: [{ k: 'casa', x: MAPA_CASA.x, y: MAPA_CASA.y }] }].map(g => { g.p = tela(MAPA_CASA.x, MAPA_CASA.y); g.ib = caixaIcone(g, g.p); g.lb = caixaRot(g, g.ib, g.p, 'baixo'); return g; }) : arruma();
+    const ocupado = grupos.flatMap(g => [g.ib, g.lb]).filter(Boolean); if (o.escolhe && marca) { const p = tela(marca.x, marca.y); ocupado.push({ x0: p.x - 18, y0: p.y - 53, x1: p.x + 18, y1: p.y + 5 }); }
+    let s = '';
+    const fonte = v.s >= 1.6 ? 13 : 11, nomesUf = [];   // nome dos estados (sigla de longe, nome inteiro de perto); vem antes dos enfeites pra nada nascer em cima dele
+    siglas.forEach(e => { const p = tela(e.x, e.y), t = v.s >= 1.6 ? e.nome : e.uf, w = mede(t, fonte) + 6, cx = { x0: p.x - w / 2, y0: p.y - fonte, x1: p.x + w / 2, y1: p.y + 4 }; if (cx.x0 < 4 || cx.y0 < 4 || cx.x1 > W - 4 || cx.y1 > H - 4 || ocupado.some(b => bate(b, cx, 3))) return; ocupado.push(cx); nomesUf.push(`<text class="mp-uf${e.destaque ? ' destaque' : ''}" x="${p.x.toFixed(1)}" y="${p.y.toFixed(1)}" text-anchor="middle" font-size="${fonte}">${mpEsc(t)}</text>`); });
+    const visiveis = [216, 72, 24, 8, 2.7, .9].filter(sp => sp * v.s >= 36).slice(-2);   // enfeite por camada: a de longe some quando a de perto chega, sempre uns 60 px entre um e outro
+    const m0 = doMapa(-30, -40), m1 = doMapa(W + 30, H + 30), enf = [];
+    visiveis.forEach((sp, t) => {
+      const tier = [216, 72, 24, 8, 2.7, .9].indexOf(sp), z = Math.max(.72, Math.min(1.25, sp * v.s / 70));
+      for (let i = Math.floor(m0.x / sp); i <= Math.floor(m1.x / sp); i++) for (let j = Math.floor(m0.y / sp); j <= Math.floor(m1.y / sp); j++) {
+        const r = mpSorteia(i, j, tier); if (r() < .3) continue;
+        const x = (i + .15 + .7 * r()) * sp, y = (j + .15 + .7 * r()) * sp, ck = tier + ':' + i + ':' + j;
+        let uf = cacheTerra.get(ck); if (uf === undefined) { uf = dentro(x, y); cacheTerra.set(ck, uf); }
+        const p = tela(x, y), cx = { x0: p.x - 20 * z, y0: p.y - 26 * z, x1: p.x + 20 * z, y1: p.y + 4 * z };
+        if (ocupado.some(b => bate(b, cx, 4)) || enf.some(b => bate(b, cx, 0))) continue;
+        const d = mpEnfeite(uf && MP_REGIAO[uf], r); if (!d) continue; enf.push(cx);
+        s += `<g transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) scale(${z.toFixed(3)})"><g${brota('e' + ck)}>${d}</g></g>`;
+      }
+    });
+    s += nomesUf.join('');
+    const casa = grupos.find(g => g.casa);
+    const angulos = [];
+    grupos.filter(g => !g.casa).forEach(g => { const a = { x: casa.p.x, y: casa.p.y - 14 }, b = { x: g.p.x, y: g.p.y - 4 }, dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy); if (L < 30 || (naTela(casa.p) && !naTela(g.p))) return; const ang = Math.atan2(dy, dx), irma = angulos.some(x => Math.abs(x - ang) < .3); angulos.push(ang); const sn = (dx > 0 ? 1 : -1) * (irma ? -1 : 1), f = irma ? .3 : .16, c = { x: (a.x + b.x) / 2 + dy * f * sn, y: (a.y + b.y) / 2 - dx * f * sn }; const d = `M${a.x.toFixed(1)} ${a.y.toFixed(1)} Q${c.x.toFixed(1)} ${c.y.toFixed(1)} ${b.x.toFixed(1)} ${b.y.toFixed(1)}`; s += `<path d="${d}" class="mp-trilha-f"/><path d="${d}" class="mp-trilha"/>`; });   // trilha de pontinhos de casa até cada lugar; a que sai pro mesmo lado de outra faz a curva pro outro lado
+    if (o.escolhe && marca) { const p = tela(marca.x, marca.y); s += `<g transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})"><g${brota('marca' + marca.x + marca.y)}>${mpPino(false, 1)}</g></g>`; }
+    grupos.forEach(g => {
+      const k = g.casa ? 'casa' : g.m.map(l => l.k).sort().join('|'), um = !g.casa && g.m.length === 1, l0 = g.m[0];
+      const ic = g.casa ? mpCasa(g.m.length - 1) : um ? mpPino(l0.foi, l0.n) : mpMonte(g.m.length);
+      const lb = g.lb, t = nomeDe(g);
+      s += `<g class="mp-marco" data-k="${mpEsc(k)}"><g transform="translate(${g.p.x.toFixed(1)} ${g.p.y.toFixed(1)})"><g${brota('m' + k)}>${ic}</g></g>` + (g.linha ? `<path d="M${g.linha.map(n => n.toFixed(1)).join(' ')}" class="mp-guia"/>` : '') + (lb ? `<g${brota('r' + k)}><rect x="${lb.x0.toFixed(1)}" y="${(lb.y0 + 3).toFixed(1)}" width="${(lb.x1 - lb.x0).toFixed(1)}" height="${(lb.y1 - lb.y0).toFixed(1)}" rx="12" fill="${MP_TINTA}"/><rect class="mp-rot" x="${lb.x0.toFixed(1)}" y="${lb.y0.toFixed(1)}" width="${(lb.x1 - lb.x0).toFixed(1)}" height="${(lb.y1 - lb.y0).toFixed(1)}" rx="12"/><text class="mp-rot-t" x="${((lb.x0 + lb.x1) / 2).toFixed(1)}" y="${(lb.y0 + 16.5).toFixed(1)}" text-anchor="middle" font-size="12.5">${mpEsc(t)}</text></g>` : '') + '</g>';
+    });
+    cima.innerHTML = s;
+    if ([...nasceu.values()].some(n => performance.now() - n < 320)) { cancelAnimationFrame(quadro); quadro = requestAnimationFrame(pinta); }
+  };
+  const agenda = () => { cancelAnimationFrame(quadro); quadro = requestAnimationFrame(pinta); };
+  const toca = (px, py) => {
+    const el = document.elementFromPoint(px, py), mk = el && el.closest && el.closest('.mp-marco'), r = box.getBoundingClientRect();
+    if (o.escolhe) { marca = doMapa(px - r.left, py - r.top); marca = { x: Math.round(marca.x * 10) / 10, y: Math.round(marca.y * 10) / 10 }; if (o.aoMarcar) o.aoMarcar(marca); pinta(); return; }
+    if (!mk) return; const g = grupos.find(x => (x.casa ? 'casa' : x.m.map(l => l.k).sort().join('|')) === mk.dataset.k); if (!g) return;
+    if (g.m.length > 1) return vai(enquadra(g.m.map(l => ({ x: l.x, y: l.y }))));   // montinho: chega perto até cada um ter o seu pino
+    if (g.casa) return vai(pertoDeCasa());
+    g.m[0].aoTocar && g.m[0].aoTocar();
+  };
+  const dedos = new Map(); let arrastou = false, ini = null;
+  box.addEventListener('pointerdown', e => { if (e.target.closest('.mp-ctl')) return; cancelAnimationFrame(anim); box.setPointerCapture(e.pointerId); dedos.set(e.pointerId, { x: e.clientX, y: e.clientY }); if (dedos.size === 1) { arrastou = false; ini = { x: e.clientX, y: e.clientY }; } else arrastou = true; });
+  box.addEventListener('pointermove', e => {
+    const a = dedos.get(e.pointerId); if (!a) return; const r = box.getBoundingClientRect();
+    if (dedos.size === 1) { v.cx -= (e.clientX - a.x) / v.s; v.cy -= (e.clientY - a.y) / v.s; prende(); if (Math.hypot(e.clientX - ini.x, e.clientY - ini.y) > 7) arrastou = true; }
+    else { const [o1, o2] = [...dedos.entries()].filter(([id]) => id !== e.pointerId).map(x => x[1]).concat([a]); const antes = Math.hypot(o2.x - o1.x, o2.y - o1.y), mx = (o1.x + o2.x) / 2, my = (o1.y + o2.y) / 2; const nx = (o1.x + e.clientX) / 2, ny = (o1.y + e.clientY) / 2, depois = Math.hypot(e.clientX - o1.x, e.clientY - o1.y); v.cx -= (nx - mx) / v.s; v.cy -= (ny - my) / v.s; if (antes > 10) zoomEm(nx - r.left, ny - r.top, depois / antes); prende(); }
+    a.x = e.clientX; a.y = e.clientY; agenda();
+  });
+  const solta = e => { if (!dedos.has(e.pointerId)) return; dedos.delete(e.pointerId); if (!dedos.size && !arrastou && e.type === 'pointerup') toca(e.clientX, e.clientY); };
+  box.addEventListener('pointerup', solta); box.addEventListener('pointercancel', solta);
+  box.addEventListener('wheel', e => { e.preventDefault(); cancelAnimationFrame(anim); const r = box.getBoundingClientRect(); zoomEm(e.clientX - r.left, e.clientY - r.top, Math.exp(-e.deltaY * .0016)); agenda(); }, { passive: false });
+  const ro = new ResizeObserver(() => { const r = box.getBoundingClientRect(); if (!r.width || !r.height) return; const prim = !W; W = r.width; H = r.height; cima.setAttribute('viewBox', '0 0 ' + W + ' ' + H); if (prim && lado && !isFinite(v.s)) Object.assign(v, inicial()); if (lado) { prende(); pinta(); } }); ro.observe(box);
+  mapaSvg().then(txt => {
+    const doc = new DOMParser().parseFromString(txt, 'image/svg+xml'), raiz = doc.documentElement;
+    [...raiz.childNodes].forEach(n => base.append(document.importNode(n, true))); lado = base.querySelector('#lado');
+    base.querySelectorAll('defs path').forEach(p => { const uf = p.id.slice(3), aneis = p.getAttribute('d').split('M').filter(Boolean).map(sub => sub.replace('Z', '').trim().split(/\s+/).map(Number)), xs = aneis.flatMap(r => r.filter((_, i) => i % 2 === 0)), ys = aneis.flatMap(r => r.filter((_, i) => i % 2)); terra.push({ uf, aneis, bx0: Math.min(...xs), bx1: Math.max(...xs), by0: Math.min(...ys), by1: Math.max(...ys) }); });
+    base.querySelectorAll('#estados use').forEach(u => siglas.push({ uf: u.dataset.uf, nome: u.querySelector('title')?.textContent || u.dataset.uf, x: +u.dataset.lx, y: +u.dataset.ly, destaque: u.classList.contains('destaque') }));
+    if (W && !isFinite(v.s)) Object.assign(v, inicial()); prende(); pinta();
+  }).catch(() => { box.append(elD('p', 'mp-erro', 'O mapa não abriu. Confere a internet.')); });
+  return { pinta, perto: () => vai(pertoDeCasa()), brasil: () => vai(brasil()), ponto: () => marca };
+}
+function mapaEscolhe(nome, inicio) {   // marcar o lugar no mapa (cidade que o app não conhece, ou lugar fora da cidade): toca onde fica, Guardar devolve { x, y }
+  return new Promise(ok => {
+    const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card ed-card mp-escolhe'), x = elD('button', 'pp-x'), caixa = elD('div', 'mp-caixa-esc'), dica = elD('p', 'mp-dica', 'Toca no mapa onde fica ' + nome + '. Arrasta pra andar e usa o + e o − pra chegar perto.'), g = elD('button', 'pp-op rec', 'Guardar este ponto');
+    x.type = 'button'; x.innerHTML = icone('close'); g.type = 'button'; g.disabled = !inicio;
+    const fecha = v => { ov.remove(); ok(v); }; x.onclick = () => fecha(null);
+    card.append(x, elD('div', 'pp-perg', 'Onde fica no mapa?'), dica, caixa, g); ov.append(card); document.body.append(ov);
+    const m = mapaBrasil(caixa, { escolhe: true, inicio, aoMarcar: () => { g.disabled = false; } });
+    g.onclick = () => fecha(m.ponto());
+  });
+}
 function abrePlanos(m) {   // Planos desenhado (#211, May 11/11 e 12/11 22:07-22:12: Harvest Moon + MapleStory no inverno, chibis de cabeça quadrada pela ficha de Cennet; opção a do Sigma 13/11 11:09): planos e viagens juntos, viagem que passou vai pra "Já foi"
   tela(m.nome, async c => {
     painel.classList.add('tema-planos'); painel.style.setProperty('--c', '#6B4226'); c.classList.add('pl2-tela');
@@ -4839,21 +5012,55 @@ function abrePlanos(m) {   // Planos desenhado (#211, May 11/11 e 12/11 22:07-22
       const ex = elD('div', 'pl2-acoes'); ex.append(ok, lap);
       return placa(p.o_que_e, p.feito ? edRotuloFeito(p) : (p.proximo_passo || ''), p.quando || 'um dia', quem(p.com_quem), ex, p.feito ? 'feito' : '');
     };
+    const dataV = v => { const ds = [...quandoV(v).matchAll(/(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?/g)]; if (ds.length) { const u = ds[0]; return new Date(+(u[3] || (fimV(v) ? fimV(v).getFullYear() : hoje().getFullYear())), +u[2] - 1, +u[1]); } return fimV(v); };   // a data da ida (ou a da volta) pra ordenar
+    const ordemVai = l => l.map((v, i) => [v, dataV(v), i]).sort((a, b) => (a[1] ? 0 : 1) - (b[1] ? 0 : 1) || (a[1] && b[1] ? a[1] - b[1] : 0) || a[2] - b[2]).map(x => x[0]);   // 1º as que vão com data (a mais perto primeiro), depois as sem data, depois as que já foram (May 16/11)
+    const vivasV = () => (V.viagens || []).filter(v => !v.apagado);
+    const ordenadas = () => { const vg = vivasV(); return [...ordemVai(vg.filter(v => !passou(v))), ...vg.filter(passou).sort((a, b) => (fimV(b) || 0) - (fimV(a) || 0))]; };
+    const abreV = v => { const fotos = (v.lembrancas || []).filter(l => !l.apagado); return passou(v) && fotos.length ? abreAlbumViagem(v, comTx(v)) : abreViagem(v); };   // o pino abre igual ao cartão
+    const mudaV = async (fn, msg) => {   // muda a viagem na tela na hora e grava no viagens.json; não gravou, volta como estava
+      V.viagens = V.viagens || []; const antes = V.viagens.map(x => ({ ...x })); fn(V.viagens); pinta();
+      const ok = await gravaJson(VARQ, dd => { dd.viagens = dd.viagens || []; fn(dd.viagens); }, msg, null);
+      if (!ok) { V.viagens.splice(0, V.viagens.length, ...antes); pinta(); showNote('Não guardou: voltou como estava. Confere a internet e tenta de novo.', true); }
+      return !!ok;
+    };
+    const CIDADES = Object.keys(MAPA_CIDADES).sort((a, b) => a.localeCompare(b, 'pt'));
+    const camposV = [{ nome: 'nome', rotulo: 'Nome da viagem', tipo: 'texto', obrigatorio: true }, { nome: 'sub', rotulo: 'Quando e o quê', tipo: 'texto' }, { nome: 'com', rotulo: 'Com quem', tipo: 'texto' }, { nome: 'fim', rotulo: 'Dia da volta', tipo: 'data' }, { nome: 'cidade', rotulo: 'Cidade', tipo: 'escolha', opcoes: [['', 'Escolher a cidade'], ...CIDADES.map(c => [c, c]), ['outra', 'Outro lugar: marcar no mapa']] }, { nome: 'cidade_outra', rotulo: 'Nome do lugar (se for outro)', tipo: 'texto' }, { nome: 'ponto', rotulo: 'Ponto no mapa', tipo: 'escolha', opcoes: [['cidade', 'No meio da cidade'], ['mapa', 'Marcar no mapa (fora da cidade)']] }];
+    const formV = v => edFormulario({ titulo: v ? 'Editar viagem' : 'Viagem nova', campos: camposV, v: v ? { nome: v.nome, sub: v.sub, com: v.com, fim: v.fim, cidade: !v.cidade ? '' : MAPA_CIDADES[v.cidade] ? v.cidade : 'outra', cidade_outra: v.cidade && !MAPA_CIDADES[v.cidade] ? v.cidade : '', ponto: v.mapa ? 'mapa' : 'cidade' } : { ponto: 'cidade' }, aoSalvar: async f => {
+      const outra = f.cidade === 'outra', lugar = outra ? (f.cidade_outra || f.nome) : f.cidade; let mapa = null;
+      if (outra || (f.cidade && f.ponto === 'mapa')) { mapa = await mapaEscolhe(lugar, (v && v.mapa) || (MAPA_CIDADES[f.cidade] ? MAPA_PROJ(...MAPA_CIDADES[f.cidade]) : null)); if (!mapa && v && v.mapa) mapa = v.mapa; if (!mapa) showNote('Ficou sem ponto no mapa: dá pra marcar depois pelo lápis da viagem.'); }
+      const dados = { nome: f.nome, sub: f.sub, com: f.com, fim: f.fim, cidade: lugar }, poe = x => { Object.entries(dados).forEach(([k, val]) => { if (val) x[k] = val; else delete x[k]; }); if (mapa) x.mapa = { x: mapa.x, y: mapa.y }; else delete x.mapa; };
+      if (v) { await mudaV(l => { const x = l.find(y => y.id === v.id); if (x) { poe(x); x.atualizado = edAgora(); } }, 'Viagem editada pelo app'); return; }
+      const nova = { id: edNovoId(f.nome), icone: '📍', criado: edAgora() }; poe(nova);
+      await mudaV(l => { if (l.some(y => y.id === nova.id)) return; const x = { ...nova, listas: [] }; if (l === V.viagens) Object.assign(x, { _arq: VARQ, _json: !!V.feito_no_json, _feitos: V.feitos }); l.unshift(x); }, 'Viagem nova pelo app');
+    }, aoApagar: v ? async () => { const q = edAgora(); if (await mudaV(l => { const x = l.find(y => y.id === v.id); if (x) x.apagado = q; }, 'Viagem apagada pelo app (fica guardada)')) edFaixaDesfazer(v.nome + ' apagada', () => mudaV(l => { const x = l.find(y => y.id === v.id); if (x) delete x.apagado; }, 'Apagado desfeito pelo app')); } : null });
+    const lugaresV = () => { const m = new Map(); ordenadas().forEach(v => { const p = mapaPonto(v); if (!p) return; const k = v.mapa ? 'xy:' + p.x + ',' + p.y : 'c:' + v.cidade; if (Math.hypot(p.x - MAPA_CASA.x, p.y - MAPA_CASA.y) < .6) { p.x += 1.4; p.y -= .8; } if (!m.has(k)) m.set(k, { k, x: p.x, y: p.y, nome: v.mapa ? String(v.nome || v.cidade).replace(/\s*\(.*\)\s*$/, '') : v.cidade, vs: [] }); m.get(k).vs.push(v); });   // um pino por lugar (BH duas vezes = um pino com o 2)
+      return [...m.values()].map(l => Object.assign(l, { n: l.vs.length, foi: l.vs.every(passou), aoTocar: () => l.vs.length === 1 ? abreV(l.vs[0]) : edEscolhe(l.nome + ': qual viagem?', l.vs.map(v => [v.id, v.nome + ' · ' + (passou(v) ? 'foi ' + quandoV(v) : quandoV(v) || 'sem data')])).then(id => { const v = l.vs.find(x => x.id === id); if (v) abreV(v); }) })); };
+    const vistaMapa = {};
     const comTx = v => { const n = String(v.com || '').trim(); return n ? 'com ' + n : 'sozinha'; };
     const cartaoViagem = (v, foi) => { const f = feitosV(v), t = itensV(v), fotos = (v.lembrancas || []).filter(l => !l.apagado), k = placa(v.nome || '', foi && fotos.length ? fotos.length + (fotos.length === 1 ? ' foto' : ' fotos') : v.listas.length + ' listas pra levar e conferir', foi ? 'foi ' + quandoV(v) : (quandoV(v) || 'sem data'), quem(v.com).map(n => (v.chibis || {})[n] || n), f == null || !t || foi ? null : barra(f, t), foi ? 'passou' : '', v.arte); k.querySelector('.pl2-top > div').append(elD('span', 'pl2-com', comTx(v)));   // quem foi junto escrito no cartão (May 13/11 13:51)
     if (foi && fotos.length) { const capa = elD('div', 'pl2-pilha'); fotos.slice(0, 3).forEach((l, i) => { const p = elD('span', 'pl2-polaroide mini'), im = elD('img'); im.alt = ''; im.loading = 'lazy'; p.style.setProperty('--gira', [-7, 4, -1][i] + 'deg'); p.append(im); fotoUrl(l.foto).then(u => { im.src = u; }).catch(() => p.remove()); capa.append(p); }); const ab = elD('button', 'pl2-abre-album', 'Abrir o álbum · ' + fotos.length + (fotos.length === 1 ? ' foto' : ' fotos')); ab.type = 'button'; capa.append(ab); k.append(capa); }   // capa do álbum: 3 polaroides empilhadas (May 13/11 16:19: "num álbum bonito, não só jogadas")
-    k.classList.add('toca'); k.onclick = () => (foi && fotos.length ? abreAlbumViagem(v, comTx(v)) : abreViagem(v)); return k; };
-    const ABAS = { viagens: 'Viagens' }; let aba = 'viagens'; nav.hidden = true;   // a tela virou Viagens (May 13/11 13:50); as abas Agora e Um dia saíram (May 16/11 14:17, #243), sem abas a barra some
+    const lap = elD('button', 'pl2-lapis'); lap.type = 'button'; lap.innerHTML = icone('pen'); lap.setAttribute('aria-label', 'Editar viagem'); lap.onclick = e => { e.stopPropagation(); formV(v); }; k.querySelector('.pl2-top').append(lap);   // tudo editável no app: nome, quando, com quem, cidade e ponto no mapa
+    k.classList.add('toca'); k.onclick = () => abreV(v); return k; };
+    const ABAS = { viagens: 'Viagens', mapa: 'Mapa' }; let aba = 'viagens';   // a tela virou Viagens (May 13/11 13:50); as abas Agora e Um dia saíram (May 16/11 14:17, #243), sem abas a barra some
     const pinta = () => {
       nav.replaceChildren(...Object.entries(ABAS).map(([k, t]) => { const b = elD('button', k === aba ? 'on' : '', t); b.type = 'button'; b.onclick = () => { aba = k; pinta(); }; return b; }));
       corpo.replaceChildren();
-      const vivos = E.itens.filter(p => !p.apagado && !p.viagem), vg = V.viagens || [];   // plano ligado a uma viagem aparece como a viagem (sem repetir)
+      c.classList.toggle('pl2-no-mapa', aba === 'mapa');
+      if (aba === 'mapa') {   // aba Mapa (May 16/11): o Brasil por estado, casa em Paraíso e um pino por lugar
+        const caixa = elD('div', 'mp-mapa'), leg = elD('div', 'mp-legenda'), semPonto = ordenadas().filter(v => !mapaPonto(v));
+        leg.innerHTML = `<span><svg viewBox="-20 -48 40 52" aria-hidden="true">${mpPino(true, 1)}</svg>Já foi</span><span><svg viewBox="-20 -48 40 52" aria-hidden="true">${mpPino(false, 1)}</svg>Vai ainda</span><span><svg viewBox="-24 -40 48 44" aria-hidden="true">${mpCasa(0)}</svg>Casa</span>`;
+        corpo.append(caixa, leg); mapaBrasil(caixa, { lugares: lugaresV, vista: vistaMapa });
+        if (semPonto.length) corpo.append(elD('p', 'pl2-vazio mp-sem', 'Sem lugar no mapa: ' + semPonto.map(v => v.nome).join(', ') + '. Toca no lápis da viagem e escolhe a cidade.'));
+        const mais = elD('button', 'pl2-mais', '+ Viagem'); mais.type = 'button'; mais.onclick = () => formV(null); corpo.append(mais); return;
+      }
+      const vivos = E.itens.filter(p => !p.apagado && !p.viagem), vg = vivasV();   // plano ligado a uma viagem aparece como a viagem (sem repetir)
       const lista = aba === 'agora' ? vivos.filter(p => p.prioridade === 'agora' && !p.feito) : aba === 'umdia' ? vivos.filter(p => p.prioridade !== 'agora' && !p.feito) : [];
-      const vAg = aba === 'viagens' ? vg.filter(v => !passou(v)) : [], vFoi = aba === 'viagens' ? vg.filter(passou).sort((a, b) => (fimV(b) || 0) - (fimV(a) || 0)) : [];   // as que já foram: da mais nova pra mais antiga (May 13/11 13:50)
+      const vAg = aba === 'viagens' ? ordemVai(vg.filter(v => !passou(v))) : [], vFoi = aba === 'viagens' ? vg.filter(passou).sort((a, b) => (fimV(b) || 0) - (fimV(a) || 0)) : [];   // as que já foram: da mais nova pra mais antiga (May 13/11 13:50)
       vAg.forEach(v => corpo.append(cartaoViagem(v, false))); lista.forEach(p => corpo.append(cartaoPlano(p)));
       if (!vAg.length && !lista.length) corpo.append(elD('p', 'pl2-vazio', aba === 'viagens' ? 'Nenhuma viagem marcada.' : aba === 'agora' ? 'Nada pra agora. Toca em + Plano pra lançar o próximo.' : 'Nada guardado pra um dia.'));
       if (vFoi.length) { corpo.append(elD('div', 'pl2-sec', 'Já foi')); vFoi.forEach(v => corpo.append(cartaoViagem(v, true))); }
       const feitos = aba !== 'viagens' ? vivos.filter(p => p.feito && (aba === 'agora' ? p.prioridade === 'agora' : p.prioridade !== 'agora')) : []; if (feitos.length) { corpo.append(elD('div', 'pl2-sec', 'Feitos')); feitos.forEach(p => corpo.append(cartaoPlano(p))); }
+      if (aba === 'viagens') { const mais = elD('button', 'pl2-mais', '+ Viagem'); mais.type = 'button'; mais.onclick = () => formV(null); corpo.append(mais); }
       if (aba !== 'viagens') { const mais = elD('button', 'pl2-mais', '+ Plano'); mais.type = 'button'; mais.onclick = () => form(null); corpo.append(mais); }
     };
     E.aoMudar = pinta; pinta();
