@@ -2829,3 +2829,6 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 .p-sub { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-size: 11.5px; line-height: 1.12; opacity: .95; }
 .painel .p-tits { min-height: 48px; justify-content: center; } .painel .p-tits h2 { line-height: 1.12; }   /* toda barra com a mesma altura, cabe subtítulo de 2 linhas sem pular ao trocar de tela (Sigma #344) */
 .painel .p-topo { background: linear-gradient(color-mix(in srgb, var(--c) 58%, black), color-mix(in srgb, var(--c) 42%, black)); }   /* fundo mais escuro: branco dá 4,5 de contraste até no amarelo (Sigma #344) */
+.p-sub[hidden] { display: none !important; }   /* subtítulo vazio não ocupa lugar: sem ele o título fica no meio da barra (Sigma #344 14:25) */
+.painel .p-tits { gap: 2px; } .painel .p-tits .p-sub { margin-top: 0; }
+.painel .p-tits h2 { flex: none; }   /* o título não estica (a regra .p-topo h2 { flex: 1 } empurrava o título pro alto e o subtítulo pro pé) */
