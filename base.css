@@ -2642,3 +2642,11 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 }
 @media (min-width: 1280px) { body.web .fm-lin :is(span, b) { font-size: 14px !important; } body.web .fin-kpis span, body.web .cm-topo span { font-size: 13px !important; } }   /* Finanças no PC: nada abaixo de 13 px (prova do Sigma 14:18) */
 @media (min-width: 1280px) { body.web .fin-res3 .neg b { color: #B42318 !important; } }   /* Sobra negativa do mês em vermelho, igual ao saldo do topo (Sigma 14:25) */
+@media (min-width: 1280px) {   /* Casa no PC: planta grande à esquerda ocupando a altura, cômodos e medidas à direita (Sigma WEB-NO-PC, May 16/11 #337) */
+  body.web .p-corpo > .tela:has(> .pl-caixa) { display: grid !important; grid-template-columns: minmax(0, 1.5fr) minmax(360px, 1fr); gap: 22px; align-items: start; }
+  body.web .p-corpo > .tela > .pl-caixa { height: calc(100dvh - 96px); min-height: 520px; display: flex; flex-direction: column; }
+  body.web .p-corpo > .tela > .pl-caixa > .pl-svg { flex: 1; width: 100%; height: auto; min-height: 0; }
+  body.web .p-corpo > .tela > .pl-info { height: calc(100dvh - 96px); min-height: 520px; overflow-y: auto; font-size: 15px; } body.web .pl-info > .pl-corpo { flex: 1 1 auto; min-height: 0; }
+  body.web .pl-info .pl-abas button { font-size: 14px; } body.web .pl-info .pl-corpo { font-size: 14.5px; }
+}
+@media (min-width: 1280px) { body.web .pl-corpo .pl-itens { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } body.web .pl-corpo .pl-toca { font-size: 15px; padding: 14px 16px; display: flex; align-items: center; min-height: 54px; } }   /* cômodos da Casa no PC: grade de 2 com botão de PC (#337) */
