@@ -1,3 +1,4 @@
+// v423 (Menu da Geral no PC: os 15 atalhos em 5 x 3 ocupando a tela; #337)
 // v422 (Autocuidado: os itens da semana voltam desmarcados todo domingo; #335)
 // v421 (Garagem no PC: os 3 veículos lado a lado, odômetro gira nos 3, antes/depois sempre Frente primeiro; #334)
 // v420 (Música no PC: Ideias embaixo das Músicas, 3 colunas cheias; Confirmado em verde; Sigma 15/11 14:18 e 15:01)

@@ -2642,3 +2642,10 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 }
 @media (min-width: 1280px) { body.web .fm-lin :is(span, b) { font-size: 14px !important; } body.web .fin-kpis span, body.web .cm-topo span { font-size: 13px !important; } }   /* Finanças no PC: nada abaixo de 13 px (prova do Sigma 14:18) */
 @media (min-width: 1280px) { body.web .fin-res3 .neg b { color: #B42318 !important; } }   /* Sobra negativa do mês em vermelho, igual ao saldo do topo (Sigma 14:25) */
+@media (min-width: 1280px) {   /* Menu da Geral no PC: os 15 atalhos em 5 x 3 ocupando a tela toda, ícone e nome de PC (#337) */
+  body.web .p-grade.apps { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; }
+  body.web .p-grade.apps .p-azulejo { height: calc((100dvh - 190px) / 3); min-height: 150px; }
+  body.web .p-grade.apps .p-azulejo :is(svg.i, svg.lp) { width: 44px; height: 44px; }
+  body.web .p-grade.apps .p-azulejo .t { font-size: 18px; }
+  body.web .p-grade.apps .bt-agenda b { font-size: 64px; line-height: 1; } body.web .p-grade.apps .bt-agenda small { font-size: 14px; }
+}
