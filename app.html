@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-16.424">
+<meta name="app-versao" content="2026-11-16.425">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-16.424"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-16.425"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -4681,6 +4681,7 @@ function abreItemMenu(m) {
   if (m.tipo === 'texto' && m.cartoes) return abreCartoes(m);
   if (m.tipo === 'texto') return abreTexto(m);
   if (m.tipo === 'agenda') return abreAgenda(m);
+  if (m.tipo === 'projetos') return abreProjetosMay(m);
   if (m.tipo === 'checklist') return abreCheck(m);
   if (m.tipo === 'atelie') return abreAtelie(m);
   if (m.tipo === 'planos') return abrePlanos(m);
@@ -6309,6 +6310,90 @@ function abreVisual(m) {
       if (d.atualizado) w.append(elD('p', 'vs-rodape', 'Atualizado em ' + d.atualizado));
     };
     pinta();
+  });
+}
+// Projetos da May (16/11/2026, no lugar do Checklist; Lyra, plano ok do Sigma 10:05): menu/projetos.json = { projetos: [{ id, nome, pra, oque, status, falta: [{ id, texto, feito }], botoes: [{ rotulo, link, motivo }], cores: { fundo, destaque, texto }, icone }] }.
+// Mesmo esquema em todo projeto, cada um nas cores dele; cor que não passa no contraste AA cai pra branco/preto (conta abaixo, não no olho). Tudo editável: projeto, item do que falta e botão.
+const pjmLum = h => { const m = String(h || '').replace('#', '').match(/^([0-9a-f]{6})$/i); if (!m) return null; return [0, 2, 4].map(i => parseInt(m[1].slice(i, i + 2), 16) / 255).map(c => c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)).reduce((s, c, i) => s + c * [0.2126, 0.7152, 0.0722][i], 0); };
+const pjmContraste = (a, b) => { const x = pjmLum(a), y = pjmLum(b); if (x == null || y == null) return 0; return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+const pjmMelhor = fundo => pjmContraste('#FFFFFF', fundo) >= pjmContraste('#000000', fundo) ? '#FFFFFF' : '#000000';
+function pjmCores(p) {
+  const c = p.cores || {}, fundo = pjmLum(c.fundo) != null ? c.fundo : '#334155';
+  const texto = pjmContraste(c.texto, fundo) >= 4.5 ? c.texto : pjmMelhor(fundo);
+  const destaque = pjmContraste(c.destaque, fundo) >= 3 ? c.destaque : texto;
+  return { fundo, texto, destaque, sobreDestaque: pjmMelhor(destaque) };
+}
+const PJM_CAMPOS = [
+  { nome: 'nome', rotulo: 'Nome do projeto', obrigatorio: true },
+  { nome: 'pra', rotulo: 'Para quem é' },
+  { nome: 'oque', rotulo: 'O que é', tipo: 'texto_longo' },
+  { nome: 'status', rotulo: 'Como está agora', tipo: 'texto_longo' },
+  { nome: 'link', rotulo: 'Link do site (se for site)' },
+  { nome: 'doc', rotulo: 'Link da documentação' },
+  { nome: 'fundo', rotulo: 'Cor de fundo (ex.: #1F6B3A)' },
+  { nome: 'destaque', rotulo: 'Cor de destaque (ex.: #C9A227)' }
+];
+function abreProjetosMay(m) {
+  let D = null;
+  const salva = async (muda, msg) => { const d = await gravaJson(m.arq, muda, msg, { projetos: [] }); if (d) { D = d; return true; } showNote('Não salvou: confere a internet.', true); return false; };
+  const doForm = p => { const b = p.botoes || [], site = b.find(x => /acessar/i.test(x.rotulo || '')), doc = b.find(x => /documenta/i.test(x.rotulo || '')); return { nome: p.nome, pra: p.pra, oque: p.oque, status: p.status, link: site ? site.link : '', doc: doc ? doc.link : '', fundo: (p.cores || {}).fundo || '', destaque: (p.cores || {}).destaque || '' }; };
+  const praProjeto = (p, v) => {
+    Object.assign(p, { nome: v.nome.trim(), pra: v.pra || '', oque: v.oque || '', status: v.status || '' });
+    p.cores = Object.assign({}, p.cores, v.fundo ? { fundo: v.fundo.trim() } : {}, v.destaque ? { destaque: v.destaque.trim() } : {});
+    const outros = (p.botoes || []).filter(x => !/acessar|documenta/i.test(x.rotulo || '')), velhoSite = (p.botoes || []).find(x => /acessar/i.test(x.rotulo || ''));
+    const novos = [];
+    if (v.link && v.link.trim()) novos.push({ rotulo: 'Acessar o site', link: v.link.trim() }); else if (velhoSite) novos.push({ rotulo: 'Acessar o site', link: '', motivo: velhoSite.motivo || 'Ainda não publicado' });
+    if (v.doc && v.doc.trim()) novos.push({ rotulo: 'Documentação', link: v.doc.trim() });
+    p.botoes = novos.concat(outros);
+  };
+  const detalhe = id => tela((D.projetos.find(x => x.id === id) || {}).nome || 'Projeto', c => {
+    const pinta = () => {
+      const p = D.projetos.find(x => x.id === id); c.replaceChildren(); if (!p) { c.append(elD('p', 'p-nota', 'Este projeto foi apagado.')); return; }
+      const k = pjmCores(p); c.classList.add('pjm-tela');
+      const topo = elD('div', 'pjm-topo'); topo.style.background = k.fundo; topo.style.color = k.texto; topo.style.borderBottomColor = k.destaque;
+      const ic = elD('span', 'pjm-ic'); ic.innerHTML = icone(p.icone || 'doc'); ic.style.color = k.destaque;
+      const ttl = elD('div'); ttl.append(elD('b', '', p.nome), elD('small', '', p.pra || ''));
+      topo.append(ic, ttl, edMini('pen', 'Editar ' + p.nome, () => edFormulario({ titulo: 'Editar projeto', campos: PJM_CAMPOS, v: doForm(p), aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) praProjeto(q, v); }, 'Projeto editado pelo app: ' + v.nome)) pinta(); }, aoApagar: async () => { if (!confirm('Apagar o projeto ' + p.nome + '?')) return; if (await salva(d => { d.projetos = d.projetos.filter(x => x.id !== id); }, 'Projeto apagado pelo app: ' + p.nome)) { history.back(); } } })));
+      c.append(topo);
+      const bloco = (rot, txt) => { if (!txt) return; const b = elD('section', 'pjm-bloco'); b.append(elD('small', 'pjm-rot', rot), elD('p', '', txt)); c.append(b); };
+      bloco('O que é', p.oque); bloco('Como está agora', p.status);
+      const bt = elD('div', 'pjm-botoes');
+      (p.botoes || []).forEach(x => {
+        if (x.link) { const a = elD('a', 'pjm-bt', x.rotulo); a.href = x.link; a.target = '_blank'; a.rel = 'noopener'; a.style.background = k.destaque; a.style.color = k.sobreDestaque; bt.append(a); }
+        else { const s = elD('span', 'pjm-bt off'); s.append(elD('b', '', x.rotulo), elD('small', '', x.motivo || 'Ainda sem link')); bt.append(s); }
+      });
+      if (bt.children.length) c.append(bt);
+      const fz = elD('section', 'pjm-bloco'), cab = elD('div', 'pjm-cab'), abertos = (p.falta || []).filter(x => !x.feito).length;
+      cab.append(elD('small', 'pjm-rot', 'O que falta' + (abertos ? ' · ' + abertos : '')));
+      const novo = elD('button', 'pjm-add', '+ Adicionar'); novo.type = 'button'; novo.onclick = () => edFormulario({ titulo: 'O que falta em ' + p.nome, campos: [{ nome: 'texto', rotulo: 'O que falta', obrigatorio: true, tipo: 'texto_longo' }], aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) (q.falta = q.falta || []).push({ id: id + '-' + Date.now().toString(36), texto: v.texto.trim(), feito: false }); }, 'Item novo em ' + p.nome)) pinta(); } });
+      cab.append(novo); fz.append(cab);
+      const ul = elD('ul', 'pjm-falta');
+      (p.falta || []).slice().sort((a, b) => (a.feito ? 1 : 0) - (b.feito ? 1 : 0)).forEach(it => {
+        const li = elD('li', it.feito ? 'feito' : ''), mk = elD('button', 'pjm-mk'); mk.type = 'button'; mk.setAttribute('aria-label', it.feito ? 'Desmarcar' : 'Marcar como feito'); mk.innerHTML = it.feito ? icone('check') : ''; mk.style.borderColor = k.destaque; if (it.feito) { mk.style.background = k.destaque; mk.style.color = k.sobreDestaque; }
+        mk.onclick = async () => { mk.disabled = true; if (await salva(d => { const q = d.projetos.find(x => x.id === id), y = q && (q.falta || []).find(z => z.id === it.id); if (y) y.feito = !y.feito; }, (it.feito ? 'Desmarcado' : 'Feito') + ' em ' + p.nome)) pinta(); else mk.disabled = false; };
+        const tx = elD('span', 'pjm-tx', it.texto);
+        li.append(mk, tx, edMini('pen', 'Editar item', () => edFormulario({ titulo: 'Editar item', campos: [{ nome: 'texto', rotulo: 'O que falta', obrigatorio: true, tipo: 'texto_longo' }], v: { texto: it.texto }, aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id), y = q && (q.falta || []).find(z => z.id === it.id); if (y) y.texto = v.texto.trim(); }, 'Item editado em ' + p.nome)) pinta(); }, aoApagar: async () => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) q.falta = (q.falta || []).filter(z => z.id !== it.id); }, 'Item apagado em ' + p.nome)) pinta(); } })));
+        ul.append(li);
+      });
+      if (!ul.children.length) fz.append(elD('p', 'pjm-vazio', 'Nada pendente.')); else fz.append(ul);
+      c.append(fz);
+    };
+    pinta();
+  });
+  tela(m.nome, async c => {
+    c.classList.add('pjm-tela'); const sk = skCarga(3); c.append(sk);
+    try { D = JSON.parse(await lerArquivo(m.arq)); } catch (e) { sk.textContent = 'Não abriu. Confere a internet.'; return; }
+    sk.remove(); cabecalho({ sub: (D.projetos || []).length + ' projetos' });
+    const lista = elD('div', 'pjm-lista');
+    (D.projetos || []).forEach(p => {
+      const k = pjmCores(p), b = elD('button', 'pjm-card'); b.type = 'button'; b.style.background = k.fundo; b.style.color = k.texto; b.style.borderLeftColor = k.destaque;
+      const ic = elD('span', 'pjm-ic'); ic.innerHTML = icone(p.icone || 'doc'); ic.style.color = k.destaque;
+      const tx = elD('span', 'pjm-cardtx'), ab = (p.falta || []).filter(x => !x.feito).length; tx.append(elD('b', '', p.nome), elD('small', '', p.pra || ''), elD('small', 'pjm-st', ab ? ab + (ab === 1 ? ' coisa falta' : ' coisas faltam') : 'Nada pendente'));
+      b.append(ic, tx); b.onclick = () => detalhe(p.id); lista.append(b);
+    });
+    const novo = elD('button', 'pjm-add grande', '+ Novo projeto'); novo.type = 'button';
+    novo.onclick = () => edFormulario({ titulo: 'Novo projeto', campos: PJM_CAMPOS, aoSalvar: async v => { const id = (v.nome || 'projeto').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Date.now().toString(36).slice(-4); if (await salva(d => { const p = { id, icone: 'doc', falta: [], botoes: [], cores: { fundo: '#334155', destaque: '#38BDF8', texto: '#FFFFFF' } }; praProjeto(p, v); (d.projetos = d.projetos || []).push(p); }, 'Projeto novo pelo app: ' + v.nome)) detalhe(id); } });
+    c.append(lista, novo);
   });
 }
 function abreCartoes(m) {

@@ -2649,3 +2649,45 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
   body.web .p-grade.apps .p-azulejo .t { font-size: 18px; }
   body.web .p-grade.apps .bt-agenda b { font-size: 64px; line-height: 1; } body.web .p-grade.apps .bt-agenda small { font-size: 14px; }
 }
+
+/* Projetos da May (16/11/2026, Lyra) */
+.pjm-lista { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.pjm-card { display: flex; align-items: center; gap: 12px; text-align: left; border: 0; border-left: 6px solid; border-radius: 12px; padding: 16px 14px; cursor: pointer; font: inherit; transition: transform .12s, filter .12s; box-shadow: 0 1px 3px rgba(0,0,0,.18); }
+.pjm-card:hover { filter: brightness(1.12); transform: translateY(-1px); }
+.pjm-ic { width: 34px; height: 34px; flex: none; display: grid; place-items: center; }
+.pjm-ic svg { width: 28px; height: 28px; }
+.pjm-cardtx { display: grid; gap: 2px; min-width: 0; }
+.pjm-cardtx b { font-size: 1.08rem; }
+.pjm-cardtx small { opacity: .85; }
+.pjm-st { font-weight: 600; }
+.pjm-add { margin-top: 12px; border: 1px dashed currentColor; background: transparent; color: inherit; border-radius: 10px; padding: 10px 14px; cursor: pointer; font: inherit; }
+.pjm-add:hover { background: rgba(127,127,127,.12); }
+.pjm-add.grande { width: 100%; padding: 14px; }
+.pjm-topo { display: flex; align-items: center; gap: 12px; border-radius: 14px; padding: 18px 14px; border-bottom: 5px solid; margin-bottom: 12px; }
+.pjm-topo > div { flex: 1; display: grid; gap: 2px; min-width: 0; }
+.pjm-topo b { font-size: 1.25rem; }
+.pjm-topo small { opacity: .9; }
+.pjm-topo .ed-mini { color: inherit; }
+.pjm-bloco { padding: 10px 2px; border-top: 1px solid rgba(127,127,127,.25); }
+.pjm-bloco p { margin: 4px 0 0; line-height: 1.5; }
+.pjm-rot { text-transform: uppercase; letter-spacing: .06em; font-weight: 700; opacity: .7; }
+.pjm-cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.pjm-cab .pjm-add { margin: 0; padding: 6px 10px; }
+.pjm-botoes { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin: 4px 0 12px; }
+.pjm-bt { display: grid; place-items: center; text-align: center; padding: 14px; border-radius: 12px; font-weight: 700; text-decoration: none; cursor: pointer; transition: filter .12s; }
+.pjm-bt:hover { filter: brightness(1.1); text-decoration: underline; }
+.pjm-bt.off { background: rgba(127,127,127,.18); color: inherit; cursor: default; font-weight: 400; }
+.pjm-bt.off:hover { filter: none; text-decoration: none; }
+.pjm-bt.off b { font-weight: 700; opacity: .7; }
+.pjm-falta { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 6px; }
+.pjm-falta li { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+.pjm-falta li.feito .pjm-tx { text-decoration: line-through; opacity: .55; }
+.pjm-tx { flex: 1; min-width: 0; }
+.pjm-mk { width: 26px; height: 26px; flex: none; border-radius: 50%; border: 2px solid; background: transparent; display: grid; place-items: center; cursor: pointer; padding: 0; }
+.pjm-mk:hover { background: rgba(127,127,127,.15); }
+.pjm-mk svg { width: 16px; height: 16px; }
+.pjm-vazio { opacity: .7; margin: 6px 0 0; }
+.pjm-tela .pjm-card { width: 100%; height: auto; min-height: 78px; white-space: normal; line-height: 1.3; justify-content: flex-start; }
+.pjm-tela .pjm-add { width: auto; height: auto; min-width: 0; white-space: nowrap; line-height: 1.2; border-radius: 10px; }
+.pjm-tela .pjm-add.grande { width: 100%; }
+.pjm-tela .pjm-mk { min-width: 26px; height: 26px; }
