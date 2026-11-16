@@ -4811,7 +4811,7 @@ function abreAtelie(m) {
 function abrePlanos(m) {   // Planos desenhado (#211, May 11/11 e 12/11 22:07-22:12: Harvest Moon + MapleStory no inverno, chibis de cabeça quadrada pela ficha de Cennet; opção a do Sigma 13/11 11:09): planos e viagens juntos, viagem que passou vai pra "Já foi"
   tela(m.nome, async c => {
     painel.classList.add('tema-planos'); painel.style.setProperty('--c', '#6B4226'); c.classList.add('pl2-tela');
-    cabecalho({ icone: 'pin', sub: 'viagens, passeios e metas' });
+    cabecalho({ icone: 'pin', sub: 'viagens e passeios' });
     const cena = elD('div', 'pl2-cena'), ci = elD('img'); ci.alt = ''; cena.append(ci);
     const nav = elD('nav', 'pl2-abas'), corpo = elD('div', 'pl2-corpo'); c.append(cena, nav, corpo);
     let E, V; try { [E, V] = await Promise.all([edAbre({ arq: m.arq }), lerArquivo(m.viagens || 'menu/viagens.json').then(t => JSON.parse(t)).catch(() => ({ viagens: [] }))]); } catch (e) { corpo.append(elD('p', 'p-nota', 'Não abriu. Confere a internet.')); return; }
@@ -4841,7 +4841,7 @@ function abrePlanos(m) {   // Planos desenhado (#211, May 11/11 e 12/11 22:07-22
     const cartaoViagem = (v, foi) => { const f = feitosV(v), t = itensV(v), fotos = (v.lembrancas || []).filter(l => !l.apagado), k = placa(v.nome || '', foi && fotos.length ? fotos.length + (fotos.length === 1 ? ' foto' : ' fotos') : v.listas.length + ' listas pra levar e conferir', foi ? 'foi ' + quandoV(v) : (quandoV(v) || 'sem data'), quem(v.com).map(n => (v.chibis || {})[n] || n), f == null || !t || foi ? null : barra(f, t), foi ? 'passou' : '', v.arte); k.querySelector('.pl2-top > div').append(elD('span', 'pl2-com', comTx(v)));   // quem foi junto escrito no cartão (May 13/11 13:51)
     if (foi && fotos.length) { const capa = elD('div', 'pl2-pilha'); fotos.slice(0, 3).forEach((l, i) => { const p = elD('span', 'pl2-polaroide mini'), im = elD('img'); im.alt = ''; im.loading = 'lazy'; p.style.setProperty('--gira', [-7, 4, -1][i] + 'deg'); p.append(im); fotoUrl(l.foto).then(u => { im.src = u; }).catch(() => p.remove()); capa.append(p); }); const ab = elD('button', 'pl2-abre-album', 'Abrir o álbum · ' + fotos.length + (fotos.length === 1 ? ' foto' : ' fotos')); ab.type = 'button'; capa.append(ab); k.append(capa); }   // capa do álbum: 3 polaroides empilhadas (May 13/11 16:19: "num álbum bonito, não só jogadas")
     k.classList.add('toca'); k.onclick = () => (foi && fotos.length ? abreAlbumViagem(v, comTx(v)) : abreViagem(v)); return k; };
-    const ABAS = { viagens: 'Viagens', agora: 'Agora', umdia: 'Um dia' }; let aba = 'viagens';   // a tela virou Viagens (May 13/11 13:50); metas ficam nas outras abas
+    const ABAS = { viagens: 'Viagens' }; let aba = 'viagens'; nav.hidden = true;   // a tela virou Viagens (May 13/11 13:50); as abas Agora e Um dia saíram (May 16/11 14:17, #243), sem abas a barra some
     const pinta = () => {
       nav.replaceChildren(...Object.entries(ABAS).map(([k, t]) => { const b = elD('button', k === aba ? 'on' : '', t); b.type = 'button'; b.onclick = () => { aba = k; pinta(); }; return b; }));
       corpo.replaceChildren();
