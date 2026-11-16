@@ -2826,4 +2826,6 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 .pjm-bloco p { white-space: pre-line; }
 .pjm-h-econtrole .pjm-hero-pra { display: none; }
 /* subtítulo da barra de cima quebra em até 2 linhas em vez de cortar com reticências (Sigma #344, Tarefas: "45 planejadas · 53 na re...") */
-.p-sub { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.25; }
+.p-sub { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-size: 11.5px; line-height: 1.12; opacity: .95; }
+.painel .p-tits { min-height: 48px; justify-content: center; } .painel .p-tits h2 { line-height: 1.12; }   /* toda barra com a mesma altura, cabe subtítulo de 2 linhas sem pular ao trocar de tela (Sigma #344) */
+.painel .p-topo { background: linear-gradient(color-mix(in srgb, var(--c) 58%, black), color-mix(in srgb, var(--c) 42%, black)); }   /* fundo mais escuro: branco dá 4,5 de contraste até no amarelo (Sigma #344) */
