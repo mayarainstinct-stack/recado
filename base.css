@@ -2825,3 +2825,5 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 .pjm-tela .pjm-bt.sec { background: transparent; color: inherit; border: 2px solid; }
 .pjm-bloco p { white-space: pre-line; }
 .pjm-h-econtrole .pjm-hero-pra { display: none; }
+/* subtítulo da barra de cima quebra em até 2 linhas em vez de cortar com reticências (Sigma #344, Tarefas: "45 planejadas · 53 na re...") */
+.p-sub { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.25; }
