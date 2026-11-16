@@ -2689,10 +2689,11 @@ function tela(titulo, montar) { if (pilha.length) pilha[pilha.length - 1][2] = p
 // Cabeçalho próprio de cada sistema (Sigma 12:19 item 1): ícone da tela, subtítulo com o estado dela e a ação dela no lugar dos 3 pontinhos; cada tela chama no montar
 const pTopo = document.querySelector('#painel .p-topo'), pMais = document.getElementById('p-mais');
 const pTits = document.createElement('div'), pSub = document.createElement('small'); pTits.className = 'p-tits'; pSub.className = 'p-sub'; pSub.hidden = true; pTit.replaceWith(pTits); pTits.append(pTit, pSub);
+const subTx = t => String(t || '').split(' · ').map(x => x.replace(/ /g, ' ')).join(' · ');   // subtítulo da barra só quebra entre os pedaços, nunca dentro de "22 na revisão" (Sigma #344)
 function cabecalho({ icone: ic, sub, acao } = {}) {
   pTopo.classList.add('proprio'); pTopo.querySelector('.p-ic')?.remove(); pTopo.querySelector('.p-acao')?.remove();
   if (ic) { const b = elD('span', 'p-ic'); b.innerHTML = icone(ic); pTits.before(b); }
-  pSub.textContent = sub || ''; pSub.hidden = !sub; pMais.hidden = true;
+  pSub.textContent = subTx(sub || ''); pSub.hidden = !sub; pMais.hidden = true;
   if (acao) { const b = elD('button', 'p-acao'); b.type = 'button'; b.innerHTML = icone(acao.icone); b.setAttribute('aria-label', acao.rotulo); b.onclick = acao.fn; pMais.before(b); }
 }
 function cabecalhoGenerico() { pTopo.classList.remove('proprio'); pTopo.querySelector('.p-ic')?.remove(); pTopo.querySelector('.p-acao')?.remove(); pSub.textContent = ''; pSub.hidden = true; pMais.hidden = false; }
@@ -6190,7 +6191,7 @@ function abreVisual(m) {
         lista.classList.add('vs-ed-lista');
         const mais = elD('button', 'vs-ed-mais', '+ ' + rotNovo); mais.type = 'button';
         mais.onclick = () => edFormulario({ titulo: rotNovo.charAt(0).toUpperCase() + rotNovo.slice(1) + ' novo', campos, aoSalvar: async v => { const id = bk + '|novo-' + Date.now().toString(36), nv = { novo: true }; campos.forEach(k => { nv[k.nome] = String(v[k.nome] || '').trim(); }); veGrava(veMuda(id, bk, nv), 'Saúde: item novo pelo app').then(pinta); pinta(); } });
-        if (ate) { ate.nextElementSibling?.remove(); ate.replaceWith(lista); } else w.append(lista); lista.after(mais); if (d.sub && w.isConnected && typeof pSub !== 'undefined') pSub.textContent = subAtual();
+        if (ate) { ate.nextElementSibling?.remove(); ate.replaceWith(lista); } else w.append(lista); lista.after(mais); if (d.sub && w.isConnected && typeof pSub !== 'undefined') pSub.textContent = subTx(subAtual());
       };
       pinta(); return w;
     };
