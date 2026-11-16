@@ -1,3 +1,4 @@
+// v439 (Mapa: casa vista de cima como a da May, eternite cinza; nomes ao lado do próprio pin)
 // v438 (Mapa: casa quadrada de laje como a da May, nada encostando nela)
 // v437 (Viagens: aba Mapa do Brasil por estados com pins das viagens, ordem com data / sem data / já foi, lançar e editar viagem no app; #351)
 // v436 (Viagens: Cachoeira do Morro Vermelho 20/11 e nenhuma pessoinha solta nos cartões)
