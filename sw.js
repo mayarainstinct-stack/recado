@@ -1,3 +1,4 @@
+// v434 (barra de cima: subtítulo inteiro em até 2 linhas, mesma altura em toda tela, conteúdo no meio, contraste 4,5; #344)
 // v433 (Viagens: desenhos novos, sem bonequinhos soltos, chapéu de bruxa na Polly, sem as abas Agora e Um dia; #243 #256-#260)
 // v432 (Projetinhos: E-controle sem o texto embaixo da logo; May 12:46)
 // v431 (Projetinhos: WhatsApp do cliente, mandar o link, baixar APK, contatos do Promoter, versoes, contagem pro evento; Lyra)
