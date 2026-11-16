@@ -1,3 +1,6 @@
+// v431 (Projetinhos: WhatsApp do cliente, mandar o link, baixar APK, contatos do Promoter, versoes, contagem pro evento; Lyra)
+// v430 (Projetinhos: abas Resumo/Pedidos/Vendas/Textos/Onde mudar, campo de pedido sempre aberto, contador de vendas do Promoter; Lyra)
+// v429 (Projetinhos: icone proprio de cada projeto, logos do mesmo tamanho, House Bridge com logo; Lyra)
 // v428 (Projetinhos: cada projeto com a cara dele inteira, logo, fonte e fundo; Midnight com planeta e orbita; Lyra)
 // v427 (barra de cima com respiro: 20 px nas laterais, 14 px entre os itens; May 16/11 10:29)
 // v426 (Projetos: textos prontos com Copiar no Promoter; Lyra)
