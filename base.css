@@ -2780,3 +2780,33 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 .pjm-h-housebridge .pjm-logo { max-height: 150px; }
 .pjm-h-housebridge .pjm-hero-pra { color: #FFCB05; }
 .pjm-ic-img { background: rgba(255,255,255,.95); padding: 3px; box-sizing: border-box; }
+/* Projetinhos: abas dentro do projeto (May 12:32) */
+.pjm-abas { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 10px; scrollbar-width: none; }
+.pjm-tela .pjm-aba { width: auto; height: auto; flex: none; border-radius: 999px; padding: 8px 16px; font: inherit; font-weight: 700; background: rgba(127,127,127,.18); color: inherit; cursor: pointer; }
+.pjm-tela .pjm-aba:hover { background: rgba(127,127,127,.3); }
+.pjm-novo { display: grid; gap: 8px; margin: 4px 0 8px; }
+.pjm-novo textarea { width: 100%; box-sizing: border-box; border-radius: 10px; border: 1px solid rgba(127,127,127,.4); padding: 10px; font: inherit; background: rgba(255,255,255,.92); color: #1d1d1d; resize: vertical; }
+.pjm-novo .pjm-copia { justify-self: end; }
+.pjm-quando { opacity: .6; font-size: .8em; }
+.pjm-vendas { display: grid; justify-items: center; gap: 8px; padding: 14px 4px; text-align: center; }
+.pjm-vnum { font-size: 4rem; font-weight: 900; line-height: 1; }
+.pjm-vbts { display: flex; gap: 12px; }
+.pjm-tela .pjm-vbt { width: 72px; height: 52px; border-radius: 14px; border: 2px solid currentColor; font: inherit; font-size: 1.4rem; font-weight: 900; cursor: pointer; }
+.pjm-tela .pjm-vbt:hover { filter: brightness(1.1); }
+.pjm-vbarra { width: 100%; height: 12px; border-radius: 999px; background: rgba(127,127,127,.25); overflow: hidden; }
+.pjm-vbarra span { display: block; height: 100%; border-radius: 999px; }
+.pjm-vganho { font-weight: 800; margin: 4px 0 0; }
+.pjm-vfaixas { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; width: 100%; }
+.pjm-vfaixas li { padding: 6px 10px; border-radius: 8px; background: rgba(127,127,127,.15); opacity: .75; }
+.pjm-vfaixas li.on { opacity: 1; font-weight: 800; outline: 2px solid currentColor; }
+/* Projetinhos: cartão mais limpo (May 12:34 "tá feio"): só o ícone do projeto à esquerda, sem caixa branca, sem logo repetida à direita */
+.pjm-card .pjm-card-logo { display: none; }
+.pjm-card .pjm-cardtx { padding-right: 0; }
+.pjm-c-midnight .pjm-cardtx { padding-right: 70px; }
+.pjm-card .pjm-ic { width: 52px; height: 52px; }
+.pjm-ic-img { width: 52px; height: 52px; background: none; padding: 0; border-radius: 12px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,.35)); }
+.pjm-hero.mini { padding-top: 10px; padding-bottom: 10px; }
+.pjm-hero.mini .pjm-planeta, .pjm-hero.mini .mn-faixa, .pjm-hero.mini .mn-rodape, .pjm-hero.mini .hud, .pjm-hero.mini .pjm-hero-pra { display: none; }
+.pjm-hero.mini .mn-data { font-size: 1.6rem; margin-top: 2px; }
+.pjm-hero.mini .mn-logo { margin-top: 0; }
+.pjm-hero.mini .pjm-logo { max-height: 84px; }

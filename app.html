@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-16.429">
+<meta name="app-versao" content="2026-11-16.430">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-16.429"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-16.430"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -6371,41 +6371,71 @@ function abreProjetosMay(m) {
       const ttl = elD('div'); ttl.append(elD('b', '', p.nome), elD('small', '', p.pra || ''));
       topo.append(ic, ttl, edMini('pen', 'Editar ' + p.nome, () => edFormulario({ titulo: 'Editar projeto', campos: PJM_CAMPOS, v: doForm(p), aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) praProjeto(q, v); }, 'Projeto editado pelo app: ' + v.nome)) pinta(); }, aoApagar: async () => { if (!confirm('Apagar o projeto ' + p.nome + '?')) return; if (await salva(d => { d.projetos = d.projetos.filter(x => x.id !== id); }, 'Projeto apagado pelo app: ' + p.nome)) { history.back(); } } })));
       if ((p.tema || {}).estilo) { const hero = c.querySelector('.pjm-hero'), lp = topo.querySelector('.ed-mini'); if (hero && lp) { lp.classList.add('pjm-hero-ed'); hero.append(lp); } } else c.append(topo);
-      const bloco = (rot, txt) => { if (!txt) return; const b = elD('section', 'pjm-bloco'); b.append(elD('small', 'pjm-rot', rot), elD('p', '', txt)); c.append(b); };
-      bloco('O que é', p.oque); bloco('Como está agora', p.status);
-      const bt = elD('div', 'pjm-botoes');
-      (p.botoes || []).forEach(x => {
-        if (x.link) { const a = elD('a', 'pjm-bt', x.rotulo); a.href = x.link; a.target = '_blank'; a.rel = 'noopener'; a.style.background = k.destaque; a.style.color = k.sobreDestaque; bt.append(a); }
-        else { const s = elD('span', 'pjm-bt off'); s.append(elD('b', '', x.rotulo), elD('small', '', x.motivo || 'Ainda sem link')); bt.append(s); }
-      });
-      if (bt.children.length) c.append(bt);
-      const fz = elD('section', 'pjm-bloco'), cab = elD('div', 'pjm-cab'), abertos = (p.falta || []).filter(x => !x.feito).length;
-      cab.append(elD('small', 'pjm-rot', 'O que falta' + (abertos ? ' · ' + abertos : '')));
-      const novo = elD('button', 'pjm-add', '+ Adicionar'); novo.type = 'button'; novo.onclick = () => edFormulario({ titulo: 'O que falta em ' + p.nome, campos: [{ nome: 'texto', rotulo: 'O que falta', obrigatorio: true, tipo: 'texto_longo' }], aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) (q.falta = q.falta || []).push({ id: id + '-' + Date.now().toString(36), texto: v.texto.trim(), feito: false }); }, 'Item novo em ' + p.nome)) pinta(); } });
-      cab.append(novo); fz.append(cab);
-      const ul = elD('ul', 'pjm-falta');
-      (p.falta || []).slice().sort((a, b) => (a.feito ? 1 : 0) - (b.feito ? 1 : 0)).forEach(it => {
-        const li = elD('li', it.feito ? 'feito' : ''), mk = elD('button', 'pjm-mk'); mk.type = 'button'; mk.setAttribute('aria-label', it.feito ? 'Desmarcar' : 'Marcar como feito'); mk.innerHTML = it.feito ? icone('check') : ''; mk.style.borderColor = k.destaque; if (it.feito) { mk.style.background = k.destaque; mk.style.color = k.sobreDestaque; }
-        mk.onclick = async () => { mk.disabled = true; if (await salva(d => { const q = d.projetos.find(x => x.id === id), y = q && (q.falta || []).find(z => z.id === it.id); if (y) y.feito = !y.feito; }, (it.feito ? 'Desmarcado' : 'Feito') + ' em ' + p.nome)) pinta(); else mk.disabled = false; };
-        const tx = elD('span', 'pjm-tx', it.texto);
-        li.append(mk, tx, edMini('pen', 'Editar item', () => edFormulario({ titulo: 'Editar item', campos: [{ nome: 'texto', rotulo: 'O que falta', obrigatorio: true, tipo: 'texto_longo' }], v: { texto: it.texto }, aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id), y = q && (q.falta || []).find(z => z.id === it.id); if (y) y.texto = v.texto.trim(); }, 'Item editado em ' + p.nome)) pinta(); }, aoApagar: async () => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) q.falta = (q.falta || []).filter(z => z.id !== it.id); }, 'Item apagado em ' + p.nome)) pinta(); } })));
-        ul.append(li);
-      });
-      if (!ul.children.length) fz.append(elD('p', 'pjm-vazio', 'Nada pendente.')); else fz.append(ul);
-      c.append(fz);
-      if ((p.textos || []).length || p.id === 'promoter') {   // textos prontos pra copiar e mandar no WhatsApp (Promoter, 16/11/2026)
+      // Abas em vez de rolar (May 12:32): Resumo · Pedidos · abas próprias do projeto; reabre na última aba de cada projeto
+      const ABAS = [['resumo', 'Resumo'], ['pedidos', 'Pedidos']];
+      if (p.vendas) ABAS.push(['vendas', 'Vendas']);
+      if ((p.textos || []).length || p.vendas) ABAS.push(['textos', 'Textos']);
+      if ((p.notas || []).length) ABAS.push(['notas', p.notasTitulo || 'Onde mudar']);
+      const chave = 'pjm-aba:' + id; let aba = 'resumo'; try { aba = localStorage.getItem(chave) || 'resumo'; } catch (e) {}
+      if (!ABAS.some(a => a[0] === aba)) aba = 'resumo';
+      { const h = c.querySelector('.pjm-hero'); if (h) h.classList.toggle('mini', aba !== 'resumo'); }   // fora do Resumo o topo da marca encolhe, pra aba caber sem rolar
+      const barra = elD('div', 'pjm-abas'); barra.setAttribute('role', 'tablist'); const corpo = elD('div', 'pjm-corpo-aba');
+      ABAS.forEach(([k2, rot]) => { const b = elD('button', 'pjm-aba' + (k2 === aba ? ' on' : ''), rot); b.type = 'button'; b.setAttribute('role', 'tab'); if (k2 === aba) { b.style.background = k.destaque; b.style.color = k.sobreDestaque; } b.onclick = () => { try { localStorage.setItem(chave, k2); } catch (e) {} pinta(); }; barra.append(b); });
+      c.append(barra, corpo);
+      const bloco = (rot, txt) => { if (!txt) return; const b = elD('section', 'pjm-bloco'); b.append(elD('small', 'pjm-rot', rot), elD('p', '', txt)); corpo.append(b); };
+      const lista = (campo, rotNovo, vazio) => {   // pedidos de alteração (era "O que falta"): campo sempre aberto, grava na hora
+        const itens = p[campo] || [], fz = elD('section', 'pjm-bloco');
+        const form = elD('form', 'pjm-novo'), inp = elD('textarea'), ok = elD('button', 'pjm-copia', 'Guardar'); inp.rows = 2; inp.placeholder = rotNovo; ok.type = 'submit'; ok.style.background = k.destaque; ok.style.color = k.sobreDestaque;
+        form.onsubmit = async e => { e.preventDefault(); const t = inp.value.trim(); if (!t) return; ok.disabled = true; if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) (q[campo] = q[campo] || []).unshift({ id: id + '-' + Date.now().toString(36), texto: t, feito: false, quando: edAgora() }); }, 'Pedido novo em ' + p.nome)) pinta(); else ok.disabled = false; };
+        form.append(inp, ok); fz.append(form);
+        const ul = elD('ul', 'pjm-falta');
+        itens.slice().sort((a, b) => (a.feito ? 1 : 0) - (b.feito ? 1 : 0)).forEach(it => {
+          const li = elD('li', it.feito ? 'feito' : ''), mk = elD('button', 'pjm-mk'); mk.type = 'button'; mk.setAttribute('aria-label', it.feito ? 'Desmarcar' : 'Marcar como feito'); mk.innerHTML = it.feito ? icone('check') : ''; mk.style.borderColor = k.destaque; if (it.feito) { mk.style.background = k.destaque; mk.style.color = k.sobreDestaque; }
+          mk.onclick = async () => { mk.disabled = true; if (await salva(d => { const q = d.projetos.find(x => x.id === id), y = q && (q[campo] || []).find(z => z.id === it.id); if (y) y.feito = !y.feito; }, (it.feito ? 'Desmarcado' : 'Feito') + ' em ' + p.nome)) pinta(); else mk.disabled = false; };
+          const tx = elD('span', 'pjm-tx'); tx.append(document.createTextNode(it.texto)); if (it.quando) tx.append(elD('small', 'pjm-quando', ' ' + String(it.quando).slice(0, 10)));
+          li.append(mk, tx, edMini('pen', 'Editar', () => edFormulario({ titulo: 'Editar pedido', campos: [{ nome: 'texto', rotulo: 'Pedido', obrigatorio: true, tipo: 'texto_longo' }], v: { texto: it.texto }, aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id), y = q && (q[campo] || []).find(z => z.id === it.id); if (y) y.texto = v.texto.trim(); }, 'Pedido editado em ' + p.nome)) pinta(); }, aoApagar: async () => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) q[campo] = (q[campo] || []).filter(z => z.id !== it.id); }, 'Pedido apagado em ' + p.nome)) pinta(); } })));
+          ul.append(li);
+        });
+        if (!ul.children.length) fz.append(elD('p', 'pjm-vazio', vazio)); else fz.append(ul);
+        corpo.append(fz);
+      };
+      if (aba === 'resumo') {
+        bloco('O que é', p.oque); bloco('Como está agora', p.status);
+        const bt = elD('div', 'pjm-botoes');
+        (p.botoes || []).forEach(x => {
+          if (x.link) { const a = elD('a', 'pjm-bt', x.rotulo); a.href = x.link; a.target = '_blank'; a.rel = 'noopener'; a.style.background = k.destaque; a.style.color = k.sobreDestaque; bt.append(a); }
+          else { const s = elD('span', 'pjm-bt off'); s.append(elD('b', '', x.rotulo), elD('small', '', x.motivo || 'Ainda sem link')); bt.append(s); }
+        });
+        if (bt.children.length) corpo.append(bt);
+        const ab = (p.pedidos || []).filter(x => !x.feito).length; if (ab) { const v = elD('button', 'pjm-add', ab + (ab === 1 ? ' pedido aberto →' : ' pedidos abertos →')); v.type = 'button'; v.onclick = () => { try { localStorage.setItem(chave, 'pedidos'); } catch (e) {} pinta(); }; corpo.append(v); }
+      }
+      if (aba === 'pedidos') lista('pedidos', 'O que pediram para mudar? Escreve aqui e toca em Guardar', 'Nenhum pedido aberto.');
+      if (aba === 'vendas') {   // Promoter: contador de ingressos e faixa do prêmio
+        const vd = p.vendas || {}, n = +vd.vendidos || 0, fx = (vd.faixas || []).slice().sort((a, b) => a[0] - b[0]);
+        const ganhou = fx.filter(f => n >= f[0]).pop(), prox = fx.find(f => n < f[0]);
+        const box = elD('section', 'pjm-vendas'), num = elD('b', 'pjm-vnum', String(n)); box.append(num, elD('small', '', n === 1 ? 'ingresso vendido' : 'ingressos vendidos'));
+        const linha = elD('div', 'pjm-vbts');
+        [[-1, '−1'], [1, '+1']].forEach(([dlt, rot]) => { const b = elD('button', 'pjm-vbt', rot); b.type = 'button'; b.style.background = dlt > 0 ? k.destaque : 'transparent'; b.style.color = dlt > 0 ? k.sobreDestaque : 'inherit'; b.onclick = async () => { if (n + dlt < 0) return; b.disabled = true; if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) { q.vendas = q.vendas || {}; q.vendas.vendidos = Math.max(0, (+q.vendas.vendidos || 0) + dlt); } }, 'Vendas do ' + p.nome + ': ' + (n + dlt))) pinta(); else b.disabled = false; }; linha.append(b); });
+        box.append(linha);
+        if (prox) { const pr = elD('div', 'pjm-vbarra'), fill = elD('span'); fill.style.width = Math.min(100, Math.round(n / prox[0] * 100)) + '%'; fill.style.background = k.destaque; pr.append(fill); box.append(pr, elD('small', '', 'Faltam ' + (prox[0] - n) + ' para a faixa de ' + prox[0] + ' (R$ ' + prox[1] + ')')); }
+        box.append(elD('p', 'pjm-vganho', ganhou ? 'Prêmio garantido até agora: R$ ' + ganhou[1] : 'Prêmio começa em ' + (fx[0] ? fx[0][0] + ' ingressos (R$ ' + fx[0][1] + ')' : '—')));
+        if (fx.length) { const tb = elD('ul', 'pjm-vfaixas'); fx.forEach(f => tb.append(elD('li', n >= f[0] ? 'on' : '', f[0] + ' ingressos · R$ ' + f[1]))); box.append(tb); }
+        corpo.append(box);
+      }
+      if (aba === 'notas') (p.notas || []).forEach(nt => bloco(nt.titulo, nt.texto));
+      if (aba === 'textos') {   // textos prontos pra copiar e mandar no WhatsApp
         const tz = elD('section', 'pjm-bloco'), cb = elD('div', 'pjm-cab'); cb.append(elD('small', 'pjm-rot', 'Textos prontos'));
         const CT = [{ nome: 'titulo', rotulo: 'Para quê', obrigatorio: true }, { nome: 'texto', rotulo: 'Texto', obrigatorio: true, tipo: 'texto_longo' }];
         const nt = elD('button', 'pjm-add', '+ Adicionar'); nt.type = 'button'; nt.onclick = () => edFormulario({ titulo: 'Texto novo', campos: CT, aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) (q.textos = q.textos || []).push({ id: id + '-t' + Date.now().toString(36), titulo: v.titulo.trim(), texto: v.texto.trim() }); }, 'Texto novo em ' + p.nome)) pinta(); } });
         cb.append(nt); tz.append(cb);
         (p.textos || []).forEach(t => {
-          const cd = elD('div', 'pjm-texto'), topo = elD('div', 'pjm-cab'); topo.append(elD('b', '', t.titulo));
+          const cd = elD('div', 'pjm-texto'), topo2 = elD('div', 'pjm-cab'); topo2.append(elD('b', '', t.titulo));
           const cp = elD('button', 'pjm-copia', 'Copiar'); cp.type = 'button'; cp.style.background = k.destaque; cp.style.color = k.sobreDestaque;
           cp.onclick = async () => { try { await navigator.clipboard.writeText(t.texto); cp.textContent = 'Copiado'; setTimeout(() => { cp.textContent = 'Copiar'; }, 1500); } catch (e) { showNote('Não copiou: segura o texto e copia na mão.', true); } };
-          topo.append(cp, edMini('pen', 'Editar texto', () => edFormulario({ titulo: 'Editar texto', campos: CT, v: { titulo: t.titulo, texto: t.texto }, aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id), y = q && (q.textos || []).find(z => z.id === t.id); if (y) { y.titulo = v.titulo.trim(); y.texto = v.texto.trim(); } }, 'Texto editado em ' + p.nome)) pinta(); }, aoApagar: async () => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) q.textos = (q.textos || []).filter(z => z.id !== t.id); }, 'Texto apagado em ' + p.nome)) pinta(); } })));
-          cd.append(topo, elD('p', '', t.texto)); tz.append(cd);
+          topo2.append(cp, edMini('pen', 'Editar texto', () => edFormulario({ titulo: 'Editar texto', campos: CT, v: { titulo: t.titulo, texto: t.texto }, aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id), y = q && (q.textos || []).find(z => z.id === t.id); if (y) { y.titulo = v.titulo.trim(); y.texto = v.texto.trim(); } }, 'Texto editado em ' + p.nome)) pinta(); }, aoApagar: async () => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) q.textos = (q.textos || []).filter(z => z.id !== t.id); }, 'Texto apagado em ' + p.nome)) pinta(); } })));
+          cd.append(topo2, elD('p', '', t.texto)); tz.append(cd);
         });
-        c.append(tz);
+        corpo.append(tz);
       }
     };
     pinta();
@@ -6418,11 +6448,11 @@ function abreProjetosMay(m) {
     (D.projetos || []).forEach(p => {
       const k = pjmCores(p), est = (p.tema || {}).estilo || 'padrao', b = elD('button', 'pjm-card pjm-c-' + est); b.type = 'button'; b.style.background = k.fundo; b.style.color = k.texto; b.style.borderLeftColor = k.destaque; if (est === 'midnight') b.insertAdjacentHTML('beforeend', PJM_SVG_PLANETA); else if ((p.tema || {}).logo) b.append(pjmLogo(p.tema, 'pjm-card-logo'));
       const ic = elD('span', 'pjm-ic'); ic.innerHTML = icone(p.icone || 'doc'); ic.style.color = k.destaque; if ((p.tema || {}).icone) { const im = pjmLogo({ logo: p.tema.icone }, 'pjm-ic-img'); im.onload = () => { ic.replaceChildren(im); }; ic.append(im); }   // ícone próprio do projeto à esquerda (May 12:30)
-      const tx = elD('span', 'pjm-cardtx'), ab = (p.falta || []).filter(x => !x.feito).length; tx.append(elD('b', '', p.nome), elD('small', '', p.pra || ''), elD('small', 'pjm-st', ab ? ab + (ab === 1 ? ' coisa falta' : ' coisas faltam') : 'Nada pendente'));
+      const tx = elD('span', 'pjm-cardtx'), ab = (p.pedidos || []).filter(x => !x.feito).length; tx.append(elD('b', '', p.nome), elD('small', '', p.pra || ''), elD('small', 'pjm-st', ab ? ab + (ab === 1 ? ' pedido aberto' : ' pedidos abertos') : 'Nenhum pedido aberto'));
       b.append(ic, tx); b.onclick = () => { if (p.abre) { location.href = p.abre + (p.abre.includes('?') ? '&' : '?') + 'v=' + encodeURIComponent(VERSAO); return; } detalhe(p.id); }; lista.append(b);   // projeto que É o documento (House Bridge = o manual, May 11:26): o cartão abre direto
     });
     const novo = elD('button', 'pjm-add grande', '+ Novo projeto'); novo.type = 'button';
-    novo.onclick = () => edFormulario({ titulo: 'Novo projeto', campos: PJM_CAMPOS, aoSalvar: async v => { const id = (v.nome || 'projeto').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Date.now().toString(36).slice(-4); if (await salva(d => { const p = { id, icone: 'doc', falta: [], botoes: [], cores: { fundo: '#334155', destaque: '#38BDF8', texto: '#FFFFFF' } }; praProjeto(p, v); (d.projetos = d.projetos || []).push(p); }, 'Projeto novo pelo app: ' + v.nome)) detalhe(id); } });
+    novo.onclick = () => edFormulario({ titulo: 'Novo projeto', campos: PJM_CAMPOS, aoSalvar: async v => { const id = (v.nome || 'projeto').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Date.now().toString(36).slice(-4); if (await salva(d => { const p = { id, icone: 'doc', pedidos: [], botoes: [], cores: { fundo: '#334155', destaque: '#38BDF8', texto: '#FFFFFF' } }; praProjeto(p, v); (d.projetos = d.projetos || []).push(p); }, 'Projeto novo pelo app: ' + v.nome)) detalhe(id); } });
     c.append(lista, novo);
   });
 }
