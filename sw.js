@@ -1,3 +1,4 @@
+// v436 (Viagens: Cachoeira do Morro Vermelho 20/11 e nenhuma pessoinha solta nos cartões)
 // v435 (Menu: icone proprio do Projetinhos, pasta com estrela; Lyra)
 // v434 (barra de cima: subtítulo inteiro em até 2 linhas, mesma altura em toda tela, conteúdo no meio, contraste 4,5; #344)
 // v433 (Viagens: desenhos novos, sem bonequinhos soltos, chapéu de bruxa na Polly, sem as abas Agora e Um dia; #243 #256-#260)
