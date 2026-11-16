@@ -1,3 +1,4 @@
+// v427 (barra de cima com respiro: 20 px nas laterais, 14 px entre os itens; May 16/11 10:29)
 // v426 (Projetos: textos prontos com Copiar no Promoter; Lyra)
 // v425 (Projetos: os projetinhos da May num lugar so, cada um nas cores dele, tudo editavel; Lyra, Sigma 10:05)
 // v424 (Jogos mais leve no celular: fileiras fora da tela sem layout, rolagem da ficha no quadro seguinte, desfoque fora do fio principal; #44)
