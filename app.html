@@ -6362,7 +6362,7 @@ function abreProjetosMay(m) {
     if (v.doc && v.doc.trim()) novos.push({ rotulo: 'Documentação', link: v.doc.trim() });
     p.botoes = novos.concat(outros);
   };
-  const detalhe = id => tela((D.projetos.find(x => x.id === id) || {}).nome || 'Projeto', c => {
+  const detalhe = id => tela((x => x.curto || x.nome || 'Projeto')(D.projetos.find(x => x.id === id) || {}), c => {   // curto: nome que cabe no topo (Sigma 11:28)
     const pinta = () => {
       const p = D.projetos.find(x => x.id === id); c.replaceChildren(); if (!p) { c.append(elD('p', 'p-nota', 'Este projeto foi apagado.')); return; }
       const k = pjmCores(p); pjmCarregaFontes(); c.className = c.className.replace(/pjm-t-\S+/g, '').trim(); c.classList.add('pjm-tela', 'pjm-t-' + ((p.tema || {}).estilo || 'padrao')); c.append(pjmHero(p, k));

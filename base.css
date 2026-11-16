@@ -2760,3 +2760,16 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 .pjm-c-midnight .pjm-cardtx b { font-style: italic; font-weight: 900; letter-spacing: .02em; color: #FC9CFC; }
 .pjm-hero .pjm-hero-ed { position: absolute; right: 8px; top: 8px; z-index: 2; background: rgba(0,0,0,.45); color: #FFFFFF; border-radius: 50%; }
 .pjm-hero .pjm-hero-ed:hover { background: rgba(0,0,0,.65); }
+/* Projetinhos: o topo também é do projeto (Sigma 11:28) */
+.painel:has(.pjm-t-econtrole) .p-topo { background: linear-gradient(#0E4524, #0B3D1F) !important; color: #FFFFFF !important; font-family: 'Barlow', 'Segoe UI', sans-serif; }
+.painel:has(.pjm-t-econtrole) .p-topo::after { background: #E6B422 !important; }
+.painel:has(.pjm-t-azul) .p-topo { background: #FFFFFF !important; color: #2C3255 !important; }
+.painel:has(.pjm-t-azul) .p-topo button, .painel:has(.pjm-t-azul) #p-tit { color: #2C3255 !important; }
+.painel:has(.pjm-t-azul) .p-topo::after { background: #254796 !important; }
+.painel:has(.pjm-t-sandro) .p-topo { background: linear-gradient(#0E2A6B, #0A1D4B) !important; color: #FFFFFF !important; font-family: 'Barlow', 'Segoe UI', sans-serif; }
+.painel:has(.pjm-t-sandro) .p-topo::after { background: #F6C21C !important; }
+.painel:has(.pjm-t-midnight) .p-topo { background: #0C0C0C !important; color: #FC9CFC !important; font-family: 'Barlow', 'Segoe UI', sans-serif; font-style: italic; }
+.painel:has(.pjm-t-midnight) .p-topo::after { background: linear-gradient(90deg, transparent, #FC9CFC, transparent) !important; }
+.pjm-card .pjm-cardtx { padding-right: 40%; }
+.pjm-card-logo { height: 46px; max-width: 34%; }
+.pjm-h-sandro .pjm-logo { max-height: none; height: auto; object-fit: contain; }
