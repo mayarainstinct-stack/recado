@@ -2697,3 +2697,7 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 .pjm-texto .pjm-cab b { flex: 1; }
 .pjm-tela .pjm-copia { width: auto; height: auto; border-radius: 999px; padding: 6px 14px; font: inherit; font-weight: 700; cursor: pointer; }
 .pjm-tela .pjm-copia:hover { filter: brightness(1.1); }
+/* barra de cima com respiro (May 16/11 10:29, "tá tudo colado"): nada encosta na borda nem no vizinho; continua fina, mas com folga de verdade (guia do Hermes: padding >= 20 px nas laterais) */
+header { padding: calc(12px + env(safe-area-inset-top, 0px)) max(20px, env(safe-area-inset-right, 0px)) 12px max(20px, env(safe-area-inset-left, 0px)); gap: 10px; } .topo { gap: 14px; }
+.painel .p-topo { padding: calc(10px + env(safe-area-inset-top, 0px)) max(20px, env(safe-area-inset-right, 0px)) 10px max(20px, env(safe-area-inset-left, 0px)); gap: 14px; }
+body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
