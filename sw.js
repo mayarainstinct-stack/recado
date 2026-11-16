@@ -1,3 +1,4 @@
+// v424 (Jogos mais leve no celular: fileiras fora da tela sem layout, rolagem da ficha no quadro seguinte, desfoque fora do fio principal; #44)
 // v423 (Menu da Geral no PC: os 15 atalhos em 5 x 3 ocupando a tela; #337)
 // v422 (Autocuidado: os itens da semana voltam desmarcados todo domingo; #335)
 // v421 (Garagem no PC: os 3 veículos lado a lado, odômetro gira nos 3, antes/depois sempre Frente primeiro; #334)
