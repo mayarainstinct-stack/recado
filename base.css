@@ -2650,3 +2650,10 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
   body.web .pl-info .pl-abas button { font-size: 14px; } body.web .pl-info .pl-corpo { font-size: 14.5px; }
 }
 @media (min-width: 1280px) { body.web .pl-corpo .pl-itens { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } body.web .pl-corpo .pl-toca { font-size: 15px; padding: 14px 16px; display: flex; align-items: center; min-height: 54px; } }   /* cômodos da Casa no PC: grade de 2 com botão de PC (#337) */
+@media (min-width: 1280px) {   /* Menu da Geral no PC: os 15 atalhos em 5 x 3 ocupando a tela toda, ícone e nome de PC (#337) */
+  body.web .p-grade.apps { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; }
+  body.web .p-grade.apps .p-azulejo { height: calc((100dvh - 190px) / 3); min-height: 150px; }
+  body.web .p-grade.apps .p-azulejo :is(svg.i, svg.lp) { width: 44px; height: 44px; }
+  body.web .p-grade.apps .p-azulejo .t { font-size: 18px; }
+  body.web .p-grade.apps .bt-agenda b { font-size: 64px; line-height: 1; } body.web .p-grade.apps .bt-agenda small { font-size: 14px; }
+}
