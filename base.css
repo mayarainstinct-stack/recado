@@ -2832,3 +2832,9 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 .p-sub[hidden] { display: none !important; }   /* subtítulo vazio não ocupa lugar: sem ele o título fica no meio da barra (Sigma #344 14:25) */
 .painel .p-tits { gap: 2px; } .painel .p-tits .p-sub { margin-top: 0; }
 .painel .p-tits h2 { flex: none; }   /* o título não estica (a regra .p-topo h2 { flex: 1 } empurrava o título pro alto e o subtítulo pro pé) */
+/* Projetinhos no Menu: cara própria (Sigma 14:37), pastas nas cores dos projetos atrás e ícone branco forte */
+.p-grade.apps .bt-projetinhos { background: linear-gradient(160deg, #1E293B, #0F172A); border: 0; position: relative; overflow: hidden; }
+.p-grade.apps .bt-projetinhos::before { content: ''; position: absolute; left: 10px; right: 10px; top: 8px; height: 16px; border-radius: 6px 6px 0 0; background: linear-gradient(90deg, #1F7A3A 0 25%, #254796 25% 50%, #F6C21C 50% 75%, #FC9CFC 75% 100%); opacity: .95; box-shadow: 0 -4px 0 -1px rgba(255,255,255,.08); }
+.p-grade.apps .bt-projetinhos .ic { color: #FFFFFF; filter: drop-shadow(0 2px 4px rgba(0,0,0,.5)); }
+.p-grade.apps .bt-projetinhos .t { color: #FFFFFF; }
+.p-grade.apps .bt-projetinhos:hover { filter: brightness(1.12); }
