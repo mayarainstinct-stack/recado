@@ -2824,3 +2824,4 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 .pjm-abas { flex-wrap: wrap; overflow: visible; }
 .pjm-tela .pjm-bt.sec { background: transparent; color: inherit; border: 2px solid; }
 .pjm-bloco p { white-space: pre-line; }
+.pjm-h-econtrole .pjm-hero-pra { display: none; }
