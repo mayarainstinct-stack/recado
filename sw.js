@@ -1,3 +1,4 @@
+// v437 (Viagens: aba Mapa do Brasil por estados com pins das viagens, ordem com data / sem data / já foi, lançar e editar viagem no app; #351)
 // v436 (Viagens: Cachoeira do Morro Vermelho 20/11 e nenhuma pessoinha solta nos cartões)
 // v435 (Menu: icone proprio do Projetinhos, pasta com estrela; Lyra)
 // v434 (barra de cima: subtítulo inteiro em até 2 linhas, mesma altura em toda tela, conteúdo no meio, contraste 4,5; #344)
