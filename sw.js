@@ -1,3 +1,4 @@
+// v426 (Projetos: textos prontos com Copiar no Promoter; Lyra)
 // v425 (Projetos: os projetinhos da May num lugar so, cada um nas cores dele, tudo editavel; Lyra, Sigma 10:05)
 // v424 (Jogos mais leve no celular: fileiras fora da tela sem layout, rolagem da ficha no quadro seguinte, desfoque fora do fio principal; #44)
 // v423 (Menu da Geral no PC: os 15 atalhos em 5 x 3 ocupando a tela; #337)

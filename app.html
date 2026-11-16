@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-16.425">
+<meta name="app-versao" content="2026-11-16.426">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-16.425"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-16.426"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -6377,6 +6377,20 @@ function abreProjetosMay(m) {
       });
       if (!ul.children.length) fz.append(elD('p', 'pjm-vazio', 'Nada pendente.')); else fz.append(ul);
       c.append(fz);
+      if ((p.textos || []).length || p.id === 'promoter') {   // textos prontos pra copiar e mandar no WhatsApp (Promoter, 16/11/2026)
+        const tz = elD('section', 'pjm-bloco'), cb = elD('div', 'pjm-cab'); cb.append(elD('small', 'pjm-rot', 'Textos prontos'));
+        const CT = [{ nome: 'titulo', rotulo: 'Para quê', obrigatorio: true }, { nome: 'texto', rotulo: 'Texto', obrigatorio: true, tipo: 'texto_longo' }];
+        const nt = elD('button', 'pjm-add', '+ Adicionar'); nt.type = 'button'; nt.onclick = () => edFormulario({ titulo: 'Texto novo', campos: CT, aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) (q.textos = q.textos || []).push({ id: id + '-t' + Date.now().toString(36), titulo: v.titulo.trim(), texto: v.texto.trim() }); }, 'Texto novo em ' + p.nome)) pinta(); } });
+        cb.append(nt); tz.append(cb);
+        (p.textos || []).forEach(t => {
+          const cd = elD('div', 'pjm-texto'), topo = elD('div', 'pjm-cab'); topo.append(elD('b', '', t.titulo));
+          const cp = elD('button', 'pjm-copia', 'Copiar'); cp.type = 'button'; cp.style.background = k.destaque; cp.style.color = k.sobreDestaque;
+          cp.onclick = async () => { try { await navigator.clipboard.writeText(t.texto); cp.textContent = 'Copiado'; setTimeout(() => { cp.textContent = 'Copiar'; }, 1500); } catch (e) { showNote('Não copiou: segura o texto e copia na mão.', true); } };
+          topo.append(cp, edMini('pen', 'Editar texto', () => edFormulario({ titulo: 'Editar texto', campos: CT, v: { titulo: t.titulo, texto: t.texto }, aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id), y = q && (q.textos || []).find(z => z.id === t.id); if (y) { y.titulo = v.titulo.trim(); y.texto = v.texto.trim(); } }, 'Texto editado em ' + p.nome)) pinta(); }, aoApagar: async () => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) q.textos = (q.textos || []).filter(z => z.id !== t.id); }, 'Texto apagado em ' + p.nome)) pinta(); } })));
+          cd.append(topo, elD('p', '', t.texto)); tz.append(cd);
+        });
+        c.append(tz);
+      }
     };
     pinta();
   });

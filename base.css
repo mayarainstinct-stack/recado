@@ -2691,3 +2691,9 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 .pjm-tela .pjm-add { width: auto; height: auto; min-width: 0; white-space: nowrap; line-height: 1.2; border-radius: 10px; }
 .pjm-tela .pjm-add.grande { width: 100%; }
 .pjm-tela .pjm-mk { min-width: 26px; height: 26px; }
+
+.pjm-texto { padding: 10px 12px; margin-top: 8px; border-radius: 10px; background: rgba(127,127,127,.12); }
+.pjm-texto p { margin: 6px 0 0; line-height: 1.5; }
+.pjm-texto .pjm-cab b { flex: 1; }
+.pjm-tela .pjm-copia { width: auto; height: auto; border-radius: 999px; padding: 6px 14px; font: inherit; font-weight: 700; cursor: pointer; }
+.pjm-tela .pjm-copia:hover { filter: brightness(1.1); }
