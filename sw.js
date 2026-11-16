@@ -1,3 +1,4 @@
+// v433 (Viagens: desenhos novos, sem bonequinhos soltos, chapéu de bruxa na Polly, sem as abas Agora e Um dia; #243 #256-#260)
 // v432 (Projetinhos: E-controle sem o texto embaixo da logo; May 12:46)
 // v431 (Projetinhos: WhatsApp do cliente, mandar o link, baixar APK, contatos do Promoter, versoes, contagem pro evento; Lyra)
 // v430 (Projetinhos: abas Resumo/Pedidos/Vendas/Textos/Onde mudar, campo de pedido sempre aberto, contador de vendas do Promoter; Lyra)
