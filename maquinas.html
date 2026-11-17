@@ -103,7 +103,7 @@ body.maq-inativa #fundo{filter:grayscale(1) brightness(.8)}body.maq-inativa .pal
 const REPO="mayarainstinct-stack/Inst",TOKEN=(()=>{try{return localStorage.getItem("gh-token")||""}catch(e){return""}})()
 const apiDe=p=>"https://api.github.com/repos/"+REPO+"/contents/"+p.split("/").map(encodeURIComponent).join("/")
 const gh=(p,raw)=>fetch(apiDe(p),{cache:"no-cache",headers:{Authorization:"Bearer "+TOKEN,Accept:raw?"application/vnd.github.raw":"application/vnd.github+json"}})
-const ROBO={orfeu:["Orfeu","#E31B23","avatares/orfeu-96.png"],nyx:["Nyx","#6FCF00","avatares/nyx-96.png"],vega:["Vega","#1D4ED8","avatares/vega-96.png"],hermes:["Hermes","#FFCB05","avatares/hermes-96.png"]}
+const ROBO={orfeu:["Orfeu","#E31B23","avatares/orfeu-96.png"],nyx:["Nyx","#6FCF00","avatares/nyx-96.png"],vega:["Vega","#1D4ED8","avatares/vega-96.png"],hermes:["Hermes","#FFCB05","avatares/hermes-96.png"],lyra:["Lyra","#FF3EC8","avatares/lyra-96.png"],sigma:["Sigma","#9333EA","avatares/sigma-96.png"]}
 const MARCA={ps1:"PlayStation",ps2:"PlayStation",ps4:"PlayStation",ps5:"PlayStation",switch:"Nintendo","3ds":"Nintendo",snes:"Nintendo",n64:"Nintendo",x360:"Xbox"}
 const CURTO={ps1:"PS1",ps2:"PS2",ps4:"PS4",switch:"Switch","3ds":"3DS",snes:"SNES",x360:"360"}
 // geração e selo (portátil, híbrido) vêm do casa/maquinas.json (campos geracao e selo, fonte única, #165)
