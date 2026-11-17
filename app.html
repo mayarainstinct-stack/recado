@@ -279,10 +279,10 @@ function msgErro(e, acao) {
   if (e.status === 401) return MSG_CHAVE;
   if (e.limite) return 'A conexão com o GitHub tá parada por excesso de leitura; volta sozinha às ' + horaDe(limiteAte) + '. Os robôs continuam trabalhando.';
   if (e.status === 403) return 'A chave não tem permissão pra ' + acao + '.';
-  if (e.rede || navigator.onLine === false) return 'Sem internet. Não consegui ' + acao + '.';
-  if (e.timeout) return 'O GitHub demorou demais. Não consegui ' + acao + ', tenta de novo.';
-  if (e.status >= 500) return 'O GitHub está instável agora. Não consegui ' + acao + ', tenta daqui a pouco.';
-  return 'Não consegui ' + acao + '. Confere a internet e tenta de novo.';
+  if (e.rede || navigator.onLine === false) return 'Sem internet. Não foi possível ' + acao + '.';
+  if (e.timeout) return 'O GitHub demorou demais. Não foi possível ' + acao + ', tenta de novo.';
+  if (e.status >= 500) return 'O GitHub está instável agora. Não foi possível ' + acao + ', tenta daqui a pouco.';
+  return 'Não foi possível ' + acao + '. Confere a internet e tenta de novo.';
 }
 // versão curta pro selo de status no topo
 const statusFalha = e => e.status === 401 ? 'Chave vencida' : e.limite ? 'GitHub segurou a conexão · volta às ' + horaDe(limiteAte) : (e.rede || navigator.onLine === false) ? 'Sem internet' : 'Sem resposta do GitHub';
@@ -530,7 +530,7 @@ FORMA_TROFEU['Escudo da May'] = ["M32 5 L53 11 L53 28 C53 41 44 51 32 58 C20 51 
 const svgTrofeu = t => { const g = FORMA_TROFEU[t.jogo] || FORMA_TROFEU[t.nome] || [GOTA_TROFEU, '', '', []], d = g[0], fu = g[1], il = g[2], pt = g[3] || []; return '<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="trA" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="#FBE931"/><stop offset=".22" stop-color="#FAD703"/><stop offset=".45" stop-color="#F3BA15"/><stop offset=".65" stop-color="#DE960B"/><stop offset=".82" stop-color="#CF8002"/><stop offset="1" stop-color="#995905"/></linearGradient><linearGradient id="trG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#995905"/><stop offset=".6" stop-color="#CF8002"/><stop offset="1" stop-color="#DE960B"/></linearGradient><filter id="trV" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur in="SourceAlpha" stdDeviation="1.1" result="b"/><feSpecularLighting in="b" surfaceScale="2.6" specularConstant=".9" specularExponent="26" lighting-color="#FFE98A" result="s"><feDistantLight azimuth="225" elevation="42"/></feSpecularLighting><feComposite in="s" in2="SourceAlpha" operator="in" result="s2"/><feComposite in="SourceGraphic" in2="s2" operator="arithmetic" k1="0" k2="1" k3=".5" k4="0"/></filter><linearGradient id="trF" x1="0" y1="0" x2=".2" y2="1"><stop offset="0" stop-color="#995905"/><stop offset=".3" stop-color="#CF8002"/><stop offset=".55" stop-color="#DE960B"/><stop offset=".8" stop-color="#F3BA15"/><stop offset="1" stop-color="#FAD703"/></linearGradient></defs><path d="' + d + '" fill="#1a0800" stroke="#1a0800" stroke-width="9" stroke-linejoin="round"/><path d="' + d + '" fill="url(#trF)"/><path d="' + d + '" fill="none" stroke="url(#trA)" stroke-width="6" stroke-linejoin="round" filter="url(#trV)"/>' + (fu ? '<path d="' + fu + '" fill="url(#trG)" stroke="#995905" stroke-width="1.4"/><path d="' + fu + '" fill="none" stroke="#FBE931" stroke-opacity=".55" stroke-width=".8" transform="translate(0 .7)"/>' : '') + '' + (il ? '<path d="' + il + '" fill="url(#trA)" fill-rule="evenodd" stroke="#2b0e00" stroke-width="1.2"/>' : '') + '' + pt.map(([x, y]) => '<circle cx="' + x + '" cy="' + y + '" r=".5" fill="#995905"/><circle cx="' + x + '" cy="' + (y + .25) + '" r=".28" fill="#FBE931" fill-opacity=".5"/>').join('') + '<mask id="trC' + t.icone + '" maskUnits="userSpaceOnUse" x="-8" y="-8" width="80" height="80"><path d="' + d + '" fill="#fff" stroke="#000" stroke-width="9" stroke-linejoin="round"/></mask><g mask="url(#trC' + t.icone + ')"><rect class="tr-brilho" x="-30" y="-10" width="16" height="90" fill="#fff" opacity=".35" transform="rotate(20 32 32)"/></g></svg>'; };
 const svgInsignia = (it, ouro) => { if (!(it && ICO_INSIGNIA[it.icone])) return INSIGNIA; const d = MOLDURA_PATH[it.moldura] || MOLDURA_PATH.hexagono; return '<svg viewBox="0 0 40 40" aria-hidden="true">' + DEFS_INSIG + '<path class="a" d="' + d + '"/><path d="' + d + '" fill="url(#insFundo)"/><path d="' + d + '" fill="none" stroke="#000" stroke-opacity=".45" stroke-width="1" transform="translate(20 20) scale(.8) translate(-20 -20)"/><path d="' + d + '" fill="none" stroke="url(#' + (ouro ? 'insOuro' : 'insPrata') + ')" stroke-width="3.2" stroke-linejoin="round"/><g transform="translate(10.5 11.2) scale(.79)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 -1px 0 rgba(0,0,0,.45))">' + ICO_INSIGNIA[it.icone] + '</g></svg>'; };
 async function abreCracha(chave) {
-  if (!FICHA) { try { FICHA = JSON.parse(await lerArquivo('casa/fichas.json')); } catch (e) { showNote('Não consegui abrir a ficha. Confere a internet.', true); return; } }
+  if (!FICHA) { try { FICHA = JSON.parse(await lerArquivo('casa/fichas.json')); } catch (e) { showNote('Não foi possível abrir a ficha. Confere a internet.', true); return; } }
   const k = ALIAS_FICHA[chave] || chave;
   if (k !== 'may' && !GRUPO[k]) await garanteGrupoTrab();   // quem é da casa mas vem do grupo-casa (ex.: o Gabriel)
   const g = k === 'may' ? EU : GRUPO[k], f = FICHA[k];
@@ -715,7 +715,7 @@ async function copiaTexto(texto) {
       document.body.append(ta); ta.focus(); ta.select(); document.execCommand('copy'); ta.remove();
     } catch (e2) { ok = false; }
   }
-  showNote(ok ? 'Copiado!' : 'Não consegui copiar. Segura o dedo no texto pra selecionar.', !ok);
+  showNote(ok ? 'Copiado!' : 'Não foi possível copiar. Segura o dedo no texto pra selecionar.', !ok);
 }
 // Menu de opções da mensagem (igual WhatsApp: toca a setinha, abre "Copiar"). Um popup só, reaproveitado,
 // reposicionado perto do botão tocado — mais leve que ter um popup por mensagem.
@@ -800,7 +800,7 @@ function ouvirAudio(pl) {
     return tocou;
   }).catch(err => {
     au._baixando = false; au.removeAttribute('src'); au.load(); pl._pinta();
-    showNote(err.status === 404 ? 'Esse áudio já saiu do repositório.' : 'Não consegui baixar o áudio.', true);
+    showNote(err.status === 404 ? 'Esse áudio já saiu do repositório.' : 'Não foi possível baixar o áudio.', true);
   });
 }
 function tocaAudio(au) {
@@ -1014,7 +1014,7 @@ function render(items, manterPosicao) {
         try {
           if (navigator.canShare && navigator.canShare({ files: arqs })) { await navigator.share({ files: arqs }); return; }   // iOS: "Salvar N imagens"
           for (const f of arqs) { baixaArquivo(f, f.name); await new Promise(r => setTimeout(r, 350)); }
-        } catch (err) { if (err && err.name !== 'AbortError') showNote('Não consegui baixar as fotos.', true); }
+        } catch (err) { if (err && err.name !== 'AbortError') showNote('Não foi possível baixar as fotos.', true); }
       });
       alb.append(grade, bt); el.append(alb);
     } else if (it.foto && /\.(mp4|mov|webm)$/i.test(it.foto)) {   // vídeo da conversa sobe inteiro (Sigma #221, May 13/11 13:07): toca no balão, baixa só quando ela der play
@@ -1683,7 +1683,7 @@ function desenhaBandeja() {
     x.onclick = () => { if (a.url) URL.revokeObjectURL(a.url); anexos.splice(i, 1); desenhaBandeja(); };
     d.append(im, x);
     if (!a.video && a.rot === undefined) { const c = document.createElement('button'); c.type = 'button'; c.className = 'anexo-corta'; c.setAttribute('aria-label', 'Cortar esta foto'); c.innerHTML = TESOURA;   // #325 (May 14/11 08:29): cortar antes de enviar
-      c.onclick = async () => { const fonte = a.orig || await (await fetch(a.url)).blob(), novo = await abreCorte(fonte); if (!novo) return; try { const rd = await reduzir(novo); URL.revokeObjectURL(a.url); Object.assign(a, { b64: rd.b64, ext: rd.ext, url: URL.createObjectURL(novo), orig: novo }); desenhaBandeja(); } catch (e) { showNote('Não consegui cortar essa foto.', true); } };
+      c.onclick = async () => { const fonte = a.orig || await (await fetch(a.url)).blob(), novo = await abreCorte(fonte); if (!novo) return; try { const rd = await reduzir(novo); URL.revokeObjectURL(a.url); Object.assign(a, { b64: rd.b64, ext: rd.ext, url: URL.createObjectURL(novo), orig: novo }); desenhaBandeja(); } catch (e) { showNote('Não foi possível cortar essa foto.', true); } };
       d.append(c); }
     bandeja.append(d);
   });
@@ -1748,16 +1748,16 @@ arquivo.addEventListener('change', async () => {
       if (f.size > LIMITE_ARQ) { showNote(f.name + ' tem ' + tamanhoLegivel(f.size) + '; o limite é ' + tamanhoLegivel(LIMITE_ARQ) + '. Divide em partes menores e manda de novo.', true); continue; }
       showNote('Preparando ' + f.name + '…');
       try { const b64 = await new Promise((ok, erro) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1] || ''); fr.onerror = erro; fr.readAsDataURL(f); }); anexos.push({ b64, ext: (f.name.match(/\.(zip|pdf|mp3|m4a|wav|aac|ogg|flac)$/i) || [0, /pdf/i.test(f.type) ? 'pdf' : /^audio\//i.test(f.type) ? ((f.type.split('/')[1] || 'mp3').replace(/^mpeg$/, 'mp3').replace(/^(x-)?m4a$|^mp4$/, 'm4a')) : 'zip'])[1].toLowerCase(), url: '', rot: f.name.replace(/[\[\]·\r\n]/g, ' ').trim() + ' · ' + tamanhoLegivel(f.size) }); showNote(''); }
-      catch (e) { showNote('Não consegui abrir ' + f.name + '.', true); }
+      catch (e) { showNote('Não foi possível abrir ' + f.name + '.', true); }
       continue;
     }
     if (/^video\//.test(f.type) || /\.(mov|mp4|m4v|webm)$/i.test(f.name || '')) {   // vídeo sobe INTEIRO em recados-videos/ (Sigma #221, May 13/11 13:07: "tinha q aceitar inteiro e tirar quadro depois"); os quadros vêm depois, de extra
       let vid = f;
       if (f.size > LIMITE_ARQ) { showNote('O vídeo tem ' + tamanhoLegivel(f.size) + '; diminuindo pra caber (deixa o app aberto)…'); try { vid = await encolheVideo(f, pc => showNote('Diminuindo o vídeo… ' + pc + '%')); } catch (e) { vid = null; } }
-      if (!vid || vid.size > LIMITE_ARQ) { showNote('Não consegui deixar o vídeo abaixo de ' + tamanhoLegivel(LIMITE_ARQ) + '. Corta em partes menores no iPhone e manda de novo.', true); continue; }
+      if (!vid || vid.size > LIMITE_ARQ) { showNote('Não foi possível deixar o vídeo abaixo de ' + tamanhoLegivel(LIMITE_ARQ) + '. Corta em partes menores no iPhone e manda de novo.', true); continue; }
       showNote('Preparando o vídeo…');
       try { const b64 = await new Promise((ok, erro) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1] || ''); fr.onerror = erro; fr.readAsDataURL(vid); }); const ext = /quicktime/i.test(vid.type) || /\.mov$/i.test(vid.name || '') ? 'mov' : /webm/i.test(vid.type) ? 'webm' : 'mp4'; anexos.push({ b64, ext, url: URL.createObjectURL(vid), video: true, tam: vid.size }); desenhaBandeja(); }
-      catch (e) { showNote('Não consegui abrir o vídeo.', true); continue; }
+      catch (e) { showNote('Não foi possível abrir o vídeo.', true); continue; }
       showNote('Vídeo pronto. Tirando os quadros de extra…');
       let qs = []; try { qs = await quadrosDoVideo(f, 8); } catch (e) {}
       for (const q of qs) { try { const rd = await reduzir(q); anexos.push({ b64: rd.b64, ext: rd.ext, url: URL.createObjectURL(q), tirada: await horaTirada(q) }); } catch (e) {} }
@@ -2407,7 +2407,7 @@ btnNotif.onclick = async () => {
     if (atual.ok) corpo.sha = (await atual.json()).sha;
     await apiOk(url, { method: 'PUT', body: JSON.stringify(corpo) });
     marcaNotif(); showNote('Notificações ligadas');
-  } catch (e) { showNote('Não consegui ligar as notificações. Tenta de novo pelo ícone da tela de início.', true); }
+  } catch (e) { showNote('Não foi possível ligar as notificações. Tenta de novo pelo ícone da tela de início.', true); }
 };
 
 function askToken() {
@@ -2821,14 +2821,14 @@ function abreInfoConversa() {
         const nomeArq = a.valor.split('/').pop();
         if (qual === 'link') { let host = a.valor; try { host = new URL(a.valor).host.replace(/^www\./, ''); } catch (e) {} area.append(botao('link', host, a.valor.replace(/^https?:\/\//, '').slice(0, 80) + ' · ' + quando(a), () => window.open(a.valor, '_blank', 'noopener'))); return; }
         if (qual === 'audio') {
-          const b = botao('mic', nomeArq, quando(a), () => { if (b.querySelector('audio')) return; const au = document.createElement('audio'); au.controls = true; b.querySelector('.tx').append(au); b.classList.add('ig-audio'); fotoUrl(a.valor, true).then(u => { au.src = u; au.play().catch(() => {}); }).catch(() => showNote('Não consegui abrir esse áudio.', true)); });
+          const b = botao('mic', nomeArq, quando(a), () => { if (b.querySelector('audio')) return; const au = document.createElement('audio'); au.controls = true; b.querySelector('.tx').append(au); b.classList.add('ig-audio'); fotoUrl(a.valor, true).then(u => { au.src = u; au.play().catch(() => {}); }).catch(() => showNote('Não foi possível abrir esse áudio.', true)); });
           area.append(b); return;
         }
         area.append(botao('doc', nomeArq, a.valor.split('/').slice(0, -1).join('/') + ' · ' + quando(a), async () => {
           try {
             if (EXT_TEXTO.test(a.valor)) { const pre = document.createElement('pre'); pre.style.cssText = 'white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; font-size: 13px;'; pre.textContent = await lerArquivo(a.valor); abreFicha({ titulo: nomeArq, corpo: pre, contexto: 'Documento ' + a.valor }); }
             else { const u = await fotoUrl(a.valor, true); baixaArquivo(await (await fetch(u)).blob(), nomeArq); }
-          } catch (e) { showNote(e && e.status === 404 ? 'Esse arquivo não existe mais (ou mudou de lugar).' : 'Não consegui abrir. Confere a internet.', true); }
+          } catch (e) { showNote(e && e.status === 404 ? 'Esse arquivo não existe mais (ou mudou de lugar).' : 'Não foi possível abrir. Confere a internet.', true); }
         }));
       });
     };
@@ -3041,7 +3041,7 @@ function abreDiagnostico(m) {
       const dias = dg.dias || [dg]; let di = 0; const escolhe = i => { di = i; datas.querySelectorAll('button').forEach((b, j) => b.classList.toggle('ativa', j === i)); nota.classList.remove('sk'); nota.textContent = dias[i].quem || ''; nota.hidden = !dias[i].quem; montaDiaPcs(caixa, dias[i], soDados ? null : x); };
       dias.forEach((d, i) => { const b = elD('button', '', d.data); b.type = 'button'; b.onclick = () => escolhe(i); datas.append(b); }); escolhe(0);
       if (!soDados) (dias[0].pcs || []).forEach((p, k) => lerArquivo('casa/diagnostico/medido/' + p.pc + '.json').then(t => { p.medido = JSON.parse(t); const pg = di === 0 && caixa.querySelectorAll('.pcd-pag')[k + 2], y = pCorpo.scrollTop; if (pg) { pg.replaceChildren(cartaoPc(p)); pCorpo.scrollTop = y; } }).catch(() => {}));   // #297 (Sigma 01:18): cada medição que chega troca só o cartão daquele PC, sem mexer na aba nem na rolagem
-    }).catch(() => { nota.textContent = soDados ? 'Ainda sem relatório dos projetos.' : 'Não consegui abrir o diagnóstico dos PCs. Confere a internet.'; });
+    }).catch(() => { nota.textContent = soDados ? 'Ainda sem relatório dos projetos.' : 'Não foi possível abrir o diagnóstico dos PCs. Confere a internet.'; });
     const linha = (t, v) => { const p = document.createElement('p'), b = document.createElement('b'); b.textContent = t + ': '; p.append(b, v); x.append(p); };
     const perm = window.Notification ? { granted: 'ligada', denied: 'bloqueada (Ajustes → Notificações)', default: 'ainda não pedida' }[Notification.permission] || Notification.permission : 'este navegador não tem';
     linha('Versão do app', VERSAO || 'sem versão');
@@ -3115,7 +3115,7 @@ function abreMaquinas(m) {
   tela(m.nome, async c => {
     painel.style.setProperty('--c', '#EC4899');
     const p = skCarga(); c.append(p);
-    let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não foi possível abrir. Confere a internet.'; return; }
     p.remove();
     const ms = d.maquinas || [], t = d.total || {};
     const h = elD('div', 'mq-hero'), tot = elD('div', 'mq-tot');
@@ -3823,7 +3823,7 @@ function abreObra(m) {
   tela(m.nome, async c => {
     painel.style.setProperty('--c', '#F97316'); c.classList.add('ob-tela');
     const nota = elD('p', 'p-nota', 'Carregando o mural…'); c.append(nota);
-    let d; try { d = JSON.parse(await lerArquivo(m.arq || 'casa/obra-mural.json')); } catch (e) { nota.textContent = 'Não consegui abrir o mural. Confere a internet.'; return; }
+    let d; try { d = JSON.parse(await lerArquivo(m.arq || 'casa/obra-mural.json')); } catch (e) { nota.textContent = 'Não foi possível abrir o mural. Confere a internet.'; return; }
     nota.remove();
     // Edição pelo app (May, 09/11/2026): cartão editado/apagado/novo mora em casa/edicoes/obra.json (chave = id ou arq), somado por cima do mural
     let O = null; try { O = await ovAbre('casa/edicoes/obra.json'); } catch (e) {}
@@ -3923,7 +3923,7 @@ function abreObra(m) {
             if (dir !== 0 && !matchMedia('(prefers-reduced-motion: reduce)').matches && f.animate) f.animate([{ transform: 'translateY(-26px) rotate(' + (gr * 4) + 'deg)', opacity: 0 }, { transform: 'translateY(3px) rotate(' + gr + 'deg)', opacity: 1, offset: .7 }, { transform: 'rotate(' + gr + 'deg)', opacity: 1 }], { duration: 380, delay: k * 60, easing: 'cubic-bezier(.3,.7,.3,1)', fill: 'backwards' });
           });
         };
-        if (cacheFonte[a.fonte]) monta(cacheFonte[a.fonte]); else { g.append(elD('p', 'p-nota', 'Carregando o diário…')); lerArquivo(a.fonte).then(t => { cacheFonte[a.fonte] = JSON.parse(t); if (aba === a.id) monta(cacheFonte[a.fonte]); }).catch(() => { g.replaceChildren(elD('p', 'p-nota', 'Não consegui abrir o diário. Confere a internet.')); }); }
+        if (cacheFonte[a.fonte]) monta(cacheFonte[a.fonte]); else { g.append(elD('p', 'p-nota', 'Carregando o diário…')); lerArquivo(a.fonte).then(t => { cacheFonte[a.fonte] = JSON.parse(t); if (aba === a.id) monta(cacheFonte[a.fonte]); }).catch(() => { g.replaceChildren(elD('p', 'p-nota', 'Não foi possível abrir o diário. Confere a internet.')); }); }
         if (dir) entraDoLado(parede, dir);
         return;
       }
@@ -3949,7 +3949,7 @@ function abreIdeias(m) {
   tela(m.nome, async c => {
     painel.style.setProperty('--c', '#FACC15'); c.classList.add('ie-tela');
     const nota = elD('p', 'p-nota', 'Carregando o quadro…'); c.append(nota);
-    let d; try { d = JSON.parse(await lerArquivo(arq)); } catch (e) { nota.textContent = 'Não consegui abrir o quadro. Confere a internet.'; return; }
+    let d; try { d = JSON.parse(await lerArquivo(arq)); } catch (e) { nota.textContent = 'Não foi possível abrir o quadro. Confere a internet.'; return; }
     nota.remove();
     const TELAS = { quadro: [['esperando', 'Esperando'], ['fazendo', 'Fazendo']], revisao: [['aguardando', 'Aguardando'], ['revisando', 'Revisando']] }, NOME_EST = { concluido: 'concluído', aguardando: 'aguardando revisão', revisando: 'Sigma revisando' };
     const abas = [['quadro', 'Planejado'], ['revisao', 'Revisão'], ['feitos', 'Concluído']], nav = elD('nav', 'ie-abas'), tr = elD('div', 'ie-trilho'), busca = elD('input', 'ie-busca'); busca.type = 'search'; busca.placeholder = 'Procurar em todas as tarefas (até nas concluídas)'; busca.enterKeyHint = 'search';
@@ -4126,7 +4126,7 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
     const cor = (COR_ASSUNTO.find(([re]) => re.test('Casa')) || [])[1] || 'var(--accent)'; painel.style.setProperty('--c', cor); c.classList.add('pl-tela');
     cabecalho({ icone: 'home', sub: 'toca num cômodo' });
     const nota = elD('p', 'p-nota', 'Carregando a planta…'); c.append(nota);
-    let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { nota.textContent = 'Não consegui abrir a planta. Confere a internet.'; return; }
+    let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { nota.textContent = 'Não foi possível abrir a planta. Confere a internet.'; return; }
     nota.remove();
     // Edição pelo app (May, 09/11/2026): coisa de cômodo editada/apagada/nova mora em casa/edicoes/planta.json (chave = cômodo|nome original), somada por cima da planta
     let OP = null; try { OP = await ovAbre('casa/edicoes/planta.json'); } catch (e) {}
@@ -4507,7 +4507,7 @@ function abreFinancas(m) {
     painel.style.setProperty('--c', '#217346'); painel.classList.add('tema-excel');   // Finanças em tema claro com cara de Excel (May 08/11 14:38)
     const nota = skCarga(); c.append(nota);
     let d0, lmd = '', fx = { mensais: [], anuais: [] }, Ec, Ep;
-    try { d0 = JSON.parse(await lerArquivo('contas/pendencias.json')); } catch (e) { nota.textContent = 'Não consegui abrir as contas. Confere a internet.'; return; }
+    try { d0 = JSON.parse(await lerArquivo('contas/pendencias.json')); } catch (e) { nota.textContent = 'Não foi possível abrir as contas. Confere a internet.'; return; }
     try { lmd = await lerArquivo('contas/LANCAMENTOS.md'); } catch (e) {}
     try { fx = JSON.parse(await lerArquivo('contas/contas-fixas.json')); } catch (e) {}
     try {
@@ -4737,7 +4737,7 @@ function semHojeFalso(txt) {   // "Perna · hoje (29/10)" num dia que não é 29
 function abreCheck(m) {
   tela(m.nome, async c => {
     const p = skCarga(); c.append(p);
-    let E; try { E = await edAbre({ arq: m.arq, edicoes: m.edicoes }); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    let E; try { E = await edAbre({ arq: m.arq, edicoes: m.edicoes }); } catch (e) { p.textContent = 'Não foi possível abrir. Confere a internet.'; return; }
     E.aoMudar = () => pinta();
     p.remove();
     let velhos = {}; try { velhos = JSON.parse(store.get('check-feitos') || '{}'); } catch (e) {}   // marcas antigas deste aparelho (check-feitos): passam uma vez pro arquivo
@@ -4783,7 +4783,7 @@ function abreCheck(m) {
 function abreAtelie(m) {
   tela(m.nome, async c => {
     const p = skCarga(); c.append(p);
-    let E; try { E = await edAbre({ arq: m.arq, lista: 'obras' }); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    let E; try { E = await edAbre({ arq: m.arq, lista: 'obras' }); } catch (e) { p.textContent = 'Não foi possível abrir. Confere a internet.'; return; }
     E.aoMudar = () => pinta();
     p.remove();
     const ETAPAS = ['ideia', 'rascunho', 'gravar · colorir', 'mixar · finalizar'];
@@ -5094,7 +5094,7 @@ function abreAlbumViagem(v, comTx) {   // álbum da viagem que já foi (May 13/1
 function abreViagens(m) {
   tela(m.nome, async c => {
     const p = skCarga(); c.append(p);
-    let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não foi possível abrir. Confere a internet.'; return; }
     p.remove();
     if (m.arq === 'menu/treino.json') {   // feito do treino no JSON (Sigma #151, 12/11/2026): passa as marcas desta semana guardadas no aparelho uma vez
       d.feitos = d.feitos || {}; const novos = {};
@@ -5284,6 +5284,7 @@ function abreEstatistica(h) {
 }
 function abreViagem(v) {
   tela(v.nome, c => {
+    if (v.arte) { const fig = document.createElement('div'), im = document.createElement('img'); fig.className = 'pl2-arte v-arte'; im.alt = ''; im.src = v.arte + '?v=' + encodeURIComponent(VERSAO); fig.append(im); c.append(fig); }   // a arte da viagem no topo, igual ao cartão (May 17/11: "dentro de viagens tem q ser mais bonitinho")
     if (v.resumo) { const r = document.createElement('div'); r.className = 'p-texto'; r.textContent = v.resumo; c.append(r); }
     const lista = document.createElement('div'); lista.className = 'p-lista'; c.append(lista);
     v.listas.forEach(l => lista.append(botao(l.icone, semHojeFalso(l.nome), marcados(v, l).size + ' de ' + totalItens(l) + ' feitos · ' + semHojeFalso(l.sub || ''), () => abreChecklist(v, l))));
@@ -5293,8 +5294,10 @@ function abreChecklist(v, l) {
   tela(semHojeFalso(l.nome), c => {
     const feitos = marcados(v, l); let total = totalItens(l); const ehTreino = v._arq === 'menu/treino.json', editavel = ehTreino || v._arq === 'menu/pos-cirurgia.json', NOME_IT = ehTreino ? 'exercício' : 'item', NOME_IT_M = ehTreino ? 'Exercício' : 'Item';   // Pós-cirurgia também lança, edita e apaga (Sigma #151, 12/11/2026)
     const prog = document.createElement('p'); prog.className = 'p-nota';
-    const conta = () => { prog.innerHTML = ''; prog.append(document.createTextNode(feitos.size + ' de ' + total + ' feitos')); if (feitos.size === total) { const ok = document.createElement('span'); ok.innerHTML = ' ' + icone('check'); ok.style.color = 'var(--accent)'; prog.append(ok); } };
-    conta(); c.append(prog);
+    let conta = () => { prog.innerHTML = ''; prog.append(document.createTextNode(feitos.size + ' de ' + total + ' feitos')); if (feitos.size === total) { const ok = document.createElement('span'); ok.innerHTML = ' ' + icone('check'); ok.style.color = 'var(--accent)'; prog.append(ok); } };
+    const barraP = document.createElement('div'); barraP.className = 'trilho-prog p-barra'; const barraI = document.createElement('i'); barraP.append(barraI);   // barra de progresso igual à do cartão da viagem (May 17/11: "mais bonitinho")
+    const conta0 = conta; conta = () => { conta0(); barraI.style.width = (total ? Math.round(100 * feitos.size / total) : 0) + '%'; };
+    conta(); c.append(prog, barraP);
     if (v._arq === 'menu/treino.json') {   // "Hoje não vou" em cima, a 1ª coisa: é na hora que abre que ela decide se vai (May 17:51, Sigma 18:03)
       const nv = document.createElement('button'); nv.type = 'button'; nv.className = 'gostei check-limpa treino-naovou';
       const rot = () => { nv.textContent = store.get('treino-folga') === diaLocal() ? 'Hoje é folga · tocar desfaz' : 'Hoje não vou'; };
@@ -5305,7 +5308,7 @@ function abreChecklist(v, l) {
       };
       c.append(nv);
     }
-    const cont = document.createElement('div'); c.append(cont);
+    const cont = document.createElement('div'); cont.className = 'p-grupos'; c.append(cont);   // p-grupos = mesmo espaço da tela (12 px): o título da seção grudava na caixa de baixo (May 17/11)
     // Treino editável pelo app (May, 09/11/2026): lança, edita e apaga exercício direto no menu/treino.json; item é [id, texto, { apagado }]; a marcação da semana vai pro feitos do JSON (12/11/2026)
     const muda = (g, fn, msg) => { const antes = JSON.parse(JSON.stringify(g.itens)); fn(g); total = totalItens(l); conta(); desenha(); return gravaJson(v._arq, dd => { const vv = (dd.viagens || []).find(x => x.id === v.id), ll = vv && vv.listas.find(x => x.id === l.id), gg = ll && ll.grupos.find(x => x.nome === g.nome); if (gg) fn(gg); }, msg, null).then(ok => { if (ok) return true; g.itens.splice(0, g.itens.length, ...antes); total = totalItens(l); conta(); desenha(); showNote('Não guardou: voltou como estava. Confere a internet e tenta de novo.', true); return false; }); };   // falhou: volta como estava (Sigma #151)
     const camposEx = [{ nome: 'texto', rotulo: NOME_IT_M, tipo: 'texto_longo', obrigatorio: true }];
@@ -5354,7 +5357,7 @@ async function midiaAplica(grupos) {   // junta as edições: título/nota mudad
 function abreImagens(m) {
   tela(m.nome, async c => {
     const p = skCarga(); c.append(p);
-    let d, O; try { d = JSON.parse(await lerArquivo(m.arq)); O = await midiaAplica(d.grupos); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    let d, O; try { d = JSON.parse(await lerArquivo(m.arq)); O = await midiaAplica(d.grupos); } catch (e) { p.textContent = 'Não foi possível abrir. Confere a internet.'; return; }
     p.textContent = 'Toca num álbum pra abrir.';
     cabecalho({ sub: d.grupos.length + ' álbuns', acao: { icone: 'plus', rotulo: 'Imagem nova', fn: () => edFormulario({ titulo: 'Imagem nova', campos: [{ nome: 'grupo', rotulo: 'Álbum', tipo: 'escolha', opcoes: d.grupos.map(g => g.nome), obrigatorio: true }, { nome: 'arq', rotulo: 'Foto', tipo: 'foto', obrigatorio: true }, { nome: 'titulo', rotulo: 'Título', tipo: 'texto' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto_longo' }], aoSalvar: async v => { await O.op({ tipo: 'lanca', item: { id: v.arq, novo: true, ...v, criado: edAgora() } }, 'Imagem nova pelo app'); desenhaTela(); } }) } });
     if (m.estilo === 'estudio') return estudio(c, d.grupos.filter(g => g.imagens.length), m, p);
@@ -5398,7 +5401,7 @@ function estudio(c, gs, m, p) {
 function abreVideos(m) {
   tela(m.nome, async c => {
     const p = skCarga(); c.append(p);
-    let d, O; try { d = JSON.parse(await lerArquivo(m.arq)); O = await ovAbre(MIDIA_OV); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    let d, O; try { d = JSON.parse(await lerArquivo(m.arq)); O = await ovAbre(MIDIA_OV); } catch (e) { p.textContent = 'Não foi possível abrir. Confere a internet.'; return; }
     const por = {}; O.itens.forEach(x => { por[x.id] = x; });
     const vs = (d.videos || []).filter(v => !(por[v.arq] && por[v.arq].apagado)).map(v => { const o = por[v.arq]; return o ? { ...v, ...(o.titulo != null ? { titulo: o.titulo } : {}), ...(o.nota != null ? { nota: o.nota } : {}) } : v; });
     const camposV = [{ nome: 'titulo', rotulo: 'Título', tipo: 'texto', obrigatorio: true }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto_longo' }];
@@ -5444,7 +5447,7 @@ function abreVideo(v) {
 function carregaVersao(el) {
   const x = el._v, st = el._st, nota = [x.duracao, x.nota].filter(Boolean).join(' · ');
   if (el.tagName === 'VIDEO' && x.capa) fotoUrl(x.capa).then(u => { el.poster = u; }).catch(() => {});
-  fotoUrl(x.arq, true).then(u => { el.src = u; st.textContent = nota; if (!nota) st.remove(); }).catch(e => { st.textContent = e && e.status === 404 ? 'Esse vídeo ainda não subiu.' : 'Não consegui abrir o vídeo. Confere a internet.'; });
+  fotoUrl(x.arq, true).then(u => { el.src = u; st.textContent = nota; if (!nota) st.remove(); }).catch(e => { st.textContent = e && e.status === 404 ? 'Esse vídeo ainda não subiu.' : 'Não foi possível abrir o vídeo. Confere a internet.'; });
 }
 function abreAlbum(g, m) {
   tela(g.nome, async c => {
@@ -5460,7 +5463,7 @@ function abreAlbum(g, m) {
       try {
         if (navigator.canShare && navigator.canShare({ files: arqs })) { await navigator.share({ files: arqs }); return; }   // iOS: "Salvar N imagens"
         for (const f of arqs) { baixaArquivo(f, f.name); await new Promise(r => setTimeout(r, 350)); }
-      } catch (err) { if (err && err.name !== 'AbortError') showNote('Não consegui baixar as imagens.', true); }
+      } catch (err) { if (err && err.name !== 'AbortError') showNote('Não foi possível baixar as imagens.', true); }
     };
     caixa.append(bt); c.append(caixa);
     const grade = elD('div', 'album-grade'); c.append(grade);   // #292 (May 01:20): foto em pé vai 2 por linha, lado a lado
@@ -5498,7 +5501,7 @@ function mdTabela(linhas) {   // linhas "| a | b |"; a do separador (|---|) sai
 function abreTexto(m) {
   tela(m.nome, async c => {
     const box = document.createElement('div'); box.className = 'p-texto'; box.textContent = 'Carregando…'; c.append(box);
-    let md; try { md = await lerArquivo(m.arq); } catch (e) { box.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    let md; try { md = await lerArquivo(m.arq); } catch (e) { box.textContent = 'Não foi possível abrir. Confere a internet.'; return; }
     box.replaceChildren();
     const neg = mdInline;
     let ul = null, ol = null, tab = null;
@@ -5778,7 +5781,7 @@ function agFiltra(c, q) {   // pesquisa da Agenda da Geral: acha em tudo (també
 function abreAgenda(m) {
   tela(m.nome, async c => {
     const p = skCarga(); c.append(p);
-    let md, FONTE = null; try { const bruto = await lerArquivo(m.arq); if (/\.json$/i.test(m.arq || '')) FONTE = JSON.parse(bruto); else md = bruto; } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    let md, FONTE = null; try { const bruto = await lerArquivo(m.arq); if (/\.json$/i.test(m.arq || '')) FONTE = JSON.parse(bruto); else md = bruto; } catch (e) { p.textContent = 'Não foi possível abrir. Confere a internet.'; return; }
     p.remove();
     if (FONTE && Array.isArray(FONTE.itens) && /agenda-da-semana/.test(m.arq || '')) { agendaSemanaTrab(c, FONTE); return; }   // agenda da semana do Trabalho: layout do PDF
     const AGASS = FONTE && FONTE.cores_por_assunto ? swAssuntoFn(FONTE) : null; agTiposAtual = AGASS ? AGASS.lista : null;   // cor por assunto (agenda pessoal)
@@ -6698,7 +6701,7 @@ function abreProjetosMay(m) {
 function abreCartoes(m) {
   tela(m.nome, async c => {
     const p = skCarga(); c.append(p);
-    let md; try { md = await lerArquivo(m.arq); } catch (e) { p.textContent = 'Não consegui abrir. Confere a internet.'; return; }
+    let md; try { md = await lerArquivo(m.arq); } catch (e) { p.textContent = 'Não foi possível abrir. Confere a internet.'; return; }
     p.remove();
     const neg = mdInline;
     let card = null, ul = null, tab = null;
@@ -6727,7 +6730,7 @@ async function abreCatalogo() {
   tela('Catálogo', async c => {
     const p = skCarga(); c.append(p);
     try { catalogo = JSON.parse(await lerArquivo('catalogo/catalogo.json')); }
-    catch (e) { p.textContent = 'Não consegui abrir o catálogo. Confere a internet.'; return; }
+    catch (e) { p.textContent = 'Não foi possível abrir o catálogo. Confere a internet.'; return; }
     p.textContent = 'Atualizado em ' + catalogo.atualizado + ' · sempre do mais barato pro mais caro.';
     c.classList.add('cat-tela'); const grade = document.createElement('div'); grade.className = 'cat-grade'; c.append(grade);   // Catálogo com cara própria (May 08/11 12:18): prateleira em grade, cada categoria um bloco com o menor preço em destaque
     catalogo.categorias.forEach(cat => {
@@ -6934,7 +6937,7 @@ function abreZoom(src, path, listaFotos) {   // listaFotos: as fotos do álbum (
       const arq = new File([blob], nome, { type: blob.type || tipoDe(nome) });
       if (navigator.canShare && navigator.canShare({ files: [arq] })) { await navigator.share({ files: [arq] }); return; }   // iOS: folha de compartilhar → "Salvar imagem"
       baixaArquivo(blob, nome);
-    } catch (err) { if (err && err.name !== 'AbortError') showNote('Não consegui salvar a foto.', true); }
+    } catch (err) { if (err && err.name !== 'AbortError') showNote('Não foi possível salvar a foto.', true); }
   };
   x.onclick = e => { e.stopPropagation(); fecha(); };
   const fecha = () => { document.removeEventListener('keydown', esc); if (z.classList.contains('saindo')) return; z.classList.add('saindo'); setTimeout(() => z.remove(), 260); };   // a foto desce e encolhe antes de sair (#110), nunca some do nada
@@ -6979,7 +6982,7 @@ novaBtn.onclick = () => {
   pop.onclick = e => { if (e.target === pop) pop.remove(); };
   pop.querySelector('#np-foto').onclick = () => arqIn.click();
   arqIn.onchange = async () => { const fl = arqIn.files[0]; if (!fl) return;
-    try { const rd = await reduzir(fl); fotoB64 = rd.b64; fotoExt = rd.ext; prev.textContent = ''; prev.style.backgroundImage = 'url(data:' + rd.mime + ';base64,' + fotoB64 + ')'; } catch (e) { showNote('Não consegui ler essa foto.', true); } };
+    try { const rd = await reduzir(fl); fotoB64 = rd.b64; fotoExt = rd.ext; prev.textContent = ''; prev.style.backgroundImage = 'url(data:' + rd.mime + ';base64,' + fotoB64 + ')'; } catch (e) { showNote('Não foi possível ler essa foto.', true); } };
   f.onsubmit = async e => {
     e.preventDefault();
     const nome = nomeIn.value.trim().slice(0, 40); if (!nome) return;

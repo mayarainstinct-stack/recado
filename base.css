@@ -2872,3 +2872,44 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 .pj-abas { position: sticky; top: -16px; z-index: 3; background: var(--bg); margin: -16px -16px 12px; padding: 16px 16px 8px; }   /* abas de Projetos ficam no topo ao rolar (revisão 17/11) */
 .treino-tela .tr-abas { position: sticky; top: -16px; z-index: 3; background: #050805; margin: 0 -24px; padding: 8px 24px; }   /* abas do Treino ficam no topo ao rolar (revisão 17/11) */
 body .painel.tema-excel .fin-res3 .neg b { color: #A4262C; }   /* Sobra negativa do mês em vermelho também no celular, igual ao saldo do topo (#341, Lyra 17/11) */
+
+/* ===== REGRAS GLOBAIS de posição e espaçamento (May 17/11/2026: "os layouts são diferentes sim, mas algumas regras precisam ser globais") =====
+   1. Bloco depois de bloco: 12 px (o gap do .p-corpo). Quem embrulha blocos numa div usa .p-grupos para manter os 12 px.
+   2. Título de seção (.p-sec): 18 px de ar em cima do bloco anterior, 0 até a caixa dele (o gap dá os 12; ele encosta no SEU bloco, nunca no de cima).
+   3. Margem lateral da tela: 16 px (já no .p-corpo). Botão fixo embaixo: o corpo reserva 84 px no fim para nada ficar escondido atrás.
+   4. Linha de lista: no mínimo 48 px de altura, caixa de marcar 24 px, texto 15 px. */
+.p-grupos { display: flex; flex-direction: column; gap: 12px; }
+.p-corpo .p-sec, .p-grupos > .p-sec { margin: 6px 4px -4px; }
+.p-grupos > .p-sec:not(:first-child), .p-corpo > .p-sec:not(:first-child), .p-corpo > .tela > .p-sec:not(:first-child) { margin-top: 10px; }
+.p-barra { margin: -6px 0 2px; }
+.check input { width: 24px; height: 24px; }
+
+/* Dentro da Viagem (tema-planos): o mesmo desenho das placas da lista de viagens, nada de cinza genérico */
+.painel.tema-planos .p-texto { background: #E7C08A; border: 3px solid #3B2A4A; border-radius: 14px; box-shadow: 0 5px 0 #3B2A4A; padding: 14px 16px; margin-bottom: 5px; font-size: 15px; line-height: 1.55; color: #3B2A4A; }
+.painel.tema-planos .p-lista { display: flex; flex-direction: column; gap: 14px; }
+.painel.tema-planos .p-lista .p-botao { background: #E7C08A; border: 3px solid #3B2A4A; border-radius: 14px; box-shadow: 0 5px 0 #3B2A4A; color: #3B2A4A; margin-bottom: 5px; }
+.painel.tema-planos .p-lista .p-botao:active { transform: translateY(3px); box-shadow: 0 2px 0 #3B2A4A; }
+.painel.tema-planos .p-lista .p-botao .ic { background: #D9A066; color: #3B2A4A; border: 2px solid #3B2A4A; box-shadow: none; }
+.painel.tema-planos .p-lista .p-botao b, .painel.tema-planos .p-lista .p-botao .tx { color: #3B2A4A; font-weight: 900; }
+.painel.tema-planos .p-lista .p-botao small, .painel.tema-planos .p-lista .p-botao .chev { color: #5A4A62; }
+.painel.tema-planos .p-sec { color: #6B4226; font-weight: 900; letter-spacing: .14em; }
+.painel.tema-planos .p-nota { color: #5A4A62; font-weight: 700; }
+.painel.tema-planos .p-barra { --trilho-cor: #7CCF4A; --trilho-fundo: #C48A55; }
+.painel.tema-planos .check-lista { background: #F1D3A1; border: 3px solid #3B2A4A; border-radius: 14px; box-shadow: 0 5px 0 #3B2A4A; margin-bottom: 5px; }
+.painel.tema-planos .check { color: #3B2A4A; align-items: center; }
+.painel.tema-planos .check + .check { border-top: 2px dashed #C48A55; }
+.painel.tema-planos .check input { appearance: none; -webkit-appearance: none; flex: none; display: grid; place-items: center; width: 26px; height: 26px; border: 2.5px solid #3B2A4A; border-radius: 7px; background: #FFF4DC; cursor: pointer; }
+.painel.tema-planos .check input:checked { background: #7CCF4A; }
+.painel.tema-planos .check input:checked::after { content: ''; width: 7px; height: 13px; margin-top: -3px; border: solid #3B2A4A; border-width: 0 3px 3px 0; transform: rotate(45deg); }
+.painel.tema-planos .check input:checked + span { color: #8A7690; }
+/* Lista de viagens: sem o vão entre as abas e o 1º cartão */
+.pl2-corpo > .pl2-placa:first-child { margin-top: 0; }
+.pl2-arte.v-arte { margin: 0; height: 168px; box-shadow: 0 5px 0 #3B2A4A; margin-bottom: 5px; }
+/* Tarefas (revisão 17/11): o número da prioridade encostava no título e caminho comprido saía pela borda do bilhete */
+.ie-post:has(> .ie-prio) { padding-top: 26px; } .ie-colunas .ie-post:has(> .ie-prio) { padding-top: 24px; }
+.ie-txt, .ie-sub { overflow-wrap: anywhere; }
+/* REGRA GLOBAL 5 (revisão 17/11): todo botão pequeno tem área de toque de ~40 px, sem mudar o desenho: um ::after invisível em volta.
+   Vale pra caixinha de marcar (Agenda, Finanças), lápis (Obra, Editar), andares da Casa e "Lançar um dia". Botão novo pequeno entra nesta lista. */
+:is(.cad-nivel, .li-ck, .fin-ck, .ob-anotar) { position: relative; }
+:is(.cad-nivel, .li-ck, .fin-ck, .ob-anotar, .ob-lapis, .ed-mini)::after { content: ''; position: absolute; inset: -7px; }
+.cad-nivel::after { inset: -10px -3px; }

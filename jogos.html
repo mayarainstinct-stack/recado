@@ -733,7 +733,7 @@ const FUNDOS={jogando:"categorias/games/mock-tela-jogos/fundo.jpg",concluidos:"c
 function fundoDa(a){requestAnimationFrame(()=>window.posDqJ&&window.posDqJ());const p=FUNDOS[a]||FUNDOS.jogando,app=document.getElementById("app");app.classList.toggle("dourado",a=="concluidos");priv(p).then(u=>{if(FUNDOS[a]==p)app.style.setProperty("--fundo-img",`url("${u}")`)}).catch(()=>{})}
 if(TOKEN&&!J2JA&&!new URLSearchParams(location.search).has("semabertura"))document.getElementById("abertura").classList.add("on")
 if(TOKEN)priv("categorias/games/tela/j2-selo.webp").then(u=>document.querySelectorAll("#app header .j2img,#abertura .j2img").forEach(i=>{i.src=u;i.removeAttribute("data-p")})).catch(()=>{})
-carrega().then(comeca).catch(e=>{document.getElementById("abertura").classList.remove("on");document.body.innerHTML='<p style="padding:24px;font:600 16px system-ui;color:#fff">Não consegui abrir os jogos. Confere a internet e tenta de novo.</p><p style="padding:0 24px"><a href="app.html" style="color:#8CE6C8;font:600 15px system-ui">Voltar pros recados</a></p>'})
+carrega().then(comeca).catch(e=>{document.getElementById("abertura").classList.remove("on");document.body.innerHTML='<p style="padding:24px;font:600 16px system-ui;color:#fff">Não foi possível abrir os jogos. Confere a internet e tenta de novo.</p><p style="padding:0 24px"><a href="app.html" style="color:#8CE6C8;font:600 15px system-ui">Voltar pros recados</a></p>'})
 function comeca(){
 const D=window.JOGOS,J=D.jogos,POR={};J.forEach(j=>POR[j.id]=j)
 const RAIZ_INST="",RAIZ_DOCS=""

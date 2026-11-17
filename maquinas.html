@@ -20,7 +20,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .topo{flex:none;display:flex;align-items:center;gap:10px;padding:0 16px 12px}.anota{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--vidro);border:1px solid var(--borda);color:var(--texto);cursor:pointer;padding:0}.anota svg{width:20px;height:20px}.anota:active{transform:scale(.92)}
 .topo .marca-sis{display:flex;align-items:center;gap:8px;font-weight:700;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--texto2)}
 .topo .marca-sis i{width:10px;height:10px;border-radius:3px;background:var(--k1);box-shadow:0 0 10px var(--k1);transform:rotate(45deg)}
-.topo .tot{margin-left:auto;font-size:12px;color:var(--texto3)}
+.topo .tit{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.topo .tot{font-size:12px;color:var(--texto3)}
 /* a fileira de máquinas, igual à tela inicial de um console */
 #fundo.marca{background-position:center}
 .card .logo{position:absolute;right:-14px;top:-10px;width:116px;height:116px;opacity:.26;object-fit:contain;transform:rotate(-8deg)}.card .logo-txt{position:absolute;right:6px;top:-4px;font-size:64px;font-weight:800;font-style:italic;opacity:.2;letter-spacing:-.04em}
@@ -207,7 +207,7 @@ const VB=document.getElementById("voltar");VB.onclick=volta   // voltar SÓ na b
 let D=null,atual=0,ALL=[];const filtra=()=>{D.maquinas=ALL.filter(x=>!x.apagado)}
 async function inicio(){
   if(!TOKEN){app.innerHTML='<p class="aviso">Abre primeiro o app de recados neste aparelho (ele guarda a chave).</p>';return}
-  try{const r=await gh("casa/maquinas.json",true);if(!r.ok)throw 0;D=JSON.parse(await r.text());ALL=D.maquinas;filtra()}catch(e){app.innerHTML='<p class="aviso">Não consegui abrir a coleção. Confere a internet.</p>';return}
+  try{const r=await gh("casa/maquinas.json",true);if(!r.ok)throw 0;D=JSON.parse(await r.text());ALL=D.maquinas;filtra()}catch(e){app.innerHTML='<p class="aviso">Não foi possível abrir a coleção. Confere a internet.</p>';return}
   grade()
 }
 const LAPIS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>'
@@ -216,7 +216,7 @@ function grade(){
   document.documentElement.style.setProperty("--k1","#4F46E5");fundo.style.backgroundImage="none";app.replaceChildren()
   const topo=el("div","topo"),ms2=el("div","marca-sis");ms2.append(el("i"),"Minha coleção");const t=D.total||{}
   const nv=el("button","ed-bt","+");nv.type="button";nv.setAttribute("aria-label","Máquina nova");nv.onclick=lancaMaq
-  topo.append(VB,ms2,el("span","tot",D.maquinas.length+" máquinas · "+(t.zerados??"–")+(t.zerados===1?" zerado":" zerados")),nv,anota("Máquinas"));app.append(topo)
+  const tt=el("div","tit");tt.append(ms2,el("span","tot",D.maquinas.length+" máquinas · "+(t.zerados??"–")+(t.zerados===1?" zerado":" zerados")));topo.append(VB,tt,nv,anota("Máquinas"));app.append(topo)
   const g=el("div","grade")
   {const b=el("button","card diag-largo"),ic=el("span","diag-ic"),tx=el("span","diag-tx"),res=el("small","","a saúde dos PCs");b.style.setProperty("--c","#8B5CF6")
     ic.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="19" height="13" rx="2"/><path d="M8 20.5h8M12 16.5v4"/><path d="M5.5 10h3l1.5-3 2.5 6 1.5-3h4.5"/></svg>'
@@ -239,7 +239,7 @@ function monta(i){
   app.replaceChildren()
   const topo=el("div","topo"),vt=el("button","volta-col","← Coleção");vt.onclick=grade;const t=D.total||{}
   const eb=el("button","ed-bt");eb.type="button";eb.textContent="Editar";eb.classList.add("ed-tx");eb.setAttribute("aria-label","Editar "+m.nome);eb.onclick=()=>editaMaq(m)
-  topo.append(VB,vt,el("span","tot",(t.zerados??"–")+(t.zerados===1?" zerado":" zerados")),eb,anota("Máquinas · "+m.nome));app.append(topo)
+  const tt=el("div","tit");tt.append(vt);topo.append(VB,tt,eb,anota("Máquinas · "+m.nome))   /* o total da coleção saiu daqui: debaixo do "Coleção" parecia ser do PC (revisão 17/11) */;app.append(topo)
   const fila=el("div","fila");ms.forEach((x,j)=>{const b=el("button","bloco"+(j===i?" ativo":""));b.style.setProperty("--c",x.ativo===false?"#8B8F98":cor(x));b.setAttribute("aria-label",x.nome)
     if(x.robo&&ROBO[x.robo]){const im=el("img");if(x.ativo===false)im.style.filter="grayscale(1)";im.alt="";im.src=ROBO[x.robo][2];b.append(im)}else b.append(el("span","",CURTO[x.console]||x.nome.slice(0,4)))
     b.onclick=()=>{if(j!==atual)monta(j)};fila.append(b)});
@@ -263,12 +263,12 @@ function monta(i){
   const ePC2=!!(m.robo||m.tipo==="pc"||/^pc/.test(m.id))
   if(!ePC2||m.id==="pc2"){const v=vid("Jogos");v.append(el("p","hist","Carregando os jogos…"));jogosDe(m).then(js=>{v.replaceChildren(el("h2","","Jogos"));const st=j=>j.status,grupo=(t,lst,mostra)=>{if(!lst.length)return;v.append(el("h3","jg-tit",t+" · "+lst.length));const ul=el("ul","jg");lst.slice(0,mostra).forEach(j=>{const li=el("li");li.append(el("span","",j.titulo),el("small","",j.pct&&j.pct!=="None"?j.pct+"%":""));ul.append(li)});if(lst.length>mostra)ul.append(el("li","jg-mais","+ "+(lst.length-mostra)+" na tela Jogos"));v.append(ul)}
     grupo("Jogando agora",js.filter(j=>st(j)==="jogando").sort((a,b)=>(+b.pct||0)-(+a.pct||0)),10);grupo("Zerados",js.filter(j=>st(j)==="zerado"),12);grupo("Parados no meio",js.filter(j=>st(j)==="parado"||st(j)==="quer_terminar"),6)
-    if(!js.length)v.append(el("p","hist","Nenhum jogo desse console no jogos.json."))}).catch(()=>{v.replaceChildren(el("h2","","Jogos"),el("p","hist","Não consegui abrir os jogos."))})}   // os jogos daquela máquina, do categorias/games/tela-jogos.json
+    if(!js.length)v.append(el("p","hist","Nenhum jogo desse console no jogos.json."))}).catch(()=>{v.replaceChildren(el("h2","","Jogos"),el("p","hist","Não foi possível abrir os jogos."))})}   // os jogos daquela máquina, do categorias/games/tela-jogos.json
   if(ePC2){const v=vid("Diagnóstico");v.append(el("p","hist","Carregando…"));Promise.all([gh("casa/diagnostico-pcs.json",true).then(r=>r.ok?r.json():Promise.reject()),gh("casa/diagnostico/medido/"+m.nome+".json",true).then(r=>r.ok?r.json():null).catch(()=>null)]).then(([dg,md])=>{const dia=Object.assign({},(dg.dias||[])[0]||{}),pc=(dia.pcs||[]).find(x=>x.pc===m.nome)||{};let ind=((dia.indicadores||{}).pcs||[]).find(x=>x.pc===m.nome);if(md&&md.disco_c_livre_gb!=null){ind={livre:md.disco_c_livre_gb,total:md.disco_c_total_gb,desligou:md.desligou_na_marra_30d,whea:md.erro_hardware_30d};dia.data=md.medido}const nome={ruim:"ruim",atencao:"de olho",ok:"tudo bem"};v.replaceChildren(el("h2","","Diagnóstico"))   // disco e contadores do casa/diagnostico/medido/<PC>.json (medido de 6 em 6 h), não da cópia (#165)
     if(!pc.estado&&!ind){v.append(el("p","hist","Esse PC ainda não foi medido."));return}
     if(pc.estado)v.append(el("span","selo marca diag-selo",nome[pc.estado]||pc.estado));const vez=(n,um,muitos)=>n==1?"1 "+um:n+" "+muitos,resumo=md&&md.disco_c_livre_gb!=null?`Nos últimos 30 dias ${md.desligou_na_marra_30d?"desligou na marra "+vez(md.desligou_na_marra_30d,"vez","vezes"):"nenhum desligamento na marra"} e ${md.erro_hardware_30d?vez(md.erro_hardware_30d,"erro","erros")+" de hardware":"nenhum erro de hardware"}; ${Math.round(md.disco_c_livre_gb)} GB livres no disco C${md.ram_livre_gb!=null?` e ${String(md.ram_livre_gb).replace(".",",")} GB de RAM livres de ${String(md.ram_gb).replace(".",",")}`:""}.`:pc.resumo;if(resumo)v.append(el("p","hist",resumo))   // com o medido, o texto sai dele (Sigma #42 13/11): o resumo escrito à mão ficava velho e contradizia os números
     if(ind){const n=el("div","nums");[[Math.round(ind.livre)+" GB","livres de "+ind.total],[ind.desligou,"desligou na marra (30 dias)"],[ind.whea,"erros de hardware (30 dias)"]].forEach(([a,b])=>{const d=el("div");d.append(el("b","",String(a)),el("small","",b));n.append(d)});v.append(n);const barra=(nome,uso,txt,aperto)=>{const bx=el("div","disco"+(aperto?" aperto":"")),tx=el("div","disco-tx"),bar=el("div","trilho-prog"),f=el("i");tx.append(el("b","",nome),el("span","",txt+(aperto?" · apertado":"")));f.style.width=Math.min(100,Math.max(0,uso))+"%";bar.append(f);bx.append(tx,bar);v.append(bx)};if(ind.total){const uso=(ind.total-ind.livre)/ind.total*100;barra("Disco C",uso,Math.round(uso)+"% usado",ind.livre<30||ind.livre/ind.total<.15)}if(md&&md.ram_livre_gb!=null&&md.ram_gb){const uso=(md.ram_gb-md.ram_livre_gb)/md.ram_gb*100;barra("RAM",uso,Math.round(uso)+"% em uso na medida",md.ram_livre_gb<1.5||md.ram_livre_gb/md.ram_gb<.1)}}   // #42: disco na barra tracejada da casa; apertado (menos de 30 GB ou 15%) fica vermelho
-    v.append(el("p","hist","Medido em "+String(dia.data||"")+". Tudo no Diagnóstico, no cartão roxo da coleção."))}).catch(()=>{v.replaceChildren(el("h2","","Diagnóstico"),el("p","hist","Não consegui abrir o diagnóstico."))})}   // casa/diagnostico-pcs.json
+    v.append(el("p","hist","Medido em "+String(dia.data||"")+". Tudo no Diagnóstico, no cartão roxo da coleção."))}).catch(()=>{v.replaceChildren(el("h2","","Diagnóstico"),el("p","hist","Não foi possível abrir o diagnóstico."))})}   // casa/diagnostico-pcs.json
   if(ePC2&&m.robo&&ROBO[m.robo]){const v=vid("Robô"),c2=el("div","robo-mora"),im=el("img");im.alt="";im.src=ROBO[m.robo][2];c2.append(im,el("div","",""));c2.lastChild.append(el("b","",ROBO[m.robo][0]+(m.ativo===false?" vai morar aqui":" mora aqui")),el("small","",m.papel||""));v.append(c2)}   // quem mora nesse PC
   const ab=el("nav","abas"),tr=el("div","trilho");pags.forEach(([t,v],j)=>{const b=el("button",j?"":"on",t==="Na biblioteca"?"Números":t);b.onclick=()=>tr.scrollTo({left:j*tr.clientWidth,behavior:"smooth"});ab.append(b);const pg=el("div","pag");pg.append(v);tr.append(pg)})
   tr.addEventListener("scroll",()=>{const j=Math.round(tr.scrollLeft/Math.max(1,tr.clientWidth));[...ab.children].forEach((b,x)=>b.classList.toggle("on",x===j));const a=ab.children[j];if(a)a.scrollIntoView({inline:"nearest",block:"nearest"})},{passive:true})

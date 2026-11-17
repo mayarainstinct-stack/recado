@@ -591,7 +591,7 @@ window.abreGaragem = function (m) {
     if (!c.isConnected) return;
     const vs = d && Array.isArray(d.veiculos) ? d.veiculos : [];
     if (vs.length) somaLancamentos(vs, lanc);
-    if (!vs.length) { c.prepend(elD('p', 'gr-msg', d ? 'A garagem tá vazia.' : 'Não consegui abrir a garagem. Confere a internet.')); }
+    if (!vs.length) { c.prepend(elD('p', 'gr-msg', d ? 'A garagem tá vazia.' : 'Não foi possível abrir a garagem. Confere a internet.')); }
     else {
       cabecalho({ icone: 'car', sub: vs.length + (vs.length === 1 ? ' veículo' : ' veículos') + ' na oficina' });
       const pager = elD('div', 'gr-pager'), pts = elD('div', 'gr-pontos'), pgs = vs.map((v, i) => pagina(v, i, vs.length, c));
