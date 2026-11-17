@@ -2869,3 +2869,5 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
   body.web .mp-mapa { height: calc(100dvh - 300px); min-height: 420px; }
   body.web .pl2-corpo > .mp-legenda { margin-top: -6px; }
 }
+.pj-abas { position: sticky; top: -16px; z-index: 3; background: var(--bg); margin: -16px -16px 12px; padding: 16px 16px 8px; }   /* abas de Projetos ficam no topo ao rolar (revisão 17/11) */
+.treino-tela .tr-abas { position: sticky; top: -16px; z-index: 3; background: #050805; margin: 0 -24px; padding: 8px 24px; }   /* abas do Treino ficam no topo ao rolar (revisão 17/11) */
