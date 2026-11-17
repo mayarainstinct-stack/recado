@@ -1,3 +1,4 @@
+// v446 (Garagem: antes e depois não trava mais no iPhone; tremido vertical no meio do arraste não vira rolagem; Orfeu, May 17/11 19:58)
 // v445 (conserto da v444: a área de toque invisível do lápis cobria o cartão inteiro e ninguém marcava nada no Autocuidado e nas listas; Orfeu, May 17/11 19:56)
 // v444 (revisão das telas da Lyra: Viagem por dentro no padrão das placas, espaçamento e área de toque globais, Tarefas e Máquinas sem encavalar, textos de erro no padrão; publicado pelo Orfeu com o ok da May 17/11 19:44)
 // v443 (Finanças: Sobra negativa do mês em vermelho também no celular; #341 Lyra)

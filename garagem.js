@@ -285,6 +285,8 @@ function arrasta(el, poe, ativo) {
   el.addEventListener('pointermove', e => { if (!ini) return; if (!arr) { const dx = Math.abs(e.clientX - x0), dy = Math.abs(e.clientY - y0); if (dx > 8 && dx > dy * 1.2) { arr = true; try { el.setPointerCapture(e.pointerId); } catch (x) {} } else return; } daX(e); e.stopPropagation(); });
   const solta = e => { if (ini && !arr && Math.abs(e.clientX - x0) < 8 && Math.abs(e.clientY - y0) < 8) daX(e); ini = arr = false; try { el.releasePointerCapture(e.pointerId); } catch (x) {} };
   el.addEventListener('pointerup', solta); el.addEventListener('pointercancel', e => { ini = arr = false; }); el.addEventListener('lostpointercapture', () => { arr = false; });
+  // iPhone (May 17/11 19:58, "funciona travando"): um tremido vertical no meio do arraste virava rolagem e o Safari cancelava o ponteiro; dedo mais na horizontal segura a rolagem
+  el.addEventListener('touchmove', e => { if (!ini || e.touches.length !== 1) return; const t = e.touches[0]; if (arr || Math.abs(t.clientX - x0) > Math.abs(t.clientY - y0)) e.preventDefault(); }, { passive: false });
 }
 function antesDepois(v) {
   const k = cartao('Antes × depois'), ad = elD('div', 'gr-ad');
