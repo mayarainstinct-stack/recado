@@ -2691,7 +2691,9 @@ function tela(titulo, montar) { if (pilha.length) pilha[pilha.length - 1][2] = p
 const pTopo = document.querySelector('#painel .p-topo'), pMais = document.getElementById('p-mais');
 const pTits = document.createElement('div'), pSub = document.createElement('small'); pTits.className = 'p-tits'; pSub.className = 'p-sub'; pSub.hidden = true; pTit.replaceWith(pTits); pTits.append(pTit, pSub);
 const subTx = t => String(t || '').split(' · ').map(x => x.replace(/ /g, ' ')).join(' · ');   // subtítulo da barra só quebra entre os pedaços, nunca dentro de "22 na revisão" (Sigma #344)
+let iconeTela = '';   // ícone do item do Menu aberto: toda tela tem o quadrado do ícone no topo, igual ao do Menu (Sigma #348, 17/11)
 function cabecalho({ icone: ic, sub, acao } = {}) {
+  ic = ic || iconeTela;
   pTopo.classList.add('proprio'); pTopo.querySelector('.p-ic')?.remove(); pTopo.querySelector('.p-acao')?.remove();
   if (ic) { const b = elD('span', 'p-ic'); b.innerHTML = icone(ic); pTits.before(b); }
   pSub.textContent = subTx(sub || ''); pSub.hidden = !sub; pMais.hidden = true;
@@ -2708,7 +2710,7 @@ function desenhaTela() {
   if (pilha.length !== nAnt && nAnt) { void pCorpo.offsetWidth; pCorpo.classList.add(pilha.length > nAnt ? 'tela-dir' : 'tela-esq'); }
   const entrada = pilha[pilha.length - 1], [titulo, montar, rolou] = entrada, mae = pilha.length > 1 ? pilha[pilha.length - 2][3] : null; painel.classList.remove('tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude', 'tema-contraste', 'tema-planos', 'tema-musica');
   if (mae) mae.temas.forEach(c => painel.classList.add(c));   // tela filha herda o tema da mãe (May, 09/11/2026: "senão fica cagado"); a filha que quiser outro tema troca no montar   // o tema claro é só da tela que pedir (a Agenda, May 08/11 12:56)
-  pTit.textContent = titulo; pCorpo.scrollTop = 0; pExtra.hidden = true;   /* só na raiz do Menu, também quando a tela abre direto pela notificação */ cabecalhoGenerico();
+  pTit.textContent = titulo; pCorpo.scrollTop = 0; pExtra.hidden = true;   /* só na raiz do Menu, também quando a tela abre direto pela notificação */ cabecalhoGenerico(); if (pilha.length === 1) iconeTela = ''; else if (iconeTela) { const ic = elD('span', 'p-ic'); ic.innerHTML = icone(iconeTela); pTits.before(ic); }   // toda tela com o quadrado do ícone do Menu (#348)
   pTopo.hidden = pilha.length === 1 && titulo === 'Menu'; painel.classList.toggle('sem-topo', pTopo.hidden);   // sem a barra, o Recados ganha respiro em cima (May 18:47: "colou em cima")   // o Menu começa direto em Recados, sem a barra de cima (May 18:40); voltar fica no botão de baixo e no deslize
   const t = document.createElement('div'); t.className = 'tela'; if (mae) mae.gr.forEach(c => t.classList.add(c)); pCorpo.replaceChildren(t);   // carga atrasada de tela que já saiu cai no invólucro velho
   const r = montar(t); const guardaTema = () => { entrada[3] = { temas: ['tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude', 'tema-planos', 'tema-musica'].filter(c => painel.classList.contains(c)), gr: [...t.classList].filter(c => c.startsWith('gr-') && !c.startsWith('gr-grade')) }; };   // a filha herda daqui
@@ -4659,6 +4661,7 @@ function abreGeralAntiga(m) {   // os dias arquivados da Geral (_geral/recados/a
   });
 }
 function abreItemMenu(m) {
+  iconeTela = m.icone || '';
   if (m.donos && m.donos.length) donosTela = m.donos;   // dono da tela (e o item de dentro herda do grupo se não tiver o seu)
   painel.style.setProperty('--c', (COR_ASSUNTO.find(([re]) => re.test(m.nome)) || [])[1] || 'var(--accent)');   // a tela fica na cor do assunto, igual o azulejo dela
   if (m.tipo === 'geral-antiga') return abreGeralAntiga(m);
