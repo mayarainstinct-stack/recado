@@ -2914,3 +2914,17 @@ body .painel.tema-excel .fin-res3 .neg b { color: #A4262C; }   /* Sobra negativa
 :where(.ob-lapis, .ed-mini) { position: relative; }   /* sem isso o ::after do lápis pegava o cartão inteiro e ninguém marcava nada (Autocuidado, May 17/11 19:56); :where não briga com quem já é absolute */
 :is(.cad-nivel, .li-ck, .fin-ck, .ob-anotar, .ob-lapis, .ed-mini)::after { content: ''; position: absolute; inset: -7px; }
 .cad-nivel::after { inset: -10px -3px; }
+/* Projetinhos: Pokémon ACT com a cara do site dele (pkmnact.netlify.app): fundo noturno, brilho roxo atrás da logo, Orbitron e as 3 cores Ametista, Citrino e Turmalina (May 17/11/2026) */
+.p-corpo:has(.pjm-t-act) { background: radial-gradient(ellipse at 50% 0%, rgba(176,96,255,.26), transparent 60%), #060810 !important; }
+.pjm-t-act { color: #E0E8FF; font-family: 'Rajdhani', 'Segoe UI', sans-serif; }
+.pjm-h-act { background: radial-gradient(circle at 50% 42%, rgba(176,96,255,.38), transparent 66%), #0B0E1A; border: 1px solid rgba(255,255,255,.08); box-shadow: 0 8px 24px rgba(0,0,0,.45); }
+.pjm-h-act .pjm-logo { width: 100%; max-height: 230px; object-fit: contain; border-radius: 0; padding: 18px 14px 6px; filter: drop-shadow(0 6px 18px rgba(176,96,255,.35)); }
+.pjm-h-act .pjm-hero-pra { font-family: 'Orbitron', sans-serif; letter-spacing: .16em; text-transform: uppercase; font-size: .7rem; line-height: 1.6; color: rgba(224,232,255,.6); padding: 0 16px 16px; text-align: center; }
+.pjm-t-act .pjm-rot { font-family: 'Orbitron', sans-serif; letter-spacing: .14em; color: #22DDFF; opacity: 1; }
+.pjm-t-act .pjm-bloco { border-top-color: rgba(255,255,255,.08); }
+.pjm-t-act .pjm-texto, .pjm-t-act .pjm-bt.off { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); }
+.pjm-t-act .ed-mini { color: #E0E8FF; }
+.pjm-c-act { background: linear-gradient(135deg, #3A1F5C, #0B0E1A 55%, #0E3440) !important; border-left-color: #B060FF !important; }
+.painel:has(.pjm-t-act) .p-topo { background: #060810 !important; color: #E0E8FF !important; font-family: 'Orbitron', sans-serif; }
+.painel:has(.pjm-t-act) .p-topo::after { background: linear-gradient(90deg, #B060FF, #FF8820, #22DDFF) !important; }
+.pjm-hero.mini.pjm-h-act .pjm-logo { width: auto; max-width: 100%; }
