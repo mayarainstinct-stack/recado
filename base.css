@@ -2911,5 +2911,6 @@ body .painel.tema-excel .fin-res3 .neg b { color: #A4262C; }   /* Sobra negativa
 /* REGRA GLOBAL 5 (revisão 17/11): todo botão pequeno tem área de toque de ~40 px, sem mudar o desenho: um ::after invisível em volta.
    Vale pra caixinha de marcar (Agenda, Finanças), lápis (Obra, Editar), andares da Casa e "Lançar um dia". Botão novo pequeno entra nesta lista. */
 :is(.cad-nivel, .li-ck, .fin-ck, .ob-anotar) { position: relative; }
+:where(.ob-lapis, .ed-mini) { position: relative; }   /* sem isso o ::after do lápis pegava o cartão inteiro e ninguém marcava nada (Autocuidado, May 17/11 19:56); :where não briga com quem já é absolute */
 :is(.cad-nivel, .li-ck, .fin-ck, .ob-anotar, .ob-lapis, .ed-mini)::after { content: ''; position: absolute; inset: -7px; }
 .cad-nivel::after { inset: -10px -3px; }

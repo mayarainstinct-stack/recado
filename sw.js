@@ -1,3 +1,4 @@
+// v445 (conserto da v444: a área de toque invisível do lápis cobria o cartão inteiro e ninguém marcava nada no Autocuidado e nas listas; Orfeu, May 17/11 19:56)
 // v444 (revisão das telas da Lyra: Viagem por dentro no padrão das placas, espaçamento e área de toque globais, Tarefas e Máquinas sem encavalar, textos de erro no padrão; publicado pelo Orfeu com o ok da May 17/11 19:44)
 // v443 (Finanças: Sobra negativa do mês em vermelho também no celular; #341 Lyra)
 // v442 (toda tela do Menu com o quadrado do ícone no topo, Treino, Música, Agenda da semana e Banco de horas inclusive; #348 Lyra)
