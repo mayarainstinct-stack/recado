@@ -1,3 +1,4 @@
+// v448 (Garagem: em Meta e Comparar aparece o que muda do agora pra meta, com o estado de cada peça; Orfeu, May 17/11 20:27)
 // v447 (Projetinhos: Pokémon ACT com a cara do site dele, logo, fundo noturno, Orbitron e as cores Ametista, Citrino e Turmalina; Orfeu, May 17/11 20:24)
 // v446 (Garagem: antes e depois não trava mais no iPhone; tremido vertical no meio do arraste não vira rolagem; Orfeu, May 17/11 19:58)
 // v445 (conserto da v444: a área de toque invisível do lápis cobria o cartão inteiro e ninguém marcava nada no Autocuidado e nas listas; Orfeu, May 17/11 19:56)

@@ -157,6 +157,8 @@ const CSS = `
 .gr-tela .gr-ctl .gr-chip { padding-left: 2px; padding-right: 2px; }
 .gr-tela .gr-ctl .gr-angs { margin: 0; }
 .gr-tela .gr-ctl .gr-legenda { margin: 6px 0 0; font-size: 11px; }
+.gr-tela .gr-muda { list-style: none; margin: 10px 0 0; padding: 10px 12px; display: grid; gap: 7px; background: rgba(255,255,255,.04); border-left: 3px solid var(--gr-am); } .gr-tela .gr-muda[hidden] { display: none; }
+.gr-tela .gr-muda-t { font: 700 11px/1.2 var(--gr-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--gr-am); } .gr-tela .gr-muda-i { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font: 500 13px/1.35 var(--gr-mono); color: #E6E8EC; } .gr-tela .gr-muda-i small { flex: none; color: var(--e); font-size: 11px; }
 .gr-tela .gr-mais { flex: none; width: 34px; height: 30px; min-width: 0; border-radius: 0; margin-left: auto; padding: 0; border: 2px solid #111; background: var(--gr-am); color: #111; font: 700 24px/1 var(--gr-imp); font-synthesis: none; display: grid; place-items: center; clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px); }
 .gr-tela .gr-tit .gr-mais { margin-left: auto; }
 .gr-tela .gr-tit small:empty { display: none; }
@@ -390,6 +392,9 @@ function elevador(v, vet) {
     chips.forEach(([f, b]) => b.classList.toggle('on', f === fase)); abas.forEach(([a, b]) => b.classList.toggle('on', a === ang));
     olho.classList.toggle('off', !placa); olho.innerHTML = placa ? OLHO : OLHO_X; olho.setAttribute('aria-label', placa ? 'Esconder a placa' : 'Mostrar a placa'); olho.setAttribute('aria-pressed', String(placa));
     const cmp = fase === 'comparar'; vet.classList.toggle('cmp', cmp);
+    const falta = (v.projeto || []).filter(p => p.estado !== 'feito').sort((a, b) => { const x = ORDEM.indexOf(a.estado), y = ORDEM.indexOf(b.estado); return (x < 0 ? 99 : x) - (y < 0 ? 99 : y); });   // Meta e Comparar mostram o que muda do agora pra meta (May 17/11 20:27)
+    muda.hidden = !(fase === 'meta' || cmp) || !falta.length;
+    if (!muda.hidden) muda.replaceChildren(elD('li', 'gr-muda-t', 'O que muda do agora pra meta'), ...falta.map(p => { const li = elD('li', 'gr-muda-i', p.peca), e = String(p.estado || ''); li.style.setProperty('--e', (ESTADOS[p.estado] || ['#7D828B'])[0]); li.append(elD('small', null, e.charAt(0).toUpperCase() + e.slice(1))); return li; }));
     const pedidos = cmp ? ['agora', 'meta'] : [fase], o = v.original && v.original.descricao;
     leg.textContent = fase === 'original' ? (o ? 'Original: ' + o : 'Como saiu de fábrica.') : fase === 'meta' ? 'Meta: como ela quer deixar.' : fase === 'agora' ? 'Agora: como está hoje.' : 'Arraste a linha: de um lado o Agora, do outro a Meta.';
     Promise.allSettled(pedidos.map(f => desenho(id, f, ang, placa))).then(r => {
@@ -399,7 +404,8 @@ function elevador(v, vet) {
       const cam = elD('div', 'gr-dep'); cam.append(img(r[1].value, '', 'Meta')); vet.replaceChildren(img(r[0].value, '', 'Agora'), cam, elD('div', 'gr-div'), elD('span', 'gr-rot a', 'AGORA'), elD('span', 'gr-rot d', 'META'));
     });
   }
-  ctl.append(fases, ags, leg); desenha(); return ctl;
+  const muda = elD('ul', 'gr-muda'); muda.hidden = true;
+  ctl.append(fases, ags, leg, muda); desenha(); return ctl;
 }
 const moeda = n => 'R$ ' + (Number(n) || 0).toFixed(2).replace('.', ',');
 const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
