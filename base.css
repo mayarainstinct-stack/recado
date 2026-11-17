@@ -2871,3 +2871,4 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 }
 .pj-abas { position: sticky; top: -16px; z-index: 3; background: var(--bg); margin: -16px -16px 12px; padding: 16px 16px 8px; }   /* abas de Projetos ficam no topo ao rolar (revisão 17/11) */
 .treino-tela .tr-abas { position: sticky; top: -16px; z-index: 3; background: #050805; margin: 0 -24px; padding: 8px 24px; }   /* abas do Treino ficam no topo ao rolar (revisão 17/11) */
+body .painel.tema-excel .fin-res3 .neg b { color: #A4262C; }   /* Sobra negativa do mês em vermelho também no celular, igual ao saldo do topo (#341, Lyra 17/11) */

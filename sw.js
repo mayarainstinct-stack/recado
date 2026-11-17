@@ -1,3 +1,4 @@
+// v443 (Finanças: Sobra negativa do mês em vermelho também no celular; #341 Lyra)
 // v442 (toda tela do Menu com o quadrado do ícone no topo, Treino, Música, Agenda da semana e Banco de horas inclusive; #348 Lyra)
 // v441 (Projetos e Treino: abas ficam no topo ao rolar a lista; Lyra)
 // v440 (Maquinas: PC0 = BenQ do Sigma, PC5 = notebook da Lyra, rosa; Lyra)
