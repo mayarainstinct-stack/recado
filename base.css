@@ -1607,7 +1607,7 @@ body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px
 .lem-bts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 14px; } .lem-bts .pp-op { min-height: 44px; }
 /* ===== Editor, Configurações, Planos e Contraste (May, 09/11/2026). Só variáveis do tema: Trabalho herda as cores Simp sozinho. */
 .painel .p-topo { padding-top: calc(4px + env(safe-area-inset-top, 0px)); padding-bottom: 4px; gap: 8px; }   /* barra de cima mais fina (May 09/11) */
-.painel .p-topo button { width: 38px; height: 38px; font-size: 20px; } .painel .p-topo button svg { width: 20px; height: 20px; }
+.painel .p-topo button { width: 44px; height: 44px; font-size: 20px; } .painel .p-topo button svg { width: 20px; height: 20px; }
 .ed-mini { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: none; border: 0; color: var(--muted); opacity: .75; cursor: pointer; } .ed-mini svg { width: 15px; height: 15px; } .ed-mini:active { background: color-mix(in srgb, var(--fg) 10%, transparent); }
 .ed-card { text-align: left; } .ed-card .pp-perg { margin: 0 34px 12px 2px; }
 .ed-card input, .ed-card select, .ed-card textarea { width: 100%; box-sizing: border-box; font: inherit; font-size: 16px; padding: 9px 11px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); resize: none; }
@@ -3022,3 +3022,8 @@ body .painel.tema-excel .fin-res3 .neg b { color: #A4262C; }   /* Sobra negativa
 .pcd-religa:disabled { opacity: .5; cursor: not-allowed; }
 .pcd-emerg small { display: block; margin-top: 6px; font-size: 12px; color: var(--muted); }
 .pcd-emerg small.err { color: #E5484D; }
+
+/* v490 (revisão do menu Trabalho, 18/11/2026): título nunca com reticências (2 linhas); hoje = só contorno, escolhido = cheio */
+.painel .p-topo h2, .painel .p-tits h2 { white-space: normal; text-overflow: clip; overflow: visible; overflow-wrap: anywhere; font-size: 17px; line-height: 1.15; }
+body .painel .sw-calbox .ag-dia.hoje:not(.sel), body .painel .ag-grade .ag-dia.hoje:not(.sel) { background: transparent; color: #0F172A; outline: 2px solid #0F172A; outline-offset: -2px; text-decoration: none; }
+body.modo-trab .pcd-abas.embaixo { position: relative; bottom: auto; margin: 12px 0 8px; box-shadow: none; border: 1px solid var(--line); }   /* no Trabalho as abas ficam no fim da página, nunca por cima do conteúdo (revisão 18/11/2026) */

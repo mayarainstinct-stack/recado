@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-18.489">
+<meta name="app-versao" content="2026-11-18.490">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-18.489"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-18.490"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -5690,7 +5690,7 @@ function swLinha(o) {   // cartão compacto da agenda da empresa (11/11/2026): e
   const tx = elD('span', 'sw-tx'); o.texto.split(/(\b\d{7}\b)/).forEach((p, n) => tx.append(n % 2 ? elD('b', 'sw-tk', p) : document.createTextNode(p)));   // outros números de ticket (7 dígitos) em negrito
   el.append(topo, tx);
   const fim = elD('span', 'sw-fim');
-  if (o.ok) fim.textContent = '✓' + (o.fimH ? ' ' + o.fimH : ''); else if (o.andamento) { fim.classList.add('exec'); fim.append(elD('i', 'sw-bol'), document.createTextNode('EXECUTANDO')); } else if (o.atrasada) { fim.classList.add('atr'); fim.textContent = 'atrasada'; }
+  if (o.ok) fim.textContent = '✓' + (o.fimH ? ' ' + o.fimH : ''); else if (o.andamento && o.ini && swChave(o.ini) < swChave(new Date())) { fim.classList.add('atr'); fim.textContent = 'não terminou'; } else if (o.andamento) { fim.classList.add('exec'); fim.append(elD('i', 'sw-bol'), document.createTextNode('EXECUTANDO')); } else if (o.atrasada) { fim.classList.add('atr'); fim.textContent = 'atrasada'; }
   if (o.hora || fim.firstChild || o.extra) { const rp = elD('div', 'sw-rodape'); if (o.hora) rp.append(elD('span', 'sw-ini', o.hora)); if (o.extra) rp.append(elD('span', 'sw-dica', 'Fora do horário')); if (fim.firstChild) rp.append(fim); el.append(rp); }
   if (o.extra) el.title = 'Fora do horário de serviço'; else if (o.atrasada) el.title = 'Passou da hora e ainda não começou';
   el.onclick = () => el.classList.toggle('aberto');   // tocar mostra o texto inteiro (no celular não tem como passar o mouse)
@@ -5802,7 +5802,7 @@ function agendaSemanaTrab(c, F) {
     sel = k; let achou = false;
     c.querySelectorAll('.sw-dia').forEach(e => { const ok = !k || e.dataset.dia === k; e.style.display = ok ? '' : 'none'; e.classList.toggle('sel', e.dataset.dia === k); if (ok) achou = true; });
     nada.hidden = achou; if (cal) cal.escolhe(k);
-    const posiciona = () => { const sc = c.querySelector('.sw-rola') || pCorpo; sc.scrollTop = 0; if (k === hk && c.querySelector('.sw-agora')) swRolaAteAgora(c); else if (k && k < hk) swRolaFimDoDia(c, k); };
+    const posiciona = () => { const sc = c.querySelector('.sw-rola') || pCorpo; sc.scrollTop = 0; if (k === hk && c.querySelector('.sw-agora')) swRolaAteAgora(c); };   // dia passado: sempre do começo, o 1º cartão inteiro à vista (revisão 18/11/2026)
     posiciona(); requestAnimationFrame(posiciona);   // instantâneo, antes do primeiro desenho; vale ao trocar de dia
   };
   const marcas = {}; modelo.dias.forEach(x => { if (x.folga) marcas[x.chave] = ['#C878E8']; });   // só dia fora do comum (folga, viagem) leva marca; dia normal fica sem
