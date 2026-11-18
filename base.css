@@ -3037,3 +3037,103 @@ body.modo-trab .pcd-abas.embaixo { position: relative; bottom: auto; margin: 12p
 #diag-capa i{display:block;height:120px;margin-bottom:14px;border-radius:14px;border:1px solid #e5e7eb;background:linear-gradient(90deg,#fff 25%,#f1f3f5 50%,#fff 75%);background-size:200% 100%;animation:dcbrilho 1.2s linear infinite}
 #diag-capa p{margin:8px 4px;color:#6b7280;font-size:14px}
 @keyframes dcbrilho{to{background-position:-200% 0}}
+
+/* ===== Trabalho com a cara do sistema da empresa (18/11/2026) =====
+   So no modo Trabalho: fundo cinza bem claro, cartoes brancos de borda fina e canto 12px, rotulos pequenos em maiusculas, numeros em monoespacada. */
+body.modo-trab { --nx-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace; }
+html:has(body.modo-trab) { background: #F6F6F4; }
+body.modo-trab .painel, body.modo-trab .painel.tema-claro { --bg: #F6F6F4; --paper: #FFFFFF; --line: #E4E4E0; background: #F6F6F4; }
+body.modo-trab .painel .p-corpo { background: #F6F6F4; }
+body.modo-trab .painel .p-topo { background: #FFFFFF; box-shadow: 0 1px 0 #E4E4E0; }
+body.modo-trab .painel .p-topo::after { display: none; }
+body.modo-trab .painel .p-topo button, body.modo-trab .painel .p-voltar-baixo { background: #FFFFFF; border: 1px solid #E4E4E0; cursor: pointer; }
+body.modo-trab .painel .p-topo button:hover, body.modo-trab .painel .p-voltar-baixo:hover { background: #F0F6F1; border-color: #BFDCC9; }
+body.modo-trab .painel .p-sec { color: #15803D; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+body.modo-trab .painel .p-grade.apps > *, body.modo-trab .painel .p-botao, body.modo-trab .painel .cartao, body.modo-trab .painel .ag, body.modo-trab .ck-bloco, body.modo-trab .sl-card, body.modo-trab .pcd, body.modo-trab .pjm-card { border: 1px solid #E4E4E0; border-radius: 12px; box-shadow: none; background: #FFFFFF; }
+body.modo-trab .pcd { border-top-width: 1px; }
+body.modo-trab .painel .p-grade.apps > *, body.modo-trab .pjm-card, body.modo-trab .painel .ag, body.modo-trab .sl-card, body.modo-trab .sl-aba, body.modo-trab .pjm-aba, body.modo-trab .ck-item { cursor: pointer; }
+body.modo-trab .painel .p-grade.apps > *:hover, body.modo-trab .pjm-card:hover, body.modo-trab .sl-card:hover { border-color: #15803D; background: #F7FBF8; }
+body.modo-trab .painel .p-hero b { font-size: 24px; letter-spacing: -.01em; color: #1B1F23; }
+body.modo-trab .painel .p-hero span { color: #6B7280; }
+body.modo-trab .painel .ag[data-tipo] { box-shadow: none; }
+body.modo-trab .ck-sec, body.modo-trab .sl-secao, body.modo-trab .sl-sub { color: #6B7280; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+body.modo-trab .ck-cab b { font-size: 17px; }
+body.modo-trab .sl-aba, body.modo-trab .pjm-aba { background: transparent; border: 0; border-bottom: 2px solid transparent; border-radius: 0; color: #6B7280; min-height: 44px; font-weight: 600; }
+body.modo-trab .sl-aba.on, body.modo-trab .pjm-aba.on, body.modo-trab .pjm-aba.ativa { background: transparent; border-bottom-color: #15803D; color: #15803D; }
+body.modo-trab .sl-aba:hover, body.modo-trab .pjm-aba:hover { color: #15803D; }
+body.modo-trab .painel .ag .cx .tag, body.modo-trab .pjm-cst, body.modo-trab .ag-tudo { background: #E3F1E7; color: #15803D; border-radius: 8px; }
+body.modo-trab .painel .p-acao, body.modo-trab .pjm-add, body.modo-trab .pjm-copia { min-height: 44px; border-radius: 10px; cursor: pointer; }
+body.modo-trab .painel .p-acao:hover, body.modo-trab .pjm-add:hover, body.modo-trab .pjm-copia:hover { filter: brightness(.95); }
+body.modo-trab .painel .ag-cal { border-radius: 12px; box-shadow: none; }
+body.modo-trab .pcd-abas, body.modo-trab .pcd-abas.embaixo { border-radius: 12px; }
+body.modo-trab .pcd-num div, body.modo-trab .pcd-val { font-family: var(--nx-mono); }
+body.modo-trab .painel th { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: #6B7280; text-align: left; border-bottom: 1px solid #E4E4E0; padding: 10px 8px; }
+body.modo-trab .painel td { border-bottom: 1px solid #EEEEEA; padding: 10px 8px; }
+
+/* Banco de horas e ferias */
+.bh-tela { padding-bottom: 24px; }
+.nx-abas { display: flex; gap: 4px; border-bottom: 1px solid #E4E4E0; margin: 0 0 8px; }
+.nx-aba { border-radius: 0; box-shadow: none; flex: 1; min-height: 44px; background: transparent; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; font: inherit; font-weight: 700; color: #6B7280; cursor: pointer; }
+.nx-aba:hover { color: #15803D; background: #F0F6F1; }
+.nx-aba.ativa { color: #15803D; border-bottom-color: #15803D; }
+.nx-cab { padding: 14px 4px 4px; }
+.nx-sobre { display: block; color: #15803D; font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+.nx-tit { margin: 2px 0 2px; font-size: 28px; line-height: 1.1; font-weight: 800; letter-spacing: -.02em; color: #1B1F23; }
+.nx-sub { margin: 0 0 6px; color: #6B7280; font-size: 15px; }
+.nx-sec { margin: 22px 4px 10px; color: #4B5563; font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.nx-sec-int { margin: 0 0 6px; color: #4B5563; font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.nx-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.nx-num { background: #FFFFFF; border: 1px solid #E4E4E0; border-radius: 12px; padding: 14px 14px 12px; min-height: 84px; }
+.nx-rot { display: block; color: #6B7280; font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.nx-val { display: block; margin-top: 8px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 28px; font-weight: 600; color: #1B1F23; letter-spacing: -.02em; }
+.nx-pos { color: #15803D; } .nx-neg { color: #C8283C; } .nx-zero { color: #6B7280; }
+.nx-num.nx-pos .nx-val { color: #15803D; } .nx-num.nx-neg .nx-val { color: #C8283C; }
+.nx-cartao { background: #FFFFFF; border: 1px solid #E4E4E0; border-radius: 12px; padding: 14px; margin-top: 12px; }
+.nx-jornada { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.nx-jornada small { display: block; color: #6B7280; font-size: 12px; } .nx-jornada b { font-size: 13px; }
+.nx-mono { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-weight: 600; }
+.nx-nota { margin: 10px 4px 0; color: #6B7280; font-size: 14px; }
+.nx-linha { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 48px; padding: 8px 0; border-top: 1px solid #EEEEEA; }
+.nx-linha-tx b { display: block; font-size: 15px; } .nx-linha-tx small { display: block; color: #6B7280; font-size: 13px; line-height: 1.3; }
+.nx-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 8px; background: #E3F1E7; color: #15803D; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.nx-chip::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.nx-btn { display: block; width: 100%; min-height: 44px; margin-top: 14px; background: #FFFFFF; border: 1px solid #E4E4E0; border-radius: 10px; font: inherit; font-weight: 700; color: #1B1F23; cursor: pointer; }
+.nx-btn:hover { background: #F0F6F1; border-color: #BFDCC9; }
+.nx-periodo { display: block; margin-bottom: 10px; font-size: 14px; }
+.nx-mini { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 6px; }
+.nx-mini b { display: block; margin-top: 4px; font-size: 18px; }
+.nx-mini .nx-rot { font-size: 9.5px; letter-spacing: .08em; }
+
+/* Listas e feeds (mural): cartao por item, etiqueta no topo, tempo a direita, filtros em chips */
+body.modo-trab .nx-item { background: #fff; border: 1px solid #E4E4E0; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+body.modo-trab .nx-etiqueta { display: inline-block; padding: 3px 10px; border-radius: 8px; background: #E3F1E7; color: #15803D; font-size: 12px; font-weight: 700; }
+body.modo-trab .nx-tempo { float: right; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #6B7280; }
+body.modo-trab .nx-filtro { min-height: 44px; padding: 0 14px; border: 1px solid #E4E4E0; border-radius: 10px; background: #fff; cursor: pointer; }
+body.modo-trab .nx-filtro.ativo { background: #E3F1E7; border-color: #BFDCC9; color: #15803D; }
+body.modo-trab .nx-filtro:hover { background: #F0F6F1; }
+
+/* Revisao .490 (18/11/2026): alvos de 44 px, menu cheio, agenda menor, checklist limpo, projetos sem jargao visual */
+body.modo-trab .ed-mini, body.modo-trab .ck-item .ed-mini, body.modo-trab .sl-item .ed-mini { width: 44px; height: 44px; cursor: pointer; }
+body.modo-trab .ed-mini:hover { background: #E3F1E7; color: #15803D; opacity: 1; }
+body.modo-trab .painel:has(.bh-tela) #p-mais { display: none; }
+body.modo-trab .painel:has(.bh-tela) .p-topo h2 { white-space: nowrap; }
+/* Menu: azulejos em 2 colunas, mais altos, rotulo com folga */
+body.modo-trab .painel .p-grade.apps { grid-template-columns: 1fr 1fr; gap: 12px; }
+body.modo-trab .painel .p-grade.apps > * { min-height: 132px; padding: 18px 12px; font-size: 15px; }
+body.modo-trab .painel .p-hero { padding: 8px 2px 14px; gap: 14px; }
+/* Agenda: calendario menor e claro, impedimentos como botao cheio */
+body.modo-trab .painel .ag-cal { padding: 8px 10px; }
+body.modo-trab .painel .ag-dia { height: 32px; font-size: 12.5px; }
+body.modo-trab .sw-impb { min-height: 44px; border: 1px solid #E4E4E0 !important; border-style: solid !important; background: #FFFFFF; border-radius: 10px; color: #1B1F23; cursor: pointer; }
+body.modo-trab .sw-impb:hover { background: #F0F6F1; border-color: #BFDCC9 !important; }
+/* Checklist: ATRASADO como etiqueta, risco dentro do texto, texto do item feito legivel */
+body.modo-trab .ck-sec.atraso { background: #FBE6E8; color: #C8283C; padding: 3px 10px; border-radius: 8px; min-height: 0; width: max-content; margin-bottom: 6px; }
+body.modo-trab .ck-item.feito .ck-t { color: #6B7280; text-decoration: line-through; text-decoration-color: #15803D; text-decoration-thickness: 2px; }
+body.modo-trab .ck-risco { display: none; }
+body.modo-trab .ck-cab b { text-transform: none; }
+/* Projetos: botoes de 44 px e chip de atencao em tom de aviso claro */
+body.modo-trab .pj-ver-mais, body.modo-trab .pj-aba { min-height: 44px; height: 44px; cursor: pointer; }
+body.modo-trab .pj-ver-mais:hover { background: #F0F6F1; border-color: #BFDCC9; }
+body.modo-trab .pj-chip { border-radius: 8px; font-weight: 700; }
+/* Diagnostico: alvos de 44 px */
+body.modo-trab .painel [class^="pcd"] button, body.modo-trab .painel [class*=" pcd"] button { min-height: 44px; cursor: pointer; }

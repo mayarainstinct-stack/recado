@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-18.491">
+<meta name="app-versao" content="2026-11-18.492">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-18.491"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-18.492"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -4723,6 +4723,7 @@ function abreItemMenu(m) {
   if (m.tipo === 'videos') return abreVideos(m);
   if (m.tipo === 'visual') return abreVisual(m);
   if (m.tipo === 'exames') return abreExames(m);
+  if (m.tipo === 'banco') return abreBanco(m);
   if (m.tipo === 'texto' && m.cartoes) return abreCartoes(m);
   if (m.tipo === 'texto') return abreTexto(m);
   if (m.tipo === 'agenda') return abreAgenda(m);
@@ -4793,10 +4794,10 @@ function abreCheck(m) {
       cabecalho({ acao: { icone: 'plus', rotulo: 'Novo item', fn: lanca } });
       w.replaceChildren(); w.append(elD('div', 'ck-espiral'));
       const todos = E.itens.filter(x => !x.apagado).map(x => ({ ...x, data: x.data || x.quando || '', saude: !!x.saude || x.de === 'Saúde' })), itens = todos.filter(x => !x.feito), feitos = todos.filter(x => x.feito);
-      const cab = elD('div', 'ck-cab'); cab.append(elD('b', '', 'pra fazer'), elD('span', '', new Date(hoje + 'T12:00').toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }))); w.append(cab);
+      const cab = elD('div', 'ck-cab'); cab.append(elD('b', '', 'Para fazer'), elD('span', '', new Date(hoje + 'T12:00').toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }))); w.append(cab);
       const amanha = soma(1), semana = soma(7), dm = s => s.slice(8, 10) + '/' + s.slice(5, 7);
       const grupos = [['Atrasado', x => x.data && x.data < hoje], ['Hoje', x => x.data === hoje], ['Amanhã', x => x.data === amanha], ['Esta semana', x => x.data > amanha && x.data <= semana], ['Mais pra frente', x => x.data > semana], ['Sem data', x => !x.data]];
-      if (!itens.length) w.append(elD('p', 'ck-vazio', 'Nada pra fazer agora.'));
+      if (!itens.length) w.append(elD('p', 'ck-vazio', 'Nada para fazer agora.'));
       const linha = (x, nome) => {
         const b = elD('div', 'ck-item' + (x.feito ? ' feito' : '')); b.setAttribute('role', 'button'); b.tabIndex = 0;
         b.innerHTML = '<span class="ck-caixa"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg></span><span class="ck-tx"><span class="ck-t"></span><span class="ck-risco"><svg viewBox="0 0 100 12" preserveAspectRatio="none"><path d="M1 7 C 18 4, 30 9, 48 6 S 80 4, 99 7"/></svg></span><small></small></span>';
@@ -6742,6 +6743,54 @@ function abreProjetosMay(m) {
     const novo = elD('button', 'pjm-add grande', '+ Novo projeto'); novo.type = 'button';
     novo.onclick = () => edFormulario({ titulo: 'Novo projeto', campos: PJM_CAMPOS, aoSalvar: async v => { const id = (v.nome || 'projeto').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Date.now().toString(36).slice(-4); if (await salva(d => { const p = { id, icone: 'doc', pedidos: [], botoes: [], cores: { fundo: '#334155', destaque: '#38BDF8', texto: '#FFFFFF' } }; praProjeto(p, v); (d.projetos = d.projetos || []).push(p); }, 'Projeto novo pelo app: ' + v.nome)) detalhe(id); } });
     c.append(lista, novo);
+  });
+}
+// Banco de horas e férias (18/11/2026): lê menu/trabalho/banco-de-horas.json, com a cara do sistema da empresa (cartões de número, abas sublinhadas).
+function abreBanco(m) {
+  tela(m.nome, async c => {
+    c.classList.add('bh-tela'); const sk = skCarga(); c.append(sk);
+    let D; try { D = JSON.parse(await lerArquivo(m.arq)); } catch (e) { sk.textContent = 'Não abriu. Confere a internet.'; return; }
+    sk.remove();
+    const cartao = k => { const d = elD('div', 'nx-num nx-' + (k.tom || 'neutro')); d.append(elD('small', 'nx-rot', k.rotulo), elD('b', 'nx-val', k.valor)); return d; };
+    const grade = lista => { const g = elD('div', 'nx-grade'); lista.forEach(k => g.append(cartao(k))); return g; };
+    const cab = (sobre, tit, sub) => { const h = elD('div', 'nx-cab'); h.append(elD('small', 'nx-sobre', sobre), elD('h2', 'nx-tit', tit), elD('p', 'nx-sub', sub)); return h; };
+    const abas = elD('div', 'nx-abas'), area = elD('div', 'nx-area'); c.append(abas, area);
+    const selo = (t, tom) => elD('span', 'nx-chip nx-chip-' + (tom || 'ok'), t);
+    const telaBanco = () => {
+      area.replaceChildren(cab('RH', 'Meu banco de horas', 'Acompanhe o seu saldo, os dias e as folgas.'));
+      const j = D.jornada || {}, per = elD('div', 'nx-cartao nx-jornada');
+      [['Período', j.periodo], ['Jornada', j.padrao], ['Almoço', j.almoco], ['Previsto por dia', j.previsto]].forEach(([r, v]) => { const x = elD('div'); x.append(elD('small', '', r), elD('b', 'nx-mono', v || '')); per.append(x); });
+      area.append(per);
+      area.append(elD('h3', 'nx-sec', 'Mês ' + ((D.mes || {}).titulo || '')), grade((D.mes || {}).cartoes || []));
+      const bn = D.banco || {}; area.append(elD('h3', 'nx-sec', 'Banco desde ' + (bn.desde || '')), grade(bn.cartoes || []));
+      if (bn.nota) area.append(elD('p', 'nx-nota', bn.nota));
+      const dd = elD('section', 'nx-cartao'); dd.append(elD('h3', 'nx-sec-int', 'Novembro dia a dia'));
+      (D.dias || []).forEach(d => { const l = elD('div', 'nx-linha'), esq = elD('div', 'nx-linha-tx'); esq.append(elD('b', '', d.dia + ' ' + (d.sem || '')), elD('small', '', [d.horario, d.nota].filter(Boolean).join(' · '))); l.append(esq); if (d.saldo) l.append(elD('span', 'nx-mono nx-' + d.tom, d.saldo)); dd.append(l); });
+      area.append(dd);
+      const dc = elD('section', 'nx-cartao'); dc.append(elD('h3', 'nx-sec-int', 'Decididos recentemente'));
+      (D.decididos || []).forEach(d => { const l = elD('div', 'nx-linha'), esq = elD('div', 'nx-linha-tx'); esq.append(elD('b', '', d.tipo + ' · ' + d.quando), elD('small', '', d.texto)); l.append(esq, selo(d.status)); dc.append(l); });
+      area.append(dc);
+      const h = elD('button', 'nx-btn', 'Ver o histórico antigo'); h.type = 'button'; h.onclick = () => abreCartoes({ nome: 'Histórico do banco de horas', arq: 'menu/trabalho/banco-de-horas.md' }); area.append(h);
+    };
+    const telaFerias = () => {
+      const F = D.ferias || {};
+      area.replaceChildren(cab('RH', 'Minhas férias', 'Acompanhe o seu saldo e o andamento dos pedidos.'));
+      area.append(grade([{ rotulo: 'Dias disponíveis', valor: String(F.disponiveis != null ? F.disponiveis : 0), tom: 'neutro' }]));
+      area.append(elD('h3', 'nx-sec', 'Meu saldo por período'));
+      (F.periodos || []).forEach(p => {
+        const cd = elD('section', 'nx-cartao'); cd.append(elD('b', 'nx-mono nx-periodo', p.periodo));
+        const g = elD('div', 'nx-mini'); [['Direito', p.direito], ['Gozados', p.gozados], ['Vendidos', p.vendidos], ['Disponível', p.disponivel]].forEach(([r, v]) => { const x = elD('div'); x.append(elD('small', 'nx-rot', r), elD('b', 'nx-mono', String(v))); g.append(x); });
+        const rod = elD('div', 'nx-linha'); rod.append(elD('small', '', p.vencimento || ''), selo(p.farol || 'Em dia'));
+        cd.append(g, rod); area.append(cd);
+      });
+      area.append(elD('h3', 'nx-sec', 'Meus pedidos'));
+      (F.pedidos || []).forEach(p => {
+        const cd = elD('section', 'nx-cartao'), l = elD('div', 'nx-linha'), esq = elD('div', 'nx-linha-tx');
+        esq.append(elD('b', 'nx-mono', p.inicio + ' a ' + p.fim), elD('small', '', p.dias + ' dias · volta em ' + p.retorno)); l.append(esq, selo(p.status)); cd.append(l); area.append(cd);
+      });
+    };
+    [['Banco de horas', telaBanco], ['Férias', telaFerias]].forEach(([t, f], i) => { const b = elD('button', 'nx-aba' + (i ? '' : ' ativa'), t); b.type = 'button'; b.onclick = () => { abas.querySelectorAll('button').forEach(x => x.classList.toggle('ativa', x === b)); f(); pCorpo.scrollTop = 0; }; abas.append(b); });
+    telaBanco();
   });
 }
 function abreCartoes(m) {
