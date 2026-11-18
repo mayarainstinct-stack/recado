@@ -1,3 +1,4 @@
+// v496 (Saúde se arruma sozinha: pasta com data mais próxima em cima, as que já passaram no fim; Obra: slide de fotos não troca mais a aba; app .496, 18/11/2026).
 // v495 (regex com \b de volta: 5 backspaces quebravam icone de git, roi, ia e a troca de tema pjm-t-; app .495, 18/11/2026).
 // v494 (Trabalho em escala menor no celular: menu de 3 colunas, cartoes e fontes compactos; Diagnostico do Trabalho so com projetos de trabalho; app .494, 18/11/2026).
 // v493 (Trabalho: Projetos e Diagnostico em menu de icones com detalhes; Diagnostico abre na hora; Agenda, Checklist, Rotina e Menu com a cara do sistema; app .493, 18/11/2026).

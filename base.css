@@ -3277,3 +3277,4 @@ body.modo-trab .painel .p-grade.apps > * { min-height: 156px !important; }
   body.modo-trab .painel .p-topo .p-ic svg { width: 18px; height: 18px; }
   body.modo-trab .dg-tela .pcd-num div, body.modo-trab .dg-tela .pcd-val { padding: 5px 8px; }
 }
+.gr-grade .gr-item.ja-passou { opacity: .72; } .gr-grade .gr-item .gr-passou { display: block; font-size: 11px; font-weight: 600; opacity: .85; text-align: center; margin-top: 2px; }   /* 18/11/2026: Saúde, pasta com data que já passou vai pro fim */
