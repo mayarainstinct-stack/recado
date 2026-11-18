@@ -1765,6 +1765,7 @@ body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px
 .vs-rodape { margin: 0; text-align: center; font-size: 11px; opacity: .6; }
 .sl-corpo { display: grid; gap: 12px; padding-bottom: 28px; } .sl-card { background: #FFFFFF; color: #4A0F2B; border: 1px solid #F5C6D6; border-left: 4px solid #D61F69; border-radius: 16px; padding: 6px 8px 6px 12px; box-shadow: 0 2px 8px rgba(214,31,105,.10); }
 .sl-sub { margin: 10px 0 2px; color: #D61F69; font-size: 13px; font-weight: 800; }
+.sl-secao { margin: 18px 4px 6px; color: #D61F69; font-size: 15px; font-weight: 800; } body.modo-trab .sl-secao { color: #059669; }
 .sl-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-top: 1px dashed #F0C9D6; } .sl-item:first-child, .sl-sub + .sl-item { border-top: 0; }
 .sl-item .li-ck { --c: #D61F69; margin-top: 1px; } .sl-item.feito .li-ck { background: #D61F69; border-color: #D61F69; } .sl-item.feito .li-ck svg { opacity: 1; }
 .sl-ponto { flex: none; width: 7px; height: 7px; border-radius: 50%; background: #D61F69; margin: 8px 10px 0 4px; } .sl-tx { flex: 1; min-width: 0; display: grid; gap: 2px; } .sl-t { font-size: 15px; line-height: 1.35; overflow-wrap: anywhere; } .sl-t b { color: #4A0F2B; } .sl-item.feito .sl-t { text-decoration: line-through; opacity: .6; } .sl-feito { font-size: 12px; font-weight: 700; color: #D61F69; }
