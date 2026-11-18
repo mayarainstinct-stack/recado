@@ -102,6 +102,9 @@ const CSS = `
 .gr-tela .gr-tag small { display: block; margin-top: 5px; font-size: 11px; line-height: 1.3; color: #5E5B52; }
 .gr-tela .gr-pend { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; }
 .gr-tela .gr-pend + .gr-pend { border-top: 1px dashed #4C5058; }
+.gr-pend-fotos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.gr-pend-fotos button { width: 64px; height: 64px; border-radius: 10px; border: 1px solid rgba(255,255,255,.25); background: #2A2D33 center / cover no-repeat; padding: 0; cursor: zoom-in; }
+.gr-pend-fotos button:active { transform: scale(.95); }
 .gr-tela .gr-pend .gr-alerta { flex: none; width: 30px; height: 28px; display: grid; place-items: center; color: #111; background: var(--gr-am); clip-path: polygon(50% 0, 100% 100%, 0 100%); padding-top: 8px; }
 .gr-tela .gr-pend .gr-alerta svg { width: 18px; height: 18px; stroke-width: 3.4; margin-top: -2px; }
 .gr-tela .gr-pend .gr-alerta svg path:first-child { display: none; }
@@ -340,7 +343,10 @@ function datas(v) {
 function pendentes(v) {
   const l = v.pendente || [], k = cartao('Pendentes', l.length ? String(l.length) : '');
   if (!l.length) { k.append(elD('p', 'gr-vazio', 'Nada pendente anotado.')); return k; }
-  l.forEach(t => { const [a, b] = parteDe(t), r = elD('div', 'gr-pend'), ic = elD('span', 'gr-alerta'), tx = elD('div'); ic.innerHTML = icone('warn'); tx.append(elD('p', null, a)); if (b) tx.append(elD('small', null, b)); r.append(ic, tx); k.append(r); });
+  const fotosDe = t => ((v.pendente_fotos || []).find(x => x.de && t.startsWith(x.de)) || {}).fotos || [];   // fotos do estrago, tocar abre grande (May 18/11 11:29)
+  l.forEach(t => { const [a, b] = parteDe(t), r = elD('div', 'gr-pend'), ic = elD('span', 'gr-alerta'), tx = elD('div'); ic.innerHTML = icone('warn'); tx.append(elD('p', null, a)); if (b) tx.append(elD('small', null, b));
+    const fs = fotosDe(t); if (fs.length) { const g = elD('div', 'gr-pend-fotos'); fs.forEach(f => { const bt = elD('button'); bt.type = 'button'; bt.setAttribute('aria-label', 'Ver a foto maior'); fotoUrl(f).then(u => { bt.style.backgroundImage = 'url(' + u + ')'; }).catch(() => bt.remove()); bt.onclick = () => fotoUrl(f, true).then(u => abreZoom(u, f, fs)).catch(() => {}); g.append(bt); }); tx.append(g); }
+    r.append(ic, tx); k.append(r); });
   return k;
 }
 function odometro(v) {

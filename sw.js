@@ -1,3 +1,4 @@
+// v486 (Garagem: pendente mostra as fotos do estrago, tocar abre grande; app .486, 18/11/2026).
 // v485 (Jogos: subtitulo do topo em 1 linha embaixo do titulo, J2 com margem de 16 px; app .485, 18/11/2026).
 // v484 (Azul: pagina lisa no cinza da capa e barra de cima no mesmo cinza; app .484, 18/11/2026).
 // v483 (Jogos: cada fileira abre no primeiro jogo, nao no fim; app .483, 18/11/2026).
