@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-17.453">
+<meta name="app-versao" content="2026-11-17.454">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-17.453"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-17.454"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -5543,6 +5543,7 @@ function montaCalendario(cal, c, opc) {   // opc (Agenda do Trabalho): { marcas:
   if (sel) { ano = +sel.slice(0, 4); mes = +sel.slice(5, 7) - 1; }
   const NOMES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
   const filtra = () => { cal.dataset.sel = sel; if (opc) return;   // sem dia escolhido: só os próximos (o que já passou some); com dia: só os dele (May 12:54)
+    { const rl0 = c.querySelector('.ag-rola'), ps0 = rl0 && rl0.querySelector('.p-sec'); if (ps0 && /próximos/i.test(ps0.textContent)) [...rl0.querySelectorAll('.ag.perto:not(.feito):not(.passou)')].sort((x, y) => x.dataset.dia < y.dataset.dia ? 1 : -1).forEach(e => ps0.after(e)); }   // o que vence hoje, amanhã e depois sobe pro topo dos Próximos dias, por data (Sigma 17/11 21:21)
     c.querySelectorAll('.ag').forEach(e => { e.hidden = sel ? e.dataset.dia !== sel : e.classList.contains('passou') || e.classList.contains('feito'); });
     c.querySelectorAll('.p-sec').forEach(t => { t.hidden = !!sel || /anterior/i.test(t.textContent); });
     if (proxT) { proxT.textContent = 'Compromissos do dia'; proxT.hidden = !sel; }
@@ -5859,7 +5860,7 @@ function abreAgenda(m) {
       if (d && !/^até/i.test(rot)) {
         const dias = Math.round((d - hoje) / 864e5);
         if (dias < 0) el.classList.add('passou');
-        else { const tg = document.createElement('span'); tg.className = 'tag'; tg.textContent = dias === 0 ? 'hoje' : dias === 1 ? 'amanhã' : 'em ' + dias + ' dias'; tgEl = tg; if (!novo) tp.append(tg); if (dias <= 2) el.classList.add('perto'); }
+        else { const tg = document.createElement('span'); tg.className = 'tag'; tg.textContent = dias === 0 ? 'Hoje' : dias === 1 ? 'Amanhã' : 'Em ' + dias + ' dias'; tgEl = tg; if (!novo) tp.append(tg); if (dias <= 2) el.classList.add('perto'); }
       }
       if (!novo && tp.textContent.trim()) cx.append(tp);
       const corpoEl = document.createElement('div'); neg(corpoEl, corpo);
@@ -6591,7 +6592,7 @@ function abreProjetosMay(m) {
       const ic = elD('span', 'pjm-ic'); ic.innerHTML = icone(p.icone || 'doc'); ic.style.color = k.destaque;
       const ttl = elD('div'); ttl.append(elD('b', '', p.nome), elD('small', '', p.pra || ''));
       topo.append(ic, ttl, edMini('pen', 'Editar ' + p.nome, () => edFormulario({ titulo: 'Editar projeto', campos: PJM_CAMPOS, v: doForm(p), aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) praProjeto(q, v); }, 'Projeto editado pelo app: ' + v.nome)) pinta(); }, aoApagar: async () => { if (!confirm('Apagar o projeto ' + p.nome + '?')) return; if (await salva(d => { d.projetos = d.projetos.filter(x => x.id !== id); }, 'Projeto apagado pelo app: ' + p.nome)) { history.back(); } } })));
-      if ((p.tema || {}).estilo) { const hero = c.querySelector('.pjm-hero'), lp = topo.querySelector('.ed-mini'); if (hero && lp) { lp.classList.add('pjm-hero-ed'); hero.append(lp); } } else c.append(topo);
+      if ((p.tema || {}).estilo || (p.tema || {}).logo) { const hero = c.querySelector('.pjm-hero'), lp = topo.querySelector('.ed-mini'); if (hero && lp) { lp.classList.add('pjm-hero-ed'); hero.append(lp); } } else c.append(topo);
       // Abas em vez de rolar (May 12:32): Resumo · Pedidos · abas próprias do projeto; reabre na última aba de cada projeto
       const ABAS = [['resumo', 'Resumo'], ['pedidos', p.pedidosTitulo || 'Pedidos']];
       if (p.vendas) ABAS.push(['vendas', 'Vendas']);

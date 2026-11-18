@@ -967,7 +967,7 @@ body:not(.modo-trab) .rel { border-radius: 0; clip-path: polygon(18px 0, 100% 0,
 .cad-obj.on .cad-obj-l { stroke: #FACC15; stroke-width: 2.2px; filter: drop-shadow(0 0 2px #FACC15); } .cad-obj.on .cad-obj-toque { fill: rgba(250,204,21,.16); }
 .desenhando .cad-obj-l { stroke-dasharray: 1; animation: cad-desenhar .9s cubic-bezier(.4,0,.2,1) both; }
 .pl-info-topo { display: flex; align-items: center; gap: 10px; } .pl-tt { flex: 1; min-width: 0; } .pl-volta { flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: #16233A; color: #22D3EE; border: 1px solid #1E3A5F; } .pl-volta svg { width: 20px; height: 20px; }
-.pl-abas { display: flex; gap: 4px; padding: 3px; border-radius: 8px; background: #0B1220; border: 1px solid #1E3A5F; flex: none; } .pl-abas button { flex: 1; width: auto; height: auto; padding: 8px 4px; border-radius: 5px; background: none; color: #7DD3FC; font: 700 12px Consolas, monospace; letter-spacing: .04em; text-transform: uppercase; } .pl-abas button.on { background: #22D3EE; color: #0B1220; }
+.pl-abas { display: flex; gap: 4px; padding: 3px; border-radius: 8px; background: #0B1220; border: 1px solid #1E3A5F; flex: none; } .pl-abas button { flex: 1; width: auto; height: auto; padding: 8px 4px; border-radius: 5px; background: none; color: #7DD3FC; font: 700 12px Consolas, monospace; letter-spacing: .04em; text-transform: uppercase; } .pl-abas button.on { background: #0891B2; color: #FFFFFF; }
 .pl-corpo { flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 6px 0 12px; }   /* respiro em cima: chip não nasce cortado na borda (Sigma 17/11) */
 .pl-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; } .pl-lista li { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 4px; background: #0B1220; border: 1px solid #1E3A5F; color: #E0F2FE; font: 13px Consolas, monospace; cursor: pointer; } .pl-lista li.fora { opacity: .62; border-style: dashed; } .pl-lista li.projeto { border-style: dashed; } .cad-obj.projeto .cad-obj-l { stroke-dasharray: .06 .05; opacity: .75; }
 .pl-lista li.on { border-color: #FACC15; box-shadow: inset 3px 0 0 #FACC15; }
@@ -2929,10 +2929,10 @@ body .painel.tema-excel .fin-res3 .neg b { color: #A4262C; }   /* Sobra negativa
 .painel:has(.pjm-t-act) .p-topo::after { background: linear-gradient(90deg, #B060FF, #FF8820, #22DDFF) !important; }
 .pjm-hero.mini.pjm-h-act .pjm-logo { width: auto; max-width: 100%; }
 /* Projetinhos: aba Imagens (logo, panfleto, banners), toca e abre grande (May 17/11/2026) */
-.pjm-imgs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 4px 0 12px; }
-.pjm-img { margin: 0; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); cursor: zoom-in; display: flex; flex-direction: column; }
-.pjm-img img { width: 100%; aspect-ratio: 4 / 5; object-fit: contain; display: block; background: rgba(0,0,0,.18); }
-.pjm-img figcaption { padding: 8px 10px 10px; font-size: 13px; line-height: 1.35; }
+.pjm-imgs { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 14px; padding: 8px 0 16px; }
+.pjm-img { margin: 0; cursor: zoom-in; display: flex; flex-direction: column; gap: 8px; }   /* arte solta, sem quadro (May 17/11 21:17) */
+.pjm-img img { width: 100%; aspect-ratio: 4 / 5; object-fit: contain; display: block; padding: 6px; box-sizing: border-box; filter: drop-shadow(0 6px 14px rgba(0,0,0,.35)); }
+.pjm-img figcaption { padding: 0 6px; font-size: 13px; line-height: 1.35; text-align: center; opacity: .85; }
 /* Agenda no celular (May 17/11 21:16, "todos os dias coloridos tá feio"): dia com compromisso ganha só um pontinho embaixo do número; cheio fica só o dia de hoje */
 @media (max-width: 1279px) {
   .ag-grade .ag-dia { position: relative; }
