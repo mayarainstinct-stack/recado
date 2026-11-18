@@ -2723,17 +2723,19 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 .pjm-t-econtrole .pjm-bloco { border-top-color: rgba(230,180,34,.45); }
 .pjm-t-econtrole .pjm-rot { color: #F5D06B; opacity: 1; }
 .pjm-c-econtrole { background: linear-gradient(135deg, #0B3D1F, #1F7A3A) !important; border-left-color: #E6B422 !important; }
-/* Azul Emprestimo: azul-marinho geometrico do site, capa branca e verde do WhatsApp (May 18/11 10:38: fundo mais escuro) */
-.p-corpo:has(.pjm-t-azul) { background: repeating-linear-gradient(135deg, #17306A 0 26px, #142B60 26px 52px) !important; }
-.pjm-t-azul { color: #FFFFFF; font-family: 'Segoe UI', system-ui, sans-serif; }
+/* Azul Emprestimo: cinza claro geometrico e azul-marinho; botoes e aba no azul da marca, sem verde (May 18/11 10:42) */
+.p-corpo:has(.pjm-t-azul) { background: repeating-linear-gradient(135deg, #EEF0F4 0 26px, #E6E9EF 26px 52px) !important; }
+.pjm-t-azul { color: #2C3255; font-family: 'Segoe UI', system-ui, sans-serif; }
 .pjm-h-azul { background: #FFFFFF; box-shadow: 0 6px 18px rgba(44,50,85,.18); padding: 0; }
 .pjm-h-azul .pjm-logo { max-height: 210px; border-radius: 0; width: 100%; object-fit: cover; }
-.pjm-h-azul .pjm-hero-pra { padding: 0 12px 12px; color: #B3C4F0; }
-.pjm-t-azul .pjm-bloco { border-top-color: rgba(179,196,240,.25); }
-.pjm-t-azul .pjm-rot { color: #B3C4F0; opacity: 1; }
-.pjm-t-azul .pjm-texto, .pjm-t-azul .pjm-bt.off { background: rgba(255,255,255,.1); color: #FFFFFF; }
-.pjm-t-azul .ed-mini { color: #FFFFFF; }
+.pjm-h-azul .pjm-hero-pra { padding: 0 12px 12px; color: #254796; }
+.pjm-t-azul .pjm-bloco { border-top-color: rgba(37,71,150,.25); }
+.pjm-t-azul .pjm-rot { color: #254796; opacity: 1; }
+.pjm-t-azul .pjm-texto, .pjm-t-azul .pjm-bt.off { background: rgba(37,71,150,.1); }
+.pjm-t-azul .ed-mini { color: #2C3255; }
 .pjm-c-azul { background: linear-gradient(135deg, #254796, #2C3255) !important; }
+.pjm-t-azul .pjm-aba.on, .pjm-t-azul .pjm-bt:not(.sec), .pjm-t-azul .pjm-copia, .pjm-t-azul .pjm-vbt:last-child { background: #254796 !important; color: #FFFFFF !important; }
+.pjm-t-azul .pjm-bt.sec, .pjm-t-azul .pjm-mk { border-color: #254796 !important; }
 /* Sandro: por do sol laranja, azul-marinho, amarelo e letra a mao */
 .p-corpo:has(.pjm-t-sandro) { background: linear-gradient(180deg, #F59E0B 0%, #EA580C 38%, #7C2D12 70%, #0E2A6B 100%) !important; }
 .pjm-t-sandro { color: #FFFFFF; font-family: 'Barlow', 'Segoe UI', sans-serif; }
@@ -2770,9 +2772,8 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 /* Projetinhos: o topo também é do projeto (Sigma 11:28) */
 .painel:has(.pjm-t-econtrole) .p-topo { background: linear-gradient(#0E4524, #0B3D1F) !important; color: #FFFFFF !important; font-family: 'Barlow', 'Segoe UI', sans-serif; }
 .painel:has(.pjm-t-econtrole) .p-topo::after { background: #E6B422 !important; }
-.painel:has(.pjm-t-azul) .p-topo { background: #101F45 !important; color: #FFFFFF !important; }
-.painel:has(.pjm-t-azul) #p-tit { color: #FFFFFF !important; }
-.painel:has(.pjm-t-azul) .p-topo button { background: rgba(255,255,255,.14) !important; color: #FFFFFF !important; border: 0 !important; }
+.painel:has(.pjm-t-azul) .p-topo { background: #FFFFFF !important; color: #2C3255 !important; }
+.painel:has(.pjm-t-azul) .p-topo button, .painel:has(.pjm-t-azul) #p-tit { color: #2C3255 !important; }
 .painel:has(.pjm-t-azul) .p-topo::after { background: #254796 !important; }
 .painel:has(.pjm-t-sandro) .p-topo { background: linear-gradient(#0E2A6B, #0A1D4B) !important; color: #FFFFFF !important; font-family: 'Barlow', 'Segoe UI', sans-serif; }
 .painel:has(.pjm-t-sandro) .p-topo::after { background: #F6C21C !important; }
