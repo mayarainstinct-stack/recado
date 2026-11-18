@@ -1,3 +1,4 @@
+// v469 (S.L.: subtitulo azul-escuro no laranja; app .469, 18/11/2026).
 // v468 (projetos de tema escuro: botoes da barra escuros no tema; LZN sem os pontinhos do fundo; app .468, 18/11/2026).
 // v467 (projetos: topo sem o quadro de fundo, so a logo; app .467, 18/11/2026).
 // v466 (recado de robo gravado como linha da May, "Orfeu (PC1): ...", vira balao do robo e nao "Voce"; app .466, 18/11/2026).

@@ -2977,3 +2977,4 @@ body .painel.tema-excel .fin-res3 .neg b { color: #A4262C; }   /* Sobra negativa
 .pjm-tela .pjm-h-housebridge .pjm-hero-pra { color: inherit; }
 .p-corpo:has(.pjm-t-midnight) { background: #0C0C0C; }
 .painel:has(.pjm-t-midnight, .pjm-t-act, .pjm-t-sandro, .pjm-t-econtrole) .p-topo button { background: rgba(255,255,255,.12) !important; color: inherit !important; border: 0 !important; }
+.pjm-tela .pjm-h-sandro .pjm-hero-pra { color: #0E2A6B; }
