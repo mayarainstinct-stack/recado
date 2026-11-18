@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-18.480">
+<meta name="app-versao" content="2026-11-18.481">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-18.480"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-18.481"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3096,9 +3096,10 @@ function abreProjetos(m) {
       pcs.forEach(x => { const cd = novoCard(x), g = elD('dl', 'pj-num');
         (x.numeros || []).forEach(([k, val]) => { const d = elD('div'), dd = elD('dd'); contaAte(dd, val); d.append(elD('dt', '', k), dd); g.append(d); }); cd.append(g); corpo.append(cd); });
     };
+    const mostra = fn => { try { fn(); } catch (e) { corpo.replaceChildren(elD('p', 'p-nota', 'Não deu para mostrar esta parte do relatório agora.')); } };   // dado fora do formato não deixa a tela em branco (18/11)
     const ABAS = [['Visão geral', abaVisao], ['Esperam você' + (esperam ? ' (' + esperam + ')' : ''), abaEspera], ['Números', abaNum]];
-    ABAS.forEach(([t, fn], i) => { const b = elD('button', 'pj-aba' + (i ? '' : ' on'), t); b.type = 'button'; b.setAttribute('role', 'tab'); b.onclick = () => { abas.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); fn(); pCorpo.scrollTop = 0; }; abas.append(b); });
-    abaVisao();
+    ABAS.forEach(([t, fn], i) => { const b = elD('button', 'pj-aba' + (i ? '' : ' on'), t); b.type = 'button'; b.setAttribute('role', 'tab'); b.onclick = () => { abas.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); mostra(fn); pCorpo.scrollTop = 0; }; abas.append(b); });
+    mostra(abaVisao);
   });
 }
 // Máquinas e consoles (May, 07/11/2026 10:19: "a capivara dos meus consoles e máquina, completa e bonita, gamificada, com a cara de cada console";
@@ -6709,6 +6710,7 @@ function abreProjetosMay(m) {
 }
 function abreCartoes(m) {
   tela(m.nome, async c => {
+    c.classList.add('cartoes-tela');   // Banco de horas (18/11): alvos de toque de 44 px e retorno visível
     const p = skCarga(); c.append(p);
     let md; try { md = await lerArquivo(m.arq); } catch (e) { p.textContent = 'Não foi possível abrir. Confere a internet.'; return; }
     p.remove();
