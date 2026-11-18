@@ -1,3 +1,4 @@
+// v455 (Agenda: legenda de cores de volta no celular, só com os assuntos do mês; May 21:22; Orfeu)
 // v454 (Agenda: o que vence em até 2 dias sobe pro topo dos Próximos, Hoje e Amanhã com maiúscula; Projetinhos: projeto com logo sem o cartão repetido, artes soltas sem quadro; Casa: aba selecionada branca no ciano; voltas do Sigma e May 21:17; Orfeu)
 // v453 (Agenda no celular: dia com compromisso vira pontinho, só o hoje fica cheio; feito sai dos Próximos; ícone do cabeçalho; volta do Sigma e May 21:16; Orfeu)
 // v452 (Casa: planta menor e a lista dos cômodos inteira sem rolar, respiro em cima dos chips, chip sem número; volta do Sigma 21:14; Orfeu)
