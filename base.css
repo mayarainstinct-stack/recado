@@ -2933,3 +2933,10 @@ body .painel.tema-excel .fin-res3 .neg b { color: #A4262C; }   /* Sobra negativa
 .pjm-img { margin: 0; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); cursor: zoom-in; display: flex; flex-direction: column; }
 .pjm-img img { width: 100%; aspect-ratio: 4 / 5; object-fit: contain; display: block; background: rgba(0,0,0,.18); }
 .pjm-img figcaption { padding: 8px 10px 10px; font-size: 13px; line-height: 1.35; }
+/* Agenda no celular (May 17/11 21:16, "todos os dias coloridos tá feio"): dia com compromisso ganha só um pontinho embaixo do número; cheio fica só o dia de hoje */
+@media (max-width: 1279px) {
+  .ag-grade .ag-dia { position: relative; }
+  .ag-grade .ag-dia.tem::after { display: block; content: ''; position: absolute; left: 50%; bottom: 3px; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: #1E293B; box-shadow: none; }
+  .ag-grade .ag-dia.hoje:not(.sel) { background: #1E293B; color: #FFFFFF; text-decoration: none; }
+  .ag-grade .ag-dia.hoje.tem:not(.sel)::after { background: #FFFFFF; }
+}

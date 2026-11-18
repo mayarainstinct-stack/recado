@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-17.452">
+<meta name="app-versao" content="2026-11-17.453">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-17.452"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-17.453"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -5543,7 +5543,7 @@ function montaCalendario(cal, c, opc) {   // opc (Agenda do Trabalho): { marcas:
   if (sel) { ano = +sel.slice(0, 4); mes = +sel.slice(5, 7) - 1; }
   const NOMES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
   const filtra = () => { cal.dataset.sel = sel; if (opc) return;   // sem dia escolhido: só os próximos (o que já passou some); com dia: só os dele (May 12:54)
-    c.querySelectorAll('.ag').forEach(e => { e.hidden = sel ? e.dataset.dia !== sel : e.classList.contains('passou'); });
+    c.querySelectorAll('.ag').forEach(e => { e.hidden = sel ? e.dataset.dia !== sel : e.classList.contains('passou') || e.classList.contains('feito'); });
     c.querySelectorAll('.p-sec').forEach(t => { t.hidden = !!sel || /anterior/i.test(t.textContent); });
     if (proxT) { proxT.textContent = 'Compromissos do dia'; proxT.hidden = !sel; }
     const rl = c.querySelector('.ag-rola'); if (rl) rl.scrollTop = 0; };
@@ -5559,7 +5559,7 @@ function montaCalendario(cal, c, opc) {   // opc (Agenda do Trabalho): { marcas:
     for (let k = 0; k < primeiro; k++) g.append(elD('span'));
     for (let dd = de; dd <= total; dd++) {
       const chave = ano + '-' + String(mes + 1).padStart(2, '0') + '-' + String(dd).padStart(2, '0'), b = elD('button', 'ag-dia', String(dd)); b.type = 'button';
-      if (dias.has(chave)) { b.classList.add('tem'); if (!opc && chave !== sel) b.style.background = '#1E293B'; }   // dia com compromisso: bolinha de uma cor só, sem borda (May 14/11 07:57), na tinta da Agenda: nenhuma cor da legenda, senão todo dia parece consulta (Sigma 14/11)   // um pontinho por tipo, na cor dele
+      if (dias.has(chave)) b.classList.add('tem');   // dia com compromisso: bolinha de uma cor só, sem borda (May 14/11 07:57), na tinta da Agenda: nenhuma cor da legenda, senão todo dia parece consulta (Sigma 14/11)   // um pontinho por tipo, na cor dele
       if (MODO_WEB && !opc && innerWidth >= 1280) {   // PC: o dia vira célula de calendário de parede, com o texto dos compromissos dentro na cor do assunto (Sigma #240, volta 11:55)
         const evs = els.filter(e => e.dataset.dia === chave); b.textContent = ''; b.style.background = ''; b.append(elD('span', 'ag-dia-n', String(dd)));
         evs.slice(0, 3).forEach(e => { const t = elD('span', 'ag-dia-ev', ((e.querySelector('.ag-tx') || e.querySelector('.cx') || e).textContent || '').replace(/\s+/g, ' ').trim()); t.title = t.textContent; t.style.setProperty('--tc', e.dataset.cor); b.append(t); });

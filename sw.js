@@ -1,3 +1,4 @@
+// v453 (Agenda no celular: dia com compromisso vira pontinho, só o hoje fica cheio; feito sai dos Próximos; ícone do cabeçalho; volta do Sigma e May 21:16; Orfeu)
 // v452 (Casa: planta menor e a lista dos cômodos inteira sem rolar, respiro em cima dos chips, chip sem número; volta do Sigma 21:14; Orfeu)
 // v451 (Projetinhos: aba Imagens pra projeto mostrar logo, panfleto e banners, toca e abre grande; Lava Jato do Biel com a logo sem fundo; Orfeu, May 17/11 21:02)
 // v450 (Agenda: legenda de cores só no calendário de parede do PC e só do mês na tela; no celular saiu, era cor sem nada; Orfeu, May 17/11 21:00)
