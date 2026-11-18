@@ -2978,3 +2978,8 @@ body .painel.tema-excel .fin-res3 .neg b { color: #A4262C; }   /* Sobra negativa
 .p-corpo:has(.pjm-t-midnight) { background: #0C0C0C; }
 .painel:has(.pjm-t-midnight, .pjm-t-act, .pjm-t-sandro, .pjm-t-econtrole) .p-topo button { background: rgba(255,255,255,.12) !important; color: inherit !important; border: 0 !important; }
 .pjm-tela .pjm-h-sandro .pjm-hero-pra { color: #0E2A6B; }
+.pjm-tela .pjm-h-midnight .mn-logo { padding: 6px 26px 8px; }
+.pjm-tela .pjm-h-midnight .mn-logo b { font-size: 3.2rem; }
+.pjm-tela .pjm-h-midnight .mn-logo small { font-size: .82rem; }
+.pjm-abas.grade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.pjm-abas.grade .pjm-aba { padding: 8px 6px; }
