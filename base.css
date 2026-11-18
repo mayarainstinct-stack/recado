@@ -2673,7 +2673,14 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 .pjm-rot { text-transform: uppercase; letter-spacing: .06em; font-weight: 700; opacity: .7; }
 .pjm-cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .pjm-cab .pjm-add { margin: 0; padding: 6px 10px; }
-.pjm-botoes { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin: 4px 0 12px; }
+.pjm-botoes { display: flex; flex-direction: row-reverse; flex-wrap: wrap-reverse; justify-content: flex-start; gap: 8px; margin: 16px 0 12px; }
+.pjm-botoes .pjm-bt { flex: none; padding: 14px 22px; order: 2; }
+.pjm-botoes .pjm-bt:first-child { order: 0; }
+.pjm-botoes .pjm-bt:last-child { order: 1; }
+.pjm-tela.pjm-res { display: flex; flex-direction: column; min-height: 100%; }
+.pjm-res .pjm-corpo-aba { flex: 1; display: flex; flex-direction: column; }
+.pjm-res .pjm-botoes { margin-top: auto; }
+.pjm-hero-pra, .pjm-topo small { text-wrap: balance; }
 .pjm-bt { display: grid; place-items: center; text-align: center; padding: 14px; border-radius: 12px; font-weight: 700; text-decoration: none; cursor: pointer; transition: filter .12s; }
 .pjm-bt:hover { filter: brightness(1.1); text-decoration: underline; }
 .pjm-bt.off { background: rgba(127,127,127,.18); color: inherit; cursor: default; font-weight: 400; }
