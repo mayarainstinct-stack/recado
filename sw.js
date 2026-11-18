@@ -1,3 +1,4 @@
+// v484 (Azul: pagina lisa no cinza da capa e barra de cima no mesmo cinza; app .484, 18/11/2026).
 // v483 (Jogos: cada fileira abre no primeiro jogo, nao no fim; app .483, 18/11/2026).
 // v482 (Azul: pagina, listras e card no cinza da capa #CBCDD4; abas e botoes vazados #D9DBE1; texto #1E2A55; app .482, 18/11/2026).
 // v481 (Projetos nao fica em branco com dado fora do formato; Banco de horas com toque de 44 px; app .481, 18/11/2026).

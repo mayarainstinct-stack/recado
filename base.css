@@ -2724,7 +2724,7 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 .pjm-t-econtrole .pjm-rot { color: #F5D06B; opacity: 1; }
 .pjm-c-econtrole { background: linear-gradient(135deg, #0B3D1F, #1F7A3A) !important; border-left-color: #E6B422 !important; }
 /* Azul Emprestimo: cinza claro geometrico e azul-marinho; botoes e aba no azul da marca, sem verde (May 18/11 10:42) */
-.p-corpo:has(.pjm-t-azul) { background: repeating-linear-gradient(135deg, #CBCDD4 0 26px, #C7CAD1 26px 52px) !important; }   /* o cinza do fundo da capa, pra logo encaixar (May 18/11 11:07) */
+.p-corpo:has(.pjm-t-azul) { background: #CBCDD4 !important; }   /* o cinza do fundo da capa, pra logo encaixar (May 18/11 11:07) */
 .pjm-h-azul .pjm-logo { -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, #000 62%, transparent 100%); mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, #000 62%, transparent 100%); }
 .pjm-t-azul { color: #1E2A55; font-family: 'Segoe UI', system-ui, sans-serif; }
 .pjm-h-azul { background: #FFFFFF; box-shadow: 0 6px 18px rgba(44,50,85,.18); padding: 0; }
@@ -2775,7 +2775,8 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 /* Projetinhos: o topo também é do projeto (Sigma 11:28) */
 .painel:has(.pjm-t-econtrole) .p-topo { background: linear-gradient(#0E4524, #0B3D1F) !important; color: #FFFFFF !important; font-family: 'Barlow', 'Segoe UI', sans-serif; }
 .painel:has(.pjm-t-econtrole) .p-topo::after { background: #E6B422 !important; }
-.painel:has(.pjm-t-azul) .p-topo { background: #FFFFFF !important; color: #2C3255 !important; }
+.painel:has(.pjm-t-azul) .p-topo { background: #CBCDD4 !important; color: #1E2A55 !important; }
+.painel:has(.pjm-t-azul) .p-topo button { background: #D9DBE1 !important; }
 .painel:has(.pjm-t-azul) .p-topo button, .painel:has(.pjm-t-azul) #p-tit { color: #2C3255 !important; }
 .painel:has(.pjm-t-azul) .p-topo::after { background: #254796 !important; }
 .painel:has(.pjm-t-sandro) .p-topo { background: linear-gradient(#0E2A6B, #0A1D4B) !important; color: #FFFFFF !important; font-family: 'Barlow', 'Segoe UI', sans-serif; }
