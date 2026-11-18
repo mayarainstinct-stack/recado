@@ -1,0 +1,24 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Como funciona o site do Sandro</title>
+<style>:root { --fundo2: #0E2A6B; --ouro: #F6C21C; --fundo: #0E0F12; --papel: #17181D; --txt: #F2F2F4; }
+* { box-sizing: border-box; } body { margin: 0; background: var(--fundo); color: var(--txt); font: 17px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+header { padding: 28px 20px 18px; background: linear-gradient(160deg, var(--fundo2), #0A0A0B); border-bottom: 4px solid var(--ouro); } header small { color: var(--ouro); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; } header h1 { margin: 6px 0 4px; font-size: 28px; } header p { margin: 0; opacity: .85; }
+main { max-width: 760px; margin: 0 auto; padding: 18px 16px 40px; } .sec { margin: 26px 0 12px; font-size: 21px; color: var(--ouro); scroll-margin-top: 12px; } html { scroll-behavior: smooth; }
+.indice { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 20px; } .indice a { padding: 8px 14px; border-radius: 999px; background: var(--papel); border: 1px solid var(--ouro); color: var(--ouro); text-decoration: none; font-weight: 700; font-size: 15px; }
+.novo { background: var(--papel); border: 2px solid var(--ouro); border-radius: 16px; padding: 14px 18px; margin-bottom: 22px; } .novo h2 { margin: 0 0 6px; color: var(--ouro); font-size: 19px; } .novo li { margin: 6px 0; }
+.passo { display: grid; grid-template-columns: 170px 1fr; gap: 16px; align-items: start; background: var(--papel); border-radius: 16px; padding: 14px; margin-bottom: 14px; } .passo:not(:has(> img)) { display: block; }
+.passo img { width: 100%; border-radius: 10px; border: 1px solid rgba(255,255,255,.12); cursor: zoom-in; } .passo h2 { margin: 2px 0 6px; font-size: 19px; color: var(--ouro); } .passo p { margin: 0 0 6px; } .passo ul { margin: 4px 0 0; padding-left: 20px; } .passo li { margin: 4px 0; }
+a { color: var(--ouro); } .fim { margin-top: 26px; padding: 14px 18px; border-radius: 16px; border: 2px dashed rgba(255,255,255,.2); }
+@media (max-width: 520px) { .passo { grid-template-columns: 1fr; } .passo img { max-width: 300px; justify-self: center; } }</style></head><body>
+<header><small>S.L. Locação e Fretes · como funciona</small><h1>Como funciona o site do Sandro</h1><p>Site de uma página: mesas, cadeiras e fretes, com o pedido que já chega pronto no WhatsApp dele.</p></header><main>
+<nav class="indice"><a href="#o-site">O site</a><a href="#o-pedido">O pedido</a><a href="#mudar-o-site">Mudar o site</a></nav>
+<h2 class="sec" id="o-site">O site</h2>
+<section class="passo"><img src="img/sandro-0-0.jpg" alt="Mesas e cadeiras" onclick="open(this.src)"><div><h2>Mesas e cadeiras</h2><p>Mostra o aluguel: o jogo de <b>1 mesa + 4 cadeiras a partir de R$ 8,00</b>.</p><ul><li><b>Calcular meus jogos:</b> leva a pessoa direto pro pedido.</li></ul></div></section>
+<section class="passo"><img src="img/sandro-0-1.jpg" alt="Como alugar" onclick="open(this.src)"><div><h2>Como alugar</h2><p>3 passos curtos: monta o pedido no site, manda no WhatsApp, o Sandro entrega e busca.</p></div></section>
+<section class="passo"><img src="img/sandro-0-2.jpg" alt="Fretes e carretos" onclick="open(this.src)"><div><h2>Fretes e carretos</h2><p>Fretes em Paraíso e região, valor a combinar.</p><ul><li><b>Tocar no que vai levar</b> (moto, mudança, geladeira...): o pedido de frete já vem pronto.</li></ul></div></section>
+<h2 class="sec" id="o-pedido">O pedido</h2>
+<section class="passo"><img src="img/sandro-1-0.jpg" alt="Orçamento em 1 minuto" onclick="open(this.src)"><div><h2>Orçamento em 1 minuto</h2><p>A pessoa escolhe <b>Mesas e cadeiras</b> ou <b>Frete</b>, preenche o que souber e toca pra mandar. A mensagem chega no WhatsApp do Sandro com tudo: o que, quanto, quando e onde.</p><ul><li><b>+ e −:</b> quantos jogos, cadeiras e mesas avulsas.</li><li>A reserva só vale <b>depois de mandar no WhatsApp</b>; só preencher não reserva.</li></ul></div></section>
+<h2 class="sec" id="mudar-o-site">Mudar o site</h2>
+<section class="passo"><div><h2>Preço, telefone e mensagens</h2><p>Tudo fica num arquivo só do site (dados.js). Mudou lá, muda no site inteiro. O preço do jogo também aparece no texto da página, então muda nos dois.</p><ul><li>Pede pro Orfeu na Geral com o valor novo, ou edita direto se estiver no PC.</li></ul></div></section>
+<section class="passo"><div><h2>Publicar</h2><p>O site fica no Netlify. Depois de mudar, a pasta do site sobe de novo e em 1 minuto está no ar.</p></div></section>
+<div class="fim">No app, em Projetinhos &gt; S.L. Locação e Fretes, ficam o botão do site, o WhatsApp do Sandro e o <b>Onde mudar</b>.</div>
+</main></body></html>
