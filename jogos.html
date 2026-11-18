@@ -20,6 +20,7 @@ header{position:relative;z-index:2;display:flex;align-items:center;gap:10px;padd
 .voltar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--vidro);border:1px solid var(--borda)}
 header h1{font-size:22px;font-weight:700;letter-spacing:.5px;flex:1}
 header h1 small{display:block;font-size:11px;font-weight:400;color:var(--texto3);letter-spacing:1.2px;text-transform:uppercase;margin-top:2px}
+header{flex-wrap:wrap}#sub{flex-basis:100%;display:block;margin:-4px 0 0 48px;font-size:11px;font-weight:400;color:var(--texto3);letter-spacing:1.2px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}   /* subtitulo em 1 linha embaixo do titulo, largura cheia (Sigma #390) */
 .selo-j2{height:30px;padding:0 10px;border-radius:9px;display:grid;place-items:center;background:var(--contorno);border:2px solid #fff;font-weight:700;font-size:15px;letter-spacing:-.5px;box-shadow:0 0 14px rgba(97,216,8,.35)}
 .selo-j2 b{color:var(--slime)}.selo-j2 i{color:var(--agua);font-style:normal}
 main{position:relative;z-index:1;flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:96px}
@@ -620,10 +621,11 @@ nav button{position:relative;z-index:1}nav button.on{background:none!important;b
 <div id="app">
 <header>
 <button class="voltar" id="voltar-app" aria-label="Voltar pros recados"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 5l-7 7 7 7"/></svg></button>
-<h1>Jogos<small id="sub"></small></h1>
+<h1>Jogos</h1>
 <button class="anotar" id="j-anotar" aria-label="Escrever sobre esta tela"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
 <button class="anotar" id="j-novo" aria-label="Lançar um jogo novo" style="margin-left:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
 <div class="selo-j2" aria-label="Jogando A2"><img class="j2img" data-p="categorias/games/tela/j2-selo.webp" alt="J2"></div>
+<small id="sub"></small>
 </header>
 <main id="lista"></main>
 <nav>
@@ -822,7 +824,7 @@ let soJ=false;try{soJ=localStorage.getItem("jogos-so-joguei")=="1"}catch(e){}
 const temSB=J.some(j=>"so_biblioteca" in j),soBib=j=>temSB?!!j.so_biblioteca:j.status=="nao_comecou",nBib=J.filter(soBib).length
 const linhas={};J.filter(j=>!soJ||!(soBib(j)||/nao_comecou|espiou/.test(j.status))).forEach(j=>{const k=chaveCons(j.console);(linhas[k]=linhas[k]||[]).push(j)})
 const ks=Object.keys(linhas).sort(abcCons)
-document.getElementById("sub").textContent=`${J.length-nBib} jogados · ${nBib} só na biblioteca · ${andamento.length} jogando`
+document.getElementById("sub").textContent=`${J.length-nBib} jogados · ${andamento.length} jogando`   // 1 linha só, o "só na biblioteca" espremia o topo em 3 linhas (Sigma #390)
 // ordem da fileira (Lyra/May 08:46): jogados primeiro, depois os da biblioteca nunca começados, e no FINAL os que ela não joga mais
 const FILA_MAX=20,NUNCA=/nao_comecou|espiou/,PAROU=/nao_joga_mais|largado|abandonado|parou_de_jogar/,grau=j=>PAROU.test(j.status||"")||j.nao_joga_mais?2:NUNCA.test(j.status||"")?1:0,filaOrdenada=k=>linhas[k].slice().sort((a,b)=>grau(a)-grau(b)||porTitulo(a,b))
 L.innerHTML=`<div class="secao"><h2>Jogando</h2><span class="secao-bts"><button class="ordem${soJ?" on":""}" id="so-joguei">só os que joguei</button><button class="ordem" id="ordem">ordem: ${ORDN[ord]}</button></span></div><div class="prateleira">${jog.map((j,i)=>tileH(j,i==0)).join("")}<button class="tile mais-tile" id="ver-mais"><div class="capa">${LOGO_J2}</div><div class="info"><div class="tt">${jogExp?"Ver menos":"Ver mais"}</div><div class="pp">${jogExp?"volta aos principais":"tudo que estou jogando"}</div></div></button></div>`+ks.map(k=>`<div class="secao"><h2 style="color:${paleta(linhas[k][0].console).cor}">${esc(nomeCons(k))}</h2><span>${linhas[k].length} ${linhas[k].length==1?"jogo":"jogos"}</span></div><div class="prateleira" data-fila="${esc(k)}">${filaOrdenada(k).slice(0,FILA_MAX).map(j=>tileH(j,false)).join("")}${linhas[k].length>FILA_MAX?`<button class="tile mais-tile mais-fila" data-fila="${esc(k)}"><div class="capa">${LOGO_J2}</div><div class="info"><div class="tt">Ver mais ${linhas[k].length-FILA_MAX}</div><div class="pp">o resto desse console</div></div></button>`:""}</div>`).join("")

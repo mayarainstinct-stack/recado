@@ -1,3 +1,4 @@
+// v485 (Jogos: subtitulo do topo em 1 linha embaixo do titulo, J2 com margem de 16 px; app .485, 18/11/2026).
 // v484 (Azul: pagina lisa no cinza da capa e barra de cima no mesmo cinza; app .484, 18/11/2026).
 // v483 (Jogos: cada fileira abre no primeiro jogo, nao no fim; app .483, 18/11/2026).
 // v482 (Azul: pagina, listras e card no cinza da capa #CBCDD4; abas e botoes vazados #D9DBE1; texto #1E2A55; app .482, 18/11/2026).
