@@ -2733,8 +2733,8 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 .pjm-t-azul .pjm-rot { color: #254796; opacity: 1; }
 .pjm-t-azul .pjm-texto, .pjm-t-azul .pjm-bt.off { background: rgba(37,71,150,.1); }
 .pjm-t-azul .ed-mini { color: #2C3255; }
-.pjm-c-azul { background: repeating-linear-gradient(135deg, #EEF0F4 0 26px, #E6E9EF 26px 52px) !important; color: #2C3255 !important; border-left-color: #254796 !important; }   /* card com a mesma cara da pagina (Sigma #387) */
-.pjm-c-azul .pjm-cardtx b { color: #254796; }
+.pjm-c-azul { background: linear-gradient(135deg, #254796, #2C3255) !important; }   /* card marinho: a May nao quer o card claro (18/11 11:06) */
+.pjm-c-azul img { filter: brightness(0) invert(1); }
 .painel:has(.pjm-t-azul) .p-topo .p-ic { background: none !important; border: 0 !important; }
 .pjm-t-azul .pjm-aba.on, .pjm-t-azul .pjm-bt:not(.sec), .pjm-t-azul .pjm-copia, .pjm-t-azul .pjm-vbt:last-child { background: #254796 !important; color: #FFFFFF !important; }
 .pjm-t-azul .pjm-bt.sec, .pjm-t-azul .pjm-mk { border-color: #254796 !important; }
