@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-18.472">
+<meta name="app-versao" content="2026-11-18.473">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-18.472"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-18.473"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -6657,7 +6657,7 @@ function abreProjetosMay(m) {
         if (fx.length) { const tb = elD('ul', 'pjm-vfaixas'); fx.forEach(f => tb.append(elD('li', n >= f[0] ? 'on' : '', f[0] + ' ingressos · R$ ' + f[1]))); box.append(tb); }
         corpo.append(box);
       }
-      if (aba === 'notas') (p.notas || []).forEach(nt => bloco(nt.titulo, nt.texto));
+      if (aba === 'notas') (p.notas || []).forEach(nt => { bloco(nt.titulo, nt.texto); if (!(nt.botoes || []).length) return; const bb = elD('div', 'pjm-botoes'); nt.botoes.forEach(x => { const el = elD(x.link ? 'a' : 'button', 'pjm-bt' + (bb.children.length ? ' sec' : ''), x.rotulo); if (x.link) { el.href = x.link; el.target = '_blank'; el.rel = 'noopener'; } else { el.type = 'button'; el.onclick = async () => { if (x.copiar) { copiaTexto(x.copiar); return; } try { if (navigator.share) await navigator.share({ url: x.compartilhar, title: p.nome }); else { await navigator.clipboard.writeText(x.compartilhar); showNote('Link copiado.'); } } catch (e) {} }; } if (bb.children.length) el.style.borderColor = k.destaque; else { el.style.background = k.destaque; el.style.color = k.sobreDestaque; } bb.append(el); }); corpo.append(bb); });   // nota com botões: o link de vendas na aba que ela usa pra vender (Sigma 08:30)
       if (aba === 'contatos') {   // Promoter: quem chamar e em que pé está (toque no status passa pro próximo)
         const ST = ['Chamar', 'Falei', 'Respondeu', 'Vai comprar', 'Comprou'], cs = p.contatos || [], fz = elD('section', 'pjm-bloco');
         const res = elD('div', 'pjm-cres'); ST.forEach(st => { const n2 = cs.filter(x => (x.status || 'Chamar') === st).length; res.append(elD('span', 'pjm-cst', st + ' ' + n2)); }); fz.append(res);
