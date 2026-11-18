@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-18.487">
+<meta name="app-versao" content="2026-11-18.488">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-18.487"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-18.488"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2883,6 +2883,37 @@ abreMenu.onclick = () => {
 const EST_PC = { ok: ['Em ordem', '#22C55E'], atencao: ['Atenção', '#F59E0B'], investigando: ['Investigando', '#3B82F6'], peca: ['Precisa de peça', '#EF4444'] }, TOM_PC = { ok: '#22C55E', atencao: '#F59E0B', investigando: '#3B82F6', ruim: '#EF4444' };   // investigando = sem causa ainda, peça só depois do teste de graça (Sigma, 06/11/2026)
 const elD = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
 const fotoRobo = g => { const im = elD('img'); im.alt = ''; im.src = AVATAR_PAGES[g.foto] || ''; return im; };
+// Botao de emergencia no cartao do robo (18/11/2026): grava casa/pcs/remoto/comando-<PC>.txt; o vigia do PC le em ate 1 min (formato em inst/casa/pcs/remoto/LEIA-ME.md)
+const RELIGA_PCS = { PC1: 'Orfeu', PC2: 'Nyx' };   // mesmo mapa do vigia-comando.ps1; PC sem robo ali = guarda desligada
+function horaBrasilia() {
+  const o = {}; new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date()).forEach(x => { o[x.type] = x.value; });
+  return { texto: o.day + '/' + o.month + '/' + o.year + ' ' + o.hour + ':' + o.minute, id: o.year + o.month + o.day + o.hour + o.minute + pad(new Date().getSeconds()) };
+}
+async function pedeReligar(pc) {
+  const h = horaBrasilia(), letras = 'abcdefghijklmnopqrstuvwxyz'; let suf = ''; for (let i = 0; i < 4; i++) suf += letras[Math.floor(Math.random() * 26)];
+  const id = h.id + suf, arq = 'casa/pcs/remoto/comando-' + pc + '.txt', corpo = { message: 'Reiniciar robo pelo app', content: b64encode(id + '|religar-robo|' + h.texto + '\n') };
+  try { const r = await api(apiDe(arq)); if (r.ok) corpo.sha = (await r.json()).sha; else if (r.status !== 404) return null; } catch (e) { return null; }
+  try { const w = await api(apiDe(arq), { method: 'PUT', body: JSON.stringify(corpo) }); if (!w.ok) return null; } catch (e) { return null; }
+  store.set('religar-id-' + pc, id); return id;
+}
+function botaoReligar(p, d) {
+  const robo = RELIGA_PCS[p.pc], caixa = elD('div', 'pcd-emerg');
+  if (!robo) { const b = elD('button', 'pcd-religa', 'Reiniciar na força'); b.type = 'button'; b.disabled = true; caixa.append(b, elD('small', '', 'sem reinício remoto neste PC')); d.append(caixa); return; }
+  const b = elD('button', 'pcd-religa', 'Reiniciar na força'), msg = elD('small', 'pcd-religa-msg'); b.type = 'button'; caixa.append(b, msg); d.append(caixa);
+  const mostra = async () => {   // resultado do pedido anterior, se o PC ja respondeu
+    const id = store.get('religar-id-' + p.pc); if (!id) return;
+    try { const t = await lerArquivo('casa/pcs/remoto/resultado-' + p.pc + '.txt'), l = t.split(/\r?\n/).filter(x => x.includes(' ' + id + ' ')).pop();
+      if (l) { const m = l.match(/^\[([^\]]+)\]\s+\S+\s+\S+\s*:\s*(\w+)/), ok = m && m[2] === 'ok'; msg.textContent = ok ? 'Último pedido: o ' + robo + ' foi reiniciado (' + m[1] + ').' : 'Último pedido: não deu certo. Tente de novo ou avise o Valber.'; msg.classList.toggle('err', !ok); } } catch (e) {}
+  };
+  mostra();
+  b.onclick = async () => {
+    if (!confirm('Reiniciar o ' + robo + ' agora? A sessão dele será fechada e aberta de novo.')) return;
+    b.disabled = true; msg.classList.remove('err'); msg.textContent = 'Enviando o pedido...';
+    const id = await pedeReligar(p.pc);
+    if (id) msg.textContent = 'Pedido enviado. Em até 1 minuto o ' + robo + ' volta.'; else { msg.textContent = 'Não deu para enviar o pedido. Veja a internet e tente de novo.'; msg.classList.add('err'); }
+    setTimeout(() => { b.disabled = false; }, 15000);
+  };
+}
 function cartaoPc(p) {
   const g = GRUPO[p.robo] || TRAB_NEUTRO, [en, ec] = EST_PC[p.estado] || EST_PC.atencao;
   const d = elD('div', 'pcd'); d.style.setProperty('--rc', g.cor);
@@ -2907,6 +2938,7 @@ function cartaoPc(p) {
     listas.forEach(([k, t, cls]) => { cx.append(elD('h4', cls, t)); const ul = elD('ul'); p[k].forEach(i => ul.append(elD('li', '', i))); cx.append(ul); });
     bt.onclick = () => { cx.hidden = !cx.hidden; bt.classList.toggle('aberto', !cx.hidden); }; d.append(bt, cx);
   }
+  botaoReligar(p, d);
   return d;
 }
 // Relatório dos PCs no Comparar (May, 07/11/2026 09:51 "bem Power BI", 09:56 "mais gamer", 09:57 áudio "rosca, progressão, degradê, cara de PS4/Xbox";
