@@ -1,3 +1,4 @@
+// v494 (Trabalho em escala menor no celular: menu de 3 colunas, cartoes e fontes compactos; Diagnostico do Trabalho so com projetos de trabalho; app .494, 18/11/2026).
 // v493 (Trabalho: Projetos e Diagnostico em menu de icones com detalhes; Diagnostico abre na hora; Agenda, Checklist, Rotina e Menu com a cara do sistema; app .493, 18/11/2026).
 // v492 (Trabalho com a cara do sistema da empresa: Banco de horas e Ferias lendo banco-de-horas.json, cartoes de numero, abas sublinhadas; app .492, 18/11/2026).
 // v491 (Diagnostico: capa de carregamento no lugar da tela branca do Trabalho ao abrir pela Maquinas; app .491, 18/11/2026).

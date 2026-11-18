@@ -3224,3 +3224,56 @@ body.modo-trab .painel .p-grade.apps { grid-auto-rows: auto; }
 body.modo-trab .painel .ag-cal-topo b::first-letter { text-transform: uppercase; }
 body.modo-trab .painel .ag-tela .ag-dia, body.modo-trab .painel .sw-calbox .ag-dia, body.modo-trab .painel .ag-dia { width: 100% !important; min-width: 44px; max-width: 52px; height: 44px !important; justify-self: center; }
 body.modo-trab .painel .p-grade.apps > * { min-height: 156px !important; }
+
+/* ===== v494 (18/11/2026): Trabalho em escala menor no celular (SO body.modo-trab; areas de toque seguem >= 44 px) ===== */
+@media (max-width: 600px) {
+  body.modo-trab .nx-cab { padding: 8px 4px 2px; }
+  body.modo-trab .nx-sobre { font-size: 10.5px; letter-spacing: .12em; }
+  body.modo-trab .nx-tit { font-size: 22px; margin: 1px 0; }
+  body.modo-trab .nx-sub { font-size: 13px; margin: 0 0 4px; }
+  body.modo-trab .nx-sec, body.modo-trab .nx-sec-int, body.modo-trab .painel .p-sec, body.modo-trab .ck-sec, body.modo-trab .sl-secao, body.modo-trab .sl-sub { font-size: 11px; letter-spacing: .1em; margin: 12px 4px 6px; }
+  body.modo-trab .nx-grade { gap: 8px; }
+  body.modo-trab .nx-num { padding: 10px 12px; min-height: 0; border-radius: 10px; }
+  body.modo-trab .nx-rot { font-size: 10px; letter-spacing: .06em; }
+  body.modo-trab .nx-val { font-size: 22px; margin-top: 4px; }
+  body.modo-trab .nx-cartao { padding: 10px 12px; margin-top: 8px; border-radius: 10px; }
+  body.modo-trab .nx-jornada { gap: 8px; } body.modo-trab .nx-jornada small { font-size: 11px; } body.modo-trab .nx-jornada b { font-size: 12px; }
+  body.modo-trab .nx-nota, body.modo-trab .nx-txt, body.modo-trab .nx-vazio { font-size: 13px; }
+  body.modo-trab .nx-par, body.modo-trab .nx-ul li { font-size: 14px; }
+  body.modo-trab .nx-ul { gap: 8px; }
+  body.modo-trab .nx-linha { min-height: 44px; padding: 6px 0; gap: 8px; }
+  body.modo-trab .nx-linha-tx b { font-size: 14px; } body.modo-trab .nx-linha-tx small { font-size: 12px; }
+  body.modo-trab .nx-chip { font-size: 11px; padding: 3px 8px; }
+  body.modo-trab .nx-item { padding: 10px 12px; margin-bottom: 8px; }
+  body.modo-trab .nx-mini { gap: 6px; } body.modo-trab .nx-mini b { font-size: 16px; }
+  body.modo-trab .nx-aba { font-size: 14px; }
+  body.modo-trab .nx-abas { margin: 0 0 4px; }
+  body.modo-trab .painel .p-hero { padding: 4px 2px 6px; gap: 8px; }
+  body.modo-trab .nx-hero { padding: 2px 2px 0; }
+  body.modo-trab .painel .p-corpo { font-size: 14px; }
+  /* menu do Trabalho: 3 colunas, icone menor */
+  body.modo-trab .painel .p-grade.apps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  body.modo-trab .painel .p-grade.apps > * { min-height: 104px !important; padding: 10px 8px !important; gap: 2px; }
+  body.modo-trab .painel .p-grade.apps > * .ic { width: 34px !important; height: 34px !important; margin: 0 0 4px !important; border-radius: 8px !important; }
+  body.modo-trab .painel .p-grade.apps > * .ic svg, body.modo-trab .p-grade.apps .ic svg.lp { width: 20px !important; height: 20px !important; }
+  body.modo-trab .painel .p-grade.apps > * .t { font-size: 13px; line-height: 1.2; overflow-wrap: anywhere; }
+  body.modo-trab .p-sub-az { font-size: 11px; line-height: 1.25; margin-top: 1px; }
+  /* menus de icones (Projetos / Diagnostico) */
+  body.modo-trab .dg-grade { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
+  body.modo-trab .dg-card { min-height: 104px; padding: 10px 8px; gap: 2px; border-radius: 10px; }
+  body.modo-trab .dg-ic { width: 34px; height: 34px; margin-bottom: 2px; border-radius: 8px; }
+  body.modo-trab .dg-ic svg { width: 20px; height: 20px; }
+  body.modo-trab .dg-nm { font-size: 13px; } body.modo-trab .dg-sub { font-size: 11px; } body.modo-trab .dg-ex { font-size: 11px; }
+  body.modo-trab .dg-card.sk i:nth-child(1) { width: 34px; height: 34px; }
+  /* agenda, checklist, rotina */
+  body.modo-trab .painel .ag { padding: 10px 12px; }
+  body.modo-trab .ck-bloco { padding: 10px 12px; margin-top: 8px; }
+  body.modo-trab .ck-cab b { font-size: 15px; }
+  body.modo-trab .ck-t { font-size: 14px; } body.modo-trab .ck-item { min-height: 48px; }
+  body.modo-trab .sl-card { padding: 10px 12px; }
+  body.modo-trab .sw-impb { min-height: 48px; padding: 8px 12px; } body.modo-trab .sw-imp-tx { font-size: 13px; } body.modo-trab .sw-imp-tx b { font-size: 15px; }
+  body.modo-trab .painel .p-topo h2, body.modo-trab .painel .p-topo .p-tit { font-size: 16px; }
+  body.modo-trab .painel .p-topo .p-ic { width: 32px; height: 32px; }
+  body.modo-trab .painel .p-topo .p-ic svg { width: 18px; height: 18px; }
+  body.modo-trab .dg-tela .pcd-num div, body.modo-trab .dg-tela .pcd-val { padding: 5px 8px; }
+}
