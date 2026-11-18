@@ -2995,3 +2995,7 @@ body .painel.tema-excel .fin-res3 .neg b { color: #A4262C; }   /* Sobra negativa
 .pjm-t-lavajato .pjm-bloco { border-color: rgba(255,255,255,.22); }
 .pjm-t-lavajato .pjm-aba:not(.on) { background: rgba(255,255,255,.14); color: #FFFFFF; }
 .pjm-t-lavajato .pjm-hero-pra { color: #FFFFFF; }
+.pjm-t-sandro .pjm-rot { color: #0E2A6B; }
+.pjm-t-sandro .pjm-aba.on { background: #0E2A6B !important; color: #FFFFFF !important; }
+.pjm-t-sandro .pjm-aba:not(.on) { background: rgba(255,255,255,.92); color: #0E2A6B; }
+.pjm-t-sandro .pjm-rot { color: #F6C21C; background: #0E2A6B; padding: 2px 12px; border-radius: 999px; display: inline-block; margin-bottom: 6px; }
