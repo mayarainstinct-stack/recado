@@ -1,3 +1,4 @@
+// v474 (Azul: pagina azul-marinho escura do site, capa branca e verde do WhatsApp; app .474, 18/11/2026).
 // v473 (projetos: nota com botoes de mandar, copiar e abrir; Lava Jato com a aba escolhida amarela da marca; app .473, 18/11/2026).
 // v472 (S.L.: titulos em selo azul, abas brancas com a escolhida azul; app .472, 18/11/2026).
 // v471 (projetos: logo horizontal na largura toda; LZN com o Midnight grande; Lava Jato todo azul no estilo do banner; app .471, 18/11/2026).
