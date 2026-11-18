@@ -2724,18 +2724,18 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 .pjm-t-econtrole .pjm-rot { color: #F5D06B; opacity: 1; }
 .pjm-c-econtrole { background: linear-gradient(135deg, #0B3D1F, #1F7A3A) !important; border-left-color: #E6B422 !important; }
 /* Azul Emprestimo: cinza claro geometrico e azul-marinho; botoes e aba no azul da marca, sem verde (May 18/11 10:42) */
-.p-corpo:has(.pjm-t-azul) { background: #CDD0D8 !important; }   /* o cinza do fundo da capa, pra logo encaixar (May 18/11 11:07) */
+.p-corpo:has(.pjm-t-azul) { background: repeating-linear-gradient(135deg, #CBCDD4 0 26px, #C7CAD1 26px 52px) !important; }   /* o cinza do fundo da capa, pra logo encaixar (May 18/11 11:07) */
 .pjm-h-azul .pjm-logo { -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, #000 62%, transparent 100%); mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, #000 62%, transparent 100%); }
-.pjm-t-azul { color: #2C3255; font-family: 'Segoe UI', system-ui, sans-serif; }
+.pjm-t-azul { color: #1E2A55; font-family: 'Segoe UI', system-ui, sans-serif; }
 .pjm-h-azul { background: #FFFFFF; box-shadow: 0 6px 18px rgba(44,50,85,.18); padding: 0; }
 .pjm-h-azul .pjm-logo { max-height: 210px; border-radius: 0; width: 100%; object-fit: cover; }
 .pjm-h-azul .pjm-hero-pra { padding: 0 12px 12px; color: #254796; }
 .pjm-t-azul .pjm-bloco { border-top-color: rgba(37,71,150,.25); }
 .pjm-t-azul .pjm-rot { color: #254796; opacity: 1; }
-.pjm-t-azul .pjm-texto, .pjm-t-azul .pjm-bt.off { background: rgba(37,71,150,.1); }
+.pjm-t-azul .pjm-texto, .pjm-t-azul .pjm-bt.off, .pjm-t-azul .pjm-aba:not(.on), .pjm-t-azul .pjm-bt.sec { background: #D9DBE1 !important; color: #1E2A55 !important; }
 .pjm-t-azul .ed-mini { color: #2C3255; }
-.pjm-c-azul { background: linear-gradient(135deg, #254796, #2C3255) !important; }   /* card marinho: a May nao quer o card claro (18/11 11:06) */
-.pjm-c-azul img { filter: brightness(0) invert(1); }
+.pjm-c-azul { background: repeating-linear-gradient(135deg, #CBCDD4 0 26px, #C7CAD1 26px 52px) !important; color: #1E2A55 !important; border-left-color: #254796 !important; }   /* card no cinza da capa: o branco que a May nao pediu era o da pagina (18/11 11:09) */
+.pjm-c-azul .pjm-cardtx b { color: #254796; }
 .painel:has(.pjm-t-azul) .p-topo .p-ic { background: none !important; border: 0 !important; }
 .pjm-t-azul .pjm-aba.on, .pjm-t-azul .pjm-bt:not(.sec), .pjm-t-azul .pjm-copia, .pjm-t-azul .pjm-vbt:last-child { background: #254796 !important; color: #FFFFFF !important; }
 .pjm-t-azul .pjm-bt.sec, .pjm-t-azul .pjm-mk { border-color: #254796 !important; }

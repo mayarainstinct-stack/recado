@@ -1,3 +1,4 @@
+// v482 (Azul: pagina, listras e card no cinza da capa #CBCDD4; abas e botoes vazados #D9DBE1; texto #1E2A55; app .482, 18/11/2026).
 // v481 (Projetos nao fica em branco com dado fora do formato; Banco de horas com toque de 44 px; app .481, 18/11/2026).
 // v480 (Azul: pagina no cinza do fundo da capa, capa com borda suave que encaixa; app .480, 18/11/2026).
 // v479 (Azul: card da lista volta pro marinho, com o A branco; app .479, 18/11/2026).
