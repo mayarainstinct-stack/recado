@@ -1,3 +1,4 @@
+// v489 (Botao Reiniciar na forca tambem no PC5, notebook da Lyra; app .489, 18/11/2026).
 // v488 (Cartao do robo: botao Reiniciar na forca grava comando-<PC>.txt; app .488, 18/11/2026).
 // v487 (Autocuidado: pagina unica rolando, sem abas, e sobrancelha de 15 em 15 dias com proxima hoje; app .487, 18/11/2026).
 // v486 (Garagem: pendente mostra as fotos do estrago, tocar abre grande; app .486, 18/11/2026).
