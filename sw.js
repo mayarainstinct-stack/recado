@@ -1,3 +1,4 @@
+// v467 (projetos: topo sem o quadro de fundo, so a logo; app .467, 18/11/2026).
 // v466 (recado de robo gravado como linha da May, "Orfeu (PC1): ...", vira balao do robo e nao "Voce"; app .466, 18/11/2026).
 // v465 (LZN Tickets: logo de verdade do Midnight no cartao de cima; app .465, 18/11/2026).
 // v464 (projetos: icone da barra com o fundo do projeto tambem no modo Trabalho; app .464, 18/11/2026).

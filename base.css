@@ -2972,3 +2972,6 @@ body .painel.tema-excel .fin-res3 .neg b { color: #A4262C; }   /* Sobra negativa
 .pjm-hero.mini .mn-logo-img { width: 120px; height: 120px; }
 .mn-logo.com-img, .mn-logo.com-img::before, .mn-logo.com-img::after { border: 0; transform: none; padding: 0; background: none; box-shadow: none; }
 .mn-logo.com-img::before, .mn-logo.com-img::after { display: none; }
+.pjm-tela .pjm-hero, .pjm-tela .pjm-hero[class] { background: none !important; border: 0 !important; box-shadow: none !important; }
+.pjm-tela .pjm-hero::before, .pjm-tela .pjm-hero::after { display: none; }
+.pjm-tela .pjm-h-housebridge .pjm-hero-pra { color: inherit; }
