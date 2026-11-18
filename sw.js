@@ -1,3 +1,4 @@
+// v457 (Música > Setup: campo Foto do aparelho, a foto entra no lugar do desenho e abre grande; Configurações > Treino avisa se o fim for antes do começo; Orfeu)
 // v456 (Configurações > Treino: hora que o treino começa e termina, a mesma do abrir sozinho, gravando no menu/treino.json; May 21:03; Orfeu)
 // v455 (Agenda: legenda de cores de volta no celular, só com os assuntos do mês; May 21:22; Orfeu)
 // v454 (Agenda: o que vence em até 2 dias sobe pro topo dos Próximos, Hoje e Amanhã com maiúscula; Projetinhos: projeto com logo sem o cartão repetido, artes soltas sem quadro; Casa: aba selecionada branca no ciano; voltas do Sigma e May 21:17; Orfeu)
