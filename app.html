@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-18.463">
+<meta name="app-versao" content="2026-11-18.464">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-18.463"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-18.464"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -6596,7 +6596,7 @@ function abreProjetosMay(m) {
       const topo = elD('div', 'pjm-topo'); topo.style.background = k.fundo; topo.style.color = k.texto; topo.style.borderBottomColor = k.destaque;
       const ic = elD('span', 'pjm-ic'); ic.innerHTML = icone(p.icone || 'doc'); ic.style.color = k.destaque;
       const ttl = elD('div'); ttl.append(elD('b', '', p.nome), elD('small', '', p.pra || ''));
-      { const pic = pTopo.querySelector('.p-ic'); if (pic) { pic.style.setProperty('--c', k.fundo); pic.style.color = k.destaque; pic.style.boxShadow = 'none'; pic.style.border = '1px solid ' + k.destaque; pic.innerHTML = icone(p.icone || 'doc'); if ((p.tema || {}).icone) { const im = pjmLogo({ logo: p.tema.icone }, 'p-ic-img'); im.addEventListener('load', () => { pic.replaceChildren(im); }); } } }   // ícone da barra no tema do projeto, não a maleta do Projetinhos (Sigma #378)
+      { const pic = pTopo.querySelector('.p-ic'); if (pic) { pic.style.setProperty('--c', k.fundo); pic.style.background = k.fundo; pic.style.color = k.destaque; pic.style.boxShadow = 'none'; pic.style.border = '1px solid ' + k.destaque; pic.innerHTML = icone(p.icone || 'doc'); if ((p.tema || {}).icone) { const im = pjmLogo({ logo: p.tema.icone }, 'p-ic-img'); im.addEventListener('load', () => { pic.replaceChildren(im); }); } } }   // ícone da barra no tema do projeto, não a maleta do Projetinhos (Sigma #378)
       topo.append(ic, ttl, edMini('pen', 'Editar ' + p.nome, () => edFormulario({ titulo: 'Editar projeto', campos: PJM_CAMPOS, v: doForm(p), aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) praProjeto(q, v); }, 'Projeto editado pelo app: ' + v.nome)) pinta(); }, aoApagar: async () => { const pos = D.projetos.findIndex(x => x.id === id), copia = JSON.parse(JSON.stringify(p)); if (await salva(d => { d.projetos = d.projetos.filter(x => x.id !== id); }, 'Projeto apagado pelo app: ' + p.nome)) { history.back(); edFaixaDesfazer('Projeto ' + p.nome + ' apagado', () => salva(d => { if (!d.projetos.some(x => x.id === id)) d.projetos.splice(Math.max(0, pos), 0, copia); }, 'Apagar desfeito pelo app: ' + p.nome)); } } })));
       const lp = topo.querySelector('.ed-mini'); lp.remove(); if (!((p.tema || {}).estilo || (p.tema || {}).logo)) c.append(topo);   // um lápis só na tela: o Editar vai pra fila de botões embaixo (Sigma 18/11 07:35)
       // Abas em vez de rolar (May 12:32): Resumo · Pedidos · abas próprias do projeto; reabre na última aba de cada projeto

@@ -1,3 +1,4 @@
+// v464 (projetos: icone da barra com o fundo do projeto tambem no modo Trabalho; app .464, 18/11/2026).
 // v463 (projetos: icone da barra no tema de cada projeto, nome curto, abas iguais numa linha com a escolhida branca no fundo colorido, botoes do mesmo tamanho, cartao de cima com a mesma altura e moldura, caixa do pedido no tema claro, sem o atalho repetido de pedidos abertos; app .463, 18/11/2026).
 // v462 (projetos: trocar de aba não mexe no cartão de cima, caixa do A fazer arredondada e sem puxador; app .462, 18/11/2026).
 // v461 (projetos: um lápis só, Editar e o botão principal embaixo à direita, subtítulo sem palavra sozinha; app .461, 18/11/2026).
