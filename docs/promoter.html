@@ -3,14 +3,15 @@
 * { box-sizing: border-box; } body { margin: 0; background: var(--fundo); color: var(--txt); font: 17px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
 header { padding: 28px 20px 18px; background: linear-gradient(160deg, var(--fundo2), #0A0A0B); border-bottom: 4px solid var(--ouro); } header small { color: var(--ouro); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; } header h1 { margin: 6px 0 4px; font-size: 28px; } header p { margin: 0; opacity: .85; }
 main { max-width: 760px; margin: 0 auto; padding: 18px 16px 40px; } .sec { margin: 26px 0 12px; font-size: 21px; color: var(--ouro); scroll-margin-top: 12px; } html { scroll-behavior: smooth; }
-.indice { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 20px; } .indice a { padding: 8px 14px; border-radius: 999px; background: var(--papel); border: 1px solid var(--ouro); color: var(--ouro); text-decoration: none; font-weight: 700; font-size: 15px; }
+.indice { display: grid; gap: 8px; margin: 0 0 20px; } .indice a { text-align: center; padding: 8px 10px; border-radius: 999px; background: var(--papel); border: 1px solid var(--ouro); color: var(--ouro); text-decoration: none; font-weight: 700; font-size: 15px; }
 .novo { background: var(--papel); border: 2px solid var(--ouro); border-radius: 16px; padding: 14px 18px; margin-bottom: 22px; } .novo h2 { margin: 0 0 6px; color: var(--ouro); font-size: 19px; } .novo li { margin: 6px 0; }
 .passo { display: grid; grid-template-columns: 170px 1fr; gap: 16px; align-items: start; background: var(--papel); border-radius: 16px; padding: 14px; margin-bottom: 14px; } .passo:not(:has(> img)) { display: block; }
 .passo img { width: 100%; border-radius: 10px; border: 1px solid rgba(255,255,255,.12); cursor: zoom-in; } .passo h2 { margin: 2px 0 6px; font-size: 19px; color: var(--ouro); } .passo p { margin: 0 0 6px; } .passo ul { margin: 4px 0 0; padding-left: 20px; } .passo li { margin: 4px 0; }
 a { color: var(--ouro); } .fim { margin-top: 26px; padding: 14px 18px; border-radius: 16px; border: 2px dashed rgba(255,255,255,.2); }
-@media (max-width: 520px) { .passo { grid-template-columns: 1fr; } .passo img { max-width: 300px; justify-self: center; } }</style></head><body>
+@media (max-width: 520px) { .passo { grid-template-columns: 1fr; } .passo img { max-width: 100%; } }</style></head><body>
 <header><small>Promoter · como funciona</small><h1>Como funciona o Promoter no app</h1><p>A tela que organiza as tuas vendas de ingresso como promotora: quantos já vendeu, quanto falta pra próxima faixa, textos prontos e com quem falar.</p></header><main>
-<nav class="indice"><a href="#resumo">Resumo</a><a href="#vendas">Vendas</a><a href="#textos">Textos</a><a href="#contatos">Contatos</a><a href="#a-fazer">A fazer</a></nav>
+<nav class="indice" style="grid-template-columns: repeat(3, 1fr)"><a href="#resumo">Resumo</a><a href="#vendas">Vendas</a><a href="#textos">Textos</a><a href="#contatos">Contatos</a><a href="#a-fazer">A fazer</a></nav>
+<div class="novo"><h2>O que é novo</h2><ul><li>Contador de ingressos com <b>+1</b> e <b>−1</b> e a barra até a próxima faixa da comissão.</li><li>Contatos com o pé de cada um: um toque passa pra próxima etapa.</li></ul></div>
 <h2 class="sec" id="resumo">Resumo</h2>
 <section class="passo"><div><h2>Contagem pro evento</h2><p>Em cima do Resumo aparece quantos dias faltam pro evento, e no dia aparece <b>É hoje!</b>.</p></div></section>
 <section class="passo"><div><h2>O que é e como está</h2><p>O evento, o lugar e a hora, e como está o teu cadastro de promotora e a regra da comissão.</p></div></section>
@@ -22,5 +23,5 @@ a { color: var(--ouro); } .fim { margin-top: 26px; padding: 14px 18px; border-ra
 <h2 class="sec" id="contatos">Contatos</h2>
 <section class="passo"><div><h2>Com quem falar</h2><p>A lista de pessoas pra chamar, cada uma com o pé em que está.</p><ul><li><b>Tocar no status:</b> passa pro próximo: Chamar, Falei, Respondeu, Vai comprar, Comprou.</li><li><b>Pessoa nova:</b> escreve o nome na caixa e toca em <b>Guardar</b>.</li><li>Em cima, quantas pessoas estão em cada etapa.</li></ul></div></section>
 <h2 class="sec" id="a-fazer">A fazer</h2>
-<section class="passo"><div><h2>Pedidos</h2><p>O que falta fazer no Promoter. Escreve na caixa e toca em <b>Guardar</b>; marca o quadradinho quando fizer.</p></div></section>
+<section class="passo"><div><h2>O que falta</h2><p>O que falta fazer no Promoter. Escreve na caixa e toca em <b>Guardar</b>; marca o quadradinho quando fizer.</p></div></section>
 </main></body></html>

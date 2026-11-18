@@ -3,16 +3,17 @@
 * { box-sizing: border-box; } body { margin: 0; background: var(--fundo); color: var(--txt); font: 17px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
 header { padding: 28px 20px 18px; background: linear-gradient(160deg, var(--fundo2), #0A0A0B); border-bottom: 4px solid var(--ouro); } header small { color: var(--ouro); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; } header h1 { margin: 6px 0 4px; font-size: 28px; } header p { margin: 0; opacity: .85; }
 main { max-width: 760px; margin: 0 auto; padding: 18px 16px 40px; } .sec { margin: 26px 0 12px; font-size: 21px; color: var(--ouro); scroll-margin-top: 12px; } html { scroll-behavior: smooth; }
-.indice { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 20px; } .indice a { padding: 8px 14px; border-radius: 999px; background: var(--papel); border: 1px solid var(--ouro); color: var(--ouro); text-decoration: none; font-weight: 700; font-size: 15px; }
+.indice { display: grid; gap: 8px; margin: 0 0 20px; } .indice a { text-align: center; padding: 8px 10px; border-radius: 999px; background: var(--papel); border: 1px solid var(--ouro); color: var(--ouro); text-decoration: none; font-weight: 700; font-size: 15px; }
 .novo { background: var(--papel); border: 2px solid var(--ouro); border-radius: 16px; padding: 14px 18px; margin-bottom: 22px; } .novo h2 { margin: 0 0 6px; color: var(--ouro); font-size: 19px; } .novo li { margin: 6px 0; }
 .passo { display: grid; grid-template-columns: 170px 1fr; gap: 16px; align-items: start; background: var(--papel); border-radius: 16px; padding: 14px; margin-bottom: 14px; } .passo:not(:has(> img)) { display: block; }
 .passo img { width: 100%; border-radius: 10px; border: 1px solid rgba(255,255,255,.12); cursor: zoom-in; } .passo h2 { margin: 2px 0 6px; font-size: 19px; color: var(--ouro); } .passo p { margin: 0 0 6px; } .passo ul { margin: 4px 0 0; padding-left: 20px; } .passo li { margin: 4px 0; }
 a { color: var(--ouro); } .fim { margin-top: 26px; padding: 14px 18px; border-radius: 16px; border: 2px dashed rgba(255,255,255,.2); }
-@media (max-width: 520px) { .passo { grid-template-columns: 1fr; } .passo img { max-width: 300px; justify-self: center; } }</style></head><body>
+@media (max-width: 520px) { .passo { grid-template-columns: 1fr; } .passo img { max-width: 100%; } }</style></head><body>
 <header><small>Pokémon ACT · como funciona</small><h1>Como funciona o site do ACT</h1><p>O site de consulta do teu fangame: história, personagens, treinadores, regiões de Kazi e Cennet e os Pokémon, cada assunto numa página.</p></header><main>
-<nav class="indice"><a href="#incio">Início</a><a href="#assuntos">Assuntos</a><a href="#mudar-o-site">Mudar o site</a></nav>
+<nav class="indice" style="grid-template-columns: repeat(3, 1fr)"><a href="#incio">Início</a><a href="#assuntos">Assuntos</a><a href="#mudar-o-site">Mudar o site</a></nav>
+<div class="novo"><h2>O que é novo</h2><ul><li>Cada assunto agora é um cartão numerado, com selo de <b>disponível</b> ou <b>spin-off</b>.</li><li>A Fakedex tem os <b>184 Pokémon</b> originais do ACT.</li></ul></div>
 <h2 class="sec" id="incio">Início</h2>
-<section class="passo"><img src="img/pokemon-act-0-0.jpg" alt="Abertura" onclick="open(this.src)"><div><h2>Abertura</h2><p>A logo do ACT e as três versões (Ametista, Citrino e Turmalina). Em cima fica a data da última atualização do site.</p><ul><li><b>Rolar pra baixo:</b> chega nos cartões de cada assunto.</li></ul></div></section>
+<section class="passo"><img src="img/pokemon-act-0-0.jpg" alt="Abertura" onclick="open(this.src)"><div><h2>Abertura</h2><p>A logo do ACT e as três versões (Ametista, Citrino e Turmalina). Em cima fica a data da última vez que o site foi publicado: hoje mostra 08/09/2026.</p><ul><li><b>Rolar pra baixo:</b> chega nos cartões de cada assunto.</li></ul></div></section>
 <section class="passo"><img src="img/pokemon-act-0-1.jpg" alt="Os cartões" onclick="open(this.src)"><div><h2>Os cartões</h2><p>Cada assunto é um cartão numerado, agrupado por tema: <b>História</b>, <b>Personagens</b>, <b>Treinadores</b>, <b>Regiões</b> e os Pokémon.</p><ul><li><b>Tocar no cartão:</b> abre a página daquele assunto.</li><li>O selo do cartão diz se a página já está <b>disponível</b> ou se é <b>spin-off</b>.</li></ul></div></section>
 <h2 class="sec" id="assuntos">Assuntos</h2>
 <section class="passo"><img src="img/pokemon-act-1-0.jpg" alt="Treinadores" onclick="open(this.src)"><div><h2>Treinadores</h2><p>Líderes de Kazi e de Cennet, ginásios, Elite dos 4 e o Palácio dos Campeões.</p></div></section>
@@ -20,6 +21,6 @@ a { color: var(--ouro); } .fim { margin-top: 26px; padding: 14px 18px; border-ra
 <section class="passo"><img src="img/pokemon-act-1-2.jpg" alt="Pokémon" onclick="open(this.src)"><div><h2>Pokémon</h2><p>A Fakedex com os 184 Pokémon originais, lendários e míticos, golpes assinatura, Eeveelutions e os sistemas próprios do ACT.</p></div></section>
 <h2 class="sec" id="mudar-o-site">Mudar o site</h2>
 <section class="passo"><div><h2>Texto e páginas novas</h2><p>Cada assunto é uma página do site. Pra mudar ou criar uma, pede pro Orfeu na Geral com o que entra.</p><ul><li>O que falta no ACT vai na aba <b>A fazer</b> do projeto no app.</li></ul></div></section>
-<section class="passo"><div><h2>Publicar</h2><p>O site fica no Netlify. Depois de mudar, ele sobe de novo e a data no topo da abertura muda sozinha.</p></div></section>
+<section class="passo"><div><h2>Publicar</h2><p>O site fica no Netlify. Depois de mudar, ele sobe de novo e a data em cima da abertura passa a ser a do dia.</p></div></section>
 <div class="fim">No app, em Projetinhos &gt; Pokémon ACT, ficam o botão do site, o <b>Mandar o link</b> e o <b>A fazer</b>.</div>
 </main></body></html>
