@@ -2677,7 +2677,7 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 .pjm-botoes .pjm-bt { flex: none; padding: 14px 22px; order: 2; }
 .pjm-botoes .pjm-bt:first-child { order: 0; }
 .pjm-botoes .pjm-bt:last-child { order: 1; }
-.pjm-tela.pjm-res { display: flex; flex-direction: column; min-height: 100%; }
+.pjm-tela { display: flex; flex-direction: column; min-height: 100%; }
 .pjm-res .pjm-corpo-aba { flex: 1; display: flex; flex-direction: column; }
 .pjm-res .pjm-botoes { margin-top: auto; }
 .pjm-hero-pra, .pjm-topo small { text-wrap: balance; }
@@ -2792,7 +2792,8 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 .pjm-tela .pjm-aba { width: auto; height: auto; flex: none; border-radius: 999px; padding: 8px 16px; font: inherit; font-weight: 700; background: rgba(127,127,127,.18); color: inherit; cursor: pointer; }
 .pjm-tela .pjm-aba:hover { background: rgba(127,127,127,.3); }
 .pjm-novo { display: grid; gap: 8px; margin: 4px 0 8px; }
-.pjm-novo textarea { width: 100%; box-sizing: border-box; border-radius: 10px; border: 1px solid rgba(127,127,127,.4); padding: 10px; font: inherit; background: rgba(255,255,255,.92); color: #1d1d1d; resize: vertical; }
+.pjm-tela .pjm-novo { border-radius: 14px; overflow: hidden; }
+.pjm-novo textarea { width: 100%; box-sizing: border-box; border-radius: 10px; border: 1px solid rgba(127,127,127,.4); padding: 10px; font: inherit; background: rgba(255,255,255,.92); color: #1d1d1d; resize: none; }
 .pjm-novo .pjm-copia { justify-self: end; }
 .pjm-quando { opacity: .6; font-size: .8em; }
 .pjm-vendas { display: grid; justify-items: center; gap: 8px; padding: 14px 4px; text-align: center; }
