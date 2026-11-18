@@ -1,3 +1,4 @@
+// v459 (Obra no celular: as 6 abas em 2 linhas de 3, nenhuma fora da tela; Sigma #370; Orfeu)
 // v458 (campo de foto com botão do app "Escolher foto/Trocar foto"; imagens entram assentando no lugar, sem fade; Desmarcar tudo e Apagar projeto sem confirm(), com desfazer; Sigma #375 e volta da Música; Orfeu)
 // v457 (Música > Setup: campo Foto do aparelho, a foto entra no lugar do desenho e abre grande; Configurações > Treino avisa se o fim for antes do começo; Orfeu)
 // v456 (Configurações > Treino: hora que o treino começa e termina, a mesma do abrir sozinho, gravando no menu/treino.json; May 21:03; Orfeu)

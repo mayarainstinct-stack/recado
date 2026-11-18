@@ -2945,3 +2945,5 @@ body .painel.tema-excel .fin-res3 .neg b { color: #A4262C; }   /* Sobra negativa
 /* Campo de foto dos formulários: botão do app no lugar do "Choose File" do navegador; com foto, miniatura + Trocar foto (Sigma 17/11 21:37) */
 .ed-foto-arq { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 .ed-foto-bt { margin-top: 8px; width: 100%; min-height: 44px; border-radius: 12px; border: 1.5px dashed currentColor; background: transparent; color: inherit; font: inherit; font-weight: 700; cursor: pointer; }
+/* Obra no celular: as 6 abas em 2 linhas de 3, nenhuma fora da tela (Sigma #370) */
+@media (max-width: 600px) { .ob-abas { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; overflow: visible !important; } .ob-abas > button { min-width: 0; padding: 8px 6px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } }
