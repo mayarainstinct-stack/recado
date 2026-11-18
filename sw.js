@@ -1,3 +1,4 @@
+// v451 (Projetinhos: aba Imagens pra projeto mostrar logo, panfleto e banners, toca e abre grande; Lava Jato do Biel com a logo sem fundo; Orfeu, May 17/11 21:02)
 // v450 (Agenda: legenda de cores só no calendário de parede do PC e só do mês na tela; no celular saiu, era cor sem nada; Orfeu, May 17/11 21:00)
 // v449 (Casa, Obra, Tarefas e Garagem: o corpo não rola, só a lista de dentro, como a Agenda; no iPhone a lista encolhia e sobrava vazio embaixo; Orfeu, May 17/11 20:54)
 // v448 (Garagem: em Meta e Comparar aparece o que muda do agora pra meta, com o estado de cada peça; Orfeu, May 17/11 20:27)
