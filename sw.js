@@ -1,3 +1,4 @@
+// v477 (Azul: faixa listrada termina num degrade curto; app .477, 18/11/2026).
 // v476 (Azul: listras so atras da capa, fundo liso no miolo; app .476, 18/11/2026).
 // v475 (Azul: volta o fundo cinza; aba escolhida e botoes no azul da marca, sem verde; app .475, 18/11/2026).
 // v474 (Azul: pagina azul-marinho escura do site, capa branca e verde do WhatsApp; app .474, 18/11/2026).

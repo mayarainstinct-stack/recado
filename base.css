@@ -2724,7 +2724,7 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 .pjm-t-econtrole .pjm-rot { color: #F5D06B; opacity: 1; }
 .pjm-c-econtrole { background: linear-gradient(135deg, #0B3D1F, #1F7A3A) !important; border-left-color: #E6B422 !important; }
 /* Azul Emprestimo: cinza claro geometrico e azul-marinho; botoes e aba no azul da marca, sem verde (May 18/11 10:42) */
-.p-corpo:has(.pjm-t-azul) { background: repeating-linear-gradient(135deg, #EEF0F4 0 26px, #E6E9EF 26px 52px) top / 100% 236px no-repeat, #EEF0F4 !important; }
+.p-corpo:has(.pjm-t-azul) { background: linear-gradient(transparent 180px, #EEF0F4 236px) top / 100% 236px no-repeat, repeating-linear-gradient(135deg, #EEF0F4 0 26px, #E6E9EF 26px 52px) top / 100% 236px no-repeat, #EEF0F4 !important; }
 .pjm-t-azul { color: #2C3255; font-family: 'Segoe UI', system-ui, sans-serif; }
 .pjm-h-azul { background: #FFFFFF; box-shadow: 0 6px 18px rgba(44,50,85,.18); padding: 0; }
 .pjm-h-azul .pjm-logo { max-height: 210px; border-radius: 0; width: 100%; object-fit: cover; }
