@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-17.449">
+<meta name="app-versao" content="2026-11-17.450">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-17.449"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-17.450"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -5572,7 +5572,8 @@ function montaCalendario(cal, c, opc) {   // opc (Agenda do Trabalho): { marcas:
     }
     cal.append(g);
     if (opc) return;
-    const usados = (agTiposAtual || TIPOS_AG.concat([['outro', 'Outros', '#94A3B8']])).filter(t => els.some(e => e.dataset.tipo === t[0])), leg = elD('div', 'ag-leg');   // a legenda das cores
+    const doMes = ano + '-' + String(mes + 1).padStart(2, '0'), parede = MODO_WEB && innerWidth >= 1280;   // legenda só no calendário de parede do PC, onde a cor aparece, e só do mês na tela; no celular o dia é de uma cor só e a legenda era cor sem nada (May 17/11 21:00)
+    const usados = parede ? (agTiposAtual || TIPOS_AG.concat([['outro', 'Outros', '#94A3B8']])).filter(t => els.some(e => e.dataset.tipo === t[0] && String(e.dataset.dia || '').startsWith(doMes))) : [], leg = elD('div', 'ag-leg');
     usados.forEach(t => { const x = elD('span', '', t[1]); x.style.setProperty('--tc', t[2]); leg.append(x); }); if (usados.length) cal.append(leg);
     if (sel) { const v = elD('button', 'ag-tudo', 'Ver tudo'); v.type = 'button'; v.onclick = () => { sel = ''; filtra(); desenhar(); }; cal.append(v);
       const hk = hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0') + '-' + String(hoje.getDate()).padStart(2, '0');
