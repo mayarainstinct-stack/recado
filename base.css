@@ -1399,6 +1399,16 @@ body.na-geral form textarea:focus { border-color: #FACC15; box-shadow: 0 0 0 3px
 .ct-av { width: 132px; height: 132px; border-radius: 50%; background: color-mix(in srgb, var(--quem) 55%, #000) center / cover no-repeat; display: grid; place-items: center; font-size: 46px; filter: drop-shadow(0 6px 14px rgba(0,0,0,.45)) drop-shadow(0 0 16px color-mix(in srgb, var(--quem) 50%, transparent)); }
 .ct-av.foto { background-color: transparent; cursor: zoom-in; animation: aparece .25s ease-out both; }
 .ct-av.carregando { background: none; filter: none; }   /* sem quadrado vinho nem sombra antes da foto chegar (May, 05/11/2026) */
+.ct-av { position: relative; transform: scale(calc(1 + var(--n, 0) * .04)); transition: transform .25s cubic-bezier(.2,.9,.3,1.4), filter .25s; }
+.ct-av.foto[role="button"]:not([aria-label^="Ver"]) { cursor: pointer; }
+.ct-av.foto.chamou { animation: none; }
+.ct-av.foto.chamou.chama { animation: ct-chacoalha .45s linear; }
+.ct-av.brava { filter: drop-shadow(0 6px 14px rgba(0,0,0,.45)) drop-shadow(0 0 calc(var(--n) * 5px) #EF4444) sepia(calc(var(--n) * .15)) saturate(calc(1 + var(--n) * .6)); }
+.ct-av.brava::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle, rgba(239,68,68,0) 40%, rgba(239,68,68,.55)); opacity: calc(var(--n) / 6); pointer-events: none; }
+@keyframes ct-chacoalha { 0%, 100% { translate: 0 0; } 15% { translate: -8px 2px; rotate: -6deg; } 30% { translate: 8px -2px; rotate: 6deg; } 45% { translate: -6px 1px; rotate: -4deg; } 60% { translate: 6px -1px; rotate: 4deg; } 80% { translate: -3px 0; rotate: -2deg; } }
+.ct-chamada { display: block; margin-top: 8px; font-size: 13px; font-weight: 700; line-height: 1.3; color: #FCA5A5; }
+.ct-chamada.err { color: #FDA4AF; } .ct-chamada:empty { display: none; }
+@media (prefers-reduced-motion: reduce) { .ct-av.foto.chamou.chama { animation: none; } }
 @keyframes aparece { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
 .ct-nome { font-size: 28px; line-height: 1.05; overflow-wrap: anywhere; }
 .ct-cargo { font-size: 14px; line-height: 1.25; margin-top: 5px; }

@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-18.496">
+<meta name="app-versao" content="2026-11-18.497">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-18.496"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-18.497"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -554,7 +554,7 @@ async function abreCracha(chave) {
   };
   const avatar = (grande) => {
     const av = el('div', 'ct-av' + (g.foto ? ' carregando' : ''), g.foto ? '' : nome.charAt(0));
-    if (g.foto) fotoUrl(g.foto, true).then(u => new Promise((ok, erro) => { const im = new Image(); im.onload = () => ok(u); im.onerror = erro; im.src = u; })).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.classList.remove('carregando'); av.classList.add('foto'); if (grande) { av.setAttribute('role', 'button'); av.setAttribute('aria-label', 'Ver a foto de ' + nome); av.onclick = e => { e.stopPropagation(); abreZoom(u, g.foto); }; } }).catch(() => { av.classList.remove('carregando'); av.textContent = nome.charAt(0); });   // foto da ficha abre a foto grande (original: a miniatura de 96 px fica borrada)
+    if (g.foto) fotoUrl(g.foto, true).then(u => new Promise((ok, erro) => { const im = new Image(); im.onload = () => ok(u); im.onerror = erro; im.src = u; })).then(u => { av.style.backgroundImage = 'url(' + u + ')'; av.classList.remove('carregando'); av.classList.add('foto'); if (grande) { av.setAttribute('role', 'button'); av.setAttribute('aria-label', g === EU ? 'Ver a foto de ' + nome : 'Chamar ' + nome); av.onclick = e => { e.stopPropagation(); if (g === EU || /^humano/i.test(f.classe || '')) abreZoom(u, g.foto); else chamaRobo(av, k, nome); }; } }).catch(() => { av.classList.remove('carregando'); av.textContent = nome.charAt(0); });   // robô: tocar chama igual o "chamar a atenção" do MSN (May 18/11 15:02 e 20:05); gente: abre a foto grande
     return av;
   };
   const insignia = (it) => { const d = el('div', 'ct-in1' + (it ? '' : ' vazia')); d.innerHTML = svgInsignia(it); d.append(el('span', '', it ? it.nome : 'Próxima')); if (it && it.data) d.append(el('small', '', it.data.slice(0, 5))); return d; };
@@ -2897,6 +2897,20 @@ async function pedeReligar(pc) {
   try { const r = await api(apiDe(arq)); if (r.ok) corpo.sha = (await r.json()).sha; else if (r.status !== 404) return null; } catch (e) { return null; }
   try { const w = await api(apiDe(arq), { method: 'PUT', body: JSON.stringify(corpo) }); if (!w.ok) return null; } catch (e) { return null; }
   store.set('religar-id-' + pc, id); return id;
+}
+// Chamar o robô igual o MSN (May 18/11/2026 15:02 e 20:05): cada toque na foto do cartão chacoalha, ele cresce e fica vermelho de bravo; parou de tocar com 3 ou mais, manda o religar-robo do PC dele (o vigia começa cutucando e só sobe se ele não responder)
+const PC_ROBO = { orfeu: 'PC1', nyx: 'PC2', lyra: 'PC5' };
+function chamaRobo(av, k, nome) {
+  const pc = PC_ROBO[k], n = Math.min(+(av.dataset.n || 0) + 1, 6); av.dataset.n = n; av.style.setProperty('--n', n);
+  av.classList.add('chamou', 'brava'); av.classList.remove('chama'); void av.offsetWidth; av.classList.add('chama'); if (navigator.vibrate) navigator.vibrate(60 + n * 20);
+  const lado = av.nextElementSibling || av.parentNode; let msg = lado.querySelector('.ct-chamada'); if (!msg) { msg = document.createElement('small'); msg.className = 'ct-chamada'; lado.append(msg); }
+  if (msg) { msg.classList.remove('err'); msg.textContent = !pc ? nome + ' não tem chamada de longe' : n < 3 ? 'Toca mais ' + (3 - n) + (3 - n === 1 ? ' vez' : ' vezes') + ' pra chamar' : 'Chamando ' + nome + '...'; }
+  clearTimeout(av._t); av._t = setTimeout(async () => {
+    const tot = +av.dataset.n; av.dataset.n = 0; av.style.setProperty('--n', 0); av.classList.remove('chama', 'brava');
+    if (!pc || tot < 3) { if (pc) msg.textContent = ''; return; }
+    const id = await pedeReligar(pc);
+    msg.textContent = id ? 'Chamei! Em até 1 minuto ' + nome + ' responde; se não, ele é reiniciado.' : 'Não deu pra chamar. Veja a internet e tente de novo.'; msg.classList.toggle('err', !id);
+  }, 1400);
 }
 function botaoReligar(p, d) {
   const robo = RELIGA_PCS[p.pc], caixa = elD('div', 'pcd-emerg');

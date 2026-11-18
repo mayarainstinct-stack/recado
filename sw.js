@@ -1,3 +1,4 @@
+// v497 (Cartao do robo: tocar na foto chama igual o MSN, ele chacoalha, cresce e fica vermelho; 3 toques ou mais mandam o religar-robo do PC dele; app .497, 18/11/2026).
 // v496 (Saúde se arruma sozinha: pasta com data mais próxima em cima, as que já passaram no fim; Obra: slide de fotos não troca mais a aba; app .496, 18/11/2026).
 // v495 (regex com \b de volta: 5 backspaces quebravam icone de git, roi, ia e a troca de tema pjm-t-; app .495, 18/11/2026).
 // v494 (Trabalho em escala menor no celular: menu de 3 colunas, cartoes e fontes compactos; Diagnostico do Trabalho so com projetos de trabalho; app .494, 18/11/2026).
