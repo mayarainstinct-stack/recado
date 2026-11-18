@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-18.462">
+<meta name="app-versao" content="2026-11-18.463">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-18.462"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-18.463"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -6546,7 +6546,8 @@ function pjmCores(p) {
   const c = p.cores || {}, fundo = pjmLum(c.fundo) != null ? c.fundo : '#334155';
   const texto = pjmContraste(c.texto, fundo) >= 4.5 ? c.texto : pjmMelhor(fundo);
   const destaque = pjmContraste(c.destaque, fundo) >= 3 ? c.destaque : texto;
-  return { fundo, texto, destaque, sobreDestaque: pjmMelhor(destaque) };
+  let abaOn = pjmLum(c.destaque) != null ? c.destaque : destaque; for (let i = 0; i < 20 && pjmContraste('#FFFFFF', abaOn) < 4.5; i++) abaOn = '#' + [1, 3, 5].map(j => Math.round(parseInt(abaOn.slice(j, j + 2), 16) * .88).toString(16).padStart(2, '0')).join('');   // aba escolhida: branco no fundo colorido (regra do celular)
+  return { fundo, texto, destaque, sobreDestaque: pjmMelhor(destaque), abaOn: /^#[0-9a-f]{6}$/i.test(abaOn) ? abaOn : '#334155' };
 }
 const PJM_CAMPOS = [
   { nome: 'nome', rotulo: 'Nome do projeto', obrigatorio: true },
@@ -6566,6 +6567,7 @@ function pjmLogo(t, cls) { const im = elD('img', cls); im.alt = ''; im.hidden = 
 function pjmHero(p, k) {
   const t = p.tema || {}, h = elD('div', 'pjm-hero pjm-h-' + (t.estilo || 'padrao'));
   if (t.estilo === 'midnight') {
+    h.classList.add('mini');   // cartão de cima do mesmo tamanho dos outros projetos (Sigma #381)
     h.innerHTML = '<span class="hud hud-a"></span><span class="hud hud-b"></span>' + PJM_SVG_PLANETA;
     const lg = elD('div', 'mn-logo'); lg.append(elD('b', '', 'MIDNIGHT'), elD('small', '', 'FUNK • TECHNO • SUBMUNDO'));
     const dt = elD('div', 'mn-data', (String(p.oque || '').match(/\d\d\/\d\d/) || [''])[0]);
@@ -6594,10 +6596,11 @@ function abreProjetosMay(m) {
       const topo = elD('div', 'pjm-topo'); topo.style.background = k.fundo; topo.style.color = k.texto; topo.style.borderBottomColor = k.destaque;
       const ic = elD('span', 'pjm-ic'); ic.innerHTML = icone(p.icone || 'doc'); ic.style.color = k.destaque;
       const ttl = elD('div'); ttl.append(elD('b', '', p.nome), elD('small', '', p.pra || ''));
+      { const pic = pTopo.querySelector('.p-ic'); if (pic) { pic.style.setProperty('--c', k.fundo); pic.style.color = k.destaque; pic.style.boxShadow = 'none'; pic.style.border = '1px solid ' + k.destaque; pic.innerHTML = icone(p.icone || 'doc'); if ((p.tema || {}).icone) { const im = pjmLogo({ logo: p.tema.icone }, 'p-ic-img'); im.addEventListener('load', () => { pic.replaceChildren(im); }); } } }   // ícone da barra no tema do projeto, não a maleta do Projetinhos (Sigma #378)
       topo.append(ic, ttl, edMini('pen', 'Editar ' + p.nome, () => edFormulario({ titulo: 'Editar projeto', campos: PJM_CAMPOS, v: doForm(p), aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) praProjeto(q, v); }, 'Projeto editado pelo app: ' + v.nome)) pinta(); }, aoApagar: async () => { const pos = D.projetos.findIndex(x => x.id === id), copia = JSON.parse(JSON.stringify(p)); if (await salva(d => { d.projetos = d.projetos.filter(x => x.id !== id); }, 'Projeto apagado pelo app: ' + p.nome)) { history.back(); edFaixaDesfazer('Projeto ' + p.nome + ' apagado', () => salva(d => { if (!d.projetos.some(x => x.id === id)) d.projetos.splice(Math.max(0, pos), 0, copia); }, 'Apagar desfeito pelo app: ' + p.nome)); } } })));
       const lp = topo.querySelector('.ed-mini'); lp.remove(); if (!((p.tema || {}).estilo || (p.tema || {}).logo)) c.append(topo);   // um lápis só na tela: o Editar vai pra fila de botões embaixo (Sigma 18/11 07:35)
       // Abas em vez de rolar (May 12:32): Resumo · Pedidos · abas próprias do projeto; reabre na última aba de cada projeto
-      const ABAS = [['resumo', 'Resumo'], ['pedidos', p.pedidosTitulo || 'Pedidos']];
+      const ABAS = [['resumo', 'Resumo'], ['pedidos', p.pedidosTitulo || 'A fazer']];
       if (p.vendas) ABAS.push(['vendas', 'Vendas']);
       if ((p.textos || []).length || p.vendas) ABAS.push(['textos', 'Textos']);
       if ((p.notas || []).length) ABAS.push(['notas', p.notasTitulo || 'Onde mudar']);
@@ -6607,8 +6610,8 @@ function abreProjetosMay(m) {
       const chave = 'pjm-aba:' + id; let aba = 'resumo'; try { aba = localStorage.getItem(chave) || 'resumo'; } catch (e) {}
       if (!ABAS.some(a => a[0] === aba)) aba = 'resumo';
       c.classList.toggle('pjm-res', aba === 'resumo');   // trocar de aba não mexe no cartão de cima (Sigma 18/11 07:39)   // fora do Resumo o topo da marca encolhe, pra aba caber sem rolar
-      const barra = elD('div', 'pjm-abas'); barra.setAttribute('role', 'tablist'); const corpo = elD('div', 'pjm-corpo-aba');
-      ABAS.forEach(([k2, rot]) => { const b = elD('button', 'pjm-aba' + (k2 === aba ? ' on' : ''), rot); b.type = 'button'; b.setAttribute('role', 'tab'); if (k2 === aba) { b.style.background = k.destaque; b.style.color = k.sobreDestaque; } b.onclick = () => { try { localStorage.setItem(chave, k2); } catch (e) {} pinta(); }; barra.append(b); });
+      const barra = elD('div', 'pjm-abas' + (ABAS.length > 4 ? ' muitas' : '')); barra.setAttribute('role', 'tablist'); const corpo = elD('div', 'pjm-corpo-aba');
+      ABAS.forEach(([k2, rot]) => { const b = elD('button', 'pjm-aba' + (k2 === aba ? ' on' : ''), rot); b.type = 'button'; b.setAttribute('role', 'tab'); if (k2 === aba) { b.style.background = k.abaOn; b.style.color = '#FFFFFF'; } b.onclick = () => { try { localStorage.setItem(chave, k2); } catch (e) {} pinta(); }; barra.append(b); });
       c.append(barra, corpo);
       const bloco = (rot, txt) => { if (!txt) return; const b = elD('section', 'pjm-bloco'); b.append(elD('small', 'pjm-rot', rot), elD('p', '', txt)); corpo.append(b); };
       const lista = (campo, rotNovo, vazio) => {   // pedidos de alteração (era "O que falta"): campo sempre aberto, grava na hora
@@ -6639,7 +6642,6 @@ function abreProjetosMay(m) {
           if (x.link) { const a = elD('a', 'pjm-bt', x.rotulo); a.href = x.link; a.target = '_blank'; a.rel = 'noopener'; pinta2(a); }
           else { const s = elD('span', 'pjm-bt off'); s.append(elD('b', '', x.rotulo), elD('small', '', x.motivo || 'Ainda sem link')); bt.append(s); }
         });
-        const ab = (p.pedidos || []).filter(x => !x.feito).length; if (ab) { const v = elD('button', 'pjm-add', ab + (ab === 1 ? ' pedido aberto →' : ' pedidos abertos →')); v.type = 'button'; v.onclick = () => { try { localStorage.setItem(chave, 'pedidos'); } catch (e) {} pinta(); }; corpo.append(v); }
         { const be = elD('button', 'pjm-bt sec', 'Editar'); be.type = 'button'; be.style.borderColor = k.destaque; be.onclick = lp.onclick; bt.append(be); corpo.append(bt); }   // principal embaixo à direita, Editar à esquerda
       }
       if (aba === 'pedidos') lista('pedidos', p.pedidosDica || 'O que pediram para mudar? Escreve aqui e toca em Guardar', 'Nada aberto.');

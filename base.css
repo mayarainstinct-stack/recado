@@ -2829,7 +2829,11 @@ body.na-geral .painel .p-topo::after { left: 20px; right: 20px; }
 .pjm-tela button.pjm-cst:hover { filter: brightness(1.15); }
 .pjm-novo-linha { grid-template-columns: 1fr auto; align-items: center; }
 .pjm-novo-linha input { width: 100%; box-sizing: border-box; border-radius: 10px; border: 1px solid rgba(127,127,127,.4); padding: 10px; font: inherit; background: rgba(255,255,255,.92); color: #1d1d1d; }
-.pjm-abas { flex-wrap: wrap; overflow: visible; }
+.pjm-abas { flex-wrap: nowrap; overflow: visible; }
+.pjm-tela .pjm-aba { flex: 1 1 auto; padding: 8px 10px; white-space: nowrap; text-align: center; }
+.p-ic-img { width: 28px; height: 28px; object-fit: contain; }
+.pjm-tela .pjm-novo { background: color-mix(in srgb, currentColor 7%, transparent); }
+.pjm-botoes .pjm-bt { flex: 1 1 calc(50% - 4px); }
 .pjm-tela .pjm-bt.sec { background: transparent; color: inherit; border: 2px solid; }
 .pjm-bloco p { white-space: pre-line; }
 .pjm-h-econtrole .pjm-hero-pra { display: none; }
@@ -2957,3 +2961,10 @@ body .painel.tema-excel .fin-res3 .neg b { color: #A4262C; }   /* Sobra negativa
 @media (max-width: 600px) { .ob-abas { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; overflow: visible !important; } .ob-abas > button { min-width: 0; padding: 8px 6px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } }
 /* Formulário: Guardar embaixo à direita, no polegar; Apagar do outro lado, longe dele (Sigma 17/11 21:37) */
 .ed-acoes .ed-link { order: -1; flex: none; }
+.pjm-tela .pjm-hero { height: 220px; flex: none; box-sizing: border-box; align-content: center; border: 1px solid color-mix(in srgb, currentColor 22%, transparent); }
+.pjm-tela .pjm-hero .pjm-logo { max-height: 150px; width: auto; max-width: 100%; object-fit: contain; }
+.pjm-tela .pjm-h-sandro { padding: 10px; }
+.pjm-tela .pjm-h-sandro .pjm-logo { max-height: 160px; border-radius: 10px; }
+.pjm-res .pjm-botoes { margin-bottom: 20px; }
+.pjm-abas.muitas { gap: 4px; }
+.pjm-abas.muitas .pjm-aba { padding: 7px 8px; font-size: .86rem; }

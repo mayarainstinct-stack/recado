@@ -1,3 +1,4 @@
+// v463 (projetos: icone da barra no tema de cada projeto, nome curto, abas iguais numa linha com a escolhida branca no fundo colorido, botoes do mesmo tamanho, cartao de cima com a mesma altura e moldura, caixa do pedido no tema claro, sem o atalho repetido de pedidos abertos; app .463, 18/11/2026).
 // v462 (projetos: trocar de aba não mexe no cartão de cima, caixa do A fazer arredondada e sem puxador; app .462, 18/11/2026).
 // v461 (projetos: um lápis só, Editar e o botão principal embaixo à direita, subtítulo sem palavra sozinha; app .461, 18/11/2026).
 // v460 (formulários: Guardar à direita no polegar, Apagar do outro lado; Música > Setup sem os campos de robô (desenho, pintura, certeza) e sem o selo Provável, título Editar · Aparelho; Obra: aba escolhida branca no laranja; voltas do Sigma 21:37 a 21:42; Orfeu)
