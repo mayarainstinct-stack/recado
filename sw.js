@@ -1,3 +1,4 @@
+// v456 (Configurações > Treino: hora que o treino começa e termina, a mesma do abrir sozinho, gravando no menu/treino.json; May 21:03; Orfeu)
 // v455 (Agenda: legenda de cores de volta no celular, só com os assuntos do mês; May 21:22; Orfeu)
 // v454 (Agenda: o que vence em até 2 dias sobe pro topo dos Próximos, Hoje e Amanhã com maiúscula; Projetinhos: projeto com logo sem o cartão repetido, artes soltas sem quadro; Casa: aba selecionada branca no ciano; voltas do Sigma e May 21:17; Orfeu)
 // v453 (Agenda no celular: dia com compromisso vira pontinho, só o hoje fica cheio; feito sai dos Próximos; ícone do cabeçalho; volta do Sigma e May 21:16; Orfeu)

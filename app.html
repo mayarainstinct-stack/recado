@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-17.455">
+<meta name="app-versao" content="2026-11-17.456">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-17.455"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-17.456"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3786,6 +3786,9 @@ function abreConfig() {
       else { const i = elD('input'); i.type = f.tipo === 'numero' ? 'number' : 'text'; if (f.tipo === 'numero') { i.min = 0; i.max = 24; i.inputMode = 'numeric'; } i.value = atual[f.nome]; i.onchange = () => guarda(f.nome, f.tipo === 'numero' ? (+i.value || 0) : (i.value.trim() || CFG_PADRAO[f.nome])); lb.append(i); }
       (f.tipo === 'numero' ? duo : paginas[ABA_DE[f.nome] || 'aparelho']).append(lb);
     });
+    { const tr = (rot, k) => { const lb = elD('div', 'cf-linha'), i = elD('input'); i.type = 'time'; lb.append(elD('span', 'cf-nome', rot), i); lerArquivo('menu/treino.json').then(t => { i.value = (JSON.parse(t).abrir || {})[k] || ''; }).catch(() => {});   // hora da academia mora no menu/treino.json, a mesma que o abrir sozinho usa (May 17/11 21:03)
+      i.onchange = async () => { if (!/^\d\d:\d\d$/.test(i.value)) return; const ok = await gravaJson('menu/treino.json', d => { d.abrir = d.abrir || {}; d.abrir[k] = i.value; }, 'Configuração pelo app: treino ' + k); status.textContent = ok ? 'Guardado.' : 'Não guardou no GitHub: confere a internet.'; }; paginas.treino.append(lb); };
+      tr('Hora que o treino começa', 'de'); tr('Hora que o treino termina', 'ate'); }
     const acoes = elD('div', 'cf-acoes'); CFG_BTNS.forEach(b => acoes.append(b)); paginas.aparelho.append(acoes);
     const abasNav = elD('nav', 'cf-abas'); let abaCf = 'aparelho';
     const mostraAba = id => { abaCf = id; [...abasNav.children].forEach((b, i) => b.classList.toggle('on', ABAS[i][0] === id)); ABAS.forEach(([k]) => { paginas[k].hidden = k !== id; }); };
