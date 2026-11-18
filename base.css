@@ -445,8 +445,8 @@ button:disabled { opacity: .45; cursor: default; }
 .item .i-corpo h3 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .item .ph { position: relative; margin: 10px 14px 0; border-radius: 12px; overflow: hidden; display: grid; place-items: center;
   aspect-ratio: 16 / 9; background: color-mix(in srgb, var(--accent) 8%, var(--cinza)); font-size: 34px; }
-.item .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #fff; opacity: 0; transition: opacity .2s; }
-.item .ph img.ok { opacity: 1; }
+.item .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #fff; visibility: hidden; transform: translateY(6px) scale(.97); transition: transform .22s ease-out; }
+.item .ph img.ok { visibility: visible; transform: none; }   /* entra assentando no lugar, sem fade (regra da casa; Sigma #375) */
 .item .ph.sem { aspect-ratio: auto; height: 44px; font-size: 26px; }
 .preco-l { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 10px; padding: 10px 14px 14px; }
 .preco { font-size: 20px; font-weight: 800; color: var(--accent); }
@@ -454,8 +454,8 @@ button:disabled { opacity: .45; cursor: default; }
 /* Detalhe do item */
 .detalhe { display: flex; flex-direction: column; gap: 12px; }
 .detalhe .ph { position: relative; overflow: hidden; display: grid; place-items: center; background: color-mix(in srgb, var(--accent) 8%, var(--cinza)); margin: 0; aspect-ratio: 4 / 3; border-radius: 16px; font-size: 56px; }
-.detalhe .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #fff; opacity: 0; transition: opacity .2s; cursor: zoom-in; }
-.detalhe .ph img.ok { opacity: 1; }
+.detalhe .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #fff; visibility: hidden; transform: translateY(6px) scale(.97); transition: transform .22s ease-out; cursor: zoom-in; }
+.detalhe .ph img.ok { visibility: visible; transform: none; }   /* entra assentando no lugar, sem fade (regra da casa; Sigma #375) */
 .detalhe .ph.sem { aspect-ratio: auto; height: 96px; }
 .detalhe h3 { margin: 0; font-size: 20px; line-height: 1.3; overflow-wrap: anywhere; }
 .detalhe .preco-l { padding: 0; }
@@ -598,7 +598,7 @@ body.na-geral .painel.tema-claro .p-topo::after { background: #8FD3C7; box-shado
 .cat-q { font-size: 12px; color: #7D828C; margin-top: 2px; }
 .cat-rot { font: 700 9px Consolas, monospace; letter-spacing: .18em; color: #7D828C; margin-top: 8px; }
 .cat-preco { font: italic 22px Impact, 'Arial Narrow', sans-serif; color: var(--c); line-height: 1.1; }
-.cat-bloco .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .2s; } .cat-bloco .ph img.ok { opacity: 1; }
+.cat-bloco .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; visibility: hidden; transform: translateY(6px) scale(.97); transition: transform .22s ease-out; } .cat-bloco .ph img.ok { visibility: visible; transform: none; }   /* entra assentando no lugar, sem fade (regra da casa; Sigma #375) */
 
 /* Viagens (08/11): a linha do tempo em cima e um cartão de embarque por página, deslizando pros lados; chanfrado, uma cor só (guia do Hermes) */
 .p-corpo > .tela.vg-tela { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 12px; }
@@ -2942,3 +2942,6 @@ body .painel.tema-excel .fin-res3 .neg b { color: #A4262C; }   /* Sobra negativa
 }
 /* Música > Setup: foto do aparelho no lugar do desenho, toca e abre grande (May 17/11 20:59) */
 .tm-aparelho .tm-slot.tem-foto { overflow: hidden; cursor: zoom-in; } .tm-aparelho .tm-slot.tem-foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Campo de foto dos formulários: botão do app no lugar do "Choose File" do navegador; com foto, miniatura + Trocar foto (Sigma 17/11 21:37) */
+.ed-foto-arq { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.ed-foto-bt { margin-top: 8px; width: 100%; min-height: 44px; border-radius: 12px; border: 1.5px dashed currentColor; background: transparent; color: inherit; font: inherit; font-weight: 700; cursor: pointer; }

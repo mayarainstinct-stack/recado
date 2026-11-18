@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-17.457">
+<meta name="app-versao" content="2026-11-17.458">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-17.457"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-17.458"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3312,7 +3312,7 @@ function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar }) {
     let el;
     if (c.tipo === 'texto_longo') { el = elD('textarea'); el.rows = 3; }
     else if (c.tipo === 'escolha') { el = elD('select'); (c.opcoes || []).forEach(o => { const [val, tx] = Array.isArray(o) ? o : [o, o]; const op = elD('option', '', tx); op.value = val; el.append(op); }); }
-    else if (c.tipo === 'foto') { el = elD('input'); el.type = 'file'; el.accept = 'image/*'; el.dataset.atual = v[c.nome] || ''; const im = elD('img', 'ed-previa'); im.alt = ''; im.hidden = true; if (v[c.nome]) fotoUrl(v[c.nome]).then(u => { im.src = u; im.hidden = false; }).catch(() => {}); el.addEventListener('change', () => { const f = el.files && el.files[0]; if (f) { im.src = URL.createObjectURL(f); im.hidden = false; } }); lb.append(im); }
+    else if (c.tipo === 'foto') { el = elD('input'); el.type = 'file'; el.accept = 'image/*'; el.dataset.atual = v[c.nome] || ''; const im = elD('img', 'ed-previa'); im.alt = ''; im.hidden = true; if (v[c.nome]) fotoUrl(v[c.nome]).then(u => { im.src = u; im.hidden = false; }).catch(() => {}); const fb = elD('button', 'ed-foto-bt', v[c.nome] ? 'Trocar foto' : 'Escolher foto'); fb.type = 'button'; fb.onclick = () => el.click(); el.classList.add('ed-foto-arq'); el.addEventListener('change', () => { const f = el.files && el.files[0]; if (f) { im.src = URL.createObjectURL(f); im.hidden = false; fb.textContent = 'Trocar foto'; } }); lb.append(im, fb); }
     else { el = elD('input'); el.type = c.tipo === 'data' ? 'date' : c.tipo === 'url_imagem' ? 'url' : 'text'; if (c.tipo === 'numero' || c.tipo === 'valor') el.inputMode = 'decimal'; }
     if (c.tipo !== 'foto') el.value = v[c.nome] != null ? v[c.nome] : (c.padrao != null ? c.padrao : ''); els[c.nome] = el; lb.append(el);
     if (c.tipo === 'url_imagem') { const im = elD('img', 'ed-previa'); im.alt = ''; im.hidden = true; const mostra = () => { im.hidden = !/^https?:/i.test(el.value); if (!im.hidden) im.src = el.value; }; im.onerror = () => { im.hidden = true; }; el.addEventListener('change', mostra); mostra(); lb.append(im); }
@@ -5344,7 +5344,7 @@ function abreChecklist(v, l) {
     };
     desenha();
     const limpa = document.createElement('button'); limpa.type = 'button'; limpa.className = 'gostei check-limpa'; limpa.textContent = 'Desmarcar tudo';
-    limpa.onclick = () => { if (!feitos.size || !confirm('Desmarcar tudo desta lista?')) return; feitos.clear(); guardaMarcados(v, l, feitos); c.querySelectorAll('.check input').forEach(x => { x.checked = false; }); conta(); desenha(); };
+    limpa.onclick = () => { if (!feitos.size) return; const antes = new Set(feitos); feitos.clear(); guardaMarcados(v, l, feitos); c.querySelectorAll('.check input').forEach(x => { x.checked = false; }); conta(); desenha(); edFaixaDesfazer('Lista desmarcada', () => { antes.forEach(k => feitos.add(k)); guardaMarcados(v, l, feitos); conta(); desenha(); }); };
     c.append(limpa);
   });
 }
@@ -6594,7 +6594,7 @@ function abreProjetosMay(m) {
       const topo = elD('div', 'pjm-topo'); topo.style.background = k.fundo; topo.style.color = k.texto; topo.style.borderBottomColor = k.destaque;
       const ic = elD('span', 'pjm-ic'); ic.innerHTML = icone(p.icone || 'doc'); ic.style.color = k.destaque;
       const ttl = elD('div'); ttl.append(elD('b', '', p.nome), elD('small', '', p.pra || ''));
-      topo.append(ic, ttl, edMini('pen', 'Editar ' + p.nome, () => edFormulario({ titulo: 'Editar projeto', campos: PJM_CAMPOS, v: doForm(p), aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) praProjeto(q, v); }, 'Projeto editado pelo app: ' + v.nome)) pinta(); }, aoApagar: async () => { if (!confirm('Apagar o projeto ' + p.nome + '?')) return; if (await salva(d => { d.projetos = d.projetos.filter(x => x.id !== id); }, 'Projeto apagado pelo app: ' + p.nome)) { history.back(); } } })));
+      topo.append(ic, ttl, edMini('pen', 'Editar ' + p.nome, () => edFormulario({ titulo: 'Editar projeto', campos: PJM_CAMPOS, v: doForm(p), aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) praProjeto(q, v); }, 'Projeto editado pelo app: ' + v.nome)) pinta(); }, aoApagar: async () => { const pos = D.projetos.findIndex(x => x.id === id), copia = JSON.parse(JSON.stringify(p)); if (await salva(d => { d.projetos = d.projetos.filter(x => x.id !== id); }, 'Projeto apagado pelo app: ' + p.nome)) { history.back(); edFaixaDesfazer('Projeto ' + p.nome + ' apagado', () => salva(d => { if (!d.projetos.some(x => x.id === id)) d.projetos.splice(Math.max(0, pos), 0, copia); }, 'Apagar desfeito pelo app: ' + p.nome)); } } })));
       if ((p.tema || {}).estilo || (p.tema || {}).logo) { const hero = c.querySelector('.pjm-hero'), lp = topo.querySelector('.ed-mini'); if (hero && lp) { lp.classList.add('pjm-hero-ed'); hero.append(lp); } } else c.append(topo);
       // Abas em vez de rolar (May 12:32): Resumo · Pedidos · abas próprias do projeto; reabre na última aba de cada projeto
       const ABAS = [['resumo', 'Resumo'], ['pedidos', p.pedidosTitulo || 'Pedidos']];
