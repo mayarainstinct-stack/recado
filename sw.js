@@ -1,3 +1,4 @@
+// v491 (Diagnostico: capa de carregamento no lugar da tela branca do Trabalho ao abrir pela Maquinas; app .491, 18/11/2026).
 // v490 (Revisao do menu Trabalho: botoes do topo 44 px, titulo em 2 linhas, Agenda com hoje em anel e lista do dia inteira; app .490, 18/11/2026).
 // v489 (Botao Reiniciar na forca tambem no PC5, notebook da Lyra; app .489, 18/11/2026).
 // v488 (Cartao do robo: botao Reiniciar na forca grava comando-<PC>.txt; app .488, 18/11/2026).

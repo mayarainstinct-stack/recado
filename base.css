@@ -3027,3 +3027,13 @@ body .painel.tema-excel .fin-res3 .neg b { color: #A4262C; }   /* Sobra negativa
 .painel .p-topo h2, .painel .p-tits h2 { white-space: normal; text-overflow: clip; overflow: visible; overflow-wrap: anywhere; font-size: 17px; line-height: 1.15; }
 body .painel .sw-calbox .ag-dia.hoje:not(.sel), body .painel .ag-grade .ag-dia.hoje:not(.sel) { background: transparent; color: #0F172A; outline: 2px solid #0F172A; outline-offset: -2px; text-decoration: none; }
 body.modo-trab .pcd-abas.embaixo { position: relative; bottom: auto; margin: 12px 0 8px; box-shadow: none; border: 1px solid var(--line); }   /* no Trabalho as abas ficam no fim da página, nunca por cima do conteúdo (revisão 18/11/2026) */
+
+/* Capa do Diagnostico (18/11/2026): evita a tela branca enquanto a conversa carrega */
+#diag-capa{position:fixed;inset:0;z-index:99999;background:#f8f9fb;color:#1f2937;font-family:inherit}
+#diag-capa .dc-topo{height:calc(64px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 20px 0 76px;display:flex;align-items:center;background:#fff;border-bottom:1px solid #e5e7eb}
+#diag-capa .dc-topo b{font-size:18px;font-weight:700}
+#diag-capa .dc-corpo{padding:24px 16px}
+#diag-capa .dc-sec{display:block;margin:0 4px 12px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#059669}
+#diag-capa i{display:block;height:120px;margin-bottom:14px;border-radius:14px;border:1px solid #e5e7eb;background:linear-gradient(90deg,#fff 25%,#f1f3f5 50%,#fff 75%);background-size:200% 100%;animation:dcbrilho 1.2s linear infinite}
+#diag-capa p{margin:8px 4px;color:#6b7280;font-size:14px}
+@keyframes dcbrilho{to{background-position:-200% 0}}

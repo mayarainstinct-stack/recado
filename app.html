@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-18.490">
+<meta name="app-versao" content="2026-11-18.491">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-18.490"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-18.491"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -7219,7 +7219,9 @@ token ? start() : askToken();
 if (location.hash === '#diagnostico') {   // veio da Máquinas: abre o Menu e já entra no Diagnóstico
   donosTela = ['orfeu', 'nyx', 'sigma'];
   history.replaceState(null, '', location.pathname + location.search);
-  const t0 = Date.now(), espera = setInterval(() => { if (FILE || Date.now() - t0 > 15000) { clearInterval(espera); if (FILE) { document.getElementById('abre-menu').click(); setTimeout(abreDiagnostico, 200); } } }, 100);
+  const capa = document.createElement('div'); capa.id = 'diag-capa'; capa.setAttribute('role', 'status');   // 18/11/2026: enquanto a conversa carrega, a tela ficava branca (Trabalho vazio); a capa mostra o Diagnóstico abrindo
+  capa.innerHTML = '<div class="dc-topo"><b>Diagnóstico</b></div><div class="dc-corpo"><span class="dc-sec">Saúde dos PCs</span><i></i><i></i><i></i><p>Abrindo o diagnóstico…</p></div>'; document.body.append(capa);
+  const t0 = Date.now(), espera = setInterval(() => { if (FILE || Date.now() - t0 > 15000) { clearInterval(espera); if (FILE) { document.getElementById('abre-menu').click(); setTimeout(() => { abreDiagnostico(); const t1 = Date.now(), fim = setInterval(() => { if (document.querySelector('#painel .pcd-pag') || Date.now() - t1 > 10000) { clearInterval(fim); capa.remove(); } }, 100); }, 200); } else capa.remove(); } }, 100);
 }
 if (location.hash === '#menu' || (history.state && history.state.painel && !location.hash)) {   // voltou de uma página do Menu (Jogos, Máquinas) pelo voltar ou pelo deslizar: reabre o Menu
   try { history.replaceState(null, ''); } catch (e) {}   // voltou da tela Jogos (ou de outra página do Menu): cai direto no Menu, não na conversa (May, 06/11/2026 11:29)
