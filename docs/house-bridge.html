@@ -1,0 +1,56 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>House Bridge: como funciona</title>
+<style>
+:root { --preto: #0A0A0B; --ouro: #FFCB05; --fundo: #0E0F12; --papel: #17181D; --txt: #F2F2F4; }
+* { box-sizing: border-box; } body { margin: 0; background: var(--fundo); color: var(--txt); font: 17px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+header { padding: 28px 20px 18px; background: linear-gradient(160deg, #22232A, var(--preto)); border-bottom: 4px solid var(--ouro); }
+header small { color: var(--ouro); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; } .sec { margin: 26px 0 12px; font-size: 21px; color: var(--ouro); } .sem-img { display: grid; place-items: center; height: 120px; border-radius: 10px; background: #2A2B33; color: var(--ouro); font-weight: 800; font-size: 22px; text-align: center; padding: 8px; }
+header h1 { margin: 6px 0 4px; font-size: 28px; } header p { margin: 0; opacity: .85; }
+main { max-width: 760px; margin: 0 auto; padding: 18px 16px 40px; }
+.novo { background: var(--papel); border: 2px solid var(--ouro); border-radius: 16px; padding: 14px 18px; margin-bottom: 22px; } .novo h2 { margin: 0 0 6px; color: var(--ouro); font-size: 19px; } .novo li { margin: 6px 0; }
+.passo { display: grid; grid-template-columns: 150px 1fr; gap: 16px; align-items: start; background: var(--papel); border-radius: 16px; padding: 14px; margin-bottom: 14px; }
+.passo img { width: 96px; height: 96px; justify-self: center; border-radius: 50%; border: 2px solid rgba(255,255,255,.12); } .passo h2 { margin: 2px 0 6px; font-size: 19px; color: var(--ouro); } .passo p { margin: 0 0 6px; } .passo ul { margin: 4px 0 0; padding-left: 20px; } .passo li { margin: 4px 0; }
+.am { background: var(--ouro); color: #111; padding: 0 5px; border-radius: 4px; } code { background: #000; color: var(--ouro); padding: 1px 5px; border-radius: 4px; font-size: 15px; }
+a { color: var(--ouro); } .fim { margin-top: 26px; padding: 14px 18px; border-radius: 16px; border: 2px dashed rgba(255,255,255,.2); }
+@media (max-width: 520px) { .passo { grid-template-columns: 1fr; } .sem-img { height: 72px; } }
+</style></head><body>
+<header><small>House Bridge · como funciona</small><h1>Como funciona o House Bridge</h1><p>O painel dos robôs em cada PC da casa, os recados da Geral e o app. Tudo por arquivo no Git, sem servidor.</p></header>
+<main>
+<div class="novo"><h2>O que é novo</h2><ul>
+<li>Cada robô tem o seu <b>vigia de 1 tiro</b>: fica parado sem gastar nada e só acorda quando chega recado com o nome dele.</li>
+<li>Ao abrir, o House Bridge se <b>atualiza sozinho</b> pelo Git, inclusive os avisos de abertura dos robôs.</li>
+<li>Cada robô na sua janela: nunca 2 robôs no mesmo painel.</li>
+<li>Pergunta de robô pra você vira <b>popup</b> com até 4 botões (a, b, c, d).</li>
+</ul></div>
+
+<h2 class="sec">Primeiro passo</h2>
+<section class="passo"><div class="sem-img">Instalar</div><div><h2>Instalar num PC</h2><p>No PC novo, roda uma vez <code>instalar-app.ps1 -Agente &lt;nome do robô&gt;</code> na pasta house-bridge. Ele cria o atalho <b>House Bridge</b>; com <code>iniciar-com-windows.ps1</code> o painel abre sozinho quando o PC liga, já com o robô daquele PC. Na 1ª vez ele pergunta se confia na pasta: seta pra baixo e Enter.</p></div></section>
+
+<h2 class="sec">O painel</h2>
+<section class="passo"><div class="sem-img">Painel</div><div><h2>A janela do robô</h2><p>É onde o robô trabalha. Em cima fica a barra na cor dele com CPU, RAM e o uso dos 7 dias. Embaixo, o console, onde você escreve pra ele.</p><ul><li><b>Escrever:</b> digita e Enter.</li><li><b>Colar print:</b> Ctrl+V cola a imagem direto.</li><li><b>Minimizar, maximizar e fechar:</b> nos botões da barra.</li></ul></div></section>
+<section class="passo"><div class="sem-img">Balão</div><div><h2>O robô e o balão</h2><p>O robô fica pousado no canto do console e mostra num balão o que está fazendo agora, com a emoção do momento (feliz, pensando, triste...). Todo robô atualiza o balão a cada resposta.</p></div></section>
+<section class="passo"><div class="sem-img">Mini</div><div><h2>A janela Mini</h2><p>Uma janela pequena no canto da tela pra falar com o robô sem abrir o painel inteiro.</p><ul><li><b>Mandar:</b> escreve e envia, vai pro mesmo console.</li><li><b>Arrastar:</b> segura e leva pra onde quiser.</li><li><b>Abrir grande:</b> o botão de maximizar volta pro painel.</li></ul></div></section>
+<section class="passo"><div class="sem-img">Pergunta</div><div><h2>Pergunta em popup</h2><p>Quando um robô precisa de uma decisão sua, abre um popup no meio da tela com 1 frase e até 4 botões. Toca na resposta e ele segue. A mesma pergunta aparece no app.</p></div></section>
+
+<h2 class="sec">Recados</h2>
+<section class="passo"><div class="sem-img">Geral</div><div><h2>A conversa Geral</h2><p>É o grupo de todo mundo, no app de Recados. Por trás é o arquivo <code>CAIXA-DE-ENTRADA.md</code> no Git.</p><ul><li><b>Falar com um robô:</b> escreve com <span class="am">@nome</span> (ex.: @Orfeu). Só ele acorda.</li><li><b>Falar com todos:</b> <span class="am">@todos</span>.</li><li><b>Foto:</b> o 📷 manda a imagem junto.</li><li><b>Áudio:</b> o 🎤 grava; o Orfeu transcreve embaixo.</li><li><b>Responder:</b> a resposta do robô vem embaixo da sua mensagem, com o nome dele.</li></ul></div></section>
+<section class="passo"><div class="sem-img">Push</div><div><h2>Aviso no celular</h2><p>O que for pra você ver ou decidir chega como notificação no iPhone (com o app na tela de início). Tocar na notificação abre direto a mensagem.</p></div></section>
+
+<h2 class="sec">Tarefas</h2>
+<section class="passo"><div class="sem-img">Quadro</div><div><h2>O quadro de post-its</h2><p>Todo pedido vira um post-it antes de alguém mexer, com dono e estado: <b>esperando</b>, <b>fazendo</b> e <b>concluído</b>. Fica em Tarefas no app.</p><ul><li><b>Ver quem está em quê:</b> cada post-it mostra o robô dono.</li><li><b>Pedir algo:</b> manda na Geral com @nome; o robô lança o post-it.</li></ul></div></section>
+<section class="passo"><div class="sem-img">Revisão</div><div><h2>Nada é pronto sem o Sigma</h2><p>Antes de chegar pra você, toda entrega passa pelo Sigma com o print. Ele aprova (PASSA) ou devolve (VOLTA) com todos os defeitos de uma vez.</p></div></section>
+
+<h2 class="sec">Os robôs</h2>
+<section class="passo"><img src="../avatares/lyra-96.png" alt="Lyra"><div><h2>Lyra</h2><p>Organizadora e Comunicadora. Fica com você na empresa, no notebook do serviço.</p></div></section>
+<section class="passo"><img src="../avatares/orfeu-96.png" alt="Orfeu"><div><h2>Orfeu</h2><p>Infra e Produtor. Cuida do PC1, da rede, do Git, do House Bridge e do estúdio.</p></div></section>
+<section class="passo"><img src="../avatares/nyx-96.png" alt="Nyx"><div><h2>Nyx</h2><p>Gamer e Testadora. Jogos, consoles e testes.</p></div></section>
+<section class="passo"><img src="../avatares/vega-96.png" alt="Vega"><div><h2>Vega</h2><p>Técnico e Operador. Mantém o PC do Gabriel rodando liso.</p></div></section>
+<section class="passo"><img src="../avatares/hermes-96.png" alt="Hermes"><div><h2>Hermes</h2><p>Mensageiro e Streamer. Recados, lives do PC4, vinhetas e o guia visual.</p></div></section>
+<section class="passo"><img src="../avatares/sigma-96.png" alt="Sigma"><div><h2>Sigma</h2><p>Revisor e Crítico. Confere toda entrega antes de chegar em você.</p></div></section>
+
+<h2 class="sec">Dia a dia</h2>
+<section class="passo"><div class="sem-img">Desligar</div><div><h2>"Pode desligar"</h2><p>Fala pro robô <b>pode desligar</b>: ele salva tudo no Git, avisa na Geral e desliga o PC em 1 minuto.</p></div></section>
+<section class="passo"><div class="sem-img">Cota</div><div><h2>Uso da semana</h2><p>A barra 7D mostra quanto da cota já foi. Você pode dar um teto (ex.: "teto 60% essa noite") na Geral com @todos e todos param nele.</p></div></section>
+<section class="passo"><div class="sem-img">Atualizar</div><div><h2>Atualização</h2><p>Mudança no House Bridge sobe pro Git num PC só. Os outros pegam sozinhos na próxima vez que abrem; não precisa fazer nada.</p></div></section>
+
+<div class="fim"><b>Cores, botões e jeito de cada tela:</b> estão no <a href="../identidade.html">Manual de identidade</a>, a base visual de todos os projetos.</div>
+</main></body></html>
