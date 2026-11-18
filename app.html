@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-18.492">
+<meta name="app-versao" content="2026-11-18.493">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-18.492"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-18.493"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2656,7 +2656,8 @@ function contaAte(el, txt) {   // 1.014 -> sobe de 0 a 1.014 (versão como 1.0.3
   const passo = t => { const k = Math.min(1, (t - t0) / 800); el.textContent = pre + fm(Math.round(alvo * (1 - Math.pow(1 - k, 3)))) + pos; if (k < 1) requestAnimationFrame(passo); }; requestAnimationFrame(passo);
 }
 const PROJ_T = { 'rm': ['#22C55E', 'clipboard'], 'simp-mobile': ['#14B8A6', 'check'], 'promotor-mobile': ['#F59E0B', 'pin'], 'promotor': ['#F59E0B', 'pin'], 'kds': ['#EAB308', 'chart'], 'acompanhamentos': ['#4F9CF0', 'bell'], 'você': ['#C878E8', 'star'], 'folga': ['#64748B', 'calendar'] };   // cor e ícone de cada projeto (Agenda e Projetos do Trabalho)
-const ICONE_TRAB = { clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', calendar: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>', clipboard: '<rect x="5" y="4.5" width="14" height="16" rx="2"/><path d="M9 4.5V3h6v1.5M8.5 10h7M8.5 13.5h7M8.5 17h4"/>', chart: '<path d="M4 20h16"/><path d="M7 16v-5M12 16V6M17 16v-8"/>', bell: '<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>', doc: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 15.5h5"/>' };
+const ICONE_TRAB = { clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', calendar: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>', clipboard: '<rect x="5" y="4.5" width="14" height="16" rx="2"/><path d="M9 4.5V3h6v1.5M8.5 10h7M8.5 13.5h7M8.5 17h4"/>', chart: '<path d="M4 20h16"/><path d="M7 16v-5M12 16V6M17 16v-8"/>', bell: '<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>', doc: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 15.5h5"/>', pulso: '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M6.5 11H9l1.5-3 2.5 6 1.5-3h3M9 21h6M12 17v4"/>' };
+if (!ICONES_SVG.clock) ICONES_SVG.clock = ICONE_TRAB.clock;   // ícone do relógio também no topo da tela do Banco de horas
 function vesteBotao(b, nome) {
   const k = (BOTAO_DE.find(([re]) => re.test(nome)) || [])[1]; if (!k) return;
   b.classList.add('bt-' + k);
@@ -2720,19 +2721,20 @@ function desenhaTela() {
 // Nada some do nada (#110, Sigma 12/11/2026): o painel que fecha desce como um cartão (cópia por cima, 0,2 s); o painel em si some na hora, então quem confere painel.hidden não muda
 function painelDesce() { if (painel.hidden || !painel.getClientRects().length) return; const g = painel.cloneNode(true); g.removeAttribute('id'); g.classList.add('p-fantasma'); const r = painel.getBoundingClientRect(), bg = getComputedStyle(painel).backgroundColor; Object.assign(g.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', margin: '0', background: bg && bg !== 'rgba(0, 0, 0, 0)' ? bg : 'var(--bg)' }); g.setAttribute('aria-hidden', 'true'); g.inert = true; document.body.append(g); setTimeout(() => g.remove(), 320); }
 function fechaPainel() { const n = pilha.length; painelDesce(); painel.hidden = true; pilha = []; if (n && history.state && history.state.painel) { fechandoPainel = true; try { history.go(-history.state.painel); } catch (e) { fechandoPainel = false; } } }
-let fechandoPainel = false, ultimoPop = 0;
+let fechandoPainel = false, ultimoPop = 0, voltaParaOrigem = false;   // voltaParaOrigem: Diagnóstico aberto por link de outra página; ao fechar volta pra ela (18/11/2026)
+const fechouPainel = () => { if (voltaParaOrigem) { voltaParaOrigem = false; setTimeout(() => { try { history.back(); } catch (e) {} }, 60); } };
 addEventListener('popstate', () => {   // voltar do navegador (deslizar da borda) = o mesmo voltar do app
   ultimoPop = Date.now();
   if (fechandoPainel) { fechandoPainel = false; return; }
   if (history.state && history.state.painel && history.state.painel > pilha.length) { try { history.back(); } catch (e) {} return; }   // deslize pra FRENTE (direita pra esquerda no iPhone) refazia uma tela antiga e podia cair no Trabalho (May, 10/11/2026): pra frente não vale, desfaz na hora
   if (painel.hidden || !pilha.length) return;
-  pilha.pop(); if (pilha.length) desenhaTela(); else { painelDesce(); painel.hidden = true; }
+  pilha.pop(); if (pilha.length) desenhaTela(); else { painelDesce(); painel.hidden = true; fechouPainel(); }
 });
 document.getElementById('p-anotar').onclick = () => { const caminho = pilha.map(p => p[0]).filter((x, i) => !(i === 0 && x === 'Menu')).join(' > ') || pTit.textContent; const dest = destinoNota(); recadoPop(caminho, nomeRobo(dest), (GRUPO[dest] || {}).cor); };   // o lápis vale em toda tela filha, com o caminho (ex.: Saúde > Perguntas pro médico); no Trabalho vai pra caixas/trabalho.md
 { let bx = null, by = 0;   // arrastar da borda esquerda pra direita = voltar, igual o iPhone
   painel.addEventListener('touchstart', e => { const t = e.touches[0]; bx = t.clientX < 28 ? t.clientX : null; by = t.clientY; }, { passive: true });
   painel.addEventListener('touchend', e => { if (bx === null) return; const t = e.changedTouches[0], dx = t.clientX - bx, dy = t.clientY - by; bx = null; if (dx > 70 && Math.abs(dy) < dx * .7) setTimeout(() => { if (Date.now() - ultimoPop > 600 && !painel.hidden) document.getElementById('p-voltar').click(); }, 350); }, { passive: true }); }   // o iPhone também volta sozinho no deslize da borda: os dois juntos voltavam 2 telas e caíam no menu do Trabalho (May, 10/11/2026: "não pode acontecer de jeito nenhum"); só volta por aqui se o do iPhone não voltou
-document.getElementById('p-voltar').onclick = document.getElementById('p-voltar-baixo').onclick = () => { if (history.state && history.state.painel) history.back(); else { pilha.pop(); if (pilha.length) desenhaTela(); else fechaPainel(); } };
+document.getElementById('p-voltar').onclick = document.getElementById('p-voltar-baixo').onclick = () => { if (history.state && history.state.painel) history.back(); else { pilha.pop(); if (pilha.length) desenhaTela(); else { fechaPainel(); fechouPainel(); } } };
 // ---- Dados da conversa (tocar no nome ou na foto lá em cima): foto, quem participa e tudo que já foi mandado nela
 const EXT_IMG = /\.(png|jpe?g|webp|gif)$/i, EXT_AUDIO = /\.(m4a|webm|mp3|wav|ogg)$/i, EXT_TEXTO = /\.(md|txt|json|csv|py|sh|ps1|html|svg)$/i;
 const RE_CAMINHO = /(?:^|[\s(`'"])((?:[\w.-]+\/)+[\w.-]+\.(?:png|jpe?g|webp|gif|m4a|webm|mp3|wav|ogg|md|pdf|json|txt|csv|docx?|xlsx?|pptx?|zip|apk|cdr|psd|ps1|py|sh|html|svg))(?=$|[\s),.;:`'"!?])/gi;
@@ -2856,9 +2858,8 @@ function abreInfoConversa() {
 abreMenu.onclick = () => {
   menu.hidden = true; painel.hidden = false; pilha = []; painel.style.removeProperty('--c'); Som.pagina();
   tela('Menu', c => {
-    const h = document.createElement('div'); h.className = 'p-hero'; h.innerHTML = '<div class="logo" aria-hidden="true" style="background-image:url(' + (FILE === TRAB.arq ? '' : FOTO_GERAL) + ');background-color:' + (FILE === TRAB.arq ? '#FFFFFF' : '#0E0F12') + '"></div><div><b>' + (FILE === TRAB.arq ? 'Trabalho' : nomeApp()) + '</b><span>' + (FILE === TRAB.arq ? 'Simplificação · o dia de trabalho' : 'Atalhos da casa') + '</span></div>'; const eng = elD('button', 'p-engrenagem'); eng.type = 'button'; eng.innerHTML = icone('gear'); eng.setAttribute('aria-label', 'Configurações'); eng.onclick = abreConfig; h.append(eng); c.append(h);   // engrenagem no canto de cima, à direita (May 09/11)
-    if (FILE === TRAB.arq) fundoFoto(h.querySelector('.logo'), 'recados-fotos/simp-logo-transparente.png');
-    else { const nomeG = h.querySelector('b'); if (nomeG) { nomeG.style.cursor = 'pointer'; nomeG.onclick = abreContas; } }   // tocar em "Geral" abre as Contas da viagem (May, 10/11/2026)   // logo do Simp no Menu do Trabalho (May 09/11)
+    const h = document.createElement('div'); h.className = 'p-hero'; if (FILE === TRAB.arq) { h.className = 'p-hero nx-hero'; const cb = cabNx('Simplificação', 'Trabalho', 'O seu dia de trabalho, num lugar só.'); h.append(cb); } else h.innerHTML = '<div class="logo" aria-hidden="true" style="background-image:url(' + (FILE === TRAB.arq ? '' : FOTO_GERAL) + ');background-color:' + (FILE === TRAB.arq ? '#FFFFFF' : '#0E0F12') + '"></div><div><b>' + (FILE === TRAB.arq ? 'Trabalho' : nomeApp()) + '</b><span>' + (FILE === TRAB.arq ? 'Simplificação · o dia de trabalho' : 'Atalhos da casa') + '</span></div>'; const eng = elD('button', 'p-engrenagem'); eng.type = 'button'; eng.innerHTML = icone('gear'); eng.setAttribute('aria-label', 'Configurações'); eng.onclick = abreConfig; h.append(eng); c.append(h);   // engrenagem no canto de cima, à direita (May 09/11)
+    if (FILE !== TRAB.arq) { const nomeG = h.querySelector('b'); if (nomeG) { nomeG.style.cursor = 'pointer'; nomeG.onclick = abreContas; } }   // tocar em "Geral" abre as Contas da viagem (May, 10/11/2026)   // logo do Simp no Menu do Trabalho (May 09/11)
     const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = 'Atalhos'; c.append(t);
     // Os botões do Menu vêm de menu/menu.json (a Lyra acrescenta páginas sem mexer no app); sem ele, só o Catálogo.
     // grade de ícones em 3 colunas, o mais usado em cima (May, 06/11/2026: "lista muito grande")
@@ -2871,7 +2872,7 @@ abreMenu.onclick = () => {
         let ordem = []; try { ordem = JSON.parse(store.get(FILE === TRAB.arq ? 'menu-ordem-trab' : 'menu-ordem') || '[]').map(n => n === 'Ideias' ? 'Tarefas' : n); } catch (e) {}   // Ideias virou Tarefas (May 16:16): a ordem que ela arrumou continua valendo
         lista.querySelectorAll('.sk-bt').forEach(x => x.remove());
         const pos = n => { const i = ordem.indexOf(n); return i < 0 ? 999 : i; };
-        itens.filter(m => !m.apagado).map((m, i) => [m, i]).sort((a, b) => pos(a[0].nome) - pos(b[0].nome) || a[1] - b[1]).forEach(([m]) => { const b = botaoGrade(m.icone, m.nome, m.sub, () => { if (navigator.onLine === false && !SEM_REDE_OK.includes(m.nome)) { showNote('Sem internet: abrem a Saúde, a Agenda, o Checklist e os Planos.'); return; } conta(m.nome); abreItemMenu(m); }); b.dataset.nome = m.nome; if (navigator.onLine === false && !SEM_REDE_OK.includes(m.nome)) b.classList.add('sem-rede'); if (FILE !== TRAB.arq) vesteBotao(b, m.nome); else if (ICONE_TRAB[m.icone]) b.querySelector('.ic').innerHTML = '<svg class="lp" viewBox="0 0 24 24" aria-hidden="true">' + ICONE_TRAB[m.icone] + '</svg>';   // Trabalho: só ícone limpo, sem número do dia nem enfeite (May 09/11)
+        itens.filter(m => !m.apagado).map((m, i) => [m, i]).sort((a, b) => pos(a[0].nome) - pos(b[0].nome) || a[1] - b[1]).forEach(([m]) => { const b = botaoGrade(m.icone, m.nome, m.sub, () => { if (navigator.onLine === false && !SEM_REDE_OK.includes(m.nome)) { showNote('Sem internet: abrem a Saúde, a Agenda, o Checklist e os Planos.'); return; } conta(m.nome); abreItemMenu(m); }); b.dataset.nome = m.nome; if (navigator.onLine === false && !SEM_REDE_OK.includes(m.nome)) b.classList.add('sem-rede'); if (FILE !== TRAB.arq) vesteBotao(b, m.nome); else { if (ICONE_TRAB[m.icone]) b.querySelector('.ic').innerHTML = '<svg class="lp" viewBox="0 0 24 24" aria-hidden="true">' + ICONE_TRAB[m.icone] + '</svg>'; if (m.sub) b.append(elD('small', 'p-sub-az', m.sub)); }   // Trabalho: só ícone limpo, sem número do dia nem enfeite (May 09/11)
  lista.append(b); });
         arrumaArrastando(lista);
       });
@@ -2915,7 +2916,7 @@ function botaoReligar(p, d) {
   };
 }
 function cartaoPc(p) {
-  const g = GRUPO[p.robo] || TRAB_NEUTRO, [en, ec] = EST_PC[p.estado] || EST_PC.atencao;
+  const g = GRUPO[p.robo] || TRAB_NEUTRO, [en0, ec] = EST_PC[p.estado] || EST_PC.atencao, en = document.body.classList.contains('modo-trab') ? (ESTADO_NX[p.estado] || ESTADO_NX.atencao)[0] : en0;
   const d = elD('div', 'pcd'); d.style.setProperty('--rc', g.cor);
   const top = elD('div', 'pcd-top'), nm = elD('div'); const gn = g.nome.replace(/\s*\(.*\)/, ''); nm.append(elD('b', '', gn.toLowerCase().startsWith(String(p.pc).toLowerCase()) ? gn : p.pc + ' · ' + gn), elD('span', '', p.papel || ''));   // sem "Checklist · Checklist" (projetos do Trabalho, 09/11)
   const es = elD('span', 'pcd-est', en); es.style.setProperty('--ec', ec); top.append(fotoRobo(g), nm, es); d.append(top);
@@ -3063,75 +3064,94 @@ function montaDiaPcs(caixa, dia, extra) {
   trilho.addEventListener('scroll', () => marca(Math.round(trilho.scrollLeft / Math.max(1, trilho.clientWidth))), { passive: true });
   nav.classList.add('embaixo'); caixa.replaceChildren(trilho, nav); requestAnimationFrame(() => marca(0));
 }
+// ===== Trabalho: Projetos e Diagnóstico viram menu de ícones; tocar abre os detalhes (18/11/2026)
+const cabNx = (sobre, tit, sub) => { const h = elD('div', 'nx-cab'); h.append(elD('small', 'nx-sobre', sobre), elD('h2', 'nx-tit', tit)); if (sub) h.append(elD('p', 'nx-sub', sub)); return h; };
+const SIMPLES = [   // texto técnico que vem dos arquivos do inst vira linguagem simples na tela do Trabalho
+  [/\bparte do servidor web\b/gi, 'parte online do sistema'], [/\b(na|da|pela|para a|a)\s+(nossa\s+)?máquina de teste\b/gi, (m, l, n) => ({ na: 'no', da: 'do', pela: 'pelo', 'para a': 'para o', a: 'o' }[l.toLowerCase()]) + ' ' + (n ? 'nosso ' : '') + 'computador de testes'], [/\bantes do pacote\b/gi, 'antes de gerar a versão'],
+  [/\(API não medida: trava\)/g, '(a parte de conexão trava e ainda não foi medida)'], [/(\d[\d.]*) verdes? \/ (\d[\d.]*)/g, '$1 de $2 passaram'],
+  [/^Responder no popup:\s*/i, 'Responder: '], [/\bno popup\b/gi, 'no aviso da tela'], [/\bpopup\b/gi, 'aviso na tela'],
+  [/\bPC limpo\b/gi, 'computador novo, sem nada instalado'], [/\bservidor web\b/gi, 'parte online do sistema'], [/\bmáquina de teste\b/gi, 'computador de testes'],
+  [/\bbanco de teste\b/gi, 'base de testes'], [/\bno mesmo banco\b/gi, 'na mesma base de dados'], [/\bintegrador\b/gi, 'sistema de integração'], [/\bpacote\b/gi, 'versão pronta para instalar'],
+  [/\bzip de logs\b/gi, 'arquivo com os registros de erro'], [/\bde ponta a ponta\b/gi, 'do começo ao fim'], [/\bponta a ponta\b/gi, 'do começo ao fim'], [/\bTestFlight\b/g, 'teste do iPhone'], [/\bDBA\b/g, 'Responsável pelo banco de dados'],
+  [/\bregressão completa verde\b/gi, 'todos os testes passando'], [/\bsuíte completa\b/gi, 'todos os testes'], [/\bsuíte\b/gi, 'testes'], [/\bcommit\b/gi, 'registrado'], [/\bpush\b/gi, 'envio'],
+  [/\bSentry\b/g, 'sistema de erros'], [/\bbackend\b/gi, 'servidor'], [/\bfrota\b/gi, 'aparelhos em campo'], [/\bquarentena\b/gi, 'fila de espera'], [/\barquivos de boot\b/gi, 'arquivos de início'],
+  [/\bscripts\b/gi, 'rotinas automáticas'], [/\bcaminho (?:fixo )?de credencial\b/gi, 'senha escrita no código'], [/\bdashboard\b/gi, 'painel'], [/Na bancada desde/g, 'Em teste desde'], [/Parados > 3 dias/g, 'Parados há mais de 3 dias'],
+  [/\bAPI\b/g, 'conexão'], [/\bregistrado, falta envio\b/gi, 'registrado, falta enviar']];
+const simples = t => SIMPLES.reduce((x, [re, n]) => x.replace(re, n), String(t == null ? '' : t));
+const ESTADO_NX = { ok: ['Em ordem', 'ok'], atencao: ['Pede atenção', 'aviso'], investigando: ['Investigando', 'info'], peca: ['Precisa de peça', 'ruim'] };
+const chipNx = est => { const [t, k] = ESTADO_NX[est] || ESTADO_NX.atencao; return elD('span', 'nx-chip nx-chip-' + k, t); };
+const esqueletoGrade = (g, n) => { g.setAttribute('aria-busy', 'true'); for (let i = 0; i < n; i++) { const k = elD('div', 'dg-card sk'); k.append(elD('i'), elD('i'), elD('i')); g.append(k); } };   // cartões de carregamento no lugar de "-" e de tela vazia
+function cartaoGrade({ icone: ic, nome, sub, estado, extra, aoTocar }) {
+  const b = elD('button', 'dg-card'); b.type = 'button'; b.setAttribute('aria-label', nome + (estado ? ': ' + (ESTADO_NX[estado] || ESTADO_NX.atencao)[0] : ''));
+  const i = elD('span', 'dg-ic'); i.innerHTML = icone(ic); b.append(i, elD('b', 'dg-nm', nome), elD('small', 'dg-sub', sub || ''));
+  if (estado) b.append(chipNx(estado)); else if (extra) b.append(elD('span', 'dg-ex', extra));
+  b.onclick = aoTocar; return b;
+}
+const listaNx = (itens, vazio) => { const cd = elD('section', 'nx-cartao'); if (!itens.length) cd.append(elD('p', 'nx-vazio', vazio)); else { const ul = elD('ul', 'nx-ul'); itens.forEach(t => ul.append(elD('li', '', simples(t)))); cd.append(ul); } return cd; };
 function abreDiagnostico(m) {
-  const arqD = (m && m.arq) || 'casa/diagnostico-pcs.json', soDados = !!(m && m.arq);   // Diagnóstico dos projetos (Trabalho, May 09/11/2026): mesma tela dos PCs, outro arquivo
-  tela((m && m.nome) || 'Diagnóstico', async c => {
-    const sp = elD('div', 'p-lista'), datas = elD('div', 'pcd-datas'), nota = skCarga(), caixa = elD('div', 'p-lista'); c.append(sp);
-    sp.append(elD('div', 'p-sec', (m && m.secao) || 'Saúde dos PCs'), datas, nota, caixa); if (!soDados) { datas.hidden = true; nota.style.display = 'none'; }   // PCs: só o dia de agora, sem as pílulas de data nem o parágrafo (Sigma 02:06)
-    const x = elD('div', 'p-texto pcd-app');   // "Este app" virou a última aba (Hermes 14/11), não repete embaixo de todas
-    lerArquivo(arqD).then(t => JSON.parse(t)).then(dg => {
-      const dias = dg.dias || [dg]; let di = 0; const escolhe = i => { di = i; datas.querySelectorAll('button').forEach((b, j) => b.classList.toggle('ativa', j === i)); nota.classList.remove('sk'); nota.textContent = dias[i].quem || ''; nota.hidden = !dias[i].quem; montaDiaPcs(caixa, dias[i], soDados ? null : x); };
-      dias.forEach((d, i) => { const b = elD('button', '', d.data); b.type = 'button'; b.onclick = () => escolhe(i); datas.append(b); }); escolhe(0);
-      if (!soDados) (dias[0].pcs || []).forEach((p, k) => lerArquivo('casa/diagnostico/medido/' + p.pc + '.json').then(t => { p.medido = JSON.parse(t); const pg = di === 0 && caixa.querySelectorAll('.pcd-pag')[k + 2], y = pCorpo.scrollTop; if (pg) { pg.replaceChildren(cartaoPc(p)); pCorpo.scrollTop = y; } }).catch(() => {}));   // #297 (Sigma 01:18): cada medição que chega troca só o cartão daquele PC, sem mexer na aba nem na rolagem
-    }).catch(() => { nota.textContent = soDados ? 'Ainda sem relatório dos projetos.' : 'Não foi possível abrir o diagnóstico dos PCs. Confere a internet.'; });
-    const linha = (t, v) => { const p = document.createElement('p'), b = document.createElement('b'); b.textContent = t + ': '; p.append(b, v); x.append(p); };
-    const perm = window.Notification ? { granted: 'ligada', denied: 'bloqueada (Ajustes → Notificações)', default: 'ainda não pedida' }[Notification.permission] || Notification.permission : 'este navegador não tem';
-    linha('Versão do app', VERSAO || 'sem versão');
-    linha('Última leitura que deu certo', ultimaLeituraOk ? horaDe(ultimaLeituraOk) + ' (' + fmtVisto(new Date(ultimaLeituraOk).toISOString()).texto.replace(/^offline · visto /, '') + ')' : 'nenhuma ainda');
-    linha('Baixado do GitHub na última hora', Math.round(baixado.reduce((n, b) => n + b[1], 0) / 1024) + ' KB (' + baixado.length + ' respostas com corpo)');
-    linha('Limite do GitHub restante', limiteResta || 'ainda não sei');
-    if (Date.now() < limiteAte) linha('Parado pelo limite até', horaDe(limiteAte));
-    { let log = []; try { log = JSON.parse(store.get('limites-log') || '[]'); } catch (e) {} linha('Vezes que o GitHub segurou', log.length ? log.slice(-5).reverse().map(l => horaDe(Date.parse(l.quando)) + ' ' + l.status + (l.recurso ? ' ' + l.recurso : '') + (l.retry ? ' espera ' + l.retry + ' s' : '') + ' (' + l.url + ')').join(' · ') : 'nenhuma neste aparelho'); }
-    linha('Chave', chaveVencida ? 'vencida' : token ? 'ok' : 'sem chave');
-    linha('Notificação', perm);
-    linha('Internet', navigator.onLine === false ? 'sem conexão' : 'conectado');
+  if (m && m.arq) return abreProjetos(m);
+  tela((m && m.nome) || 'Diagnóstico', c => {
+    painel.style.setProperty('--c', '#15803D'); c.classList.add('dg-tela'); cabecalho({ icone: 'pulso' });
+    c.append(cabNx('Saúde', 'Diagnóstico', 'Toque em um computador para ver os detalhes.'));
+    const grade = elD('div', 'dg-grade'); c.append(grade); esqueletoGrade(grade, 6);
+    lerArquivo('casa/diagnostico-pcs.json').then(t => JSON.parse(t)).then(dg => {
+      const dias = dg.dias || [dg], dia = dias[0] || { pcs: [] }, pcs = dia.pcs || [];
+      pcs.forEach(p => { p._med = lerArquivo('casa/diagnostico/medido/' + p.pc + '.json').then(t => { p.medido = JSON.parse(t); }).catch(() => {}); });   // a medição chega em segundo plano; o detalhe espera por ela só quando é aberto
+      grade.removeAttribute('aria-busy'); grade.replaceChildren();
+      const fora = pcs.filter(p => p.estado !== 'ok').length; cabecalho({ icone: 'pulso', sub: pcs.length + ' computadores' + (fora ? ' · ' + fora + ' pedem atenção' : ' · tudo em ordem') });
+      pcs.forEach(p => grade.append(cartaoGrade({ icone: 'pulso', nome: p.pc, sub: simples((GRUPO[p.robo] ? GRUPO[p.robo].nome.replace(/\s*\(.*\)/, '') + ' · ' : '') + (p.papel || '')), estado: p.estado, aoTocar: () => abreDetalheDiag(p.pc, p.papel, c2 => { const sk = skCarga(2); c2.append(sk); return Promise.race([p._med || Promise.resolve(), new Promise(r => setTimeout(r, 4000))]).then(() => { sk.remove(); c2.append(cartaoPc(p)); }); }) })));
+      if (dia.indicadores || (dia.comparar || []).length) grade.append(cartaoGrade({ icone: 'chart', nome: 'Comparar', sub: 'os computadores lado a lado', extra: 'ver quadro', aoTocar: () => abreDetalheDiag('Comparar', 'Os computadores lado a lado.', c2 => { const bi = painelPcs(dia); if (bi) c2.append(bi); c2.append(comparaPcs(dia)); }) }));
+      grade.append(cartaoGrade({ icone: 'calendar', nome: 'Dias', sub: 'como foram os últimos 30 dias', extra: 'ver gráficos', aoTocar: () => abreDetalheDiag('Dias', 'Como foram os últimos 30 dias.', c2 => { c2.append(painelDias(pcs)); }) }));
+      grade.append(cartaoGrade({ icone: 'wifi', nome: 'Conexão', sub: 'este aparelho e o app', extra: 'ver dados', aoTocar: () => abreDetalheDiag('Conexão', 'Este aparelho e o app.', c2 => { c2.append(infoApp()); }) }));
+    }).catch(() => { grade.removeAttribute('aria-busy'); grade.replaceChildren(elD('p', 'nx-vazio', 'Não foi possível abrir o diagnóstico. Confere a internet.')); });
   });
 }
-// Projetos do Trabalho (May 09/11/2026 10:13: "essa página tá ruim"): padrão Simplificação, 1 cartão por projeto, abas. Lê menu/trabalho/diagnostico-projetos.json (só leitura, quem escreve é a Lyra).
+function abreDetalheDiag(nome, sub, monta) {
+  tela(nome, c => { painel.style.setProperty('--c', '#15803D'); c.classList.add('dg-tela', 'dg-det'); cabecalho({ icone: 'pulso' }); c.append(cabNx('Diagnóstico', nome, simples(sub || ''))); return monta(c); });
+}
+function infoApp() {
+  const x = elD('div', 'p-texto pcd-app nx-cartao'), linha = (t, v) => { const p = document.createElement('p'), b = document.createElement('b'); b.textContent = t + ': '; p.append(b, v); x.append(p); };
+  const perm = window.Notification ? { granted: 'ligada', denied: 'bloqueada (Ajustes → Notificações)', default: 'ainda não pedida' }[Notification.permission] || Notification.permission : 'este navegador não tem';
+  linha('Versão do app', VERSAO || 'sem versão');
+  linha('Última leitura que deu certo', ultimaLeituraOk ? horaDe(ultimaLeituraOk) + ' (' + fmtVisto(new Date(ultimaLeituraOk).toISOString()).texto.replace(/^offline · visto /, '') + ')' : 'nenhuma ainda');
+  linha('Baixado do GitHub na última hora', Math.round(baixado.reduce((n, b) => n + b[1], 0) / 1024) + ' KB (' + baixado.length + ' respostas com corpo)');
+  linha('Limite do GitHub restante', limiteResta || 'ainda não sei');
+  if (Date.now() < limiteAte) linha('Parado pelo limite até', horaDe(limiteAte));
+  { let log = []; try { log = JSON.parse(store.get('limites-log') || '[]'); } catch (e) {} linha('Vezes que o GitHub segurou', log.length ? log.slice(-5).reverse().map(l => horaDe(Date.parse(l.quando)) + ' ' + l.status + (l.recurso ? ' ' + l.recurso : '') + (l.retry ? ' espera ' + l.retry + ' s' : '') + ' (' + l.url + ')').join(' · ') : 'nenhuma neste aparelho'); }
+  linha('Chave', chaveVencida ? 'vencida' : token ? 'ok' : 'sem chave');
+  linha('Notificação', perm);
+  linha('Internet', navigator.onLine === false ? 'sem conexão' : 'conectado');
+  return x;
+}
+// Projetos do Trabalho (May 09/11/2026 10:13; menu de ícones 18/11/2026): um cartão por projeto, tocar abre os detalhes. Lê menu/trabalho/diagnostico-projetos.json (só leitura, quem escreve é a Lyra).
 function abreProjetos(m) {
-  tela(m.nome, async c => {
-    painel.style.setProperty('--c', '#059669'); c.classList.add('pj-tela');
-    const sk = skCarga(4); c.append(sk); let dg;
-    try { dg = JSON.parse(await lerArquivo(m.arq)); } catch (e) { sk.textContent = 'Ainda sem relatório dos projetos.'; return; }
-    sk.remove();
-    const dia = (dg.dias || [dg])[0] || {}, pcs = dia.pcs || [], num = (x, re) => ((x.numeros || []).find(n => re.test(n[0])) || [])[1] || '';
-    const pj = x => PROJ_T[(x.robo || '').toLowerCase()] || ['#059669', 'doc'], cor = x => pj(x)[0];
-    const esperam = pcs.reduce((n, x) => n + (x.peca || []).length, 0), atencao = pcs.filter(x => x.estado && x.estado !== 'ok').length;
-    cabecalho({ sub: pcs.length + ' projetos · atualizado ' + (dia.data || '') });
-    const abas = elD('div', 'pj-abas'), corpo = elD('div', 'pj-corpo'); abas.setAttribute('role', 'tablist'); c.append(abas, corpo);
-    const lista = (rot, itens, vazio) => { const b = elD('div', 'pj-bloco'); b.append(elD('small', 'pj-rot', rot)); if (!itens.length) b.append(elD('p', 'pj-vazio', vazio)); else { const ul = elD('ul'); itens.forEach(t => ul.append(elD('li', '', t))); b.append(ul); } return b; };
-    const cabCard = x => {
-      const h = elD('div', 'pj-cab'), ic = elD('span', 'pj-ic'), est = EST_PC[x.estado] || ['', '#64748B']; ic.style.color = cor(x); ic.innerHTML = icone(pj(x)[1]);
-      const nm = elD('div', 'pj-nm'); nm.append(elD('b', '', x.pc), elD('small', '', x.papel || '')); const chip = elD('span', 'pj-chip', est[0]); chip.style.setProperty('--k', est[1]); h.append(ic, nm, chip); return h;
-    };
-    const novoCard = x => { const cd = elD('article', 'pj-card'); cd.style.setProperty('--tc', cor(x)); cd.append(cabCard(x)); return cd; };
-    const abaVisao = () => {
-      corpo.replaceChildren(); const v = elD('div', 'pj-resumo');
-      [[atencao, 'pedem atenção'], [esperam, 'esperam por você']].forEach(([n, t]) => { const b = elD('div'), nb = elD('b'); contaAte(nb, String(n)); b.append(nb, elD('small', '', t)); v.append(b); }); corpo.append(v);
-      pcs.forEach(x => {
-        const cd = novoCard(x);
-        const ver = num(x, /vers/i); if (ver) { const l = elD('div', 'pj-ver'); l.append(elD('span', '', 'Versão'), elD('b', '', ver)); cd.append(l); }
-        const fz = elD('div', 'pj-bloco'); fz.append(elD('small', 'pj-rot', 'Fazendo agora'), elD('p', '', x.resumo || '')); cd.append(fz);
-        cd.append(lista('Espera de você', x.peca || [], 'Nada espera por você.'));
-        const mais = elD('div', 'pj-mais'); mais.hidden = true; mais.append(lista('Já feito', x.feito || [], 'Nada ainda.'), lista('Falta fazer', x.falta || [], 'Nada.'));
-        const bt = elD('button', 'pj-ver-mais', 'Ver feito e falta'); bt.type = 'button'; bt.onclick = () => { mais.hidden = !mais.hidden; bt.textContent = mais.hidden ? 'Ver feito e falta' : 'Esconder'; };
-        cd.append(bt, mais); corpo.append(cd);
-      });
-    };
-    const abaEspera = () => {
-      corpo.replaceChildren(); const com = pcs.filter(x => (x.peca || []).length);
-      if (!com.length) corpo.append(elD('p', 'p-nota', 'Nada espera por você agora.'));
-      com.forEach(x => { const cd = novoCard(x); cd.append(lista('Espera de você', x.peca, '')); corpo.append(cd); });
-    };
-    const abaNum = () => {
-      corpo.replaceChildren();
-      pcs.forEach(x => { const cd = novoCard(x), g = elD('dl', 'pj-num');
-        (x.numeros || []).forEach(([k, val]) => { const d = elD('div'), dd = elD('dd'); contaAte(dd, val); d.append(elD('dt', '', k), dd); g.append(d); }); cd.append(g); corpo.append(cd); });
-    };
-    const mostra = fn => { try { fn(); } catch (e) { corpo.replaceChildren(elD('p', 'p-nota', 'Não deu para mostrar esta parte do relatório agora.')); } };   // dado fora do formato não deixa a tela em branco (18/11)
-    const ABAS = [['Visão geral', abaVisao], ['Esperam você' + (esperam ? ' (' + esperam + ')' : ''), abaEspera], ['Números', abaNum]];
-    ABAS.forEach(([t, fn], i) => { const b = elD('button', 'pj-aba' + (i ? '' : ' on'), t); b.type = 'button'; b.setAttribute('role', 'tab'); b.onclick = () => { abas.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); mostra(fn); pCorpo.scrollTop = 0; }; abas.append(b); });
-    mostra(abaVisao);
+  tela(m.nome, c => {
+    painel.style.setProperty('--c', '#15803D'); c.classList.add('pj-tela', 'dg-tela'); cabecalho({});
+    c.append(cabNx('Projetos', 'Como vão os projetos', 'Toque em um projeto para ver os detalhes.'));
+    const resumo = elD('div', 'nx-grade'), grade = elD('div', 'dg-grade'); c.append(resumo, grade); esqueletoGrade(grade, 4);
+    lerArquivo(m.arq).then(t => JSON.parse(t)).then(dg => {
+      const dia = (dg.dias || [dg])[0] || {}, pcs = dia.pcs || [], pj = x => PROJ_T[(x.robo || '').toLowerCase()] || ['#059669', 'doc'];
+      const esperam = pcs.reduce((n, x) => n + (x.peca || []).length, 0), atencao = pcs.filter(x => x.estado && x.estado !== 'ok').length;
+      cabecalho({ sub: pcs.length + ' projetos' });
+      [['Pedem atenção', atencao], ['Esperam por você', esperam]].forEach(([r, n]) => { const d = elD('div', 'nx-num'); d.append(elD('small', 'nx-rot', r), elD('b', 'nx-val', String(n))); resumo.append(d); });
+      grade.removeAttribute('aria-busy'); grade.replaceChildren();
+      pcs.forEach(x => { const n = (x.peca || []).length; grade.append(cartaoGrade({ icone: pj(x)[1], nome: x.pc, sub: n ? n + (n === 1 ? ' coisa espera' : ' coisas esperam') + ' por você' : 'nada espera por você', estado: x.estado, aoTocar: () => abreProjetoDet(x, pj(x)[1]) })); });
+      if (!pcs.length) grade.append(elD('p', 'nx-vazio', 'Ainda sem relatório dos projetos.'));
+    }).catch(() => { grade.removeAttribute('aria-busy'); grade.replaceChildren(elD('p', 'nx-vazio', 'Ainda sem relatório dos projetos.')); });
+  });
+}
+function abreProjetoDet(x, ic) {
+  tela(x.pc, c => {
+    painel.style.setProperty('--c', '#15803D'); c.classList.add('pj-tela', 'dg-tela', 'dg-det'); cabecalho({ icone: ic });
+    c.append(cabNx('Projeto', x.pc, simples(x.papel || '')));
+    const linhaChip = elD('div', 'dg-estado'); linhaChip.append(chipNx(x.estado)); c.append(linhaChip);
+    const curtos = [], longos = []; (x.numeros || []).forEach(([k, v]) => (String(simples(v)).length <= 11 ? curtos : longos).push([simples(k), simples(v)]));
+    if (curtos.length) { const g = elD('div', 'nx-grade'); curtos.forEach(([k, v]) => { const d = elD('div', 'nx-num'); d.append(elD('small', 'nx-rot', k), elD('b', 'nx-val', v)); g.append(d); }); c.append(g); }
+    if (longos.length) { const cd = elD('section', 'nx-cartao'); longos.forEach(([k, v]) => { const l = elD('div', 'nx-linha nx-linha-col'); l.append(elD('small', 'nx-rot', k), elD('span', 'nx-txt', v)); cd.append(l); }); c.append(cd); }
+    c.append(elD('h3', 'nx-sec', 'Fazendo agora')); const fz = elD('section', 'nx-cartao'); fz.append(elD('p', 'nx-par', simples(x.resumo || 'Nada em andamento.'))); c.append(fz);
+    c.append(elD('h3', 'nx-sec', 'Espera de você'), listaNx(x.peca || [], 'Nada espera por você.'));
+    c.append(elD('h3', 'nx-sec', 'Já feito'), listaNx(x.feito || [], 'Nada ainda.'));
+    c.append(elD('h3', 'nx-sec', 'Falta fazer'), listaNx(x.falta || [], 'Nada.'));
   });
 }
 // Máquinas e consoles (May, 07/11/2026 10:19: "a capivara dos meus consoles e máquina, completa e bonita, gamificada, com a cara de cada console";
@@ -3433,6 +3453,7 @@ function abreSaudeLista(m, soGrupo) {   // soGrupo: tela filha com um grupo só 
         gs.forEach(g => { const its = vis.filter(x => (x.grupo || '') === g && x.tipo !== 'nota'), b = elD('button', 'sl-item sl-grupo'), tx = elD('div', 'sl-tx'); b.type = 'button'; tx.append(elD('span', 'sl-t', g || 'Geral')); if (marcavel && its.length) tx.append(elD('small', 'sl-feito', its.filter(x => x.feito).length + ' de ' + its.length + ' feitos')); b.append(tx, elD('i', 'sl-seta', '›')); b.onclick = () => abreSaudeLista({ ...m, nome: g || m.nome }, g); card.append(b); });
         if (gs.length) w.append(card); return;
       }
+      const trabSl = document.body.classList.contains('modo-trab') && semAbas; if (trabSl && !c.querySelector('.nx-cab')) c.prepend(cabNx('Trabalho', m.nome, 'Horários e regras fixas do dia a dia. Toque em uma regra para mudar.'));
       abasEl.replaceChildren(); abasEl.hidden = semAbas || grupos.length < 2;   // sem_abas (Autocuidado, May 18/11/2026): página única rolando, uma seção por grupo
       if (!semAbas) grupos.forEach(g => { const b = elD('button', 'sl-aba' + (g === aba ? ' on' : ''), g); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(g === aba)); b.onclick = () => { aba = g; pinta(); pCorpo.scrollTop = 0; }; abasEl.append(b); });
       w.replaceChildren();
@@ -3464,7 +3485,7 @@ function abreSaudeLista(m, soGrupo) {   // soGrupo: tela filha com um grupo só 
             if (marcavel) { const ck = elD('button', 'li-ck'); ck.type = 'button'; ck.setAttribute('aria-label', x.feito ? 'Desmarcar' : 'Marcar como feito'); ck.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg>'; ck.onclick = async () => { await E.feito(x.id, !x.feito); pinta(); }; linha.append(ck); }
             else linha.append(elD('i', 'sl-ponto'));
           }
-          linha.append(tx, edMini('note', 'Editar', () => edita(x))); card.append(linha);
+          if (trabSl) { linha.append(tx); linha.classList.add('sl-toca'); linha.setAttribute('role', 'button'); linha.tabIndex = 0; linha.onclick = e => { if (!e.target.closest('button, textarea, a')) edita(x); }; } else linha.append(tx, edMini('note', 'Editar', () => edita(x))); card.append(linha);
         });
         w.append(card);
       });
@@ -4792,7 +4813,7 @@ function abreCheck(m) {
     const edita = x => edFormulario({ titulo: 'Editar', campos, v: { ...x, data: x.data || x.quando || '' }, aoSalvar: async v => { await E.edita(x.id, v); pinta(); }, aoApagar: () => apaga(x) });
     const pinta = () => {
       cabecalho({ acao: { icone: 'plus', rotulo: 'Novo item', fn: lanca } });
-      w.replaceChildren(); w.append(elD('div', 'ck-espiral'));
+      w.replaceChildren(); const trabCk = document.body.classList.contains('modo-trab'); w.classList.toggle('ck-nx', trabCk); if (trabCk) { if (!c.querySelector(':scope > .nx-cab')) w.before(cabNx('Tarefas', 'Checklist', 'O que você precisa fazer no trabalho. Toque no quadrado para marcar.')); } else w.append(elD('div', 'ck-espiral'));
       const todos = E.itens.filter(x => !x.apagado).map(x => ({ ...x, data: x.data || x.quando || '', saude: !!x.saude || x.de === 'Saúde' })), itens = todos.filter(x => !x.feito), feitos = todos.filter(x => x.feito);
       const cab = elD('div', 'ck-cab'); cab.append(elD('b', '', 'Para fazer'), elD('span', '', new Date(hoje + 'T12:00').toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }))); w.append(cab);
       const amanha = soma(1), semana = soma(7), dm = s => s.slice(8, 10) + '/' + s.slice(5, 7);
@@ -4801,11 +4822,11 @@ function abreCheck(m) {
       const linha = (x, nome) => {
         const b = elD('div', 'ck-item' + (x.feito ? ' feito' : '')); b.setAttribute('role', 'button'); b.tabIndex = 0;
         b.innerHTML = '<span class="ck-caixa"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg></span><span class="ck-tx"><span class="ck-t"></span><span class="ck-risco"><svg viewBox="0 0 100 12" preserveAspectRatio="none"><path d="M1 7 C 18 4, 30 9, 48 6 S 80 4, 99 7"/></svg></span><small></small></span>';
-        b.querySelector('.ck-t').textContent = x.saude && !/ver em Saúde/i.test(x.texto || '') ? (x.texto || 'Um item de saúde') + ' · ver em Saúde' : x.texto;
+        b.querySelector('.ck-t').textContent = x.saude && !/ver em Saúde/i.test(x.texto || '') ? (x.texto || 'Um item de saúde') + ' · ver em Saúde' : trabCk ? simples(x.texto) : x.texto;
         b.querySelector('small').textContent = x.feito ? edRotuloFeito(x) : [x.data && nome !== 'Hoje' && nome !== 'Amanhã' ? dm(x.data) : '', x.de].filter(Boolean).join(' · ');
-        b.append(edMini('note', 'Editar', () => edita(x)));
+        if (!trabCk) b.append(edMini('note', 'Editar', () => edita(x)));
         const mede = () => { const q = b.querySelector('.ck-t').getClientRects()[0]; if (q) b.style.setProperty('--rw', Math.round(q.width + 8) + 'px'); };
-        b.onclick = async () => { mede(); await E.feito(x.id, !x.feito); pinta(); };
+        b.onclick = async e => { if (trabCk && !e.target.closest('.ck-caixa')) { edita(x); return; } mede(); await E.feito(x.id, !x.feito); pinta(); };   // Trabalho: sem lápis em cada linha; tocar no quadrado marca, tocar no texto edita
         (ckAlvo || w).append(b); requestAnimationFrame(mede);
       };
       let ckAlvo = null; const ckCols = elD('div', 'ck-colunas'); w.append(ckCols);   // cada seção num grupo dentro das colunas: no celular os dois somem (display: contents); no PC as seções correm em colunas de jornal, equilibradas (Sigma #240)
@@ -5582,6 +5603,7 @@ function montaCalendario(cal, c, opc) {   // opc (Agenda do Trabalho): { marcas:
   els.forEach(e => { (corDia[e.dataset.dia] = corDia[e.dataset.dia] || []).includes(e.dataset.cor) || corDia[e.dataset.dia].push(e.dataset.cor); });
   let ano = hoje.getFullYear(), mes = hoje.getMonth(), sel = opc ? opc.sel || '' : '';
   if (sel) { ano = +sel.slice(0, 4); mes = +sel.slice(5, 7) - 1; }
+  let mesInteiro = !(opc && opc.compacto), ref = sel ? new Date(+sel.slice(0, 4), +sel.slice(5, 7) - 1, +sel.slice(8, 10)) : new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());   // Trabalho: só a semana na tela; o mês inteiro abre num botão (18/11/2026)
   const NOMES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
   const filtra = () => { cal.dataset.sel = sel; if (opc) return;   // sem dia escolhido: só os próximos (o que já passou some); com dia: só os dele (May 12:54)
     { const rl0 = c.querySelector('.ag-rola'), ps0 = rl0 && rl0.querySelector('.p-sec'); if (ps0 && /próximos/i.test(ps0.textContent)) [...rl0.querySelectorAll('.ag.perto:not(.feito):not(.passou)')].sort((x, y) => x.dataset.dia < y.dataset.dia ? 1 : -1).forEach(e => ps0.after(e)); }   // o que vence hoje, amanhã e depois sobe pro topo dos Próximos dias, por data (Sigma 17/11 21:21)
@@ -5594,12 +5616,16 @@ function montaCalendario(cal, c, opc) {   // opc (Agenda do Trabalho): { marcas:
     cal.replaceChildren();
     const topo = elD('div', 'ag-cal-topo'), ant = elD('button', 'ag-seta'), prox = elD('button', 'ag-seta');
     ant.type = prox.type = 'button'; ant.innerHTML = icone('back'); prox.innerHTML = icone('back'); prox.classList.add('dir'); ant.setAttribute('aria-label', 'Mês anterior'); prox.setAttribute('aria-label', 'Próximo mês');
-    ant.onclick = () => { mes--; if (mes < 0) { mes = 11; ano--; } desenhar(); }; prox.onclick = () => { mes++; if (mes > 11) { mes = 0; ano++; } desenhar(); };
-    topo.append(ant, elD('b', '', NOMES[mes] + ' ' + ano), prox); cal.append(topo);
+    const semana = !mesInteiro, dom = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate() - ref.getDay()), sab = new Date(dom.getFullYear(), dom.getMonth(), dom.getDate() + 6);
+    if (semana) { ant.setAttribute('aria-label', 'Semana anterior'); prox.setAttribute('aria-label', 'Próxima semana'); }
+    ant.onclick = () => { if (semana) { ref = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate() - 7); ano = ref.getFullYear(); mes = ref.getMonth(); } else { mes--; if (mes < 0) { mes = 11; ano--; } } desenhar(); }; prox.onclick = () => { if (semana) { ref = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate() + 7); ano = ref.getFullYear(); mes = ref.getMonth(); } else { mes++; if (mes > 11) { mes = 0; ano++; } } desenhar(); };
+    const tituloCal = semana ? (dom.getMonth() === sab.getMonth() ? dom.getDate() + ' a ' + sab.getDate() + ' de ' + NOMES[sab.getMonth()] : dom.getDate() + ' de ' + NOMES[dom.getMonth()].slice(0, 3) + ' a ' + sab.getDate() + ' de ' + NOMES[sab.getMonth()].slice(0, 3)) : NOMES[mes] + ' ' + ano;
+    topo.append(ant, elD('b', '', tituloCal), prox); cal.append(topo);
     const g = elD('div', 'ag-grade'); ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].forEach(x => g.append(elD('span', 'ag-sem', x)));
-    let primeiro = new Date(ano, mes, 1).getDay(), total = new Date(ano, mes + 1, 0).getDate(), de = 1;
+    let primeiro = semana ? 0 : new Date(ano, mes, 1).getDay(), total = new Date(ano, mes + 1, 0).getDate(), de = 1;
     for (let k = 0; k < primeiro; k++) g.append(elD('span'));
-    for (let dd = de; dd <= total; dd++) {
+    const celulas = semana ? [...Array(7)].map((_, k) => { const x = new Date(dom.getFullYear(), dom.getMonth(), dom.getDate() + k); return [x.getFullYear(), x.getMonth(), x.getDate()]; }) : [...Array(total)].map((_, k) => [ano, mes, de + k]);
+    for (const [ano, mes, dd] of celulas) {
       const chave = ano + '-' + String(mes + 1).padStart(2, '0') + '-' + String(dd).padStart(2, '0'), b = elD('button', 'ag-dia', String(dd)); b.type = 'button';
       if (dias.has(chave)) b.classList.add('tem');   // dia com compromisso: bolinha de uma cor só, sem borda (May 14/11 07:57), na tinta da Agenda: nenhuma cor da legenda, senão todo dia parece consulta (Sigma 14/11)   // um pontinho por tipo, na cor dele
       if (MODO_WEB && !opc && innerWidth >= 1280) {   // PC: o dia vira célula de calendário de parede, com o texto dos compromissos dentro na cor do assunto (Sigma #240, volta 11:55)
@@ -5609,10 +5635,11 @@ function montaCalendario(cal, c, opc) {   // opc (Agenda do Trabalho): { marcas:
       }
       if (chave === sel) b.classList.add('sel');
       if (dd === hoje.getDate() && mes === hoje.getMonth() && ano === hoje.getFullYear()) b.classList.add('hoje');
-      b.onclick = () => { if (opc) { sel = sel === chave ? '' : chave; desenhar(); opc.aoEscolher(sel); return; } sel = sel === chave ? '' : chave; filtra(); desenhar(); };
+      b.onclick = () => { if (opc) { sel = sel === chave ? '' : chave; if (sel) ref = new Date(ano, mes, dd); desenhar(); opc.aoEscolher(sel); return; } sel = sel === chave ? '' : chave; filtra(); desenhar(); };
       g.append(b);
     }
     cal.append(g);
+    if (opc && opc.compacto) { const al = elD('button', 'ag-alterna', semana ? 'Ver o mês inteiro' : 'Ver só a semana'); al.type = 'button'; al.setAttribute('aria-expanded', String(!semana)); al.onclick = () => { mesInteiro = !mesInteiro; if (mesInteiro) { ano = ref.getFullYear(); mes = ref.getMonth(); } desenhar(); }; cal.append(al); }
     if (opc) return;
     const doMes = ano + '-' + String(mes + 1).padStart(2, '0');   // legenda só no calendário de parede do PC, onde a cor aparece, e só do mês na tela; no celular o dia é de uma cor só e a legenda era cor sem nada (May 17/11 21:00)
     const usados = (agTiposAtual || TIPOS_AG.concat([['outro', 'Outros', '#94A3B8']])).filter(t => els.some(e => e.dataset.tipo === t[0] && String(e.dataset.dia || '').startsWith(doMes))), leg = elD('div', 'ag-leg');   // legenda de volta no celular (May 17/11 21:22), só com os assuntos do mês na tela
@@ -5624,9 +5651,9 @@ function montaCalendario(cal, c, opc) {   // opc (Agenda do Trabalho): { marcas:
   let x0 = null, y0 = 0; cal.dataset.gesto = '1';
   cal.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
   cal.addEventListener('touchend', e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null;
-    if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return; e.stopPropagation(); const dir = dx < 0 ? 1 : -1; mes += dir; if (mes < 0) { mes = 11; ano--; } if (mes > 11) { mes = 0; ano++; } desenhar(); entraDoLado(cal.querySelector('.ag-grade'), dir); }, { passive: true });
+    if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return; e.stopPropagation(); const dir = dx < 0 ? 1 : -1; if (!mesInteiro) { ref = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate() + 7 * dir); ano = ref.getFullYear(); mes = ref.getMonth(); } else { mes += dir; if (mes < 0) { mes = 11; ano--; } if (mes > 11) { mes = 0; ano++; } } desenhar(); entraDoLado(cal.querySelector('.ag-grade'), dir); }, { passive: true });
   desenhar(); filtra();
-  return opc ? { escolhe: k => { sel = k; desenhar(); } } : undefined;
+  return opc ? { escolhe: k => { sel = k; if (k) ref = new Date(+k.slice(0, 4), +k.slice(5, 7) - 1, +k.slice(8, 10)); desenhar(); } } : undefined;
 }
 // ---- Agenda da semana no layout do PDF (May 09/11/2026): mesmo desenho do PDF de C:/claude/tools/agenda-da-semana/gerar.py; CSS .sw escopado
 let agTiposAtual = null;
@@ -5688,7 +5715,7 @@ function swLinha(o) {   // cartão compacto da agenda da empresa (11/11/2026): e
   if (!o.ok && o.dia) el.classList.add(o.andamento ? 'doing' : 'todo'); if (o.atrasada) el.classList.add('atras'); if (o.extra) el.classList.add('late');
   const topo = elD('div', 'sw-topo'), ref = [o.tk, o.cli].filter(Boolean);
   topo.append(elD('span', 'sw-tag', o.tag)); if (ref.length) topo.append(elD('span', 'sw-ref' + (o.tk ? ' comtk' : ''), ref.join(' - ')));
-  const tx = elD('span', 'sw-tx'); o.texto.split(/(\b\d{7}\b)/).forEach((p, n) => tx.append(n % 2 ? elD('b', 'sw-tk', p) : document.createTextNode(p)));   // outros números de ticket (7 dígitos) em negrito
+  const tx = elD('span', 'sw-tx'); simples(o.texto).split(/(\b\d{7}\b)/).forEach((p, n) => tx.append(n % 2 ? elD('b', 'sw-tk', p) : document.createTextNode(p)));   // outros números de ticket (7 dígitos) em negrito
   el.append(topo, tx);
   const fim = elD('span', 'sw-fim');
   if (o.ok) fim.textContent = '✓' + (o.fimH ? ' ' + o.fimH : ''); else if (o.andamento && o.ini && swChave(o.ini) < swChave(new Date())) { fim.classList.add('atr'); fim.textContent = 'não terminou'; } else if (o.andamento) { fim.classList.add('exec'); fim.append(elD('i', 'sw-bol'), document.createTextNode('EXECUTANDO')); } else if (o.atrasada) { fim.classList.add('atr'); fim.textContent = 'atrasada'; }
@@ -5707,6 +5734,9 @@ function swLinhaPdf(o) {
   return el;
 }
 const swAgora = d => { const e = elD('div', 'sw-agora'); e.append(elD('span', '', 'agora ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'))); return e; };
+function swImpTxt(bt, n) {   // botão dos impedimentos: número, explicação curta e seta, com cara de linha que abre (18/11/2026)
+  const tx = elD('span', 'sw-imp-tx'), ch = elD('span', 'sw-imp-ch'); tx.append(elD('b', '', String(n)), document.createTextNode(n === 1 ? ' impedimento' : ' impedimentos'), elD('small', '', 'Esperando resposta de outras pessoas')); ch.innerHTML = icone('chev'); ch.setAttribute('aria-hidden', 'true'); bt.append(tx, ch);
+}
 function swRender(m, o = {}) {
   const LN = o.pdf ? swLinhaPdf : swLinha, red = !!o.reduzida;   // celular: só calendário e tarefas; título, legenda, contadores e barra saem, Exportar vai pro cabeçalho, impedimentos no fim
   const raiz = elD('div', 'sw' + (o.pdf ? ' sw-pdf' : '')), hero = elD('div', 'sw-hero'), h = elD('div'), leg = elD('div', 'sw-leg'), agora = new Date(), hk = swChave(agora);
@@ -5721,7 +5751,7 @@ function swRender(m, o = {}) {
     const tot = elD('span', 'sw-k tot'); tot.append(elD('b', '', k.ok + ' de ' + k.total)); rs.append(tot);
     if ((m.imp || []).length && !o.pdf) {
       const n = m.imp.reduce((a, b) => a + b.linhas.length, 0), bt = elD('button', 'sw-k sw-impb'); bt.type = 'button'; bt.setAttribute('aria-expanded', 'false');
-      bt.append(elD('b', '', String(n)), document.createTextNode(n === 1 ? ' impedimento' : ' impedimentos'));
+      swImpTxt(bt, n);
       bt.onclick = () => { const ab = impBox.hidden; impBox.hidden = !ab; bt.setAttribute('aria-expanded', String(ab)); bt.classList.toggle('on', ab); if (ab) impBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); };
       rs.append(bt);
     }
@@ -5760,7 +5790,7 @@ function swRender(m, o = {}) {
     impBox.append(elD('h2', '', 'Impedimentos'), elD('p', 'sw-sub', 'Não dá para desenvolver até quem está indicado responder ou aprovar.'));
     m.imp.forEach(g => { const cx = elD('div', 'sw-aguarda'), li = elD('div', 'sw-lista'); g.linhas.forEach(l => li.append(LN(l))); cx.append(elD('h3', '', g.titulo), li); impBox.append(cx); });
     const n = m.imp.reduce((a, b) => a + b.linhas.length, 0), bt = elD('button', 'sw-k sw-impb'); bt.type = 'button'; bt.setAttribute('aria-expanded', 'false');
-    bt.append(elD('b', '', String(n)), document.createTextNode(n === 1 ? ' impedimento' : ' impedimentos'));
+    swImpTxt(bt, n);
     bt.onclick = () => { const ab = impBox.hidden; impBox.hidden = !ab; bt.setAttribute('aria-expanded', String(ab)); bt.classList.toggle('on', ab); if (ab) impBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); };
     raiz.append(bt, impBox);
   }
@@ -5809,7 +5839,7 @@ function agendaSemanaTrab(c, F) {
   const marcas = {}; modelo.dias.forEach(x => { if (x.folga) marcas[x.chave] = ['#C878E8']; });   // só dia fora do comum (folga, viagem) leva marca; dia normal fica sem
   const raiz = swRender(modelo, { reduzida: true, busca: true, exporta: () => swExportar(modelo), sel, aoEscolher: escolhe }), box = elD('div', 'ag-cal sw-calbox');
   raiz.querySelector('.sw-ancora').after(box); const prim = raiz.querySelector('.sw-dia'); if (prim) prim.before(nada); else raiz.append(nada); c.replaceChildren(raiz);
-  cal = montaCalendario(box, c, { marcas, sel, aoEscolher: escolhe });
+  cal = montaCalendario(box, c, { marcas, sel, aoEscolher: escolhe, compacto: true });
   escolhe(sel);
 }
 let agQ = '';
@@ -6775,7 +6805,7 @@ function abreBanco(m) {
     const telaFerias = () => {
       const F = D.ferias || {};
       area.replaceChildren(cab('RH', 'Minhas férias', 'Acompanhe o seu saldo e o andamento dos pedidos.'));
-      area.append(grade([{ rotulo: 'Dias disponíveis', valor: String(F.disponiveis != null ? F.disponiveis : 0), tom: 'neutro' }]));
+      area.append(grade([{ rotulo: 'Dias disponíveis', valor: String(F.disponiveis != null ? F.disponiveis : 0), tom: 'neutro' }, { rotulo: 'Dias já gozados', valor: String((F.periodos || []).reduce((n, p) => n + (+p.gozados || 0), 0)), tom: 'neutro' }]));   // dois números lado a lado, nunca um cartão sozinho
       area.append(elD('h3', 'nx-sec', 'Meu saldo por período'));
       (F.periodos || []).forEach(p => {
         const cd = elD('section', 'nx-cartao'); cd.append(elD('b', 'nx-mono nx-periodo', p.periodo));
@@ -7265,14 +7295,16 @@ sair.onclick = () => { store.set('gh-token', ''); token = ''; askToken(); };
 
 token = store.get('gh-token');
 token ? start() : askToken();
-if (location.hash === '#diagnostico') {   // veio da Máquinas: abre o Menu e já entra no Diagnóstico
+const voltouDeMenu = location.hash === '#menu' || (history.state && history.state.painel && !location.hash);   // calculado antes do Diagnóstico mexer no histórico
+if (location.hash === '#diagnostico') {   // veio da Máquinas: abre o Diagnóstico NA HORA, sem esperar a conversa do Trabalho (18/11/2026); o Diagnóstico só lê arquivos do inst
   donosTela = ['orfeu', 'nyx', 'sigma'];
   history.replaceState(null, '', location.pathname + location.search);
-  const capa = document.createElement('div'); capa.id = 'diag-capa'; capa.setAttribute('role', 'status');   // 18/11/2026: enquanto a conversa carrega, a tela ficava branca (Trabalho vazio); a capa mostra o Diagnóstico abrindo
-  capa.innerHTML = '<div class="dc-topo"><b>Diagnóstico</b></div><div class="dc-corpo"><span class="dc-sec">Saúde dos PCs</span><i></i><i></i><i></i><p>Abrindo o diagnóstico…</p></div>'; document.body.append(capa);
-  const t0 = Date.now(), espera = setInterval(() => { if (FILE || Date.now() - t0 > 15000) { clearInterval(espera); if (FILE) { document.getElementById('abre-menu').click(); setTimeout(() => { abreDiagnostico(); const t1 = Date.now(), fim = setInterval(() => { if (document.querySelector('#painel .pcd-pag') || Date.now() - t1 > 10000) { clearInterval(fim); capa.remove(); } }, 100); }, 200); } else capa.remove(); } }, 100);
+  voltaParaOrigem = (() => { try { return !!document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1; } catch (e) { return false; } })();   // Voltar leva de volta pra página de onde veio
+  document.body.classList.add('modo-trab'); menu.hidden = true; painel.hidden = false; pilha = []; Som.pagina();
+  const forca = setInterval(() => { if (painel.hidden) clearInterval(forca); else document.body.classList.add('modo-trab'); }, 250);   // a conversa que carrega depois não desfaz o visual do Trabalho enquanto o Diagnóstico está aberto
+  abreDiagnostico();
 }
-if (location.hash === '#menu' || (history.state && history.state.painel && !location.hash)) {   // voltou de uma página do Menu (Jogos, Máquinas) pelo voltar ou pelo deslizar: reabre o Menu
+if (voltouDeMenu) {   // voltou de uma página do Menu (Jogos, Máquinas) pelo voltar ou pelo deslizar: reabre o Menu
   try { history.replaceState(null, ''); } catch (e) {}   // voltou da tela Jogos (ou de outra página do Menu): cai direto no Menu, não na conversa (May, 06/11/2026 11:29)
   history.replaceState(null, '', location.pathname + location.search);
   const t0 = Date.now(), espera = setInterval(() => { if (FILE || Date.now() - t0 > 15000) { clearInterval(espera); if (FILE) document.getElementById('abre-menu').click(); } }, 100);

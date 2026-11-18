@@ -1,3 +1,4 @@
+// v493 (Trabalho: Projetos e Diagnostico em menu de icones com detalhes; Diagnostico abre na hora; Agenda, Checklist, Rotina e Menu com a cara do sistema; app .493, 18/11/2026).
 // v492 (Trabalho com a cara do sistema da empresa: Banco de horas e Ferias lendo banco-de-horas.json, cartoes de numero, abas sublinhadas; app .492, 18/11/2026).
 // v491 (Diagnostico: capa de carregamento no lugar da tela branca do Trabalho ao abrir pela Maquinas; app .491, 18/11/2026).
 // v490 (Revisao do menu Trabalho: botoes do topo 44 px, titulo em 2 linhas, Agenda com hoje em anel e lista do dia inteira; app .490, 18/11/2026).

@@ -3029,13 +3029,6 @@ body .painel .sw-calbox .ag-dia.hoje:not(.sel), body .painel .ag-grade .ag-dia.h
 body.modo-trab .pcd-abas.embaixo { position: relative; bottom: auto; margin: 12px 0 8px; box-shadow: none; border: 1px solid var(--line); }   /* no Trabalho as abas ficam no fim da página, nunca por cima do conteúdo (revisão 18/11/2026) */
 
 /* Capa do Diagnostico (18/11/2026): evita a tela branca enquanto a conversa carrega */
-#diag-capa{position:fixed;inset:0;z-index:99999;background:#f8f9fb;color:#1f2937;font-family:inherit}
-#diag-capa .dc-topo{height:calc(64px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 20px 0 76px;display:flex;align-items:center;background:#fff;border-bottom:1px solid #e5e7eb}
-#diag-capa .dc-topo b{font-size:18px;font-weight:700}
-#diag-capa .dc-corpo{padding:24px 16px}
-#diag-capa .dc-sec{display:block;margin:0 4px 12px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#059669}
-#diag-capa i{display:block;height:120px;margin-bottom:14px;border-radius:14px;border:1px solid #e5e7eb;background:linear-gradient(90deg,#fff 25%,#f1f3f5 50%,#fff 75%);background-size:200% 100%;animation:dcbrilho 1.2s linear infinite}
-#diag-capa p{margin:8px 4px;color:#6b7280;font-size:14px}
 @keyframes dcbrilho{to{background-position:-200% 0}}
 
 /* ===== Trabalho com a cara do sistema da empresa (18/11/2026) =====
@@ -3137,3 +3130,97 @@ body.modo-trab .pj-ver-mais:hover { background: #F0F6F1; border-color: #BFDCC9; 
 body.modo-trab .pj-chip { border-radius: 8px; font-weight: 700; }
 /* Diagnostico: alvos de 44 px */
 body.modo-trab .painel [class^="pcd"] button, body.modo-trab .painel [class*=" pcd"] button { min-height: 44px; cursor: pointer; }
+
+/* ===== v493 (18/11/2026): Projetos e Diagnostico em menu de icones; cara do sistema em Agenda, Checklist, Rotina e Menu ===== */
+body.modo-trab .nx-hero { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 6px 2px 0; text-align: left; }
+body.modo-trab .nx-hero .nx-cab { flex: 1; min-width: 0; padding: 8px 4px 4px; text-align: left; }
+body.modo-trab .nx-hero .p-engrenagem { flex: none; width: 44px; height: 44px; margin-top: 4px; cursor: pointer; }
+body.modo-trab .painel .p-grade.apps > * { text-align: left; align-items: flex-start; justify-content: flex-start; gap: 4px; min-height: 140px; padding: 16px 14px; }
+body.modo-trab .painel .p-grade.apps > * .ic { width: 44px; height: 44px; border-radius: 10px; background: #E3F1E7; display: grid; place-items: center; margin: 0 0 8px; }
+body.modo-trab .painel .p-grade.apps > * .ic svg { width: 24px; height: 24px; }
+body.modo-trab .painel .p-grade.apps > * .t { font-size: 16px; font-weight: 800; text-align: left; }
+.p-sub-az { display: block; margin-top: 2px; color: #6B7280; font-size: 12.5px; font-weight: 500; line-height: 1.3; text-align: left; }
+/* menu de icones (Projetos e Diagnostico) */
+.dg-tela { padding-bottom: 28px; }
+.dg-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.dg-card { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; width: 100%; height: auto; min-height: 148px; padding: 14px; text-align: left; background: #FFFFFF; border: 1px solid #E4E4E0; border-radius: 12px; color: #1B1F23; font: inherit; cursor: pointer; box-shadow: none; }
+.dg-card:hover { border-color: #15803D; background: #F7FBF8; }
+.dg-card:focus-visible { outline: 2px solid #15803D; outline-offset: 2px; }
+.dg-ic { width: 44px; height: 44px; border-radius: 10px; background: #E3F1E7; color: #15803D; display: grid; place-items: center; margin-bottom: 6px; }
+.dg-ic svg { width: 24px; height: 24px; }
+.dg-nm { display: block; font-size: 16px; font-weight: 800; }
+.dg-sub { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: #6B7280; font-size: 12.5px; font-weight: 500; line-height: 1.3; }
+.dg-card .nx-chip, .dg-ex { margin-top: auto; }
+.dg-ex { color: #15803D; font-size: 12px; font-weight: 700; }
+.dg-card.sk { pointer-events: none; gap: 10px; cursor: default; }
+.dg-card.sk i { display: block; border-radius: 8px; background: linear-gradient(90deg, #EEEEEA 25%, #F7F7F5 50%, #EEEEEA 75%) 0 0 / 200% 100%; animation: skm 1.3s ease-in-out infinite; }
+.dg-card.sk i:nth-child(1) { width: 44px; height: 44px; } .dg-card.sk i:nth-child(2) { width: 70%; height: 14px; } .dg-card.sk i:nth-child(3) { width: 40%; height: 14px; margin-top: auto; }
+@media (prefers-reduced-motion: reduce) { .dg-card.sk i { animation: none; } }
+.dg-estado { margin: 10px 4px 12px; }
+.nx-chip-aviso { background: #FBF3DC; color: #8A5A00; } .nx-chip-ruim { background: #FBE6E8; color: #C8283C; } .nx-chip-info { background: #E6EEF8; color: #2F5FA8; }
+.nx-ul { margin: 0; padding-left: 18px; display: grid; gap: 10px; } .nx-ul li { font-size: 15px; line-height: 1.4; color: #1B1F23; overflow-wrap: anywhere; }
+.nx-par { margin: 0; font-size: 15px; line-height: 1.5; color: #1B1F23; } .nx-vazio { margin: 0; color: #6B7280; font-size: 14px; }
+.nx-linha-col { flex-direction: column; align-items: flex-start; gap: 2px; } .nx-linha-col:first-child, .nx-cartao > .nx-linha:first-child { border-top: 0; }
+.nx-txt { font-size: 14px; color: #1B1F23; line-height: 1.35; }
+.nx-rot { letter-spacing: .06em; font-size: 10px; white-space: nowrap; }
+.dg-det .pcd, .dg-det .rel, .dg-det .pcd-dias-graf, .dg-det .pcd-app { margin-top: 12px; }
+/* Diagnostico: sem mascotes nem barras multicoloridas */
+body.modo-trab .dg-tela img { display: none !important; }
+body.modo-trab .dg-tela { --rc: #15803D; }
+body.modo-trab .dg-tela :is(.pcd, .rel-kpi, .rel-rosca, .pcd-dias-graf, .pcd-cmp, .rel, .pcd-app) { --rc: #15803D !important; --k: 0px; background: #FFFFFF; border: 1px solid #E4E4E0; border-radius: 12px; box-shadow: none; color: #1B1F23; }
+body.modo-trab .dg-tela :is(.pcd, .rel-kpi, .rel-rosca, .pcd-abas)::before { display: none; }
+body.modo-trab .dg-tela .pcd-dias-lin, body.modo-trab .dg-tela .rel-prog { --rc: #15803D !important; }
+body.modo-trab .dg-tela .pcd-val-bar, body.modo-trab .dg-tela .rel-trilha i, body.modo-trab .dg-tela .pcd-dias-bar::after { background: #15803D !important; }
+body.modo-trab .dg-tela .pcd-est { background: #E3F1E7; color: #15803D; border-radius: 8px; }
+body.modo-trab .dg-tela .pcd-num div, body.modo-trab .dg-tela .pcd-val, body.modo-trab .dg-tela .rel-kpi b, body.modo-trab .dg-tela .rel-prog b, body.modo-trab .dg-tela .pcd-dias-num b { font-family: var(--nx-mono); background: #F6F6F4; color: #1B1F23; }
+body.modo-trab .dg-tela .pcd-ver, body.modo-trab .dg-tela .pcd-dias-sel button { background: #FFFFFF; border: 1px solid #E4E4E0; border-radius: 10px; color: #1B1F23; min-height: 44px; cursor: pointer; }
+body.modo-trab .dg-tela .pcd-ver:hover, body.modo-trab .dg-tela .pcd-dias-sel button:hover { background: #F0F6F1; border-color: #BFDCC9; }
+body.modo-trab .dg-tela .pcd-dias-sel button.on { background: #E3F1E7; color: #15803D; border-color: #BFDCC9; }
+/* Agenda: clara, neutra e verde */
+body.modo-trab .painel .ag-dia.hoje { background: #E3F1E7 !important; color: #15803D !important; outline: 0; border-radius: 10px; font-weight: 800; }
+body.modo-trab .painel .ag-dia.sel { background: #15803D !important; color: #FFFFFF !important; border-radius: 10px; }
+body.modo-trab .painel .ag-dia.tem { background: transparent; }
+body.modo-trab .painel .ag-dia:hover { background: #F0F6F1; }
+body.modo-trab .painel .ag-seta { width: 44px; height: 44px; cursor: pointer; } body.modo-trab .painel .ag-seta:hover { background: #E3F1E7; }
+body.modo-trab .painel .sw-calbox.ag-cal { background: #FFFFFF; border: 1px solid #E4E4E0; border-radius: 12px; padding: 6px 10px 4px; }
+body.modo-trab .painel .sw-calbox .ag-dia { height: 40px; }
+.ag-alterna { display: block; width: 100%; min-height: 44px; margin-top: 2px; background: transparent; border: 0; border-top: 1px solid #EEEEEA; color: #15803D; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 0 0 10px 10px; }
+.ag-alterna:hover { background: #F0F6F1; }
+body.modo-trab .sw-it.sw-n, body.modo-trab .sw-it.sw-n.todo, body.modo-trab .sw-it.sw-n.atras, body.modo-trab .sw-it.sw-n.doing, body.modo-trab .sw-it.sw-n.late, body.modo-trab .sw-it.sw-n.ok { background: #FFFFFF !important; border: 1px solid #E4E4E0 !important; border-radius: 12px; box-shadow: none !important; animation: none !important; cursor: pointer; }
+body.modo-trab .sw-it.sw-n:hover { border-color: #BFDCC9 !important; background: #F7FBF8 !important; }
+body.modo-trab .sw-it.sw-n.ok { background: #F5FAF6 !important; }
+body.modo-trab .sw-n .sw-tag { align-self: flex-start; padding: 2px 8px; border-radius: 6px; background: color-mix(in srgb, var(--c) 14%, #FFFFFF); color: color-mix(in srgb, var(--c) 55%, #000000); font-size: 10.5px; font-weight: 800; letter-spacing: .06em; }
+body.modo-trab .sw-n .sw-fim.atr { color: #8A5A00; } body.modo-trab .sw-n .sw-fim.exec { color: #15803D; }
+body.modo-trab .sw-agora::before, body.modo-trab .sw-agora::after { background: #15803D !important; border-color: #15803D !important; } body.modo-trab .sw-agora span { background: #15803D; }
+body.modo-trab .sw-pdf-bt { background: #FFFFFF !important; border: 1px solid #E4E4E0 !important; color: #6B7280 !important; border-radius: 10px; cursor: pointer; box-shadow: none !important; }
+body.modo-trab .sw-pdf-bt svg { filter: grayscale(1) opacity(.75); } body.modo-trab .sw-pdf-bt:hover { background: #F0F6F1 !important; }
+body.modo-trab .sw-busca { background: #FFFFFF; border: 1px solid #E4E4E0; border-radius: 10px; min-height: 44px; }
+body.modo-trab .sw-busca:focus { border-color: #15803D; }
+body.modo-trab .sw-impb { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-height: 60px; padding: 10px 14px; text-align: left; border-radius: 12px; }
+.sw-imp-tx b { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 18px; } .sw-imp-tx { font-size: 15px; font-weight: 700; } .sw-imp-tx small { display: block; margin-top: 2px; color: #6B7280; font-size: 12.5px; font-weight: 500; }
+.sw-imp-ch { flex: none; width: 20px; height: 20px; color: #6B7280; } .sw-imp-ch svg { width: 20px; height: 20px; } .sw-impb[aria-expanded="true"] .sw-imp-ch { transform: rotate(90deg); }
+/* Checklist e Rotina */
+body.modo-trab .ck-bloco { margin-top: 8px; }
+body.modo-trab .ck-item { min-height: 56px; cursor: pointer; } body.modo-trab .ck-item:hover { background: #F7FBF8; }
+body.modo-trab .ck-caixa { position: relative; } body.modo-trab .ck-caixa::after { content: ''; position: absolute; inset: -8px; }
+body.modo-trab .sl-card { border-left-color: #E4E4E0; border-radius: 12px; box-shadow: none; }
+body.modo-trab .sl-secao { margin: 18px 4px 8px; color: #4B5563; }
+body.modo-trab .sl-toca { cursor: pointer; min-height: 56px; } body.modo-trab .sl-toca:hover { background: #F7FBF8; }
+body.modo-trab .sl-tela > .nx-cab { padding-top: 14px; }
+/* ajustes v493 */
+body.modo-trab .painel .p-grade.apps > * { align-items: flex-start !important; text-align: left !important; justify-content: flex-start !important; }
+body.modo-trab .painel .p-grade.apps > * .ic { background: #E3F1E7 !important; width: 44px !important; height: 44px !important; border-radius: 10px !important; display: grid !important; place-items: center; margin: 0 0 8px !important; align-self: flex-start; }
+body.modo-trab .painel .p-grade.apps > * .t { text-align: left !important; }
+.dg-grade { grid-template-columns: repeat(2, minmax(0, 1fr)); } .dg-nm { overflow-wrap: anywhere; }
+body.modo-trab .painel .ag-cal-topo b { text-transform: none; }
+body.modo-trab .sw-aguarda { border: 1px solid #E4E4E0; background: #FFFFFF; border-radius: 12px; }
+body.modo-trab .dg-tela :is(.pcd-dias-num b, .rel-prog b, .rel-kpi b) { background: transparent; }
+body.modo-trab .dg-tela .pcd-cab div { background: #F6F6F4 !important; border: 1px solid #E4E4E0 !important; border-radius: 8px; color: #1B1F23; box-shadow: none !important; }
+body.modo-trab .dg-tela .pcd-val { border-left-color: #D6D6D2 !important; }
+body.modo-trab .painel .p-grade.apps > * { justify-items: start !important; align-content: start !important; }
+body.modo-trab .painel .p-grade.apps > * .ic { justify-self: start !important; }
+body.modo-trab .painel .p-grade.apps > * { min-height: 168px !important; height: auto !important; overflow: visible !important; }
+body.modo-trab .painel .p-grade.apps { grid-auto-rows: auto; }
+body.modo-trab .painel .ag-cal-topo b::first-letter { text-transform: uppercase; }
+body.modo-trab .painel .ag-tela .ag-dia, body.modo-trab .painel .sw-calbox .ag-dia, body.modo-trab .painel .ag-dia { width: 100% !important; min-width: 44px; max-width: 52px; height: 44px !important; justify-self: center; }
+body.modo-trab .painel .p-grade.apps > * { min-height: 156px !important; }
