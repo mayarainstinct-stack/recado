@@ -2983,3 +2983,15 @@ body .painel.tema-excel .fin-res3 .neg b { color: #A4262C; }   /* Sobra negativa
 .pjm-tela .pjm-h-midnight .mn-logo small { font-size: .82rem; }
 .pjm-abas.grade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 .pjm-abas.grade .pjm-aba { padding: 8px 6px; }
+.pjm-tela .pjm-hero .pjm-logo { max-height: 170px; width: 100%; }
+.pjm-tela .pjm-h-midnight .mn-logo b { font-size: 3.9rem; }
+.pjm-tela .pjm-h-midnight .mn-logo small { font-size: .95rem; }
+.p-corpo:has(.pjm-t-lavajato) { background: linear-gradient(180deg, #0B47C7 0%, #062A7A 55%, #04185A 100%); }
+.painel:has(.pjm-t-lavajato) .p-topo { background: #062A7A !important; color: #FFFFFF !important; }
+.painel:has(.pjm-t-lavajato) .p-topo::after { background: #FFD400 !important; }
+.painel:has(.pjm-t-lavajato) .p-topo button { background: rgba(255,255,255,.14) !important; color: #FFFFFF !important; border: 0 !important; }
+.pjm-t-lavajato { color: #FFFFFF; }
+.pjm-t-lavajato .pjm-rot { color: #FFD400; }
+.pjm-t-lavajato .pjm-bloco { border-color: rgba(255,255,255,.22); }
+.pjm-t-lavajato .pjm-aba:not(.on) { background: rgba(255,255,255,.14); color: #FFFFFF; }
+.pjm-t-lavajato .pjm-hero-pra { color: #FFFFFF; }
