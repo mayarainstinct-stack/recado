@@ -1,3 +1,4 @@
+// v478 (Azul: card da lista cinza e azul igual a pagina; icone da barra so o A com a seta, sem quadro; app .478, 18/11/2026).
 // v477 (Azul: faixa listrada termina num degrade curto; app .477, 18/11/2026).
 // v476 (Azul: listras so atras da capa, fundo liso no miolo; app .476, 18/11/2026).
 // v475 (Azul: volta o fundo cinza; aba escolhida e botoes no azul da marca, sem verde; app .475, 18/11/2026).
