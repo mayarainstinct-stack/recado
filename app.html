@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-18.465">
+<meta name="app-versao" content="2026-11-18.466">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -702,7 +702,7 @@ let RE_QUEM_NOMES, RE_RESP, RE_AGENTE_SETA;
 function montaReQuem() {
   RE_QUEM_NOMES = [...Object.keys(GRUPO), ...Object.keys(ALIAS_QUEM)].map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
   RE_RESP = reResp(RE_QUEM_NOMES);
-  RE_AGENTE_SETA = new RegExp('^(' + RE_QUEM_NOMES + ') → ([\\s\\S]*)$', 'i');   // só "→": "Fulano -> ver" digitado por ela no Trabalho continua dela
+  RE_AGENTE_SETA = new RegExp('^(' + RE_QUEM_NOMES + ')(?: →| \\(PC\\d+\\):?) ([\\s\\S]*)$', 'i');   // só "→" ou "Nome (PC1):" (robô que gravou como linha dela, 18/11/2026): "Fulano -> ver" digitado por ela no Trabalho continua dela
 }
 montaReQuem();
 // Copia o texto puro da mensagem pro clipboard; cai pra execCommand em navegador mobile antigo que não tem Clipboard API.
