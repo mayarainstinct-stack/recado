@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-19.512">
+<meta name="app-versao" content="2026-11-19.513">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-19.510"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-19.513"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -5400,7 +5400,8 @@ function abreHospedagem(h) {
       if (gn) c.append(elD('div', 'p-sec', gn + ' (' + os.length + ')'));
       const g = elD('div', 'hosp-grade'); c.append(g);
       os.forEach(o => {
-        const a = elD('a', 'hosp-card'); a.href = o.link; a.target = '_blank'; a.rel = 'noopener';
+        const a = elD('a', 'hosp-card' + (o.preferido ? ' preferido' : '')); a.href = o.link; a.target = '_blank'; a.rel = 'noopener';
+        if (o.preferido) a.append(elD('span', 'hosp-pref', '★ Meu preferido'));   // v513 (May 19/11/2026: "salva como meu preferido"); vem primeiro na lista
         if (o.foto) { const im = elD('img'); im.loading = 'lazy'; im.alt = ''; im.src = o.foto; a.append(im); }
         const i = elD('div', 'hosp-info');
         if (o.precos) {   // 1, 2 e 3 semanas (May 19/11/2026: "coloca o valor de 1 2 ou 3 semanas de cada lugar"); traço = não estava livre

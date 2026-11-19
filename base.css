@@ -3317,3 +3317,6 @@ body.modo-trab .painel .p-grade.apps > * { min-height: 156px !important; }
 .chave-cara .chave-card button { width: 100%; height: auto; min-height: 48px; white-space: nowrap; display: block; font: inherit; font-weight: 700; padding: 12px; border: 0; border-radius: 10px; background: #22C55E; color: #0b2a15; cursor: pointer; }
 .chave-card button:hover { filter: brightness(1.08); } .chave-card button:disabled { opacity: .6; cursor: default; }
 .chave-card .chave-erro { color: #DC2626; min-height: 1em; }
+/* v513: o Airbnb preferido da May, com selo e borda */
+.hosp-card { position: relative; } .hosp-card.preferido { border: 2px solid #F5C400; box-shadow: 0 0 0 3px rgba(245,196,0,.25); }
+.hosp-pref { position: absolute; top: 8px; left: 8px; z-index: 1; padding: 3px 10px; border-radius: 999px; background: #F5C400; color: #2a2000; font-size: 12px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
