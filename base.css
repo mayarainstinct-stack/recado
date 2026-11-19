@@ -3302,3 +3302,8 @@ body.modo-trab .painel .p-grade.apps > * { min-height: 156px !important; }
 .hosp-lugar { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
 .hosp-acoes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .hosp-acoes a { text-decoration: none; cursor: pointer; }
+.hosp-semanas { display: flex; flex-direction: column; gap: 2px; margin-bottom: 4px; }
+.hosp-sem { display: flex; justify-content: space-between; gap: 6px; font-size: 13px; }
+.hosp-sem span { color: var(--muted); }
+.hosp-sem b { color: var(--accent); font-weight: 700; }
+.hosp-sem.vazio b { color: var(--muted); font-weight: 400; }

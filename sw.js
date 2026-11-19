@@ -1,3 +1,4 @@
+// v500 (Viagens, Onde ficar: preço de 1, 2 e 3 semanas em cada cartão; app .500, 19/11/2026).
 // v499 (Viagens: Onde ficar com foto, preço e link do anúncio, e Lugares com ligar e mapa; app .499, 19/11/2026).
 // v498 (Parede da Vitoria: ao entrar, todas as capas carregam na ordem das cartas, 3 por vez; app .498, 18/11/2026).
 // v497 (Cartao do robo: tocar na foto chama igual o MSN, ele chacoalha, cresce e fica vermelho; 3 toques ou mais mandam o religar-robo do PC dele; app .497, 18/11/2026).
