@@ -60,7 +60,7 @@ const CSS = `
    frente = parede lateral com a prateleira de pneus e óleo; traseira = a outra lateral, bancada e janela; cima = só o chão visto de cima. */
 .gr-tela .gr-rua, .gr-tela .gr-prat, .gr-tela .gr-banc { display: none; position: absolute; }
 .gr-tela .gr-palco.gr-gira { perspective: 700px; }
-.gr-tela .gr-palco.gr-gira .gr-parede, .gr-tela .gr-palco.gr-gira .gr-chao, .gr-tela .gr-palco.gr-gira .gr-mapa { animation: gr-caixa .5s cubic-bezier(.3,.7,.3,1); transform-origin: var(--gir-o, 50%) 50%; backface-visibility: hidden; }
+.gr-tela .gr-palco.gr-gira .gr-parede, .gr-tela .gr-palco.gr-gira .gr-chao, .gr-tela .gr-palco.gr-gira .gr-mapa, .gr-tela .gr-palco.gr-gira .gr-vet { animation: gr-caixa .5s cubic-bezier(.3,.7,.3,1); transform-origin: var(--gir-o, 50%) 50%; backface-visibility: hidden; }
 @keyframes gr-caixa { 0% { transform: rotateY(var(--gir, 70deg)); opacity: .3; } 100% { transform: none; opacity: 1; } }   /* v512: o fundo vira como a face de uma caixa (May 19/11: "gira em 3d", "como se fosse uma caixa"); antes o nome batia com o giro da chave e rodava 360 */
 .gr-tela .gr-palco[data-ang="lado-esquerdo"] .gr-painel-f, .gr-tela .gr-palco[data-ang="lado-esquerdo"] .gr-box,
 .gr-tela .gr-palco[data-ang="frente"] .gr-painel-f, .gr-tela .gr-palco[data-ang="traseira"] .gr-painel-f { display: none; }
