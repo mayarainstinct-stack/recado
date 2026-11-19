@@ -1,3 +1,4 @@
+// v509 (19/11/2026): Garagem: o mesmo lugar de todos os lados (cantos com as paredes vizinhas na posição certa; de cima, as 4 paredes em volta).
 // v508 (19/11/2026): Garagem: cada lado um fundo (direito = fundo da oficina, esquerdo = porta e estrada, frente = prateleira, trás = bancada e janela, cima = chão).
 // v507 (19/11/2026): Avaliação da semana: arrastar de lado é do app (igual ao conserto do slide da Garagem, v446); tremido vertical não trava mais.
 // v506 (19/11/2026): deslizar entre semanas sempre troca a semana inteira (nunca para no meio); o ajuste inicial não briga com o dedo.

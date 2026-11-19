@@ -36,6 +36,25 @@ const CSS = `
 .gr-tela .gr-pag.gr-no-ar .gr-sombra { transform: scaleX(.78); }
 .gr-tela .gr-coluna { position: absolute; bottom: 26px; width: 18px; height: 196px; background: repeating-linear-gradient(to bottom, transparent 0 8px, rgba(0,0,0,.45) 8px 11px) 5px 30px / 8px calc(100% - 40px) no-repeat, linear-gradient(90deg, #6E737B, #B9BEC5 40%, #7C818A); clip-path: polygon(0 4px, 4px 0, 100% 0, 100% 100%, 0 100%); }
 .gr-tela .gr-coluna::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 22px; background: repeating-linear-gradient(-45deg, #F5C400 0 5px, #141414 5px 10px); }
+/* Mesmo lugar de todos os lados (May 19/11: "tem q parecer q é o mesmo lugar"). Planta: N = parede do fundo (painel de ferramentas e BOX),
+   S = portão e estrada, O = prateleira de pneus e óleo, L = bancada e janela; o carro fica de nariz pro L.
+   Cada vista mostra nos cantos um pedaço das paredes vizinhas, no lado certo, e a de cima mostra as 4 em volta. */
+.gr-tela .gr-canto { display: none; position: absolute; top: 14px; height: 164px; width: 30px; }
+.gr-tela .gr-canto.e { left: 0; transform: perspective(240px) rotateY(38deg); transform-origin: 0 50%; }
+.gr-tela .gr-canto.d { right: 0; transform: perspective(240px) rotateY(-38deg); transform-origin: 100% 50%; }
+.gr-tela .gr-palco[data-ang] .gr-canto { display: block; filter: brightness(.82); }
+.gr-tela .gr-palco[data-ang="cima"] .gr-canto { display: none; }
+.gr-tela .gr-canto.prat { background: linear-gradient(#6B5236 0 0) 0 52px / 100% 5px no-repeat, linear-gradient(#6B5236 0 0) 0 104px / 100% 5px no-repeat, linear-gradient(#6B5236 0 0) 0 156px / 100% 5px no-repeat, radial-gradient(circle, #55585F 0 4px, #141414 5px 12px, transparent 13px) 3px 24px / 26px 52px repeat-y, #34363C; }
+.gr-tela .gr-canto.banc { background: linear-gradient(90deg, transparent 0 4px, #9CC9EE 4px 26px, transparent 26px) 0 14px / 100% 52px no-repeat, linear-gradient(#8A6A44 0 0) 0 112px / 100% 9px no-repeat, linear-gradient(90deg, transparent 10px, #3B3E45 10px 16px, transparent 16px) 0 121px / 100% 43px no-repeat, #34363C; }
+.gr-tela .gr-canto.pino { background: radial-gradient(circle, #121316 1.3px, transparent 1.8px) 0 0 / 9px 9px, #3B3E45; background-clip: content-box; padding: 6px 0 92px; }
+.gr-tela .gr-canto.porta { background: linear-gradient(to bottom, #87B7E3 0 60%, #9FBF8A 60% 72%, #3B3E44 72%); border: 4px solid #4C5058; border-bottom: 0; }
+.gr-tela .gr-palco[data-ang="frente"] .gr-box, .gr-tela .gr-palco[data-ang="traseira"] .gr-box { display: none; }
+.gr-tela .gr-mapa { display: none; position: absolute; inset: 0; pointer-events: none; }
+.gr-tela .gr-palco[data-ang="cima"] .gr-mapa { display: block;
+  background: radial-gradient(circle, #121316 1.3px, transparent 1.8px) 0 0 / 9px 9px repeat-x, linear-gradient(#3B3E45 0 0) 0 0 / 100% 14px no-repeat,
+    repeating-linear-gradient(90deg, #F2F2F0 0 18px, transparent 18px 34px) 0 calc(100% - 9px) / 100% 3px no-repeat, linear-gradient(#3B3E44 0 0) 0 100% / 100% 20px no-repeat,
+    radial-gradient(circle, #55585F 0 3px, #141414 4px 9px, transparent 10px) 0 18px / 20px 22px repeat-y, linear-gradient(#6B5236 0 0) 0 0 / 22px 100% no-repeat,
+    linear-gradient(#8A6A44 0 0) 100% 30% / 22px 40% no-repeat; }
 /* Cada lado um fundo (May 19/11/2026: "pra parecer q mudou a camera", "tem q combinar com o lado q o veiculo ta").
    lado-direito = fundo da oficina visto da porta (o cenário de sempre); lado-esquerdo = a porta aberta e a estrada, vista do fundo;
    frente = parede lateral com a prateleira de pneus e óleo; traseira = a outra lateral, bancada e janela; cima = só o chão visto de cima. */
@@ -424,7 +443,7 @@ function elevador(v, vet) {
   const velho = vet.innerHTML;   // o desenho antigo do veículo fica de reserva se o vetor não abrir
   function desenha() {
     const meu = ++tok;
-    { const pl = vet.closest('.gr-palco'); if (pl && pl.dataset.ang !== ang) { pl.dataset.ang = ang; pl.classList.remove('gr-gira'); void pl.offsetWidth; pl.classList.add('gr-gira'); } }   // cada lado um fundo, como se a câmera desse a volta (May 19/11)
+    { const pl = vet.closest('.gr-palco'); if (pl && pl.dataset.ang !== ang) { pl.dataset.ang = ang; const CANTOS = { 'lado-direito': ['prat', 'banc'], 'lado-esquerdo': ['banc', 'prat'], frente: ['porta', 'pino'], traseira: ['pino', 'porta'] }, cs = CANTOS[ang] || ['', '']; pl.querySelectorAll('.gr-canto').forEach((c, n) => { c.className = 'gr-canto ' + (n ? 'd ' : 'e ') + cs[n]; }); pl.classList.remove('gr-gira'); void pl.offsetWidth; pl.classList.add('gr-gira'); } }   // cada lado um fundo, como se a câmera desse a volta (May 19/11)
     chips.forEach(([f, b]) => b.classList.toggle('on', f === fase)); abas.forEach(([a, b]) => b.classList.toggle('on', a === ang));
     olho.classList.toggle('off', !placa); olho.innerHTML = placa ? OLHO : OLHO_X; olho.setAttribute('aria-label', placa ? 'Esconder a placa' : 'Mostrar a placa'); olho.setAttribute('aria-pressed', String(placa));
     const cmp = fase === 'comparar'; vet.classList.toggle('cmp', cmp);
@@ -602,11 +621,11 @@ function pagina(v, i, tot, raiz) {
   const cor = corOk(v.cor), pg = elD('article', 'gr-pag'); pg.style.setProperty('--v', cor); pg.setAttribute('aria-label', v.nome);
   const pal = elD('div', 'gr-palco'), par = elD('div', 'gr-parede'), pf = elD('div', 'gr-painel-f'), box = elD('div', 'gr-box', 'BOX');
   pf.innerHTML = FERRAMENTAS; box.append(elD('b', null, String(i + 1).padStart(2, '0'))); box.setAttribute('aria-label', 'Vaga ' + (i + 1) + ' de ' + tot);
-  par.append(elD('div', 'gr-lampada'), pf, box, elD('div', 'gr-rua'), elD('div', 'gr-prat'), elD('div', 'gr-banc'));   // fundos das outras vistas (May 19/11)
+  par.append(elD('div', 'gr-lampada'), pf, box, elD('div', 'gr-rua'), elD('div', 'gr-prat'), elD('div', 'gr-banc'), elD('div', 'gr-canto e'), elD('div', 'gr-canto d'));   // fundos das outras vistas (May 19/11)
   const carga = elD('div', 'gr-carga'), id = (v.id || 'v' + i).replace(/[^a-z0-9]/gi, '');
   const vet = elD('div', 'gr-vet'); vet.innerHTML = (SVG[v.tipo] || svgSiena)(id, cor); carga.append(vet);
   const rampa = elD('div', 'gr-rampa'); rampa.append(elD('span', 'gr-carro e'), elD('span', 'gr-carro d')); carga.append(rampa);
-  pal.append(par, elD('div', 'gr-faixa'), elD('div', 'gr-chao'), elD('div', 'gr-sombra'), elD('div', 'gr-coluna e'), elD('div', 'gr-coluna d'), carga);
+  pal.append(par, elD('div', 'gr-faixa'), elD('div', 'gr-chao'), elD('div', 'gr-mapa'), elD('div', 'gr-sombra'), elD('div', 'gr-coluna e'), elD('div', 'gr-coluna d'), carga);
   const nm = elD('div', 'gr-nome'); nm.append(elD('h3', null, v.nome), elD('div', 'gr-modelo', v.modelo));
   const ln = elD('div', 'gr-linha'); if (v.apelido) ln.append(elD('span', 'gr-fita', v.apelido));
   if (v.medida) { const tr = elD('span', 'gr-trena'); tr.setAttribute('aria-label', 'Medida ' + v.medida); tr.append(elD('i'), elD('span', null, v.medida)); ln.append(tr); }
