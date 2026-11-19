@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-19.510">
+<meta name="app-versao" content="2026-11-19.511">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -5381,7 +5381,8 @@ function abreEstatistica(h) {
 }
 function abreViagem(v) {
   tela(v.nome, c => {
-    if (v.arte) { const fig = document.createElement('div'), im = document.createElement('img'); fig.className = 'pl2-arte v-arte'; im.alt = ''; im.src = v.arte + '?v=' + encodeURIComponent(VERSAO); fig.append(im); c.append(fig); }   // a arte da viagem no topo, igual ao cartão (May 17/11: "dentro de viagens tem q ser mais bonitinho")
+    const arteD = v.arte_detalhe || v.arte;   // v511 (May 19/11): 2 imagens por viagem, uma no card (arte) e outra no detalhe (arte_detalhe)
+    if (arteD) { const fig = document.createElement('div'), im = document.createElement('img'); fig.className = 'pl2-arte v-arte'; im.alt = ''; im.src = arteD + '?v=' + encodeURIComponent(VERSAO); fig.append(im); c.append(fig); }   // a arte da viagem no topo, igual ao cartão (May 17/11: "dentro de viagens tem q ser mais bonitinho")
     if (v.resumo) { const r = document.createElement('div'); r.className = 'p-texto'; r.textContent = v.resumo; c.append(r); }
     const lista = document.createElement('div'); lista.className = 'p-lista'; c.append(lista);
     v.listas.forEach(l => lista.append(botao(l.icone, semHojeFalso(l.nome), marcados(v, l).size + ' de ' + totalItens(l) + ' feitos · ' + semHojeFalso(l.sub || ''), () => abreChecklist(v, l))));
