@@ -59,8 +59,9 @@ const CSS = `
    lado-direito = fundo da oficina visto da porta (o cenário de sempre); lado-esquerdo = a porta aberta e a estrada, vista do fundo;
    frente = parede lateral com a prateleira de pneus e óleo; traseira = a outra lateral, bancada e janela; cima = só o chão visto de cima. */
 .gr-tela .gr-rua, .gr-tela .gr-prat, .gr-tela .gr-banc { display: none; position: absolute; }
-.gr-tela .gr-palco.gr-gira .gr-parede, .gr-tela .gr-palco.gr-gira .gr-chao { animation: gr-gira .45s ease-out; }
-@keyframes gr-gira { 0% { opacity: .25; transform: translateX(-18px); } 100% { opacity: 1; transform: none; } }
+.gr-tela .gr-palco.gr-gira { perspective: 700px; }
+.gr-tela .gr-palco.gr-gira .gr-parede, .gr-tela .gr-palco.gr-gira .gr-chao, .gr-tela .gr-palco.gr-gira .gr-mapa { animation: gr-caixa .5s cubic-bezier(.3,.7,.3,1); transform-origin: var(--gir-o, 50%) 50%; backface-visibility: hidden; }
+@keyframes gr-caixa { 0% { transform: rotateY(var(--gir, 70deg)); opacity: .3; } 100% { transform: none; opacity: 1; } }   /* v512: o fundo vira como a face de uma caixa (May 19/11: "gira em 3d", "como se fosse uma caixa"); antes o nome batia com o giro da chave e rodava 360 */
 .gr-tela .gr-palco[data-ang="lado-esquerdo"] .gr-painel-f, .gr-tela .gr-palco[data-ang="lado-esquerdo"] .gr-box,
 .gr-tela .gr-palco[data-ang="frente"] .gr-painel-f, .gr-tela .gr-palco[data-ang="traseira"] .gr-painel-f { display: none; }
 .gr-tela .gr-palco[data-ang="lado-esquerdo"] .gr-rua { display: block; left: 34px; right: 34px; top: 16px; height: 162px; border: 6px solid #4C5058; border-bottom: 0; box-shadow: 0 0 0 2px #111, 0 0 30px rgba(255,248,220,.18);
@@ -443,7 +444,7 @@ function elevador(v, vet) {
   const velho = vet.innerHTML;   // o desenho antigo do veículo fica de reserva se o vetor não abrir
   function desenha() {
     const meu = ++tok;
-    { const pl = vet.closest('.gr-palco'); if (pl && pl.dataset.ang !== ang) { pl.dataset.ang = ang; const CANTOS = { 'lado-direito': ['prat', 'banc'], 'lado-esquerdo': ['banc', 'prat'], frente: ['porta', 'pino'], traseira: ['pino', 'porta'] }, cs = CANTOS[ang] || ['', '']; pl.querySelectorAll('.gr-canto').forEach((c, n) => { c.className = 'gr-canto ' + (n ? 'd ' : 'e ') + cs[n]; }); pl.classList.remove('gr-gira'); void pl.offsetWidth; pl.classList.add('gr-gira'); } }   // cada lado um fundo, como se a câmera desse a volta (May 19/11)
+    { const pl = vet.closest('.gr-palco'); if (pl && pl.dataset.ang !== ang) { const VOLTA = ['lado-direito', 'frente', 'lado-esquerdo', 'traseira'], de = VOLTA.indexOf(pl.dataset.ang), pra = VOLTA.indexOf(ang), dir = de < 0 || pra < 0 ? 1 : ((pra - de + 4) % 4 === 3 ? -1 : 1); pl.style.setProperty('--gir', (dir * 70) + 'deg'); pl.style.setProperty('--gir-o', dir > 0 ? '100%' : '0%'); pl.dataset.ang = ang; const CANTOS = { 'lado-direito': ['prat', 'banc'], 'lado-esquerdo': ['banc', 'prat'], frente: ['porta', 'pino'], traseira: ['pino', 'porta'] }, cs = CANTOS[ang] || ['', '']; pl.querySelectorAll('.gr-canto').forEach((c, n) => { c.className = 'gr-canto ' + (n ? 'd ' : 'e ') + cs[n]; }); pl.classList.remove('gr-gira'); void pl.offsetWidth; pl.classList.add('gr-gira'); } }   // cada lado um fundo, como se a câmera desse a volta (May 19/11)
     chips.forEach(([f, b]) => b.classList.toggle('on', f === fase)); abas.forEach(([a, b]) => b.classList.toggle('on', a === ang));
     olho.classList.toggle('off', !placa); olho.innerHTML = placa ? OLHO : OLHO_X; olho.setAttribute('aria-label', placa ? 'Esconder a placa' : 'Mostrar a placa'); olho.setAttribute('aria-pressed', String(placa));
     const cmp = fase === 'comparar'; vet.classList.toggle('cmp', cmp);

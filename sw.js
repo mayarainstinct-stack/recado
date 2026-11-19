@@ -1,3 +1,4 @@
+// v512 (19/11/2026): Garagem: o fundo vira em 3D como a face de uma caixa ao trocar de lado (antes rodava 360 por nome de animação repetido).
 // v511 (19/11/2026): Viagens com 2 imagens: a do card e outra cena no detalhe (arte_detalhe).
 // v510 (19/11/2026): chave vencida mostra o campo da chave nova na cara, por cima de tudo (sem precisar dos 3 pontinhos).
 // v509 (19/11/2026): Garagem: o mesmo lugar de todos os lados (cantos com as paredes vizinhas na posição certa; de cima, as 4 paredes em volta).
