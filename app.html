@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-19.509">
+<meta name="app-versao" content="2026-11-19.510">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-19.505"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-19.510"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -269,9 +269,22 @@ const RAW = { headers: { Accept: 'application/vnd.github.raw' } };
 // 401: para o polling e pede a chave de novo (sem atropelar envio, foto na bandeja ou texto pela metade)
 function chaveVenceu() {
   if (chaveVencida) return; chaveVencida = true; clearInterval(poll); poll = null;
-  setTimeout(() => { if (!chaveVencida || !token) return; if (nadaPendente()) askToken(); showNote(MSG_CHAVE, true); }, 0);
+  setTimeout(() => { if (!chaveVencida || !token) return; pedeChaveNaCara(); }, 0);
 }
-const MSG_CHAVE = 'A chave não vale mais. Toca em ⋮ → Trocar chave.';
+// v510 (May 19/11/2026: "quando tiver com a chave vencida joga na cara o campo de por a chave"; os ⋮ nem aparecem): cartão por cima de tudo,
+// com o campo e o Salvar; não apaga nada da tela (envio, foto na bandeja e texto pela metade continuam lá)
+function pedeChaveNaCara() {
+  if (document.querySelector('.chave-cara')) return;
+  const fundo = document.createElement('div'), card = document.createElement('div'), t = document.createElement('b'), p = document.createElement('p'), inp = document.createElement('input'), ok = document.createElement('button'), err = document.createElement('p');
+  fundo.className = 'chave-cara'; card.className = 'chave-card'; t.textContent = 'A chave do GitHub venceu'; p.textContent = 'Cola aqui a chave nova para o app voltar a funcionar.';
+  inp.type = 'password'; inp.placeholder = 'Chave nova'; inp.autocomplete = 'off'; inp.spellcheck = false; ok.type = 'button'; ok.textContent = 'Salvar chave'; err.className = 'chave-erro';
+  ok.onclick = async () => { const nova = inp.value.trim(); if (!nova) { inp.focus(); return; } const velha = token; ok.disabled = true; ok.textContent = 'Conferindo…'; err.textContent = '';
+    token = nova; try { await carregaLista(true); store.set('gh-token', nova); fundo.remove(); start(); showNote('Chave nova salva.'); }
+    catch (e) { token = velha; ok.disabled = false; ok.textContent = 'Salvar chave'; err.textContent = 'Essa chave não abriu o repositório. Confere e cola de novo.'; } };
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') ok.click(); });
+  card.append(t, p, inp, ok, err); fundo.append(card); document.body.append(fundo); setTimeout(() => inp.focus(), 50);
+}
+const MSG_CHAVE = 'A chave do GitHub venceu. Cola a chave nova no campo que apareceu.';
 const horaDe = t => pad(new Date(t).getHours()) + ':' + pad(new Date(t).getMinutes());
 // Mensagem certa pra cada erro: chave, limite, sem rede, demora, GitHub fora. "acao" = o que não deu ("ler a caixa").
 function msgErro(e, acao) {

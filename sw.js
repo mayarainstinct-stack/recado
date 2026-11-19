@@ -1,3 +1,4 @@
+// v510 (19/11/2026): chave vencida mostra o campo da chave nova na cara, por cima de tudo (sem precisar dos 3 pontinhos).
 // v509 (19/11/2026): Garagem: o mesmo lugar de todos os lados (cantos com as paredes vizinhas na posição certa; de cima, as 4 paredes em volta).
 // v508 (19/11/2026): Garagem: cada lado um fundo (direito = fundo da oficina, esquerdo = porta e estrada, frente = prateleira, trás = bancada e janela, cima = chão).
 // v507 (19/11/2026): Avaliação da semana: arrastar de lado é do app (igual ao conserto do slide da Garagem, v446); tremido vertical não trava mais.

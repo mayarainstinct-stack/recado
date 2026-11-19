@@ -3309,3 +3309,11 @@ body.modo-trab .painel .p-grade.apps > * { min-height: 156px !important; }
 .hosp-sem b { background: #c8ecd0; color: #12361c; font-weight: 700; border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
 .hosp-sem.vazio b { background: transparent; color: var(--muted); font-weight: 400; }
 .rv-pagina { position: relative; }   /* v505: offsetTop dos cards medido dentro da página, pra alinhar o mesmo robô ao trocar de semana */
+/* v510: chave vencida = cartão na cara, por cima de tudo (May 19/11/2026) */
+.chave-cara { position: fixed; inset: 0; z-index: 99999; display: grid; place-items: center; padding: 16px; background: rgba(0,0,0,.6); }
+.chave-card { width: min(100%, 380px); display: grid; gap: 10px; padding: 18px; border-radius: 16px; background: var(--paper, #fff); color: var(--fg, #111); box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+.chave-card b { font-size: 18px; } .chave-card p { margin: 0; font-size: 14px; color: var(--muted, #555); }
+.chave-card input { font: inherit; font-size: 16px; padding: 12px; border-radius: 10px; border: 1px solid var(--line, #ccc); background: var(--bg, #fff); color: inherit; }
+.chave-cara .chave-card button { width: 100%; height: auto; min-height: 48px; white-space: nowrap; display: block; font: inherit; font-weight: 700; padding: 12px; border: 0; border-radius: 10px; background: #22C55E; color: #0b2a15; cursor: pointer; }
+.chave-card button:hover { filter: brightness(1.08); } .chave-card button:disabled { opacity: .6; cursor: default; }
+.chave-card .chave-erro { color: #DC2626; min-height: 1em; }
