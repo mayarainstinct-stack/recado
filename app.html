@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-19.504">
+<meta name="app-versao" content="2026-11-19.505">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-19.502"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-19.505"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -7029,7 +7029,7 @@ async function abreReavaliacao() {
   const nivelAntes = (w, k) => { const i = semanas.indexOf(w), ant = semanas[i + 1]; if (ant && ant.notas[k] && ant.notas[k].nivel != null) return ant.notas[k].nivel; const h = hist.filter(y => y.dia < w.de && y.niveis && y.niveis[k] != null).pop(); return h ? h.niveis[k] : null; };
   const dif = (d, cls) => { const s = elD('span', 'rv-dif ' + (d > 0 ? 'rv-sobe' : 'rv-desce') + (cls ? ' ' + cls : ''), (d > 0 ? '+' : '−') + Math.abs(d)); return s; };
   const card = (w, k) => {   // o mesmo cartão do detalhe do robô (.ct: moldura com brilho na cor dele, cabeçalho com avatar, placa do nível, barras de 10 segmentos; May 13/11 17:39-17:41 e Sigma 17:41)
-    const n = w.notas[k], g = k === 'may' ? EU : GRUPO[k] || {}, f = FICHA[k] || {}, c = elD('article', 'ct rv-ct' + (k === 'may' ? ' eu' : '') + (k === 'sigma' ? ' sigma' : '')); c.style.setProperty('--quem', g.cor || '#64748B'); c.style.setProperty('--quem-fg', g.texto || '#fff');
+    const n = w.notas[k], g = k === 'may' ? EU : GRUPO[k] || {}, f = FICHA[k] || {}, c = elD('article', 'ct rv-ct' + (k === 'may' ? ' eu' : '') + (k === 'sigma' ? ' sigma' : '')); c.dataset.k = k; c.style.setProperty('--quem', g.cor || '#64748B'); c.style.setProperty('--quem-fg', g.texto || '#fff');
     if (k !== 'may' && Array.isArray(f.cores) && f.cores.length === 3) { c.classList.add('tres'); f.cores.forEach((cor, ii) => c.style.setProperty('--c' + (ii + 1), cor)); }
     const face = elD('div', 'ct-face ct-frente rv-face'), cin = elD('div', 'ct-in'), vcab = elD('div', 'ct-vcab rv-vcab'), vnome = elD('div'), av = elD('div', 'ct-av ct-emo carregando');
     const antes = n.primeira_vez ? null : nivelAntes(w, k), ganhouTr = (n.trofeus_semana || []).length || ((w.robo_da_semana || w.robo_do_mes || {}).ganhador === k), emo = ganhouTr || (antes != null && n.nivel > antes) ? 'feliz' : antes != null && n.nivel < antes ? 'pensando' : 'calmo';   // troféu ou subiu = feliz, desceu = sem graça, igual = calmo
@@ -7078,7 +7078,13 @@ async function abreReavaliacao() {
   trilho.querySelectorAll('.rv-conta').forEach(el => { if (olho) olho.observe(el); else conta(el); });
   const mostra = j => { const i = ult - j; tit.lastChild.textContent = semanas.length > 1 ? (i ? 'semana anterior · ' : 'semana mais nova · ') + br(semanas[i].de) + ' a ' + br(semanas[i].ate) + (i < semanas.length - 1 ? ' · deslize pra direita pra ver a anterior' : '') : br(semanas[i].de) + ' a ' + br(semanas[i].ate); [...pontos.children].forEach((p, k) => p.classList.toggle('on', k === j)); };
   let t0; trilho.addEventListener('scroll', () => { clearTimeout(t0); t0 = setTimeout(() => mostra(Math.round(trilho.scrollLeft / trilho.clientWidth)), 80); }, { passive: true });
-  pontos.hidden = semanas.length < 2; requestAnimationFrame(() => { trilho.scrollLeft = trilho.scrollWidth; mostra(ult); });
+  // v505 (May 19/11 14:55): trocar de semana mantém o MESMO robô no mesmo lugar da tela; abre certinho na semana mais nova
+  const pags = [...trilho.children]; let alinhando = false;
+  const ancora = pg => { const topo = pg.scrollTop; for (const c of pg.querySelectorAll('.rv-ct')) if (c.offsetTop + c.offsetHeight > topo + 40) return { k: c.dataset.k, d: c.offsetTop - topo }; return null; };
+  const alinha = de => { const a = ancora(de); alinhando = true; pags.forEach(pg => { if (pg === de) return; if (!a || de.scrollTop < 20) { pg.scrollTop = de.scrollTop < 20 ? 0 : pg.scrollTop; return; } const c = pg.querySelector('.rv-ct[data-k="' + a.k + '"]'); if (c) pg.scrollTop = c.offsetTop - a.d; }); requestAnimationFrame(() => { alinhando = false; }); };
+  pags.forEach(pg => pg.addEventListener('scroll', () => { if (!alinhando) alinha(pg); }, { passive: true }));
+  pontos.hidden = semanas.length < 2; const vaiPraNova = () => { pags[ult].scrollIntoView({ block: 'nearest', inline: 'start' }); trilho.scrollLeft = pags[ult].offsetLeft - pags[0].offsetLeft; mostra(ult); };
+  requestAnimationFrame(vaiPraNova); setTimeout(vaiPraNova, 250);
 }
 // Toque duplo (May, 09/11/2026): troca entre o Menu e a conversa. Na conversa, toque duplo no nome ou no logo abre o Menu; no Menu, toque duplo no título ou na faixa de cima volta pra conversa.
 function toqueDuplo(el, fn) {

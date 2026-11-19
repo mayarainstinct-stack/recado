@@ -3308,3 +3308,4 @@ body.modo-trab .painel .p-grade.apps > * { min-height: 156px !important; }
 .hosp-sem span small { display: block; font-size: 11px; color: var(--muted); }
 .hosp-sem b { background: #c8ecd0; color: #12361c; font-weight: 700; border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
 .hosp-sem.vazio b { background: transparent; color: var(--muted); font-weight: 400; }
+.rv-pagina { position: relative; }   /* v505: offsetTop dos cards medido dentro da página, pra alinhar o mesmo robô ao trocar de semana */

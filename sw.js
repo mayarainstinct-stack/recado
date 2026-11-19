@@ -1,3 +1,4 @@
+// v505 (19/11/2026): Avaliação da semana: ao trocar de semana o mesmo robô fica no mesmo lugar da tela; abre certinho na semana mais nova.
 // v504 (19/11/2026): desenho do troféu Constância da Semana (taça com 7 marcas) e o Escudo vira Protetor (sem nome de pessoa).
 // v503 (19/11/2026): Reavaliação com a semana passada à ESQUERDA da atual (abre na mais nova, desliza pra direita pra ver as anteriores); troféu vira "Robô da semana" e lê robo_da_semana.
 // v502 (19/11/2026): Onde ficar mostra as datas cotadas (01 a 08, 15 ou 22/01) e o preço vira pill verde com letra escura.
