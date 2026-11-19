@@ -1,3 +1,4 @@
+// v507 (19/11/2026): Avaliação da semana: arrastar de lado é do app (igual ao conserto do slide da Garagem, v446); tremido vertical não trava mais.
 // v506 (19/11/2026): deslizar entre semanas sempre troca a semana inteira (nunca para no meio); o ajuste inicial não briga com o dedo.
 // v505 (19/11/2026): Avaliação da semana: ao trocar de semana o mesmo robô fica no mesmo lugar da tela; abre certinho na semana mais nova.
 // v504 (19/11/2026): desenho do troféu Constância da Semana (taça com 7 marcas) e o Escudo vira Protetor (sem nome de pessoa).
