@@ -1,3 +1,4 @@
+// v508 (19/11/2026): Garagem: cada lado um fundo (direito = fundo da oficina, esquerdo = porta e estrada, frente = prateleira, trás = bancada e janela, cima = chão).
 // v507 (19/11/2026): Avaliação da semana: arrastar de lado é do app (igual ao conserto do slide da Garagem, v446); tremido vertical não trava mais.
 // v506 (19/11/2026): deslizar entre semanas sempre troca a semana inteira (nunca para no meio); o ajuste inicial não briga com o dedo.
 // v505 (19/11/2026): Avaliação da semana: ao trocar de semana o mesmo robô fica no mesmo lugar da tela; abre certinho na semana mais nova.

@@ -36,6 +36,35 @@ const CSS = `
 .gr-tela .gr-pag.gr-no-ar .gr-sombra { transform: scaleX(.78); }
 .gr-tela .gr-coluna { position: absolute; bottom: 26px; width: 18px; height: 196px; background: repeating-linear-gradient(to bottom, transparent 0 8px, rgba(0,0,0,.45) 8px 11px) 5px 30px / 8px calc(100% - 40px) no-repeat, linear-gradient(90deg, #6E737B, #B9BEC5 40%, #7C818A); clip-path: polygon(0 4px, 4px 0, 100% 0, 100% 100%, 0 100%); }
 .gr-tela .gr-coluna::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 22px; background: repeating-linear-gradient(-45deg, #F5C400 0 5px, #141414 5px 10px); }
+/* Cada lado um fundo (May 19/11/2026: "pra parecer q mudou a camera", "tem q combinar com o lado q o veiculo ta").
+   lado-direito = fundo da oficina visto da porta (o cenário de sempre); lado-esquerdo = a porta aberta e a estrada, vista do fundo;
+   frente = parede lateral com a prateleira de pneus e óleo; traseira = a outra lateral, bancada e janela; cima = só o chão visto de cima. */
+.gr-tela .gr-rua, .gr-tela .gr-prat, .gr-tela .gr-banc { display: none; position: absolute; }
+.gr-tela .gr-palco.gr-gira .gr-parede, .gr-tela .gr-palco.gr-gira .gr-chao { animation: gr-gira .45s ease-out; }
+@keyframes gr-gira { 0% { opacity: .25; transform: translateX(-18px); } 100% { opacity: 1; transform: none; } }
+.gr-tela .gr-palco[data-ang="lado-esquerdo"] .gr-painel-f, .gr-tela .gr-palco[data-ang="lado-esquerdo"] .gr-box,
+.gr-tela .gr-palco[data-ang="frente"] .gr-painel-f, .gr-tela .gr-palco[data-ang="traseira"] .gr-painel-f { display: none; }
+.gr-tela .gr-palco[data-ang="lado-esquerdo"] .gr-rua { display: block; left: 34px; right: 34px; top: 16px; height: 162px; border: 6px solid #4C5058; border-bottom: 0; box-shadow: 0 0 0 2px #111, 0 0 30px rgba(255,248,220,.18);
+  background: linear-gradient(to bottom, #3A3D43 0 14px, #5E636B 14px 16px, transparent 16px),
+    linear-gradient(to bottom, transparent 0 112px, #8E949C 112px 118px, transparent 118px),
+    repeating-linear-gradient(90deg, transparent 0 18px, #F2F2F0 18px 46px, transparent 46px 64px) 0 142px / 100% 4px no-repeat,
+    linear-gradient(to bottom, transparent 0 118px, #3B3E44 118px 100%),
+    linear-gradient(to bottom, #87B7E3 16px, #CFE6F7 84px, #9FBF8A 84px 112px); }
+.gr-tela .gr-palco[data-ang="lado-esquerdo"] .gr-rua::before { content: ''; position: absolute; left: -6px; right: -6px; top: -16px; height: 16px; background: repeating-linear-gradient(to bottom, #8E949C 0 2px, #B7BCC3 2px 6px, #5E636B 6px 8px); box-shadow: 0 2px 0 #111; }
+.gr-tela .gr-palco[data-ang="frente"] .gr-prat { display: block; left: 30px; top: 24px; width: 170px; height: 150px; border-left: 6px solid #4C5058; border-right: 6px solid #4C5058;
+  background: linear-gradient(#6B5236 0 0) 0 46px / 100% 6px no-repeat, linear-gradient(#6B5236 0 0) 0 96px / 100% 6px no-repeat, linear-gradient(#6B5236 0 0) 0 144px / 100% 6px no-repeat,
+    radial-gradient(circle at 50% 50%, #55585F 0 7px, #141414 8px 19px, transparent 20px) 6px 6px / 42px 42px repeat-x,
+    linear-gradient(90deg, #B4232B 0 18px, transparent 18px 24px, #2F6FB4 24px 42px, transparent 42px 48px, #F5C400 48px 66px, transparent 66px) 10px 66px / 100% 30px no-repeat,
+    radial-gradient(circle at 50% 50%, #55585F 0 6px, #141414 7px 17px, transparent 18px) 12px 106px / 38px 38px repeat-x; }
+.gr-tela .gr-palco[data-ang="frente"] .gr-box { right: 46px; }
+.gr-tela .gr-palco[data-ang="traseira"] .gr-banc { display: block; left: 36px; right: 36px; top: 20px; height: 158px;
+  background: linear-gradient(#4C5058 0 0) 50% 6px / 150px 76px no-repeat; }
+.gr-tela .gr-palco[data-ang="traseira"] .gr-banc::before { content: ''; position: absolute; left: 50%; top: 12px; width: 138px; height: 64px; margin-left: -69px; background: linear-gradient(90deg, transparent 67px, #4C5058 67px 71px, transparent 71px), linear-gradient(transparent 30px, #4C5058 30px 34px, transparent 34px), linear-gradient(#9CC9EE, #E6F2FB); }
+.gr-tela .gr-palco[data-ang="traseira"] .gr-banc::after { content: ''; position: absolute; left: 0; right: 0; top: 104px; height: 54px; background: linear-gradient(#8A6A44 0 10px, #5A4229 10px 14px, transparent 14px), linear-gradient(90deg, transparent 8px, #3B3E45 8px 16px, transparent 16px calc(100% - 16px), #3B3E45 calc(100% - 16px) calc(100% - 8px), transparent calc(100% - 8px)), linear-gradient(90deg, transparent 20px, #55585F 20px 46px, transparent 46px) 0 -12px / 100% 12px no-repeat; }
+.gr-tela .gr-palco[data-ang="traseira"] .gr-box { right: auto; left: 46px; text-align: left; }
+.gr-tela .gr-palco[data-ang="cima"] .gr-parede, .gr-tela .gr-palco[data-ang="cima"] .gr-faixa, .gr-tela .gr-palco[data-ang="cima"] .gr-coluna, .gr-tela .gr-palco[data-ang="cima"] .gr-sombra { display: none; }
+.gr-tela .gr-palco[data-ang="cima"] .gr-chao { top: 0; }
+.gr-tela .gr-palco[data-ang="cima"] .gr-chao::before { content: ''; position: absolute; left: 18px; right: 18px; top: 18px; bottom: 30px; border: 4px solid rgba(245,196,0,.6); border-radius: 4px; }
 .gr-tela .gr-coluna::after { content: ''; position: absolute; left: -5px; right: -5px; bottom: 0; height: 6px; background: #2C2E33; }
 .gr-tela .gr-coluna.e { left: 14px; } .gr-tela .gr-coluna.d { right: 14px; }
 .gr-tela .gr-carga { position: absolute; left: 30px; right: 30px; bottom: 26px; transform: translateY(0); transition: transform 1.25s cubic-bezier(.5,0,.3,1); }
@@ -395,6 +424,7 @@ function elevador(v, vet) {
   const velho = vet.innerHTML;   // o desenho antigo do veículo fica de reserva se o vetor não abrir
   function desenha() {
     const meu = ++tok;
+    { const pl = vet.closest('.gr-palco'); if (pl && pl.dataset.ang !== ang) { pl.dataset.ang = ang; pl.classList.remove('gr-gira'); void pl.offsetWidth; pl.classList.add('gr-gira'); } }   // cada lado um fundo, como se a câmera desse a volta (May 19/11)
     chips.forEach(([f, b]) => b.classList.toggle('on', f === fase)); abas.forEach(([a, b]) => b.classList.toggle('on', a === ang));
     olho.classList.toggle('off', !placa); olho.innerHTML = placa ? OLHO : OLHO_X; olho.setAttribute('aria-label', placa ? 'Esconder a placa' : 'Mostrar a placa'); olho.setAttribute('aria-pressed', String(placa));
     const cmp = fase === 'comparar'; vet.classList.toggle('cmp', cmp);
@@ -572,7 +602,7 @@ function pagina(v, i, tot, raiz) {
   const cor = corOk(v.cor), pg = elD('article', 'gr-pag'); pg.style.setProperty('--v', cor); pg.setAttribute('aria-label', v.nome);
   const pal = elD('div', 'gr-palco'), par = elD('div', 'gr-parede'), pf = elD('div', 'gr-painel-f'), box = elD('div', 'gr-box', 'BOX');
   pf.innerHTML = FERRAMENTAS; box.append(elD('b', null, String(i + 1).padStart(2, '0'))); box.setAttribute('aria-label', 'Vaga ' + (i + 1) + ' de ' + tot);
-  par.append(elD('div', 'gr-lampada'), pf, box);
+  par.append(elD('div', 'gr-lampada'), pf, box, elD('div', 'gr-rua'), elD('div', 'gr-prat'), elD('div', 'gr-banc'));   // fundos das outras vistas (May 19/11)
   const carga = elD('div', 'gr-carga'), id = (v.id || 'v' + i).replace(/[^a-z0-9]/gi, '');
   const vet = elD('div', 'gr-vet'); vet.innerHTML = (SVG[v.tipo] || svgSiena)(id, cor); carga.append(vet);
   const rampa = elD('div', 'gr-rampa'); rampa.append(elD('span', 'gr-carro e'), elD('span', 'gr-carro d')); carga.append(rampa);
