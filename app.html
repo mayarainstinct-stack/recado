@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-18.498">
+<meta name="app-versao" content="2026-11-19.499">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -5370,6 +5370,45 @@ function abreViagem(v) {
     if (v.resumo) { const r = document.createElement('div'); r.className = 'p-texto'; r.textContent = v.resumo; c.append(r); }
     const lista = document.createElement('div'); lista.className = 'p-lista'; c.append(lista);
     v.listas.forEach(l => lista.append(botao(l.icone, semHojeFalso(l.nome), marcados(v, l).size + ' de ' + totalItens(l) + ' feitos · ' + semHojeFalso(l.sub || ''), () => abreChecklist(v, l))));
+    (v.hospedagens || []).forEach(h => { if ((h.opcoes || []).length) lista.append(botao(h.icone || '🏠', h.nome, h.opcoes.length + ' opções · ' + (h.sub || ''), () => abreHospedagem(h))); });   // onde ficar com foto, preço e link (May 19/11/2026: "com fotos e tal", "hoteis e sugestoes em viagens com preço e tudo")
+    if ((v.lugares || []).length) lista.append(botao(v.lugares_icone || '📍', v.lugares_nome || 'Lugares e contatos', v.lugares.length + ' lugares · ligar, mapa e regras', () => abreLugares(v)));
+  });
+}
+// Onde ficar (May 19/11/2026): viagens.json > viagem.hospedagens = [{ nome, sub, nota, noites, opcoes: [{ grupo, nome, tipo, bairro, quartos, nota, total, foto, link, obs }] }]; cada cartão abre o anúncio
+function abreHospedagem(h) {
+  tela(h.nome, c => {
+    if (h.nota) c.append(elD('p', 'p-nota', h.nota));
+    const grupos = [...new Set(h.opcoes.map(o => o.grupo || ''))];
+    grupos.forEach(gn => {
+      const os = h.opcoes.filter(o => (o.grupo || '') === gn);
+      if (gn) c.append(elD('div', 'p-sec', gn + ' (' + os.length + ')'));
+      const g = elD('div', 'hosp-grade'); c.append(g);
+      os.forEach(o => {
+        const a = elD('a', 'hosp-card'); a.href = o.link; a.target = '_blank'; a.rel = 'noopener';
+        if (o.foto) { const im = elD('img'); im.loading = 'lazy'; im.alt = ''; im.src = o.foto; a.append(im); }
+        const i = elD('div', 'hosp-info');
+        i.append(elD('div', 'hosp-preco', reaisFin(o.total)));
+        if (h.noites) i.append(elD('div', 'hosp-noite', reaisFin(Math.round(o.total / h.noites)) + ' por noite · ' + h.noites + ' noites'));
+        i.append(elD('div', 'hosp-nome', o.nome), elD('div', 'hosp-sub', [o.tipo, o.bairro, o.quartos, o.nota ? 'nota ' + o.nota : ''].filter(Boolean).join(' · ')));
+        if (o.obs) i.append(elD('div', 'hosp-obs', o.obs));
+        a.append(i); g.append(a);
+      });
+    });
+  });
+}
+// Lugares da viagem (hospital, contatos): viagem.lugares = [{ nome, end, tel, mapa, notas: [] }]
+function abreLugares(v) {
+  tela(v.lugares_nome || 'Lugares e contatos', c => {
+    v.lugares.forEach(l => {
+      const b = elD('div', 'hosp-lugar'); b.append(elD('div', 'hosp-nome', l.nome));
+      if (l.end) b.append(elD('div', 'hosp-sub', l.end));
+      (l.notas || []).forEach(n => b.append(elD('div', 'hosp-obs', n)));
+      const ac = elD('div', 'hosp-acoes');
+      if (l.tel) { const t = elD('a', 'gostei', 'Ligar ' + l.tel); t.href = 'tel:' + l.tel.replace(/[^\d+]/g, ''); ac.append(t); }
+      if (l.mapa) { const m = elD('a', 'gostei', 'Ver no mapa'); m.href = l.mapa; m.target = '_blank'; m.rel = 'noopener'; ac.append(m); }
+      if (ac.children.length) b.append(ac);
+      c.append(b);
+    });
   });
 }
 function abreChecklist(v, l) {

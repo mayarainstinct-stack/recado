@@ -3288,3 +3288,17 @@ body.modo-trab .painel .p-grade.apps > * { min-height: 156px !important; }
   body.modo-trab .dg-tela .pcd-num div, body.modo-trab .dg-tela .pcd-val { padding: 5px 8px; }
 }
 .gr-grade .gr-item.ja-passou { opacity: .72; } .gr-grade .gr-item .gr-passou { display: block; font-size: 11px; font-weight: 600; opacity: .85; text-align: center; margin-top: 2px; }   /* 18/11/2026: Saúde, pasta com data que já passou vai pro fim */
+
+/* Onde ficar e Lugares da viagem (v499, 19/11/2026) */
+.hosp-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 6px 0 16px; }
+.hosp-card { display: block; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; text-decoration: none; color: var(--fg); cursor: pointer; transition: transform .15s, box-shadow .15s; }
+.hosp-card:hover, .hosp-card:active { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.18); }
+.hosp-card img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; background: var(--line); }
+.hosp-info { padding: 8px 10px 10px; }
+.hosp-preco { font-weight: 700; font-size: 17px; color: var(--accent); }
+.hosp-noite, .hosp-sub { font-size: 12px; color: var(--muted); }
+.hosp-nome { font-size: 14px; font-weight: 600; margin: 4px 0 2px; line-height: 1.25; }
+.hosp-obs { font-size: 13px; margin-top: 6px; line-height: 1.35; }
+.hosp-lugar { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+.hosp-acoes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.hosp-acoes a { text-decoration: none; cursor: pointer; }
