@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-19.505">
+<meta name="app-versao" content="2026-11-19.506">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -7077,14 +7077,18 @@ async function abreReavaliacao() {
   ordem.forEach((w, i) => { const p = elD('i', i === ult ? 'on' : ''); pontos.append(p); });
   trilho.querySelectorAll('.rv-conta').forEach(el => { if (olho) olho.observe(el); else conta(el); });
   const mostra = j => { const i = ult - j; tit.lastChild.textContent = semanas.length > 1 ? (i ? 'semana anterior · ' : 'semana mais nova · ') + br(semanas[i].de) + ' a ' + br(semanas[i].ate) + (i < semanas.length - 1 ? ' · deslize pra direita pra ver a anterior' : '') : br(semanas[i].de) + ' a ' + br(semanas[i].ate); [...pontos.children].forEach((p, k) => p.classList.toggle('on', k === j)); };
-  let t0; trilho.addEventListener('scroll', () => { clearTimeout(t0); t0 = setTimeout(() => mostra(Math.round(trilho.scrollLeft / trilho.clientWidth)), 80); }, { passive: true });
+  let t0, dedo = null; const vaiPara = j => { j = Math.max(0, Math.min(ult, j)); trilho.scrollTo({ left: j * trilho.clientWidth, behavior: 'smooth' }); };
+  trilho.addEventListener('scroll', () => { clearTimeout(t0); t0 = setTimeout(() => { const f = trilho.scrollLeft / trilho.clientWidth, j = Math.round(f); mostra(j); if (!dedo && Math.abs(f - j) > .02) vaiPara(j); }, 120); }, { passive: true });   // v506: nunca para no meio, entre duas semanas
+  trilho.addEventListener('touchstart', e => { const t = e.touches[0]; dedo = { x: t.clientX, y: t.clientY, j: Math.round(trilho.scrollLeft / trilho.clientWidth) }; }, { passive: true });
+  trilho.addEventListener('touchend', e => { if (!dedo) return; const t = e.changedTouches[0], dx = t.clientX - dedo.x, dy = t.clientY - dedo.y, j0 = dedo.j; dedo = null; if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.2) vaiPara(j0 + (dx > 0 ? -1 : 1)); else { const j = Math.round(trilho.scrollLeft / trilho.clientWidth); if (Math.abs(trilho.scrollLeft - j * trilho.clientWidth) > 2) vaiPara(j); } }, { passive: true });   // v506: deslizou de lado = troca de semana inteira, sem depender do embalo
   // v505 (May 19/11 14:55): trocar de semana mantém o MESMO robô no mesmo lugar da tela; abre certinho na semana mais nova
   const pags = [...trilho.children]; let alinhando = false;
   const ancora = pg => { const topo = pg.scrollTop; for (const c of pg.querySelectorAll('.rv-ct')) if (c.offsetTop + c.offsetHeight > topo + 40) return { k: c.dataset.k, d: c.offsetTop - topo }; return null; };
   const alinha = de => { const a = ancora(de); alinhando = true; pags.forEach(pg => { if (pg === de) return; if (!a || de.scrollTop < 20) { pg.scrollTop = de.scrollTop < 20 ? 0 : pg.scrollTop; return; } const c = pg.querySelector('.rv-ct[data-k="' + a.k + '"]'); if (c) pg.scrollTop = c.offsetTop - a.d; }); requestAnimationFrame(() => { alinhando = false; }); };
   pags.forEach(pg => pg.addEventListener('scroll', () => { if (!alinhando) alinha(pg); }, { passive: true }));
   pontos.hidden = semanas.length < 2; const vaiPraNova = () => { pags[ult].scrollIntoView({ block: 'nearest', inline: 'start' }); trilho.scrollLeft = pags[ult].offsetLeft - pags[0].offsetLeft; mostra(ult); };
-  requestAnimationFrame(vaiPraNova); setTimeout(vaiPraNova, 250);
+  let mexeu = false; trilho.addEventListener('touchstart', () => { mexeu = true; }, { passive: true }); trilho.addEventListener('wheel', () => { mexeu = true; }, { passive: true });
+  requestAnimationFrame(vaiPraNova); setTimeout(() => { if (!mexeu) vaiPraNova(); }, 250);   // o 2º ajuste nunca briga com o dedo dela
 }
 // Toque duplo (May, 09/11/2026): troca entre o Menu e a conversa. Na conversa, toque duplo no nome ou no logo abre o Menu; no Menu, toque duplo no título ou na faixa de cima volta pra conversa.
 function toqueDuplo(el, fn) {
