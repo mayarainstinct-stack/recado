@@ -1,3 +1,4 @@
+// v503 (19/11/2026): Reavaliação com a semana passada à ESQUERDA da atual (abre na mais nova, desliza pra direita pra ver as anteriores); troféu vira "Robô da semana" e lê robo_da_semana.
 // v502 (19/11/2026): Onde ficar mostra as datas cotadas (01 a 08, 15 ou 22/01) e o preço vira pill verde com letra escura.
 // v501 (push pode abrir uma tela direto: a avaliação da semana; app .501, 19/11/2026).
 // v500 (Viagens, Onde ficar: preço de 1, 2 e 3 semanas em cada cartão; app .500, 19/11/2026).
