@@ -1,3 +1,4 @@
+// v501 (push pode abrir uma tela direto: a avaliação da semana; app .501, 19/11/2026).
 // v500 (Viagens, Onde ficar: preço de 1, 2 e 3 semanas em cada cartão; app .500, 19/11/2026).
 // v499 (Viagens: Onde ficar com foto, preço e link do anúncio, e Lugares com ligar e mapa; app .499, 19/11/2026).
 // v498 (Parede da Vitoria: ao entrar, todas as capas carregam na ordem das cartas, 3 por vez; app .498, 18/11/2026).
@@ -143,7 +144,8 @@ self.addEventListener('notificationclick', e => {
   // O pedido vai no endereço (#responder=...), não em postMessage: se a página recarregar no meio, o hash continua lá.
   const conv = (e.notification.data && e.notification.data.conv) || '', foto = (e.notification.data && e.notification.data.foto) || '';
   const lem = (e.notification.data && e.notification.data.lembrete) || '';   // lembrete em popup (09/11/2026): abre o app na janela Sim · Não · Ver
-  const url = lem ? './#lembrete=' + encodeURIComponent(lem) : './#responder=' + encodeURIComponent(conv) + (foto ? '&foto=' + encodeURIComponent(foto) : '');
+  const abrir = (e.notification.data && e.notification.data.abrir) || '';   // tela pra abrir direto (ex.: reavaliacao, 19/11/2026)
+  const url = lem ? './#lembrete=' + encodeURIComponent(lem) : './#responder=' + encodeURIComponent(conv) + (foto ? '&foto=' + encodeURIComponent(foto) : '') + (abrir ? '&abrir=' + encodeURIComponent(abrir) : '');
   e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(async cs => {
     for (const c of cs) {
       if (!('focus' in c)) continue;
