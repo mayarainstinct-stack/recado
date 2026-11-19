@@ -1,3 +1,4 @@
+// v502 (19/11/2026): Onde ficar mostra as datas cotadas (01 a 08, 15 ou 22/01) e o preço vira pill verde com letra escura.
 // v501 (push pode abrir uma tela direto: a avaliação da semana; app .501, 19/11/2026).
 // v500 (Viagens, Onde ficar: preço de 1, 2 e 3 semanas em cada cartão; app .500, 19/11/2026).
 // v499 (Viagens: Onde ficar com foto, preço e link do anúncio, e Lugares com ligar e mapa; app .499, 19/11/2026).

@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-19.501">
+<meta name="app-versao" content="2026-11-19.502">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-18.498"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-19.502"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -5389,7 +5389,7 @@ function abreHospedagem(h) {
         if (o.foto) { const im = elD('img'); im.loading = 'lazy'; im.alt = ''; im.src = o.foto; a.append(im); }
         const i = elD('div', 'hosp-info');
         if (o.precos) {   // 1, 2 e 3 semanas (May 19/11/2026: "coloca o valor de 1 2 ou 3 semanas de cada lugar"); traço = não estava livre
-          const t = elD('div', 'hosp-semanas'); [['7', '1 semana'], ['14', '2 semanas'], ['21', '3 semanas']].forEach(([n, r]) => { const l = elD('div', 'hosp-sem' + (o.precos[n] ? '' : ' vazio')); l.append(elD('span', '', r), elD('b', '', o.precos[n] ? reaisFin(o.precos[n]) : '—')); t.append(l); }); i.append(t);
+          const t = elD('div', 'hosp-semanas'); [['7', '1 semana', '01 a 08/01'], ['14', '2 semanas', '01 a 15/01'], ['21', '3 semanas', '01 a 22/01']].forEach(([n, r, dt]) => { const l = elD('div', 'hosp-sem' + (o.precos[n] ? '' : ' vazio')); const sp = elD('span', '', r); sp.append(elD('small', '', dt)); l.append(sp, elD('b', '', o.precos[n] ? reaisFin(o.precos[n]) : '—')); t.append(l); }); i.append(t);
           if (o.pnoite) i.append(elD('div', 'hosp-noite', 'a partir de ' + reaisFin(o.pnoite) + ' por noite'));
         } else {
           i.append(elD('div', 'hosp-preco', reaisFin(o.total)));

@@ -3295,7 +3295,7 @@ body.modo-trab .painel .p-grade.apps > * { min-height: 156px !important; }
 .hosp-card:hover, .hosp-card:active { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.18); }
 .hosp-card img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; background: var(--line); }
 .hosp-info { padding: 8px 10px 10px; }
-.hosp-preco { font-weight: 700; font-size: 17px; color: var(--accent); }
+.hosp-preco { display: inline-block; font-weight: 700; font-size: 16px; background: #c8ecd0; color: #12361c; border-radius: 999px; padding: 2px 10px; }   /* v502: pill verde com letra escura (verde solto não dava pra ler) */
 .hosp-noite, .hosp-sub { font-size: 12px; color: var(--muted); }
 .hosp-nome { font-size: 14px; font-weight: 600; margin: 4px 0 2px; line-height: 1.25; }
 .hosp-obs { font-size: 13px; margin-top: 6px; line-height: 1.35; }
@@ -3303,7 +3303,8 @@ body.modo-trab .painel .p-grade.apps > * { min-height: 156px !important; }
 .hosp-acoes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .hosp-acoes a { text-decoration: none; cursor: pointer; }
 .hosp-semanas { display: flex; flex-direction: column; gap: 2px; margin-bottom: 4px; }
-.hosp-sem { display: flex; justify-content: space-between; gap: 6px; font-size: 13px; }
-.hosp-sem span { color: var(--muted); }
-.hosp-sem b { color: var(--accent); font-weight: 700; }
-.hosp-sem.vazio b { color: var(--muted); font-weight: 400; }
+.hosp-sem { display: flex; justify-content: space-between; align-items: center; gap: 6px; font-size: 13px; }
+.hosp-sem span { color: var(--fg); line-height: 1.15; }
+.hosp-sem span small { display: block; font-size: 11px; color: var(--muted); }
+.hosp-sem b { background: #c8ecd0; color: #12361c; font-weight: 700; border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
+.hosp-sem.vazio b { background: transparent; color: var(--muted); font-weight: 400; }
