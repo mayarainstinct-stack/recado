@@ -186,6 +186,9 @@ const CSS = `
 .gr-tela .gr-ang { min-width: 0; text-align: center; white-space: nowrap; padding: 9px 0 8px; overflow: hidden; border: 1px solid #4C5058; background: #1E1F23; color: #C9CCD2; font: 600 10.5px/1 system-ui, -apple-system, 'Segoe UI', sans-serif; letter-spacing: -.01em; }
 .gr-tela .gr-ang.on { border-color: var(--gr-am); color: var(--gr-am); background: #26282C; }
 .gr-tela .gr-olho { flex: none; width: 40px; height: 32px; border-radius: 0; display: grid; place-items: center; border: 2px solid #111; background: var(--gr-am); color: #111; padding: 0; margin-left: 2px; }
+.gr-tela .gr-vis { display: none; flex: none; height: 32px; padding: 0 8px; border-radius: 0; border: 2px solid #111; background: #F2F2F0; color: #111; font: 700 12px/1 var(--gr-imp); letter-spacing: .04em; margin-left: 2px; cursor: pointer; white-space: nowrap; }
+.gr-tela .gr-vis:hover { filter: brightness(.92); }
+.gr-tela .gr-vet.gr-so-linhas { background: #fff; border-radius: 6px; }   /* só as linhas, no fundo branco (May 19/11) */
 .gr-tela .gr-olho svg { width: 22px; height: 22px; }
 .gr-tela .gr-olho.off { background: #3A3D43; color: #C9CCD2; border-color: #4C5058; }
 .gr-tela .gr-legenda { margin: 8px 0 0; font: 500 12px/1.35 var(--gr-mono); color: #C9CCD2; }
@@ -419,10 +422,15 @@ const FASES = { original: ['Original', '-original'], agora: ['Agora', ''], meta:
 const svgCache = {};
 const lePlaca = () => { try { return localStorage.getItem('gr-placa') !== '0'; } catch (e) { return true; } };
 const gravaPlaca = on => { try { localStorage.setItem('gr-placa', on ? '1' : '0'); } catch (e) {} };
-function desenho(id, fase, ang, placa) {
+const MODOS = [['juntos', 'Juntos'], ['linhas', 'Só linhas'], ['formas', 'Só formas']];   // May 19/11: ver linhas e formas separadas pra achar onde o desenho tá errado
+const leModo = () => { try { const m = localStorage.getItem('gr-modo'); return MODOS.some(x => x[0] === m) ? m : 'juntos'; } catch (e) { return 'juntos'; } };
+const gravaModo = m => { try { localStorage.setItem('gr-modo', m); } catch (e) {} };
+const ESTILO_MODO = { linhas: '<style>*{fill:none!important}path,circle,rect,ellipse,polygon,polyline,line{stroke:#000!important;stroke-width:1px!important;vector-effect:non-scaling-stroke}text{fill:#000!important;stroke:none!important}</style>', formas: '<style>*{stroke:none!important}</style>' };
+function desenho(id, fase, ang, placa, modo) {
   const cam = PASTA + id + FASES[fase][1] + '/' + ang + '.svg';
   const prom = svgCache[cam] || (svgCache[cam] = lerArquivo(cam).then(t => { if (!/<svg[\s>]/.test(t)) throw new Error('sem svg'); return t; }).catch(e => { delete svgCache[cam]; throw e; }));
   return prom.then(t => {
+    if (ESTILO_MODO[modo]) t = t.replace(/(<svg[^>]*>)/, '$1' + ESTILO_MODO[modo]);
     if (!placa) { try { const dc = new DOMParser().parseFromString(t, 'image/svg+xml'), g = dc.getElementById('placa'); if (g) { g.remove(); t = new XMLSerializer().serializeToString(dc.documentElement); } } catch (e) {} }
     return URL.createObjectURL(new Blob([t], { type: 'image/svg+xml' }));
   });
@@ -435,9 +443,12 @@ function elevador(v, vet) {
   const ctl = elD('div', 'gr-ctl'), fases = elD('div', 'gr-fases'), ags = elD('div', 'gr-angs'), leg = elD('p', 'gr-legenda');
   const olho = elD('button', 'gr-olho'); olho.type = 'button';
   const chips = [['original', 'Original'], ['agora', 'Agora'], ['meta', 'Meta'], ['comparar', 'Comparar']].map(([f, t]) => { const b = elD('button', 'gr-chip', t); b.type = 'button'; b.onclick = () => { fase = f; desenha(); }; fases.append(b); return [f, b]; });
+  let modo = leModo();   // o olhinho troca a visão: Juntos > Só linhas (fundo branco) > Só formas (May 19/11: "naquele olhinho ... vc clica e muda")
+  const ICO_MODO = { juntos: OLHO, linhas: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M3 15l4-6h8l4 4v4H3z"/><circle cx="8" cy="17" r="2"/><circle cx="16" cy="17" r="2"/></svg>', formas: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 15l4-6h8l4 4v4H3z"/><circle cx="8" cy="17" r="2.4" fill="#111"/><circle cx="16" cy="17" r="2.4" fill="#111"/></svg>' };
+  const pintaVis = () => { const nome = MODOS.find(x => x[0] === modo)[1]; olho.innerHTML = ICO_MODO[modo]; olho.title = 'Ver: ' + nome; olho.setAttribute('aria-label', 'Ver: ' + nome + ' (toque pra trocar)'); vet.classList.toggle('gr-so-linhas', modo === 'linhas'); };
   fases.append(olho);
   const abas = angs.map(([a, t]) => { const b = elD('button', 'gr-ang', t); b.type = 'button'; b.onclick = () => { ang = a; desenha(); }; ags.append(b); return [a, b]; });
-  olho.onclick = e => { e.stopPropagation(); placa = !placa; gravaPlaca(placa); desenha(); };
+  olho.onclick = e => { e.stopPropagation(); const i = MODOS.findIndex(x => x[0] === modo); modo = MODOS[(i + 1) % MODOS.length][0]; gravaModo(modo); desenha(); };
   const poe = p => { p = Math.max(0, Math.min(100, p)); vet.style.setProperty('--x', p + '%'); };
   arrasta(vet, poe, () => vet.classList.contains('cmp'));
   const img = (url, cls, alt) => { const i = elD('img', cls); i.alt = alt; i.decoding = 'async'; i.src = url; return i; };
@@ -446,14 +457,14 @@ function elevador(v, vet) {
     const meu = ++tok;
     { const pl = vet.closest('.gr-palco'); if (pl && pl.dataset.ang !== ang) { const VOLTA = ['lado-direito', 'frente', 'lado-esquerdo', 'traseira'], de = VOLTA.indexOf(pl.dataset.ang), pra = VOLTA.indexOf(ang), dir = de < 0 || pra < 0 ? 1 : ((pra - de + 4) % 4 === 3 ? -1 : 1); pl.style.setProperty('--gir', (dir * 70) + 'deg'); pl.style.setProperty('--gir-o', dir > 0 ? '100%' : '0%'); pl.dataset.ang = ang; const CANTOS = { 'lado-direito': ['prat', 'banc'], 'lado-esquerdo': ['banc', 'prat'], frente: ['porta', 'pino'], traseira: ['pino', 'porta'] }, cs = CANTOS[ang] || ['', '']; pl.querySelectorAll('.gr-canto').forEach((c, n) => { c.className = 'gr-canto ' + (n ? 'd ' : 'e ') + cs[n]; }); pl.classList.remove('gr-gira'); void pl.offsetWidth; pl.classList.add('gr-gira'); } }   // cada lado um fundo, como se a câmera desse a volta (May 19/11)
     chips.forEach(([f, b]) => b.classList.toggle('on', f === fase)); abas.forEach(([a, b]) => b.classList.toggle('on', a === ang));
-    olho.classList.toggle('off', !placa); olho.innerHTML = placa ? OLHO : OLHO_X; olho.setAttribute('aria-label', placa ? 'Esconder a placa' : 'Mostrar a placa'); olho.setAttribute('aria-pressed', String(placa));
+    pintaVis();   // o olhinho agora é a visão (Juntos / Só linhas / Só formas); a placa segue a última escolha gravada
     const cmp = fase === 'comparar'; vet.classList.toggle('cmp', cmp);
     const falta = (v.projeto || []).filter(p => p.estado !== 'feito').sort((a, b) => { const x = ORDEM.indexOf(a.estado), y = ORDEM.indexOf(b.estado); return (x < 0 ? 99 : x) - (y < 0 ? 99 : y); });   // Meta e Comparar mostram o que muda do agora pra meta (May 17/11 20:27)
     muda.hidden = !(fase === 'meta' || cmp) || !falta.length;
     if (!muda.hidden) muda.replaceChildren(elD('li', 'gr-muda-t', 'O que muda do agora pra meta'), ...falta.map(p => { const li = elD('li', 'gr-muda-i', p.peca), e = String(p.estado || ''); li.style.setProperty('--e', (ESTADOS[p.estado] || ['#7D828B'])[0]); li.append(elD('small', null, e.charAt(0).toUpperCase() + e.slice(1))); return li; }));
     const pedidos = cmp ? ['agora', 'meta'] : [fase], o = v.original && v.original.descricao;
     leg.textContent = fase === 'original' ? (o ? 'Original: ' + o : 'Como saiu de fábrica.') : fase === 'meta' ? 'Meta: como ela quer deixar.' : fase === 'agora' ? 'Agora: como está hoje.' : 'Arraste a linha: de um lado o Agora, do outro a Meta.';
-    Promise.allSettled(pedidos.map(f => desenho(id, f, ang, placa))).then(r => {
+    Promise.allSettled(pedidos.map(f => desenho(id, f, ang, placa, modo))).then(r => {
       if (meu !== tok) return;
       if (r.some(x => x.status === 'rejected')) { const falta = pedidos.filter((f, i) => r[i].status === 'rejected').map(f => FASES[f][0]); vet.innerHTML = velho; vet.append(elD('div', 'gr-vet-msg', 'desenho chegando' + (cmp ? ' (' + falta.join(' e ') + ')' : ''))); return; }
       if (!cmp) { vet.replaceChildren(img(r[0].value, '', FASES[fase][0])); return; }

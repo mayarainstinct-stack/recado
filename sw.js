@@ -1,3 +1,4 @@
+// v514 (19/11/2026): Garagem: botão Juntos / Só linhas (fundo branco) / Só formas; contornos pretos.
 // v513 (19/11/2026): Onde ficar: o Airbnb preferido da May vem primeiro, com selo "Meu preferido".
 // v512 (19/11/2026): Garagem: o fundo vira em 3D como a face de uma caixa ao trocar de lado (antes rodava 360 por nome de animação repetido).
 // v511 (19/11/2026): Viagens com 2 imagens: a do card e outra cena no detalhe (arte_detalhe).
