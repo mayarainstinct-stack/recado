@@ -186,6 +186,8 @@ const CSS = `
 .gr-tela .gr-ang { min-width: 0; text-align: center; white-space: nowrap; padding: 9px 0 8px; overflow: hidden; border: 1px solid #4C5058; background: #1E1F23; color: #C9CCD2; font: 600 10.5px/1 system-ui, -apple-system, 'Segoe UI', sans-serif; letter-spacing: -.01em; }
 .gr-tela .gr-ang.on { border-color: var(--gr-am); color: var(--gr-am); background: #26282C; }
 .gr-tela .gr-olho { flex: none; width: 40px; height: 32px; border-radius: 0; display: grid; place-items: center; border: 2px solid #111; background: var(--gr-am); color: #111; padding: 0; margin-left: 2px; }
+.gr-tela .gr-palco > .gr-olho { position: absolute; right: 64px; bottom: 30px; z-index: 6; margin: 0; box-shadow: 0 2px 6px rgba(0,0,0,.45); }   /* no canto do palco (Sigma #371) */
+.gr-tela .gr-ctl .gr-vista { flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding-left: 8px; padding-right: 8px; border-color: var(--gr-am); color: var(--gr-am); } .gr-tela .gr-vista svg { flex: none; width: 13px; height: 13px; }
 .gr-tela .gr-vis { display: none; flex: none; height: 32px; padding: 0 8px; border-radius: 0; border: 2px solid #111; background: #F2F2F0; color: #111; font: 700 12px/1 var(--gr-imp); letter-spacing: .04em; margin-left: 2px; cursor: pointer; white-space: nowrap; }
 .gr-tela .gr-vis:hover { filter: brightness(.92); }
 .gr-tela .gr-vet.gr-so-linhas { background: #fff; border-radius: 6px; }   /* só as linhas, no fundo branco (May 19/11) */
@@ -209,7 +211,7 @@ const CSS = `
 .gr-tela .gr-vet-msg { position: absolute; left: 0; right: 0; bottom: 48%; text-align: center; font: 700 12px/1.3 var(--gr-mono); color: #9EA2AA; }
 .gr-tela .gr-ctl { padding: 12px 16px 0; background: #18191C; }
 .gr-tela .gr-ctl .gr-fases { align-items: center; flex-wrap: nowrap; }
-.gr-tela .gr-ctl .gr-chip { padding-left: 2px; padding-right: 2px; }
+.gr-tela .gr-ctl .gr-chip { padding-left: 2px; padding-right: 2px; letter-spacing: .01em; }
 .gr-tela .gr-ctl .gr-angs { margin: 0; }
 .gr-tela .gr-ctl .gr-legenda { margin: 6px 0 0; font-size: 11px; }
 .gr-tela .gr-muda { list-style: none; margin: 10px 0 0; padding: 10px 12px; display: grid; gap: 7px; background: rgba(255,255,255,.04); border-left: 3px solid var(--gr-am); } .gr-tela .gr-muda[hidden] { display: none; }
@@ -417,6 +419,7 @@ function odometro(v) {
   k.append(w); return k;
 }
 const PASTA = 'categorias/carros-moto/vetores/';
+const GIRO_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v4h-4"/></svg>';
 const ANGS = [['lado-direito', 'Direita'], ['lado-esquerdo', 'Esquerda'], ['frente', 'Frente'], ['traseira', 'Trás'], ['cima', 'Cima']];   // May 09/11 12:35: sem Farol, nomes curtos, ocupando a largura toda
 const FASES = { original: ['Original', '-original'], agora: ['Agora', ''], meta: ['Meta', '-tunado'] };
 const svgCache = {};
@@ -440,14 +443,14 @@ const OLHO_X = OLHO.replace('</svg>', '<path d="M4 4l16 16"/></svg>');
 function elevador(v, vet) {
   const id = v.id, angs = ANGS.filter(a => a[0] !== 'farol' || id === 'gol');
   let fase = 'agora', ang = angs[0][0], placa = lePlaca(), tok = 0;
-  const ctl = elD('div', 'gr-ctl'), fases = elD('div', 'gr-fases'), ags = elD('div', 'gr-angs'), leg = elD('p', 'gr-legenda');
+  const ctl = elD('div', 'gr-ctl'), fases = elD('div', 'gr-fases'), leg = elD('p', 'gr-legenda');
   const olho = elD('button', 'gr-olho'); olho.type = 'button';
   const chips = [['original', 'Original'], ['agora', 'Agora'], ['meta', 'Meta'], ['comparar', 'Comparar']].map(([f, t]) => { const b = elD('button', 'gr-chip', t); b.type = 'button'; b.onclick = () => { fase = f; desenha(); }; fases.append(b); return [f, b]; });
   let modo = leModo();   // o olhinho troca a visão: Juntos > Só linhas (fundo branco) > Só formas (May 19/11: "naquele olhinho ... vc clica e muda")
   const ICO_MODO = { juntos: OLHO, linhas: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M3 15l4-6h8l4 4v4H3z"/><circle cx="8" cy="17" r="2"/><circle cx="16" cy="17" r="2"/></svg>', formas: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 15l4-6h8l4 4v4H3z"/><circle cx="8" cy="17" r="2.4" fill="#111"/><circle cx="16" cy="17" r="2.4" fill="#111"/></svg>' };
   const pintaVis = () => { const nome = MODOS.find(x => x[0] === modo)[1]; olho.innerHTML = ICO_MODO[modo]; olho.title = 'Ver: ' + nome; olho.setAttribute('aria-label', 'Ver: ' + nome + ' (toque pra trocar)'); vet.classList.toggle('gr-so-linhas', modo === 'linhas'); };
-  fases.append(olho);
-  const abas = angs.map(([a, t]) => { const b = elD('button', 'gr-ang', t); b.type = 'button'; b.onclick = () => { ang = a; desenha(); }; ags.append(b); return [a, b]; });
+  const GIRA = ['lado-direito', 'frente', 'lado-esquerdo', 'traseira', 'cima'].filter(a => angs.some(x => x[0] === a)), vb = elD('button', 'gr-chip gr-vista'); vb.type = 'button';   // vista e estado numa fileira só: a câmera dá a volta no veículo a cada toque (Sigma #371)
+  vb.onclick = () => { ang = GIRA[(GIRA.indexOf(ang) + 1) % GIRA.length]; desenha(); }; fases.append(vb);
   olho.onclick = e => { e.stopPropagation(); const i = MODOS.findIndex(x => x[0] === modo); modo = MODOS[(i + 1) % MODOS.length][0]; gravaModo(modo); desenha(); };
   const poe = p => { p = Math.max(0, Math.min(100, p)); vet.style.setProperty('--x', p + '%'); };
   arrasta(vet, poe, () => vet.classList.contains('cmp'));
@@ -456,7 +459,8 @@ function elevador(v, vet) {
   function desenha() {
     const meu = ++tok;
     { const pl = vet.closest('.gr-palco'); if (pl && pl.dataset.ang !== ang) { const VOLTA = ['lado-direito', 'frente', 'lado-esquerdo', 'traseira'], de = VOLTA.indexOf(pl.dataset.ang), pra = VOLTA.indexOf(ang), dir = de < 0 || pra < 0 ? 1 : ((pra - de + 4) % 4 === 3 ? -1 : 1); pl.style.setProperty('--gir', (dir * 70) + 'deg'); pl.style.setProperty('--gir-o', dir > 0 ? '100%' : '0%'); pl.dataset.ang = ang; const CANTOS = { 'lado-direito': ['prat', 'banc'], 'lado-esquerdo': ['banc', 'prat'], frente: ['porta', 'pino'], traseira: ['pino', 'porta'] }, cs = CANTOS[ang] || ['', '']; pl.querySelectorAll('.gr-canto').forEach((c, n) => { c.className = 'gr-canto ' + (n ? 'd ' : 'e ') + cs[n]; }); pl.classList.remove('gr-gira'); void pl.offsetWidth; pl.classList.add('gr-gira'); } }   // cada lado um fundo, como se a câmera desse a volta (May 19/11)
-    chips.forEach(([f, b]) => b.classList.toggle('on', f === fase)); abas.forEach(([a, b]) => b.classList.toggle('on', a === ang));
+    chips.forEach(([f, b]) => b.classList.toggle('on', f === fase)); { const n = (angs.find(x => x[0] === ang) || [, ''])[1]; vb.innerHTML = GIRO_SVG; vb.append(elD('span', null, n)); vb.setAttribute('aria-label', 'Vista: ' + n + ' (toque pra girar)'); }
+    { const pl = vet.closest('.gr-palco'); if (pl && olho.parentNode !== pl) pl.append(olho); }   // o olhinho mora no palco, no canto: ele muda o jeito de ver a cena
     pintaVis();   // o olhinho agora é a visão (Juntos / Só linhas / Só formas); a placa segue a última escolha gravada
     const cmp = fase === 'comparar'; vet.classList.toggle('cmp', cmp);
     const falta = (v.projeto || []).filter(p => p.estado !== 'feito').sort((a, b) => { const x = ORDEM.indexOf(a.estado), y = ORDEM.indexOf(b.estado); return (x < 0 ? 99 : x) - (y < 0 ? 99 : y); });   // Meta e Comparar mostram o que muda do agora pra meta (May 17/11 20:27)
@@ -472,7 +476,7 @@ function elevador(v, vet) {
     });
   }
   const muda = elD('ul', 'gr-muda'); muda.hidden = true;
-  ctl.append(fases, ags, leg, muda); desenha(); return ctl;
+  ctl.append(fases, leg, muda); desenha(); return ctl;
 }
 const moeda = n => 'R$ ' + (Number(n) || 0).toFixed(2).replace('.', ',');
 const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
