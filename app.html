@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-19.515">
+<meta name="app-versao" content="2026-11-19.516">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-19.513"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-19.516"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -5274,20 +5274,22 @@ function montaTreino(c, d) {
     abas.replaceChildren(); corpo.replaceChildren();
     [['treino', 'Treino'], ['mural', 'Mural']].forEach(([id, nome]) => { const b = elD('button', 'tr-aba' + (trAba === id ? ' on' : ''), nome); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(trAba === id)); b.onclick = () => { trAba = id; pinta(); }; abas.append(b); });
     if (trAba === 'mural') return montaMural(corpo);
-    const b = botao('chart', 'Estatística', 'semana, cargas, comparação com a base', () => abreEstatistica(d.historico || [])); b.classList.add('treino-est'); corpo.append(b);
+    const b = botao('chart', 'Estatística', 'semana, cargas, comparação com a base', () => abreEstatistica(d.historico || [])); b.classList.add('treino-est');
     const folga = () => store.get('treino-folga') === diaLocal() || (d.folgas || []).includes(diaLocal());
+    const ab = d.abrir || {}, sem = new Date().getDay(), hoje = !folga() && (ab.dias || []).includes(sem) ? ((ab.porDia || {})[sem] || ab.lista || '') : '';   // o treino do dia vem primeiro (Sigma #374, 17/11): mesma regra do abrir sozinho, porDia ou a lista padrão
     const bf = botao(folga() ? 'moon' : 'sofa', folga() ? 'Hoje é folga' : 'Hoje não vou', folga() ? 'o treino não abre sozinho hoje · tocar desfaz' : 'o treino não abre sozinho hoje', () => {
       if (store.get('treino-folga') === diaLocal()) { store.set('treino-folga', ''); showNote('Folga desfeita: o treino volta a abrir no horário'); }
       else { store.set('treino-folga', diaLocal()); showNote('Beleza, hoje o treino não abre sozinho'); }
       c.replaceChildren(); montaTreino(c, d);
     });
+    const regras = [];
     d.viagens.forEach(v => {
-      if (v.resumo) { const r = document.createElement('div'); r.className = 'p-texto'; r.textContent = v.resumo; corpo.append(r); }
+      if (v.resumo) { const r = elD('details', 'p-texto tr-regras'); r.append(elD('summary', '', 'Regras do treino'), elD('div', 'tr-regras-tx', v.resumo)); regras.push(r); }   // regras numa dobra, fechada: não empurram o treino (Sigma #374)
       const lista = document.createElement('div'); lista.className = 'p-lista'; corpo.append(lista);
       const PC = document.body.classList.contains('web') && matchMedia('(min-width: 1280px)').matches;   // no PC o cartão grande mostra os exercícios do treino, o feito riscado (Sigma 15/11 11:55)
-      v.listas.forEach(l => { const b = botao(l.icone, semHojeFalso(l.nome), marcados(v, l).size + ' de ' + totalItens(l) + ' feitos · ' + semHojeFalso(l.sub || ''), () => abreChecklist(v, l)); if (PC) { const ul = elD('ul', 'tr-exs'), fez = marcados(v, l); l.grupos.forEach(g => g.itens.filter(itemVivo).forEach(it => ul.append(elD('li', fez.has(it[0]) ? 'feito' : '', String(it[1]).split(/,| \(/)[0])))); b.querySelector('.tx').append(ul); } lista.append(b); });
+      [...v.listas].sort((x, y) => (y.id === hoje) - (x.id === hoje)).forEach(l => { const b = botao(l.icone, semHojeFalso(l.nome), marcados(v, l).size + ' de ' + totalItens(l) + ' feitos · ' + semHojeFalso(l.sub || ''), () => abreChecklist(v, l)); if (PC) { const ul = elD('ul', 'tr-exs'), fez = marcados(v, l); l.grupos.forEach(g => g.itens.filter(itemVivo).forEach(it => ul.append(elD('li', fez.has(it[0]) ? 'feito' : '', String(it[1]).split(/,| \(/)[0])))); b.querySelector('.tx').append(ul); } if (l.id === hoje) { b.classList.add('tr-hoje'); b.querySelector('.tx').prepend(elD('span', 'tr-tag', 'Hoje')); } lista.append(b); });
     });
-    corpo.append(bf);   // "Hoje não vou" fica lá embaixo, depois dos treinos (May, 05/11/2026)
+    corpo.append(b, ...regras, bf);   // "Hoje não vou" fica lá embaixo, depois dos treinos (May, 05/11/2026)
   };
   pinta();
 }

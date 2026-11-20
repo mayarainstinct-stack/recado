@@ -1,3 +1,4 @@
+// v516 (19/11/2026): Treino: o treino de hoje vem primeiro com o selo Hoje; as regras numa dobra fechada; capa mais baixa (Sigma #374).
 // v515 (19/11/2026): Garagem: o veículo vira junto com o fundo (mesma face de caixa).
 // v514 (19/11/2026): Garagem: botão Juntos / Só linhas (fundo branco) / Só formas; contornos pretos.
 // v513 (19/11/2026): Onde ficar: o Airbnb preferido da May vem primeiro, com selo "Meu preferido".
