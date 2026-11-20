@@ -1,3 +1,4 @@
+// v517 (19/11/2026): Tarefas: o post-it mostra o título e 2 linhas, o resto abre no toque; botão de mandar pedido com ícone de enviar (Sigma #372).
 // v516 (19/11/2026): Treino: o treino de hoje vem primeiro com o selo Hoje; as regras numa dobra fechada; capa mais baixa (Sigma #374).
 // v515 (19/11/2026): Garagem: o veículo vira junto com o fundo (mesma face de caixa).
 // v514 (19/11/2026): Garagem: botão Juntos / Só linhas (fundo branco) / Só formas; contornos pretos.

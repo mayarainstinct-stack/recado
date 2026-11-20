@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-19.516">
+<meta name="app-versao" content="2026-11-19.517">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-19.516"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-19.517"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -130,6 +130,7 @@ const ICONES_SVG = {
   grade: '<rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/>',
   more: '<circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/>',
   reply: '<path d="M9 14 4 9l5-5M4 9h10a6 6 0 0 1 6 6v3"/>',
+  send: '<path d="M21 3 3 10.5l7.5 3L13 21z"/><path d="M10.5 13.5 21 3"/>',
   retry: '<path d="M4 12a8 8 0 1 0 2.3-5.7M4 4v4h4"/>',
   download: '<path d="M12 4v11M7 11l5 5 5-5M4 20h16"/>',
   chev: '<path d="M9 5l7 7-7 7"/>',
@@ -4050,7 +4051,7 @@ function abreIdeias(m) {
     const TELAS = { quadro: [['esperando', 'Esperando'], ['fazendo', 'Fazendo']], revisao: [['aguardando', 'Aguardando'], ['revisando', 'Revisando']] }, NOME_EST = { concluido: 'concluído', aguardando: 'aguardando revisão', revisando: 'Sigma revisando' };
     const abas = [['quadro', 'Planejado'], ['revisao', 'Revisão'], ['feitos', 'Concluído']], nav = elD('nav', 'ie-abas'), tr = elD('div', 'ie-trilho'), busca = elD('input', 'ie-busca'); busca.type = 'search'; busca.placeholder = 'Procurar em todas as tarefas (até nas concluídas)'; busca.enterKeyHint = 'search';
     const caixa = elD('div', 'id-nova ie-nova'), ta = elD('textarea'); ta.rows = 1; ta.placeholder = 'Novo pedido (@Orfeu manda direto)'; ta.enterKeyHint = 'send';
-    const env = elD('button'); env.type = 'button'; env.setAttribute('aria-label', 'Pregar o post-it'); env.innerHTML = icone('reply'); caixa.append(ta, env);
+    const env = elD('button'); env.type = 'button'; env.setAttribute('aria-label', 'Pregar o post-it'); env.innerHTML = icone('send'); caixa.append(ta, env);
     c.append(nav, busca, tr, caixa);
     let aba = 'quadro';
     busca.addEventListener('input', () => pinta());
