@@ -1,3 +1,4 @@
+// v524 (19/11/2026): Projetinhos: a tela do projeto garante o fundo e o texto na cor dela e não herda o tema claro de quem abriu (Sigma #395).
 // v523 (19/11/2026): Máquinas: insígnias e acessórios em colmeia (hexágonos na cor da máquina), toque abre o texto inteiro (May 22:33).
 // v522 (19/11/2026): Viagens: a viagem que já foi também mostra a imagem dentro, em cima do álbum de fotos (May 22:31).
 // v521 (19/11/2026): Finanças: cartão pago sem a pílula Pago e sem repetir o valor; Falta receber, Falta pagar e Saldo final em cima, Sobra do mês embaixo (Sigma #376).

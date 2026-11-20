@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-19.523">
+<meta name="app-versao" content="2026-11-19.524">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -6747,7 +6747,8 @@ function abreProjetosMay(m) {
   const detalhe = id => tela((x => x.curto || x.nome || 'Projeto')(D.projetos.find(x => x.id === id) || {}), c => {   // curto: nome que cabe no topo (Sigma 11:28)
     const pinta = () => {
       const p = D.projetos.find(x => x.id === id); c.replaceChildren(); if (!p) { c.append(elD('p', 'p-nota', 'Este projeto foi apagado.')); return; }
-      const k = pjmCores(p); pjmCarregaFontes(); c.className = c.className.replace(/\bpjm-t-\S+/g, '').trim(); c.classList.add('pjm-tela', 'pjm-t-' + ((p.tema || {}).estilo || 'padrao')); c.append(pjmHero(p, k));
+      painel.classList.remove('tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude', 'tema-planos', 'tema-musica');   // o projeto tem a identidade dele: aberto pela Agenda (clara) não herda o claro, senão o texto branco some (Sigma #395)
+      const k = pjmCores(p); pjmCarregaFontes(); c.className = c.className.replace(/\bpjm-t-\S+/g, '').trim(); c.classList.add('pjm-tela', 'pjm-t-' + ((p.tema || {}).estilo || 'padrao')); c.style.backgroundColor = k.fundo; c.style.color = k.texto; c.append(pjmHero(p, k));
       const topo = elD('div', 'pjm-topo'); topo.style.background = k.fundo; topo.style.color = k.texto; topo.style.borderBottomColor = k.destaque;
       const ic = elD('span', 'pjm-ic'); ic.innerHTML = icone(p.icone || 'doc'); ic.style.color = k.destaque;
       const ttl = elD('div'); ttl.append(elD('b', '', p.nome), elD('small', '', p.pra || ''));
