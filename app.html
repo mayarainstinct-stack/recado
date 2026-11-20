@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-20.536">
+<meta name="app-versao" content="2026-11-20.537">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-20.536"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-20.537"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -4432,8 +4432,8 @@ function abrePlanta(m) {   // planta com cara de AutoCAD (May 15:50); metade de 
       const abas = [['Coisas · ' + k.coisas.length, cp => {
         const nvC = elD('button', 'pl-bt on', '+ Coisa'); nvC.type = 'button'; nvC.onclick = () => lancaCoisa(k);
         if (!k.coisas.length) { cp.append(elD('p', 'p-nota', k.obs || 'Ainda não tem nada anotado daqui.'), nvC); return; }
-        const ul = elD('ul', 'pl-lista'); k.coisas.forEach(ci => { const li = elD('li', 'pl-toca'); li.dataset.n = ci.n; const ic = ns('svg', { viewBox: '-.1 -.1 1.2 1.2', class: 'pl-ic', preserveAspectRatio: 'xMidYMid meet' }); ci.tp[3].forEach(p => ic.append(ns('path', { d: p, 'vector-effect': 'non-scaling-stroke' }))); const tx = elD('span', '', (ci.numerado ? (ci.n + 1) + ' · ' : '') + ci.nome); if (ci.medida || ci.onde) tx.append(elD('small', 'pl-med-it', [ci.medida || 'sem medida no Inst', ci.onde].filter(Boolean).join(' · '))); if (!ci.desenhar) li.classList.add('fora'); if (ci.projeto) li.classList.add('projeto'); li.append(ic, tx, edMini('note', 'Editar', () => editaCoisa(k, ci))); li.onclick = () => tocaCoisa(ci); ul.append(li); });
-        cp.append(ul, nvC, elD('p', 'p-nota', 'Medida e lugar tirados do Inst (' + (k.fontes || []).map(f => f.replace(/^casa\//, '')).join(', ') + '). O lugar no desenho é aproximado quando o arquivo só diz a parede; apagada = fica na parede ou em cima de outra coisa.')); marcaLista();
+        const ul = elD('ul', 'pl-lista'); k.coisas.forEach(ci => { const li = elD('li', 'pl-toca'); li.dataset.n = ci.n; const ic = ns('svg', { viewBox: '-.1 -.1 1.2 1.2', class: 'pl-ic', preserveAspectRatio: 'xMidYMid meet' }); ci.tp[3].forEach(p => ic.append(ns('path', { d: p, 'vector-effect': 'non-scaling-stroke' }))); const tx = elD('span', '', (ci.numerado ? (ci.n + 1) + ' · ' : '') + ci.nome); if (ci.medida || ci.onde) tx.append(elD('small', 'pl-med-it', [ci.medida || 'Sem medida anotada', ci.onde].filter(Boolean).join(' · '))); if (!ci.desenhar) li.classList.add('fora'); if (ci.projeto) li.classList.add('projeto'); li.append(ic, tx, edMini('note', 'Editar', () => editaCoisa(k, ci))); li.onclick = () => tocaCoisa(ci); ul.append(li); });
+        cp.append(ul, nvC, elD('p', 'p-nota', 'O lugar no desenho é aproximado quando só se sabe a parede. Apagada = fica na parede ou em cima de outra coisa.')); marcaLista();
       }], ['Medidas', cp => { const ul = elD('ul', 'pl-med'); [['Largura', num(k.w) + ' m'], ['Comprimento', num(k.h) + ' m'], ['Área', num(areaDe(k)) + ' m²'], ['Perímetro', num(2 * (k.w + k.h)) + ' m'], ['Posição', 'X ' + num(k.x) + ' · Y ' + num(k.y)]].forEach(([a, b]) => { const li = elD('li'); li.append(elD('span', '', a), elD('b', '', b)); ul.append(li); }); cp.append(ul); }]];
       if ((k.tomadas || []).length) abas.splice(1, 0, ['Tomadas · ' + k.tomadas.length, cp => { const ul = elD('ul', 'pl-med'); k.tomadas.forEach(t => { const li = elD('li'); li.append(elD('span', '', t)); ul.append(li); }); cp.append(ul, elD('p', 'p-nota', 'Da May em 21/10 (casa/TOMADAS-DA-CASA-21-10-2026.md).')); }]);   // tomadas de cada cômodo, do levantamento dela
       if (k.obs || k.doc || k.alexa || k.eletrica || k.portas || k.janelas || k.pe_direito) abas.push(['Sobre', cp => { if (k.obs) cp.append(elD('p', 'pl-obs', k.obs)); [['Pé-direito', k.pe_direito ? [k.pe_direito] : null], ['Portas', k.portas], ['Janelas', k.janelas], ['Alexa', k.alexa], ['Elétrica', k.eletrica]].forEach(([t, xs]) => { if (!(xs || []).length) return; cp.append(elD('small', 'ob-folha-rot', t)); const ul = elD('ul', 'pl-med'); xs.forEach(x => { const li = elD('li'); li.append(elD('span', '', x)); ul.append(li); }); cp.append(ul); }); if (k.doc) { const ab = elD('button', 'pl-bt on', 'Inventário completo'); ab.type = 'button'; ab.onclick = () => abreCartoes({ nome: k.nome, arq: k.doc }); cp.append(ab); } }]);

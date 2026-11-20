@@ -1,3 +1,4 @@
+// v537 (20/11/2026): Casa > planta: abas Coisas, Tomadas, Medidas e Sobre sempre numa linha; textos das coisas falam com você, sem anotação de robô (Sigma #12).
 // v536 (20/11/2026): Saúde: cartão que já passou fica cheio e o "Já passou" vira etiqueta rosa-escuro no rosa-claro, nunca branco no branco (Sigma #373)
 // v535 (20/11/2026): Todo bloco de texto visível começa com maiúscula (rede no app inteiro, sem mexer no meio da frase, link ou unidade); Jogos: Só os que joguei e Ordem; Viagens: Foi e Sem data do Hermes (Sigma #369 #407).
 // v534 (20/11/2026): Finanças: Saldo final negativo vira cartão vermelho com o valor em branco (Sigma #376).
