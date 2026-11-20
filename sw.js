@@ -1,3 +1,4 @@
+// v521 (19/11/2026): Finanças: cartão pago sem a pílula Pago e sem repetir o valor; Falta receber, Falta pagar e Saldo final em cima, Sobra do mês embaixo (Sigma #376).
 // v520 (19/11/2026): Frase começa com maiúscula no app inteiro: subtítulo de tela, cartão e azulejo passam pelo maiusc; data do Checklist e capa do Treino; subs do menu.json na fonte (Sigma #369).
 // v519 (19/11/2026): Pauta de caderno presa à linha do texto no Checklist, no Diário da Obra e nos Relatos; corações dos Relatos fora do título (Sigma #368).
 // v518 (19/11/2026): Garagem: vista e estado numa fileira só (a câmera gira a cada toque), o olhinho no canto do palco (Sigma #371).

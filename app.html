@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-19.520">
+<meta name="app-versao" content="2026-11-19.521">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -4517,7 +4517,7 @@ const finChaveDe = s => { const d = finData(s); return d ? finChave(d) : ''; };
 const finDiaMes = (ano, mes0, dia) => new Date(ano, mes0, Math.min(+dia, new Date(ano, mes0 + 1, 0).getDate()));
 const finTs = y => { const d = finData(y.data); const h = String(y.quando || '').match(/(\d\d):(\d\d)$/); return (d ? d.getTime() : 0) + (h ? (+h[1] * 60 + +h[2]) * 6e4 : 0); };
 const finFuturo = y => { const m = String(y.data || '').match(/^(\d\d)\/(\d\d)\/(\d{4})/); return !y.quando && !!m && new Date(+m[3], m[2] - 1, +m[1]) > new Date(); };   // data na frente de hoje = combinado, ainda não pago (Sigma 13/11: 'Vô · dia 20' dizia 'Pago em 20/11' no dia 13)
-const finPagoTxt = (y, lado) => (finFuturo(y) ? (lado === 'receber' ? 'Vai receber em ' : 'Vai pagar em ') : lado === 'receber' ? 'Recebido em ' : 'Pago em ') + (y.quando ? edQuando(y.quando) : String(y.data).slice(0, 5)) + (y.valor !== '' && y.valor != null ? ' · ' + reaisFin(y.valor) : '') + (y.forma ? ' · ' + y.forma : '');
+const finPagoTxt = (y, lado, semValor) => (finFuturo(y) ? (lado === 'receber' ? 'Vai receber em ' : 'Vai pagar em ') : lado === 'receber' ? 'Recebido em ' : 'Pago em ') + (y.quando ? edQuando(y.quando) : String(y.data).slice(0, 5)) + (!semValor && y.valor !== '' && y.valor != null ? ' · ' + reaisFin(y.valor) : '') + (y.forma ? ' · ' + y.forma : '');
 const finNum = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
 function finAplicaLanc(d, l) {   // o LANCAMENTOS.md antigo (o que ela lançou antes do .241) continua valendo
   if (/^nova-/.test(l.tipo)) { const ld = l.tipo === 'nova-pagar' ? d.pagar : d.receber; if (!ld.some(y => [y.nome, y.chave].some(n => n && n.toLowerCase() === l.nome.toLowerCase()))) { const lem = (l.nota.match(/lembrar (\d\d\/\d\d\/\d{4})/) || [])[1] || null; ld.push({ nome: l.nome, chave: l.nome, dia: null, total: l.valor, pago: 0, falta: l.valor, como: l.nota.replace(/\s*lembrar \d\d\/\d\d\/\d{4}\s*·?\s*/, '').trim(), pagamentos: [], lembrar: lem, desde: l.data }); } return; }
@@ -4557,7 +4557,7 @@ function finLista(S, M, hoje) {
   S.fixas.forEach(f => {
     if (!f.dia) return; const pago = f.pagos.filter(y => y.chave === chave).slice(-1)[0] || null; if (passado && !pago) return;
     const q = finDiaMes(M.getFullYear(), M.getMonth(), f.dia), ent = f.tipo === 'entrada';
-    its.push({ id: f.id, ent: f, tipo: 'f', cat: f.tipo, lado: ent ? 'receber' : 'pagar', nome: f.nome, quando: q, valor: finParte(f), pago, estado: estadoDe(pago, q), sub: pago ? finPagoTxt(pago, ent ? 'receber' : 'pagar') : (f.metade ? 'tua metade ' + reaisFin(f.valor / 2) + ' · ' : '') + (f.de ? 'última: ' + f.de : '') + (f.nota ? (f.de ? ' · ' : '') + f.nota : ''), hist: f.pagos.length > (pago ? 1 : 0) ? 'Antes: ' + f.pagos.filter(y => y !== pago).slice(-3).map(y => String(y.data).slice(0, 5)).join(', ') : '' });
+    its.push({ id: f.id, ent: f, tipo: 'f', cat: f.tipo, lado: ent ? 'receber' : 'pagar', nome: f.nome, quando: q, valor: finParte(f), pago, estado: estadoDe(pago, q), sub: pago ? finPagoTxt(pago, ent ? 'receber' : 'pagar', true) : (f.metade ? 'tua metade ' + reaisFin(f.valor / 2) + ' · ' : '') + (f.de ? 'última: ' + f.de : '') + (f.nota ? (f.de ? ' · ' : '') + f.nota : ''), hist: f.pagos.length > (pago ? 1 : 0) ? 'Antes: ' + f.pagos.filter(y => y !== pago).slice(-3).map(y => String(y.data).slice(0, 5)).join(', ') : '' });
   });
   S.pessoas.forEach(p => {
     const pagoM = p.pagamentos.filter(y => y.chave === chave).slice(-1)[0] || null, ult = p.pagamentos[p.pagamentos.length - 1], lq = p.lembrar ? finData(p.lembrar) : null; let q, pago = null;
@@ -4565,7 +4565,7 @@ function finLista(S, M, hoje) {
     else if (p.falta > 0) { if (!(lq ? (finChave(lq) === chave || (atual && finChave(lq) < chave)) : atual)) return; q = lq || hoje; }
     else { if (!pagoM) return; q = lq || finData(pagoM.data); pago = pagoM; }
     const cheio = p.vp || (ult && ult.valor) || p.falta, valor = p.dia ? Math.min(cheio, p.falta || cheio) : p.falta;
-    its.push({ id: p.id, ent: p, tipo: 'p', cat: p.cat, lado: p.lado, nome: p.nome, quando: q, valor, pago, estado: estadoDe(pago, q), sub: pago ? finPagoTxt(pago, p.lado) : 'falta ' + reaisFin(p.falta) + (p.lembrar && !p.dia && lq ? ' · lembrete ' + edDataBr(finIso(p.lembrar)).slice(0, 5) : '') + (p.como && p.origem === 'app' ? ' · ' + p.como : ''), hist: '' });
+    its.push({ id: p.id, ent: p, tipo: 'p', cat: p.cat, lado: p.lado, nome: p.nome, quando: q, valor, pago, estado: estadoDe(pago, q), sub: pago ? finPagoTxt(pago, p.lado, true) : 'falta ' + reaisFin(p.falta) + (p.lembrar && !p.dia && lq ? ' · lembrete ' + edDataBr(finIso(p.lembrar)).slice(0, 5) : '') + (p.como && p.origem === 'app' ? ' · ' + p.como : ''), hist: '' });
   });
   its.sort((a, b) => a.quando - b.quando || a.nome.localeCompare(b.nome));
   const agora = hoje.getTime() + 864e5, ja = y => finTs(y) < agora, doMes = (ls, f) => ls.reduce((n, p) => n + p.pagamentos.filter(y => y.chave === chave && ja(y)).reduce((s, y) => s + finNum(y.valor), 0), 0) + f.reduce((n, x) => n + x.pagos.filter(y => y.chave === chave && ja(y)).reduce((s, y) => s + finNum(y.valor), 0), 0);   // entrou e saiu só contam o que já aconteceu (pagamento com data futura na planilha não entra)
@@ -4667,7 +4667,7 @@ function abreFinancas(m) {
     const linha = it => {
       const l = elD('div', 'cm-item fin-it cm-' + it.cat + ' est-' + it.estado), dia = elD('div', 'cm-dia'), meio = elD('div', 'cm-meio'), dir = elD('div', 'fin-dir'), top = elD('div', 'fin-top'), dd = Math.round((it.quando - hoje) / 864e5);
       dia.append(elD('b', '', String(it.quando.getDate())), elD('small', '', SEM[it.quando.getDay()]));
-      top.append(elD('span', 'cm-chip', CHIP[it.cat] || it.cat), elD('em', 'fin-est ' + it.estado, it.estado === 'vencer' && dd > 0 && dd <= 3 && it.lado === 'pagar' ? (dd === 1 ? 'Vence amanhã' : 'Vence em ' + dd + ' dias') : ESTADO[it.lado][it.estado]));
+      top.append(elD('span', 'cm-chip', CHIP[it.cat] || it.cat)); if (it.estado !== 'paga') top.append(elD('em', 'fin-est ' + it.estado, it.estado === 'vencer' && dd > 0 && dd <= 3 && it.lado === 'pagar' ? (dd === 1 ? 'Vence amanhã' : 'Vence em ' + dd + ' dias') : ESTADO[it.lado][it.estado]));   // pago já fala pelo visto verde e pelo 'Pago em': sem a pílula e sem repetir o valor (Sigma #376)
       meio.append(top, elD('strong', '', it.nome), elD('small', '', it.sub)); if (it.hist) meio.append(elD('small', 'fin-antes', it.hist));
       const ck = elD('button', 'fin-ck' + (it.pago ? ' on' : '')); ck.type = 'button'; ck.setAttribute('aria-label', it.pago ? 'Desmarcar' : 'Marcar'); ck.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg>'; ck.onclick = e => { e.stopPropagation(); marcar(it); };
       const ac = elD('div', 'fin-ac'); ac.append(ck, edMini('note', 'Editar', () => editaConta(it.ent)));
@@ -4690,7 +4690,7 @@ function abreFinancas(m) {
       const pg = elD('div', 'fin-pag cm-pag'), { its, resumo } = finLista(S, mesAt, hoje), sobra = resumo.entrou - resumo.saiu;
       const nav = elD('div', 'fin-mesnav'), mv = (n, t) => { const b = elD('button', '', t); b.type = 'button'; b.setAttribute('aria-label', n < 0 ? 'Mês anterior' : 'Próximo mês'); b.onclick = () => { mesAt = new Date(mesAt.getFullYear(), mesAt.getMonth() + n, 1); pinta(); }; return b; };
       nav.append(mv(-1, '‹'), elD('b', '', MES[mesAt.getMonth()].replace(/^./, x => x.toUpperCase()) + ' de ' + mesAt.getFullYear()), mv(1, '›'));
-      const tp = elD('div', 'cm-topo fin-resumo'), g = elD('div', 'fin-res3'); [['Entrou', resumo.entrou, 'rec'], ['Saiu', resumo.saiu, 'pag'], ['Sobra', sobra, sobra >= 0 ? 'rec' : 'neg']].forEach(([t, v, cl]) => { const b = elD('div', cl); b.append(elD('span', '', t), elD('b', '', reaisFin(v))); g.append(b); });
+      const tp = elD('div', 'cm-topo fin-resumo'), g = elD('div', 'fin-res3'); [['Entrou', resumo.entrou, 'rec'], ['Saiu', resumo.saiu, 'pag'], ['Sobra do mês', sobra, sobra >= 0 ? 'rec' : 'neg']].forEach(([t, v, cl]) => { const b = elD('div', cl); b.append(elD('span', '', t), elD('b', '', reaisFin(v))); g.append(b); });
       tp.append(g, elD('small', '', 'Ainda falta pagar ' + reaisFin(resumo.aPagar) + ' · a receber ' + reaisFin(resumo.aReceber) + ' neste mês')); pg.append(nav, tp);
       const lista = elD('div', 'cm-lista'); its.forEach(it => lista.append(linha(it))); if (!its.length) lista.append(elD('p', 'p-nota', 'Nada neste mês.')); pg.append(lista); return pg;
     };
@@ -4711,7 +4711,7 @@ function abreFinancas(m) {
       const rs = finLista(S, new Date(hoje.getFullYear(), hoje.getMonth(), 1), hoje).resumo;
       { const fxb = elD('div', 'xl-fx'), cel = elD('i', 'xl-cel'); cel.innerHTML = '<svg viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="13" height="13" rx="1" fill="none" stroke="currentColor"/><path d="M1.5 6h13M6 1.5v13" stroke="currentColor"/><rect x="6" y="6" width="8.5" height="8.5" fill="none" stroke="#217346" stroke-width="2"/></svg>'; fxb.append(cel, elD('b', '', 'fx'), elD('span', '', '=SOMA(mês)  ' + reaisFin(rs.saiu + rs.aPagar))); box.append(fxb); }   // a barra de fórmula do Excel com o total a pagar do mês
       const fr = S.pessoas.filter(p => p.lado === 'receber').reduce((n, x) => n + x.falta, 0), fp = S.pessoas.filter(p => p.lado === 'pagar').reduce((n, x) => n + x.falta, 0);
-      const k = elD('div', 'fin-kpis'); [['A receber', fr, 'rec'], ['A pagar', fp, 'pag'], ['Saldo', fr - fp, fr - fp >= 0 ? 'rec' : 'neg']].forEach(([t, v, cl]) => { const b = elD('div', 'fin-kpi ' + cl); b.append(elD('span', '', t), elD('b', '', reaisFin(v))); k.append(b); }); box.append(k);
+      const k = elD('div', 'fin-kpis'); [['Falta receber', fr, 'rec'], ['Falta pagar', fp, 'pag'], ['Saldo final', fr - fp, fr - fp >= 0 ? 'rec' : 'neg']].forEach(([t, v, cl]) => { const b = elD('div', 'fin-kpi ' + cl); b.append(elD('span', '', t), elD('b', '', reaisFin(v))); k.append(b); }); box.append(k);
       const nav = elD('nav', 'fin-abas'), tr = elD('div', 'fin-trilho');
       tr.append(paginaMes(), paginaPessoas('receber'), paginaPessoas('pagar'), paginaFixas());
       abas.forEach(([id, t], j) => { const b = elD('button', '', t); b.type = 'button'; b.onclick = () => { abaId = id; [...nav.children].forEach((x, i) => x.classList.toggle('on', i === j)); tr.scrollTo({ left: j * tr.clientWidth, behavior: 'smooth' }); }; nav.append(b); });
