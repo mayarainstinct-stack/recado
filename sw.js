@@ -1,3 +1,4 @@
+// v528 (19/11/2026): Jogos: Onde parei ganhou a linha do tempo (cada fala com data e hora, a mais nova em cima, cartões de altura fixa que rolam por dentro); o Onde parei editado no app entra na linha (#279).
 // v527 (19/11/2026): Reiniciar robô pergunta no popup do app, sem confirm() nativo (Sigma #375).
 // v526 (19/11/2026): Opções dos formulários com maiúscula (Briefing); abas da Saúde em 2 linhas sem corte; cartão dos Relatos ocupa a tela; telefone não quebra no meio (Sigma #397).
 // v525 (19/11/2026): Formulário herda a tela que abriu: cor de destaque dela (Saúde rosa, Artes magenta, Viagens marrom, Música vermelha), claro nas telas claras (Saúde, Agenda, Viagens) e escuro na Música (Sigma #396).
