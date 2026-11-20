@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-19.529">
+<meta name="app-versao" content="2026-11-20.530">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-19.526"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-20.530"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3265,7 +3265,15 @@ function abreGrupo(m) {
     const dataDe = x => { const mt = String(x.data || x.sub || '').match(/(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?/); if (!mt || +mt[2] < 1 || +mt[2] > 12) return null; return new Date(mt[3] ? +mt[3] : hojeS.getFullYear(), +mt[2] - 1, +mt[1]); };
     if (m.estilo === 'saude') { const f = itensG.map((x, i) => { const d = dataDe(x); return { x, i, d, passou: !!d && d < hojeS }; }); const fase = o => o.d && !o.passou ? 0 : o.d ? 2 : 1; itensG.splice(0, itensG.length, ...f.sort((p, q) => fase(p) - fase(q) || (fase(p) === 0 ? p.d - q.d : fase(p) === 2 ? q.d - p.d : p.i - q.i)).map(o => o.x)); itensG.forEach(x => { const d = dataDe(x); if (d && d < hojeS) x.__passou = true; }); }
     arrumaArrastando(g, { sel: '.gr-item', chave, aviso: 'Pastas arrumadas: ficam assim neste aparelho' });
-    itensG.forEach(x => { const b = botaoGrade(x.icone, x.nome, x.sub, () => abreItemMenu(x)); b.classList.add('gr-item'); b.dataset.nome = x.nome; if (x.__passou) { b.classList.add('ja-passou'); b.append(elD('small', 'gr-passou', 'Já passou')); } b.style.setProperty('--c', x.cor || cor); if (x.cor) b.classList.add('cor-propria'); if (!m.estilo || m.estilo === 'cinema') { const sb = elD('small', 'gr-sub', x.sub || ''); b.append(sb); } g.append(b); });
+    itensG.forEach(x => { const b = botaoGrade(x.icone, x.nome, x.sub, () => abreItemMenu(x)); b.classList.add('gr-item'); b.dataset.nome = x.nome; if (m.abas && x.icone) b.querySelector('.ic').innerHTML = icone(x.icone); if (x.aba) b.dataset.aba = x.aba; /* pasta de grupo com abas usa o ícone de traço dela, nunca o colorido do Menu (Pós-cirurgia, Sigma #373) */ if (x.__passou) { b.classList.add('ja-passou'); b.append(elD('small', 'gr-passou', 'Já passou')); } b.style.setProperty('--c', x.cor || cor); if (x.cor) b.classList.add('cor-propria'); if (!m.estilo || m.estilo === 'cinema') { const sb = elD('small', 'gr-sub', x.sub || ''); b.append(sb); } g.append(b); });
+    if ((m.abas || []).length > 1) {   // grupo comprido vira abas (regra 'Celular: abas no lugar de scroll'; Saúde com 17 pastas = 4 telas, Sigma #373): as abas e o que vai em cada uma vêm do menu.json (m.abas e x.aba); pasta sem aba fica na primeira
+      const nomes = m.abas, chA = 'grupo-aba:' + m.nome; let aba = 0; try { aba = Math.max(0, Math.min(+(store.get(chA) || 0), nomes.length - 1)); } catch (e) {}
+      const abasEl = elD('div', 'sl-abas gr-abas'); abasEl.setAttribute('role', 'tablist'); g.classList.add('com-abas'); g.prepend(abasEl);
+      const pinta = () => { abasEl.replaceChildren(...nomes.map((n, i) => { const f = elD('button', 'sl-aba' + (i === aba ? ' on' : ''), n); f.type = 'button'; f.setAttribute('role', 'tab'); f.setAttribute('aria-selected', String(i === aba)); f.onclick = () => troca(i); return f; }));
+        g.querySelectorAll('.gr-item').forEach(b => { b.hidden = (nomes.includes(b.dataset.aba) ? b.dataset.aba : nomes[0]) !== nomes[aba]; }); };
+      const troca = i => { if (i < 0 || i >= nomes.length || i === aba) return; aba = i; try { store.set(chA, String(i)); } catch (e) {} pinta(); const pc = document.querySelector('#p-corpo'); if (pc) pc.scrollTop = 0; };
+      deslizaAbas(g, () => aba, troca); pinta();
+    }
     if (m.estilo === 'cinema' && document.body.classList.contains('web') && matchMedia('(min-width: 1280px)').matches) ultimasMidia(c, itensG);   // no PC, embaixo da fileira, a prévia das últimas peças (Sigma #240)
   });
 }

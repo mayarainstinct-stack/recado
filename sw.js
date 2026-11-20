@@ -1,3 +1,4 @@
+// v530 (20/11/2026): Saúde em 3 abas (Consultas, Cirurgia, Pra você) no lugar de 17 pastas roladas; pasta de grupo com abas usa o ícone de traço dela (Pós-cirurgia sem o ícone colorido do Menu) (Sigma #373).
 // v529 (20/11/2026): Jogos no PC: ficha sem coluna morta (Detalhes embaixo do progresso, painéis vão pra coluna mais curta, História vazia some no PC); O que eu falei saiu porque as falas estão na linha do tempo do Onde parei (Sigma #345).
 // v528 (19/11/2026): Jogos: Onde parei ganhou a linha do tempo (cada fala com data e hora, a mais nova em cima, cartões de altura fixa que rolam por dentro); o Onde parei editado no app entra na linha (#279).
 // v527 (19/11/2026): Reiniciar robô pergunta no popup do app, sem confirm() nativo (Sigma #375).
