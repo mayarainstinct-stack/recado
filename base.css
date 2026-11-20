@@ -3295,6 +3295,7 @@ body.modo-trab .painel .p-grade.apps > * { min-height: 156px !important; }
   body.modo-trab .dg-tela .pcd-num div, body.modo-trab .dg-tela .pcd-val { padding: 5px 8px; }
 }
 .gr-grade .gr-item.ja-passou { opacity: .72; } .gr-grade .gr-item .gr-passou { display: block; font-size: 11px; font-weight: 600; opacity: .85; text-align: center; margin-top: 2px; }   /* 18/11/2026: Saúde, pasta com data que já passou vai pro fim */
+.gr-grade.gr-grade-saude .gr-item.ja-passou { opacity: 1; } .gr-grade.gr-grade-saude .gr-item .gr-passou { display: inline-block; align-self: flex-start; margin: 0; padding: 3px 10px; border-radius: 999px; background: #FCE7F3; border: 1px solid #F0C9D6; color: #9D174D; font-size: 12px; font-weight: 700; opacity: 1; text-align: left; }   /* Sigma #373 20/11: cartão que já passou fica cheio como os outros (sem apagar) e o "Já passou" vira etiqueta rosa-escuro no rosa-claro, nunca branco no branco */
 
 /* Onde ficar e Lugares da viagem (v499, 19/11/2026) */
 .hosp-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 6px 0 16px; }
