@@ -1,3 +1,4 @@
+// v519 (19/11/2026): Pauta de caderno presa à linha do texto no Checklist, no Diário da Obra e nos Relatos; corações dos Relatos fora do título (Sigma #368).
 // v518 (19/11/2026): Garagem: vista e estado numa fileira só (a câmera gira a cada toque), o olhinho no canto do palco (Sigma #371).
 // v517 (19/11/2026): Tarefas: o post-it mostra o título e 2 linhas, o resto abre no toque; botão de mandar pedido com ícone de enviar (Sigma #372).
 // v516 (19/11/2026): Treino: o treino de hoje vem primeiro com o selo Hoje; as regras numa dobra fechada; capa mais baixa (Sigma #374).
