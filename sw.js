@@ -1,3 +1,4 @@
+// v523 (19/11/2026): Máquinas: insígnias e acessórios em colmeia (hexágonos na cor da máquina), toque abre o texto inteiro (May 22:33).
 // v522 (19/11/2026): Viagens: a viagem que já foi também mostra a imagem dentro, em cima do álbum de fotos (May 22:31).
 // v521 (19/11/2026): Finanças: cartão pago sem a pílula Pago e sem repetir o valor; Falta receber, Falta pagar e Saldo final em cima, Sobra do mês embaixo (Sigma #376).
 // v520 (19/11/2026): Frase começa com maiúscula no app inteiro: subtítulo de tela, cartão e azulejo passam pelo maiusc; data do Checklist e capa do Treino; subs do menu.json na fonte (Sigma #369).
