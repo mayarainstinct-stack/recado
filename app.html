@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-20.530">
+<meta name="app-versao" content="2026-11-20.531">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-20.530"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-20.531"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -4793,6 +4793,7 @@ function abreItemMenu(m) {
   if (m.tipo === 'imagens') return abreImagens(m);
   if (m.tipo === 'videos') return abreVideos(m);
   if (m.tipo === 'visual') return abreVisual(m);
+  if (m.tipo === 'consultas') return abreConsultas(m);
   if (m.tipo === 'exames') return abreExames(m);
   if (m.tipo === 'banco') return abreBanco(m);
   if (m.tipo === 'texto' && m.cartoes) return abreCartoes(m);
@@ -6549,6 +6550,54 @@ function blocoValores(b, tit, tx) {   // números grandes do exame, com a faixa 
 }
 // ---- Telas visuais da Saúde (May, 10/11/2026: "pega na saúde tudo e coloca de uma maneira bonita e fácil de ler", "não quero textão", "vou ler tudo na viagem")
 // saude/visual/<id>.json = { titulo, sub, abas: [{ nome, icone, blocos: [{ t: destaque|cartoes|passos|numeros|lista|frase|aviso|perguntas|tabela|contatos|topicos, ... }] }] }   (formato em saude/visual/FORMATO.md)
+// Saúde > Consultas (Sigma #303, May 01:52 "Kd as outras consultas??"): LISTA lida da Agenda (menu/agenda.json, tipo consulta = fonte única), próximas e passadas em abas; cada uma abre a pasta dela (campo pasta no item da Agenda) ou o cartão do compromisso. Lyra
+const DIA_SEM = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'], MES_CURTO = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+function consultaData(x) {   // a data do rótulo (DD/MM) manda, como na Agenda; o ano vem do campo data (AAAA-MM-DD) ou é o deste ano
+  const r = String(x.rotulo || '').match(/(\d{1,2})\/(\d{1,2})/) || String(x.data || '').match(/(\d{1,2})\/(\d{1,2})/), iso = String(x.data || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (r && +r[2] >= 1 && +r[2] <= 12) return new Date(iso ? +iso[1] : new Date().getFullYear(), +r[2] - 1, +r[1]);
+  return iso ? new Date(+iso[1], +iso[2] - 1, +iso[3]) : null;
+}
+const consultaHora = x => { const h = String(x.hora || '').trim() || (String(x.rotulo || '').match(/\)\s*(\d{1,2}h\d{0,2})/) || [])[1] || ''; return h.replace(/^0(\d)/, '$1').replace(/^(\d{1,2}):00$/, '$1h').replace(/^(\d{1,2}):(\d{2})$/, '$1h$2'); };
+function abreConsultas(m) {
+  tela(m.nome, async c => {
+    c.classList.add('sl-tela', 'vs-tela', 'cs-tela'); painel.classList.add('tema-saude');
+    const p = skCarga(); c.append(p); let d;
+    try { d = JSON.parse(await lerArquivo(m.arq || 'menu/agenda.json')); } catch (e) { p.textContent = 'Não abriu. Confere a internet.'; return; }
+    p.remove();
+    const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+    const todas = (d.secoes || []).flatMap(s => s.itens || []).filter(x => !x.apagado && x.tipo === 'consulta').map(x => ({ x, dt: consultaData(x) })).filter(o => o.dt);
+    const prox = todas.filter(o => o.dt >= hoje).sort((a, b) => a.dt - b.dt), pass = todas.filter(o => o.dt < hoje).sort((a, b) => b.dt - a.dt);
+    const ABAS = [['Próximas', prox, 'Nenhuma consulta marcada na Agenda.'], ['Já passaram', pass, 'Nenhuma consulta passada na Agenda.']];
+    let aba = 0; try { aba = Math.min(+(store.get('cs-aba') || 0), 1); } catch (e) {}
+    const abasEl = elD('div', 'sl-abas vs-abas cs-abas'); abasEl.setAttribute('role', 'tablist'); const w = elD('div', 'sl-corpo cs-corpo'); c.append(abasEl, w);
+    const cartao = ({ x, dt }) => {
+      const b = elD('button', 'cs-item' + (dt < hoje ? ' passou' : '') + (+dt === +hoje ? ' hoje' : '')); b.type = 'button';
+      const dia = elD('span', 'cs-dia'); dia.append(elD('b', '', String(dt.getDate())), elD('small', '', MES_CURTO[dt.getMonth()]), elD('i', '', +dt === +hoje ? 'hoje' : DIA_SEM[dt.getDay()]));
+      const tx = elD('span', 'cs-tx'), h = consultaHora(x); if (h) tx.append(elD('small', 'cs-hora', h)); const t = elD('span', 'cs-t'); mdInline(t, maiusc(x.texto || '')); tx.append(t);
+      if (x.pasta) tx.append(elD('small', 'cs-pasta', 'Tem pasta: toca pra abrir'));
+      b.append(dia, tx); b.setAttribute('aria-label', dt.toLocaleDateString('pt-BR') + (h ? ' ' + h : '') + ': ' + String(x.texto || '').replace(/\*\*/g, ''));
+      b.onclick = () => x.pasta ? abreVisual({ tipo: 'visual', icone: 'stetho', nome: 'Consulta', arq: x.pasta }) : consultaCartao(x, dt);
+      return b;
+    };
+    const pinta = () => {
+      cabecalho({ icone: m.icone || 'stetho', sub: prox.length ? 'Próxima: ' + prox[0].dt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + (consultaHora(prox[0].x) ? ' às ' + consultaHora(prox[0].x) : '') : 'Lidas da Agenda' });
+      abasEl.replaceChildren(...ABAS.map(([n, l], i) => { const f = elD('button', 'sl-aba' + (i === aba ? ' on' : ''), n + ' (' + l.length + ')'); f.type = 'button'; f.setAttribute('role', 'tab'); f.setAttribute('aria-selected', String(i === aba)); f.onclick = () => troca(i); return f; }));
+      const [, lista, vazio] = ABAS[aba]; w.replaceChildren(...(lista.length ? lista.map(cartao) : [elD('p', 'p-nota', vazio)]));
+      w.append(elD('p', 'p-nota cs-nota', 'Vem da Agenda: pra lançar, mudar ou apagar uma consulta, é lá.'));
+    };
+    const troca = i => { if (i < 0 || i > 1 || i === aba) return; aba = i; try { store.set('cs-aba', String(i)); } catch (e) {} pinta(); pCorpo.scrollTop = 0; };
+    deslizaAbas(w, () => aba, troca); pinta();
+  });
+}
+function consultaCartao(x, dt) {   // consulta sem pasta própria: o compromisso da Agenda inteiro, com as fotos dele
+  tela(dt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' (' + DIA_SEM[dt.getDay()] + ')', c => {
+    c.classList.add('sl-tela', 'vs-tela', 'cs-tela'); painel.classList.add('tema-saude');
+    const h = consultaHora(x); cabecalho({ icone: 'stetho', sub: h ? 'Às ' + h : 'Da Agenda' });
+    const card = elD('section', 'sl-card cs-cartao'), t = elD('p', 'cs-t'); mdInline(t, maiusc(x.texto || '')); card.append(t); c.append(card);
+    if ((x.fotos || []).length) { const fs = elD('div', 'mq-fotos'); x.fotos.forEach(pth => { const b = elD('button'); b.type = 'button'; b.setAttribute('aria-label', 'Abrir foto'); fundoFoto(b, pth); b.onclick = () => fotoUrl(pth, true).then(u => abreZoom(u, pth, x.fotos)).catch(() => {}); fs.append(b); }); c.append(fs); }
+    if (x.feito) c.append(elD('p', 'p-nota', 'Feito em ' + x.feito + '.'));
+  });
+}
 function abreVisual(m) {
   tela(m.nome, async c => {
     c.classList.add('sl-tela', 'vs-tela');
