@@ -1,3 +1,4 @@
+// v535 (20/11/2026): Todo bloco de texto visível começa com maiúscula (rede no app inteiro, sem mexer no meio da frase, link ou unidade); Jogos: Só os que joguei e Ordem; Viagens: Foi e Sem data do Hermes (Sigma #369 #407).
 // v534 (20/11/2026): Finanças: Saldo final negativo vira cartão vermelho com o valor em branco (Sigma #376).
 // v533 (20/11/2026): Jogos: Onde parei sem registro mostra o último relato com o dia; relato sem hora diz Hora não anotada; falas começam com maiúscula; no PC os painéis são repartidos pela altura de verdade (Sobre o jogo já aberto), o mais alto na coluna mais curta (Sigma #279 #345).
 // v532 (20/11/2026): Jogos com o fundo neon do launcher (Jogando no neon v5, Zerados na Parede neon dourada), em pé no celular e deitado no PC; véu um pouco mais claro pro neon aparecer (Hermes #285).

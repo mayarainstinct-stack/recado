@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-20.534">
+<meta name="app-versao" content="2026-11-20.535">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -2698,6 +2698,8 @@ function botaoGrade(ic, txt, sub, fn) {   // azulejo do Menu: ícone grande em c
   b.onclick = fn; return b;
 }
 const maiusc = t => { t = String(t || ''); return t.charAt(0).toLocaleUpperCase('pt-BR') + t.slice(1); };   // frase começa com maiúscula no app inteiro (regra comum, Sigma #369): subtítulo de tela, cartão e azulejo passam por aqui
+const maiuscTela = raiz => { if (!raiz) return; const w = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT), nos = []; let n; while ((n = w.nextNode())) if (/^\s*[a-zà-ú]/.test(n.data)) nos.push(n); for (const n of nos) { const el = n.parentElement; if (!el || !el.offsetParent || el.closest('a,textarea,input,select,code,script,style,[contenteditable],.sem-maiusc')) continue; if (/^\s*([a-zA-Z]{1,4}\/[a-zA-Z]+|[a-z0-9-]+\.[a-z]{2,}\b|v\d|x\d|r\$)/.test(n.data)) continue; let c = el; while (c !== raiz && c.parentElement && getComputedStyle(c).display === 'inline') c = c.parentElement; const w2 = document.createTreeWalker(c, NodeFilter.SHOW_TEXT); let f, antes = ''; while ((f = w2.nextNode()) && f !== n) antes += f.data; const pe = el.previousElementSibling, sub = el !== c && el.parentElement === c && /^(SPAN|SMALL)$/.test(el.tagName) && pe && /^(B|STRONG)$/.test(pe.tagName) && pe === c.firstElementChild; if (f !== n || !(sub || /^[\s\d.,:;%×xR$+\-–—·/()ºª°*#]*$/.test(antes))) continue; const i = n.data.search(/\S/); n.data = n.data.slice(0, i) + n.data.charAt(i).toLocaleUpperCase('pt-BR') + n.data.slice(i + 1); } };   // rede da regra comum (Sigma #369): todo bloco de texto visível começa com maiúscula, sem mexer no meio da frase, em link ou unidade
+let maiuscFila = 0; new MutationObserver(() => { clearTimeout(maiuscFila); maiuscFila = setTimeout(() => { maiuscTela(document.getElementById('painel')); document.querySelectorAll('.ed-pop, .fixa-pop').forEach(maiuscTela); }, 120); }).observe(document.body, { childList: true, subtree: true });
 function botao(ic, txt, sub, fn) {
   const b = document.createElement('button'); b.type = 'button'; b.className = 'p-botao';
   b.innerHTML = '<span class="ic"></span><span class="tx"><span class="t"></span><small></small></span><span class="chev" aria-hidden="true">' + icone('chev') + '</span>';
