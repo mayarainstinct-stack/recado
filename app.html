@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-19.519">
+<meta name="app-versao" content="2026-11-19.520">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-19.519"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-19.520"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2692,22 +2692,23 @@ function vesteBotao(b, nome) {
   if (k === 'agenda') { const d = new Date(), ic = b.querySelector('.ic'); ic.replaceChildren(elD('small', '', d.toLocaleDateString('pt-BR', { weekday: 'long' }).split('-')[0]), elD('b', '', String(d.getDate()))); }
 }
 function botaoGrade(ic, txt, sub, fn) {   // azulejo do Menu: ícone grande em cima, nome curto embaixo, na cor do assunto
-  const b = document.createElement('button'); b.type = 'button'; b.className = 'p-azulejo'; if (sub) b.title = sub;
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'p-azulejo'; if (sub) b.title = maiusc(sub);
   const cor = (COR_ASSUNTO.find(([re]) => re.test(txt)) || [])[1]; if (cor) b.style.setProperty('--c', cor);
-  b.innerHTML = '<span class="ic"></span><span class="t"></span>'; b.querySelector('.ic').innerHTML = iconeMenu(txt) || icone(ic); b.querySelector('.t').textContent = txt; b.setAttribute('aria-label', txt + (sub ? ': ' + sub : ''));
+  b.innerHTML = '<span class="ic"></span><span class="t"></span>'; b.querySelector('.ic').innerHTML = iconeMenu(txt) || icone(ic); b.querySelector('.t').textContent = txt; b.setAttribute('aria-label', txt + (sub ? ': ' + maiusc(sub) : ''));
   b.onclick = fn; return b;
 }
+const maiusc = t => { t = String(t || ''); return t.charAt(0).toLocaleUpperCase('pt-BR') + t.slice(1); };   // frase começa com maiúscula no app inteiro (regra comum, Sigma #369): subtítulo de tela, cartão e azulejo passam por aqui
 function botao(ic, txt, sub, fn) {
   const b = document.createElement('button'); b.type = 'button'; b.className = 'p-botao';
   b.innerHTML = '<span class="ic"></span><span class="tx"><span class="t"></span><small></small></span><span class="chev" aria-hidden="true">' + icone('chev') + '</span>';
-  b.querySelector('.ic').innerHTML = icone(ic); b.querySelector('.t').textContent = txt; b.querySelector('small').textContent = sub || '';
+  b.querySelector('.ic').innerHTML = icone(ic); b.querySelector('.t').textContent = txt; b.querySelector('small').textContent = maiusc(sub);
   b.onclick = fn; return b;
 }
 function tela(titulo, montar) { if (pilha.length) pilha[pilha.length - 1][2] = pCorpo.scrollTop; pilha.push([titulo, montar, 0]); try { history.pushState({ painel: pilha.length }, ''); } catch (e) {} desenhaTela(); }   // cada tela = um passo no histórico: o voltar do app e o deslizar do iPhone fazem a mesma rota (May 12:37)
 // Cabeçalho próprio de cada sistema (Sigma 12:19 item 1): ícone da tela, subtítulo com o estado dela e a ação dela no lugar dos 3 pontinhos; cada tela chama no montar
 const pTopo = document.querySelector('#painel .p-topo'), pMais = document.getElementById('p-mais');
 const pTits = document.createElement('div'), pSub = document.createElement('small'); pTits.className = 'p-tits'; pSub.className = 'p-sub'; pSub.hidden = true; pTit.replaceWith(pTits); pTits.append(pTit, pSub);
-const subTx = t => String(t || '').split(' · ').map(x => x.replace(/ /g, ' ')).join(' · ');   // subtítulo da barra só quebra entre os pedaços, nunca dentro de "22 na revisão" (Sigma #344)
+const subTx = t => maiusc(t).split(' · ').map(x => x.replace(/ /g, ' ')).join(' · ');   // subtítulo da barra só quebra entre os pedaços, nunca dentro de "22 na revisão" (Sigma #344)
 let iconeTela = '';   // ícone do item do Menu aberto: toda tela tem o quadrado do ícone no topo, igual ao do Menu (Sigma #348, 17/11)
 function cabecalho({ icone: ic, sub, acao } = {}) {
   ic = ic || iconeTela;
@@ -4851,7 +4852,7 @@ function abreCheck(m) {
       cabecalho({ acao: { icone: 'plus', rotulo: 'Novo item', fn: lanca } });
       w.replaceChildren(); const trabCk = document.body.classList.contains('modo-trab'); w.classList.toggle('ck-nx', trabCk); if (trabCk) { if (!c.querySelector(':scope > .nx-cab')) w.before(cabNx('Tarefas', 'Checklist', 'O que você precisa fazer no trabalho. Toque no quadrado para marcar.')); } else w.append(elD('div', 'ck-espiral'));
       const todos = E.itens.filter(x => !x.apagado).map(x => ({ ...x, data: x.data || x.quando || '', saude: !!x.saude || x.de === 'Saúde' })), itens = todos.filter(x => !x.feito), feitos = todos.filter(x => x.feito);
-      const cab = elD('div', 'ck-cab'); cab.append(elD('b', '', 'Para fazer'), elD('span', '', new Date(hoje + 'T12:00').toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }))); w.append(cab);
+      const cab = elD('div', 'ck-cab'); cab.append(elD('b', '', 'Para fazer'), elD('span', '', maiusc(new Date(hoje + 'T12:00').toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })))); w.append(cab);
       const amanha = soma(1), semana = soma(7), dm = s => s.slice(8, 10) + '/' + s.slice(5, 7);
       const grupos = [['Atrasado', x => x.data && x.data < hoje], ['Hoje', x => x.data === hoje], ['Amanhã', x => x.data === amanha], ['Esta semana', x => x.data > amanha && x.data <= semana], ['Mais pra frente', x => x.data > semana], ['Sem data', x => !x.data]];
       if (!itens.length) w.append(elD('p', 'ck-vazio', 'Nada para fazer agora.'));
@@ -5268,7 +5269,7 @@ function montaViagens(c, d) {   // Viagens com cara própria (May 08/11 12:18: "
 let trAba = 'treino';   // aba aberta da tela Treino (Treino | Mural); o abrir sozinho e o menu caem na mesma tela
 function montaTreino(c, d) {
   c.classList.add('treino-tela');   // cara das artes da Corpus (May 08/11 13:00 e 13:15, Sigma 16:27, layout do Hermes)
-  const cab = elD('div', 'tr-cab'); cab.append(elD('span', 'tr-x'), elD('b', '', 'Treino'), elD('i', '', 'bora pra cima'), elD('small', '', 'a semana de treino da May')); c.append(cab);
+  const cab = elD('div', 'tr-cab'); cab.append(elD('span', 'tr-x'), elD('b', '', 'Treino'), elD('i', '', 'Bora pra cima'), elD('small', '', 'A semana de treino da May')); c.append(cab);
   zeraSemanaTreino(d.viagens);
   const abas = elD('div', 'tr-abas'), corpo = elD('div', 'tr-corpo'); abas.setAttribute('role', 'tablist'); c.append(abas, corpo);
   const pinta = () => {

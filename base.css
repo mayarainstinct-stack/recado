@@ -1085,7 +1085,7 @@ body.na-geral .painel.tema-rosa .p-topo::after { background: #E75480; box-shadow
 .ck-espiral { position: absolute; left: 14px; right: 14px; top: -10px; height: 22px; background: radial-gradient(circle at 50% 70%, #1B1E24 0 4px, transparent 4.5px) 0 0 / 26px 22px repeat-x, repeating-linear-gradient(90deg, transparent 0 9px, #9AA3AF 9px 11px, #E5E7EB 11px 13px, #9AA3AF 13px 15px, transparent 15px 26px) 0 0 / 26px 14px repeat-x; }
 .ck-cab { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; min-height: 34px; margin-bottom: 6px; }
 .ck-cab b { font-family: 'Segoe Print', 'Bradley Hand', 'Chalkboard SE', 'Comic Sans MS', cursive; font-size: 24px; font-weight: 700; color: #1D4ED8; transform: rotate(-2deg); }
-.ck-cab span { font-size: 12px; font-weight: 700; color: #64748B; text-transform: lowercase; }
+.ck-cab span { font-size: 12px; font-weight: 700; color: #64748B; }
 .ck-sec { min-height: 34px; display: flex; align-items: flex-end; padding-bottom: 4px; font-family: 'Segoe Print', 'Bradley Hand', 'Chalkboard SE', 'Comic Sans MS', cursive; font-size: 15px; font-weight: 700; color: #B91C1C; }
 .ck-sec.atraso { width: max-content; padding-right: 6px; background: linear-gradient(transparent 55%, #FCA5A5 55% 90%, transparent 90%); color: #7F1D1D; }
 .ck-item { flex-shrink: 0; height: auto; max-height: none; overflow: visible; display: flex; align-items: flex-start; gap: 12px; width: 100%; min-height: 68px; padding: 8px 0 4px; border: 0; background: none; text-align: left; font: inherit; color: inherit; cursor: pointer; }
