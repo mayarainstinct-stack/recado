@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-19.526">
+<meta name="app-versao" content="2026-11-19.527">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -2939,8 +2939,12 @@ function botaoReligar(p, d) {
       if (l) { const m = l.match(/^\[([^\]]+)\]\s+\S+\s+\S+\s*:\s*(\w+)/), ok = m && m[2] === 'ok'; msg.textContent = ok ? 'Último pedido: o ' + robo + ' foi reiniciado (' + m[1] + ').' : 'Último pedido: não deu certo. Tente de novo ou avise o Valber.'; msg.classList.toggle('err', !ok); } } catch (e) {}
   };
   mostra();
-  b.onclick = async () => {
-    if (!confirm('Reiniciar o ' + robo + ' agora? A sessão dele será fechada e aberta de novo.')) return;
+  b.onclick = () => {   // pergunta no popup do app, não no confirm() nativo (Sigma #375)
+    const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card'), ops = elD('div', 'pp-ops'), sim = elD('button', 'pp-op rec', 'Reiniciar'), nao = elD('button', 'pp-op', 'Agora não'); sim.type = nao.type = 'button'; ops.style.marginTop = '16px';
+    const fecha = () => ov.remove(); nao.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; sim.onclick = () => { fecha(); religa(); };
+    ops.append(nao, sim); card.append(elD('div', 'pp-perg', 'Reiniciar o ' + robo + ' agora?'), elD('p', 'p-nota', 'A sessão dele será fechada e aberta de novo.'), ops); ov.append(card); document.body.append(ov);
+  };
+  const religa = async () => {
     b.disabled = true; msg.classList.remove('err'); msg.textContent = 'Enviando o pedido...';
     const id = await pedeReligar(p.pc);
     if (id) msg.textContent = 'Pedido enviado. Em até 1 minuto o ' + robo + ' volta.'; else { msg.textContent = 'Não deu para enviar o pedido. Veja a internet e tente de novo.'; msg.classList.add('err'); }
