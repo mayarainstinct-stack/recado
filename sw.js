@@ -1,3 +1,4 @@
+// v532 (20/11/2026): Jogos com o fundo neon do launcher (Jogando no neon v5, Zerados na Parede neon dourada), em pé no celular e deitado no PC; véu um pouco mais claro pro neon aparecer (Hermes #285).
 // v531 (20/11/2026): Saúde > Consultas vira lista lida da Agenda (tipo consulta), abas Próximas e Já passaram; cada uma abre a pasta dela (campo pasta) ou o cartão do compromisso (Sigma #303).
 // v530 (20/11/2026): Saúde em 3 abas (Consultas, Cirurgia, Pra você) no lugar de 17 pastas roladas; pasta de grupo com abas usa o ícone de traço dela (Pós-cirurgia sem o ícone colorido do Menu) (Sigma #373).
 // v529 (20/11/2026): Jogos no PC: ficha sem coluna morta (Detalhes embaixo do progresso, painéis vão pra coluna mais curta, História vazia some no PC); O que eu falei saiu porque as falas estão na linha do tempo do Onde parei (Sigma #345).

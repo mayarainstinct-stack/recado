@@ -15,7 +15,7 @@ html,body{height:100%;background:var(--fundo);color:var(--texto);font-family:Int
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 svg{display:block}
 #app{position:fixed;inset:0;height:100vh;height:100dvh;bottom:auto;display:flex;flex-direction:column;background:var(--fundo) var(--fundo-img,none) center/cover no-repeat}
-#app::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,4,22,.55),rgba(10,4,22,.82) 40%,rgba(10,4,22,.92));pointer-events:none}
+#app::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,4,22,.4),rgba(10,4,22,.74) 40%,rgba(10,4,22,.88));pointer-events:none}
 header{position:relative;z-index:2;display:flex;align-items:center;gap:10px;padding:14px 16px 10px;padding-top:max(14px,env(safe-area-inset-top))}
 .voltar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--vidro);border:1px solid var(--borda)}
 header h1{font-size:22px;font-weight:700;letter-spacing:.5px;flex:1}
@@ -741,7 +741,7 @@ if(new URLSearchParams(location.search).get("paleta")=="proposta")window.PALETA3
 async function carregaCons(){const raw=p=>gh(p,{headers:{Accept:"application/vnd.github.raw"}}).then(r=>r.ok?r.text():"").catch(()=>"")
 try{const cj=JSON.parse(await raw("marca/consoles/consoles.json"));const nomes=[...new Set([cj.padrao.icone,...cj.consoles.map(c=>c.icone)])];const svgs=await Promise.all(nomes.map(n=>raw("marca/consoles/"+n)));const SVG={};nomes.forEach((n,i)=>{SVG[n]=svgs[i].replace(/width="48" height="48"/,'width="16" height="16"').replace(/color="#ffffff"/,'color="#fff"')});window.CONS={padrao:cj.padrao,por:Object.fromEntries(cj.consoles.map(c=>[c.id,c])),svg:SVG}}catch(e){window.CONS=null}
 }
-const FUNDOS={jogando:"categorias/games/mock-tela-jogos/fundo.jpg",concluidos:"categorias/games/tela/parede-fundo.jpg"}
+const RETRATO=matchMedia("(orientation: portrait)"),fundosDo=()=>{const t=RETRATO.matches?"cel":"pc";return{jogando:`categorias/games/tela/fundo-neon-jogando-${t}.jpg`,concluidos:`categorias/games/tela/fundo-neon-parede-${t}.jpg`}};let FUNDOS=fundosDo();RETRATO.addEventListener&&RETRATO.addEventListener("change",()=>{FUNDOS=fundosDo();fundoDa(aba)})
 function fundoDa(a){requestAnimationFrame(()=>window.posDqJ&&window.posDqJ());const p=FUNDOS[a]||FUNDOS.jogando,app=document.getElementById("app");app.classList.toggle("dourado",a=="concluidos");priv(p).then(u=>{if(FUNDOS[a]==p)app.style.setProperty("--fundo-img",`url("${u}")`)}).catch(()=>{})}
 if(TOKEN&&!J2JA&&!new URLSearchParams(location.search).has("semabertura"))document.getElementById("abertura").classList.add("on")
 if(TOKEN)priv("categorias/games/tela/j2-selo.webp").then(u=>document.querySelectorAll("#app header .j2img,#abertura .j2img").forEach(i=>{i.src=u;i.removeAttribute("data-p")})).catch(()=>{})
