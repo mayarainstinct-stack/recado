@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-19.524">
+<meta name="app-versao" content="2026-11-19.525">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-19.520"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-19.525"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3396,6 +3396,7 @@ const VALIDA = { data: t => { const m = t.match(/^(\d{2})\/(\d{2})\/(\d{4})$/); 
 function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar }) {
   const ov = elD('div', 'fixa-pop ed-pop'), card = elD('div', 'pp-card ed-card'), x = elD('button', 'pp-x'), form = elD('form', 'ed-form'), els = {};
   x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); };
+  { const tl = document.querySelector('#p-corpo .tela'), cor = (tl && getComputedStyle(tl).getPropertyValue('--vs-c').trim()) || getComputedStyle(painel).getPropertyValue('--c').trim(); if (cor) card.style.setProperty('--quem', cor); if (painel.classList.contains('tema-musica')) ov.classList.add('escuro'); else if (painel.classList.contains('tema-claro') || painel.classList.contains('tema-saude') || painel.classList.contains('tema-planos') || document.querySelector('#p-corpo .vs-tela, #p-corpo .gr-saude')) { ov.classList.add('claro'); const f = (tl && getComputedStyle(tl).getPropertyValue('--vs-f').trim()) || (painel.classList.contains('tema-planos') ? '#FBF3E2' : ''); if (f) card.style.setProperty('--fundo-claro', f); } }   // tela filha herda a mãe (Sigma #396): o formulário vem na cor da tela que abriu, e escuro na Música
   card.append(x, elD('div', 'pp-perg', titulo));
   campos.filter(c => c.nome !== 'id' && c.tipo !== 'oculto').forEach(c => {
     const lb = elD('label', 'ed-campo'); lb.append(elD('span', '', edRotulo(c) + (c.obrigatorio ? ' *' : '')));

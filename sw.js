@@ -1,3 +1,4 @@
+// v525 (19/11/2026): Formulário herda a tela que abriu: cor de destaque dela (Saúde rosa, Artes magenta, Viagens marrom, Música vermelha), claro nas telas claras (Saúde, Agenda, Viagens) e escuro na Música (Sigma #396).
 // v524 (19/11/2026): Projetinhos: a tela do projeto garante o fundo e o texto na cor dela e não herda o tema claro de quem abriu (Sigma #395).
 // v523 (19/11/2026): Máquinas: insígnias e acessórios em colmeia (hexágonos na cor da máquina), toque abre o texto inteiro (May 22:33).
 // v522 (19/11/2026): Viagens: a viagem que já foi também mostra a imagem dentro, em cima do álbum de fotos (May 22:31).
