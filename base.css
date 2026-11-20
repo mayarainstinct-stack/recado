@@ -1679,7 +1679,7 @@ body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px
 .vs-sl-cont { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 2px 10px; background: #FFFFFF; } .vs-sl-info { flex: 1; text-align: center; font-size: 13px; font-weight: 700; color: var(--vs-c); }
 .vs-sl-b { flex: none; width: 52px; height: 52px; border-radius: 50%; border: 0; background: var(--vs-c); color: #FFFFFF; font: inherit; font-size: 22px; font-weight: 800; } .vs-sl-b:disabled { background: var(--vs-l); color: var(--vs-b); }
 .vs-duas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .vs-lado { background: #FFFFFF; border: 1px solid var(--vs-b); border-radius: 18px; padding: 12px; } .vs-lado h4 { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font-size: 14px; color: var(--vs-c); } .vs-lado.b { background: var(--vs-f); } .vs-lado .vs-lista li { font-size: 13px; }
-.vs-abas { flex-wrap: nowrap; overflow-x: auto; gap: 6px; } .vs-abas .sl-aba { max-width: none; padding: 8px 12px; font-size: 12.5px; }
+.vs-abas { flex-wrap: wrap; overflow: visible; gap: 6px; }   /* abas da Saúde em 2 linhas quando não cabem, nunca cortadas na borda (Sigma #397) */ .vs-abas .sl-aba { max-width: none; padding: 8px 12px; font-size: 12.5px; }
 .vs-laudo-dica { margin: 0 0 10px; font-size: 14px; color: var(--vs-e); }
 .vs-bloco { min-width: 0; } .vs-laudo { min-width: 0; max-width: 100%; box-sizing: border-box; margin: 0 0 12px; padding: 12px; border-radius: 14px; background: #fff; border: 1.5px solid var(--vs-b); }
 /* Passagens (popup): rosa da Saude, cantos grandes (24px popup, 16px blocos) */
@@ -3334,3 +3334,4 @@ body.modo-trab .painel .p-grade.apps > * { min-height: 156px !important; }
 body.modo-trab .ck-tx { background: none; }
 .ed-pop.escuro .pp-card { background: #141414; color: #F6F2EE; --bg: #1E1E1E; --fg: #F6F2EE; --line: #3A3A3A; }   /* formulário da Música escuro como a tela (Sigma #396) */
 .ed-pop.claro .pp-card { background: var(--fundo-claro, #FFFFFF); color: #1F2937; --bg: #FFFFFF; --fg: #1F2937; --line: color-mix(in srgb, var(--quem) 28%, #E5E7EB); --muted: #6B7280; border-color: var(--quem); }   /* tela clara (Saúde, Agenda): o formulário vem claro no tom dela (Sigma #396) */
+.vs-slide > .vs-dest { min-height: calc(100dvh - 300px - env(safe-area-inset-bottom)); }   /* Relatos: o cartão ocupa a tela, sem 400 px vazios embaixo (Sigma #397) */

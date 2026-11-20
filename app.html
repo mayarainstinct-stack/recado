@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-19.525">
+<meta name="app-versao" content="2026-11-19.526">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-19.525"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-19.526"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3402,7 +3402,7 @@ function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar }) {
     const lb = elD('label', 'ed-campo'); lb.append(elD('span', '', edRotulo(c) + (c.obrigatorio ? ' *' : '')));
     let el;
     if (c.tipo === 'texto_longo') { el = elD('textarea'); el.rows = 3; }
-    else if (c.tipo === 'escolha') { el = elD('select'); (c.opcoes || []).forEach(o => { const [val, tx] = Array.isArray(o) ? o : [o, o]; const op = elD('option', '', tx); op.value = val; el.append(op); }); }
+    else if (c.tipo === 'escolha') { el = elD('select'); (c.opcoes || []).forEach(o => { const [val, tx] = Array.isArray(o) ? o : [o, o]; const op = elD('option', '', maiusc(tx)); op.value = val; el.append(op); }); }
     else if (c.tipo === 'foto') { el = elD('input'); el.type = 'file'; el.accept = 'image/*'; el.dataset.atual = v[c.nome] || ''; const im = elD('img', 'ed-previa'); im.alt = ''; im.hidden = true; if (v[c.nome]) fotoUrl(v[c.nome]).then(u => { im.src = u; im.hidden = false; }).catch(() => {}); const fb = elD('button', 'ed-foto-bt', v[c.nome] ? 'Trocar foto' : 'Escolher foto'); fb.type = 'button'; fb.onclick = () => el.click(); el.classList.add('ed-foto-arq'); el.addEventListener('change', () => { const f = el.files && el.files[0]; if (f) { im.src = URL.createObjectURL(f); im.hidden = false; fb.textContent = 'Trocar foto'; } }); lb.append(im, fb); }
     else { el = elD('input'); el.type = c.tipo === 'data' ? 'date' : c.tipo === 'url_imagem' ? 'url' : 'text'; if (c.tipo === 'numero' || c.tipo === 'valor') el.inputMode = 'decimal'; }
     if (c.tipo !== 'foto') el.value = v[c.nome] != null ? v[c.nome] : (c.padrao != null ? c.padrao : ''); els[c.nome] = el; lb.append(el);
@@ -6599,7 +6599,7 @@ function abreVisual(m) {
           its.forEach(x => { const r = elD('tr', 'vs-ed-tx'); r.onclick = () => edita(x); for (let i = 0; i < nc; i++) { const cel = String(x['c' + i] || ''); r.append(tx('td', /^[▲▼]/.test(cel) ? 'vs-td-fora' : /^✓/.test(cel) ? 'vs-td-ok' : '', cel)); } t.append(r); });
           const sw = elD('div', 'md-tab-w'); sw.append(t); return sw; }, 'linha'); },
       ligar: b => { const w = elD('section', 'vs-bloco vs-ligar'); tit(b, w); (b.itens || []).forEach(x => { const l = elD('div', 'vs-lig'), n = String(x.numero || ''), a = elD('a', 'vs-lig-tel'); a.href = 'tel:' + n.replace(/[^\d+]/g, ''); a.setAttribute('aria-label', 'Ligar para ' + x.nome); a.append(ic('phone', 'vs-ic-p')); const t = elD('span', 'vs-lig-tx'); t.append(tx('b', '', x.nome), tx('small', '', n)); a.append(t, tx('span', 'vs-lig-go', 'Ligar')); l.append(a); if (x.whatsapp) { const z = elD('a', 'vs-lig-wa', 'WhatsApp'); z.href = x.whatsapp; z.target = '_blank'; z.rel = 'noopener'; z.setAttribute('aria-label', 'Abrir o WhatsApp de ' + x.nome); l.append(z); } w.append(l); }); return w; },   // botões de ligar: um toque liga (tel:); números vêm do JSON (May, 11/11/2026)
-      contatos: b => { const w = elD('section', 'vs-bloco vs-cx'); tit(b, w); (b.itens || []).forEach(x => { const l = elD('div', 'vs-cont'); l.append(ic(x.icone || 'phone', 'vs-ic-p')); const cx = elD('div'); cx.append(tx('b', '', x.nome)); const i = String(x.info || ''); let mp = null; if (x.lat != null && x.lon != null) { mp = elD('button', 'vs-mapa', x.mapaRotulo || 'Ver no mapa'); mp.type = 'button'; mp.setAttribute('aria-label', (x.mapaRotulo || 'Ver no mapa') + ': abrir o mapa'); mp.onclick = () => abreMapa(x); } else if (x.mapa) { mp = elD('a', 'vs-mapa', x.mapaRotulo || 'Ir a pé'); mp.href = x.mapa; mp.target = '_blank'; mp.rel = 'noopener'; mp.setAttribute('aria-label', (x.mapaRotulo || 'Ir a pé') + ': abrir o trajeto no mapa'); } if (/^https?:\/\//.test(i)) { const a = elD('a', '', i.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')); a.href = i; a.target = '_blank'; a.rel = 'noopener'; cx.append(a); } else cx.append(tx('span', '', i)); if (mp) cx.append(mp); l.append(cx); w.append(l); }); return w; },
+      contatos: b => { const w = elD('section', 'vs-bloco vs-cx'); tit(b, w); (b.itens || []).forEach(x => { const l = elD('div', 'vs-cont'); l.append(ic(x.icone || 'phone', 'vs-ic-p')); const cx = elD('div'); cx.append(tx('b', '', x.nome)); const i = String(x.info || ''); let mp = null; if (x.lat != null && x.lon != null) { mp = elD('button', 'vs-mapa', x.mapaRotulo || 'Ver no mapa'); mp.type = 'button'; mp.setAttribute('aria-label', (x.mapaRotulo || 'Ver no mapa') + ': abrir o mapa'); mp.onclick = () => abreMapa(x); } else if (x.mapa) { mp = elD('a', 'vs-mapa', x.mapaRotulo || 'Ir a pé'); mp.href = x.mapa; mp.target = '_blank'; mp.rel = 'noopener'; mp.setAttribute('aria-label', (x.mapaRotulo || 'Ir a pé') + ': abrir o trajeto no mapa'); } if (/^https?:\/\//.test(i)) { const a = elD('a', '', i.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')); a.href = i; a.target = '_blank'; a.rel = 'noopener'; cx.append(a); } else cx.append(tx('span', '', i.replace(/\(\d{2}\) ?\d{4,5}-\d{4}|0800 ?\d{3} ?\d{4}/g, t => t.replace(/ /g, ' ').replace('-', '‑')))); if (mp) cx.append(mp); l.append(cx); w.append(l); }); return w; },   // telefone nunca quebra no meio (Sigma #397)
       duas: b => { const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-duas'); ['a', 'b'].forEach(k => { const x = b[k] || {}; const l = elD('div', 'vs-lado ' + k); const h = elD('h4'); h.append(ic(x.icone || (k === 'a' ? 'check' : 'warn'), 'vs-ic-p')); mdInline(h, x.titulo || ''); const ul = elD('ul', 'vs-lista'); (x.itens || []).forEach(s => ul.append(tx('li', '', s))); l.append(h, ul); g.append(l); }); w.append(g); return w; },
       passagens: b => cartoesPassagens(b, tit, tx),
       perguntasdia: b => blocoPerguntasDia(b, tit, tx),   // pasta Consulta: as perguntas do arquivo Perguntas pro médico, com "perguntada"
