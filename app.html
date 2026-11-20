@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-20.538">
+<meta name="app-versao" content="2026-11-20.539">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-20.538"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-20.539"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2577,9 +2577,14 @@ function abrir(c) {
 voltar.onclick = () => { if (!sending) mostraLista(); };
 // Celular: abre pelo relógio (May, 22/10/2026): seg–sex 8h–18h, fora do almoço (12h–13h) = Trabalho; resto = Geral.
 // Web: abre a última conversa vista.
+function feriadoNacional(d) {
+  const dm = String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0'), y = d.getFullYear(), a = y % 19, b = Math.floor(y / 100), c = y % 100, e = (19 * a + b - Math.floor(b / 4) - Math.floor((b - Math.floor((b + 8) / 25) + 1) / 3) + 15) % 30, l = (32 + 2 * (b % 4) + 2 * Math.floor(c / 4) - e - c % 4) % 7, m = Math.floor((a + 11 * e + 22 * l) / 451), pascoa = new Date(y, Math.floor((e + l - 7 * m + 114) / 31) - 1, (e + l - 7 * m + 114) % 31 + 1), santa = new Date(pascoa); santa.setDate(pascoa.getDate() - 2);
+  return ['01/01', '21/04', '01/05', '07/09', '12/10', '02/11', '15/11', '20/11', '25/12'].includes(dm) || (d.getMonth() === santa.getMonth() && d.getDate() === santa.getDate());   // nacionais fixos + Sexta-feira Santa (Páscoa pelo cálculo de Meeus)
+}
 function horaDeTrabalho(d = new Date()) {
   const dia = d.getDay(), h = d.getHours(), hoje = String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
   if ((CFG.folgas || []).includes(hoje)) return false;   // folga (May, 10/11/2026: "quinta não abrir trabalho porque tô viajando")
+  if (feriadoNacional(d)) return false;   // feriado nacional não abre o Trabalho sozinho (May 20/11 13:08: "hj to de folga não era pra aparecer no trabalho")
   return CFG.trabalhaAtivo !== false && (CFG.diasDeTrabalho || []).includes(dia) && h >= CFG.horaTrabalhoInicio && h < CFG.horaTrabalhoFim && !(h >= CFG.almocoInicio && h < CFG.almocoFim);   // parâmetros em config/app.json (padrão: seg-sex 8h-18h, almoço 12h-13h)
 }
 // Combinado (May, 07/11/2026 15:52): no horário do serviço o app abre no Trabalho e a Geral some (lista e ⋮); dois toques rápidos no anel do limite semanal abrem a Geral, como segredo.
@@ -2728,12 +2733,12 @@ function desenhaTela() {
     const st = pCorpo.scrollTop; document.body.append(g); g.scrollTop = st; setTimeout(() => g.remove(), 300);
   }
   if (pilha.length !== nAnt && nAnt) { void pCorpo.offsetWidth; pCorpo.classList.add(pilha.length > nAnt ? 'tela-dir' : 'tela-esq'); }
-  const entrada = pilha[pilha.length - 1], [titulo, montar, rolou] = entrada, mae = pilha.length > 1 ? pilha[pilha.length - 2][3] : null; painel.classList.remove('tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude', 'tema-contraste', 'tema-planos', 'tema-musica');
+  const entrada = pilha[pilha.length - 1], [titulo, montar, rolou] = entrada, mae = pilha.length > 1 ? pilha[pilha.length - 2][3] : null; painel.classList.remove('tema-claro', 'tema-cupom', 'tema-folhinha', 'tema-rosa', 'tema-saude', 'tema-contraste', 'tema-planos', 'tema-musica');
   if (mae) mae.temas.forEach(c => painel.classList.add(c));   // tela filha herda o tema da mãe (May, 09/11/2026: "senão fica cagado"); a filha que quiser outro tema troca no montar   // o tema claro é só da tela que pedir (a Agenda, May 08/11 12:56)
   pTit.textContent = titulo; pCorpo.scrollTop = 0; pExtra.hidden = true;   /* só na raiz do Menu, também quando a tela abre direto pela notificação */ cabecalhoGenerico(); if (pilha.length === 1) iconeTela = ''; else if (iconeTela) { const ic = elD('span', 'p-ic'); ic.innerHTML = icone(iconeTela); pTits.before(ic); }   // toda tela com o quadrado do ícone do Menu (#348)
   pTopo.hidden = pilha.length === 1 && titulo === 'Menu'; painel.classList.toggle('sem-topo', pTopo.hidden);   // sem a barra, o Recados ganha respiro em cima (May 18:47: "colou em cima")   // o Menu começa direto em Recados, sem a barra de cima (May 18:40); voltar fica no botão de baixo e no deslize
   const t = document.createElement('div'); t.className = 'tela'; if (mae) mae.gr.forEach(c => t.classList.add(c)); pCorpo.replaceChildren(t);   // carga atrasada de tela que já saiu cai no invólucro velho
-  const r = montar(t); const guardaTema = () => { entrada[3] = { temas: ['tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude', 'tema-planos', 'tema-musica'].filter(c => painel.classList.contains(c)), gr: [...t.classList].filter(c => c.startsWith('gr-') && !c.startsWith('gr-grade')) }; };   // a filha herda daqui
+  const r = montar(t); const guardaTema = () => { entrada[3] = { temas: ['tema-claro', 'tema-cupom', 'tema-folhinha', 'tema-rosa', 'tema-saude', 'tema-planos', 'tema-musica'].filter(c => painel.classList.contains(c)), gr: [...t.classList].filter(c => c.startsWith('gr-') && !c.startsWith('gr-grade')) }; };   // a filha herda daqui
   if (pilha[pilha.length - 1] === entrada) { guardaTema(); Promise.resolve(r).then(() => { if (pilha[pilha.length - 1] === entrada && t.isConnected) guardaTema(); }).catch(() => {}); }
   if (rolou) Promise.resolve(r).then(() => { if (t.isConnected) pCorpo.scrollTop = rolou; });   // voltando: devolve a rolagem de onde ela estava
 }
@@ -4617,7 +4622,7 @@ async function finLembretes() {
 }
 function abreFinancas(m) {
   tela(m.nome, async c => {
-    painel.style.setProperty('--c', '#217346'); painel.classList.add('tema-excel');   // Finanças em tema claro com cara de Excel (May 08/11 14:38)
+    painel.style.setProperty('--c', '#1C1C1C'); painel.classList.add('tema-cupom');   // Finanças vira cupom fiscal (May 20/11 13:03, #347; antes era a cara de Excel de 08/11)
     const nota = skCarga(); c.append(nota);
     let d0, lmd = '', fx = { mensais: [], anuais: [] }, Ec, Ep;
     try { d0 = JSON.parse(await lerArquivo('contas/pendencias.json')); } catch (e) { nota.textContent = 'Não foi possível abrir as contas. Confere a internet.'; return; }
@@ -4722,9 +4727,8 @@ function abreFinancas(m) {
     const pinta = () => {
       const trAntes = box.querySelector('.fin-trilho'), rolo = trAntes ? [...trAntes.children].map(p => p.scrollTop) : [];
       box.replaceChildren();
-      { const jan = elD('div', 'xl-janela'); jan.append(elD('span', 'xl-arq', 'Finanças.xlsx · Salvo'), elD('i', 'xl-bt', '—'), elD('i', 'xl-bt', '☐'), elD('i', 'xl-bt xl-x', '✕')); const rib = elD('div', 'xl-ribbon'); ['Arquivo', 'Página Inicial', 'Inserir', 'Fórmulas', 'Dados'].forEach((t, i) => rib.append(elD('span', i === 1 ? 'on' : '', t))); box.append(jan, rib); }   // a janela do Excel, só de enfeite
-      const rs = finLista(S, new Date(hoje.getFullYear(), hoje.getMonth(), 1), hoje).resumo;
-      { const fxb = elD('div', 'xl-fx'), cel = elD('i', 'xl-cel'); cel.innerHTML = '<svg viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="13" height="13" rx="1" fill="none" stroke="currentColor"/><path d="M1.5 6h13M6 1.5v13" stroke="currentColor"/><rect x="6" y="6" width="8.5" height="8.5" fill="none" stroke="#217346" stroke-width="2"/></svg>'; fxb.append(cel, elD('b', '', 'fx'), elD('span', '', '=SOMA(mês)  ' + reaisFin(rs.saiu + rs.aPagar))); box.append(fxb); }   // a barra de fórmula do Excel com o total a pagar do mês
+      { const cb = elD('div', 'cp-cab'), ag = new Date(), hj = finLista(S, new Date(hoje.getFullYear(), hoje.getMonth(), 1), hoje).its.filter(x => x.estado === 'hoje'); cb.append(elD('b', 'cp-tit', 'Finanças da May'), elD('span', '', 'Cupom do mês · ' + MES[hoje.getMonth()].slice(0, 3) + '/' + hoje.getFullYear()), elD('span', '', ag.toLocaleDateString('pt-BR') + ' ' + ag.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })));   // cabeçalho do cupom fiscal (May 20/11 13:03)
+        hj.forEach(it => { const l = elD('button', 'cp-hoje'); l.type = 'button'; l.append(elD('span', '', 'Hoje: ' + it.nome), elD('b', '', reaisFin(it.valor))); l.onclick = () => detalhe(it.ent, it); cb.append(l); }); if (!hj.length) cb.append(elD('div', 'cp-hoje vazio', 'Hoje: nada vence')); box.append(cb); }   // a linha de hoje marcada de amarelo, igual caneta no cupom
       const fr = S.pessoas.filter(p => p.lado === 'receber').reduce((n, x) => n + x.falta, 0), fp = S.pessoas.filter(p => p.lado === 'pagar').reduce((n, x) => n + x.falta, 0);
       const k = elD('div', 'fin-kpis'); [['Falta receber', fr, 'rec'], ['Falta pagar', fp, 'pag'], ['Saldo final', fr - fp, fr - fp >= 0 ? 'rec' : 'neg']].forEach(([t, v, cl]) => { const b = elD('div', 'fin-kpi ' + cl); b.append(elD('span', '', t), elD('b', '', reaisFin(v))); k.append(b); }); box.append(k);
       const nav = elD('nav', 'fin-abas'), tr = elD('div', 'fin-trilho');
@@ -5978,14 +5982,14 @@ function abreAgenda(m) {
     const agEdita = it => edFormulario({ titulo: 'Editar compromisso', campos: AG_CAMPOS, v: it, aoSalvar: async v => { await agOp({ tipo: 'edita', id: it.id, v, quando: edAgora() }, 'Compromisso editado pelo app'); }, aoApagar: () => agApaga(it) });
     const agMarca = async it => { await agOp({ tipo: 'feito', id: it.id, on: !it.feito, quando: edAgora() }, it.feito ? 'Desmarcado pelo app' : 'Marcado como feito pelo app'); };
     const monta = () => {
-    const rolou = pCorpo.scrollTop; c.replaceChildren(); idDe.clear(); linhasAg.length = 0;
+    const rolou = pCorpo.scrollTop, rolouT = c.scrollTop; c.replaceChildren(); idDe.clear(); linhasAg.length = 0;
     if (FONTE) {
       cabecalho({ acao: { icone: 'plus', rotulo: 'Novo compromisso', fn: agLanca } });
       linhasAg.push('# ' + (FONTE.titulo || 'Agenda')); if (FONTE.atualizada) linhasAg.push(FONTE.atualizada);
       (FONTE.secoes || []).forEach(sec => { linhasAg.push('', '## ' + sec.titulo); (sec.itens || []).filter(i => !i.apagado).forEach(i => { let t = i.texto || ''; if (i.rotulo) t = '**' + i.rotulo + ':** ' + t; (i.fotos || []).forEach(f => { t += ' 📷 ' + f; }); idDe.set(linhasAg.length, i); linhasAg.push('- ' + t); }); });
       if (FONTE.rodape) linhasAg.push('', FONTE.rodape);
     }
-    painel.classList.add('tema-claro'); c.classList.add('ag-tela');   // Agenda clara, cara de consultório (May 08/11 12:49 e 12:56): branco, verde-água suave, cantos redondos, sem neon
+    const FOLHA = !/trabalho/i.test(m.arq || '') && !document.body.classList.contains('modo-trab'); painel.classList.add('tema-claro'); painel.classList.toggle('tema-folhinha', FOLHA); c.classList.add('ag-tela');   // Agenda vira folhinha de parede (May 20/11 13:03, #347)   // Agenda clara, cara de consultório (May 08/11 12:49 e 12:56): branco, verde-água suave, cantos redondos, sem neon
     if (false) { const rl = elD('button', 'ag-relat'); rl.type = 'button'; rl.append(elD('b', '', 'Relatório da semana'), elD('small', '', 'o que cada robô acertou e errou, 06 a 08/11')); rl.onclick = () => abreTexto({ nome: 'Relatório da semana', arq: 'casa/relatorios/semana-06-08-11-2026.md' }); c.append(rl); }   // o relatório que ela pediu na Agenda (May 08/11 18:30)
     const cal = elD('div', 'ag-cal'); c.append(cal);
     if (AGASS) {   // mesma linha do Trabalho: Pesquisar + ícone do PDF da semana, logo abaixo do calendário congelado
@@ -6058,6 +6062,17 @@ function abreAgenda(m) {
     c.querySelectorAll('.p-sec').forEach(sec => { const prox = sec.nextElementSibling; if (!prox || prox.classList.contains('p-sec')) sec.remove(); });
     if (passados.length) { const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = 'Anteriores'; c.append(t); passados.reverse().forEach(e => c.append(e)); }
     { const rola = elD('div', 'ag-rola'); [...c.children].filter(e => !e.matches('.ag-cal, .sw-exp-p, .sw-busca-lin')).forEach(e => rola.append(e)); c.append(rola); rola.scrollTop = rolou; }   // calendário congelado em cima; só a lista rola
+    if (FOLHA) {   // folhinha de parede: hoje grande no bloco pregado na parede, os próximos dias em folhas pequenas; tocar abre o compromisso (May 20/11 13:03, #347)
+      const DSEM = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'], NM = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'], hk = hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0') + '-' + String(hoje.getDate()).padStart(2, '0');
+      const cartas = [...c.querySelectorAll('.ag[data-dia]')], txtDe = e => ((e.querySelector('.ag-tx') || e.querySelector('.cx') || e).textContent || '').replace(/\s+/g, ' ').trim().replace(/^([^\p{L}]*)(\p{L})/u, (_, a, l) => a + l.toUpperCase()), ok = e => !e.classList.contains('feito'), abre = e => { const h = e.hidden; e.hidden = false; e.click(); e.hidden = h; }, dHoje = cartas.filter(e => e.dataset.dia === hk);
+      const fo = elD('div', 'fo-parede'), bl = elD('div', 'fo-bloco'), lis = elD('div', 'fo-lista');
+      bl.append(elD('span', 'fo-mes', NM[hoje.getMonth()] + ' ' + hoje.getFullYear()), elD('div', 'fo-dia', String(hoje.getDate())), elD('div', 'fo-sem', DSEM[hoje.getDay()])); if (dHoje.some(e => /feriado/i.test(e.textContent))) bl.append(elD('span', 'fo-fer', 'Feriado'));
+      dHoje.forEach(e => { const b = elD('button', 'fo-it' + (ok(e) ? '' : ' feito')), i = elD('i'), t = elD('p', '', txtDe(e)); b.type = 'button'; i.style.background = e.dataset.cor || '#C62828'; t.append(elD('small', '', [(e.querySelector('.ag-tipo') || {}).textContent, ((e.querySelector('.ag-ini') || {}).textContent || '').replace(/^~?\d{1,2}\/\d{1,2}(\/\d{4})?\s*(\([^)]*\))?\s*/, '').replace(/^./, x => x.toUpperCase())].filter(Boolean).join(' · '))); b.append(i, t); b.onclick = () => abre(e); lis.append(b); });
+      if (!dHoje.length) lis.append(elD('p', 'fo-nada', 'Nada marcado pra hoje.')); bl.append(lis); fo.append(elD('span', 'fo-prego'), bl);
+      const prox = [...new Set(cartas.filter(e => e.dataset.dia > hk && ok(e)).map(e => e.dataset.dia))].sort().slice(0, 3);
+      if (prox.length) { const px = elD('div', 'fo-prox'), gr = elD('div', 'fo-folhas'); px.append(elD('h4', '', 'Próximas folhas')); prox.forEach(k => { const es = cartas.filter(e => e.dataset.dia === k && ok(e)), f = elD('button', 'fo-folha'), n = elD('b', '', String(+k.slice(8))); f.type = 'button'; if (+k.slice(5, 7) !== hoje.getMonth() + 1) n.append(elD('em', '', NM[+k.slice(5, 7) - 1].slice(0, 3))); f.append(n, elD('small', '', txtDe(es[0]) + (es.length > 1 ? ' (+' + (es.length - 1) + ')' : ''))); f.onclick = () => abre(es[0]); gr.append(f); }); px.append(gr); fo.append(px); }
+      c.prepend(fo); cal.addEventListener('click', e => { if (e.target.closest('.ag-dia')) setTimeout(() => c.scrollTo({ top: c.scrollTop + cal.getBoundingClientRect().top - c.getBoundingClientRect().top - 8, behavior: 'smooth' }), 0); }); setTimeout(() => { c.scrollTop = rolouT; }, 0);   // tocou num dia: o calendário sobe pra lista do dia aparecer embaixo; editou: volta pra onde estava
+    }
     pCorpo.scrollTop = rolou; if (agQ) agFiltra(c, agQ);
     };
     monta();
@@ -6811,7 +6826,7 @@ function abreProjetosMay(m) {
   const detalhe = id => tela((x => x.curto || x.nome || 'Projeto')(D.projetos.find(x => x.id === id) || {}), c => {   // curto: nome que cabe no topo (Sigma 11:28)
     const pinta = () => {
       const p = D.projetos.find(x => x.id === id); c.replaceChildren(); if (!p) { c.append(elD('p', 'p-nota', 'Este projeto foi apagado.')); return; }
-      painel.classList.remove('tema-claro', 'tema-excel', 'tema-rosa', 'tema-saude', 'tema-planos', 'tema-musica');   // o projeto tem a identidade dele: aberto pela Agenda (clara) não herda o claro, senão o texto branco some (Sigma #395)
+      painel.classList.remove('tema-claro', 'tema-cupom', 'tema-folhinha', 'tema-rosa', 'tema-saude', 'tema-planos', 'tema-musica');   // o projeto tem a identidade dele: aberto pela Agenda (clara) não herda o claro, senão o texto branco some (Sigma #395)
       const k = pjmCores(p); pjmCarregaFontes(); c.className = c.className.replace(/\bpjm-t-\S+/g, '').trim(); c.classList.add('pjm-tela', 'pjm-t-' + ((p.tema || {}).estilo || 'padrao')); c.style.backgroundColor = k.fundo; c.style.color = k.texto; c.append(pjmHero(p, k));
       const topo = elD('div', 'pjm-topo'); topo.style.background = k.fundo; topo.style.color = k.texto; topo.style.borderBottomColor = k.destaque;
       const ic = elD('span', 'pjm-ic'); ic.innerHTML = icone(p.icone || 'doc'); ic.style.color = k.destaque;

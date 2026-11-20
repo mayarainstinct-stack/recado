@@ -1,3 +1,4 @@
+// v539 (20/11/2026): Finanças vira cupom fiscal e Agenda vira folhinha de parede (May, ❓ de 20/11 13:03, #347); feriado nacional não abre o Trabalho sozinho (#410).
 // v538 (20/11/2026): Garagem: parede, chão, colunas, sombra e carro giram em volta do mesmo ponto com a mesma perspectiva (o carro não descola do fundo) e o giro não esmaece mais (Sigma #399).
 // v537 (20/11/2026): Casa > planta: abas Coisas, Tomadas, Medidas e Sobre sempre numa linha; textos das coisas falam com você, sem anotação de robô (Sigma #12).
 // v536 (20/11/2026): Saúde: cartão que já passou fica cheio e o "Já passou" vira etiqueta rosa-escuro no rosa-claro, nunca branco no branco (Sigma #373)
