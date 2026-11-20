@@ -1,3 +1,4 @@
+// v533 (20/11/2026): Jogos: Onde parei sem registro mostra o último relato com o dia; relato sem hora diz Hora não anotada; falas começam com maiúscula; no PC os painéis são repartidos pela altura de verdade (Sobre o jogo já aberto), o mais alto na coluna mais curta (Sigma #279 #345).
 // v532 (20/11/2026): Jogos com o fundo neon do launcher (Jogando no neon v5, Zerados na Parede neon dourada), em pé no celular e deitado no PC; véu um pouco mais claro pro neon aparecer (Hermes #285).
 // v531 (20/11/2026): Saúde > Consultas vira lista lida da Agenda (tipo consulta), abas Próximas e Já passaram; cada uma abre a pasta dela (campo pasta) ou o cartão do compromisso (Sigma #303).
 // v530 (20/11/2026): Saúde em 3 abas (Consultas, Cirurgia, Pra você) no lugar de 17 pastas roladas; pasta de grupo com abas usa o ícone de traço dela (Pós-cirurgia sem o ícone colorido do Menu) (Sigma #373).
