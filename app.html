@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-23.541">
+<meta name="app-versao" content="2026-11-23.542">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -2608,7 +2608,7 @@ const irGeral = document.getElementById('ir-geral'), irTrab = document.getElemen
 const painel = document.getElementById('painel'), pCorpo = document.getElementById('p-corpo'), pTit = document.getElementById('p-tit'), pExtra = document.getElementById('p-extra');
 let pilha = [], catalogo = null;
 const reais = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
-const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#62B02A'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/m[uú]sica/i, '#8B5CF6'], [/^artes/i, '#EC008C'], [/^planos/i, '#06B6D4'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#B3261E'], [/ateli/i, '#B3261E'], [/^listas/i, '#F59E0B'], [/ideia|tarefa/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia|contas/i, '#F59E0B']];
+const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#62B02A'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/^marca/i, '#B3261E'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/m[uú]sica/i, '#8B5CF6'], [/^artes/i, '#EC008C'], [/^planos/i, '#06B6D4'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#B3261E'], [/ateli/i, '#B3261E'], [/^listas/i, '#F59E0B'], [/ideia|tarefa/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia|contas/i, '#F59E0B']];
 // Arrumar o Menu arrastando (May, 07/11/2026 12:03: "dar pra eu clicar e arrastar, aí eu mesma organizava"): segura o azulejo até ele levantar,
 // arrasta pro lugar do outro e solta; a ordem fica guardada neste aparelho
 function arrumaArrastando(grade, op) {   // op: { sel, chave, aviso } pra usar em outra grade (pastas da Saúde, May 10/11/2026: "como se fossem pastas mesmo")
@@ -4807,6 +4807,7 @@ function abreItemMenu(m) {
   if (m.tipo === 'maquinas') return abreMaquinas(m);
   if (m.tipo === 'imagens') return abreImagens(m);
   if (m.tipo === 'videos') return abreVideos(m);
+  if (m.tipo === 'marca') return abreMarca(m);
   if (m.tipo === 'visual') return abreVisual(m);
   if (m.tipo === 'consultas') return abreConsultas(m);
   if (m.tipo === 'exames') return abreExames(m);
@@ -5549,6 +5550,38 @@ function abreImagens(m) {
       const n = document.createElement('div'); n.className = 'det'; n.textContent = g.imagens.length + (g.imagens.length > 1 ? ' imagens' : ' imagem'); b.append(n);
       el.append(b); el.onclick = () => abreAlbum(g, m); c.append(el);
     }); });
+  });
+}
+function abreMarca(m) {
+  tela(m.nome, async c => {
+    c.classList.add('mc-tela');
+    const p = skCarga(); c.append(p);
+    let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não foi possível abrir. Confere a internet.'; return; }
+    p.remove(); cabecalho({ sub: d.marcas.length + ' marcas' });
+    d.marcas.forEach(x => {
+      const sec = elD('section', 'mc-marca'); sec.style.setProperty('--mc', x.cor || '#B3261E');
+      const topo = elD('div', 'mc-topo'); topo.append(elD('h3', '', x.nome), elD('small', '', x.sub || '')); sec.append(topo);
+      if ((x.logos || []).length) {
+        const fila = elD('div', 'mc-logos');
+        x.logos.forEach(l => {
+          const b = elD('button', 'mc-logo'); b.type = 'button'; b.style.background = l.fundo || '#0E1420'; const im = elD('img'); im.alt = l.titulo; im.loading = 'lazy'; b.append(im, elD('span', '', l.titulo));
+          fotoUrl(l.arq, true).then(u => { im.src = u; b.onclick = () => abreZoom(u, l.arq); }).catch(() => { b.hidden = true; });
+          fila.append(b);
+        });
+        sec.append(fila);
+      }
+      if ((x.cores || []).length) {
+        const f = elD('div', 'mc-cores');
+        x.cores.forEach(([n, h]) => { const b = elD('button', 'mc-cor'); b.type = 'button'; b.style.setProperty('--h', h); b.append(elD('i'), elD('b', '', n), elD('code', '', h)); b.onclick = () => { try { navigator.clipboard.writeText(h); } catch (e) {} showNote(h + ' copiado'); }; f.append(b); });
+        sec.append(f);
+      }
+      if ((x.arquivos || []).length) {
+        const f = elD('div', 'mc-arqs');
+        x.arquivos.forEach(a => { const b = elD('button', 'mc-arq', a.nome); b.type = 'button'; b.onclick = () => abreTexto({ nome: a.nome, arq: a.arq }); f.append(b); });
+        sec.append(f);
+      }
+      c.append(sec);
+    });
   });
 }
 function estudio(c, gs, m, p) {
