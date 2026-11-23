@@ -1,3 +1,4 @@
+// v541 (23/11/2026): Tarefas ganha Ideias soltas no final do Planejado: lista sem data e sem dono, lida de menu/ideias-soltas.json (#356).
 // v540 (23/11/2026): Agenda: cartão de consulta mostra a hora do compromisso quando o rótulo não tem hora (Sigma #429; cardio 25/11, laser 27/11, anestesista 30/11).
 // v539 (20/11/2026): Finanças vira cupom fiscal e Agenda vira folhinha de parede (May, ❓ de 20/11 13:03, #347); feriado nacional não abre o Trabalho sozinho (#410).
 // v538 (20/11/2026): Garagem: parede, chão, colunas, sombra e carro giram em volta do mesmo ponto com a mesma perspectiva (o carro não descola do fundo) e o giro não esmaece mais (Sigma #399).

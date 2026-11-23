@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-23.540">
+<meta name="app-versao" content="2026-11-23.541">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -4157,6 +4157,15 @@ function abreIdeias(m) {
       else if (antesO) avisa(d.postits.find(y => y.id === movido), antesO);
     };
     // Aba Semana (post-it #206, Sigma 12/11/2026: a May tirou o relatório da Agenda na .267): cartão por robô com a barra de entregou x errou, o último erro e o que muda, lido do casa/reavaliacao.json
+    let soltasD = { lista: [], vazio: 'sem ideias ainda' }; lerArquivo('menu/ideias-soltas.json').then(t => { soltasD = JSON.parse(t); if (aba === 'quadro' && !busca.value.trim()) pinta(); }).catch(() => {});
+    const soltas = () => {
+      const s = elD('section', 'ie-soltas'), l = (soltasD.lista || []).filter(x => x && x.texto && !x.apagado);
+      s.append(elD('h4', '', 'Ideias soltas'));
+      if (!l.length) s.append(elD('p', 'ie-solta-vazia', soltasD.vazio || 'sem ideias ainda'));
+      else { const ul = elD('ul'); l.forEach(x => ul.append(elD('li', '', x.texto))); s.append(ul); }
+      s.append(elD('small', '', 'Sem data e sem dono: ninguém pega'));
+      return s;
+    };
     const pinta = () => {
       cabecalho({ icone: 'lampada', sub: abertos().length + ' planejadas · ' + daTela('revisao').length + ' na revisão', acao: { icone: 'plus', rotulo: 'Novo pedido', fn: novaTarefa } });
       nav.replaceChildren(); tr.replaceChildren();
@@ -4177,7 +4186,7 @@ function abreIdeias(m) {
         ps.forEach((p, k) => lst.append(postit(p, k))); q.append(col);
       });
       else { const lista = feitos(); if (!lista.length) q.append(elD('p', 'p-nota', 'Nada concluído ainda: tudo passa pela revisão do Sigma antes.')); lista.forEach((p, k) => q.append(postit(p, k))); }
-      tr.append(q);
+      tr.append(q); if (aba === 'quadro') tr.append(soltas());
       q.addEventListener('click', e => { const el = e.target.closest('.ie-post'); if (!el || q.dataset.arrastou) return; const p = d.postits.find(x => x.id === el.dataset.id); if (p) detalhe(p); });
       if (TELAS[aba]) arrastaPostits(q, (cols, movido) => { salvaOrdem(cols, movido); });
     };
