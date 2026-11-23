@@ -1,3 +1,4 @@
+// v543 (23/11/2026): Garagem > Diário: data comprida (ex.: "02 a 06/11/2026 (dia a confirmar)") quebra linha e não passa por cima da nota nem do lápis (#412).
 // v542 (23/11/2026): Mídia ganha Marca: logos, cores (toca e copia o hex) e arquivos de cada marca num lugar (#53); texto aberto dentro da Mídia fica legível no papel do cinema.
 // v541 (23/11/2026): Tarefas ganha Ideias soltas no final do Planejado: lista sem data e sem dono, lida de menu/ideias-soltas.json (#356).
 // v540 (23/11/2026): Agenda: cartão de consulta mostra a hora do compromisso quando o rótulo não tem hora (Sigma #429; cardio 25/11, laser 27/11, anestesista 30/11).

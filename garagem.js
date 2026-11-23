@@ -198,7 +198,7 @@ const CSS = `
 .gr-tela .gr-mes { display: flex; justify-content: space-between; align-items: baseline; margin: 10px 0 4px; padding-bottom: 4px; border-bottom: 2px solid #111; font: 700 14px/1 var(--gr-imp); font-synthesis: none; letter-spacing: .1em; text-transform: uppercase; color: var(--gr-am); }
 .gr-tela .gr-reg { display: flex; gap: 10px; align-items: baseline; padding: 7px 0; font-size: 13px; }
 .gr-tela .gr-reg + .gr-reg { border-top: 1px dashed #4C5058; }
-.gr-tela .gr-reg b { flex: none; min-width: 78px; font: 700 12px/1.2 var(--gr-mono); color: #F2F2F0; }
+.gr-tela .gr-reg b { flex: 0 1 auto; max-width: 44%; min-width: 78px; overflow-wrap: anywhere; font: 700 12px/1.2 var(--gr-mono); color: #F2F2F0; }
 .gr-tela .gr-reg .gr-rs { flex: none; font: 700 13px/1.2 var(--gr-mono); color: var(--gr-am); }
 .gr-tela .gr-reg .gr-nt { flex: 1; min-width: 0; color: #C9CCD2; font-weight: 500; }
 .gr-tela .gr-sub { margin: 14px 0 6px; font: 700 13px/1 var(--gr-mono); letter-spacing: .08em; text-transform: uppercase; color: #9EA2AA; }
