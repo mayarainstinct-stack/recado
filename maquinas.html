@@ -105,7 +105,7 @@ const apiDe=p=>"https://api.github.com/repos/"+REPO+"/contents/"+p.split("/").ma
 const gh=(p,raw)=>fetch(apiDe(p),{cache:"no-cache",headers:{Authorization:"Bearer "+TOKEN,Accept:raw?"application/vnd.github.raw":"application/vnd.github+json"}})
 const ROBO={orfeu:["Orfeu","#E31B23","avatares/orfeu-96.png"],nyx:["Nyx","#6FCF00","avatares/nyx-96.png"],vega:["Vega","#1D4ED8","avatares/vega-96.png"],hermes:["Hermes","#FFCB05","avatares/hermes-96.png"],lyra:["Lyra","#FF3EC8","avatares/lyra-96.png"],sigma:["Sigma","#9333EA","avatares/sigma-96.png"]}
 const MARCA={ps1:"PlayStation",ps2:"PlayStation",ps4:"PlayStation",ps5:"PlayStation",switch:"Nintendo","3ds":"Nintendo",snes:"Nintendo",n64:"Nintendo",x360:"Xbox"}
-const CURTO={ps1:"PS1",ps2:"PS2",ps4:"PS4",switch:"Switch","3ds":"3DS",snes:"SNES",x360:"360"}
+const CURTO={ps1:"PS1",ps2:"PS2",ps4:"PS4",ps5:"PS5",switch:"Switch","3ds":"3DS",snes:"SNES",x360:"360"}
 // geração e selo (portátil, híbrido) vêm do casa/maquinas.json (campos geracao e selo, fonte única, #165)
 const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
 const fotos={}
@@ -119,7 +119,7 @@ const W_SVG={
   x360:["#127C1F",'<g fill="none" stroke="#fff" stroke-width="3" opacity=".22" stroke-linecap="round"><circle cx="36" cy="36" r="18"/><path d="M26 26l20 20M46 26l-20 20"/><circle cx="90" cy="88" r="7"/><circle cx="76" cy="102" r="3"/><circle cx="104" cy="74" r="3"/></g>'],
   pc:[null,'<g fill="none" stroke="#fff" stroke-width="2.5" opacity=".2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 30h30l10 10h30M80 40v30l10 10h20M20 90h40l10-10"/><circle cx="10" cy="30" r="3"/><circle cx="110" cy="80" r="3"/><circle cx="20" cy="90" r="3"/><rect x="44" y="52" width="22" height="22" rx="3"/></g>']}
 const W_DE={ps1:"ps",ps2:"ps",ps4:"ps",ps5:"ps",switch:"switch","3ds":"3ds",snes:"snes",x360:"x360"}
-const W_FOTO={ps1:"ps1",ps2:"ps2",ps4:"ps4",switch:"switch","3ds":"3ds",snes:"snes",x360:"x360"}
+const W_FOTO={ps1:"ps1",ps2:"ps2",ps4:"ps4",ps5:"ps5",switch:"switch","3ds":"3ds",snes:"snes",x360:"x360"}
 const veu=(c,a,b)=>"linear-gradient(180deg,color-mix(in srgb,"+c+" "+a+"%,transparent),color-mix(in srgb,"+c+" "+b+"%,transparent))"   // a cor do console por cima da foto, de leve em cima a quase cheia embaixo
 const ESTILO=(location.hash.match(/estilo=([abcd])/)||[])[1]||"c"   // a confete · b neon · c 3D · d escuro com rastros; ela escolheu o c) 3D (May 19:10)
 // Fundos de console no espírito dos exemplos dela (19:04): a) confete de símbolos, b) símbolos grandes em neon, c) formas 3D flutuando, d) escuro com cubos e rastros de luz.
@@ -217,6 +217,7 @@ function grade(){
   const topo=el("div","topo"),ms2=el("div","marca-sis");ms2.append(el("i"),"Minha coleção");const t=D.total||{}
   const nv=el("button","ed-bt","+");nv.type="button";nv.setAttribute("aria-label","Máquina nova");nv.onclick=lancaMaq
   const tt=el("div","tit");tt.append(ms2,el("span","tot",D.maquinas.length+" máquinas · "+(t.zerados??"–")+(t.zerados===1?" zerado":" zerados")));topo.append(VB,tt,nv,anota("Máquinas"));app.append(topo)
+  if(D.colecao_slim)app.append(el("p","hist",D.colecao_slim))
   const g=el("div","grade")
   {const b=el("button","card diag-largo"),ic=el("span","diag-ic"),tx=el("span","diag-tx"),res=el("small","","a saúde dos PCs");b.style.setProperty("--c","#8B5CF6")
     ic.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="19" height="13" rx="2"/><path d="M8 20.5h8M12 16.5v4"/><path d="M5.5 10h3l1.5-3 2.5 6 1.5-3h4.5"/></svg>'
