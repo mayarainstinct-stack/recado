@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-20.539">
+<meta name="app-versao" content="2026-11-23.540">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -5986,7 +5986,7 @@ function abreAgenda(m) {
     if (FONTE) {
       cabecalho({ acao: { icone: 'plus', rotulo: 'Novo compromisso', fn: agLanca } });
       linhasAg.push('# ' + (FONTE.titulo || 'Agenda')); if (FONTE.atualizada) linhasAg.push(FONTE.atualizada);
-      (FONTE.secoes || []).forEach(sec => { linhasAg.push('', '## ' + sec.titulo); (sec.itens || []).filter(i => !i.apagado).forEach(i => { let t = i.texto || ''; if (i.rotulo) t = '**' + i.rotulo + ':** ' + t; (i.fotos || []).forEach(f => { t += ' 📷 ' + f; }); idDe.set(linhasAg.length, i); linhasAg.push('- ' + t); }); });
+      (FONTE.secoes || []).forEach(sec => { linhasAg.push('', '## ' + sec.titulo); (sec.itens || []).filter(i => !i.apagado).forEach(i => { let t = i.texto || ''; const hj = String(i.hora || '').match(/^(\d{1,2})(?:h|:)(\d{2})?$/), rot = i.rotulo && hj && !/\d(h|:\d)/.test(i.rotulo.replace(/\d{1,2}\/\d{1,2}(\/\d{4})?/g, '')) ? i.rotulo + ' ' + (+hj[1]) + 'h' + (hj[2] && hj[2] !== '00' ? hj[2] : '') : i.rotulo; if (rot) t = '**' + rot + ':** ' + t; (i.fotos || []).forEach(f => { t += ' 📷 ' + f; }); idDe.set(linhasAg.length, i); linhasAg.push('- ' + t); }); });
       if (FONTE.rodape) linhasAg.push('', FONTE.rodape);
     }
     const FOLHA = !/trabalho/i.test(m.arq || '') && !document.body.classList.contains('modo-trab'); painel.classList.add('tema-claro'); painel.classList.toggle('tema-folhinha', FOLHA); c.classList.add('ag-tela');   // Agenda vira folhinha de parede (May 20/11 13:03, #347)   // Agenda clara, cara de consultório (May 08/11 12:49 e 12:56): branco, verde-água suave, cantos redondos, sem neon
