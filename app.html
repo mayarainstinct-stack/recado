@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-23.545">
+<meta name="app-versao" content="2026-11-23.546">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-23.544"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-23.546"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -921,7 +921,7 @@ function cartaoArquivo(a) {
   const w = elD('div', 'arq-musica'), pl = playerAudio(a.caminho), mc = pl.querySelector('.mic-av'); if (mc) mc.innerHTML = icone('headphones'); w.append(pl, b); return w;   // música: toca ali mesmo e ainda dá pra baixar
 }
 // Modelo 3D (v544, 23/11/2026): "🧊 caminho.stl" (ou .3mf, relativo ao Inst) vira cartão no balão; tocar abre o visualizador em tela cheia.
-// O three.js só baixa na 1ª vez que abre um modelo (jsdelivr, versão fixa); a miniatura fica guardada depois da 1ª abertura.
+// O three.js só baixa quando o 1º cartão 3D aparece na tela (jsdelivr, versão fixa); a miniatura fica guardada no aparelho.
 const RE_MODELO = /🧊\s*(\S+\.(?:stl|3mf))/gi;
 const ehModelo3d = a => /\.(stl|3mf)$/i.test(a || '');
 const modelosDe = t => [...String(t || '').matchAll(RE_MODELO)].map(m => m[1]);
@@ -934,18 +934,61 @@ function baixaModelo(path) {
     .then(r => { if (!r.ok) { const e = new Error('modelo ' + r.status); e.status = r.status; throw e; } return r.arrayBuffer(); })
     .then(b => { guardaFoto(path, b); return b; })).catch(e => { delete modeloBuf[path]; throw e; }));
 }
-const miniKey = p => 'mini3d:' + p;
+const miniKey = p => 'mini3d2:' + p;
+async function geometriasDe(L, buf, path) {   // STL ou 3MF -> geometrias sem índice, já em pé (Z do fatiador vira Y)
+  let malhas = [];
+  if (/\.3mf$/i.test(path)) {
+    const { ThreeMFLoader } = await import(TRES + '/examples/jsm/loaders/3MFLoader.js/+esm');
+    const g = new ThreeMFLoader().parse(buf); g.updateMatrixWorld(true);
+    g.traverse(o => { if (o.isMesh) { let gg = o.geometry.clone().applyMatrix4(o.matrixWorld); if (gg.index) gg = gg.toNonIndexed(); gg.deleteAttribute('normal'); gg.computeVertexNormals(); malhas.push(gg); } });
+  } else malhas = [new L.STLLoader().parse(buf)];
+  if (!malhas.length) throw new Error('vazio');
+  malhas.forEach(g => { g.rotateX(-Math.PI / 2); if (!g.attributes.normal) g.computeVertexNormals(); });
+  return malhas;
+}
+// Miniatura sozinha (v546, May 23/11 22:39): o cartão entrou na tela, um renderer só (fora da tela) tira o retrato 3/4, um modelo por vez; fica guardada no aparelho
+let miniR = null, miniRodando = false;
+const miniFila = [], miniEspera = new Map();
+const miniObs = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; miniObs.unobserve(e.target); const x = miniEspera.get(e.target); miniEspera.delete(e.target); if (x) pedeMini(x[0], x[1]); }), { rootMargin: '200px 0px' }) : null;
+function miniDe(el, path, aplica) {
+  const u = store.get(miniKey(path)); if (u) { aplica(u); return; }
+  if (!miniObs) return; miniEspera.set(el, [path, aplica]); miniObs.observe(el);
+}
+function pedeMini(path, aplica) { const ja = miniFila.find(x => x[0] === path); if (ja) ja[1].push(aplica); else miniFila.push([path, [aplica]]); proxMini(); }
+async function proxMini() {
+  if (miniRodando || !miniFila.length) return; miniRodando = true;
+  const [path, fs] = miniFila.shift();
+  try { const u = store.get(miniKey(path)) || await geraMini(path); fs.forEach(f => f(u)); } catch (e) {}
+  miniRodando = false; setTimeout(proxMini, 50);
+}
+async function geraMini(path) {
+  const [L, buf] = await Promise.all([carregaTres(), baixaModelo(path)]), { T } = L, LADO = 192;
+  if (!miniR) { miniR = new T.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); miniR.setPixelRatio(1); miniR.setSize(LADO, LADO, false); miniR.outputColorSpace = T.SRGBColorSpace; miniR.setClearColor(0x000000, 0); }
+  const malhas = await geometriasDe(L, buf, path); delete modeloBuf[path];
+  const cena = new T.Scene(), mat = new T.MeshStandardMaterial({ color: 0xd3d8df, roughness: 0.55, metalness: 0.05, side: T.DoubleSide }), grupo = new T.Group();
+  malhas.forEach(g => grupo.add(new T.Mesh(g, mat)));
+  const caixa = new T.Box3().setFromObject(grupo), centro = caixa.getCenter(new T.Vector3()), raio = Math.max(caixa.getSize(new T.Vector3()).length() / 2, 1e-3);
+  grupo.position.sub(centro); cena.add(grupo);
+  const camera = new T.PerspectiveCamera(30, 1, 0.1, 1e6), dir = new T.Vector3(0.9, 0.75, 1.2).normalize(), dist = raio / Math.sin(T.MathUtils.degToRad(15)) * 0.88;
+  camera.position.copy(dir).multiplyScalar(dist); camera.near = dist / 100; camera.far = dist * 10; camera.lookAt(0, 0, 0); camera.updateProjectionMatrix();
+  cena.add(new T.HemisphereLight(0xffffff, 0x8a96a3, 1.7));
+  const sol = new T.DirectionalLight(0xffffff, 1.7); sol.position.copy(camera.position).add(new T.Vector3(raio, raio * 2, raio)); cena.add(sol);
+  miniR.render(cena, camera);
+  const u = miniR.domElement.toDataURL('image/png');
+  malhas.forEach(g => g.dispose()); mat.dispose();
+  store.set(miniKey(path), u); return u;
+}
 function cartaoModelo(path) {
   const b = document.createElement('button'); b.type = 'button'; b.className = 'm3d-cartao';
-  const vis = elD('span', 'm3d-mini'), mini = store.get(miniKey(path));
-  if (mini) vis.style.backgroundImage = 'url(' + mini + ')';
-  else vis.innerHTML = '<svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.8 20.5 7.5v9L12 21.2 3.5 16.5v-9z"/><path d="M3.5 7.5 12 12.2l8.5-4.7M12 12.2v9"/></svg>';
+  const vis = elD('span', 'm3d-mini');
+  vis.innerHTML = '<svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.8 20.5 7.5v9L12 21.2 3.5 16.5v-9z"/><path d="M3.5 7.5 12 12.2l8.5-4.7M12 12.2v9"/></svg>';
+  miniDe(b, path, u => { vis.innerHTML = ''; vis.classList.add('pronta'); vis.style.backgroundImage = 'url(' + u + ')'; });
   const tx = elD('span', 'm3d-tx'); tx.append(elD('b', '', 'Modelo 3D'), elD('small', '', path.split('/').pop()), elD('small', 'm3d-dica', 'Toque pra girar e dar zoom'));
   b.append(vis, tx);
-  b.addEventListener('click', e => { e.stopPropagation(); abreModelo(path, vis); });
+  b.addEventListener('click', e => { e.stopPropagation(); abreModelo(path); });
   return b;
 }
-async function abreModelo(path, visCartao) {
+async function abreModelo(path) {
   const z = elD('div', 'm3d'), palco = elD('div', 'm3d-palco'), barra = elD('div', 'm3d-barra'), nome = elD('span', 'm3d-nome', path.split('/').pop());
   const cam = document.createElement('button'); cam.type = 'button'; cam.className = 'm3d-bt'; cam.textContent = 'Camadas'; cam.setAttribute('aria-pressed', 'false'); cam.disabled = true;
   const cen = document.createElement('button'); cen.type = 'button'; cen.className = 'm3d-bt'; cen.textContent = 'Centralizar'; cen.disabled = true;
@@ -959,7 +1002,7 @@ async function abreModelo(path, visCartao) {
   try {
     const [L, buf] = await Promise.all([carregaTres(), baixaModelo(path)]);
     if (!vivo) return;
-    const { T, OrbitControls, STLLoader } = L;
+    const { T, OrbitControls } = L;
     const escuro = document.body.classList.contains('na-geral') || matchMedia('(prefers-color-scheme: dark)').matches;
     const fundo = getComputedStyle(document.body).getPropertyValue('--bg').trim() || (escuro ? '#121419' : '#F2F5F3');
     z.classList.toggle('escuro', escuro); z.style.background = fundo;
@@ -971,14 +1014,8 @@ async function abreModelo(path, visCartao) {
     cena.add(new T.HemisphereLight(0xffffff, escuro ? 0x2a2f38 : 0xb8c4cc, escuro ? 1.6 : 1.9));
     const sol = new T.DirectionalLight(0xffffff, 1.6); cena.add(sol);
     const rebate = new T.DirectionalLight(0xffffff, 0.55); cena.add(rebate);
-    let malhas = [];
-    if (/\.3mf$/i.test(path)) {
-      const { ThreeMFLoader } = await import(TRES + '/examples/jsm/loaders/3MFLoader.js/+esm');
-      const g = new ThreeMFLoader().parse(buf); g.updateMatrixWorld(true);
-      g.traverse(o => { if (o.isMesh) { let gg = o.geometry.clone().applyMatrix4(o.matrixWorld); if (gg.index) gg = gg.toNonIndexed(); gg.deleteAttribute('normal'); gg.computeVertexNormals(); malhas.push(gg); } });
-    } else malhas = [new STLLoader().parse(buf)];
+    const malhas = await geometriasDe(L, buf, path);
     if (!vivo) return;
-    if (!malhas.length) throw new Error('vazio');
     const mat = new T.MeshStandardMaterial({ color: escuro ? 0xd9dde3 : 0xc9ced6, roughness: 0.55, metalness: 0.05, side: T.DoubleSide });
     const matCam = new T.MeshStandardMaterial({ roughness: 0.6, metalness: 0, side: T.DoubleSide });
     matCam.onBeforeCompile = sh => {   // Camadas: cor pela altura em 24 faixas (azul embaixo, vermelho em cima), pintada por pixel
@@ -987,7 +1024,7 @@ async function abreModelo(path, visCartao) {
       sh.fragmentShader = 'varying float vAlt;\nuniform float uFaixa;\nvec3 hsl(float h, float s, float l) { vec3 k = clamp(abs(mod(h * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0); return l + s * (k - 0.5) * (1.0 - abs(2.0 * l - 1.0)); }\n' + sh.fragmentShader.replace('#include <color_fragment>', '#include <color_fragment>\nfloat kk = clamp(floor(vAlt / uFaixa), 0.0, 23.0);\ndiffuseColor.rgb = hsl(0.66 - 0.66 * kk / 23.0, 0.75, mod(kk, 2.0) > 0.5 ? 0.5 : 0.6);');
     };
     const grupo = new T.Group();
-    malhas.forEach(g => { g.rotateX(-Math.PI / 2); if (!g.attributes.normal) g.computeVertexNormals(); grupo.add(new T.Mesh(g, mat)); });
+    malhas.forEach(g => grupo.add(new T.Mesh(g, mat)));
     const caixa = new T.Box3().setFromObject(grupo), centro = caixa.getCenter(new T.Vector3()), tam = caixa.getSize(new T.Vector3());
     grupo.position.set(-centro.x, -caixa.min.y, -centro.z); cena.add(grupo);
     const alto = tam.y || 1, raio = Math.max(tam.length() / 2, 1e-3);
@@ -1018,14 +1055,6 @@ async function abreModelo(path, visCartao) {
     st.remove(); cam.disabled = false; cen.disabled = false;
     cam.onclick = e => { e.stopPropagation(); const on = cam.getAttribute('aria-pressed') !== 'true'; grupo.children.forEach(m => { m.material = on ? matCam : mat; }); cam.setAttribute('aria-pressed', on); };
     cen.onclick = e => { e.stopPropagation(); enquadra(); };
-    if (!store.get(miniKey(path))) requestAnimationFrame(() => requestAnimationFrame(() => {   // miniatura do cartão: 1ª abertura tira um retrato pequeno
-      try {
-        if (!vivo) return; const c = document.createElement('canvas'), s = r.domElement, l = Math.min(s.width, s.height); c.width = c.height = 128;
-        c.getContext('2d').drawImage(s, (s.width - l) / 2, (s.height - l) / 2, l, l, 0, 0, 128, 128);
-        const u = c.toDataURL('image/jpeg', 0.8); store.set(miniKey(path), u);
-        if (visCartao) { visCartao.innerHTML = ''; visCartao.style.backgroundImage = 'url(' + u + ')'; }
-      } catch (er) {}
-    }));
   } catch (e) {
     if (!vivo) return;
     st.textContent = e.status === 404 ? 'Esse modelo não está mais no repositório.' : e.status ? msgErro(e, 'abrir o modelo') : /import|module|fetch/i.test(String(e && e.message)) ? 'Não deu pra baixar o visualizador 3D. Confere a internet e tenta de novo.' : 'Não consegui ler esse arquivo 3D.';
@@ -5733,7 +5762,7 @@ function abreVideos(m) {
       const cp = document.createElement('div'); cp.className = 'cine-capa';
       const im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; cp.append(im);
       if (v.capa) fotoUrl(v.capa, true).then(u => { im.src = u; }).catch(() => {});
-      const m3 = ehModelo3d(v.arq), pl = document.createElement('span'); pl.className = m3 ? 'm3d-ic' : 'play'; if (m3) { pl.textContent = '3D'; el.style.width = '100%'; const mi = store.get(miniKey(v.arq)); if (mi && !v.capa) { im.src = mi; im.style.objectFit = 'contain'; } } cp.append(pl);
+      const m3 = ehModelo3d(v.arq), pl = document.createElement('span'); pl.className = m3 ? 'm3d-ic' : 'play'; if (m3) { pl.textContent = '3D'; el.style.width = '100%'; if (!v.capa) miniDe(el, v.arq, u => { im.src = u; im.style.objectFit = 'contain'; }); } cp.append(pl);
       if (v.duracao) { const du = document.createElement('span'); du.className = 'dur'; du.textContent = v.duracao; cp.append(du); }
       const h = document.createElement('h3'); h.textContent = v.titulo;
       const n = document.createElement('div'); n.className = 'det'; n.textContent = [v.versao || v.nota, v.versoes && v.versoes.length ? (v.versoes.length + 1) + ' versões' : ''].filter(Boolean).join(' · ');
