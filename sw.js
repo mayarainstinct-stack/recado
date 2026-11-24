@@ -1,3 +1,4 @@
+// v545 (23/11/2026): Máquinas sem o bloco grande de cima ("Minha coleção" + totais): a grade de consoles e PCs abre direto (May 22:29: "só tá atrapalhando").
 // v544 (23/11/2026): Modelo 3D na conversa: linha com "🧊 caminho.stl" (ou .3mf, relativo ao Inst) vira cartão; tocar abre o visualizador (girar, pinça/roda, 2 dedos arrasta, Camadas, Centralizar). Mídia aceita item com arq .stl/.3mf (mesmo cartão). three.js só baixa na 1ª abertura.
 // v543 (23/11/2026): Garagem > Diário: data comprida (ex.: "02 a 06/11/2026 (dia a confirmar)") quebra linha e não passa por cima da nota nem do lápis (#412).
 // v542 (23/11/2026): Mídia ganha Marca: logos, cores (toca e copia o hex) e arquivos de cada marca num lugar (#53); texto aberto dentro da Mídia fica legível no papel do cinema.

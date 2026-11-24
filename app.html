@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-23.544">
+<meta name="app-versao" content="2026-11-23.545">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -3328,11 +3328,7 @@ function abreMaquinas(m) {
     const p = skCarga(); c.append(p);
     let d; try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não foi possível abrir. Confere a internet.'; return; }
     p.remove();
-    const ms = d.maquinas || [], t = d.total || {};
-    const h = elD('div', 'mq-hero'), tot = elD('div', 'mq-tot');
-    h.append(elD('b', '', 'Minha coleção'), elD('span', '', ms.filter(x => x.tipo === 'console').length + ' consoles · ' + ms.filter(x => x.tipo === 'pc').length + ' PCs · os números são os mesmos da página Jogos'));
-    [['jogados', 'jogados'], ['zerados', 'zerados'], ['andamento', 'em andamento']].forEach(([k, tt]) => { const b = elD('div'); b.append(elD('b', '', String(t[k] ?? '–')), elD('small', '', tt)); tot.append(b); });
-    h.append(tot); c.append(h);
+    const ms = d.maquinas || [];
     const g = elD('div', 'mq-grade'); c.append(g);
     ms.forEach(x => {
       const [k1, k2] = corMaq(x), mk = marcaMaq(x), b = elD('button', 'mq-card marca-' + mk + ' c-' + (x.console === 'pc' ? x.id : x.console)); b.type = 'button'; b.style.setProperty('--k1', k1); b.style.setProperty('--k2', k2);
