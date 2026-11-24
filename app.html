@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-23.549">
+<meta name="app-versao" content="2026-11-23.550">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-23.549"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-23.550"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2891,12 +2891,12 @@ function desenhaTela() {
     const st = pCorpo.scrollTop; document.body.append(g); g.scrollTop = st; setTimeout(() => g.remove(), 300);
   }
   if (pilha.length !== nAnt && nAnt) { void pCorpo.offsetWidth; pCorpo.classList.add(pilha.length > nAnt ? 'tela-dir' : 'tela-esq'); }
-  const entrada = pilha[pilha.length - 1], [titulo, montar, rolou] = entrada, mae = pilha.length > 1 ? pilha[pilha.length - 2][3] : null; painel.classList.remove('tema-claro', 'tema-cupom', 'tema-folhinha', 'tema-rosa', 'tema-saude', 'tema-contraste', 'tema-planos', 'tema-musica');
+  const entrada = pilha[pilha.length - 1], [titulo, montar, rolou] = entrada, mae = pilha.length > 1 ? pilha[pilha.length - 2][3] : null; painel.classList.remove('tema-claro', 'tema-cupom', 'tema-planilha', 'tema-folhinha', 'tema-rosa', 'tema-saude', 'tema-contraste', 'tema-planos', 'tema-musica');
   if (mae) mae.temas.forEach(c => painel.classList.add(c));   // tela filha herda o tema da mãe (May, 09/11/2026: "senão fica cagado"); a filha que quiser outro tema troca no montar   // o tema claro é só da tela que pedir (a Agenda, May 08/11 12:56)
   pTit.textContent = titulo; pCorpo.scrollTop = 0; pExtra.hidden = true;   /* só na raiz do Menu, também quando a tela abre direto pela notificação */ cabecalhoGenerico(); if (pilha.length === 1) iconeTela = ''; else if (iconeTela) { const ic = elD('span', 'p-ic'); ic.innerHTML = icone(iconeTela); pTits.before(ic); }   // toda tela com o quadrado do ícone do Menu (#348)
   pTopo.hidden = pilha.length === 1 && titulo === 'Menu'; painel.classList.toggle('sem-topo', pTopo.hidden);   // sem a barra, o Recados ganha respiro em cima (May 18:47: "colou em cima")   // o Menu começa direto em Recados, sem a barra de cima (May 18:40); voltar fica no botão de baixo e no deslize
   const t = document.createElement('div'); t.className = 'tela'; if (mae) mae.gr.forEach(c => t.classList.add(c)); pCorpo.replaceChildren(t);   // carga atrasada de tela que já saiu cai no invólucro velho
-  const r = montar(t); const guardaTema = () => { entrada[3] = { temas: ['tema-claro', 'tema-cupom', 'tema-folhinha', 'tema-rosa', 'tema-saude', 'tema-planos', 'tema-musica'].filter(c => painel.classList.contains(c)), gr: [...t.classList].filter(c => c.startsWith('gr-') && !c.startsWith('gr-grade')) }; };   // a filha herda daqui
+  const r = montar(t); const guardaTema = () => { entrada[3] = { temas: ['tema-claro', 'tema-cupom', 'tema-planilha', 'tema-folhinha', 'tema-rosa', 'tema-saude', 'tema-planos', 'tema-musica'].filter(c => painel.classList.contains(c)), gr: [...t.classList].filter(c => c.startsWith('gr-') && !c.startsWith('gr-grade')) }; };   // a filha herda daqui
   if (pilha[pilha.length - 1] === entrada) { guardaTema(); Promise.resolve(r).then(() => { if (pilha[pilha.length - 1] === entrada && t.isConnected) guardaTema(); }).catch(() => {}); }
   if (rolou) Promise.resolve(r).then(() => { if (t.isConnected) pCorpo.scrollTop = rolou; });   // voltando: devolve a rolagem de onde ela estava
 }
@@ -4785,7 +4785,8 @@ async function finLembretes() {
 }
 function abreFinancas(m) {
   tela(m.nome, async c => {
-    painel.style.setProperty('--c', '#1C1C1C'); painel.classList.add('tema-cupom');   // Finanças vira cupom fiscal (May 20/11 13:03, #347; antes era a cara de Excel de 08/11)
+    painel.style.setProperty('--c', '#217346'); painel.classList.add('tema-planilha');   // Finanças com cara de planilha (May 23/11 23:43: "era com cara de Excel; tem que ser algo mais financeiro"); o cupom fiscal de 20/11 (#347) saiu
+    const reaisFin = v => 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });   // na planilha todo valor com 2 casas
     const nota = skCarga(); c.append(nota);
     let d0, lmd = '', fx = { mensais: [], anuais: [] }, Ec, Ep;
     try { d0 = JSON.parse(await lerArquivo('contas/pendencias.json')); } catch (e) { nota.textContent = 'Não foi possível abrir as contas. Confere a internet.'; return; }
@@ -4851,18 +4852,19 @@ function abreFinancas(m) {
       const l = elD('div', 'cm-item fin-it cm-' + it.cat + ' est-' + it.estado), dia = elD('div', 'cm-dia'), meio = elD('div', 'cm-meio'), dir = elD('div', 'fin-dir'), top = elD('div', 'fin-top'), dd = Math.round((it.quando - hoje) / 864e5);
       dia.append(elD('b', '', String(it.quando.getDate())), elD('small', '', SEM[it.quando.getDay()]));
       top.append(elD('span', 'cm-chip', CHIP[it.cat] || it.cat)); if (it.estado !== 'paga') top.append(elD('em', 'fin-est ' + it.estado, it.estado === 'vencer' && dd > 0 && dd <= 3 && it.lado === 'pagar' ? (dd === 1 ? 'Vence amanhã' : 'Vence em ' + dd + ' dias') : ESTADO[it.lado][it.estado]));   // pago já fala pelo visto verde e pelo 'Pago em': sem a pílula e sem repetir o valor (Sigma #376)
-      meio.append(top, elD('strong', '', it.nome), elD('small', '', it.sub)); if (it.hist) meio.append(elD('small', 'fin-antes', it.hist));
+      meio.append(top, elD('strong', '', it.nome), elD('small', '', String(it.sub || '').replace(/^tua metade R\$ [\d.,]+/, 'tua metade').replace(!it.pago && it.ent && it.valor === it.ent.falta ? /^falta R\$ [\d.,]+(?: · )?/ : /$^/, ''))); if (it.hist) meio.append(elD('small', 'fin-antes', it.hist));   // o valor já está na coluna Valor: não repete (#435)
       const ck = elD('button', 'fin-ck' + (it.pago ? ' on' : '')); ck.type = 'button'; ck.setAttribute('aria-label', it.pago ? 'Desmarcar' : 'Marcar'); ck.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg>'; ck.onclick = e => { e.stopPropagation(); marcar(it); };
       const ac = elD('div', 'fin-ac'); ac.append(ck, edMini('note', 'Editar', () => editaConta(it.ent)));
       dir.append(elD('div', 'cm-val', reaisFin(it.pago && it.pago.valor !== '' ? it.pago.valor : it.valor)), ac);
       l.append(dia, meio, dir); dia.onclick = meio.onclick = () => detalhe(it.ent, it); return l;
     };
+    const cabPl = () => { const h = elD('div', 'pl-cab'); ['Dia', 'Descrição', 'Valor'].forEach(t => h.append(elD('span', '', t))); return h; };   // cabeçalho da planilha, fica parado ao rolar
     const cartaoPessoa = (x, lado) => {
       const c2 = elD('button', 'fm-card'); c2.type = 'button'; c2.onclick = () => detalhe(x); const pct = x.total ? Math.min(100, Math.round(x.pago / x.total * 100)) : 0, h = elD('div', 'fm-nome');
       h.innerHTML = '<svg viewBox="0 0 16 16"><circle cx="8" cy="5.5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M3 13.5c.6-2.6 2.6-3.8 5-3.8s4.4 1.2 5 3.8" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>'; h.append(document.createTextNode(x.nome)); c2.append(h);
       [['Total', reaisFin(x.total), ''], [lado === 'pagar' ? 'Pago' : 'Recebido', reaisFin(x.pago), 'ok'], ['Falta', x.falta > 0 ? reaisFin(x.falta) : 'quitado', x.falta > 0 ? 'falta' : 'ok']].forEach(([t, v, cl]) => { const l = elD('div', 'fm-lin'); l.append(elD('span', '', t), elD('b', cl, v)); c2.append(l); });
       const bar = elD('div', 'fm-barra trilho-prog'), i = elD('i'); i.style.width = pct + '%'; bar.append(i); c2.append(bar, elD('small', 'fm-pct', pct + '%'));
-      const ult = x.pagamentos[x.pagamentos.length - 1]; if (ult) c2.append(elD('small', 'fin-ult', finPagoTxt(ult, lado)));
+      const ult = x.pagamentos[x.pagamentos.length - 1]; if (ult) c2.append(elD('small', 'fin-ult', finPagoTxt(ult, lado).replace(/R\$ [\d.]+(?:,\d+)?/, () => reaisFin(ult.valor))));
       return c2;
     };
     const paginaPessoas = lado => {
@@ -4875,12 +4877,12 @@ function abreFinancas(m) {
       nav.append(mv(-1, '‹'), elD('b', '', MES[mesAt.getMonth()].replace(/^./, x => x.toUpperCase()) + ' de ' + mesAt.getFullYear()), mv(1, '›'));
       const tp = elD('div', 'cm-topo fin-resumo'), g = elD('div', 'fin-res3'); [['Entrou', resumo.entrou, 'rec'], ['Saiu', resumo.saiu, 'pag'], ['Sobra do mês', sobra, sobra >= 0 ? 'rec' : 'neg']].forEach(([t, v, cl]) => { const b = elD('div', cl); b.append(elD('span', '', t), elD('b', '', reaisFin(v))); g.append(b); });
       tp.append(g, elD('small', '', 'Ainda falta pagar ' + reaisFin(resumo.aPagar) + ' · a receber ' + reaisFin(resumo.aReceber) + ' neste mês')); pg.append(nav, tp);
-      const lista = elD('div', 'cm-lista'); its.forEach(it => lista.append(linha(it))); if (!its.length) lista.append(elD('p', 'p-nota', 'Nada neste mês.')); pg.append(lista); return pg;
+      const lista = elD('div', 'cm-lista'); lista.append(cabPl()); its.forEach(it => lista.append(linha(it))); if (!its.length) lista.append(elD('p', 'p-nota', 'Nada neste mês.')); pg.append(lista); return pg;
     };
     const paginaFixas = () => {
       const pg = elD('div', 'fin-pag cm-pag'), ls = finLista(S, new Date(hoje.getFullYear(), hoje.getMonth(), 1), hoje).its.filter(x => x.tipo === 'f'), fi = ls.filter(x => x.cat === 'fixa'), tua = fi.reduce((n, x) => n + x.valor, 0);
       const tp = elD('div', 'cm-topo'); tp.append(elD('span', '', 'Contas fixas do mês · tua metade'), elD('b', '', reaisFin(tua)), elD('small', '', fi.length + ' contas fixas · a outra metade é do Gabriel')); pg.append(tp);
-      const lista = elD('div', 'cm-lista'); ls.forEach(it => lista.append(linha(it))); if (!ls.length) lista.append(elD('p', 'p-nota', 'Nenhuma conta fixa com dia.')); pg.append(lista);
+      const lista = elD('div', 'cm-lista'); lista.append(cabPl()); ls.forEach(it => lista.append(linha(it))); if (!ls.length) lista.append(elD('p', 'p-nota', 'Nenhuma conta fixa com dia.')); pg.append(lista);
       const semDia = S.fixas.filter(f => !f.dia);
       [['Sem dia anotado', semDia.map(f => [f.nome, reaisFin(f.valor) + (f.nota ? ' · ' + f.nota : ''), f])], ['Uma vez por ano', S.anuais.map(a => [a.nome, (a.mes ? 'vence em ' + a.mes + ' · ' : '') + (a.nota || ''), a])]].forEach(([t, xs]) => {
         if (!xs.length) return; const b = elD('div', 'cm-bloco'); b.append(elD('h4', 'cm-mes', t)); xs.forEach(([n, v, ent]) => { const l = elD('div', 'cm-mini fin-mini'), tx = elD('div'); tx.append(elD('strong', '', n), elD('small', '', v)); l.append(tx, edMini('note', 'Editar', () => ent.pagos ? editaConta(ent) : editaAnual(ent))); b.append(l); }); pg.append(b);
@@ -4890,8 +4892,6 @@ function abreFinancas(m) {
     const pinta = () => {
       const trAntes = box.querySelector('.fin-trilho'), rolo = trAntes ? [...trAntes.children].map(p => p.scrollTop) : [];
       box.replaceChildren();
-      { const cb = elD('div', 'cp-cab'), ag = new Date(), hj = finLista(S, new Date(hoje.getFullYear(), hoje.getMonth(), 1), hoje).its.filter(x => x.estado === 'hoje'); cb.append(elD('b', 'cp-tit', 'Finanças da May'), elD('span', '', 'Cupom do mês · ' + MES[hoje.getMonth()].slice(0, 3) + '/' + hoje.getFullYear()), elD('span', '', ag.toLocaleDateString('pt-BR') + ' ' + ag.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })));   // cabeçalho do cupom fiscal (May 20/11 13:03)
-        hj.forEach(it => { const l = elD('button', 'cp-hoje'); l.type = 'button'; l.append(elD('span', '', 'Hoje: ' + it.nome), elD('b', '', reaisFin(it.valor))); l.onclick = () => detalhe(it.ent, it); cb.append(l); }); if (!hj.length) cb.append(elD('div', 'cp-hoje vazio', 'Hoje: nada vence')); box.append(cb); }   // a linha de hoje marcada de amarelo, igual caneta no cupom
       const fr = S.pessoas.filter(p => p.lado === 'receber').reduce((n, x) => n + x.falta, 0), fp = S.pessoas.filter(p => p.lado === 'pagar').reduce((n, x) => n + x.falta, 0);
       const k = elD('div', 'fin-kpis'); [['Falta receber', fr, 'rec'], ['Falta pagar', fp, 'pag'], ['Saldo final', fr - fp, fr - fp >= 0 ? 'rec' : 'neg']].forEach(([t, v, cl]) => { const b = elD('div', 'fin-kpi ' + cl); b.append(elD('span', '', t), elD('b', '', reaisFin(v))); k.append(b); }); box.append(k);
       const nav = elD('nav', 'fin-abas'), tr = elD('div', 'fin-trilho');
@@ -7027,7 +7027,7 @@ function abreProjetosMay(m) {
   const detalhe = id => tela((x => x.curto || x.nome || 'Projeto')(D.projetos.find(x => x.id === id) || {}), c => {   // curto: nome que cabe no topo (Sigma 11:28)
     const pinta = () => {
       const p = D.projetos.find(x => x.id === id); c.replaceChildren(); if (!p) { c.append(elD('p', 'p-nota', 'Este projeto foi apagado.')); return; }
-      painel.classList.remove('tema-claro', 'tema-cupom', 'tema-folhinha', 'tema-rosa', 'tema-saude', 'tema-planos', 'tema-musica');   // o projeto tem a identidade dele: aberto pela Agenda (clara) não herda o claro, senão o texto branco some (Sigma #395)
+      painel.classList.remove('tema-claro', 'tema-cupom', 'tema-planilha', 'tema-folhinha', 'tema-rosa', 'tema-saude', 'tema-planos', 'tema-musica');   // o projeto tem a identidade dele: aberto pela Agenda (clara) não herda o claro, senão o texto branco some (Sigma #395)
       const k = pjmCores(p); pjmCarregaFontes(); c.className = c.className.replace(/\bpjm-t-\S+/g, '').trim(); c.classList.add('pjm-tela', 'pjm-t-' + ((p.tema || {}).estilo || 'padrao')); c.style.backgroundColor = k.fundo; c.style.color = k.texto; c.append(pjmHero(p, k));
       const topo = elD('div', 'pjm-topo'); topo.style.background = k.fundo; topo.style.color = k.texto; topo.style.borderBottomColor = k.destaque;
       const ic = elD('span', 'pjm-ic'); ic.innerHTML = icone(p.icone || 'doc'); ic.style.color = k.destaque;
