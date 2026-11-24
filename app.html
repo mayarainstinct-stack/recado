@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-23.547">
+<meta name="app-versao" content="2026-11-23.548">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -352,6 +352,7 @@ function parse(md, arq) {
       if (m) { m = [m[0], m[1], m[4], m[6], m[5], m[2], m[3]]; }
       if (m) {
         lidasAte = out.length;
+        const pai = [...out].reverse().find(x => !x._resp);
         let txt = m[3].replace(/\\n/g, '\n');
         const cit = txt.match(RE_CIT);
         if (cit) txt = txt.slice(0, cit.index);
@@ -360,7 +361,8 @@ function parse(md, arq) {
         const ant = out[out.length - 1]; let day = m[5] || (ant ? ant.day : '');
         if (!m[5] && m[6] && ant && ant.time >= '20:00' && m[6] < '04:00') day = diaSeguinte(day);
         const auAg = txt.match(RE_AUDIO), axAg = txt.match(RE_ARQ);
-        out.push({ from: 'lyra', quem: ALIAS_QUEM[m[1].toLowerCase()] || m[1].toLowerCase(), copiar: !!m[2], opcoes: m[4] ? m[4].split('|').map(x => x.trim()).filter(Boolean) : null, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], day, time: m[6] || '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, audio: auAg ? auAg[1] : '', arquivo: axAg ? { caminho: axAg[1], rotulo: axAg[2] || '' } : null, text: auAg ? '' : (f ? f[2] : axAg ? axAg[3] : txt), _linha: i, _raw: line, _extras: [] });   // agente também manda áudio: "↳ Orfeu [hora]: 🎤 recados-audios/x.m4a"
+        out.push({ from: 'lyra', quem: ALIAS_QUEM[m[1].toLowerCase()] || m[1].toLowerCase(), copiar: !!m[2], opcoes: m[4] ? m[4].split('|').map(x => x.trim()).filter(Boolean) : null, foto: f ? f[1] : '', fotos: f ? f[1].split(',').filter(Boolean) : [], day, time: m[6] || '', re: cit ? { nome: cit[1], trecho: cit[2] } : null, audio: auAg ? auAg[1] : '', arquivo: axAg ? { caminho: axAg[1], rotulo: axAg[2] || '' } : null, text: auAg ? '' : (f ? f[2] : axAg ? axAg[3] : txt), _linha: i, _raw: line, _extras: [], _resp: true });
+        if (pai) Object.defineProperty(out[out.length - 1], '_pai', { value: pai });   // agente também manda áudio: "↳ Orfeu [hora]: 🎤 recados-audios/x.m4a"
       } else if (line.trim() && out.length) {
         // Linha solta dentro de "## Recados" que não bate em nenhum padrão conhecido: provavelmente
         // quebra de linha REAL (em vez de "\n" escapado) dentro da mesma mensagem. Em vez de sumir com
@@ -374,7 +376,19 @@ function parse(md, arq) {
     } catch (e) { /* linha ruim: ignora e segue pras próximas, não derruba a conversa toda */ }
   }
   for (let k = 0; k < lidasAte; k++) if (out[k].from === 'may') out[k].lida = true;
-  return out;
+  return ordemCrono(out);
+}
+// Balões em ordem de data e hora (May, 23/11/2026): a "↳" do robô fica embaixo do recado original no arquivo e aparecia acima
+// das mensagens mais novas dela. Só os com dia e hora trocam de lugar entre si; sem hora fica na posição do arquivo; hora igual = ordem do arquivo.
+function ordemCrono(out) {
+  const ts0 = it => /^\d\d:\d\d$/.test(it.time || '') ? tsDe(it) : 0, ts = it => { const t = ts0(it); return t && it._pai ? Math.max(t, ts0(it._pai)) : t; };   // resposta nunca sobe acima do recado que ela responde (dia herdado errado)
+  const pos = [], com = [];
+  out.forEach((it, k) => { if (ts(it)) { pos.push(k); com.push(it); } });
+  com.sort((a, b) => ts(a) - ts(b) || a._linha - b._linha);
+  const res = out.slice(); pos.forEach((k, j) => { res[k] = com[j]; });
+  const bloco = it => it._pai ? it._pai._linha : it._linha;
+  res.forEach((it, k) => { if (it._pai) Object.defineProperty(it, '_solta', { value: k > 0 && bloco(res[k - 1]) !== bloco(it), configurable: true }); });   // separada da conversa dela: mostra a citação do recado-pai
+  return res;
 }
 
 let shown = -1;          // quantos itens já estavam na tela (-1 = primeira carga, sem animação)
@@ -1116,13 +1130,14 @@ function render(items, manterPosicao) {
       nome.append(av, rotulo); el.append(nome);
       nome.style.cursor = 'pointer'; nome.addEventListener('click', e => { e.stopPropagation(); abreCracha(g === EU ? 'may' : it.quem); });
     }
-    if (it.re) {
+    const re = it.re || (it._solta && it._pai ? { nome: nomeCita(it._pai), trecho: trechoDe(it._pai) } : null);
+    if (re) {
       const q = document.createElement('div'); q.className = 'cita';
-      q.style.setProperty('--quem', corDe(it.re.nome));
-      const qn = document.createElement('b'), qg = grupoDeNome(it.re.nome);
+      q.style.setProperty('--quem', corDe(re.nome));
+      const qn = document.createElement('b'), qg = grupoDeNome(re.nome);
       if (qg && qg.foto) { const qa = document.createElement('i'); qa.className = 'cita-av' + (qg === EU ? ' eu' : ''); qa.style.backgroundColor = qg === EU ? 'transparent' : qg.cor; fotoUrl(qg.foto).then(u => { qa.style.backgroundImage = 'url(' + u + ')'; }).catch(() => {}); qn.append(qa); }   // o robozinho de quem foi respondido (May, 05/11/2026)
-      qn.append(String(it.re.nome).replace(/\s*\(PC\d\)\s*$/i, ''));   // sem o PC no nome (May, 05/11/2026)
-      const qt = document.createElement('span'); qt.textContent = String(it.re.trecho).replace(/\*\*|`/g, '');   // sem o markdown cru
+      qn.append(String(re.nome).replace(/\s*\(PC\d\)\s*$/i, ''));   // sem o PC no nome (May, 05/11/2026)
+      const qt = document.createElement('span'); qt.textContent = String(re.trecho).replace(/\*\*|`/g, '');   // sem o markdown cru
       q.append(qn, qt); el.append(q);
     }
     gestoResponder(el, it);
