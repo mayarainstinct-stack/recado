@@ -1,3 +1,4 @@
+// v549 (23/11/2026): Agenda verde-água fofinha de volta (May 23:40): página branca, calendário verde-água/azul-claro de cantos bem redondos e compromissos no visual de 08/11; o bloco de hoje e as próximas folhas (#347) ficam, só que verde-água e arredondados. Só visual: nada de informação nem função saiu.
 // v548 (23/11/2026): Conversa em ordem de data e hora: a "↳" do robô que fica embaixo do recado antigo no arquivo agora aparece depois das mensagens mais novas dela (hora igual = ordem do arquivo; sem hora fica no lugar); solta da conversa, mostra a citação do recado-pai (May 23:3x).
 // v546 (23/11/2026): Cartão Modelo 3D mostra a prévia sozinho: quando entra na tela, um renderer só (fora da tela) tira o retrato 3/4, um modelo por vez, e guarda no aparelho; vale na conversa e na Mídia (May 22:39).
 // v545 (23/11/2026): Máquinas sem o bloco grande de cima ("Minha coleção" + totais): a grade de consoles e PCs abre direto (May 22:29: "só tá atrapalhando").
