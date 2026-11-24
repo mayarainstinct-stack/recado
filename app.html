@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-24.551">
+<meta name="app-versao" content="2026-11-24.552">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -2796,6 +2796,8 @@ function arrumaArrastando(grade, op) {   // op: { sel, chave, aviso } pra usar e
 }
 // ícones ilustrados do Menu (May 07/11 12:47: "refletindo o que tem dentro de cada aba, diferentes mesmo, estranheza"): duas camadas, preenchimento (f1 claro, f2 cheio) e traço, na cor do assunto (Hermes)
 const ICONES_MENU = [
+  [/jogando/i, '<text x="24" y="32" text-anchor="middle" font-size="21" font-weight="900" font-family="Arial Black,Arial,sans-serif" fill="#44EB03" stroke="#024900" stroke-width="1.8" paint-order="stroke">A2</text><path d="M14.5 32.5v5a1.6 1.6 0 0 0 3.2 0v-5M28 32.5v7a1.6 1.6 0 0 0 3.2 0v-7" fill="#44EB03" stroke="#024900" stroke-width="1.4"/><path d="M24 6.5l1.7 3.4 3.7.5-2.7 2.6.7 3.7-3.4-1.8-3.4 1.8.7-3.7-2.7-2.6 3.7-.5z" fill="#F6C709" stroke="#8a5a03" stroke-width=".8"/>'],   // Jogando A2: o A2 verde escorrendo com a estrela (May 24/11/2026: a Mídia virou Jogando A2)
+  [/^jogos/i, '<path d="M12 14h24a8 8 0 0 1 7.7 10.2l-2.4 8.4a4 4 0 0 1-6.8 1.5L31 30H17l-3.5 4.1a4 4 0 0 1-6.8-1.5l-2.4-8.4A8 8 0 0 1 12 14z" fill="#44EB03" stroke="#024900" stroke-width="2.2"/><path d="M16.5 30v6.5a1.7 1.7 0 0 0 3.4 0V30M27.5 30v4a1.5 1.5 0 0 0 3 0v-4" fill="#44EB03" stroke="#024900" stroke-width="1.8"/><path d="M14.5 17h9" stroke="#C4FC1B" stroke-width="1.8" stroke-linecap="round"/><path d="M13 20v6M10 23h6" stroke="#024900" stroke-width="2.6" stroke-linecap="round"/><circle cx="33" cy="20.5" r="2" fill="#05C4F8" stroke="#004787" stroke-width="1"/><circle cx="36.8" cy="24.2" r="2" fill="#05C4F8" stroke="#004787" stroke-width="1"/>'],   // Jogos: controle nas cores do Jogando A2 (May 24/11/2026)
   [/m[uú]sica/i, '<path d="M9 30V22a15 14 0 0 1 30 0v8" fill="none" stroke="#B3140E" stroke-width="3.6" stroke-linecap="round"/><rect x="5" y="22" width="8" height="15" rx="3.5" fill="#E2421A"/><rect x="35" y="22" width="8" height="15" rx="3.5" fill="#E2421A"/><polyline points="14,31 19,31 21,26 24,36 27,20 30,34 32,29 34,29" fill="none" stroke="#FFD60A" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>'],   // Música: o fone do Estúdio JWA com o pulso amarelo (May 13/11 12:35: "kd um ícone legal")
   [/jogo/i, '<path class="f1" d="M11 14h26a8 8 0 0 1 7.7 10.2l-2.6 8.6a4 4 0 0 1-6.9 1.4L30.5 29h-13l-4.7 5.2a4 4 0 0 1-6.9-1.4l-2.6-8.6A8 8 0 0 1 11 14z"/><path d="M13 19v8M9 23h8"/><circle class="f2" cx="33" cy="21" r="2"/><circle class="f2" cx="37" cy="25" r="2"/><rect class="ouro" x="10" y="39" width="28" height="5" rx="2.5"/>'],
   [/m[aá]quina|console/i, '<rect class="f1" x="5" y="8" width="14" height="32" rx="2"/><path d="M8 14h8M8 19h8"/><circle class="f2" cx="12" cy="33" r="2"/><path class="f1" d="M24 26h16a5 5 0 0 1 4.8 6.4l-1.4 4.6a3 3 0 0 1-5.1 1L35.5 35h-7l-2.8 3a3 3 0 0 1-5.1-1l-1.4-4.6A5 5 0 0 1 24 26z"/><path d="M27 30v4M25 32h4"/><path d="M28 10l6 6 6-6"/>'],
@@ -2841,7 +2843,7 @@ function vesteBotao(b, nome) {
   const k = (BOTAO_DE.find(([re]) => re.test(nome)) || [])[1]; if (!k) return;
   b.classList.add('bt-' + k);
   if (ICONE_LIMPO[k]) b.querySelector('.ic').innerHTML = '<svg class="lp" viewBox="0 0 24 24" aria-hidden="true">' + ICONE_LIMPO[k] + '</svg>';
-  if (k === 'musica') b.querySelector('.ic').innerHTML = iconeMenu(nome);   // Música: o fone do Estúdio JWA colorido (May 13/11 12:35), não o ícone de traço
+  if (k === 'musica' || k === 'jogos') b.querySelector('.ic').innerHTML = iconeMenu(nome);   // Jogos: o controle colorido do Jogando A2 (May 24/11/2026)   // Música: o fone do Estúdio JWA colorido (May 13/11 12:35), não o ícone de traço
   if (k === 'contas') {   // no lugar do desenho, o número de verdade (a Finanças não: ícone simples, sem conta, May 08/11 14:48), que nem painel (lido da planilha dela)
     const ic = b.querySelector('.ic'); ic.className = 'ic mini'; ic.replaceChildren();
     lerArquivo('contas/pendencias.json').then(t => {
@@ -2877,7 +2879,7 @@ const subTx = t => maiusc(t).split(' · ').map(x => x.replace(/ /g, ' ')).join(
 let iconeTela = '', iconeTelaHtml = '';
 function icDoMenu(nome) {   // o desenho que o azulejo do Menu usa pra esse nome (o mesmo do vesteBotao/botaoGrade)
   const k = (BOTAO_DE.find(([re]) => re.test(nome)) || [])[1];
-  if (k && k !== 'musica' && ICONE_LIMPO[k]) return '<svg class="lp" viewBox="0 0 24 24" aria-hidden="true">' + ICONE_LIMPO[k] + '</svg>';
+  if (k && k !== 'musica' && k !== 'jogos' && ICONE_LIMPO[k]) return '<svg class="lp" viewBox="0 0 24 24" aria-hidden="true">' + ICONE_LIMPO[k] + '</svg>';
   return iconeMenu(nome) || '';
 }   // ícone do item do Menu aberto: toda tela tem o quadrado do ícone no topo, igual ao do Menu (Sigma #348, 17/11)
 function cabecalho({ icone: ic, sub, acao } = {}) {
