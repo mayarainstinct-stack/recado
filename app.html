@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-24.552">
+<meta name="app-versao" content="2026-11-24.553">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -7083,7 +7083,8 @@ function abreProjetosMay(m) {
           if (x.whats) { const a = elD('a', 'pjm-bt', x.rotulo); a.href = 'https://wa.me/' + x.whats; a.target = '_blank'; a.rel = 'noopener'; pinta2(a); return; }
           if (x.compartilhar) { const b = elD('button', 'pjm-bt', x.rotulo); b.type = 'button'; b.onclick = async () => { try { if (navigator.share) await navigator.share({ url: x.compartilhar, title: p.nome }); else { await navigator.clipboard.writeText(x.compartilhar); showNote('Link copiado.'); } } catch (e) {} }; pinta2(b); return; }
           if (x.arquivo) { const b = elD('button', 'pjm-bt', x.rotulo); b.type = 'button'; b.onclick = async () => { const t0 = b.textContent; b.textContent = 'Baixando...'; b.disabled = true; try { const r = await api(apiDe(x.arquivo), { ...RAW, tempo: 120000 }); if (!r.ok) throw 0; const u = URL.createObjectURL(await r.blob()), a = elD('a'); a.href = u; a.download = x.arquivo.split('/').pop(); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 60000); } catch (e) { showNote('Não baixou: confere a internet.', true); } b.textContent = t0; b.disabled = false; }; pinta2(b); return; }
-          if (x.link) { const a = elD('a', 'pjm-bt', x.rotulo); a.href = x.link; a.target = '_blank'; a.rel = 'noopener'; pinta2(a); }
+          if (x.abrir) { const a = elD('button', 'pjm-bt', x.rotulo); a.type = 'button'; a.onclick = () => abreItemMenu({ nome: x.rotulo, tipo: x.tipo || 'imagens', arq: x.abrir, estilo: x.estilo || '' }); pinta2(a); }   // botão que abre uma tela do app por dentro do projeto (Jogando A2: controles, animações, vídeos e marca; May 24/11/2026)
+          else if (x.link) { const a = elD('a', 'pjm-bt', x.rotulo); a.href = x.link; a.target = '_blank'; a.rel = 'noopener'; pinta2(a); }
           else { const s = elD('span', 'pjm-bt off'); s.append(elD('b', '', x.rotulo), elD('small', '', x.motivo || 'Ainda sem link')); bt.append(s); }
         });
         { const be = elD('button', 'pjm-bt sec', 'Editar'); be.type = 'button'; be.style.borderColor = k.destaque; be.onclick = lp.onclick; bt.append(be); corpo.append(bt); }   // principal embaixo à direita, Editar à esquerda

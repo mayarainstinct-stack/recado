@@ -1,3 +1,4 @@
+// v553 (24/11/2026): Jogando A2 sai do menu e vira o projeto do canal todo em Projetinhos; botão de projeto abre tela do app (controles e animações, vídeos, marca).
 // v552 (24/11/2026): Mídia virou Jogando A2 (controles, animações, vídeos e marca); ícones com a cara da marca no Jogando A2 e nos Jogos.
 // v551 (24/11/2026): Financeiro numa tela só (fonte única contas/financas.json, sem planilha), com cara de app no celular; ícone de carteira; barra de cima com o ícone do Menu em todas as telas.
 // v550 (23/11/2026): Finanças com cara de planilha de novo (May 23:43): faixa verde do Excel, abas de planilha, tabela com cabeçalho parado, linhas zebradas, valor à direita com 2 casas, total do mês no rodapé e totais gerais na barra de baixo; sem o cabeçalho do cupom e sem o valor repetido na linha (#435). Dados e funções iguais.
