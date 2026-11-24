@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-23.543">
+<meta name="app-versao" content="2026-11-23.544">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-20.539"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-23.544"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -920,6 +920,118 @@ function cartaoArquivo(a) {
   if (!EXT_MUSICA.test(a.caminho)) return b;
   const w = elD('div', 'arq-musica'), pl = playerAudio(a.caminho), mc = pl.querySelector('.mic-av'); if (mc) mc.innerHTML = icone('headphones'); w.append(pl, b); return w;   // música: toca ali mesmo e ainda dá pra baixar
 }
+// Modelo 3D (v544, 23/11/2026): "🧊 caminho.stl" (ou .3mf, relativo ao Inst) vira cartão no balão; tocar abre o visualizador em tela cheia.
+// O three.js só baixa na 1ª vez que abre um modelo (jsdelivr, versão fixa); a miniatura fica guardada depois da 1ª abertura.
+const RE_MODELO = /🧊\s*(\S+\.(?:stl|3mf))/gi;
+const ehModelo3d = a => /\.(stl|3mf)$/i.test(a || '');
+const modelosDe = t => [...String(t || '').matchAll(RE_MODELO)].map(m => m[1]);
+const TRES = 'https://cdn.jsdelivr.net/npm/three@0.160.0';
+let tresP = null;
+const carregaTres = () => tresP || (tresP = Promise.all([import(TRES + '/+esm'), import(TRES + '/examples/jsm/controls/OrbitControls.js/+esm'), import(TRES + '/examples/jsm/loaders/STLLoader.js/+esm')]).then(([T, oc, sl]) => ({ T, OrbitControls: oc.OrbitControls, STLLoader: sl.STLLoader })).catch(e => { tresP = null; throw e; }));
+const modeloBuf = {};
+function baixaModelo(path) {
+  return modeloBuf[path] || (modeloBuf[path] = fotoDoCache(path).then(buf => buf || api(apiDe(path), { ...RAW, cache: 'default', tempo: 120000 })
+    .then(r => { if (!r.ok) { const e = new Error('modelo ' + r.status); e.status = r.status; throw e; } return r.arrayBuffer(); })
+    .then(b => { guardaFoto(path, b); return b; })).catch(e => { delete modeloBuf[path]; throw e; }));
+}
+const miniKey = p => 'mini3d:' + p;
+function cartaoModelo(path) {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'm3d-cartao';
+  const vis = elD('span', 'm3d-mini'), mini = store.get(miniKey(path));
+  if (mini) vis.style.backgroundImage = 'url(' + mini + ')';
+  else vis.innerHTML = '<svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.8 20.5 7.5v9L12 21.2 3.5 16.5v-9z"/><path d="M3.5 7.5 12 12.2l8.5-4.7M12 12.2v9"/></svg>';
+  const tx = elD('span', 'm3d-tx'); tx.append(elD('b', '', 'Modelo 3D'), elD('small', '', path.split('/').pop()), elD('small', 'm3d-dica', 'Toque pra girar e dar zoom'));
+  b.append(vis, tx);
+  b.addEventListener('click', e => { e.stopPropagation(); abreModelo(path, vis); });
+  return b;
+}
+async function abreModelo(path, visCartao) {
+  const z = elD('div', 'm3d'), palco = elD('div', 'm3d-palco'), barra = elD('div', 'm3d-barra'), nome = elD('span', 'm3d-nome', path.split('/').pop());
+  const cam = document.createElement('button'); cam.type = 'button'; cam.className = 'm3d-bt'; cam.textContent = 'Camadas'; cam.setAttribute('aria-pressed', 'false'); cam.disabled = true;
+  const cen = document.createElement('button'); cen.type = 'button'; cen.className = 'm3d-bt'; cen.textContent = 'Centralizar'; cen.disabled = true;
+  const x = document.createElement('button'); x.type = 'button'; x.className = 'm3d-x'; x.innerHTML = icone('close'); x.setAttribute('aria-label', 'Fechar');
+  const st = elD('div', 'm3d-st', 'Carregando o modelo…');
+  barra.append(nome, cam, cen, x); z.append(palco, barra, st); document.body.append(z);
+  let vivo = true, limpa = () => {};
+  const fecha = () => { if (!vivo) return; vivo = false; document.removeEventListener('keydown', esc); limpa(); z.classList.add('saindo'); setTimeout(() => z.remove(), 220); };
+  const esc = e => { if (e.key === 'Escape') fecha(); };
+  document.addEventListener('keydown', esc); x.onclick = e => { e.stopPropagation(); fecha(); };
+  try {
+    const [L, buf] = await Promise.all([carregaTres(), baixaModelo(path)]);
+    if (!vivo) return;
+    const { T, OrbitControls, STLLoader } = L;
+    const escuro = document.body.classList.contains('na-geral') || matchMedia('(prefers-color-scheme: dark)').matches;
+    const fundo = getComputedStyle(document.body).getPropertyValue('--bg').trim() || (escuro ? '#121419' : '#F2F5F3');
+    z.classList.toggle('escuro', escuro); z.style.background = fundo;
+    const r = new T.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+    r.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); r.outputColorSpace = T.SRGBColorSpace;
+    palco.append(r.domElement);
+    const cena = new T.Scene(); cena.background = new T.Color(fundo);
+    const camera = new T.PerspectiveCamera(40, 1, 0.1, 100000);
+    cena.add(new T.HemisphereLight(0xffffff, escuro ? 0x2a2f38 : 0xb8c4cc, escuro ? 1.6 : 1.9));
+    const sol = new T.DirectionalLight(0xffffff, 1.6); cena.add(sol);
+    const rebate = new T.DirectionalLight(0xffffff, 0.55); cena.add(rebate);
+    let malhas = [];
+    if (/\.3mf$/i.test(path)) {
+      const { ThreeMFLoader } = await import(TRES + '/examples/jsm/loaders/3MFLoader.js/+esm');
+      const g = new ThreeMFLoader().parse(buf); g.updateMatrixWorld(true);
+      g.traverse(o => { if (o.isMesh) { let gg = o.geometry.clone().applyMatrix4(o.matrixWorld); if (gg.index) gg = gg.toNonIndexed(); gg.deleteAttribute('normal'); gg.computeVertexNormals(); malhas.push(gg); } });
+    } else malhas = [new STLLoader().parse(buf)];
+    if (!vivo) return;
+    if (!malhas.length) throw new Error('vazio');
+    const mat = new T.MeshStandardMaterial({ color: escuro ? 0xd9dde3 : 0xc9ced6, roughness: 0.55, metalness: 0.05, side: T.DoubleSide });
+    const matCam = new T.MeshStandardMaterial({ roughness: 0.6, metalness: 0, side: T.DoubleSide });
+    matCam.onBeforeCompile = sh => {   // Camadas: cor pela altura em 24 faixas (azul embaixo, vermelho em cima), pintada por pixel
+      sh.uniforms.uFaixa = { value: alto / 24 };
+      sh.vertexShader = 'varying float vAlt;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\nvAlt = (modelMatrix * vec4(transformed, 1.0)).y;');
+      sh.fragmentShader = 'varying float vAlt;\nuniform float uFaixa;\nvec3 hsl(float h, float s, float l) { vec3 k = clamp(abs(mod(h * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0); return l + s * (k - 0.5) * (1.0 - abs(2.0 * l - 1.0)); }\n' + sh.fragmentShader.replace('#include <color_fragment>', '#include <color_fragment>\nfloat kk = clamp(floor(vAlt / uFaixa), 0.0, 23.0);\ndiffuseColor.rgb = hsl(0.66 - 0.66 * kk / 23.0, 0.75, mod(kk, 2.0) > 0.5 ? 0.5 : 0.6);');
+    };
+    const grupo = new T.Group();
+    malhas.forEach(g => { g.rotateX(-Math.PI / 2); if (!g.attributes.normal) g.computeVertexNormals(); grupo.add(new T.Mesh(g, mat)); });
+    const caixa = new T.Box3().setFromObject(grupo), centro = caixa.getCenter(new T.Vector3()), tam = caixa.getSize(new T.Vector3());
+    grupo.position.set(-centro.x, -caixa.min.y, -centro.z); cena.add(grupo);
+    const alto = tam.y || 1, raio = Math.max(tam.length() / 2, 1e-3);
+    const lado = Math.max(tam.x, tam.z, alto * 0.5) * 2.4;
+    const grade = new T.GridHelper(lado, 24, escuro ? 0x3a414c : 0xb4bec6, escuro ? 0x262b33 : 0xd6dde2);
+    grade.material.transparent = true; grade.material.opacity = 0.7; cena.add(grade);
+    const sombra = new T.Mesh(new T.CircleGeometry(Math.max(tam.x, tam.z) * 0.62, 48), new T.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: escuro ? 0.35 : 0.12, depthWrite: false }));
+    sombra.rotation.x = -Math.PI / 2; sombra.position.y = alto * 0.001; cena.add(sombra);
+    const ctl = new OrbitControls(camera, r.domElement);
+    ctl.enableDamping = true; ctl.dampingFactor = 0.12; ctl.screenSpacePanning = true; ctl.touches = { ONE: T.TOUCH.ROTATE, TWO: T.TOUCH.DOLLY_PAN };
+    ctl.minDistance = raio * 0.2; ctl.maxDistance = raio * 20;
+    const enquadra = () => {
+      const alvo = new T.Vector3(0, alto / 2, 0), dist = raio / Math.sin(T.MathUtils.degToRad(camera.fov / 2)) * (camera.aspect < 1 ? 1.05 / Math.max(camera.aspect, 0.45) : 1.05);
+      camera.position.copy(alvo).add(new T.Vector3(0.9, 0.7, 1.2).normalize().multiplyScalar(dist)); camera.near = dist / 200; camera.far = dist * 50; camera.updateProjectionMatrix();
+      ctl.target.copy(alvo); ctl.update();
+    };
+    const ajusta = () => { const w = palco.clientWidth || innerWidth, h = palco.clientHeight || innerHeight; r.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); };
+    ajusta(); enquadra();
+    let quadro = 0;
+    const roda = () => {
+      if (!vivo) return; quadro = requestAnimationFrame(roda); ctl.update();
+      sol.position.copy(camera.position).add(new T.Vector3(raio, raio * 2, raio)); rebate.position.copy(camera.position).multiplyScalar(-1);
+      r.render(cena, camera);
+    };
+    roda();
+    const ro = new ResizeObserver(ajusta); ro.observe(palco);
+    limpa = () => { cancelAnimationFrame(quadro); ro.disconnect(); ctl.dispose(); malhas.forEach(g => g.dispose()); mat.dispose(); matCam.dispose(); r.dispose(); r.forceContextLoss && r.forceContextLoss(); };
+    st.remove(); cam.disabled = false; cen.disabled = false;
+    cam.onclick = e => { e.stopPropagation(); const on = cam.getAttribute('aria-pressed') !== 'true'; grupo.children.forEach(m => { m.material = on ? matCam : mat; }); cam.setAttribute('aria-pressed', on); };
+    cen.onclick = e => { e.stopPropagation(); enquadra(); };
+    if (!store.get(miniKey(path))) requestAnimationFrame(() => requestAnimationFrame(() => {   // miniatura do cartão: 1ª abertura tira um retrato pequeno
+      try {
+        if (!vivo) return; const c = document.createElement('canvas'), s = r.domElement, l = Math.min(s.width, s.height); c.width = c.height = 128;
+        c.getContext('2d').drawImage(s, (s.width - l) / 2, (s.height - l) / 2, l, l, 0, 0, 128, 128);
+        const u = c.toDataURL('image/jpeg', 0.8); store.set(miniKey(path), u);
+        if (visCartao) { visCartao.innerHTML = ''; visCartao.style.backgroundImage = 'url(' + u + ')'; }
+      } catch (er) {}
+    }));
+  } catch (e) {
+    if (!vivo) return;
+    st.textContent = e.status === 404 ? 'Esse modelo não está mais no repositório.' : e.status ? msgErro(e, 'abrir o modelo') : /import|module|fetch/i.test(String(e && e.message)) ? 'Não deu pra baixar o visualizador 3D. Confere a internet e tenta de novo.' : 'Não consegui ler esse arquivo 3D.';
+    st.classList.add('erro');
+  }
+}
 function render(items, manterPosicao) {
   renderizando = true; setTimeout(() => { renderizando = false; }, 100);
   // áudio tocando (ou baixando depois do toque) passa inteiro pro balão novo: tirar e pôr de volta na mesma tarefa não pausa.
@@ -1055,6 +1167,8 @@ function render(items, manterPosicao) {
       el.append(img);
     }
     if (it.arquivo) el.append(cartaoArquivo(it.arquivo));
+    const mods = modelosDe(it.text), txtV = mods.length ? it.text.replace(RE_MODELO, '').replace(/\n{3,}/g, '\n\n').trim() : it.text;
+    mods.forEach(mp => el.append(cartaoModelo(mp)));
     if (it.audio) {
       // áudio só baixa no play (05/11/2026): antes cada redesenho da conversa baixava todos; já baixado = player direto
       const pl = vivos[it.audio] || playerAudio(it.audio); delete vivos[it.audio]; el.append(pl);
@@ -1063,12 +1177,12 @@ function render(items, manterPosicao) {
       if (it.transcricao || it.from === 'may') el.append(tr);   // quem transcreve é a Lyra, só o áudio dela; o de agente ficava "transcrevendo…" pra sempre
     }
     const t = document.createElement('div'); t.className = 'txt';
-    const altsB = it.from !== 'may' && RE_PERG.test(it.text || '') ? alternativasDe(it.text) : [];
+    const altsB = it.from !== 'may' && RE_PERG.test(txtV || '') ? alternativasDe(txtV) : [];
     if (altsB.length >= 2) {   // pergunta com alternativas: texto + lista limpa (sem o * da recomendada) (Sigma, 06/11/2026 19:29)
-      const m0 = it.text.match(/(?:^|[\s(:;])a\)\s/i); linkar(t, it.text.slice(0, m0 ? m0.index : undefined).trim());
+      const m0 = txtV.match(/(?:^|[\s(:;])a\)\s/i); linkar(t, txtV.slice(0, m0 ? m0.index : undefined).trim());
       const ul = document.createElement('ol'); ul.className = 'perg-alts'; altsB.forEach(([l, x]) => { const li = document.createElement('li'); li.dataset.l = l + ')'; li.textContent = x.replace(/^\*\s*/, ''); ul.append(li); }); t.append(ul);
-    } else linkar(t, it.text);
-    if (it.text) el.append(t);
+    } else linkar(t, txtV);
+    if (txtV) el.append(t);
     if (FILE === GERAL.arq && altsB !== null && it.from !== 'may' && RE_PERG.test(it.text || '') && fixasI.includes(i)) { const rb = document.createElement('button'); rb.type = 'button'; rb.className = 'perg-abre'; rb.textContent = 'Responder a pergunta'; rb.onclick = (e) => { e.stopPropagation(); fixaPopVista.delete(chaveDe(it)); render(lastItems, true); }; el.append(rb); }
     if (it.text && !it.copiar) {
       // Setinha no canto (igual WhatsApp) em toda mensagem com texto: toca e abre menu com "Copiar".
@@ -5544,7 +5658,7 @@ function abreImagens(m) {
     tipos.forEach(tp => { if (tipos.length > 1) c.append(elD('h3', 'midia-tipo', tp)); d.grupos.filter(g => (g.tipo || 'Outras') === tp).forEach(g => {
       if (!g.imagens.length) return;
       const el = document.createElement('div'); el.className = 'item';
-      el.append(fotoDe({ nome: g.nome, foto: g.capa || g.imagens[0].arq }, { icone: m.icone }, false));   // capa: opcional no json
+      el.append(fotoDe({ nome: g.nome, foto: g.capa || (g.imagens.find(x => !ehModelo3d(x.arq)) || {}).arq || '' }, { icone: m.icone }, false));   // capa: opcional no json
       const b = document.createElement('div'); b.className = 'i-corpo';
       const h = document.createElement('h3'); h.textContent = g.nome; b.append(h);
       const n = document.createElement('div'); n.className = 'det'; n.textContent = g.imagens.length + (g.imagens.length > 1 ? ' imagens' : ' imagem'); b.append(n);
@@ -5591,7 +5705,7 @@ function estudio(c, gs, m, p) {
   if (!gs.length) return;
   const [g0, ...resto] = gs;
   const hero = document.createElement('div'); hero.className = 'estudio-hero';
-  const hi = document.createElement('img'); hi.alt = ''; hero.append(hi); img(g0.capa || g0.imagens[0].arq, hi);
+  const hi = document.createElement('img'); hi.alt = ''; hero.append(hi); img(g0.capa || (g0.imagens.find(x => !ehModelo3d(x.arq)) || g0.imagens[0]).arq, hi);
   const leg = document.createElement('div'); leg.className = 'leg';
   const chip = document.createElement('span'); chip.className = 'chip'; chip.textContent = 'MAIS NOVA'; leg.append(chip);
   const h = document.createElement('h2'); h.textContent = g0.nome; leg.append(h);
@@ -5601,7 +5715,7 @@ function estudio(c, gs, m, p) {
   resto.forEach(g => {
     const t = document.createElement('button'); t.type = 'button'; t.className = 'estudio-tile';
     const cp = document.createElement('div'); cp.className = 'cp';
-    const im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; cp.append(im); img(g.capa_fixa || g.capa || g.imagens[0].arq, im);
+    const im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; cp.append(im); img(g.capa_fixa || g.capa || (g.imagens.find(x => !ehModelo3d(x.arq)) || g.imagens[0]).arq, im);
     const q = document.createElement('span'); q.className = 'qtd'; q.textContent = g.imagens.length; cp.append(q);
     const h3 = document.createElement('h3'); h3.textContent = g.nome;
     t.append(cp, h3); t.onclick = () => abreAlbum(g, m); grade.append(t);
@@ -5623,11 +5737,11 @@ function abreVideos(m) {
       const cp = document.createElement('div'); cp.className = 'cine-capa';
       const im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; cp.append(im);
       if (v.capa) fotoUrl(v.capa, true).then(u => { im.src = u; }).catch(() => {});
-      const pl = document.createElement('span'); pl.className = 'play'; cp.append(pl);
+      const m3 = ehModelo3d(v.arq), pl = document.createElement('span'); pl.className = m3 ? 'm3d-ic' : 'play'; if (m3) { pl.textContent = '3D'; el.style.width = '100%'; const mi = store.get(miniKey(v.arq)); if (mi && !v.capa) { im.src = mi; im.style.objectFit = 'contain'; } } cp.append(pl);
       if (v.duracao) { const du = document.createElement('span'); du.className = 'dur'; du.textContent = v.duracao; cp.append(du); }
       const h = document.createElement('h3'); h.textContent = v.titulo;
       const n = document.createElement('div'); n.className = 'det'; n.textContent = [v.versao || v.nota, v.versoes && v.versoes.length ? (v.versoes.length + 1) + ' versões' : ''].filter(Boolean).join(' · ');
-      el.append(cp, h, n); el.onclick = () => abreVideo(v);
+      el.append(cp, h, n); el.onclick = () => m3 ? abreModelo(v.arq) : abreVideo(v);
       const wr = elD('div', 'cine-wrap'); wr.append(el, edMini('note', 'Editar vídeo', () => editaV(v))); c.append(wr);
     });
   });
@@ -5680,6 +5794,11 @@ function abreAlbum(g, m) {
     const grade = elD('div', 'album-grade'); c.append(grade);   // #292 (May 01:20): foto em pé vai 2 por linha, lado a lado
     const pares = () => { const pe = [...grade.children].filter(x => x.classList.contains('em-pe')); pe.forEach(x => x.classList.remove('so')); if (pe.length % 2) pe[pe.length - 1].classList.add('so'); requestAnimationFrame(() => [...grade.children].forEach(x => { const f = x.querySelector('.ph'); if (f) x.style.setProperty('--lapis-r', Math.max(10, x.getBoundingClientRect().right - f.getBoundingClientRect().right - 12) + 'px'); })); };   // o lápis no canto da moldura, não do cartão (Sigma 01:52)   // lado a lado só 2 em pé; a que sobra sozinha ocupa a linha inteira (May 01:49)
     g.imagens.forEach(im => {
+      if (ehModelo3d(im.arq)) {   // Modelo 3D na Mídia: o mesmo cartão da conversa, tocar abre o visualizador
+        const el = elD('div', 'item m3d-item'); el.append(cartaoModelo(im.arq));
+        const b = elD('div', 'i-corpo'); b.append(elD('h3', '', im.titulo || im.arq.split('/').pop())); if (im.nota) b.append(elD('div', 'det', im.nota));
+        el.append(b, edMini('note', 'Editar imagem', () => editaIm(im))); el.onclick = () => abreModelo(im.arq); grade.append(el); return;
+      }
       fotoUrl(im.arq).then(u => fetch(u)).then(r => r.blob()).then(bl => { prontos[im.arq] = new File([bl], im.arq.split('/').pop(), { type: bl.type || tipoDe(im.arq) }); }).catch(() => {});
       const el = document.createElement('div'); el.className = 'item';
       const ph = fotoDe({ nome: im.titulo, foto: im.arq }, { icone: m.icone }, false); ph.dataset.zoomFoto = '1'; el.append(ph);
