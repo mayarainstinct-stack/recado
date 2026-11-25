@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.582">
+<meta name="app-versao" content="2026-11-25.583">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.582"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.583"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3927,7 +3927,7 @@ function abreMusica(m) {
           corpo.append(a);
         });
       } else if (aba === 'pratica') {   // tocar 2x por semana e anotar (May 13/11 18:53): instrumento, o que usou e uma nota; conta a semana de segunda a domingo
-        const inst = vivos('setup').filter(x => x.tipo === 'guitarra' || /viol[aã]o|baixo|guitarra|telecaster/i.test(x.nome)), equip = vivos('setup').filter(x => ['amp', 'pedal', 'interface', 'mic', 'teclas'].includes(x.tipo));
+        const inst = vivos('setup').filter(x => !x.bloqueado && (x.tipo === 'guitarra' || /viol[aã]o|baixo|guitarra|telecaster/i.test(x.nome))), equip = vivos('setup').filter(x => ['amp', 'pedal', 'interface', 'mic', 'teclas'].includes(x.tipo));
         const daQ = t => { const m = String(t || '').match(/^(\d\d)\/(\d\d)\/(\d{4})(?: (\d\d):(\d\d))?/); return m ? new Date(+m[3], m[2] - 1, +m[1], +(m[4] || 0), +(m[5] || 0)) : null; };
         const seg = new Date(); seg.setHours(0, 0, 0, 0); seg.setDate(seg.getDate() - ((seg.getDay() + 6) % 7));
         const vezes = vivos('pratica').map(x => Object.assign({ _d: daQ(x.quando) }, x)).filter(x => x._d).sort((a, b) => b._d - a._d), semana = vezes.filter(x => x._d >= seg).length, meta = +(d.meta_pratica || 2);
@@ -3942,7 +3942,7 @@ function abreMusica(m) {
           if (x.nota) tx.append(elD('p', 'tm-pr-nota', x.nota));
           const ed = edMini('note', 'Editar', () => formPratica(x, inst, equip)); ed.classList.add('tm-ed'); a.append(sl, tx, ed); corpo.append(a); });
       } else if (aba === 'manut') {   // manutenção dos instrumentos (May 13/11 12:36, layout 13:00): cada um com o desenho dele e 3 cuidados em quadros (cordas, regulagem, limpeza) com quantos dias faltam; datas começam vazias (nada inventado), intervalo é sugestão editável. Estúdio JWA fase 1 (25/11): abas Vitrine, Cuidados e Histórico, cuidado personalizado, giro com pausa e velocidade
-        const SERV = [['cordas', 'Cordas', 60], ['regulagem', 'Regulagem', 180], ['limpeza', 'Limpeza', 30]], inst = vivos('setup').filter(x => x.tipo === 'guitarra' || /viol[aã]o|baixo|guitarra|telecaster/i.test(x.nome)), hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+        const SERV = [['cordas', 'Cordas', 60], ['regulagem', 'Regulagem', 180], ['limpeza', 'Limpeza', 30]], inst = vivos('setup').filter(x => !x.bloqueado && (x.tipo === 'guitarra' || /viol[aã]o|baixo|guitarra|telecaster/i.test(x.nome))), hoje = new Date(); hoje.setHours(0, 0, 0, 0);
         const daData = t => { const m = String(t || '').match(/^(\d\d)\/(\d\d)\/(\d{4})/); return m ? new Date(+m[3], m[2] - 1, +m[1]) : null; }, br = d => String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
         const achaReg = (l, x, sv) => l.find(y => y.secao === 'manut' && y.instrumento === x.id && y.servico === sv && !y.apagado);
         const servicos = x => SERV.concat(d.itens.filter(y => y.secao === 'manut' && y.instrumento === x.id && /^pers-/.test(y.servico || '') && !y.apagado).map(y => [y.servico, y.nome || 'Cuidado', +y.cada_dias || 30, y]));
@@ -3998,14 +3998,14 @@ function abreMusica(m) {
           pa.append(ul); miolo.append(pa);
         };
         const vitrine = () => {
-          const vit = vivos('setup').filter(x => x.png); if (!vit.length) { miolo.append(elD('div', 'tm-vazio', 'Nenhum instrumento com foto ainda.')); return; }
+          const vit = vivos('setup').filter(x => x.png).map((x, i) => [x, i]).sort((a, b) => (a[0].ordem || 99) - (b[0].ordem || 99) || a[1] - b[1]).map(a => a[0]);   // #449 (May 25/11 08:31): ordem do quarto pelo campo ordem if (!vit.length) { miolo.append(elD('div', 'tm-vazio', 'Nenhum instrumento com foto ainda.')); return; }
           let sel = vit.findIndex(x => x.id === store.get('mus-vit')); if (sel < 0) sel = Math.max(0, vit.findIndex(x => inst.includes(x)));
           const PEDS = [['vitrine', 'Vitrine'], ['palco', 'Palco'], ['vinil', 'Vinil'], ['case', 'Case']], ped = PEDS.some(p => p[0] === d.pedestal) ? d.pedestal : 'vitrine', VEL = [['lenta', 'Devagar', .05, 1500], ['media', 'Médio', .1, 1000], ['rapida', 'Rápido', .18, 650]], G = Object.assign({ vel: 'lenta', pausado: false }, d.giro || {});
           const tem3d = window.CSS && CSS.supports && (CSS.supports('transform-style', 'preserve-3d') || CSS.supports('-webkit-transform-style', 'preserve-3d')), modo3d = tem3d && !reduz && store.get('mus-vit-2d') !== '1';
           const palco = elD('div', 'tv-palco ped-' + ped + (modo3d ? ' tv-3d' : ' tv-2d')), luz = elD('i', 'tv-luz'), base = elD('i', 'tv-ped'), cena = elD('div', 'tv-cena'), anel = elD('div', 'tv-anel'), cartao = elD('div', 'tv-cartao ped-' + ped);
-          const itens = vit.map((x, i) => { const it = elD('button', 'tv-item'), im = elD('img'); it.type = 'button'; it.setAttribute('aria-label', x.nome); im.alt = ''; im.decoding = 'async'; im.draggable = false; it.w = 56; im.onload = () => { const w = Math.max(44, Math.min(150, im.naturalWidth / im.naturalHeight * 162)); it.w = w; it.style.width = w + 'px'; it.style.left = (-w / 2) + 'px'; if (reduz) try { pos(performance.now()); } catch (e) {} }; fotoUrl(x.png).then(u => { im.src = u; }).catch(() => {}); it.append(im); it.onclick = () => { if (arrastou) return; vai(i); }; anel.append(it); return it; });
+          const itens = vit.map((x, i) => { const it = elD('button', 'tv-item'), im = elD('img'); it.type = 'button'; it.setAttribute('aria-label', x.nome); im.alt = ''; im.decoding = 'async'; im.draggable = false; it.w = 56; im.onload = () => { const w = Math.max(60, Math.min(230, im.naturalWidth / im.naturalHeight * 255)); it.w = w; it.style.width = w + 'px'; it.style.left = (-w / 2) + 'px'; if (reduz) try { pos(performance.now()); } catch (e) {} }; fotoUrl(x.png).then(u => { im.src = u; }).catch(() => {}); it.append(im); it.onclick = () => { if (arrastou) return; vai(i); }; anel.append(it); return it; });
           const ant = elD('button', 'tv-seta tv-ant', '‹'), prx = elD('button', 'tv-seta tv-prx', '›'); ant.type = prx.type = 'button'; ant.setAttribute('aria-label', 'Anterior'); prx.setAttribute('aria-label', 'Próximo'); ant.onclick = () => vai(sel - 1); prx.onclick = () => vai(sel + 1);
-          cena.append(anel); palco.append(luz, base, cena, ant, prx);
+          cena.append(anel); palco.append(luz, base, cena, ant, prx); [palco, cena].forEach(e => e.addEventListener('scroll', () => { e.scrollLeft = 0; e.scrollTop = 0; }));   // foco num instrumento rolava o palco de lado
           const ctrl = elD('div', 'tv-ctrl'), bP = elD('button', 'tv-ct tv-pausa'), bV = elD('button', 'tv-ct tv-vel'), b2 = elD('button', 'tv-ct tv-2dbt'), bPed = elD('button', 'tv-ct tv-pedbt'); bP.type = bV.type = b2.type = bPed.type = 'button';
           const rotulo = (b, r, v) => { b.replaceChildren(elD('small', '', r), elD('b', '', v)); b.setAttribute('aria-label', r + ': ' + v); };
           const pintaCtrl = () => { bP.textContent = G.pausado ? '▶ Balançar' : '❚❚ Pausar'; bP.setAttribute('aria-pressed', String(!!G.pausado)); rotulo(bV, 'Velocidade', (VEL.find(v => v[0] === G.vel) || VEL[0])[1]); rotulo(b2, 'Modo', modo3d ? '3D' : '2D'); rotulo(bPed, 'Pedestal', (PEDS.find(p => p[0] === ped) || PEDS[0])[1]); };
@@ -4020,13 +4020,13 @@ function abreMusica(m) {
           let p = sel, alvo = sel, pausaAte = 0, ultimo = performance.now(), fase = 0, quadro = 0, arrastou = false, mostrado = -1, dedo = false;
           const solta2 = () => { if (dedo) { dedo = false; pausaAte = performance.now() + 6000; } };
           cartao.addEventListener('pointerdown', () => { dedo = true; pausaAte = performance.now() + 6000; }); ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => cartao.addEventListener(ev, solta2));
-          const pintaCartao = () => { if (mostrado === sel) return; const ia = mostrado; mostrado = sel; const x = vit[sel]; store.set('mus-vit', x.id); pintaFixo(); const jan = cartao.querySelector('.tv-c-jan') || cartao.appendChild(elD('div', 'tv-c-jan')), velho = jan.querySelector('.tv-c-in'), novo = elD('div', 'tv-c-in'), tp = elD('div', 'tv-c-topo'), tt = elD('div'); tt.append(elD('small', 'tv-c-rot', ped === 'case' ? 'Turnê JWA · ' + String(sel + 1).padStart(2, '0') : ped === 'palco' ? 'Setlist · ' + String(sel + 1).padStart(2, '0') : String(sel + 1).padStart(2, '0') + ' de ' + String(N).padStart(2, '0')), elD('b', 'tv-c-nome', x.nome));
+          const pintaCartao = () => { if (mostrado === sel) return; const ia = mostrado; mostrado = sel; const x = vit[sel]; store.set('mus-vit', x.id); pintaFixo(); const jan = cartao.querySelector('.tv-c-jan') || cartao.appendChild(elD('div', 'tv-c-jan')), velhos = [...jan.querySelectorAll('.tv-c-in')], velho = velhos.pop(), novo = elD('div', 'tv-c-in'), tp = elD('div', 'tv-c-topo'), tt = elD('div'); tt.append(elD('small', 'tv-c-rot', ped === 'case' ? 'Turnê JWA · ' + String(sel + 1).padStart(2, '0') : ped === 'palco' ? 'Setlist · ' + String(sel + 1).padStart(2, '0') : String(sel + 1).padStart(2, '0') + ' de ' + String(N).padStart(2, '0')), elD('b', 'tv-c-nome', x.nome));
             const acoes = elD('div', 'tv-c-acoes'); if (inst.includes(x)) acoes.append(edMini('plus', 'Novo cuidado em ' + x.nome, () => novoCuidado(x))); const ed = lapis('setup', x); ed.classList.remove('tm-ed'); acoes.append(ed); tp.append(tt, acoes); novo.append(tp);
-            const fi = ficha(x, inst.includes(x) ? 'curta' : 'curta solta'); if (fi) novo.append(fi); if (inst.includes(x)) novo.append(quadros(x, true));
-            jan.append(novo); if (!velho) return; if (reduz || ia < 0 || !novo.animate) { velho.remove(); return; }
+            const fi = !x.bloqueado && ficha(x, inst.includes(x) ? 'curta' : 'curta solta'); if (fi) novo.append(fi); else if (x.bloqueado) novo.append(elD('small', 'tv-c-rot', 'Bloqueado')); if (inst.includes(x)) novo.append(quadros(x, true));
+            velhos.forEach(v => v.remove()); jan.append(novo); if (!velho) return; if (reduz || ia < 0 || !novo.animate) { velho.remove(); return; }
             velho.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(115%)' }], { duration: 240, easing: 'cubic-bezier(.5,0,.75,0)', fill: 'forwards' }).onfinish = () => velho.remove();
             novo.animate([{ transform: 'translateY(115%)' }, { transform: 'translateY(0)' }], { duration: 300, delay: 160, easing: 'cubic-bezier(.2,.9,.25,1)', fill: 'backwards' }); };
-          const arruma = c => { const xs = []; xs[mod(c)] = 0; [1, -1].forEach(lado => { let x = 0, wa = itens[mod(c)].w; for (let k = 1; k <= (lado > 0 ? Math.floor(N / 2) : Math.ceil(N / 2) - 1); k++) { const j = mod(c + lado * k), wj = itens[j].w * .8; x += lado * ((wa + wj) / 2 - 2); xs[j] = x; wa = wj; } }); return xs; };   // fileira encostada: cada um ocupa a largura do próprio desenho
+          const arruma = c => { const xs = []; xs[mod(c)] = 0; [1, -1].forEach(lado => { let x = 0, wa = itens[mod(c)].w; for (let k = 1; k <= (lado > 0 ? Math.floor(N / 2) : Math.ceil(N / 2) - 1); k++) { const j = mod(c + lado * k), wj = itens[j].w * .8; x += lado * ((wa + wj) / 2 - 8); xs[j] = x; wa = wj; } }); return xs; };   // fileira encostada: cada um ocupa a largura do próprio desenho
           const pos = agora => { const fr = mod(Math.round(p)), f = Math.floor(p), t = p - f, XA = arruma(f), XB = arruma(f + 1);
             itens.forEach((it, i) => { let rel = i - p; rel -= Math.round(rel / N) * N; const frente = i === fr, gira = ang[i], z = zoom(rel), a = Math.abs(rel), k = Math.min(1, a), x = (Math.abs(XA[i] - XB[i]) > 260 ? (t < .5 ? XA[i] : XB[i]) : XA[i] + (XB[i] - XA[i]) * t).toFixed(1);
               if (modo3d) it.style.transform = 'translateX(' + x + 'px) translateY(' + lift[i].toFixed(1) + 'px) rotateY(' + (gira - Math.max(-1.5, Math.min(1.5, rel)) * 10).toFixed(2) + 'deg) scale(' + z.toFixed(3) + ')';
