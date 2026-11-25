@@ -3624,16 +3624,16 @@ body .painel.tema-planilha .p-nota { color: #605E5C; font-size: 12px; padding: 8
 .t-musica .tv-f-tx { margin: 2px 0 0; color: var(--tm-mudo); font-size: 12.5px; line-height: 1.35; }
 .t-musica .tv-ficha.curta .tv-f-tipo { display: inline; font-size: 12.5px; } .t-musica .tv-ficha.curta .tv-f-tx { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; } .t-musica .tv-ficha.solta .tv-f-tx { -webkit-line-clamp: 6; }
 .t-musica .tv-f-fotos { display: flex; gap: 6px; margin-top: 6px; } .t-musica .tv-f-fotos img { width: 44px; height: 44px; object-fit: cover; border-radius: 8px; border: 1px solid var(--tm-linha); }
-.t-musica .tv-palco { position: relative; height: 150px; margin: 0; border-radius: 20px; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-select: none; background: radial-gradient(ellipse 80% 70% at 50% 35%, #1E1A18 0, #0A0908 70%); border: 1px solid var(--tm-linha); }
+.t-musica .tv-palco { position: relative; height: 230px; margin: 0; border-radius: 20px; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-select: none; background: radial-gradient(ellipse 80% 70% at 50% 35%, #1E1A18 0, #0A0908 70%); border: 1px solid var(--tm-linha); }
 .t-musica .tv-luz, .t-musica .tv-ped { position: absolute; left: 50%; pointer-events: none; }
 .t-musica .tv-ped { bottom: 8px; width: 160px; height: 36px; margin-left: -80px; border-radius: 50%; }
 .t-musica .tv-luz { top: 0; width: 240px; height: 100%; margin-left: -120px; display: none; }
 .t-musica .tv-cena { position: absolute; left: 0; right: 0; top: 22px; bottom: 10px; perspective: 560px; -webkit-perspective: 560px; perspective-origin: 50% 30%; }
 .t-musica .tv-anel { position: absolute; left: 50%; top: 0; bottom: 0; width: 0; transform-style: preserve-3d; -webkit-transform-style: preserve-3d; will-change: transform; }
-.t-musica .tv-item { position: absolute; left: -38px; bottom: 0; width: 76px; height: 114px; padding: 0; margin: 0; border: 0; border-radius: 0; background: none; display: flex; align-items: flex-end; justify-content: center; transform-origin: 50% 100%; will-change: transform; }   /* #449: sem backface hidden, o instrumento gira inteiro e mostra as costas */
+.t-musica .tv-item { position: absolute; left: -61px; bottom: 0; width: 122px; height: 182px; padding: 0; margin: 0; border: 0; border-radius: 0; background: none; display: flex; align-items: flex-end; justify-content: center; transform-origin: 50% 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
 .t-musica .tv-item img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: none; }
 .t-musica .tv-2d .tv-cena { perspective: none; } .t-musica .tv-2d .tv-anel { transform-style: flat; }
-.t-musica .tv-seta { position: absolute; bottom: 10px; z-index: 30; width: 38px; height: 38px; padding: 0; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--tm-linha); background: rgba(18,17,16,.9); color: #FFD60A; font-size: 24px; line-height: 1; }
+.t-musica .tv-seta { position: absolute; top: 8px; z-index: 30; width: 38px; height: 38px; padding: 0; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--tm-linha); background: rgba(18,17,16,.9); color: #FFD60A; font-size: 24px; line-height: 1; }
 .t-musica .tv-ant { left: 10px; } .t-musica .tv-prx { right: 10px; }
 .t-musica .tv-ctrl { display: flex; align-items: center; gap: 5px; margin: 6px 0; flex-wrap: nowrap; }
 .t-musica .tv-ct { flex: none; width: auto; height: 32px; padding: 0 9px; border-radius: 999px; border: 1px solid var(--tm-linha); background: #121110; color: #F6F2EE; font-size: 12.5px; font-weight: 800; white-space: nowrap; display: inline-flex; align-items: center; }

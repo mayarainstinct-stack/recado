@@ -1,3 +1,4 @@
+// v576 (25/11/2026): #449 pedido da May 07:57: sem giro; o instrumento da frente da Vitrine fica de frente e 1,6x maior, só balança pros lados (pausar e velocidade valem pro balanço); setas no alto do palco, sem cortar instrumento.
 // v575 (25/11/2026): #454 ficha de jogo nova, entrega a: voltar e fechar no cabeçalho, barra de progresso na cor do console, linha JOGAR + favorito + menu, botão do JOGAR com texto pelo maior contraste, sem botão flutuante.
 // v574 (25/11/2026): #449 "gire o vetor": o instrumento da frente da Vitrine gira inteiro no eixo (costas = desenho escurecido), pausar e velocidade valem pro giro; 2D gira por scaleX.
 // v573 (25/11/2026): #437 volta do Sigma: carteirinha em tela cheia com X embaixo à direita e 2 bolinhas dizendo que tem verso.
