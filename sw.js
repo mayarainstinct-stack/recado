@@ -1,3 +1,4 @@
+// v627 #449 3c linha do toque: N sessoes de meta
 // v626 #449 3c historico: resumo, 8 semanas em barras, semanas com meta
 // v625 #467 Inicio conta a parcela e mostra Adiantou
 // v624 #467 historico pela data do pagamento
