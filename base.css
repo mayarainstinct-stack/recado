@@ -4104,3 +4104,6 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .tm-ide-aus { display: flex; flex-direction: column; gap: 6px; }
 .ed-abas:has(> :nth-child(4)) { gap: 6px; }
 .ed-abas:has(> :nth-child(4)) .ed-aba { flex: 1 0 auto; padding: 0 10px; font-size: 14px; }
+.t-musica .tm-ideia .tm-virar{margin:14px auto 6px;min-height:44px}
+.t-musica .tm-viraram{margin-top:14px}
+.t-musica .tm-viraram .tm-sr-ide:disabled{opacity:.6}
