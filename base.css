@@ -4193,3 +4193,5 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .tm-nt-hora { height: 44px; padding: 0 12px; border-radius: 12px; border: 1px solid #3A3533; background: #0B0A0A; color: #F5F0EC; font: inherit; font-size: 16px; width: 120px; color-scheme: dark; }
 .tm-busca-card .tm-nt-ops { display: flex; flex-wrap: wrap; gap: 6px; overflow: visible; } .tm-busca-card .tm-nt-ops .tm-cat { padding: 0 12px; min-width: 44px; justify-content: center; }
 .tm-busca-card .tm-nt-ops.tm-nt-dias { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; } .tm-busca-card .tm-nt-dias .tm-cat { min-width: 0; width: 100%; padding: 0; }
+.tm-dd-pend { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #3A3533; } .tm-dd-pend b { color: #F5F0EC; font-size: 15px; } .tm-dd-pend small, .tm-dd-carga { color: #BDB5AF; font-size: 13px; }
+.tm-dd-vers { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; } .tm-dd-vers:empty { display: none; } .tm-dd-vers .tm-sug small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

@@ -1,4 +1,4 @@
-// v651 #449 fase 7 seria bom: chave ligada amarela no tema da Musica, abrir Notificacoes fecha a faixa Desfazer
+// v652 #449 fase 8: copia e exportar no Painel da Musica (baixar copia, voltar no tempo c/ Desfazer, planilha csv, fila offline por item)
 // v637 #449 5c series: episodios e etapas c/ ordem, proxima no cartao, ideias da serie, series na aba Ideias
 // v636 #449 5b audio na ideia: gravar ou anexar, ouvir e apagar
 // v632 #449 4b categorias do Setup com filtro, onde fica e estado
