@@ -3692,6 +3692,8 @@ body .painel.tema-planilha .p-nota { color: #605E5C; font-size: 12px; padding: 8
 .t-musica .tv-anel { position: absolute; left: 50%; top: 0; bottom: 0; width: 0; transform-style: preserve-3d; -webkit-transform-style: preserve-3d; will-change: transform; }
 .t-musica .tv-item { position: absolute; left: -49px; bottom: 0; width: 98px; height: 255px; padding: 0; margin: 0; border: 0; border-radius: 0; background: none; display: flex; align-items: flex-end; justify-content: center; transform-origin: 50% 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
 .t-musica .tv-item img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: none; }
+.t-musica .tv-3d .tv-item { transform-style: preserve-3d; -webkit-transform-style: preserve-3d; -webkit-backface-visibility: visible; backface-visibility: visible; } .t-musica .tv-3d .tv-item > img:first-child { transform: translateZ(0); }
+.t-musica .tv-item img.tv-esp { display: none; position: absolute; left: 0; bottom: 0; width: 100%; height: 100%; max-width: none; max-height: none; object-fit: contain; object-position: 50% 100%; transform: translateZ(calc(var(--k) * var(--esp, 0) * -1px)); filter: brightness(calc(var(--b, .5) * var(--lb, 1))) sepia(.5); } .t-musica .tv-item.grosso img.tv-esp { display: block; }
 .t-musica .tv-2d .tv-cena { perspective: none; } .t-musica .tv-2d .tv-anel { transform-style: flat; }
 .t-musica .tv-seta { position: absolute; top: 8px; z-index: 30; width: 38px; height: 38px; padding: 0; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--tm-linha); background: rgba(18,17,16,.9); color: #FFD60A; font-size: 24px; line-height: 1; }
 .t-musica .tv-ant { left: 10px; } .t-musica .tv-prx { right: 10px; }
