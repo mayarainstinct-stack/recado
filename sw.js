@@ -1,3 +1,4 @@
+// v604 #468 detalhe da semanal e a cada N dias mostra a regra (Hermes 25/11)
 // v603 #468 detalhe da conta no tema claro, botões de 44 px, Apagar com confirmação (Hermes 25/11)
 // v602 #450 detalhe: 1 voltar e 1 lapis no topo, foto 40% c/ nome por cima
 // v600 (25/11/2026): #450 detalhe fase A (foto no topo, linhas, estado, manutencoes, Editar, 4 numeros) + Comparar c/ cor do codigo e fonte normal + religa vermelho.
