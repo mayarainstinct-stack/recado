@@ -2421,7 +2421,7 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 .tm-pr-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .tm-pr-chip { width: auto !important; height: auto !important; padding: 7px 12px; border-radius: 999px !important; border: 1px solid #3A3533; background: #1C1917; color: #EDE7E3; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 .tm-pr-chip.on { background: #FFD60A; border-color: #FFD60A; color: #111; }
-.t-musica .tp-subs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.t-musica .tp-subs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .t-musica .tp-topo { position: relative; padding: 18px 52px; }
 .t-musica .tp-meta-ed { position: absolute; top: 10px; right: 10px; }
 .t-musica .tp-topo .tp-min { color: #EDE7E3; font-size: 14px; font-weight: 800; } .t-musica .tp-topo .tp-min.ok { color: #34D17A; }
@@ -2442,6 +2442,29 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 @keyframes tp-entra { from { transform: scale(.86); } to { transform: none; } }
 @keyframes tp-pulsa { 50% { transform: scale(.6); } }
 @media (prefers-reduced-motion: reduce) { .t-musica .tp-bt, .t-musica .tp-crono.rodando .tp-est::before { animation: none; } }
+.tp-du { position: relative; } .tp-du input { padding-right: 48px !important; } .tp-du span { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: #BDB5AF; font-weight: 800; pointer-events: none; }
+.t-musica .tp-metro, .t-musica .tp-afina { display: grid; gap: 10px; margin: 0 0 12px; padding: 20px 16px; border-radius: 18px; background: #0B0A0A; border: 1px solid var(--tm-linha); }
+.t-musica .tp-luz { display: flex; justify-content: center; gap: 12px; padding: 6px 0 2px; } .t-musica .tp-luz i { width: 18px; height: 18px; border-radius: 50%; background: #2A2624; border: 2px solid #3A3533; } .t-musica .tp-luz i.um { border-color: #F0283A; } .t-musica .tp-luz i.meio { border-color: #FFD60A; }
+.t-musica .tp-luz i.bate { background: #FFD60A; border-color: #FFD60A; box-shadow: 0 0 14px rgba(255,214,10,.6); } .t-musica .tp-luz i.um.bate { background: #F0283A; border-color: #F0283A; box-shadow: 0 0 14px rgba(240,40,58,.7); }
+.t-musica .tp-bpm-l { display: grid; grid-template-columns: 56px 1fr 56px; align-items: center; gap: 8px; } .t-musica .tp-bpm-cx { display: grid; justify-items: center; } .t-musica .tp-bpm { font-size: 64px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; color: #F5F0EC; } .t-musica .tp-bpm-cx small { color: var(--tm-mudo); font-weight: 800; letter-spacing: .08em; }
+.t-musica .tp-metro.rodando .tp-bpm { color: #FFD60A; }
+.t-musica .tp-pm { width: 56px !important; height: 56px !important; border-radius: 50% !important; border: 2px solid #3A3533; background: #1C1917; color: #F5F0EC; font: inherit; font-size: 28px; font-weight: 800; cursor: pointer; }
+.t-musica .tp-rg { width: 100%; accent-color: #FFD60A; margin: 4px 0; }
+.t-musica .tp-comp, .t-musica .tp-cordas { justify-content: center; } .t-musica .tp-cordas { flex-wrap: nowrap; gap: 6px; } .t-musica .tp-cordas .tm-pr-chip { min-width: 36px; padding: 7px 9px; }
+.t-musica .tp-aviso { margin: 0; padding: 10px 12px; border-radius: 12px; background: #2A1A0A; border: 1px solid #FFD60A; color: #FFE58A; font-size: 13.5px; line-height: 1.35; }
+.t-musica .tp-afina { justify-items: center; text-align: center; } .t-musica .tp-afina > .tm-pr-rot { justify-self: stretch; text-align: left; }
+.t-musica .tp-nota { font-size: 72px; font-weight: 900; line-height: 1; color: #F5F0EC; } .t-musica .tp-hz { color: var(--tm-mudo); font-weight: 700; font-variant-numeric: tabular-nums; }
+.t-musica .tp-mostr { position: relative; width: 240px; height: 132px; overflow: hidden; } .t-musica .tp-esc { position: absolute; left: 0; top: 12px; width: 240px; height: 240px; border-radius: 50%; border: 6px solid #2A2624; box-sizing: border-box; }
+.t-musica .tp-esc::after { content: ""; position: absolute; left: 50%; top: -10px; width: 4px; height: 22px; margin-left: -2px; border-radius: 2px; background: #34D17A; }
+.t-musica .tp-agulha { position: absolute; left: 50%; bottom: 0; width: 4px; height: 112px; margin-left: -2px; border-radius: 2px; background: #F5F0EC; transform-origin: 50% 100%; transition: transform .12s ease-out; }
+.t-musica .tp-marca { position: absolute; bottom: 4px; color: var(--tm-mudo); font-size: 11px; font-weight: 700; } .t-musica .tp-marca.m0 { left: 6px; } .t-musica .tp-marca.m1 { left: 50%; transform: translateX(-50%); bottom: auto; top: 30px; } .t-musica .tp-marca.m2 { right: 6px; }
+.t-musica .tp-diz { min-height: 22px; font-size: 18px; font-weight: 900; color: var(--tm-mudo); } .t-musica .tp-afina.afinada .tp-diz, .t-musica .tp-afina.afinada .tp-nota { color: #34D17A; } .t-musica .tp-afina.afinada .tp-agulha { background: #34D17A; } .t-musica .tp-afina.fora .tp-diz { color: #F0283A; }
+.t-musica .tp-afina .tp-bt { max-width: 320px; }
+.t-musica .tp-grupo { margin: 14px 4px 4px; color: #FFD60A; font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.t-musica .tp-item { grid-template-columns: 1fr auto; } .t-musica .tp-item .tp-dc { color: #FFD60A; font-weight: 800; }
+.t-musica .tp-barra { height: 8px; margin: 6px 0 2px; border-radius: 999px; background: #2A2624; overflow: hidden; } .t-musica .tp-barra i { display: block; height: 100%; border-radius: 999px; background: #FFD60A; }
+.t-musica .tp-treina { margin-top: 8px; }
+@media (prefers-reduced-motion: reduce) { .t-musica .tp-agulha { transition: none; } }
 .tm-pr-card textarea, .tm-pr-card input { width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid #3A3533; background: #0B0A0A; color: #F5F0EC; font: inherit; }
 .tm-pr-card .pp-op.rec { background: #F0283A !important; border-color: #F0283A !important; color: #FFFFFF !important; } .tm-pr-card .pp-op.depois { background: transparent !important; border-color: #FFD60A !important; color: #FFD60A !important; } .tm-pr-card .pp-x { background: #1C1917 !important; border-color: #F0283A !important; color: #FFFFFF !important; }
 @keyframes aba-vem-dir { from { transform: translateX(56px); } to { transform: none; } } @keyframes aba-vem-esq { from { transform: translateX(-56px); } to { transform: none; } } .aba-vem-dir { animation: aba-vem-dir .24s cubic-bezier(.2,.8,.2,1); } .aba-vem-esq { animation: aba-vem-esq .24s cubic-bezier(.2,.8,.2,1); }
