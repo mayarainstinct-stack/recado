@@ -255,7 +255,7 @@ textarea:focus-visible { outline: none; }
 @keyframes mandaCorre { to { background-position: 150% 0; } }
 .aviso-curto { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 9999; display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: #1F2C34; color: #E9EDEF; font-size: 14.5px; font-weight: 600; box-shadow: 0 6px 20px rgba(0,0,0,.45); animation: entra .2s ease-out; }
 .aviso-curto svg.i { color: #4ADE80; }
-.video-cheio { display: block; width: 100%; max-height: 70vh; border-radius: 14px; background: #000; margin: 4px 0 10px; }
+.video-cheio { display: block; width: auto; height: auto; max-width: 100%; max-height: 70vh; border-radius: 14px; background: #000; margin: 4px auto 10px; }   /* #483: no formato do vídeo (vertical em pé, sem tarja do lado) */
 .versao { margin: 0 0 22px; }
 /* Animações = estúdio (Hermes 07/11): a mais nova grande e animada em cima, o resto em grade de 2 com capa parada */
 .estudio-hero { position: relative; border-radius: 18px; overflow: hidden; background: #0e1420; margin: 2px 0 16px; box-shadow: 0 12px 30px rgba(0,0,0,.5), 0 0 0 2px color-mix(in srgb, var(--c) 55%, transparent); cursor: pointer; }
@@ -1363,7 +1363,7 @@ body.na-geral form textarea:focus { border-color: #FACC15; box-shadow: 0 0 0 3px
 .pp-card { max-height: calc(100dvh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); overflow-y: auto; overscroll-behavior: contain; }   /* nunca maior que a tela: rola por dentro (May 11:18) */
 .pp-card { max-width: calc(100vw - 24px); min-width: 0; } .pp-midia { min-width: 0; max-width: 100%; }   /* vídeo empurrava o popup pra fora da tela no iPhone (May, 07/11/2026 11:01) */
 .pp-midia.varias > * { flex-basis: 86%; } .pp-midia video { object-fit: contain; }
-.pp-midia video { width: 100%; }
+.pp-midia video { width: 100%; } .pp-card .pp-midia:not(.varias) > video { flex: 0 0 auto; width: auto; height: auto; max-width: 100%; max-height: 30vh; max-height: 30dvh; margin-inline: auto; }   /* #483: 1 vídeo só = caixa no formato dele */
 .pp-card:has(.pp-midia) .pp-perg { max-height: 16vh; max-height: 16dvh; font-size: 15px; font-weight: 600; text-align: left; } .pp-card:has(.pp-midia) .pp-midia > * { height: 30vh; height: 30dvh; }   /* pergunta c/ foto ou vídeo cabe inteira na altura do celular, o texto rola por dentro (May 07/11 11:18) */
 .pp-op:active { transform: scale(.95); }
 .pp-aviso { flex: 1; font-size: 13px; color: var(--muted); }
@@ -2249,8 +2249,8 @@ body .painel.tema-contraste:not(.rolou) .p-topo::after { display: none; }   /* #
 .anexo video { width: 100%; height: 100%; object-fit: cover; display: block; background: #000; }
 .anexo.vid-parado { width: 156px; } .anexo.vid-parado span { color: var(--muted, #6B7280); } .anexo.recusa { border-color: var(--err); } .anexo.recusa span { color: var(--err); font-weight: 600; }   /* #445: vídeo na fila ou recusado, parado com o nome */
 .anexo .anexo-tam { position: absolute; left: 4px; bottom: 4px; padding: 1px 6px; border-radius: 8px; background: rgba(0,0,0,.66); color: #fff; font-size: 10.5px; font-weight: 600; }
-.video-caixa { position: relative; margin-top: 4px; min-height: 160px; border-radius: 12px; overflow: hidden; background: #000; }
-.video-caixa video { display: block; width: 100%; max-height: 420px; background: #000; }
+.video-caixa { position: relative; margin-top: 4px; aspect-ratio: var(--ar, .5625); width: min(100%, calc(420px * var(--ar, .5625))); border-radius: 12px; overflow: hidden; background: #000; }   /* #483 (May 25/11 20:13): caixa no formato do vídeo; antes do play, em pé (a maioria é vertical) ou o formato já visto */
+.video-caixa video { display: block; width: 100%; height: 100%; object-fit: contain; background: #000; }
 .video-tampa { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 8px; border: 0; background: rgba(0,0,0,.6); color: #fff; font: inherit; font-weight: 700; font-size: 15px; cursor: pointer; }
 .video-tampa svg { width: 24px; height: 24px; }
 .video-caixa > .video-tampa { position: absolute !important; inset: 0 !important; width: auto !important; height: auto !important; min-width: 0 !important; border-radius: 0 !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; }
@@ -4225,8 +4225,8 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .rl-ver-topo { position: relative; display: flex; align-items: center; min-height: 60px; padding: 12px 64px 12px 16px; box-sizing: border-box; }
 .rl-ver-topo > div { display: grid; gap: 2px; min-width: 0; } .rl-ver-topo b { font-size: 17px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .rl-ver-topo small { opacity: .7; }
 .rl-ver .rl-x { top: 12px; right: 16px; --quem: #E1306C; color: #fff; }
-.rl-ver-midia { display: grid; place-items: center; min-height: 0; padding: 0 16px 12px; }
-.rl-ver-midia video { max-width: 100%; max-height: 100%; border-radius: 12px; background: #111; }
+.rl-ver-midia { display: grid; place-items: center; min-height: 0; padding: 0 16px 12px; container-type: size; }
+.rl-ver-midia video { max-width: 100%; max-height: 100%; max-width: 100cqw; max-height: 100cqh; border-radius: 12px; background: #111; }   /* #483: vertical passava da área e ficava por baixo das informações */
 .rl-carga { opacity: .7; }
 .rl-sem { display: grid; justify-items: center; gap: 8px; padding: 16px; text-align: center; } .rl-sem svg { width: 44px; height: 44px; color: var(--c); } .rl-sem small { opacity: .7; }
 .rl-ver-info { display: grid; gap: 10px; max-height: 50dvh; overflow-y: auto; padding: 14px 16px 16px; border-top: 1px solid rgba(255,255,255,.12); background: #0D0D0F; }
@@ -4241,6 +4241,7 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .rl-pedido { margin: 0; font-size: 14px; line-height: 1.35; opacity: .85; }
 .rl-ops { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .rl-bt { width: 100%; height: auto; min-height: 44px; padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,.22); background: transparent; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+.rl-bx { grid-column: 1 / -1; }
 .rl-bt.rec { background: var(--c); border-color: var(--c); } .rl-bt.rec.on { background: #16A34A; border-color: #16A34A; } .rl-bt.on:not(.rec) { border-color: #F59E0B; color: #F59E0B; }
 .rl-nota { margin: 0; line-height: 1.4; opacity: .8; }
 .rl-ta { display: block; width: 100%; min-height: 96px; margin-top: 12px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--paper); color: var(--fg); font: inherit; font-size: 16px; resize: none; box-sizing: border-box; }

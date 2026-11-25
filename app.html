@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.654">
+<meta name="app-versao" content="2026-11-25.656">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.654"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.656"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -1232,7 +1232,9 @@ function render(items, manterPosicao) {
       const v = document.createElement('video'); v.className = 'foto video'; v.controls = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'none';
       const tampa = elD('button', 'video-tampa'); tampa.type = 'button'; tampa.innerHTML = icone('video') + ' Ver o vídeo';
       tampa.onclick = e => { e.stopPropagation(); tampa.textContent = 'Carregando o vídeo…'; fotoUrl(it.foto, true).then(u => { v.src = u; tampa.remove(); v.play().catch(() => {}); }).catch(er => { tampa.textContent = er.status === 404 ? 'Vídeo apagado' : 'Não carregou o vídeo'; }); };
-      const caixa = elD('div', 'video-caixa'); caixa.append(v, tampa); el.append(caixa);
+      const caixa = elD('div', 'video-caixa'), arK = 'video-ar:' + it.foto, arV = store.get(arK); if (arV) caixa.style.setProperty('--ar', arV);   // #483 (May 25/11 20:13): caixa no formato do vídeo; antes do play usa o formato já visto, senão em pé
+      v.onloadedmetadata = () => { if (v.videoWidth && v.videoHeight) { const r = (v.videoWidth / v.videoHeight).toFixed(4); caixa.style.setProperty('--ar', r); store.set(arK, r); } };
+      caixa.append(v, tampa); el.append(caixa);
     } else if (it.foto) {
       const img = document.createElement('img'); img.className = 'foto esq'; img.alt = 'Foto enviada'; img.loading = 'lazy'; img.decoding = 'async'; img.addEventListener('load', () => img.classList.remove('esq'), { once: true });
       img.addEventListener('click', e => { e.stopPropagation(); if (img.src) abreZoom(img.src, it.foto); });
@@ -7594,6 +7596,7 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
       top.append(elD('span', 'rl-chip ' + (d ? d.status : 'novo'), d ? (d.status === 'aprovado' ? 'Aprovado ' : 'Ajuste ') + d.quando.slice(0, 5) : 'Pra ver')); L.append(top);
       if (d && d.status === 'ajuste' && d.nota) L.append(elD('p', 'rl-pedido', '"' + d.nota + '"'));
       const ok = d && d.status === 'aprovado', ops = elD('div', 'rl-ops');
+      if (t) { const bx = bt('rl-bt rl-bx', 'Baixar', async () => { const t0 = bx.textContent; bx.textContent = 'Baixando...'; bx.disabled = true; try { const r = await api(apiDe(t.audio), { ...RAW, tempo: 120000 }); if (!r.ok) throw 0; const nome = t.audio.split('/').pop(), f = new File([await r.blob()], nome, { type: 'audio/mp4' }); if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], title: t.nome }); } catch (e) {} } else baixaArquivo(f, nome); } catch (e) { showNote('Não baixou: confere a internet.', true); } bx.textContent = t0; bx.disabled = false; }); bx.setAttribute('aria-label', 'Baixar ' + t.nome); ops.append(bx); }   // May 25/11 18:28: baixar a trilha no iPhone pra passar no Suno
       ops.append(bt('rl-bt' + (d && d.status === 'ajuste' ? ' on' : ''), 'Pedir ajuste', () => rlAjuste(p, t, repinta)), bt('rl-bt rec' + (ok ? ' on' : ''), ok ? 'Aprovado' : 'Aprovar', () => { if (!ok) rlGrava(p, t, { status: 'aprovado', quando: edAgora(), nota: '' }, repinta); }));
       L.append(ops); return L;
     };

@@ -1,3 +1,5 @@
+// v656 #483 player no formato do video: Geral, Estudio de Reels e popup (vertical em pe, horizontal deitado, sem tarja)
+// v655 Estudio de Reels: botao Baixar em cada trilha (compartilha o arquivo no iPhone pra salvar ou mandar pro Suno)
 // v654 video e audio tocam com o iPhone no silencioso (audioSession playback no play, ambient ao parar)
 // v653 #482 Estudio de Reels: perfil tipo Instagram, video final e trilhas c/ Aprovar / Pedir ajuste
 // v652 #449 fase 8: copia e exportar no Painel da Musica (baixar copia, voltar no tempo c/ Desfazer, planilha csv, fila offline por item)
