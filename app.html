@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.618">
+<meta name="app-versao" content="2026-11-25.619">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.618"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.619"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3656,6 +3656,7 @@ function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar, rodape }) {
     else if (c.tipo === 'foto') { el = elD('input'); el.type = 'file'; el.accept = 'image/*'; el.dataset.atual = v[c.nome] || ''; const im = elD('img', 'ed-previa'); im.alt = ''; im.hidden = true; if (v[c.nome]) fotoUrl(v[c.nome]).then(u => { im.src = u; im.hidden = false; }).catch(() => {}); const fb = elD('button', 'ed-foto-bt', v[c.nome] ? 'Trocar foto' : 'Escolher foto'); fb.type = 'button'; fb.onclick = () => el.click(); el.classList.add('ed-foto-arq'); el.addEventListener('change', () => { const f = el.files && el.files[0]; if (f) { im.src = URL.createObjectURL(f); im.hidden = false; fb.textContent = 'Trocar foto'; } }); lb.append(im, fb); }
     else { el = elD('input'); el.type = c.tipo === 'data' ? 'date' : c.tipo === 'mes' ? 'month' : c.tipo === 'url_imagem' ? 'url' : 'text'; if (c.tipo === 'numero' || c.tipo === 'valor') el.inputMode = 'decimal'; }
     if (c.tipo !== 'foto') el.value = v[c.nome] != null ? v[c.nome] : (c.padrao != null ? c.padrao : ''); els[c.nome] = el; lb.append(el);
+    if (c.tipo === 'mes' && !el.value) { el.type = 'text'; el.placeholder = 'Mês e ano'; el.addEventListener('focus', () => { el.type = 'month'; try { el.showPicker(); } catch (e) {} }); el.addEventListener('blur', () => { if (!el.value) el.type = 'text'; }); }   // campo de mês vazio mostra "Mês e ano", não o "--- de ---" do navegador (Sigma 25/11)
     if (c.tipo === 'url_imagem') { const im = elD('img', 'ed-previa'); im.alt = ''; im.hidden = true; const mostra = () => { im.hidden = !/^https?:/i.test(el.value); if (!im.hidden) im.src = el.value; }; im.onerror = () => { im.hidden = true; }; el.addEventListener('change', mostra); mostra(); lb.append(im); }
     (secs[c.aba] || form).append(lb);
   });
@@ -5389,7 +5390,7 @@ function abreFinancas(m) {
       const dTot = devo.reduce((n, x) => n + x.total, 0), dPago = devo.reduce((n, x) => n + x.pago, 0), dPct = dTot ? Math.min(100, Math.round(dPago / dTot * 100)) : 100, mh = elD('div', 'fu-heroi fn-met-heroi'), mb = elD('div', 'fu-barra grande'), mi = elD('i');
       mi.style.width = dPct + '%'; mb.append(mi); mh.append(elD('span', '', sd > 0 ? 'Você deve' : 'Tudo quitado'), elD('b', '', reaisFin(sd)), elD('small', '', 'Pago ' + reaisFin(dPago) + ' de ' + reaisFin(dTot)), mb, elD('small', 'fu-pago', dPct + '% quitado'));
       const gr = {}, lm = elD('div', 'fn-contas'); ordF(devo).forEach(x => { const k = x.grupo || x.pessoa || x.nome.split(' · ')[0]; (gr[k] = gr[k] || []).push(x); });
-      Object.entries(gr).forEach(([k, ls]) => { if (ls.length > 1) { const h = elD('div', 'fn-met-grupo'); h.append(elD('strong', '', k), elD('small', '', ls.length + ' dívidas · falta ' + reaisFin(ls.reduce((n, y) => n + y.falta, 0)))); lm.append(h); } ls.forEach(x => lm.append(cartaoDiv(x))); });
+      Object.entries(gr).forEach(([k, ls]) => { if (ls.length > 1) { const bl = elD('div', 'fn-met-bloco'), h = elD('div', 'fn-met-grupo'); h.append(elD('strong', '', k), elD('small', '', ls.length + ' dívidas · falta ' + reaisFin(ls.reduce((n, y) => n + y.falta, 0)))); bl.append(h, ...ls.map(cartaoDiv)); lm.append(bl); } else lm.append(cartaoDiv(ls[0])); });   // grupo num bloco com linha do lado: a dívida solta depois não parece do grupo (#467 4b)
       if (!devo.length) lm.append(elD('p', 'fu-vazio', 'Você não deve nada.'));
       const MT = metasJuntas(), lmt = elD('div', 'fn-contas'), nova = elD('button', 'fn-met-nova'); nova.type = 'button'; nova.append(elD('i', '', '+'), elD('span', '', 'Nova meta')); nova.onclick = novaMeta;
       MT.forEach(mt => lmt.append(cartaoMeta(mt))); if (!MT.length) lmt.append(elD('p', 'fu-vazio', 'Nenhuma meta ainda. Toca em Nova meta pra juntar pra um carro, uma viagem ou a reserva.'));
