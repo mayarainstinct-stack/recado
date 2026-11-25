@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.621">
+<meta name="app-versao" content="2026-11-25.622">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.621"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.622"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -5178,7 +5178,7 @@ function finLista(S, M, hoje) {
     });
   });
   S.pessoas.forEach(p => {
-    const pagoM = p.pagamentos.filter(y => y.chave === chave).slice(-1)[0] || null, ult = p.pagamentos[p.pagamentos.length - 1], lq = p.lembrar ? finData(p.lembrar) : null; let q, pago = null;
+    const doM = p.pagamentos.filter(y => y.chave === chave), pagoM = doM.length > 1 ? { ...doM[doM.length - 1], valor: Math.round(doM.reduce((s, y) => s + finNum(y.valor), 0) * 100) / 100, varios: doM.length } : doM[0] || null, ult = p.pagamentos[p.pagamentos.length - 1], lq = p.lembrar ? finData(p.lembrar) : null; let q, pago = null;
     if (p.inicio && chave < String(p.inicio).slice(0, 7) && !pagoM) return;   // dívida que só começa depois (PS5: 1ª parcela em 12/2026)
     if (p.dia) { if (p.falta <= 0 && !pagoM) return; if (passado && !pagoM) return; q = finDiaMes(M.getFullYear(), M.getMonth(), p.dia); pago = pagoM; }
     else if (p.falta > 0) { if (!(lq ? (finChave(lq) === chave || (atual && finChave(lq) < chave)) : atual)) return; q = lq || hoje; }
@@ -5393,6 +5393,42 @@ function abreFinancas(m) {
       const fecha = pop(mt.nome, cp);
     };
     const confirmaMeta = mt => { const cp = elD('div', 'fin-conf'), bt = elD('div', 'fin-bts'), sim = elD('button', 'pp-op fin-apaga', 'Apagar'), nao = elD('button', 'pp-op', 'Cancelar'); sim.type = nao.type = 'button'; cp.append(elD('p', 'p-nota', 'Some da lista com o que foi guardado nela; dá pra desfazer logo depois.'), bt); bt.append(nao, sim); const fecha = pop('Apagar ' + mt.nome + '?', cp); nao.onclick = fecha; sim.onclick = () => { fecha(); apagaMeta(mt); }; };
+    const MESN = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'], mesNome = ch => { const m = String(ch || '').match(/^(\d{4})-(\d\d)/); return m ? maiusc(MESN[+m[2] - 1]) + ' de ' + m[1] : 'Sem mês'; };
+    const movs = () => {   // Histórico de movimentações (#467 5a): mesma regra do resumo do mês (mês da conta, só o que já aconteceu), pra soma bater com o Início, o Receber e as Metas
+      const out = [], ag = hoje.getTime() + 864e5, vivas = {}; Em.itens.filter(m => !m.apagado).forEach(m => { vivas[m.id] = m.nome; });
+      S.pessoas.forEach(p => p.pagamentos.forEach(y => { if (finTs(y) < ag) out.push({ k: p.lado === 'receber' ? 'ent' : 'sai', nome: p.nome, y, chave: y.chave, v: finNum(y.valor), ts: finTs(y) }); }));
+      S.fixas.forEach(f => f.pagos.forEach(y => { if (finTs(y) < ag) out.push({ k: f.tipo === 'entrada' ? 'ent' : 'sai', nome: f.nome, y, chave: y.chave, v: finNum(y.valor), ts: finTs(y) }); }));
+      Ea.itens.filter(a => !a.apagado && vivas[a.meta]).forEach(a => { const d = finData(a.quando); out.push({ k: 'meta', nome: vivas[a.meta], y: { quando: a.quando, data: '', forma: '', nota: a.nota || '' }, chave: d ? finChave(d) : '', v: finNum(a.valor), ts: d ? d.getTime() : 0 }); });
+      return out.sort((a, b) => (b.chave || '').localeCompare(a.chave || '') || b.ts - a.ts);
+    };
+    const abreHist = () => {
+      let fil = 'tudo'; const cp = elD('div', 'fin-hmov'), bar = elD('div', 'fin-hfil'), lista = elD('div'), ms = movs(), soma = ls => ls.reduce((n, x) => n + x.v, 0);
+      [['tudo', 'Tudo'], ['sai', 'Saídas'], ['ent', 'Entradas'], ['meta', 'Metas']].forEach(([k, tx]) => { const b = elD('button', '', tx); b.type = 'button'; b.dataset.k = k; b.onclick = () => { fil = k; pintaH(); }; bar.append(b); });
+      const pintaH = () => {
+        lista.textContent = ''; bar.querySelectorAll('button').forEach(b => { b.classList.toggle('on', b.dataset.k === fil); b.setAttribute('aria-pressed', String(b.dataset.k === fil)); });
+        const vs = ms.filter(m => fil === 'tudo' || m.k === fil); let ch = null, bl = null;
+        vs.forEach(m => {
+          const c = m.chave || 'sem'; if (c !== ch) { ch = c; const dm = vs.filter(x => (x.chave || 'sem') === c), h = elD('div', 'fin-hmes'); h.append(elD('strong', '', c === 'sem' ? 'Sem data' : mesNome(c)), elD('small', '', fil === 'tudo' ? ['saiu ' + reaisFin(soma(dm.filter(x => x.k === 'sai'))), 'entrou ' + reaisFin(soma(dm.filter(x => x.k === 'ent'))), 'guardado ' + reaisFin(soma(dm.filter(x => x.k === 'meta')))].join(' · ') : 'total ' + reaisFin(soma(dm)))); bl = elD('div', 'fin-hlista'); lista.append(h, bl); }
+          const l = elD('div', 'fin-hl k-' + m.k); l.append(elD('strong', '', m.nome), elD('b', '', (m.k === 'sai' ? '− ' : '+ ') + reaisFin(m.v)), elD('small', '', [m.y.quando ? edQuando(m.y.quando) : m.y.data || 'Sem data', m.k === 'meta' ? 'guardado' : '', m.y.forma, m.y.nota].filter(Boolean).join(' · '))); bl.append(l);
+        });
+        if (!vs.length) lista.append(elD('p', 'fu-vazio', 'Nada aqui ainda.'));
+      };
+      cp.append(bar, lista); pintaH(); pop('Histórico de movimentações', cp);
+    };
+    const baixa = (nome, txt, tipo) => { const u = URL.createObjectURL(new Blob([txt], { type: tipo })), a = elD('a'); a.href = u; a.download = nome; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000); };
+    const backup = async () => { const d = new Date(); try { baixa('financas-' + pad(d.getDate()) + '-' + pad(d.getMonth() + 1) + '-' + d.getFullYear() + '.json', await lerArquivo(FIN_ARQ), 'application/json'); showNote('Cópia baixada.'); } catch (e) { showNote('Não baixou. Confere a internet e tenta de novo.', true); } };
+    const csvDe = meses => { const num = v => String(Math.round(finNum(v) * 100) / 100).replace('.', ','), q = s => '"' + String(s == null ? '' : s).replace(/"/g, '""') + '"', L = ['Mês;Conta;Tipo;Vencimento;Valor;Pago em;Valor pago;Forma'];
+      meses.forEach(M => finLista(S, M, hoje).its.forEach(it => L.push([q(mesNome(finChave(M))), q(it.nome), it.lado === 'receber' ? 'Entrada' : 'Saída', dataBr(it.quando), num(it.valor), it.pago ? (it.pago.data || '') : '', it.pago && it.pago.valor !== '' ? num(it.pago.valor) : '', q(it.pago ? it.pago.forma : '')].join(';'))));
+      return '\ufeff' + L.join('\r\n'); };   // ; e vírgula decimal: abre certo no Excel e no Numbers em português
+    const exporta = () => {
+      const cp = elD('div', 'fin-det'), bts = elD('div', 'ed-acoes fin-bts'), ano = mesAt.getFullYear(), mk = (tx, fn) => { const b = elD('button', 'pp-op larga', tx); b.type = 'button'; b.onclick = () => { fecha(); fn(); }; bts.append(b); };
+      cp.append(elD('p', 'p-nota', 'Planilha com cada conta e entrada: vencimento, valor, quando pagou e a forma.'), bts);
+      mk(mesNome(finChave(mesAt)), () => baixa('financas-' + finChave(mesAt) + '.csv', csvDe([mesAt]), 'text/csv;charset=utf-8'));
+      mk('Ano de ' + ano, () => baixa('financas-' + ano + '.csv', csvDe([...Array(12)].map((_, i) => new Date(ano, i, 1))), 'text/csv;charset=utf-8'));
+      const fecha = pop('Exportar relatório', cp);
+    };
+    const FN_MAIS_ICO = { hist: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', backup: '<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/>', exp: '<rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M5 9h14M5 14h14M10 9v11.5"/>', rel: '<path d="M5 20V11M10 20V5M15 20v-7M20 20V9"/>', not: '<path d="M6 16v-5a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 004 0"/>', cat: '<path d="M4 12V4.5h7.5L20 13l-7 7z"/><circle cx="8.5" cy="8.5" r="1.3"/>', banco: '<path d="M3.5 9.5L12 4l8.5 5.5M5.5 10v7M10 10v7M14 10v7M18.5 10v7M3.5 19.5h17"/>', conf: '<circle cx="12" cy="12" r="3"/><path d="M12 3.5V6M12 18v2.5M3.5 12H6M18 12h2.5M6 6l1.8 1.8M16.2 16.2L18 18M6 18l1.8-1.8M16.2 7.8L18 6"/>', pers: '<path d="M12 3.5a8.5 8.5 0 100 17c1.2 0 1.6-1 1-2-.7-1.2.1-2.5 1.5-2.5H17a3.5 3.5 0 003.5-3.5c0-5-3.8-9-8.5-9z"/><circle cx="8" cy="10" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16" cy="10" r="1"/>' };
+    const FN_MAIS = [['hist', '#0E7C5A', 'Histórico de movimentações', 'Tudo que saiu, entrou e foi guardado', abreHist], ['backup', '#2F80ED', 'Backup', 'Baixar cópia dos dados', backup], ['exp', '#6C5CE7', 'Exportar relatório', 'Planilha do mês ou do ano', exporta], ['rel', '#9AACA5', 'Relatórios', 'Gráficos na fase 6'], ['not', '#9AACA5', 'Notificações', 'Na fase 7'], ['cat', '#9AACA5', 'Categorias personalizadas', 'Na fase 5b'], ['banco', '#9AACA5', 'Contas bancárias', 'Na fase 5b'], ['conf', '#9AACA5', 'Configurações', 'Esperando a May dizer o que quer aqui'], ['pers', '#9AACA5', 'Personalização', 'Esperando a May dizer o que quer aqui']];
     const proxDiv = x => {   // próximo vencimento da dívida: o dia dela neste mês, ou no mês seguinte se já passou ou já pagou; nunca antes do início
       if (x.falta <= 0) return 'Quitada'; if (!x.dia) return x.lembrar && finData(x.lembrar) ? 'Sem dia certo · lembrete ' + dataBr(finData(x.lembrar)).slice(0, 5) : 'Sem dia certo';
       const m = String(x.inicio || '').match(/^(\d{4})-(\d\d)/), ini = m ? new Date(+m[1], m[2] - 1, 1) : null; let d = finDiaMes(hoje.getFullYear(), hoje.getMonth(), x.dia);
@@ -5474,6 +5510,7 @@ function abreFinancas(m) {
       else pag.metas.append(mh, sMt, sDv);
       // ---- Mais (fase 5): lançar e as outras contas (sem dia, anuais de outros meses)
       const lan = elD('button', 'fn-todas', 'Lançar conta, entrada ou dívida'); lan.type = 'button'; lan.append(elD('i', '', '+')); lan.onclick = novaConta; pag.mais.append(lan);
+      const gm = elD('div', 'fn-mais'); FN_MAIS.forEach(([ic, cor, tit, sub, fn]) => { const b = elD(fn ? 'button' : 'div', 'fn-mt' + (fn ? '' : ' breve')); b.append(icone2([ic, null, cor, FN_MAIS_ICO[ic]]), elD('strong', '', tit), elD('small', '', sub)); if (fn) { b.type = 'button'; b.append(elD('i', 'fn-mt-seta', '›')); b.onclick = fn; } else b.append(elD('span', 'fn-mt-selo', 'Em breve')); gm.append(b); }); pag.mais.append(gm);
       const outras = [...S.fixas.filter(f => !f.dia).map(f => [f.nome, reaisFin(finParte(f)) + (f.nota ? ' · ' + f.nota : ''), f]), ...S.anuais.filter(a => !anuais.includes(a)).map(a => [a.nome, (a.mes ? 'vence em ' + a.mes : '') + (a.nota ? (a.mes ? ' · ' : '') + a.nota : ''), a])];
       if (outras.length) pag.mais.append(secao('Outras contas (' + outras.length + ')', null, null, outras.map(([n, v, ent]) => { const l = elD('button', 'fu-mini'); l.type = 'button'; l.append(elD('strong', '', n), elD('small', '', v)); l.onclick = () => ent.pagos ? detalhe(ent) : editaConta(ent); return l; })));
       requestAnimationFrame(() => Object.entries(pag).forEach(([k, p]) => { p.parentNode.scrollTop = rol[k]; }));
