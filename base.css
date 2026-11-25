@@ -4146,3 +4146,4 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .tm-busca-card .tm-cat { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid #3A3533; background: transparent; color: #F5F0EC; font: inherit; font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; }
 .tm-busca-card .tm-cat i { font-style: normal; font-size: 11px; font-weight: 800; color: #BDB5AF; }
 .tm-busca-card .tm-cat.on { background: #F0283A; border-color: #F0283A; color: #fff; } .tm-busca-card .tm-cat.on i { color: #fff; }
+.tm-busca-card .tm-cats .tm-cat { width: auto; min-width: 0; max-width: none; height: 44px; min-height: 44px; aspect-ratio: auto; padding: 0 14px; margin: 0; flex: 0 0 auto; }

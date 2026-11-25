@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.642">
+<meta name="app-versao" content="2026-11-25.643">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.642"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.643"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -4145,7 +4145,7 @@ function abreMusica(m) {
       const mostra = () => { const q = semAc(cx.value.trim()); res.replaceChildren(); res.scrollTop = 0; if (q.length < 2) { res.append(elD('p', 'tm-busca-dica', 'Músicas, ideias, séries, aparelhos, timbres, cuidados e gravações.')); return; }
         const gr = {}; buscaIdx().forEach(r => { const c = r.campos.find(([, v]) => semAc(v).includes(q)); if (c) (gr[r.tipo] = gr[r.tipo] || []).push([r, c]); });
         const tem = BUSCA_ORD.filter(k => gr[k]); if (!tem.length) { res.append(elD('p', 'tm-busca-dica', 'Nada com "' + cx.value.trim() + '".')); return; } if (!tem.includes(tipoB)) tipoB = '';
-        if (tem.length > 1) { const ch = elD('div', 'tm-cats'); ch.setAttribute('role', 'toolbar'); ch.setAttribute('aria-label', 'Filtrar por tipo'); [['', 'Tudo', tem.reduce((n, k) => n + gr[k].length, 0)]].concat(tem.map(k => [k, k, gr[k].length])).forEach(([k, tx, n]) => { const b = elD('button', 'tm-cat' + (k === tipoB ? ' on' : '')); b.type = 'button'; b.setAttribute('aria-pressed', String(k === tipoB)); b.append(document.createTextNode(tx + ' '), elD('i', '', String(n))); b.onclick = () => { tipoB = k; mostra(); }; ch.append(b); }); res.append(ch); }   // 6c (#449): chip de tipo na pesquisa
+        if (tem.length > 1) { const ch = elD('div', 'tm-cats'); ch.setAttribute('role', 'toolbar'); ch.setAttribute('aria-label', 'Filtrar por tipo'); [['', 'Tudo', tem.reduce((n, k) => n + gr[k].length, 0)]].concat(tem.map(k => [k, k, gr[k].length])).forEach(([k, tx, n]) => { const b = elD('button', 'tm-cat' + (k === tipoB ? ' on' : '')); b.type = 'button'; b.setAttribute('aria-pressed', String(k === tipoB)); b.append(document.createTextNode(tx + ' '), elD('i', '', String(n))); b.onclick = () => { tipoB = k; mostra(); }; ch.append(b); }); res.append(ch); requestAnimationFrame(() => { const o = ch.querySelector('.on'); if (o) ch.scrollLeft = o.offsetLeft - (ch.clientWidth - o.offsetWidth) / 2; }); }   // 6c (#449): chip de tipo na pesquisa
         tem.filter(k => !tipoB || k === tipoB).forEach(k => { const s = elD('section', 'tm-busca-gr'); s.append(elD('h4', '', k + ' (' + gr[k].length + ')'));
           gr[k].forEach(([r, [rot, v]]) => { const b = elD('button', 'tm-busca-it'), tx = elD('div'), sb = elD('small'); b.type = 'button'; if (rot) sb.append(rot + ': ', realca(v, q, true)); else sb.textContent = r.sub || ''; tx.append(realca(r.nome, rot ? '' : q), sb); b.append(tx); b.insertAdjacentHTML('beforeend', SETA); b.onclick = () => { fecha(); r.ir(); }; s.append(b); });
           res.append(s); }); };
