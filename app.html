@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.591">
+<meta name="app-versao" content="2026-11-25.592">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.591"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.592"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -4932,7 +4932,7 @@ async function finLembretes() {
   if (novo) { store.set('fin-lembretes-vistos', JSON.stringify(visto)); mostraProximoLembrete(); }
 }
 // Financeiro numa tela só (May, 24/11/2026: "simples e direta", "bonito e útil", "me surpreenda"; abandonou a planilha). Fonte única: contas/financas.json.
-// De cima pra baixo: mês · quanto sobra (ou quanto falta pagar) · "pode gastar por dia" · você deve / te devem · falta pagar no mês · pagas · por pessoa · outras.
+// Layout do modelo dela (#467, May 24/11/2026 23:15, contas/IDEIA-LAYOUT-FINANCAS-24-11-2026.md): barra de baixo com 5 abas (Início, Contas, Receber, Metas, Mais), deslizar de lado entre elas.
 function abreFinancas(m) {
   tela(m.nome, async c => {
     painel.style.setProperty('--c', '#0E7C5A'); painel.classList.add('tema-claro'); c.classList.add('fu-tela');
@@ -4949,19 +4949,27 @@ function abreFinancas(m) {
     const SEM = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'], MES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
     const CHIP = { fixa: 'conta fixa', parcela: 'parcela', avulsa: 'avulsa', receber: 'a receber', entrada: 'entrada', divida: 'parcela' };
     const monta = () => { S = finMonta({ contas: Ec.itens, pagos: Ep.itens }); return S; };
-    const box = elD('div', 'fu'); c.append(box);
+    const FN_ABAS = [['inicio', 'Início', '<path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/>'], ['contas', 'Contas', '<rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/>'], ['receber', 'Receber', '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>'], ['metas', 'Metas', '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8"/>'], ['mais', 'Mais', '<circle cx="5.5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="18.5" cy="12" r="1.4"/>']];
+    const fn = elD('div', 'fn'), tri = elD('div', 'fn-trilho'), nav = elD('nav', 'fn-nav'), pag = {}, bt = {}, semMov = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let abaAt = 0, rolT;
+    const marcaAba = i => { abaAt = i; FN_ABAS.forEach(([k], j) => { bt[k].classList.toggle('on', j === i); bt[k].setAttribute('aria-current', j === i ? 'page' : 'false'); }); };
+    const vaiAba = (i, liso) => { tri.scrollTo({ left: i * tri.clientWidth, behavior: liso && !semMov ? 'smooth' : 'auto' }); marcaAba(i); };
+    FN_ABAS.forEach(([k, t, ic], i) => { const p = elD('section', 'fn-pag'), b = elD('button', 'fn-bt'); p.setAttribute('aria-label', t); pag[k] = elD('div', 'fu'); p.append(pag[k]); tri.append(p); b.type = 'button'; b.innerHTML = '<svg viewBox="0 0 24 24">' + ic + '</svg>'; b.append(elD('span', '', t)); b.onclick = () => vaiAba(i, true); bt[k] = b; nav.append(b); });
+    tri.addEventListener('scroll', () => { clearTimeout(rolT); rolT = setTimeout(() => { const i = Math.round(tri.scrollLeft / Math.max(1, tri.clientWidth)); if (i !== abaAt) marcaAba(i); }, 60); }, { passive: true });
+    tri.addEventListener('touchstart', e => { if (abaAt > 0) e.stopPropagation(); }, { passive: true });   // da 2ª aba em diante, puxar da borda volta uma aba, não fecha a tela
+    nav.setAttribute('aria-label', 'Finanças'); fn.append(tri, nav); c.append(fn); marcaAba(0);
     const abertos = { pagas: false, devo: false, devem: false, outras: false };
     const pop = (titulo, corpo) => { const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card fin-card'), x = elD('button', 'pp-x'); x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; card.append(x, elD('div', 'pp-perg', titulo), corpo); ov.append(card); document.body.append(ov); fechaPuxando(ov, fecha, () => card, () => card); return fecha; };
     const repinta = () => { monta(); pinta(); };
     // ---- ações (tudo grava no contas/financas.json com dia e hora)
     const marcaRapido = async it => {   // 1 toque no círculo: paga com o valor da conta; dá pra desfazer
       if (it.pago) { const id = it.pago.appId; if (!(await Ep.apaga(id, true))) return; repinta(); edFaixaDesfazer('Desmarcado', async () => { await Ep.apaga(id, false); repinta(); }); return; }
-      const g = await Ep.lanca({ conta: it.id, mes: finChave(mesAt), feito: edAgora(), valor_feito: it.valor, forma: '' }, 'Pagamento marcado pelo app');
+      const g = await Ep.lanca({ conta: it.id, mes: it.mes || finChave(mesAt), feito: edAgora(), valor_feito: it.valor, forma: '' }, 'Pagamento marcado pelo app');
       if (g) { repinta(); edFaixaDesfazer((it.lado === 'receber' ? 'Recebido: ' : 'Pago: ') + it.nome + ' · ' + reaisFin(it.valor), async () => { await Ep.apaga(g.id || (Ep.itens[Ep.itens.length - 1] || {}).id, true); repinta(); }); }
     };
     const marcarComValor = async it => {
       const r = await finPedePago(it.nome, it.valor, it.lado); if (!r) return;
-      if (await Ep.lanca({ conta: it.id, mes: finChave(mesAt), feito: edAgora(), valor_feito: r.valor, forma: r.forma }, 'Pagamento marcado pelo app')) { repinta(); showNote((it.lado === 'receber' ? 'Recebido: ' : 'Pago: ') + it.nome); }
+      if (await Ep.lanca({ conta: it.id, mes: it.mes || finChave(mesAt), feito: edAgora(), valor_feito: r.valor, forma: r.forma }, 'Pagamento marcado pelo app')) { repinta(); showNote((it.lado === 'receber' ? 'Recebido: ' : 'Pago: ') + it.nome); }
     };
     const pagaPessoa = async p => {
       const r = await finPedePago(p.nome, p.falta > 0 ? Math.min(p.vp || (p.pagamentos[p.pagamentos.length - 1] || {}).valor || p.falta, p.falta) : '', p.lado); if (!r) return;
@@ -5014,49 +5022,60 @@ function abreFinancas(m) {
       b.append(top, bar, elD('small', '', pct + '% ' + (lado === 'pagar' ? 'pago' : 'recebido') + (x.parcelas && x.vp ? ' · ' + x.parcelas + 'x de ' + reaisFin(x.vp) : x.vp ? ' · ' + reaisFin(x.vp) + ' por mês' : '') + (ult ? ' · último ' + String(ult.quando || ult.data).slice(0, 5) : '') + (!x.total ? ' · sem total' : '')));
       return b;
     };
-    const pinta = () => {
-      const y0 = c.scrollTop; box.replaceChildren();
-      const { its, resumo } = finLista(S, mesAt, hoje), atual = finChave(mesAt) === finChave(hoje);
-      const pagar = its.filter(x => x.lado === 'pagar'), aPagar = pagar.filter(x => !x.pago), pagas = its.filter(x => x.pago), aRec = its.filter(x => x.lado === 'receber' && !x.pago);
-      const ordem = { atrasada: 0, hoje: 1, vencer: 2, semreg: 3 }; aPagar.sort((a, b) => ordem[a.estado] - ordem[b.estado] || a.quando - b.quando);
+    const doMes = M => {
+      const { its, resumo } = finLista(S, M, hoje), pagar = its.filter(x => x.lado === 'pagar'), aPagar = pagar.filter(x => !x.pago), pagas = its.filter(x => x.pago), aRec = its.filter(x => x.lado === 'receber' && !x.pago), ordem = { atrasada: 0, hoje: 1, vencer: 2, semreg: 3 };
+      its.forEach(x => { x.mes = finChave(M); }); aPagar.sort((a, b) => ordem[a.estado] - ordem[b.estado] || a.quando - b.quando);
       const totMes = pagar.reduce((n, x) => n + finNum(x.pago && x.pago.valor !== '' ? x.pago.valor : x.valor), 0), jaPago = pagar.filter(x => x.pago).reduce((n, x) => n + finNum(x.pago.valor), 0);
-      const renda = S.fixas.filter(f => f.tipo === 'entrada' && f.dia).reduce((n, f) => n + f.valor, 0), sobra = renda - totMes;
-      // mês
-      const nav = elD('div', 'fu-mes'), mv = (n, t, rot) => { const b = elD('button', '', t); b.type = 'button'; b.setAttribute('aria-label', rot); b.onclick = () => { mesAt = new Date(mesAt.getFullYear(), mesAt.getMonth() + n, 1); pinta(); }; return b; };
-      const tit = elD('button', 'fu-mest', MES[mesAt.getMonth()].replace(/^./, x => x.toUpperCase()) + (mesAt.getFullYear() !== hoje.getFullYear() ? ' de ' + mesAt.getFullYear() : '')); tit.type = 'button'; tit.title = 'Voltar pro mês de hoje'; tit.onclick = () => { mesAt = new Date(hoje.getFullYear(), hoje.getMonth(), 1); pinta(); };
-      const mais = elD('button', 'fu-mais'); mais.type = 'button'; mais.setAttribute('aria-label', 'Lançar'); mais.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>'; mais.onclick = novaConta;
-      nav.append(mv(-1, '‹', 'Mês anterior'), tit, mv(1, '›', 'Próximo mês'), mais); box.append(nav);
-      // herói
-      const her = elD('div', 'fu-heroi' + (renda && sobra < 0 ? ' neg' : '')), pct = totMes ? Math.round(jaPago / totMes * 100) : 100;
-      if (renda) her.append(elD('span', '', 'Sobra no mês'), elD('b', '', reaisFin(sobra)), elD('small', '', 'entra ' + reaisFin(renda) + ' · sai ' + reaisFin(totMes)));
-      else her.append(elD('span', '', aPagar.length ? 'Falta pagar ' + (atual ? 'este mês' : 'no mês') : 'Tudo pago ' + (atual ? 'este mês' : 'no mês')), elD('b', '', reaisFin(resumo.aPagar)), elD('small', '', 'de ' + reaisFin(totMes) + ' no mês'));
-      const bar = elD('div', 'fu-barra grande'), bi = elD('i'); bi.style.width = Math.min(100, pct) + '%'; bar.append(bi); her.append(bar, elD('small', 'fu-pago', 'Pago ' + reaisFin(jaPago) + ' · ' + pct + '%'));
-      box.append(her);
-      // a surpresa: quanto dá pra gastar por dia (só com a renda lançada e no mês de hoje)
-      if (atual) {
-        const fim = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0).getDate(), dias = fim - hoje.getDate() + 1, dia = elD('button', 'fu-dia'); dia.type = 'button';
-        if (renda) { const livre = (renda - jaPago - resumo.aPagar) / dias; dia.classList.add(livre > 30 ? 'bom' : livre > 0 ? 'meio' : 'neg'); dia.append(elD('b', '', livre > 0 ? 'Você pode gastar ' + reaisFin(Math.floor(livre)) + ' por dia' : 'O mês está no vermelho'), elD('small', '', 'até o dia ' + fim + ', depois de pagar o que falta')); dia.onclick = () => pop('De onde vem esse número', (() => { const d = elD('div', 'fin-det'); [['Entra no mês', renda], ['Já pago', -jaPago], ['Ainda falta pagar', -resumo.aPagar], ['Sobra', renda - jaPago - resumo.aPagar]].forEach(([t, v]) => { const l = elD('div', 'fu-conta'); l.append(elD('span', '', t), elD('b', '', reaisFin(v))); d.append(l); }); d.append(elD('p', 'p-nota', 'Dividido pelos ' + dias + ' dias que faltam no mês.')); return d; })()); }
-        else { dia.classList.add('vazio'); dia.append(elD('b', '', 'Quanto você pode gastar por dia?'), elD('small', '', 'Lança o seu salário e eu faço a conta')); dia.onclick = () => edFormulario({ titulo: 'Entrada do mês', campos: campos(), v: { tipo: 'entrada', nome: 'Salário' }, aoSalvar: async v => { if (await Ec.lanca(v, 'Entrada nova pelo app')) { repinta(); showNote('Guardado: ' + v.nome); } } }); }
-        box.append(dia);
-      }
-      // você deve / te devem
+      return { its, resumo, pagar, aPagar, pagas, aRec, totMes, jaPago, pct: totMes ? Math.round(jaPago / totMes * 100) : 100 };
+    };
+    const entraDia = () => { const ents = S.fixas.filter(f => f.tipo === 'entrada' && f.dia); if (!ents.length) return null; const prox = ents.map(f => { let d = finDiaMes(hoje.getFullYear(), hoje.getMonth(), f.dia); if (d <= hoje) d = finDiaMes(hoje.getFullYear(), hoje.getMonth() + 1, f.dia); return [d, f]; }).sort((a, b) => a[0] - b[0])[0]; return { ents, renda: ents.reduce((n, f) => n + f.valor, 0), quando: prox[0], nome: prox[1].nome, dias: Math.max(1, Math.round((prox[0] - hoje) / 864e5)) }; };
+    const pinta = () => {
+      const rol = {}; Object.entries(pag).forEach(([k, p]) => { rol[k] = p.parentNode.scrollTop; p.replaceChildren(); });
+      const I = doMes(new Date(hoje.getFullYear(), hoje.getMonth(), 1)), A = finChave(mesAt) === finChave(hoje) ? I : doMes(mesAt), atual = A === I;
       const devo = S.pessoas.filter(p => p.lado === 'pagar'), devem = S.pessoas.filter(p => p.lado === 'receber'), sd = devo.reduce((n, x) => n + x.falta, 0), sr = devem.reduce((n, x) => n + x.falta, 0);
-      const pil = elD('div', 'fu-pilulas'); [['Você deve', sd, 'devo', 'pag'], ['Te devem', sr, 'devem', 'rec']].forEach(([t, v, k, cl]) => { const b = elD('button', 'fu-pil ' + cl); b.type = 'button'; b.append(elD('span', '', t), elD('b', '', reaisFin(v))); b.onclick = () => { abertos[k] = true; pinta(); box.querySelector('.fu-sec-' + k)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }; pil.append(b); }); box.append(pil);
-      // falta pagar no mês
-      const lp = aPagar.map(linha); if (!lp.length) lp.push(elD('p', 'fu-vazio', 'Nada pra pagar neste mês.'));
-      box.append(secao('Falta pagar', reaisFin(resumo.aPagar), null, lp));
-      if (aRec.length) box.append(secao('Pra receber no mês', '+ ' + reaisFin(resumo.aReceber), null, aRec.map(linha)));
-      const anuais = S.anuais.filter(a => (a.mes || '').toLowerCase().startsWith(MES[mesAt.getMonth()].slice(0, 3))); if (anuais.length) box.append(secao('Vence uma vez por ano', null, null, anuais.map(a => { const l = elD('button', 'fu-mini'); l.type = 'button'; l.append(elD('strong', '', a.nome), elD('small', '', a.nota || '')); l.onclick = () => editaConta(a); return l; })));
-      if (pagas.length) box.append(secao('Pagas e recebidas (' + pagas.length + ')', reaisFin(jaPago), 'pagas', pagas.map(linha)));
-      // por pessoa
       const ordF = ls => ls.slice().sort((a, b) => (b.falta > 0) - (a.falta > 0) || b.falta - a.falta);
       const porPessoa = (ls, lado) => { const out = [], vistos = {}; ordF(ls).forEach(x => { const k = x.pessoa; if (k && ls.filter(y => y.pessoa === k).length > 1) { if (vistos[k]) return; vistos[k] = 1; const gs = ls.filter(y => y.pessoa === k), h = elD('div', 'fu-grupo'); h.append(elD('strong', '', k), elD('b', '', reaisFin(gs.reduce((n, y) => n + y.falta, 0)) + ' · ' + gs.length + ' dívidas')); out.push(h, ...gs.map(y => { const b = pessoa(y, lado); b.classList.add('no-grupo'); return b; })); } else out.push(pessoa(x, lado)); }); return out; };   // 2 dívidas da mesma pessoa juntas (May 24/11: o Vô tem o 1º empréstimo e o carro)
-      const s1 = secao('Você deve', reaisFin(sd), 'devo', porPessoa(devo, 'pagar')); s1.classList.add('fu-sec-devo'); box.append(s1);
-      const s2 = secao('Te devem', reaisFin(sr), 'devem', porPessoa(devem, 'receber')); s2.classList.add('fu-sec-devem'); box.append(s2);
-      // outras (sem dia, anuais de outros meses, entradas)
+      // ---- Início: falta pagar este mês, quanto dá pra gastar por dia, você deve / te devem, as próximas contas
+      const ini = pag.inicio, her = elD('div', 'fu-heroi'), cal = elD('button', 'fn-cal'), bar = elD('div', 'fu-barra grande'), bi = elD('i');
+      cal.type = 'button'; cal.setAttribute('aria-label', 'Ver as contas do mês'); cal.innerHTML = '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>'; cal.onclick = () => vaiAba(1, true);
+      bi.style.width = Math.min(100, I.pct) + '%'; bar.append(bi);
+      her.append(cal, elD('span', '', I.aPagar.length ? 'Falta pagar este mês' : 'Tudo pago este mês'), elD('b', '', reaisFin(I.resumo.aPagar)), elD('small', '', 'De ' + reaisFin(I.totMes) + ' no mês'), bar, elD('small', 'fu-pago', 'Pago ' + reaisFin(I.jaPago) + ' · ' + I.pct + '%'));
+      ini.append(her);
+      const E = entraDia(), dia = elD('button', 'fu-dia fn-dia'); dia.type = 'button'; dia.append(elD('span', 'fn-diat', 'Quanto você pode gastar por dia?'));
+      if (E) {
+        const livre = E.renda - I.jaPago - I.resumo.aPagar, porDia = livre / E.dias;
+        dia.classList.add(porDia > 30 ? 'bom' : porDia > 0 ? 'meio' : 'neg');
+        dia.append(elD('b', '', porDia > 0 ? reaisFin(Math.floor(porDia * 100) / 100) + ' por dia' : 'O mês está no vermelho'), elD('small', '', 'Até ' + pad(E.quando.getDate()) + '/' + pad(E.quando.getMonth() + 1) + ', quando entra ' + E.nome + ' · ' + E.dias + (E.dias === 1 ? ' dia' : ' dias')), elD('small', 'fn-conta', reaisFin(E.renda) + ' entra − ' + reaisFin(I.jaPago) + ' pago − ' + reaisFin(I.resumo.aPagar) + ' falta = ' + reaisFin(livre) + ' ÷ ' + E.dias));
+        dia.onclick = () => { if (E.ents.length === 1) return editaConta(E.ents[0]); const cp = elD('div', 'fu-novo'); E.ents.forEach(f => { const b = elD('button', 'fu-op'); b.type = 'button'; b.append(elD('b', '', f.nome), elD('small', '', reaisFin(f.valor) + ' · dia ' + f.dia)); b.onclick = () => { fecha(); editaConta(f); }; cp.append(b); }); const fecha = pop('Quanto entra', cp); };
+      } else {
+        dia.classList.add('vazio'); dia.append(elD('small', '', 'Toca e me diz quanto entra'));
+        dia.onclick = () => edFormulario({ titulo: 'Entrada do mês', campos: campos(), v: { tipo: 'entrada', nome: 'Salário' }, aoSalvar: async v => { if (await Ec.lanca(v, 'Entrada nova pelo app')) { repinta(); showNote('Guardado: ' + v.nome); } } });
+      }
+      ini.append(dia);
+      const pil = elD('div', 'fu-pilulas'); [['Você deve', sd, 3, 'pag'], ['Te devem', sr, 2, 'rec']].forEach(([t, v, i, cl]) => { const b = elD('button', 'fu-pil ' + cl); b.type = 'button'; b.append(elD('span', '', t), elD('b', '', reaisFin(v))); b.onclick = () => vaiAba(i, true); pil.append(b); }); ini.append(pil);
+      const prox = I.aPagar.slice(0, 3).map(linha); if (!prox.length) prox.push(elD('p', 'fu-vazio', 'Nada pra pagar este mês.'));
+      const todas = elD('button', 'fn-todas', 'Ver todas as contas'); todas.type = 'button'; todas.append(elD('i', '', '→')); todas.onclick = () => vaiAba(1, true);
+      ini.append(secao('Suas contas', null, null, prox), todas);
+      // ---- Contas (fase 2 refaz no modelo): o mês por seta, falta pagar, pagas
+      const navM = elD('div', 'fu-mes'), mv = (n, t, rot) => { const b = elD('button', '', t); b.type = 'button'; b.setAttribute('aria-label', rot); b.onclick = () => { mesAt = new Date(mesAt.getFullYear(), mesAt.getMonth() + n, 1); pinta(); }; return b; };
+      const tit = elD('button', 'fu-mest', MES[mesAt.getMonth()].replace(/^./, x => x.toUpperCase()) + (mesAt.getFullYear() !== hoje.getFullYear() ? ' de ' + mesAt.getFullYear() : '')); tit.type = 'button'; tit.title = 'Voltar pro mês de hoje'; tit.onclick = () => { mesAt = new Date(hoje.getFullYear(), hoje.getMonth(), 1); pinta(); };
+      const mais = elD('button', 'fu-mais'); mais.type = 'button'; mais.setAttribute('aria-label', 'Lançar'); mais.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>'; mais.onclick = novaConta;
+      navM.append(mv(-1, '‹', 'Mês anterior'), tit, mv(1, '›', 'Próximo mês'), mais); pag.contas.append(navM);
+      const lp = A.aPagar.map(linha); if (!lp.length) lp.push(elD('p', 'fu-vazio', 'Nada pra pagar neste mês.'));
+      pag.contas.append(secao('Falta pagar', reaisFin(A.resumo.aPagar), null, lp));
+      const anuais = S.anuais.filter(a => (a.mes || '').toLowerCase().startsWith(MES[mesAt.getMonth()].slice(0, 3))); if (anuais.length) pag.contas.append(secao('Vence uma vez por ano', null, null, anuais.map(a => { const l = elD('button', 'fu-mini'); l.type = 'button'; l.append(elD('strong', '', a.nome), elD('small', '', a.nota || '')); l.onclick = () => editaConta(a); return l; })));
+      if (A.pagas.length) pag.contas.append(secao('Pagas e recebidas (' + A.pagas.length + ')', reaisFin(A.jaPago), 'pagas', A.pagas.map(linha)));
+      // ---- Receber (fase 3): o que entra no mês e quem te deve
+      const lr = I.aRec.map(linha); if (!lr.length) lr.push(elD('p', 'fu-vazio', 'Nada pra receber este mês.'));
+      pag.receber.append(secao('Pra receber no mês', I.aRec.length ? '+ ' + reaisFin(I.resumo.aReceber) : null, null, lr));
+      const s2 = secao('Te devem', reaisFin(sr), null, devem.length ? porPessoa(devem, 'receber') : [elD('p', 'fu-vazio', 'Ninguém te deve.')]); s2.classList.add('fu-sec-devem'); pag.receber.append(s2);
+      // ---- Metas (fase 4): as dívidas por credor
+      const s1 = secao('Você deve', reaisFin(sd), null, devo.length ? porPessoa(devo, 'pagar') : [elD('p', 'fu-vazio', 'Você não deve nada.')]); s1.classList.add('fu-sec-devo'); pag.metas.append(s1);
+      // ---- Mais (fase 5): lançar e as outras contas (sem dia, anuais de outros meses)
+      const lan = elD('button', 'fn-todas', 'Lançar conta, entrada ou dívida'); lan.type = 'button'; lan.append(elD('i', '', '+')); lan.onclick = novaConta; pag.mais.append(lan);
       const outras = [...S.fixas.filter(f => !f.dia).map(f => [f.nome, reaisFin(finParte(f)) + (f.nota ? ' · ' + f.nota : ''), f]), ...S.anuais.filter(a => !anuais.includes(a)).map(a => [a.nome, (a.mes ? 'vence em ' + a.mes : '') + (a.nota ? (a.mes ? ' · ' : '') + a.nota : ''), a])];
-      if (outras.length) box.append(secao('Outras contas (' + outras.length + ')', null, 'outras', outras.map(([n, v, ent]) => { const l = elD('button', 'fu-mini'); l.type = 'button'; l.append(elD('strong', '', n), elD('small', '', v)); l.onclick = () => ent.pagos ? detalhe(ent) : editaConta(ent); return l; })));
-      requestAnimationFrame(() => { c.scrollTop = y0; });
+      if (outras.length) pag.mais.append(secao('Outras contas (' + outras.length + ')', null, null, outras.map(([n, v, ent]) => { const l = elD('button', 'fu-mini'); l.type = 'button'; l.append(elD('strong', '', n), elD('small', '', v)); l.onclick = () => ent.pagos ? detalhe(ent) : editaConta(ent); return l; })));
+      requestAnimationFrame(() => Object.entries(pag).forEach(([k, p]) => { p.parentNode.scrollTop = rol[k]; }));
     };
     monta(); pinta(); finLembretes();
   });

@@ -3737,3 +3737,36 @@ body .ed-pop.pjm-pop .ed-card :is(input, select, textarea):focus { outline: 2px 
 .ed-pop.pjm-pop .ed-card ::placeholder { color: var(--muted); opacity: 1; }
 .cart-x { position: absolute; right: calc(20px + env(safe-area-inset-right, 0px)); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); width: 56px; height: 56px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: #111; color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,.25); } .cart-x svg { width: 24px; height: 24px; }   /* #437 volta do Sigma: X da carteirinha embaixo à direita */
 .cart-pontos { position: absolute; left: 50%; bottom: calc(40px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); display: flex; gap: 10px; } .cart-pontos i { width: 10px; height: 10px; border-radius: 50%; background: #c9ccd1; } .cart-pontos i.on { background: #111; }
+
+/* Finanças no modelo dela (#467 fase 1, May 24/11/2026 23:15): 5 abas embaixo, deslizar de lado, cada aba rola por dentro */
+.p-corpo > .tela:has(> .fn) { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; padding: 0; }
+.p-corpo:has(> .tela > .fn) { overflow: hidden; display: flex; flex-direction: column; padding: 0; }
+.p-corpo > .tela > .fn { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; background: #F4FAF7; }
+.fn-trilho { flex: 1 1 0; min-height: 0; display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
+.fn-trilho::-webkit-scrollbar { display: none; }
+.fn-pag { flex: 0 0 100%; min-width: 0; overflow-y: auto; overscroll-behavior-y: contain; scroll-snap-align: start; scroll-snap-stop: always; -webkit-overflow-scrolling: touch; }
+.fn-pag > .fu { padding: 16px 16px 28px; }
+.fn-nav { flex: none; display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; padding: 8px 12px calc(10px + env(safe-area-inset-bottom, 0px)); background: #FFFFFF; border-top: 1px solid #DCEBE4; box-shadow: 0 -4px 16px rgba(14,124,90,.06); }
+.fn .fn-nav .fn-bt { width: auto; height: auto; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 6px 2px; border: 0; border-radius: 14px; background: transparent; color: #6B8A7C; font: inherit; font-size: 12px; font-weight: 600; box-shadow: none; transition: color .2s, background .2s; }
+.fn-bt svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.fn .fn-nav .fn-bt.on { color: #FFFFFF; background: #0E7C5A; }
+.fn .fu-heroi { position: relative; padding: 20px 20px 18px; }
+.fn .fu-heroi > span { text-transform: none; letter-spacing: 0; font-size: 16px; opacity: .92; }
+.fn .fu-heroi > b { font-size: 38px; }
+.fn .fu-heroi > small { font-size: 14px; }
+.fn .fu-heroi .fu-pago { font-size: 15px; opacity: 1; }
+.fn .fn-cal { position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; border: 0; border-radius: 12px; background: rgba(255,255,255,.16); color: #FFFFFF; display: grid; place-items: center; padding: 0; }
+.fn-cal svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.fn .fn-dia { align-items: center; text-align: center; gap: 4px; padding: 14px 16px; }
+.fn .fn-dia .fn-diat { font-size: 15px; font-weight: 700; color: var(--fg); }
+.fn .fn-dia b { font-size: 22px; font-weight: 800; }
+.fn .fn-dia small { font-size: 13px; }
+.fn .fn-dia .fn-conta { margin-top: 2px; font-size: 12px; color: var(--muted); }
+.fn .fu-dia.vazio small { color: var(--fu-ok); font-weight: 600; }
+.fn .fu-pil span { text-transform: none; letter-spacing: 0; font-size: 14px; opacity: .9; }
+.fn .fu-pil b { font-size: 21px; }
+.fn .fu-pil.rec { background: var(--fu-okc); color: var(--fu-ok); }
+.fn .fu-sech span { text-transform: none; letter-spacing: 0; font-size: 17px; font-weight: 700; color: var(--fg); }
+.fn .fn-todas { width: 100%; height: 50px; display: flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 14px; background: #0E7C5A; color: #FFFFFF; font: inherit; font-size: 16px; font-weight: 700; box-shadow: 0 6px 16px rgba(14,124,90,.25); }
+.fn .fn-todas i { font-style: normal; font-size: 18px; }
+@media (prefers-reduced-motion: reduce) { .fn-trilho { scroll-behavior: auto; } .fn-bt { transition: none; } }

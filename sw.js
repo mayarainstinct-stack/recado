@@ -1,3 +1,4 @@
+// v592 (25/11/2026): #467 Financas fase 1: barra de baixo c/ 5 abas (Inicio, Contas, Receber, Metas, Mais), deslizar de lado, Inicio no modelo dela.
 // v591 (25/11/2026): #450 fase 1 refeita: foto do setup viva a esquerda, numeros empilhados a direita, 4 atalhos (Visao Geral, Consoles, Maquinas, Acessorios) e popup de Acessorios.
 // v590 (25/11/2026): #448 faixa do Desfazer: o button global (46 px redondo) espremia o Desfazer pra fora da faixa; agora cabe, largura pelo texto, sobe de baixo.
 // v589 (25/11/2026): #450 fase 1 Maquinas: cartao Coleção atual (3 numeros, Jogados e Em andamento, alerta de inativas) c/ a foto do setup atras; colecao_slim_lista vira a fonte.
