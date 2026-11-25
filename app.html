@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.602">
+<meta name="app-versao" content="2026-11-25.603">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.602"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.603"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -4989,7 +4989,7 @@ function abreFinancas(m) {
     nav.setAttribute('aria-label', 'Finanças'); fn.append(tri, nav); c.append(fn); marcaAba(0);
     const abertos = { pagas: false, devo: false, devem: false, outras: false };
     let filtro = 'todas';
-    const pop = (titulo, corpo) => { const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card fin-card'), x = elD('button', 'pp-x'); x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; card.append(x, elD('div', 'pp-perg', titulo), corpo); ov.append(card); document.body.append(ov); fechaPuxando(ov, fecha, () => card, () => card); return fecha; };
+    const pop = (titulo, corpo) => { const ov = elD('div', 'fixa-pop fin-pop'), card = elD('div', 'pp-card fin-card'), x = elD('button', 'pp-x'); x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; card.append(x, elD('div', 'pp-perg', titulo), corpo); ov.append(card); document.body.append(ov); fechaPuxando(ov, fecha, () => card, () => card); return fecha; };
     const repinta = () => { monta(); pinta(); };
     // ---- ações (tudo grava no contas/financas.json com dia e hora)
     const marcaRapido = async it => {   // 1 toque no círculo: paga com o valor da conta; dá pra desfazer
@@ -5015,6 +5015,7 @@ function abreFinancas(m) {
     const duplica = ent => { const v = copiaDe(ent); v.nome = v.nome + ' (cópia)'; formConta('Duplicar conta', v, async nv => { if (await Ec.lanca(nv, 'Conta duplicada pelo app')) { repinta(); showNote('Guardado: ' + nv.nome); } }); };
     const adia = (ent, it) => { const o = finData(it.venc), sug = finDiaMes(o.getFullYear(), o.getMonth() + 1, o.getDate()); edFormulario({ titulo: 'Passar pra outro mês', campos: [{ nome: 'novo', rotulo: 'Novo vencimento', tipo: 'data', obrigatorio: true }], v: { novo: finIsoD(sug) }, aoSalvar: async nv => { const s = Ec.itens.find(y => y.id === ent.id) || {}, antes = { ...(s.adiada || {}) }, novo = finIso(nv.novo); if (!novo) return; await Ec.edita(ent.id, { adiada: { ...antes, [it.venc]: novo } }); repinta(); edFaixaDesfazer('Adiada pra ' + edDataBr(novo).slice(0, 5), async () => { await Ec.edita(ent.id, { adiada: antes }); repinta(); }); } }); };
     const desfazAdia = async (ent, it) => { const s = Ec.itens.find(y => y.id === ent.id) || {}, antes = { ...(s.adiada || {}) }, agora = { ...antes }; delete agora[it.venc]; await Ec.edita(ent.id, { adiada: agora }); repinta(); edFaixaDesfazer('Voltou pro dia ' + edDataBr(it.venc).slice(0, 5), async () => { await Ec.edita(ent.id, { adiada: antes }); repinta(); }); };
+    const confirmaApaga = ent => { const cp = elD('div', 'fin-conf'), bt = elD('div', 'fin-bts'), sim = elD('button', 'pp-op fin-apaga', 'Apagar'), nao = elD('button', 'pp-op', 'Cancelar'); sim.type = nao.type = 'button'; cp.append(elD('p', 'p-nota', 'Some da lista; dá pra desfazer logo depois.'), bt); bt.append(nao, sim); const fecha = pop('Apagar ' + ent.nome + '?', cp); nao.onclick = fecha; sim.onclick = () => { fecha(); apagaConta(ent); }; };
     const apagaConta = async ent => { await Ec.apaga(ent.id, true); repinta(); edFaixaDesfazer('Conta apagada', async () => { await Ec.apaga(ent.id, false); repinta(); }); };
     const editaConta = ent => { const s = Ec.itens.find(y => y.id === ent.id) || {}; const v = copiaDe(ent); if (ent.mes != null && s.tipo === 'anual') v.mes = s.mes; edFormulario({ titulo: 'Editar', rodape: s.tipo !== 'anual', campos: s.tipo === 'anual' ? [{ nome: 'nome', rotulo: 'Nome', tipo: 'texto', obrigatorio: true }, { nome: 'mes', rotulo: 'Mês que vence', tipo: 'texto' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto_longo' }] : campos(), v, aoSalvar: async nv => { await Ec.edita(ent.id, nv); repinta(); }, aoApagar: () => apagaConta(ent) }); };
     const NOVO = [['fixa', 'Conta do mês', 'Luz, internet, aluguel: vence todo mês'], ['pagar', 'Devo a alguém', 'Empréstimo ou compra que eu pago aos poucos'], ['receber', 'Alguém me deve', 'Dinheiro que vão me devolver'], ['entrada', 'Entrada do mês', 'Salário ou outro dinheiro que entra todo mês']];
@@ -5032,10 +5033,10 @@ function abreFinancas(m) {
       if (ent.lembrar && finData(ent.lembrar) && (!eP || ent.falta > 0)) cp.append(elD('p', 'fin-lembra', 'Lembrete no dia ' + edDataBr(finIso(ent.lembrar)).slice(0, 5)));
       const ul = elD('div', 'fin-hist'); hs.forEach(y => { const l = elD('div'); l.append(elD('span', '', y.quando ? edQuando(y.quando) : y.data), elD('b', '', y.valor !== '' ? reaisFin(y.valor) : '—'), elD('small', '', [y.forma, y.nota].filter(Boolean).join(' · '))); if (y.appId) l.append(edMini('note', 'Editar pagamento', () => { fecha(); editaPagto(y); })); ul.append(l); });
       if (!hs.length) ul.append(elD('p', 'p-nota', 'Nenhum pagamento ainda.')); cp.append(ul);
-      const bts = elD('div', 'ed-acoes'), mk = (t, cl, fn) => { const b = elD('button', cl, t); b.type = 'button'; b.onclick = () => { fecha(); fn(); }; bts.append(b); };
+      const bts = elD('div', 'ed-acoes fin-bts'), mk = (t, cl, fn, onde) => { const b = elD('button', cl, t); b.type = 'button'; b.onclick = () => { fecha(); fn(); }; (onde || bts).append(b); };
       if (eP) mk(lado === 'pagar' ? 'Registrar pagamento' : 'Registrar recebimento', 'pp-op rec', () => pagaPessoa(ent)); else if (it) mk(it.pago ? 'Desmarcar' : (lado === 'receber' ? 'Marcar recebido' : 'Marcar pago'), 'pp-op rec', () => it.pago ? marcaRapido(it) : marcarComValor(it));
-      if (it && it.tipo === 'f' && it.venc) { if (it.estado === 'adiada' || it.de) mk('Desfazer adiamento', 'ed-link', () => desfazAdia(ent, it)); else if (!it.pago) mk('Passar pra outro mês', 'ed-link', () => adia(ent, it)); }
-      mk('Editar', 'ed-link', () => editaConta(ent)); mk('Duplicar', 'ed-link', () => duplica(ent)); mk('Apagar', 'ed-link', () => apagaConta(ent)); cp.append(bts);
+      if (it && it.tipo === 'f' && it.venc) { if (it.estado === 'adiada' || it.de) mk('Desfazer adiamento', 'pp-op larga', () => desfazAdia(ent, it)); else if (!it.pago) mk('Passar pra outro mês', 'pp-op larga', () => adia(ent, it)); }
+      mk('Editar', 'pp-op', () => editaConta(ent)); mk('Duplicar', 'pp-op', () => duplica(ent)); const ap = elD('div', 'fin-apagar'); mk('Apagar conta', 'pp-op fin-apaga', () => confirmaApaga(ent), ap); cp.append(bts, ap);
       const fecha = pop(ent.nome, cp);
     };
     // ---- peças
