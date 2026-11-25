@@ -1,3 +1,4 @@
+// v616 #467 nota do historico 1 vez
 // v615 #467 fase 4a dividas
 // v614 #449 serie: campo Nova tarefa escuro como o do formulario. v613 #449 JWA 2c-2: formulario da musica em 2 abas (genero, instrumentos, letra, obs, serie), series com tarefas de caixinha, anexos na musica
 // v605 #467 fase 3 Receber: herói azul, cartões do mês, parcelas automáticas no detalhe (Hermes 25/11)

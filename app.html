@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.615">
+<meta name="app-versao" content="2026-11-25.616">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.615"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.616"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -5198,7 +5198,7 @@ function abreFinancas(m) {
       else if (!(eP && lado === 'pagar')) { const ini = finData(ent.inicio), desde = ini ? ', desde ' + dataBr(ini).slice(0, 5) : ''; cp.append(elD('p', 'p-nota', (ent.repete === 'semanal' ? 'Toda semana' + desde : ent.repete === 'dias' ? 'A cada ' + (Math.round(finNum(ent.a_cada)) || 1) + ' dias' + desde : ent.dia ? 'Vence todo dia ' + ent.dia : 'Sem dia de vencimento') + (eP ? (ent.vp ? ' · ' + reaisFin(ent.vp) : '') : ' · ' + reaisFin(finParte(ent))) + (ent.metade ? ' (sua metade de ' + reaisFin(ent.valor) + ')' : ''))); }
       const obs = eP ? ent.como : ent.nota; if (obs) cp.append(elD('p', 'fu-obs', obs)); if (it && (it.para || it.de)) cp.append(elD('p', 'fin-lembra', it.para ? 'Adiada pra ' + dataBr(it.para).slice(0, 5) : 'Era dia ' + dataBr(it.de).slice(0, 5) + ', passou pra ' + dataBr(it.quando).slice(0, 5)));
       if (ent.lembrar && finData(ent.lembrar) && (!eP || ent.falta > 0)) cp.append(elD('p', 'fin-lembra', 'Lembrete no dia ' + edDataBr(finIso(ent.lembrar)).slice(0, 5)));
-      if (PS.length) cp.append(elD('p', 'fin-rot', 'Histórico')); const ul = elD('div', 'fin-hist'); hs.forEach(y => { const l = elD('div'); l.append(elD('span', '', y.quando ? edQuando(y.quando) : y.data), elD('b', '', y.valor !== '' ? reaisFin(y.valor) : '—'), elD('small', '', [y.forma, y.nota].filter(Boolean).join(' · '))); if (y.appId) l.append(edMini('note', 'Editar pagamento', () => { fecha(); editaPagto(y); })); ul.append(l); });
+      if (PS.length) cp.append(elD('p', 'fin-rot', 'Histórico')); const nRep = hs.length > 1 && hs.every(y => y.nota && y.nota === hs[0].nota) ? hs[0].nota : ''; if (nRep) cp.append(elD('p', 'fin-nrep', nRep)); const ul = elD('div', 'fin-hist'); hs.forEach(y => { const l = elD('div'); l.append(elD('span', '', y.quando ? edQuando(y.quando) : y.data), elD('b', '', y.valor !== '' ? reaisFin(y.valor) : '—'), elD('small', '', [y.forma, nRep ? '' : y.nota].filter(Boolean).join(' · '))); if (y.appId) l.append(edMini('note', 'Editar pagamento', () => { fecha(); editaPagto(y); })); ul.append(l); });
       if (!hs.length) ul.append(elD('p', 'p-nota', 'Nenhum pagamento ainda.')); cp.append(ul);
       const bts = elD('div', 'ed-acoes fin-bts'), mk = (t, cl, fn, onde) => { const b = elD('button', cl, t); b.type = 'button'; b.onclick = () => { fecha(); fn(); }; (onde || bts).append(b); };
       if (eP) mk(lado === 'pagar' ? 'Registrar pagamento' : 'Registrar recebimento', 'pp-op rec', () => pagaPessoa(ent)); else if (it) mk(it.pago ? 'Desmarcar' : (lado === 'receber' ? 'Marcar recebido' : 'Marcar pago'), 'pp-op rec', () => it.pago ? marcaRapido(it) : marcarComValor(it));

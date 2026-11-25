@@ -3852,6 +3852,7 @@ body .painel.tema-maq.tema-maq .dg-tela .pcd-val { border-left-color: var(--ec, 
 .fn .fu-heroi.fn-met-heroi { margin-bottom: 16px; } .fn .fu-heroi.fn-met-heroi .fu-pago { font-weight: 800; }   /* Metas e dívidas, 4ª tela do modelo (#467 fase 4a) */
 .fn .fn-cartao.fn-div { grid-template-columns: 44px 1fr auto; } .fn-div .fn-cmeio .fu-barra { margin-top: 6px; } .fn-div .fn-cdir small { font-size: 12px; color: var(--muted); white-space: nowrap; }
 .fn-met-grupo { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 10px 4px 0; } .fn-met-grupo strong { font-size: 16px; font-weight: 700; } .fn-met-grupo small { font-size: 13px; color: var(--muted); }
+.fixa-pop.fin-pop .fin-nrep { text-align: left; margin: 4px 2px 6px; font-size: 13px; color: #6B7C85; }   /* nota igual em todo o histórico: 1 vez em cima (#467 4a) */
 .fin-info { display: grid; gap: 0; margin: 4px 0 12px; text-align: left; } .fin-info div { display: flex; justify-content: space-between; gap: 12px; padding: 10px 2px; border-bottom: 1px solid #EEF2F3; } .fin-info span { font-size: 14px; color: #6B7C85; } .fin-info b { font-size: 14px; font-weight: 700; color: #1E2B33; text-align: right; } .fixa-pop.fin-pop .fin-rot { text-align: left; margin: 14px 2px 8px; }
 
 /* Estúdio JWA 2a (25/11): abas numa barra c/ ícone, a escolhida vermelha c/ contorno amarelo; seção entra deslizando; 8 etapas em pontos; histórico e prioridade */
