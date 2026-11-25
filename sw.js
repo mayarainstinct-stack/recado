@@ -1,3 +1,4 @@
+// v629 #449 1b Fiz hoje sai descendo com o painel Luz aberto e volta ao fechar
 // v628 #449 1b luz do pedestal: cor e forca
 // v627 #449 3c linha do toque: N sessoes de meta
 // v626 #449 3c historico: resumo, 8 semanas em barras, semanas com meta
