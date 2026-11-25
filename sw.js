@@ -1,3 +1,4 @@
+// v625 #467 Inicio conta a parcela e mostra Adiantou
 // v624 #467 historico pela data do pagamento
 // v623 #449 3b afinador: aviso de microfone negado visivel
 // v621 #449 fase 3b metronomo afinador repertorio exercicios

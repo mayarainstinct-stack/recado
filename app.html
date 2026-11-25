@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.624">
+<meta name="app-versao" content="2026-11-25.625">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.624"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.625"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -5178,7 +5178,7 @@ function finLista(S, M, hoje) {
     });
   });
   S.pessoas.forEach(p => {
-    const doM = p.pagamentos.filter(y => y.chave === chave), pagoM = doM.length > 1 ? { ...doM[doM.length - 1], valor: Math.round(doM.reduce((s, y) => s + finNum(y.valor), 0) * 100) / 100, varios: doM.length } : doM[0] || null, ult = p.pagamentos[p.pagamentos.length - 1], lq = p.lembrar ? finData(p.lembrar) : null; let q, pago = null;
+    const doM = p.pagamentos.filter(y => y.chave === chave), pagoM = doM.length > 1 ? { ...doM[doM.length - 1], valor: Math.round(doM.reduce((s, y) => s + finNum(y.valor), 0) * 100) / 100, varios: doM.length, ultV: finNum(doM[doM.length - 1].valor) } : doM[0] || null, ult = p.pagamentos[p.pagamentos.length - 1], lq = p.lembrar ? finData(p.lembrar) : null; let q, pago = null;
     if (p.inicio && chave < String(p.inicio).slice(0, 7) && !pagoM) return;   // dívida que só começa depois (PS5: 1ª parcela em 12/2026)
     if (p.dia) { if (p.falta <= 0 && !pagoM) return; if (passado && !pagoM) return; q = finDiaMes(M.getFullYear(), M.getMonth(), p.dia); pago = pagoM; }
     else if (p.falta > 0) { if (!(lq ? (finChave(lq) === chave || (atual && finChave(lq) < chave)) : atual)) return; q = lq || hoje; }
@@ -5438,8 +5438,9 @@ function abreFinancas(m) {
     const doMes = M => {
       const { its, resumo } = finLista(S, M, hoje), pagar = its.filter(x => x.lado === 'pagar'), aPagar = pagar.filter(x => !x.pago && x.estado !== 'adiada'), pagas = its.filter(x => x.pago), aRec = its.filter(x => x.lado === 'receber' && !x.pago), ordem = { atrasada: 0, hoje: 1, vencer: 2, semreg: 3 };
       its.forEach(x => { x.mes = finChave(M); }); aPagar.sort((a, b) => ordem[a.estado] - ordem[b.estado] || a.quando - b.quando);
-      const totMes = pagar.filter(x => x.pago || x.estado !== 'adiada').reduce((n, x) => n + finNum(x.pago && x.pago.valor !== '' ? x.pago.valor : x.valor), 0), jaPago = pagar.filter(x => x.pago).reduce((n, x) => n + finNum(x.pago.valor), 0);
-      return { its, resumo, pagar, aPagar, pagas, aRec, totMes, jaPago, pct: totMes ? Math.round(jaPago / totMes * 100) : 100 };
+      const pv = x => finNum(x.pago && x.pago.valor !== '' ? x.pago.valor : x.valor), conta = x => x.tipo === 'p' && x.pago && x.pago.varios ? x.pago.ultV : pv(x);   // no Início a dívida paga 2+ vezes no mês conta só a parcela (o último pagamento, como antes); o resto é adiantamento (Sigma 13:06)
+      const totMes = pagar.filter(x => x.pago || x.estado !== 'adiada').reduce((n, x) => n + conta(x), 0), jaPago = pagar.filter(x => x.pago).reduce((n, x) => n + conta(x), 0), adiantou = Math.round(pagar.filter(x => x.tipo === 'p' && x.pago).reduce((n, x) => n + (x.pago.varios ? pv(x) - x.pago.ultV : 0), 0) * 100) / 100;
+      return { its, resumo, pagar, aPagar, pagas, aRec, totMes, jaPago, adiantou, pct: totMes ? Math.round(jaPago / totMes * 100) : 100 };
     };
     const entraDia = () => { const ents = S.fixas.filter(f => f.tipo === 'entrada' && f.dia); if (!ents.length) return null; const prox = ents.map(f => { let d = finDiaMes(hoje.getFullYear(), hoje.getMonth(), f.dia); if (d <= hoje) d = finDiaMes(hoje.getFullYear(), hoje.getMonth() + 1, f.dia); return [d, f]; }).sort((a, b) => a[0] - b[0])[0]; return { ents, renda: ents.reduce((n, f) => n + f.valor, 0), quando: prox[0], nome: prox[1].nome, dias: Math.max(1, Math.round((prox[0] - hoje) / 864e5)) }; };
     const pinta = () => {
@@ -5452,7 +5453,7 @@ function abreFinancas(m) {
       const ini = pag.inicio, her = elD('div', 'fu-heroi'), cal = elD('button', 'fn-cal'), bar = elD('div', 'fu-barra grande'), bi = elD('i');
       cal.type = 'button'; cal.setAttribute('aria-label', 'Ver as contas do mês'); cal.innerHTML = '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>'; cal.onclick = () => vaiAba(1, true);
       bi.style.width = Math.min(100, I.pct) + '%'; bar.append(bi);
-      her.append(cal, elD('span', '', I.aPagar.length ? 'Falta pagar este mês' : 'Tudo pago este mês'), elD('b', '', reaisFin(I.resumo.aPagar)), elD('small', '', 'De ' + reaisFin(I.totMes) + ' no mês'), bar, elD('small', 'fu-pago', 'Pago ' + reaisFin(I.jaPago) + ' · ' + I.pct + '%'));
+      her.append(cal, elD('span', '', I.aPagar.length ? 'Falta pagar este mês' : 'Tudo pago este mês'), elD('b', '', reaisFin(I.resumo.aPagar)), elD('small', '', 'De ' + reaisFin(I.totMes) + ' no mês'), bar, elD('small', 'fu-pago', 'Pago ' + reaisFin(I.jaPago) + ' · ' + I.pct + '%'), ...(I.adiantou > 0 ? [elD('small', 'fu-adiant', 'Adiantou ' + reaisFin(I.adiantou) + ' em dívidas')] : []));
       ini.append(her);
       const E = entraDia(), dia = elD('button', 'fu-dia fn-dia'); dia.type = 'button'; dia.append(elD('span', 'fn-diat', 'Quanto você pode gastar por dia?'));
       if (E) {
