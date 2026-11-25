@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.607">
+<meta name="app-versao" content="2026-11-25.608">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.607"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.608"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3877,7 +3877,7 @@ function abreMusica(m) {
       xb.onclick = () => ov.remove(); ov.append(card); document.body.append(ov);
     };
     const grava = async (fn, msg) => { const antes = JSON.parse(JSON.stringify(d.itens)); fn(d.itens); pinta(); if (await gravaJson(m.arq, dd => { dd.itens = dd.itens || []; fn(dd.itens); }, msg, null)) return true; d.itens.splice(0, d.itens.length, ...antes); pinta(); showNote('Não guardou: voltou como estava. Confere a internet.', true); return false; };
-    const CAMPOS = { musica: [{ nome: 'nome', rotulo: 'Música', tipo: 'texto', obrigatorio: true }, { nome: 'texto', rotulo: 'Sobre', tipo: 'texto_longo' }, { nome: 'falta', rotulo: 'O que falta', tipo: 'texto' }, { nome: 'etapa', rotulo: 'Etapa', tipo: 'escolha', opcoes: ET.map((t, k) => [String(k + 1), t]), padrao: '1' }, { nome: 'prioridade', rotulo: 'Prioridade', tipo: 'escolha', opcoes: [['', 'Sem prioridade'], ['alta', 'Alta'], ['media', 'Média'], ['baixa', 'Baixa']], padrao: '' }, { nome: 'data', rotulo: 'Prazo', tipo: 'data' }],
+    const CAMPOS = { musica: [{ nome: 'nome', rotulo: 'Música', tipo: 'texto', obrigatorio: true }, { nome: 'texto', rotulo: 'Sobre', tipo: 'texto_longo' }, { nome: 'falta', rotulo: 'O que falta', tipo: 'texto' }, { nome: 'etapa', rotulo: 'Etapa', tipo: 'escolha', opcoes: ET.map((t, k) => [String(k + 1), t]), padrao: '1' }, { nome: 'prioridade', rotulo: 'Prioridade', tipo: 'escolha', opcoes: [['', 'Sem prioridade'], ['alta', 'Alta'], ['media', 'Média'], ['baixa', 'Baixa']], padrao: '' }, { nome: 'data', rotulo: 'Prazo (dd/mm/aaaa)', tipo: 'data' }],
       setup: [{ nome: 'nome', rotulo: 'Aparelho ou pessoa', tipo: 'texto', obrigatorio: true }, { nome: 'grupo', rotulo: 'Grupo (Som, Instrumentos...)', tipo: 'texto', obrigatorio: true }, { nome: 'texto', rotulo: 'Detalhe', tipo: 'texto_longo' }, { nome: 'foto', rotulo: 'Foto do aparelho', tipo: 'foto' }, { nome: 'tipo', rotulo: 'Ícone', tipo: 'escolha', opcoes: [['amp', 'Amplificador'], ['pedal', 'Pedaleira'], ['teclas', 'Teclado'], ['mic', 'Microfone'], ['interface', 'Interface'], ['guitarra', 'Guitarra'], ['gente', 'Pessoa']], padrao: 'interface' }, { nome: 'bloqueado', rotulo: 'Já tenho?', tipo: 'escolha', opcoes: [['', 'Já tenho'], ['1', 'Ainda não (silhueta ???)']], padrao: '' }],
       ideia: [{ nome: 'nome', rotulo: 'Ideia', tipo: 'texto', obrigatorio: true }, { nome: 'grupo', rotulo: 'Grupo (Cards, Reels...)', tipo: 'texto', obrigatorio: true }, { nome: 'texto', rotulo: 'Detalhe', tipo: 'texto_longo' }] };
     const NOME_SEC = { musica: 'Música', setup: 'Aparelho', ideia: 'Ideia' };

@@ -1,4 +1,4 @@
-// v607 #449 JWA 2a: 8 etapas c/ historico e desfazer, prioridade e prazo, confirma antes de apagar, abas c/ icone
+// v608 #449 JWA 2a: Apagar do formulario da Musica vira botao vermelho 44 px, Prazo c/ dd/mm/aaaa
 // v605 #467 fase 3 Receber: herói azul, cartões do mês, parcelas automáticas no detalhe (Hermes 25/11)
 // v604 #468 detalhe da semanal e a cada N dias mostra a regra (Hermes 25/11)
 // v603 #468 detalhe da conta no tema claro, botões de 44 px, Apagar com confirmação (Hermes 25/11)

@@ -3877,3 +3877,5 @@ body .painel.tema-maq.tema-maq .dg-tela .pcd-val { border-left-color: var(--ec, 
 body:has(#painel.tema-musica:not([hidden])) .fixa-pop .pp-card{background:#121110;border-color:#F0283A;color:#F6F2EE;box-shadow:0 0 24px rgba(240,40,58,.25)}
 body:has(#painel.tema-musica:not([hidden])) .fixa-pop .pp-op.rec{background:#D0101E;border-color:#D0101E;color:#fff}
 body:has(#painel.tema-musica:not([hidden])) .fixa-pop .pp-op:not(.rec){background:transparent;border-color:#3A3533;color:#F6F2EE}
+body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes{flex-wrap:wrap}
+body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;flex:1 0 100%;min-height:44px;margin-top:16px;padding:10px;border:1px solid #F0283A;border-radius:12px;background:transparent;color:#FF6B76;font-size:15px;font-weight:800;text-decoration:none}
