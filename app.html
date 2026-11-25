@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.598">
+<meta name="app-versao" content="2026-11-25.599">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.598"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.599"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2958,12 +2958,12 @@ function desenhaTela() {
     const st = pCorpo.scrollTop; document.body.append(g); g.scrollTop = st; setTimeout(() => g.remove(), 300);
   }
   if (pilha.length !== nAnt && nAnt) { void pCorpo.offsetWidth; pCorpo.classList.add(pilha.length > nAnt ? 'tela-dir' : 'tela-esq'); }
-  const entrada = pilha[pilha.length - 1], [titulo, montar, rolou] = entrada, mae = pilha.length > 1 ? pilha[pilha.length - 2][3] : null; painel.classList.remove('tema-claro', 'tema-cupom', 'tema-planilha', 'tema-folhinha', 'tema-rosa', 'tema-saude', 'tema-contraste', 'tema-planos', 'tema-musica');
+  const entrada = pilha[pilha.length - 1], [titulo, montar, rolou] = entrada, mae = pilha.length > 1 ? pilha[pilha.length - 2][3] : null; painel.classList.remove('tema-claro', 'tema-cupom', 'tema-planilha', 'tema-folhinha', 'tema-rosa', 'tema-saude', 'tema-contraste', 'tema-planos', 'tema-musica', 'tema-maq');
   if (mae) mae.temas.forEach(c => painel.classList.add(c));   // tela filha herda o tema da mãe (May, 09/11/2026: "senão fica cagado"); a filha que quiser outro tema troca no montar   // o tema claro é só da tela que pedir (a Agenda, May 08/11 12:56)
   pTit.textContent = titulo; pCorpo.scrollTop = 0; pExtra.hidden = true;   /* só na raiz do Menu, também quando a tela abre direto pela notificação */ cabecalhoGenerico(); if (pilha.length === 1) iconeTela = iconeTelaHtml = ''; else if (iconeTela || iconeTelaHtml) { const ic = elD('span', 'p-ic'); ic.innerHTML = iconeTelaHtml || icone(iconeTela); pTits.before(ic); }   // toda tela com o quadrado do ícone do Menu (#348)
   pTopo.hidden = pilha.length === 1 && titulo === 'Menu'; painel.classList.toggle('sem-topo', pTopo.hidden);   // sem a barra, o Recados ganha respiro em cima (May 18:47: "colou em cima")   // o Menu começa direto em Recados, sem a barra de cima (May 18:40); voltar fica no botão de baixo e no deslize
   const t = document.createElement('div'); t.className = 'tela'; if (mae) mae.gr.forEach(c => t.classList.add(c)); pCorpo.replaceChildren(t);   // carga atrasada de tela que já saiu cai no invólucro velho
-  const r = montar(t); const guardaTema = () => { entrada[3] = { temas: ['tema-claro', 'tema-cupom', 'tema-planilha', 'tema-folhinha', 'tema-rosa', 'tema-saude', 'tema-planos', 'tema-musica'].filter(c => painel.classList.contains(c)), gr: [...t.classList].filter(c => c.startsWith('gr-') && !c.startsWith('gr-grade')) }; };   // a filha herda daqui
+  const r = montar(t); const guardaTema = () => { entrada[3] = { temas: ['tema-claro', 'tema-cupom', 'tema-planilha', 'tema-folhinha', 'tema-rosa', 'tema-saude', 'tema-planos', 'tema-musica', 'tema-maq'].filter(c => painel.classList.contains(c)), gr: [...t.classList].filter(c => c.startsWith('gr-') && !c.startsWith('gr-grade')) }; };   // a filha herda daqui
   if (pilha[pilha.length - 1] === entrada) { guardaTema(); Promise.resolve(r).then(() => { if (pilha[pilha.length - 1] === entrada && t.isConnected) guardaTema(); }).catch(() => {}); }
   if (rolou) Promise.resolve(r).then(() => { if (t.isConnected) pCorpo.scrollTop = rolou; });   // voltando: devolve a rolagem de onde ela estava
 }
@@ -3356,11 +3356,12 @@ function cartaoGrade({ icone: ic, nome, sub, estado, extra, aoTocar }) {
   b.onclick = aoTocar; return b;
 }
 const listaNx = (itens, vazio) => { const cd = elD('section', 'nx-cartao'); if (!itens.length) cd.append(elD('p', 'nx-vazio', vazio)); else { const ul = elD('ul', 'nx-ul'); itens.forEach(t => ul.append(elD('li', '', simples(t)))); cd.append(ul); } return cd; };
+let diagDaMaq = location.hash === '#diagnostico';   // aberto pelo cartão Diagnóstico da Máquinas: a tela e as filhas herdam o tema de lá (#469)
 function abreDiagnostico(m) {
   if (m && m.arq) return abreProjetos(m);
   if (m) return abreProjetos(Object.assign({}, m, { arq: 'menu/trabalho/diagnostico-projetos.json' }));   // aberto pelo menu do Trabalho: SO projetos de trabalho; os PCs de casa ficam no Geral (18/11/2026)
   tela((m && m.nome) || 'Diagnóstico', c => {
-    painel.style.setProperty('--c', '#15803D'); c.classList.add('dg-tela'); cabecalho({ icone: 'pulso' });
+    painel.style.setProperty('--c', diagDaMaq ? '#4F46E5' : '#15803D'); if (diagDaMaq) painel.classList.add('tema-maq'); c.classList.add('dg-tela'); cabecalho({ icone: 'pulso' });
     c.append(cabNx('Saúde', 'Diagnóstico', 'Toque em um computador para ver os detalhes.'));
     const grade = elD('div', 'dg-grade'); c.append(grade); esqueletoGrade(grade, 6);
     lerArquivo('casa/diagnostico-pcs.json').then(t => JSON.parse(t)).then(dg => {
@@ -7246,7 +7247,7 @@ function abreProjetosMay(m) {
       const p = D.projetos.find(x => x.id === id); c.replaceChildren(); if (!p) { c.append(elD('p', 'p-nota', 'Este projeto foi apagado.')); return; }
       if (p.painel && !X[id]) { X[id] = { diario: [] }; lerArquivo(arqX(id)).then(t => { X[id] = JSON.parse(t); if (!c.contains(document.activeElement)) pinta(); }).catch(() => {}); }
       const px = X[id] || {}, hoje = new Date(new Date().toDateString()), diaDe = s => { const m = String(s || '').match(/^(\d{4})-(\d\d)-(\d\d)/); return m ? new Date(+m[1], m[2] - 1, +m[3]) : null; }, atras = x => { const d = diaDe(x.prazo); return !x.feito && !!d && d < hoje; }, estDe = x => x.estado || 'Pendente';
-      painel.classList.remove('tema-claro', 'tema-cupom', 'tema-planilha', 'tema-folhinha', 'tema-rosa', 'tema-saude', 'tema-planos', 'tema-musica');   // o projeto tem a identidade dele: aberto pela Agenda (clara) não herda o claro, senão o texto branco some (Sigma #395)
+      painel.classList.remove('tema-claro', 'tema-cupom', 'tema-planilha', 'tema-folhinha', 'tema-rosa', 'tema-saude', 'tema-planos', 'tema-musica', 'tema-maq');   // o projeto tem a identidade dele: aberto pela Agenda (clara) não herda o claro, senão o texto branco some (Sigma #395)
       const k = pjmCores(p); pjmCarregaFontes(); c.className = c.className.replace(/\bpjm-t-\S+/g, '').trim(); c.classList.add('pjm-tela', 'pjm-t-' + ((p.tema || {}).estilo || 'padrao')); c.style.backgroundColor = k.fundo; c.style.color = k.texto; [['--pj-f', k.fundo], ['--pj-t', k.texto], ['--pj-d', k.destaque], ['--pj-sd', k.sobreDestaque]].forEach(([n, v]) => c.style.setProperty(n, v)); c.append(pjmHero(p, k));
       const topo = elD('div', 'pjm-topo'); topo.style.background = k.fundo; topo.style.color = k.texto; topo.style.borderBottomColor = k.destaque;
       const ic = elD('span', 'pjm-ic'); ic.innerHTML = icone(p.icone || 'doc'); ic.style.color = k.destaque;
@@ -7973,8 +7974,7 @@ if (location.hash === '#diagnostico') {   // veio da Máquinas: abre o Diagnóst
   donosTela = ['orfeu', 'nyx', 'sigma'];
   history.replaceState(null, '', location.pathname + location.search);
   voltaParaOrigem = (() => { try { return !!document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1; } catch (e) { return false; } })();   // Voltar leva de volta pra página de onde veio
-  document.body.classList.add('modo-trab'); menu.hidden = true; painel.hidden = false; pilha = []; Som.pagina();
-  const forca = setInterval(() => { if (painel.hidden) clearInterval(forca); else document.body.classList.add('modo-trab'); }, 250);   // a conversa que carrega depois não desfaz o visual do Trabalho enquanto o Diagnóstico está aberto
+  menu.hidden = true; painel.hidden = false; pilha = []; Som.pagina();   // fica no tema da Máquinas, sem trocar pro modo Trabalho (May via Lyra 25/11 10:35, #469)
   abreDiagnostico();
 }
 if (voltouDeMenu) {   // voltou de uma página do Menu (Jogos, Máquinas) pelo voltar ou pelo deslizar: reabre o Menu

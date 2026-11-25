@@ -1,3 +1,4 @@
+// v599 (25/11/2026): #469 Diagnostico aberto pela Maquinas fica no tema de la (sem modo-trab), ate o ultimo nivel.
 // v598 #467 Inicio vencida sem pagamento em vermelho
 // v597 #467 vencida sem pagamento = Atrasada
 // v596 (25/11/2026): #450 cartoes de PC voltam pra arte antiga (May 10:33); junta a v595 do Hermes (#467 Contas).
