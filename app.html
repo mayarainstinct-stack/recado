@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.619">
+<meta name="app-versao" content="2026-11-25.620">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.619"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.620"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3636,7 +3636,7 @@ function edPedeValor(titulo, sugestao) {
 async function edSobeFoto(file) { const rd = await reduzir(file), nome = comTirada(nomeArq('recados-fotos', new Date(), 0, rd.ext || 'jpg'), await horaTirada(file)); await apiOk(apiDe(nome), { method: 'PUT', body: JSON.stringify({ message: 'foto pelo app', content: rd.b64 }) }); return nome; }
 // formulário pelos campos: v = valores atuais (editar) ou {} (lançar); aoSalvar(valores); aoApagar opcional
 const VALIDA = { data: t => { const m = t.match(/^(\d{2})\/(\d{2})\/(\d{4})$/); if (!m) return false; const d = new Date(+m[3], +m[2] - 1, +m[1]); return d.getFullYear() === +m[3] && d.getMonth() === +m[2] - 1 && d.getDate() === +m[1] && +m[3] > 1900 && +m[3] < 2100; }, numero: t => /^-?\d+([.,]\d+)?$/.test(t) };
-function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar, rodape }) {
+function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar, rodape, apagarForte }) {   // apagarForte: texto do botão vermelho separado no fim (Finanças, Sigma 25/11); sem ele fica o link Apagar
   const ov = elD('div', 'fixa-pop ed-pop'), card = elD('div', 'pp-card ed-card'), x = elD('button', 'pp-x'), form = elD('form', 'ed-form'), els = {};
   x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); };
   { const tl = document.querySelector('#p-corpo .tela'), cor = (tl && getComputedStyle(tl).getPropertyValue('--vs-c').trim()) || getComputedStyle(painel).getPropertyValue('--c').trim(); if (cor) card.style.setProperty('--quem', cor); if (painel.classList.contains('tema-musica')) ov.classList.add('escuro'); else if (painel.classList.contains('tema-claro') || painel.classList.contains('tema-saude') || painel.classList.contains('tema-planos') || document.querySelector('#p-corpo .vs-tela, #p-corpo .gr-saude')) { ov.classList.add('claro'); const f = (tl && getComputedStyle(tl).getPropertyValue('--vs-f').trim()) || (painel.classList.contains('tema-planos') ? '#FBF3E2' : ''); if (f) card.style.setProperty('--fundo-claro', f); } }   // tela filha herda a mãe (Sigma #396): o formulário vem na cor da tela que abriu, e escuro na Música
@@ -3663,7 +3663,8 @@ function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar, rodape }) {
   if (nomesAba.length > 1) { vaiAba(nomesAba[0]); ve(); form.addEventListener('change', ve); }
   const erro = elD('p', 'ed-erro'); erro.hidden = true; const ops = elD('div', 'ed-acoes'), pe = rodape ? elD('div', 'ed-pe') : null;
   const ok = elD('button', 'pp-op rec', 'Guardar'); ok.type = 'submit'; ops.append(ok);
-  if (aoApagar) { const ap = elD('button', 'ed-link', 'Apagar'); ap.type = 'button'; ap.onclick = () => { fecha(); aoApagar(); }; ops.append(ap); }
+  if (aoApagar && !apagarForte) { const ap = elD('button', 'ed-link', 'Apagar'); ap.type = 'button'; ap.onclick = () => { fecha(); aoApagar(); }; ops.append(ap); }
+  if (aoApagar && apagarForte) { const sep = elD('div', 'ed-apagar-forte'), ap = elD('button', 'pp-op', apagarForte); ap.type = 'button'; ap.onclick = () => { fecha(); aoApagar(); }; sep.append(ap); form.append(sep); }
   if (pe) { pe.append(erro, ops); form.append(pe); card.classList.add('ed-com-pe'); } else form.append(erro, ops);
   form.onsubmit = async e => {
     e.preventDefault(); const out = {};
@@ -5203,14 +5204,14 @@ function abreFinancas(m) {
     const desfazAdia = async (ent, it) => { const s = Ec.itens.find(y => y.id === ent.id) || {}, antes = { ...(s.adiada || {}) }, agora = { ...antes }; delete agora[it.venc]; await Ec.edita(ent.id, { adiada: agora }); repinta(); edFaixaDesfazer('Voltou pro dia ' + edDataBr(it.venc).slice(0, 5), async () => { await Ec.edita(ent.id, { adiada: antes }); repinta(); }); };
     const confirmaApaga = ent => { const cp = elD('div', 'fin-conf'), bt = elD('div', 'fin-bts'), sim = elD('button', 'pp-op fin-apaga', 'Apagar'), nao = elD('button', 'pp-op', 'Cancelar'); sim.type = nao.type = 'button'; cp.append(elD('p', 'p-nota', 'Some da lista; dá pra desfazer logo depois.'), bt); bt.append(nao, sim); const fecha = pop('Apagar ' + ent.nome + '?', cp); nao.onclick = fecha; sim.onclick = () => { fecha(); apagaConta(ent); }; };
     const apagaConta = async ent => { await Ec.apaga(ent.id, true); repinta(); edFaixaDesfazer('Conta apagada', async () => { await Ec.apaga(ent.id, false); repinta(); }); };
-    const editaConta = ent => { const s = Ec.itens.find(y => y.id === ent.id) || {}; const v = copiaDe(ent); if (ent.mes != null && s.tipo === 'anual') v.mes = s.mes; edFormulario({ titulo: 'Editar', rodape: s.tipo !== 'anual', campos: s.tipo === 'anual' ? [{ nome: 'nome', rotulo: 'Nome', tipo: 'texto', obrigatorio: true }, { nome: 'mes', rotulo: 'Mês que vence', tipo: 'texto' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto_longo' }] : campos(), v, aoSalvar: async nv => { await Ec.edita(ent.id, nv); repinta(); }, aoApagar: () => apagaConta(ent) }); };
+    const editaConta = ent => { const s = Ec.itens.find(y => y.id === ent.id) || {}; const v = copiaDe(ent); if (ent.mes != null && s.tipo === 'anual') v.mes = s.mes; edFormulario({ titulo: 'Editar', rodape: s.tipo !== 'anual', campos: s.tipo === 'anual' ? [{ nome: 'nome', rotulo: 'Nome', tipo: 'texto', obrigatorio: true }, { nome: 'mes', rotulo: 'Mês que vence', tipo: 'texto' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto_longo' }] : campos(), v, aoSalvar: async nv => { await Ec.edita(ent.id, nv); repinta(); }, aoApagar: () => confirmaApaga(ent), apagarForte: ent.lado === 'receber' || s.tipo === 'receber' || s.tipo === 'entrada' ? 'Apagar recebimento' : 'Apagar conta' }); };
     const NOVO = [['fixa', 'Conta do mês', 'Luz, internet, aluguel: vence todo mês'], ['pagar', 'Devo a alguém', 'Empréstimo ou compra que eu pago aos poucos'], ['receber', 'Alguém me deve', 'Dinheiro que vão me devolver'], ['entrada', 'Entrada do mês', 'Salário ou outro dinheiro que entra todo mês']];
     const novaConta = (so, tit) => {
       const cp = elD('div', 'fu-novo');
       NOVO.filter(x => !Array.isArray(so) || so.includes(x[0])).forEach(([tipo, t, s]) => { const b = elD('button', 'fu-op'); b.type = 'button'; b.append(elD('b', '', t), elD('small', '', s)); b.onclick = () => { fecha(); formConta(t, { tipo }, async v => { if (await Ec.lanca(v, 'Conta nova pelo app')) { repinta(); showNote('Guardado: ' + v.nome); } }); }; cp.append(b); });
       const fecha = pop(tit || 'O que você quer lançar?', cp);
     };
-    const editaPagto = y => edFormulario({ titulo: 'Editar pagamento', campos: (Ep.base.campos && Ep.base.campos.pagamentos) || FIN_CAMPOS.pagamentos, v: { valor_feito: y.valor, forma: y.forma, feito: y.quando, nota: y.nota }, aoSalvar: async nv => { await Ep.edita(y.appId, nv); repinta(); }, aoApagar: async () => { await Ep.apaga(y.appId, true); repinta(); edFaixaDesfazer('Pagamento apagado', async () => { await Ep.apaga(y.appId, false); repinta(); }); } });
+    const editaPagto = y => edFormulario({ titulo: 'Editar pagamento', campos: (Ep.base.campos && Ep.base.campos.pagamentos) || FIN_CAMPOS.pagamentos, v: { valor_feito: y.valor, forma: y.forma, feito: y.quando, nota: y.nota }, aoSalvar: async nv => { await Ep.edita(y.appId, nv); repinta(); }, aoApagar: async () => { await Ep.apaga(y.appId, true); repinta(); edFaixaDesfazer('Pagamento apagado', async () => { await Ep.apaga(y.appId, false); repinta(); }); }, apagarForte: 'Apagar pagamento' });
     const detalhe = (ent, it) => {
       const eP = !!ent.pagamentos, cp = elD('div', 'fin-det'), lado = eP ? ent.lado : (ent.tipo === 'entrada' ? 'receber' : 'pagar'), hs = (eP ? ent.pagamentos : ent.pagos || []).slice().reverse();
       if (eP) { const pct = ent.total ? Math.min(100, Math.round(ent.pago / ent.total * 100)) : 0, r = elD('div', 'fu-detres'); r.append(elD('b', '', ent.falta > 0 ? 'Falta ' + reaisFin(ent.falta) : 'Quitado'), elD('small', '', (lado === 'pagar' ? 'Pago ' : 'Recebido ') + reaisFin(ent.pago) + ' de ' + reaisFin(ent.total))); const bar = elD('div', 'fu-barra'), i = elD('i'); i.style.width = pct + '%'; bar.append(i); r.append(bar); cp.append(r);
@@ -5304,10 +5305,10 @@ function abreFinancas(m) {
       const it = await Em.lanca({ nome: String(nv.nome || '').trim(), alvo: finNum(nv.alvo), prazo: nv.prazo || '', icone: nv.icone || 'outra' }, 'Meta nova pelo app'); if (!it) return;
       if (finNum(nv.ja)) await Ea.lanca({ meta: it.id, valor: finNum(nv.ja), quando: String(nv.ja_quando || '').trim(), nota: 'Já guardado antes' }, 'Valor já guardado na meta nova');
       repinta(); showNote('Meta criada: ' + it.nome); } });
-    const editaMeta = mt => edFormulario({ titulo: 'Editar meta', campos: camposMeta(), v: { nome: mt.nome, alvo: mt.alvo, prazo: mt.prazo || '', icone: mt.icone || 'outra' }, aoSalvar: async nv => { await Em.edita(mt.id, { nome: String(nv.nome || '').trim(), alvo: finNum(nv.alvo), prazo: nv.prazo || '', icone: nv.icone || 'outra' }); repinta(); }, aoApagar: () => apagaMeta(mt) });
+    const editaMeta = mt => edFormulario({ titulo: 'Editar meta', campos: camposMeta(), v: { nome: mt.nome, alvo: mt.alvo, prazo: mt.prazo || '', icone: mt.icone || 'outra' }, aoSalvar: async nv => { await Em.edita(mt.id, { nome: String(nv.nome || '').trim(), alvo: finNum(nv.alvo), prazo: nv.prazo || '', icone: nv.icone || 'outra' }); repinta(); }, aoApagar: () => confirmaMeta(mt), apagarForte: 'Apagar meta' });
     const apagaMeta = async mt => { await Em.apaga(mt.id, true); repinta(); edFaixaDesfazer('Meta apagada', async () => { await Em.apaga(mt.id, false); repinta(); }); };
     const guardaMeta = mt => edFormulario({ titulo: 'Guardar em ' + mt.nome, campos: camposAporte(), v: { quando: edAgora() }, aoSalvar: async nv => { const v = finNum(nv.valor); if (!v) { showNote('Põe quanto guardou.', true); return; } await Ea.lanca({ meta: mt.id, valor: v, quando: String(nv.quando || '').trim(), nota: nv.nota || '' }, 'Dinheiro guardado na meta pelo app'); repinta(); showNote('Guardado: ' + reaisFin(v)); } });
-    const editaAporte = a => edFormulario({ titulo: 'Editar', campos: camposAporte(), v: { valor: a.valor, quando: a.quando || '', nota: a.nota || '' }, aoSalvar: async nv => { await Ea.edita(a.id, { valor: finNum(nv.valor), quando: String(nv.quando || '').trim(), nota: nv.nota || '' }); repinta(); }, aoApagar: async () => { await Ea.apaga(a.id, true); repinta(); edFaixaDesfazer('Apagado', async () => { await Ea.apaga(a.id, false); repinta(); }); } });
+    const editaAporte = a => edFormulario({ titulo: 'Editar', campos: camposAporte(), v: { valor: a.valor, quando: a.quando || '', nota: a.nota || '' }, aoSalvar: async nv => { await Ea.edita(a.id, { valor: finNum(nv.valor), quando: String(nv.quando || '').trim(), nota: nv.nota || '' }); repinta(); }, aoApagar: async () => { await Ea.apaga(a.id, true); repinta(); edFaixaDesfazer('Apagado', async () => { await Ea.apaga(a.id, false); repinta(); }); }, apagarForte: 'Apagar valor guardado' });
     const detalheMeta = mt => {
       const cp = elD('div', 'fin-det'), r = elD('div', 'fu-detres'), bar = elD('div', 'fu-barra'), i = elD('i'), inf = elD('div', 'fin-info'), li = (k, v) => { const d = elD('div'); d.append(elD('span', '', k), elD('b', '', v)); inf.append(d); }, pz = String(mt.prazo || '').match(/^(\d{4})-(\d\d)/);
       i.style.width = mt.pct + '%'; bar.append(i); r.append(elD('b', '', mt.falta > 0 ? 'Falta ' + reaisFin(mt.falta) : 'Meta batida'), elD('small', '', 'Guardado ' + reaisFin(mt.guardado) + ' de ' + reaisFin(mt.alvo)), bar); cp.append(r);
