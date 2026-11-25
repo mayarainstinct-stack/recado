@@ -3879,3 +3879,29 @@ body:has(#painel.tema-musica:not([hidden])) .fixa-pop .pp-op.rec{background:#D01
 body:has(#painel.tema-musica:not([hidden])) .fixa-pop .pp-op:not(.rec){background:transparent;border-color:#3A3533;color:#F6F2EE}
 body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes{flex-wrap:wrap}
 body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;flex:1 0 100%;min-height:44px;margin-top:16px;padding:10px;border:1px solid #3A3533;border-radius:12px;background:#1A1817;color:#FF6B76;font-size:15px;font-weight:800;text-decoration:none}
+/* Estúdio JWA 2b (25/11): 4 blocos em cima, Hoje no estúdio e aba Painel; 1 cor de destaque (amarelo) */
+.t-musica .tm-abas{grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}
+.t-musica .tm-aba{font-size:11px}
+.t-musica .tm-blocos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:4px 0 10px}
+.t-musica .tm-bloco{display:block;width:auto;height:auto;min-height:78px;margin:0;padding:12px 14px;border-radius:14px;border:1px solid var(--tm-linha);background:linear-gradient(180deg,var(--tm-painel2),var(--tm-painel));color:var(--tm-texto);font:inherit;text-align:left;box-shadow:none;cursor:default}
+.t-musica button.tm-bloco{cursor:pointer}
+.t-musica .tm-bloco b{display:block;font-size:26px;line-height:1.1;font-weight:800;color:var(--tm-ama)}
+.t-musica .tm-bloco.tx b{font-size:15px;line-height:1.3;color:var(--tm-texto);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.t-musica .tm-bloco small{display:block;margin-top:4px;font-size:12px;color:var(--tm-mudo)}
+.t-musica .tm-hoje-est{margin:0 0 12px;padding:12px 14px 6px;border-radius:16px;border:1px solid var(--tm-ama);background:var(--tm-painel)}
+.t-musica .tm-hoje-est h3{margin:0 0 4px;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--tm-ama)}
+.t-musica .tm-hoje-ok{margin:4px 0 8px;color:var(--tm-mudo);font-size:14px}
+.t-musica .tm-sug{display:flex;align-items:center;gap:10px;width:100%;height:auto;min-height:52px;margin:0;padding:8px 0;border:0;border-top:1px solid rgba(255,255,255,.07);border-radius:0;background:none;color:var(--tm-texto);font:inherit;text-align:left;box-shadow:none;cursor:pointer}
+.t-musica h3+.tm-sug,.t-musica small+.tm-sug{border-top:0}
+.t-musica .tm-sug div{flex:1;min-width:0}
+.t-musica .tm-sug b{display:block;font-size:15px;line-height:1.3;overflow-wrap:anywhere}
+.t-musica .tm-sug small{display:block;margin-top:2px;font-size:13px;color:var(--tm-mudo)}
+.t-musica .tm-sug svg,.t-musica .tm-pn-lin svg{flex:none;width:18px;height:18px;fill:none;stroke:var(--tm-mudo);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.t-musica .tm-pn-lin{display:flex;align-items:center;gap:10px;width:100%;height:auto;min-height:0;margin:0 0 8px;padding:12px 14px;border-radius:14px;border:1px solid var(--tm-linha);background:var(--tm-painel);color:var(--tm-texto);font:inherit;text-align:left;box-shadow:none}
+.t-musica .tm-pn-lin div{flex:1;min-width:0}
+.t-musica .tm-pn-lin small{display:block;font-size:12px;color:var(--tm-mudo)}
+.t-musica .tm-pn-lin b{display:block;margin-top:2px;font-size:15px;line-height:1.3;overflow-wrap:anywhere}
+.t-musica .tm-pn-lin span{display:block;margin-top:2px;font-size:13px;color:var(--tm-mudo)}
+.t-musica .tm-pn-ideias{margin:0 0 12px;padding:12px 14px 4px;border-radius:14px;border:1px solid var(--tm-linha);background:var(--tm-painel)}
+.t-musica .tm-pn-ideias>small{display:block;font-size:12px;color:var(--tm-mudo)}
+.t-musica .tm-blocos button.tm-bloco,.t-musica .tm-blocos button.tm-bloco *{text-align:left;justify-content:flex-start;align-items:flex-start}.t-musica .tm-blocos button.tm-bloco{display:block;place-items:start;justify-items:start}
