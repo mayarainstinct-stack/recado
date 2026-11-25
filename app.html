@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.656">
+<meta name="app-versao" content="2026-11-25.657">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.656"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.657"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2210,7 +2210,7 @@ function abrePergunta(it, g, alts, k, conta) {   // padrão aprovado no HOUSE-BR
   // pergunta com foto ou vídeo (May, 07/11/2026 10:31: "um balão que me mostra imagens e vídeos pra eu clicar em aprovo, reprovo ou digitar"): a mídia vem no popup
   const midia = (it.fotos || []).filter(Boolean), md = document.createElement('div'); md.className = 'pp-midia' + (midia.length > 1 ? ' varias' : '');
   midia.forEach(pth => {
-    if (/\.(mp4|webm|mov)$/i.test(pth)) { const v = document.createElement('video'); v.controls = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'metadata'; fotoUrl(pth, true).then(u => { v.src = u; }).catch(() => {}); md.append(v); }
+    if (/\.(mp4|webm|mov)$/i.test(pth)) { const v = document.createElement('video'); v.controls = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'metadata'; if (midia.length === 1) v.onloadedmetadata = () => { if (v.videoHeight > v.videoWidth) { const livre = parseFloat(getComputedStyle(card).maxHeight) - (card.scrollHeight - v.offsetHeight) - 4; if (livre > v.offsetHeight) v.style.maxHeight = livre + 'px'; } };   /* #483 (Sigma 20:25): vídeo em pé ocupa a altura que sobra no cartão, como no Estúdio */ fotoUrl(pth, true).then(u => { v.src = u; }).catch(() => {}); md.append(v); }
     else { const b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', 'Ver maior'); fotoUrl(pth).then(u => { b.style.backgroundImage = 'url(' + u + ')'; b.onclick = () => fotoUrl(pth, true).then(o => abreZoom(o, pth, midia)); }).catch(() => {}); md.append(b); }
   });
   const ops = document.createElement('div'); ops.className = 'pp-ops';

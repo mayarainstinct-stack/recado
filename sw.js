@@ -1,3 +1,4 @@
+// v657 #483 popup: video em pe ocupa a altura livre do cartao (Sigma 20:25)
 // v656 #483 player no formato do video: Geral, Estudio de Reels e popup (vertical em pe, horizontal deitado, sem tarja)
 // v655 Estudio de Reels: botao Baixar em cada trilha (compartilha o arquivo no iPhone pra salvar ou mandar pro Suno)
 // v654 video e audio tocam com o iPhone no silencioso (audioSession playback no play, ambient ao parar)
