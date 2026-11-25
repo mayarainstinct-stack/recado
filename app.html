@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.650">
+<meta name="app-versao" content="2026-11-25.651">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.650"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.651"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -4162,7 +4162,7 @@ function abreMusica(m) {
     const lupa = elD('button', 'tm-lupa'); lupa.type = 'button'; lupa.setAttribute('aria-label', 'Procurar no estúdio'); lupa.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>'; lupa.onclick = abreBusca;
     const NT = [['pratica', 'Hora de praticar', 'Lembra no horário escolhido, se ainda não tocou no dia.', { on: false, hora: '19:00', dias: [1, 2, 3, 4, 5] }], ['meta', 'Meta da semana', 'Domingo às 18h, se faltar sessão pra bater a meta.', { on: false }], ['manutencao', 'Manutenção chegando', 'Cordas, regulagem e limpeza perto de vencer.', { on: false, antes: 3 }], ['tarefa', 'Tarefa pendente', 'Música com prazo hoje ou já passado.', { on: false }], ['parado', 'Música parada', 'Música sem mexer há muitos dias.', { on: false, dias: 14 }], ['data', 'Data importante', 'Qualquer item com data chegando.', { on: false, antes: 1 }]];   // fase 7 (#449): todas desligadas de início, o PC1 manda só o que ela ligar (Sigma 17:06)
     const abreNotif = () => {
-      const ov = elD('div', 'fixa-pop tm-pr-pop tm-busca-pop tm-nt-pop'), card = elD('div', 'pp-card tm-pr-card tm-busca-card tm-nt-card'), xb = elD('button', 'pp-x'), lista = elD('div', 'tm-nt-lista'), N = () => d.notificacoes || {};
+      document.querySelector('.ed-faixa')?.remove(); const ov = elD('div', 'fixa-pop tm-pr-pop tm-busca-pop tm-nt-pop'), card = elD('div', 'pp-card tm-pr-card tm-busca-card tm-nt-card'), xb = elD('button', 'pp-x'), lista = elD('div', 'tm-nt-lista'), N = () => d.notificacoes || {};
       xb.type = 'button'; xb.innerHTML = icone('close'); xb.setAttribute('aria-label', 'Fechar'); const fecha = () => ov.remove(); xb.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); };
       const salva = async (k, v) => { const antes = JSON.parse(JSON.stringify(N())); d.notificacoes = Object.assign({}, N(), { [k]: v }); desenha(); if (await gravaJson(m.arq, dd => { dd.notificacoes = Object.assign({}, dd.notificacoes || {}, { [k]: v }); }, 'Estúdio: notificação ' + k, null)) return; d.notificacoes = antes; desenha(); showNote('Não guardou: voltou como estava. Confere a internet.', true); };
       const chips = (ops, atual, fn) => { const f = elD('div', 'tm-cats tm-nt-ops'); ops.forEach(([v, t]) => { const b = elD('button', 'tm-cat' + (v === atual ? ' on' : '')); b.type = 'button'; b.setAttribute('aria-pressed', String(v === atual)); b.textContent = t; b.onclick = () => fn(v); f.append(b); }); return f; };

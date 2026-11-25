@@ -1,4 +1,4 @@
-// v650 #449 fase 7 notificacoes do estudio (sino, 6 chaves desligadas, push abre a Musica)
+// v651 #449 fase 7 seria bom: chave ligada amarela no tema da Musica, abrir Notificacoes fecha a faixa Desfazer
 // v637 #449 5c series: episodios e etapas c/ ordem, proxima no cartao, ideias da serie, series na aba Ideias
 // v636 #449 5b audio na ideia: gravar ou anexar, ouvir e apagar
 // v632 #449 4b categorias do Setup com filtro, onde fica e estado
