@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.652">
+<meta name="app-versao" content="2026-11-25.653">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.652"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.653"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -7438,14 +7438,14 @@ async function dbxApi(rota, corpo, conteudo, arg) {
 function dbxVolta() {   // voltou do login do Dropbox (?code=...&state=dbx): troca pela chave, limpa a URL e abre a tela
   const q = new URLSearchParams(location.search); if (q.get('state') !== 'dbx') return false; const code = q.get('code');
   ['code', 'state', 'error', 'error_description'].forEach(k => q.delete(k)); history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : ''));
-  if (code) Promise.all([dbxTroca(code, true), new Promise(r => setTimeout(r, 1500))]).then(() => { if (painel.hidden && !abreMenu.hidden) abreMenu.click(); setTimeout(() => abreDropbox({ nome: 'Dropbox' }), 350); }).catch(() => showNote('Não entrou no Dropbox. Tenta de novo.', true)); return true;   // espera o app abrir a conversa e abre o Menu > Dropbox por cima
+  if (code) Promise.all([dbxTroca(code, true), new Promise(r => setTimeout(r, 1500))]).then(() => { if (painel.hidden && !abreMenu.hidden) abreMenu.click(); setTimeout(() => { store.set('rl-aba', 'enviar'); abreDropbox({ nome: 'Estúdio de Reels' }); }, 350); }).catch(() => showNote('Não entrou no Dropbox. Tenta de novo.', true)); return true;   // espera o app abrir a conversa e abre o Menu > Dropbox por cima
 }
 let dbxEnvio = null, dbxUi = { envio() {}, pinta() {}, feito() {} };
-function abreDropbox(m) {
-  tela(m.nome || 'Dropbox', async c => {
-    c.classList.add('t-dbx'); painel.style.setProperty('--c', m.cor || '#0061FF'); cabecalho({ icone: 'dropbox', sub: 'Caixa de entrada · o Orfeu leva pro PC1' }); const raiz = elD('div', 'dbx'); c.append(raiz); let pasta = store.get('dbx-pasta') || DBX_RAIZ, esp = null;
+function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio de Reels, cara de perfil do Instagram; ela vê e aprova o vídeo final e as trilhas de cada projeto; aba Enviar = o envio do Dropbox (#480)
+  tela(m.nome || 'Estúdio de Reels', async c => {
+    c.classList.add('t-dbx', 't-reels'); painel.style.setProperty('--c', '#E1306C'); cabecalho({ icone: 'dropbox', sub: m.sub || 'Manda o bruto, vê e aprova o vídeo pronto' }); const abas = elD('div', 'rl-abas'), grade = elD('div', 'rl'), raiz = elD('div', 'dbx'); abas.setAttribute('role', 'tablist'); c.append(abas, grade, raiz); let pasta = store.get('dbx-pasta') || DBX_RAIZ, esp = null, dbxFoi = false;
     const bt = (cls, tx, fn) => { const b = elD('button', cls, tx); b.type = 'button'; b.onclick = fn; return b; };
-    const ICO = { pasta: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>', arq: '<path d="M7 3h7l5 5v13H7zM14 3v5h5"/>', video: '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/>', foto: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 8"/>', sobe: '<path d="M12 16V4M7 9l5-5 5 5M5 20h14"/>' };
+    const ICO = { pasta: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>', arq: '<path d="M7 3h7l5 5v13H7zM14 3v5h5"/>', video: '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/>', foto: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 8"/>', sobe: '<path d="M12 16V4M7 9l5-5 5 5M5 20h14"/>', grade: '<rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/>', play: '<path d="M8 5.2v13.6L19 12z"/>', pausa: '<path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/>', nota: '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>', ok: '<path d="M5 12.5l4.5 4.5L19 7.5"/>', ajuste: '<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>' };
     const svg = k => '<svg viewBox="0 0 24 24" aria-hidden="true">' + ICO[k] + '</svg>';
     const nomeDe = p => p ? p.split('/').pop() : 'Dropbox';
     const pinta = async () => {
@@ -7533,7 +7533,88 @@ function abreDropbox(m) {
       try { esp = await dbxApi('users/get_space_usage'); pintaEspaco(); } catch (e) { if (e.message === 'sem login') return pinta(); topo.querySelector('b').textContent = 'Não deu pra ver o espaço'; }
       if (dbxEnvio && !dbxEnvio.indo && !dbxEnvio.erro) sobe();
     };
-    pinta();
+    const RL_ARQ = 'reels/reels.json', RM_ARQ = 'reels/reels-may.json'; let RL = null, RM = null, rlTocando = null;   // reels.json = do Hermes (fonte única); reels-may.json = a decisão dela, o app junta por cima
+    const rlChave = (p, t) => p.id + '/' + (t ? t.id : 'video') + '@' + ((t || p.video || {}).versao || 1);   // versão nova = chave nova: volta pra "Pra ver"
+    const rlDec = (p, t) => ((RM && RM.decisoes) || {})[rlChave(p, t)] || null;
+    const rlItens = p => (p.video ? [[p, null]] : []).concat((p.trilhas || []).map(t => [p, t]));
+    const dn = s => String(s || '').split(' ')[0].split('/').reverse().join('');
+    const rlPara = () => { if (rlTocando) { rlTocando.pause(); rlTocando = null; } document.querySelectorAll('.rl-play.on').forEach(x => { x.classList.remove('on'); x.innerHTML = svg('play'); }); };
+    const rlMonta = () => {
+      const P = (RL.projetos || []).filter(p => !p.apagado).sort((a, b) => dn(b.data).localeCompare(dn(a.data))), tudo = P.flatMap(rlItens);
+      const per = elD('div', 'rl-perfil'), av = elD('div', 'rl-av'), im = elD('img'), st = elD('div', 'rl-nums'); im.alt = ''; av.append(im); fotoUrl('recados-fotos/avatar-may-192.png').then(u => { im.src = u; }).catch(() => {});
+      const num = (n, t) => { const d = elD('div'); d.append(elD('b', '', String(n)), elD('small', '', t)); st.append(d); };
+      num(P.length, P.length === 1 ? 'Projeto' : 'Projetos'); num(tudo.filter(([p, t]) => (rlDec(p, t) || {}).status === 'aprovado').length, 'Aprovados'); num(tudo.filter(([p, t]) => !rlDec(p, t)).length, 'Pra ver');
+      const nm = elD('div', 'rl-nome'); nm.append(elD('b', '', 'Estúdio de Reels'), elD('small', '', 'Vídeo final e trilhas de cada projeto. Toca pra ver e aprovar.')); per.append(av, st); grade.replaceChildren(per, nm);
+      if (!P.length) { grade.append(elD('p', 'dbx-vazio', 'Nenhum vídeo pronto ainda. O Hermes publica a versão final aqui.')); return; }
+      const g = elD('div', 'rl-grade'); grade.append(g);
+      P.forEach(p => {
+        const ds = rlItens(p).map(([q, t]) => rlDec(q, t)), sl = !ds.length ? '' : ds.some(d => d && d.status === 'ajuste') ? 'ajuste' : ds.every(d => d && d.status === 'aprovado') ? 'aprovado' : 'novo', nT = (p.trilhas || []).length;
+        const b = bt('rl-cel', '', () => rlAbre(p)), cap = elD('div', 'rl-cap'), pe = elD('div', 'rl-cel-pe');
+        b.setAttribute('aria-label', p.titulo + (sl === 'aprovado' ? ', aprovado' : sl === 'ajuste' ? ', ajuste pedido' : sl === 'novo' ? ', pra ver' : ''));
+        if (p.capa) { const ci = elD('img'); ci.alt = ''; fotoUrl(p.capa).then(u => { ci.src = u; }).catch(() => {}); cap.append(ci); } else cap.append(elD('b', 'rl-cap-tit', p.titulo));
+        pe.innerHTML = svg(p.video ? 'play' : 'nota'); pe.append(elD('span', '', p.capa ? p.titulo : p.video ? 'Vídeo' : nT + (nT === 1 ? ' trilha' : ' trilhas'))); b.append(cap, pe);
+        if (sl) { const s = elD('span', 'rl-selo ' + sl); if (sl === 'novo') s.textContent = 'Novo'; else s.innerHTML = svg(sl === 'aprovado' ? 'ok' : 'ajuste'); b.append(s); }
+        g.append(b);
+      });
+    };
+    const rlPinta = async () => {
+      grade.replaceChildren(skCarga());
+      try { const [a, b] = await Promise.all([lerArquivo(RL_ARQ), lerArquivo(RM_ARQ).catch(e => { if (e.status === 404) return '{}'; throw e; })]); RL = JSON.parse(a); RM = JSON.parse(b || '{}'); }
+      catch (e) { grade.replaceChildren(elD('p', 'dbx-vazio', 'Não abriu. Confere a internet.'), bt('dbx-bt', 'Tentar de novo', rlPinta)); return; }
+      rlMonta();
+    };
+    const rlGrava = async (p, t, novo, repinta, desfazendo) => {
+      const k = rlChave(p, t), ant = rlDec(p, t), ver = (t || p.video).versao || 1, nome = (t ? 'trilha "' + t.nome + '"' : 'vídeo') + ' de ' + p.titulo + ' (versão ' + ver + ')', dono = t ? (t.dono || 'Orfeu') : (p.video.dono || 'Hermes');
+      const nv = await gravaJson(RM_ARQ, dd => { dd.decisoes = dd.decisoes || {}; if (novo) dd.decisoes[k] = novo; else delete dd.decisoes[k]; }, 'Reels: ' + (desfazendo ? 'desfez ' : novo.status === 'aprovado' ? 'aprovou ' : 'pediu ajuste em ') + k + ' pelo app', { decisoes: {} });
+      if (!nv) { showNote('Não guardou. Confere a internet.', true); return; }
+      RM = nv; repinta(); rlMonta();
+      const lin = desfazendo ? ' Desfeito no Estúdio de Reels: ' + nome + ' (vale o de antes, ignora a linha anterior).' : novo.status === 'aprovado' ? ' Aprovado no Estúdio de Reels: ' + nome + '.' : ' Ajuste pedido no Estúdio de Reels, ' + nome + ': ' + novo.nota;
+      gravaLinha(GERAL.arq, '- [' + stamp(new Date()) + '] @' + dono + lin);
+      if (!desfazendo) edFaixaDesfazer(novo.status === 'aprovado' ? 'Aprovado' : 'Ajuste pedido', () => rlGrava(p, t, ant, repinta, true));
+    };
+    const rlAjuste = (p, t, repinta) => {
+      const ov = elD('div', 'fixa-pop rl-pop'), card = elD('div', 'pp-card'), ops = elD('div', 'pp-ops'), ta = elD('textarea', 'rl-ta'); ov.style.setProperty('--c', '#E1306C'); ta.placeholder = 'Ex.: música mais baixa na fala, trocar a capa'; ta.setAttribute('aria-label', 'O que ajustar');
+      const sim = bt('pp-op rec', 'Mandar', () => { const n = ta.value.trim().replace(/\s+/g, ' '); if (!n) { ta.focus(); return; } ov.remove(); rlGrava(p, t, { status: 'ajuste', quando: edAgora(), nota: n }, repinta); });
+      ops.style.marginTop = '16px'; ops.append(bt('pp-op', 'Agora não', () => ov.remove()), sim); card.append(elD('div', 'pp-perg', 'O que ajustar?'), ta, ops); ov.append(card); ov.onclick = e => { if (e.target === ov) ov.remove(); }; document.body.append(ov); ta.focus();
+    };
+    const rlLinha = (p, t, repinta) => {
+      const L = elD('section', 'rl-lin'), top = elD('div', 'rl-lin-top'), tx = elD('div'), d = rlDec(p, t), ver = (t || p.video).versao;
+      if (t) {
+        const pl = bt('rl-play', '', async () => {
+          const era = rlTocando && rlTocando.dono === pl; rlPara(); if (era) return;
+          const au = new Audio(); au.dono = pl; rlTocando = au; pl.classList.add('on'); pl.innerHTML = svg('pausa'); au.onended = () => { if (rlTocando === au) rlPara(); };
+          try { au.src = await fotoUrl(t.audio, true); if (rlTocando === au) await au.play(); } catch (e) { if (rlTocando === au) rlPara(); showNote('Não tocou. Confere a internet.', true); }
+        });
+        pl.innerHTML = svg('play'); pl.setAttribute('aria-label', 'Ouvir ' + t.nome); top.append(pl);
+      }
+      tx.append(elD('b', '', t ? t.nome : 'Vídeo final'), elD('small', '', [ver ? 'Versão ' + ver : '', t && t.obs].filter(Boolean).join(' · '))); top.append(tx);
+      top.append(elD('span', 'rl-chip ' + (d ? d.status : 'novo'), d ? (d.status === 'aprovado' ? 'Aprovado ' : 'Ajuste ') + d.quando.slice(0, 5) : 'Pra ver')); L.append(top);
+      if (d && d.status === 'ajuste' && d.nota) L.append(elD('p', 'rl-pedido', '"' + d.nota + '"'));
+      const ok = d && d.status === 'aprovado', ops = elD('div', 'rl-ops');
+      ops.append(bt('rl-bt' + (d && d.status === 'ajuste' ? ' on' : ''), 'Pedir ajuste', () => rlAjuste(p, t, repinta)), bt('rl-bt rec' + (ok ? ' on' : ''), ok ? 'Aprovado' : 'Aprovar', () => { if (!ok) rlGrava(p, t, { status: 'aprovado', quando: edAgora(), nota: '' }, repinta); }));
+      L.append(ops); return L;
+    };
+    const rlAbre = p => {
+      const ov = elD('div', 'rl-ver'), topo = elD('div', 'rl-ver-topo'), midia = elD('div', 'rl-ver-midia'), info = elD('div', 'rl-ver-info'), xb = elD('button', 'pp-x rl-x'), tt = elD('div');
+      ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', p.titulo); ov.style.setProperty('--c', '#E1306C'); xb.type = 'button'; xb.innerHTML = icone('close'); xb.setAttribute('aria-label', 'Fechar');
+      tt.append(elD('b', '', p.titulo), elD('small', '', p.data || '')); topo.append(tt, xb);
+      const esc = e => { if (e.key === 'Escape' && !document.querySelector('.rl-pop')) { e.stopImmediatePropagation(); fecha(); } }, fecha = () => { rlPara(); ov.querySelectorAll('video').forEach(v => v.pause()); removeEventListener('keydown', esc, true); ov.classList.add('sai'); setTimeout(() => ov.remove(), 260); };   // Esc fecha só o vídeo, não a tela de trás
+      addEventListener('keydown', esc, true); xb.onclick = fecha;
+      if (p.video) {
+        const v = elD('video'), car = elD('small', 'rl-carga', 'Carregando o vídeo...'); v.playsInline = true; v.setAttribute('playsinline', ''); v.controls = true; v.preload = 'metadata'; v.onplay = rlPara; midia.append(car, v);
+        (p.video.link ? Promise.resolve(p.video.link) : fotoUrl(p.video.arquivo, true)).then(u => { v.src = u; car.remove(); }).catch(() => { car.textContent = 'Não abriu o vídeo. Confere a internet.'; });
+      } else { const s = elD('div', 'rl-sem'); s.innerHTML = svg('nota'); s.append(elD('b', '', 'O vídeo ainda não saiu'), elD('small', '', 'As trilhas já estão aqui embaixo pra ouvir.')); midia.append(s); }
+      const pintaInfo = () => { info.replaceChildren(); if (p.video) info.append(rlLinha(p, null, pintaInfo)); if ((p.trilhas || []).length) { info.append(elD('h4', 'rl-sec', 'Trilhas')); p.trilhas.forEach(t => info.append(rlLinha(p, t, pintaInfo))); } if (p.nota) info.append(elD('p', 'rl-nota', p.nota)); };
+      pintaInfo(); ov.append(topo, midia, info); document.body.append(ov);
+    };
+    const rlAbas = () => {
+      const ab = store.get('rl-aba') === 'enviar' ? 'enviar' : 'prontos'; abas.replaceChildren();
+      [['prontos', 'Prontos', 'grade'], ['enviar', 'Enviar bruto', 'sobe']].forEach(([k, t, ic]) => { const b = bt('rl-aba' + (k === ab ? ' on' : ''), '', () => { store.set('rl-aba', k); rlAbas(); }); b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(k === ab)); b.innerHTML = svg(ic); b.append(elD('span', '', t)); abas.append(b); });
+      grade.hidden = ab !== 'prontos'; raiz.hidden = ab !== 'enviar'; if (ab !== 'prontos') rlPara();
+      if (ab === 'enviar' && !dbxFoi) { dbxFoi = true; pinta(); }
+      if (ab === 'prontos' && !RL) rlPinta();
+    };
+    rlAbas();
   });
 }
 async function abreCarteirinha(arq) {   // May 11/11: abre direto o CARTÃO DA FRENTE, tela cheia, sem mais nenhum dado; ela vira o celular e entrega. #437 (May 24/11 11:16): o mesmo visor é o atalho da tela inicial e da Saúde

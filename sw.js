@@ -1,3 +1,4 @@
+// v653 #482 Estudio de Reels: perfil tipo Instagram, video final e trilhas c/ Aprovar / Pedir ajuste
 // v652 #449 fase 8: copia e exportar no Painel da Musica (baixar copia, voltar no tempo c/ Desfazer, planilha csv, fila offline por item)
 // v637 #449 5c series: episodios e etapas c/ ordem, proxima no cartao, ideias da serie, series na aba Ideias
 // v636 #449 5b audio na ideia: gravar ou anexar, ouvir e apagar
