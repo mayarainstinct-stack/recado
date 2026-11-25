@@ -1,4 +1,4 @@
-// v635 #449 5a Ideias: categoria, data, referencia, fotos e filtro
+// v636 #449 5b audio na ideia: gravar ou anexar, ouvir e apagar
 // v632 #449 4b categorias do Setup com filtro, onde fica e estado
 // v629 #449 1b Fiz hoje sai descendo com o painel Luz aberto e volta ao fechar
 // v628 #449 1b luz do pedestal: cor e forca

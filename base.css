@@ -4084,3 +4084,13 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .ed-fotos-diz.pesado { color: #FFD60A; opacity: 1; }
 .ed-fotos-campo .ed-foto-bt { margin-top: 0; }
 .ed-fotos-volta .ed-link { flex: none; width: auto; min-height: 36px; margin: 0; padding: 0 4px; }
+.ed-audios { display: flex; flex-direction: column; gap: 8px; }
+.ed-au { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 12px; border-radius: 12px; background: rgba(255,255,255,.07); }
+.ed-au b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+.ed-au small { flex: none; font-size: 12px; opacity: .75; }
+.ed-au.novo small { color: #FFD60A; opacity: 1; }
+.ed-au-x { flex: none; width: 44px; height: 44px; margin-right: -6px; display: grid; place-items: center; border: 0; border-radius: 12px; background: rgba(0,0,0,.35); color: inherit; font: inherit; font-weight: 900; cursor: pointer; }
+.ed-au-dica { font-size: 12px; opacity: .75; }
+.tm-ide-aus { display: flex; flex-direction: column; gap: 6px; }
+.ed-abas:has(> :nth-child(4)) { gap: 6px; }
+.ed-abas:has(> :nth-child(4)) .ed-aba { flex: 1 0 auto; padding: 0 10px; font-size: 14px; }
