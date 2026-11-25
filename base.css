@@ -4021,6 +4021,10 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .t-musica .tm-timbre summary b,.t-musica .tm-timbre summary small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .t-musica .tm-timb-aj{margin:0 0 10px;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
 .t-musica .tm-timb-aj li{padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.05);font-size:14px;overflow-wrap:anywhere}
+.t-musica .tm-ideia{margin:0 0 10px}
+.t-musica .tm-ideia summary b{white-space:normal;overflow:visible;overflow-wrap:anywhere}
+.t-musica .tm-ref{display:inline-block;margin-top:4px;min-height:44px;line-height:44px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tm-ama);font-size:14px;font-weight:700}
+.t-musica .tm-ide-fotos{flex-wrap:wrap;gap:8px}.t-musica .tm-ide-fotos img{width:64px;height:64px;cursor:pointer}
 .t-musica .tm-timb-filtro{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px;font-size:13px;color:var(--tm-mudo)}
 .t-musica .tm-det-bl{padding:8px 0;border-top:1px solid rgba(255,255,255,.07)}
 .t-musica .tm-det-bl small{display:block;font-size:12px;color:var(--tm-mudo)}
