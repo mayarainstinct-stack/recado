@@ -3822,4 +3822,7 @@ body .painel.tema-maq.tema-maq .p-corpo button:not(.dg-card):not(.pcd-dias-bar) 
 body .painel.tema-maq.tema-maq .p-corpo button.on { background: #4F46E5; color: #FFFFFF; border-color: #4F46E5; }
 body .painel.tema-maq.tema-maq .pcd-cab > div { background: color-mix(in srgb, var(--rc) 16%, transparent) !important; border: 1px solid rgba(255,255,255,.12) !important; border-bottom: 3px solid var(--rc) !important; color: #F5F8FC; }
 body .painel.tema-maq.tema-maq .dg-tela img { display: inline-block !important; }   /* os robôs de cada PC voltam (o modo-trab esconde) */
-body .painel.tema-maq.tema-maq .p-corpo button.pcd-religa { color: #F87171; border-color: rgba(248,113,113,.55); background: rgba(248,113,113,.08); }
+body .painel.tema-maq.tema-maq .p-corpo button.pcd-religa:not(.dg-card):not(.pcd-dias-bar) { color: #F87171; border-color: rgba(248,113,113,.55); background: rgba(248,113,113,.08); }
+body .painel.tema-maq.tema-maq .dg-tela .pcd-val-bar { background: linear-gradient(90deg, var(--ec, var(--rc)) var(--w), rgba(255,255,255,.08) var(--w)) !important; }   /* barra na cor do código fixo da própria medida (verde, amarelo, vermelho), não toda verde (Sigma 10:52) */
+body .painel.tema-maq.tema-maq .dg-tela :is(.pcd-num div, .pcd-val, .rel-kpi b, .rel-prog b, .pcd-dias-num b) { font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif !important; }
+body .painel.tema-maq.tema-maq .dg-tela .pcd-val { border-left-color: var(--ec, transparent) !important; }
