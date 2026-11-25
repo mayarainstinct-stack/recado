@@ -1,3 +1,4 @@
+// v587 (25/11/2026): #462 popup da colecao Slim vira lista (1 linha por console, PS5 c/ chegada em destaque, No PC); ? c/ contraste e 44 px.
 // v586 (25/11/2026): #462 Maquinas: texto da colecao Slim sai do topo e abre no ? de Consoles, popup do tema de Maquinas.
 // v585 (25/11/2026): S.L. foto do Sandro encostada na barra de cima, sem margem em cima (lados iguais).
 // v584 (25/11/2026): #449 vizinhas levemente viradas pro centro (15 e 25 graus), cabeca do baixo mais fina, cartao do bloqueado c/ 1 linha, campo Ja tenho no lapis do setup.
