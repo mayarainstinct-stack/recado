@@ -3905,3 +3905,35 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .t-musica .tm-pn-ideias{margin:0 0 12px;padding:12px 14px 4px;border-radius:14px;border:1px solid var(--tm-linha);background:var(--tm-painel)}
 .t-musica .tm-pn-ideias>small{display:block;font-size:12px;color:var(--tm-mudo)}
 .t-musica .tm-blocos button.tm-bloco,.t-musica .tm-blocos button.tm-bloco *{text-align:left;justify-content:flex-start;align-items:flex-start}.t-musica .tm-blocos button.tm-bloco{display:block;place-items:start;justify-items:start}
+/* #449 2c-1: painel de gravação, fila do aparelho e gravações da música */
+.tm-gp .pp-card{text-align:center}
+.tm-gp-miolo{display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:4px 2px 2px}
+.tm-gp-ponto{align-self:center;width:18px;height:18px;margin-top:6px;border-radius:50%;background:#F0283A;box-shadow:0 0 0 6px rgba(240,40,58,.25);animation:tmGpPulsa 1.2s ease-in-out infinite}
+.tm-gp-ponto.pausa{background:#FFD60A;box-shadow:0 0 0 6px rgba(255,214,10,.2);animation:none}
+@keyframes tmGpPulsa{50%{transform:scale(.7)}}
+.tm-gp-tempo{font-size:48px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;color:#F6F2EE}
+.tm-gp-tempo.pausa{color:#FFD60A}
+.tm-gp-st,.tm-gp-info{display:block;font-size:13px;color:#BDB5AF}
+.tm-gp-ops{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.tm-gp-bt{width:auto;height:auto;min-height:48px;margin:0;padding:0 14px;border:1px solid #4A4442;border-radius:14px;background:#26221F;color:#F6F2EE;font:inherit;font-weight:800;font-size:15px;box-shadow:none}
+.tm-gp-bt.rec{border-color:#F0283A;background:#F0283A;color:#fff}
+.tm-gp-bt:disabled{opacity:.6}
+.tm-gp-au{width:100%;height:44px;margin:2px 0}
+.tm-gp .ed-campo{text-align:left}
+.tm-gp .pp-card .pp-perg{margin:0 34px 4px}
+.t-musica .tm-ouvir{display:inline-flex;align-items:center;width:auto !important;height:auto !important;min-height:44px;border-radius:10px !important;white-space:nowrap}
+.tm-gp-conf{padding:32px}
+.tm-gp-conf .pp-card{background:#141414;color:#F6F2EE;border:1px solid #F0283A;box-shadow:0 0 0 10px rgba(20,20,20,.55)}
+.t-musica .tm-pend{display:flex;align-items:center;gap:10px;margin:0 0 10px;padding:10px 12px;border-radius:14px;border:1px dashed var(--tm-ama);background:var(--tm-painel)}
+.t-musica .tm-pend>div{flex:1;min-width:0}
+.t-musica .tm-pend b{display:block;font-size:15px;overflow-wrap:anywhere}
+.t-musica .tm-pend small{display:block;margin-top:2px;font-size:13px;color:var(--tm-ama)}
+.t-musica .tm-pend .tm-gp-bt{flex:none;min-height:44px;font-size:14px}
+.t-musica .tm-gravs{margin:10px 0 0;padding:0 12px;border-radius:12px;border:1px solid var(--tm-linha);background:rgba(0,0,0,.25)}
+.t-musica .tm-gravs summary{min-height:44px;display:flex;align-items:center;font-size:14px;font-weight:700;color:var(--tm-texto);cursor:pointer}
+.t-musica .tm-grav{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,.07);animation:tmGravDesce .22s ease-out both}
+@keyframes tmGravDesce{from{transform:translateY(-8px);clip-path:inset(0 0 100% 0)}to{transform:none;clip-path:inset(0)}}
+.t-musica .tm-grav>div{flex:1;min-width:0}
+.t-musica .tm-grav b{display:block;font-size:14px;overflow-wrap:anywhere}
+.t-musica .tm-grav small{display:block;margin-top:2px;font-size:12px;color:var(--tm-mudo)}
+.t-musica .tm-grav-pl{flex:none;width:40px !important;height:40px !important;margin:0;padding:0;border:0;border-radius:50% !important;background:var(--tm-ama);color:#120C00;font-size:14px;box-shadow:none}

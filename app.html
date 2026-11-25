@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.611">
+<meta name="app-versao" content="2026-11-25.612">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.611"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.612"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3917,28 +3917,70 @@ function abreMusica(m) {
       aoApagar: it ? () => confirmaApagar('"' + it.nome + '"', async () => { const q = edAgora(); if (await grava(l => { const x = l.find(y => y.id === it.id); if (x) x.apagado = q; }, 'Música: item apagado pelo app (fica guardado)')) edFaixaDesfazer('Apagado', () => grava(l => { const x = l.find(y => y.id === it.id); if (x) delete x.apagado; }, 'Apagado desfeito pelo app')); }) : null });
     const agrupa = l => { const g = new Map(); l.forEach(i => { const k = i.grupo || ''; if (!g.has(k)) g.set(k, []); g.get(k).push(i); }); return [...g]; };
     const lapis = (sec, x) => { const b = edMini('note', 'Editar ' + x.nome, () => form(sec, x)); b.classList.add('tm-ed'); return b; };
-    // Gravar ideia na hora (útil de verdade, May 12/11 22:10): grava, sobe o áudio pra musica/audios/ e já cria a música na etapa Ideia; falhou = avisa e não cria nada
-    let rec = null, partes = [], t0 = 0, relogio = null, tocando = null;
-    const gravador = () => {
-      const w = elD('div', 'tm-grava'), bt = elD('button', 'tm-grava-bt' + (rec ? ' on' : '')), dica = elD('small', '', rec ? 'Gravando… toque pra parar e guardar' : 'Teve um riff, uma letra, uma melodia? Grava agora.'); bt.type = 'button';
-      bt.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg><span>' + (rec ? '0:00' : 'Gravar ideia') + '</span>';
-      const sp = bt.querySelector('span'); if (rec) { clearInterval(relogio); relogio = setInterval(() => { if (!sp.isConnected) return clearInterval(relogio); const s = Math.floor((Date.now() - t0) / 1000); sp.textContent = Math.floor(s / 60) + ':' + pad(s % 60); }, 250); }
-      bt.onclick = async () => {
-        if (rec) { rec.stop(); return; }
-        if (!navigator.mediaDevices || !window.MediaRecorder) { showNote('Este navegador não grava áudio. Abre pelo ícone da tela de início.', true); return; }
-        try {
-          const stream = await pegaMic(), tipo = tipoAudio(); rec = new MediaRecorder(stream, tipo ? { mimeType: tipo } : undefined); partes = [];
-          rec.ondataavailable = e => { if (e.data.size) partes.push(e.data); };
-          rec.onstop = async () => { soltaMicStream(); clearInterval(relogio); const g = rec, dur = Math.round((Date.now() - t0) / 1000); rec = null; pinta(); const blob = new Blob(partes, { type: g.mimeType || tipo || 'audio/mp4' }); if (blob.size < 1500) { showNote('Áudio curto demais.', true); return; }
-            showNote('Guardando a ideia…'); const quando = new Date(), nome = nomeArq('musica/audios', quando, 0, /webm/.test(blob.type) ? 'webm' : 'm4a');
-            try { const b64 = await new Promise((ok, erro) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1] || ''); fr.onerror = erro; fr.readAsDataURL(blob); }); await apiOk(apiDe(nome), { method: 'PUT', body: JSON.stringify({ message: 'Música: ideia gravada pelo app', content: b64 }) }); }
-            catch (e) { showNote('O áudio não subiu: confere a internet e grava de novo.', true); return; }
-            if (await grava(l => l.unshift({ id: edNovoId('ideia-' + edAgora()), secao: 'musica', nome: 'Ideia gravada ' + edAgora().slice(0, 5) + ' às ' + edAgora().slice(11, 16), etapa: 1, audio: nome, dur, falta: 'ouvir de novo e dar um nome', criado: edAgora() }), 'Música: ideia gravada vira música (Ideia)')) showNote('Ideia guardada: tá no topo, na etapa Ideia.'); };
-          rec.start(); t0 = Date.now(); if (CFG.vibracao !== false && navigator.vibrate) navigator.vibrate(20); pinta();
-        } catch (e) { rec = null; soltaMicStream(); pinta(); showNote(e && e.name === 'NotAllowedError' ? 'Sem acesso ao microfone. Libera em Ajustes → Apps → Safari → Microfone (Permitir).' : 'Microfone não abriu (' + ((e && e.name) || 'erro') + ').', true); }
+    // 2c (#449, ok Sigma 11:52): Gravar ideia abre um painel: gravar, pausar/continuar, ouvir antes de salvar, nome, destino e obs; o áudio fica no aparelho até subir e entrar no json
+    let tocando = null;
+    const PEND_MUS = 'mus-grav-pend', memGrav = new Map(), subindo = new Set(), pendMus = () => { try { return JSON.parse(store.get(PEND_MUS) || '[]'); } catch (e) { return []; } }, poePend = l => store.set(PEND_MUS, l.length ? JSON.stringify(l) : '');
+    const tam = n => n >= 1048576 ? (n / 1048576).toFixed(1).replace('.', ',') + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB', mmss = s => Math.floor(s / 60) + ':' + pad(s % 60);
+    const juntaWav = async blobs => {   // plano B (pause falhou no aparelho): cada retomada é uma parte; junta tudo num WAV mono 22 kHz, nada se perde
+      const ac = new (window.AudioContext || window.webkitAudioContext)(), bufs = []; for (const b of blobs) bufs.push(await new Promise((ok, erro) => b.arrayBuffer().then(a => ac.decodeAudioData(a, ok, erro), erro))); if (ac.close) ac.close();
+      const R = 22050, lens = bufs.map(bf => Math.floor(bf.length * R / bf.sampleRate)), mono = new Float32Array(lens.reduce((a, b) => a + b, 0)); let o = 0;
+      bufs.forEach((bf, k) => { const f = bf.sampleRate / R, ch = [...Array(bf.numberOfChannels)].map((_, c) => bf.getChannelData(c)); for (let i = 0; i < lens[k]; i++) { const j = Math.floor(i * f); let v = 0; ch.forEach(c => { v += c[j]; }); mono[o++] = v / ch.length; } });
+      const dv = new DataView(new ArrayBuffer(44 + mono.length * 2)), str = (at, t) => [...t].forEach((c, k) => dv.setUint8(at + k, c.charCodeAt(0)));
+      str(0, 'RIFF'); dv.setUint32(4, 36 + mono.length * 2, true); str(8, 'WAVEfmt '); dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 1, true); dv.setUint32(24, R, true); dv.setUint32(28, R * 2, true); dv.setUint16(32, 2, true); dv.setUint16(34, 16, true); str(36, 'data'); dv.setUint32(40, mono.length * 2, true);
+      mono.forEach((v, i) => dv.setInt16(44 + i * 2, Math.max(-1, Math.min(1, v)) * 32767, true)); return new Blob([dv], { type: 'audio/wav' });
+    };
+    const pergunta = (perg, sim, fn) => { const ov = elD('div', 'fixa-pop tm-gp-conf'), card = elD('div', 'pp-card'), ops = elD('div', 'pp-ops'), si = elD('button', 'pp-op rec', sim), nao = elD('button', 'pp-op', 'Voltar'); si.type = nao.type = 'button'; ops.style.marginTop = '16px'; const fecha = () => ov.remove(); nao.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; si.onclick = () => { fecha(); fn(); }; ops.append(nao, si); card.append(elD('div', 'pp-perg', perg), ops); ov.append(card); document.body.append(ov); };   // popup em cima do painel, com mais margem
+    const sobeGrav = async id => {   // sobe o áudio, grava em gravacoes[] e só então solta do aparelho; falhou = fica guardado com "Tentar de novo"
+      let p = pendMus().find(x => x.id === id); if (!p || subindo.has(id)) return; subindo.add(id); pinta();
+      const acerta = v => { p = Object.assign(p, v); poePend(pendMus().map(x => x.id === id ? p : x)); }, sai = (msg, err) => { subindo.delete(id); pinta(); if (msg) showNote(msg, err); };
+      const blob = memGrav.get(id) || await audioGuardado(id); if (!blob && !p.arq) { poePend(pendMus().filter(x => x.id !== id)); return sai('Esse áudio não está mais no aparelho.', true); }
+      if (!p.arq) { const arq = nomeArq('musica/audios', new Date(), 0, p.ext); try { const b64 = await new Promise((ok, erro) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1] || ''); fr.onerror = erro; fr.readAsDataURL(blob); }); await apiOk(apiDe(arq), { method: 'PUT', body: JSON.stringify({ message: 'Música: ideia gravada pelo app', content: b64 }) }); acerta({ arq }); } catch (e) { acerta({ falhou: edAgora() }); return sai('Não subiu: ficou guardado no aparelho.', true); } }
+      const g = Object.assign({ audio: p.arq, nome: p.nome, quando: p.quando, dur: p.dur }, p.obs ? { obs: p.obs } : {});
+      const nova = l => l.unshift({ id: edNovoId(p.nome), secao: 'musica', nome: p.nome, etapa: 1, audio: p.arq, dur: p.dur, gravacoes: [g], historico: [{ etapa: 1, quando: p.quando }], criado: p.quando });
+      subindo.delete(id); if (!await grava(l => { const y = p.destino && l.find(z => z.id === p.destino && !z.apagado); if (!y) return nova(l); (y.gravacoes = y.gravacoes || []).push(g); if (!y.audio) { y.audio = p.arq; y.dur = p.dur; } y.atualizado = p.quando; }, 'Música: ideia gravada pelo app' + (p.destino ? ' (na música)' : ' (música nova)'))) { acerta({ falhou: edAgora() }); return; }
+      poePend(pendMus().filter(x => x.id !== id)); memGrav.delete(id); tiraAudio(id); pinta(); showNote(p.destino ? 'Gravação guardada na música.' : 'Ideia guardada: tá no topo, na etapa Ideia.');
+    };
+    const painelGrava = async () => {
+      if (!navigator.mediaDevices || !window.MediaRecorder) { showNote('Este navegador não grava áudio. Abre pelo ícone da tela de início.', true); return; }
+      let stream; try { stream = await pegaMic(); } catch (e) { soltaMicStream(); showNote(e && e.name === 'NotAllowedError' ? 'Sem acesso ao microfone. Libera em Ajustes → Apps → Safari → Microfone (Permitir).' : 'Microfone não abriu (' + ((e && e.name) || 'erro') + ').', true); return; }
+      const tipo = tipoAudio(), segs = [], ov = elD('div', 'fixa-pop ed-pop escuro tm-gp'), card = elD('div', 'pp-card ed-card'), x = elD('button', 'pp-x'), miolo = elD('div', 'tm-gp-miolo');
+      let rec = null, partes = [], pausado = false, acum = 0, t0 = Date.now(), relogio = null, url = '', fim = null;
+      const fecha = () => { clearInterval(relogio); if (rec && rec.state !== 'inactive') { rec.onstop = null; try { rec.stop(); } catch (e) {} } soltaMicStream(); if (url) URL.revokeObjectURL(url); ov.remove(); };
+      const descarta = () => pergunta(fim ? 'Descartar esta gravação?' : 'Parar e descartar a gravação?', 'Descartar', fecha);
+      x.type = 'button'; x.innerHTML = icone('close'); x.setAttribute('aria-label', 'Fechar'); x.onclick = descarta; ov.onclick = e => { if (e.target === ov) descarta(); };
+      const novoRec = () => { partes = []; rec = new MediaRecorder(stream, tipo ? { mimeType: tipo } : undefined); rec.ondataavailable = e => { if (e.data.size) partes.push(e.data); }; rec.start(1000); };
+      const fimSeg = () => new Promise(ok => { const r = rec; r.onstop = () => { segs.push(new Blob(partes, { type: r.mimeType || tipo || 'audio/mp4' })); ok(); }; r.stop(); });
+      const seg = () => Math.floor((acum + (pausado ? 0 : Date.now() - t0)) / 1000);
+      const desenhaGrav = () => {
+        const tm = elD('div', 'tm-gp-tempo' + (pausado ? ' pausa' : ''), mmss(seg())), st = elD('small', 'tm-gp-st', pausado ? 'Pausado' : 'Gravando'), ops = elD('div', 'tm-gp-ops'), pa = elD('button', 'tm-gp-bt', pausado ? 'Continuar' : 'Pausar'), pr = elD('button', 'tm-gp-bt rec', 'Parar e ouvir'); pa.type = pr.type = 'button';
+        pa.onclick = async () => { pa.disabled = true; if (!pausado) { acum += Date.now() - t0; pausado = true; try { rec.pause(); if (rec.state !== 'paused') throw 0; } catch (e) { if (rec.state !== 'inactive') await fimSeg(); } } else { t0 = Date.now(); pausado = false; if (rec.state === 'inactive') novoRec(); else try { rec.resume(); if (rec.state !== 'recording') throw 0; } catch (e) { await fimSeg(); novoRec(); } } desenhaGrav(); };
+        pr.onclick = async () => { pr.disabled = pa.disabled = true; clearInterval(relogio); if (!pausado) { acum += Date.now() - t0; pausado = true; } if (rec.state !== 'inactive') await fimSeg(); soltaMicStream(); const dur = Math.round(acum / 1000); let blob = segs[0];
+          if (segs.length > 1) { st.textContent = 'Juntando as partes…'; try { blob = await juntaWav(segs); } catch (e) { blob = null; } }
+          if (!blob) { showNote('Não consegui juntar as partes do áudio.', true); fecha(); return; } if (blob.size < 1500) { showNote('Áudio curto demais.', true); fecha(); return; } fim = { blob, dur }; desenhaOuvir(); };
+        ops.append(pa, pr); miolo.replaceChildren(elD('div', 'pp-perg', 'Gravar ideia'), elD('i', 'tm-gp-ponto' + (pausado ? ' pausa' : '')), tm, st, ops);
+        clearInterval(relogio); if (!pausado) relogio = setInterval(() => { if (!tm.isConnected) return clearInterval(relogio); tm.textContent = mmss(seg()); }, 250);
       };
+      const desenhaOuvir = () => {
+        url = URL.createObjectURL(fim.blob); const au = elD('audio', 'tm-gp-au'); au.controls = true; au.src = url; au.preload = 'metadata';
+        const agora = new Date(), lb = (rot, el) => { const l = elD('label', 'ed-campo'); l.append(elD('span', '', rot), el); return l; }, nm = elD('input'), ds = elD('select'), ob = elD('textarea'); nm.type = 'text'; nm.value = 'Ideia ' + pad(agora.getDate()) + '/' + pad(agora.getMonth() + 1) + ' ' + pad(agora.getHours()) + ':' + pad(agora.getMinutes()); ob.rows = 2;
+        [['', 'Música nova']].concat(vivos('musica').map(y => [y.id, y.nome])).forEach(([v, t]) => { const o = elD('option', '', t); o.value = v; ds.append(o); });
+        const info = elD('small', 'tm-gp-info', mmss(fim.dur) + (fim.blob.size > 10485760 ? ' · ' + tam(fim.blob.size) + ' pra subir' : '')), ops = elD('div', 'tm-gp-ops'), sv = elD('button', 'tm-gp-bt rec', 'Salvar'), dc = elD('button', 'tm-gp-bt', 'Descartar'); sv.type = dc.type = 'button'; dc.onclick = descarta;
+        sv.onclick = async () => { const nome = nm.value.trim(); if (!nome) { nm.focus(); return; } sv.disabled = true; const id = 'mg-' + Date.now(), t = fim.blob.type; memGrav.set(id, fim.blob); await guardaAudio(id, fim.blob);
+          poePend(pendMus().concat([{ id, nome, destino: ds.value, obs: ob.value.trim(), dur: fim.dur, quando: edAgora(), ext: /wav/.test(t) ? 'wav' : /webm/.test(t) ? 'webm' : 'm4a', tam: fim.blob.size }])); fecha(); sobeGrav(id); };
+        ops.append(dc, sv); miolo.replaceChildren(elD('div', 'pp-perg', 'Ouvir antes de salvar'), au, info, lb('Nome', nm), lb('Vai pra', ds), lb('Obs', ob), ops);
+      };
+      card.append(x, miolo); ov.append(card); document.body.append(ov);
+      try { novoRec(); t0 = Date.now(); if (CFG.vibracao !== false && navigator.vibrate) navigator.vibrate(20); desenhaGrav(); } catch (e) { fecha(); showNote('Não deu pra gravar (' + ((e && e.name) || 'erro') + ').', true); }
+    };
+    const pendentes = () => pendMus().map(p => { const w = elD('div', 'tm-pend'), tx = elD('div'), ir = subindo.has(p.id); tx.append(elD('b', '', p.nome), elD('small', '', (ir ? 'Subindo… ' : 'Não subiu, tentar de novo · ') + tam(p.tam || 0))); w.append(tx);
+      if (!ir) { const de = elD('button', 'tm-gp-bt', 'Tentar de novo'), ap = edMini('close', 'Descartar ' + p.nome, () => pergunta('Descartar "' + p.nome + '"? O áudio sai do aparelho.', 'Descartar', () => { poePend(pendMus().filter(y => y.id !== p.id)); memGrav.delete(p.id); tiraAudio(p.id); pinta(); })); de.type = 'button'; de.onclick = () => sobeGrav(p.id); w.append(de, ap); }
+      return w; });
+    const gravador = () => {
+      const w = elD('div', 'tm-grava'), bt = elD('button', 'tm-grava-bt'), dica = elD('small', '', 'Teve um riff, uma letra, uma melodia? Grava agora.'); bt.type = 'button';
+      bt.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg><span>Gravar ideia</span>'; bt.onclick = painelGrava;
       w.append(bt, dica); return w;
     };
+    const gravAbertas = new Set();
     const resumo = elD('div', 'tm-resumo'), rtx = elD('div'); resumo.innerHTML = MUS_MARCA; resumo.append(rtx);
     const abas = elD('div', 'tm-abas'); abas.setAttribute('role', 'tablist'); const corpo = elD('div', 'tm-painel'); c.append(resumo, abas, corpo);
     const trocaAba = id => { if (id === aba) return; rolagem[aba] = pCorpo.scrollTop; const dir = ABA_ORD.indexOf(id) > ABA_ORD.indexOf(aba) ? 1 : -1; aba = id; store.set('mus-aba', id); pinta(); vemDoLado(corpo, dir); requestAnimationFrame(() => { pCorpo.scrollTop = rolagem[id] || 0; }); };   // toque na aba também entra deslizando do lado dela (o dedo pro lado já troca pelo gesto comum do app) e cada aba volta na rolagem onde estava
@@ -3954,9 +3996,9 @@ function abreMusica(m) {
         const R = resumoEstudio(), bl = elD('div', 'tm-blocos'), bloco = (num, rot, fn, tx) => { const b = elD(fn ? 'button' : 'div', 'tm-bloco' + (tx ? ' tx' : '')); if (fn) { b.type = 'button'; b.onclick = fn; } b.append(elD('b', '', num), elD('small', '', rot)); bl.append(b); };   // 2b: no máximo 4 blocos em cima (Sigma 07:24); o resto mora na aba Painel
         bloco(String(R.anda.length), 'Em andamento'); bloco(String(R.paradas.length), 'Paradas há 14+ dias'); bloco(R.prox ? R.prox.tit : 'Nada pendente', 'Próxima tarefa', R.prox ? () => vaiSug(R.prox) : null, true); bloco(R.P.semana + ' de ' + R.P.meta, 'Meta da semana', () => trocaAba('pratica')); corpo.append(bl);
         const he = elD('section', 'tm-hoje-est'); he.append(elD('h3', '', 'Hoje no estúdio'));   // sugere só o que ela cadastrou: prazo, prioridade alta, parada, cuidado vencendo, meta da semana (texto da May, item 9)
-        if (!R.sug.length) he.append(elD('p', 'tm-hoje-ok', 'Tudo em dia.'));
+        if (!R.sug.length) he.append(elD('p', 'tm-hoje-ok', 'Nada atrasado.'));   // 'Tudo em dia' brigava com a meta que falta (Sigma 11:58)
         R.sug.forEach(s => { const b = elD('button', 'tm-sug'), tx = elD('div'); b.type = 'button'; tx.append(elD('b', '', s.tit), elD('small', '', s.sub)); b.append(tx); b.insertAdjacentHTML('beforeend', SETA); b.onclick = () => vaiSug(s); he.append(b); });
-        corpo.append(he, gravador());
+        corpo.append(he, ...pendentes(), gravador());
         const l = vivos('musica'); if (!l.length) corpo.append(elD('div', 'tm-vazio', 'Nenhuma música ainda.'));
         l.forEach((x, n) => {
           const e = Math.min(NE, Math.max(1, x.etapa || 1)), a = elD('article', 'tm-faixa'), topo = elD('div', 'tm-faixa-topo'), tx = elD('div');
@@ -3969,6 +4011,11 @@ function abreMusica(m) {
           if (!x.audio) fd.append(elD('small', 'tm-onda-sem', 'Sem áudio ainda'));
           fd.onclick = async () => { const nova = e >= NE ? 1 : e + 1, q = edAgora(); if (await grava(ll => { const y = ll.find(z => z.id === x.id); if (y) { y.etapa = nova; y.atualizado = q; (y.historico = y.historico || []).push({ etapa: nova, quando: q }); } }, 'Música: etapa de ' + x.nome + ' foi pra ' + ET[nova - 1] + ' pelo app')) edFaixaDesfazer('Etapa: ' + ET[nova - 1], () => grava(ll => { const y = ll.find(z => z.id === x.id); if (y) { y.etapa = e; const h = (y.historico || []).filter(z => z.quando === q && z.etapa === nova && !z.apagado).pop(); if (h) h.apagado = edAgora(); } }, 'Música: etapa de ' + x.nome + ' voltou pra ' + ET[e - 1] + ' (desfeito)'), 3000); };   // tocar no fader sobe uma etapa e grava no histórico; 3 s pra desfazer (Sigma 07:24); depois de Finalizada volta pra Ideia
           const et = elD('div', 'tm-etapas'); et.setAttribute('aria-label', 'Etapa ' + e + ' de ' + NE + ': ' + ET[e - 1]); ET.forEach((t, k) => { const s = elD('span', k + 1 === e ? 'atual' : k + 1 < e ? 'foi' : '', k + 1 === e ? e + '/' + NE + ' · ' + t : ''); s.title = t; et.append(s); }); a.append(fd, et);   // 8 etapas em 390 px: só a atual com nome, as outras são ponto
+          const gv = (x.gravacoes || []).filter(g => !g.apagado); if (gv.length) { const det = elD('details', 'tm-gravs'); det.open = gravAbertas.has(x.id); det.ontoggle = () => { if (det.open) gravAbertas.add(x.id); else gravAbertas.delete(x.id); }; det.append(elD('summary', '', 'Gravações (' + gv.length + ') · Toca pra ver'));   // 2c: cada gravação da música, com ouvir e apagar (confirma antes, fica guardada)
+            gv.forEach(g => { const li = elD('div', 'tm-grav'), pl = elD('button', 'tm-grav-pl', '▶'), tx = elD('div'); pl.type = 'button'; pl.setAttribute('aria-label', 'Ouvir ' + g.nome); tx.append(elD('b', '', g.nome), elD('small', '', g.quando + (g.dur ? ' · ' + mmss(g.dur) : '') + (g.obs ? ' · ' + g.obs : '')));
+              pl.onclick = async () => { const era = tocando && tocando.dono === pl; if (tocando) { tocando.pause(); if (tocando.dono) tocando.dono.textContent = '▶'; tocando = null; } if (era) return; pl.textContent = '…'; try { const u = await fotoUrl(g.audio, true); tocando = new Audio(u); tocando.dono = pl; tocando.onended = () => { tocando = null; pl.textContent = '▶'; }; await tocando.play(); pl.textContent = '■'; } catch (e) { tocando = null; pl.textContent = '▶'; showNote('Não tocou: confere a internet.', true); } };
+              const ap = edMini('close', 'Apagar ' + g.nome, () => confirmaApagar('"' + g.nome + '"', async () => { const q = edAgora(), acha = l => { const y = l.find(z => z.id === x.id); return y && (y.gravacoes || []).find(z => z.audio === g.audio); }; if (await grava(l => { const h = acha(l); if (h) h.apagado = q; }, 'Música: gravação apagada pelo app (fica guardada)')) edFaixaDesfazer('Gravação apagada', () => grava(l => { const h = acha(l); if (h) delete h.apagado; }, 'Música: gravação de volta')); }));
+              li.append(pl, tx, ap); det.append(li); }); a.append(det); }
           if (x.falta) { const f = elD('p', 'tm-falta'); f.append(elD('small', '', 'O que falta'), document.createTextNode(x.falta)); a.append(f); }
           if (x.prioridade || x.data) { const ch = elD('div', 'tm-chips'); if (x.prioridade) ch.append(elD('span', 'tm-chip pri-' + x.prioridade, 'Prioridade ' + ({ alta: 'alta', media: 'média', baixa: 'baixa' }[x.prioridade] || x.prioridade))); if (x.data) ch.append(elD('span', 'tm-chip', 'Prazo ' + edDataBr(x.data))); a.append(ch); }
           const hs = (x.historico || []).filter(z => !z.apagado); if (hs.length) { const hb = elD('button', 'tm-hist-bt'), hl = elD('ol', 'tm-hist'); hb.type = 'button'; hb.append(elD('b', '', 'Histórico de etapas (' + hs.length + ')'), elD('span', '', 'Toca pra ver')); hl.hidden = true; hb.onclick = () => { hl.hidden = !hl.hidden; hb.lastChild.textContent = hl.hidden ? 'Toca pra ver' : 'Toca pra fechar'; };

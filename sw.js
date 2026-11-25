@@ -1,4 +1,4 @@
-// v611 #449 JWA 2b: topo conta por etapa, Proxima tarefa sem repetir o Hoje no estudio, meta so no bloco
+// v612 #449 JWA 2c-1: painel de gravacao (pausar, ouvir, nome, destino, obs), gravacoes[] na musica, fila no aparelho se nao subir
 // v605 #467 fase 3 Receber: herói azul, cartões do mês, parcelas automáticas no detalhe (Hermes 25/11)
 // v604 #468 detalhe da semanal e a cada N dias mostra a regra (Hermes 25/11)
 // v603 #468 detalhe da conta no tema claro, botões de 44 px, Apagar com confirmação (Hermes 25/11)
