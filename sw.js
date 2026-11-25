@@ -1,4 +1,4 @@
-// v640 #449 6a aparelho mostra as musicas dele, icones SVG no lugar dos simbolos de texto
+// v641 #449 6b pesquisa global do estudio (lupa, sem acento, termo em negrito)
 // v637 #449 5c series: episodios e etapas c/ ordem, proxima no cartao, ideias da serie, series na aba Ideias
 // v636 #449 5b audio na ideia: gravar ou anexar, ouvir e apagar
 // v632 #449 4b categorias do Setup com filtro, onde fica e estado

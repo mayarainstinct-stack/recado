@@ -4112,3 +4112,22 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .t-musica .tm-grav-pl .mi{width:16px;height:16px;vertical-align:middle}
 .t-musica .tm-ap-mus{display:flex;flex-direction:column;gap:6px;margin:8px 0 0}
 .t-musica .tm-ap-mus .tm-sr-ide{margin:0}
+.t-musica .tm-resumo > div { flex: 1; min-width: 0; }
+.t-musica .tm-lupa { flex: none; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 12px; border: 1px solid var(--tm-linha); background: transparent; color: var(--tm-texto); cursor: pointer; }
+.t-musica .tm-lupa svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.tm-busca-pop { place-items: start center; grid-template-rows: 100%; height: 100dvh; box-sizing: border-box; }
+.tm-busca-card { width: min(520px, 100%); height: 100%; max-height: none; display: flex; flex-direction: column; gap: 12px; padding: 16px; box-sizing: border-box; overflow: hidden; }
+.tm-busca-card .pp-x { width: 44px; height: 44px; top: 12px; right: 12px; }
+.tm-busca-card .tm-busca-in { flex: none; width: calc(100% - 56px); min-height: 44px; font-size: 16px; }
+.tm-busca-res { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: grid; align-content: start; gap: 14px; padding: 2px 2px 8px; }
+.tm-busca-gr { display: grid; gap: 6px; }
+.tm-busca-gr h4 { margin: 0 2px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: #B8B0AA; }
+.tm-busca-it { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 8px 12px; border-radius: 12px; border: 1px solid #3A3533; background: #1C1917; color: #F5F0EC; font: inherit; text-align: left; cursor: pointer; }
+.tm-busca-it > div { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.tm-busca-it > div > span, .tm-busca-it small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tm-busca-it > div > span { font-weight: 600; }
+.tm-busca-it small { color: #B8B0AA; font-size: 12px; }
+.tm-busca-it b { font-weight: 800; color: #FF6B76; }
+.tm-busca-it > svg { flex: none; width: 18px; height: 18px; fill: none; stroke: #8C8782; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.tm-busca-dica { margin: 4px 2px; color: #B8B0AA; font-size: 14px; }
+.tm-busca-card { --quem: #F0283A; }
