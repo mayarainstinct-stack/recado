@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.580">
+<meta name="app-versao" content="2026-11-25.581">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.580"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.581"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -6728,10 +6728,10 @@ function carregaLeaflet() {
 function abreMapa(x) {   // Google Maps dentro do app (embed sem chave): acha o número exato e mostra a rota a pé da rodoviária (May 11/11: "preciso de um mapa que seja preciso")
   const p = popupRosa(x.nome || 'Mapa'), cx = elD('div', 'pr-mapa'); p.corpo.append(cx);
   let dest = '', orig = '';
-  try { const u = new URL(x.mapaExterno || ''); dest = u.searchParams.get('destination') || ''; orig = u.searchParams.get('origin') || ''; } catch (e) {}
+  try { const u = new URL(x.mapaExterno || ''); dest = u.searchParams.get('destination') || u.searchParams.get('daddr') || u.searchParams.get('q') || ''; orig = u.searchParams.get('origin') || u.searchParams.get('saddr') || ''; } catch (e) {}
   if (!dest) dest = x.lat + ',' + x.lon;
   const e = encodeURIComponent, srcs = { rota: orig ? 'https://www.google.com/maps?saddr=' + e(orig) + '&daddr=' + e(dest) + '&dirflg=w&hl=pt-BR&output=embed' : '', lugar: 'https://www.google.com/maps?q=' + e(dest) + '&z=17&hl=pt-BR&output=embed' };
-  const fr = document.createElement('iframe'); fr.loading = 'eager'; fr.referrerPolicy = 'no-referrer-when-downgrade'; fr.style.cssText = 'width:100%;height:100%;border:0;border-radius:inherit'; fr.title = 'Mapa';
+  const fr = document.createElement('iframe'); fr.loading = 'eager'; fr.referrerPolicy = 'no-referrer-when-downgrade'; fr.style.cssText = 'width:100%;height:100%;border:0;border-radius:inherit'; fr.title = 'Mapa'; fr.setAttribute('sandbox', 'allow-scripts allow-same-origin');   // May 25/11: iPhone, link de mapa é sempre o Mapas da Apple; toque dentro do mapinha não abre o Google
   const abas = elD('div', 'pr-mapa-abas'); abas.style.cssText = 'display:flex;gap:8px;margin:10px 0 0';
   const aba = (k, rot) => { const bt = elD('button', 'pr-externo', rot); bt.type = 'button'; bt.style.cssText = 'flex:1;cursor:pointer;margin:0'; bt.onclick = () => { fr.src = srcs[k]; [...abas.children].forEach(c => c.style.opacity = c === bt ? '1' : '.55'); }; abas.append(bt); return bt; };
   cx.append(fr);
