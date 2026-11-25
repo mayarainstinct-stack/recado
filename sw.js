@@ -1,4 +1,4 @@
-// v646 #479 medidas reais na Vitrine (escala e grossura por instrumento)
+// v647 #479 conserto: descricao do cartao do Setup voltou, medida embaixo
 // v637 #449 5c series: episodios e etapas c/ ordem, proxima no cartao, ideias da serie, series na aba Ideias
 // v636 #449 5b audio na ideia: gravar ou anexar, ouvir e apagar
 // v632 #449 4b categorias do Setup com filtro, onde fica e estado
