@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.604">
+<meta name="app-versao" content="2026-11-25.605">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.604"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.605"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -4862,6 +4862,17 @@ const finIso = s => { const d = finData(s); return d ? d.getFullYear() + '-' + p
 const finChaveDe = s => { const d = finData(s); return d ? finChave(d) : ''; };
 const finDiaMes = (ano, mes0, dia) => new Date(ano, mes0, Math.min(+dia, new Date(ano, mes0 + 1, 0).getDate()));
 const finIsoD = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+// parcelas de quem te deve (#467 fase 3, item 5 do texto da May): o app cria sozinho pelo total, valor da parcela e quantidade; pagamento com nota "Parcela N" vai pra ela, o resto enche da mais antiga pra frente
+function finParcelas(p, hoje) {
+  const vp = p.vp, n = p.parcelas || (p.total && vp ? Math.ceil(p.total / vp - 1e-6) : 0); if (!vp || !n || n > 120) return [];
+  const pr = p.pagamentos[0], ini = finData(p.inicio) || (pr ? finData(pr.data) : null) || hoje, dia = p.dia || ini.getDate(), out = [];
+  for (let k = 0; k < n; k++) { const v = p.total && k === n - 1 ? Math.round((p.total - vp * (n - 1)) * 100) / 100 : vp; out.push({ n: k + 1, de: n, quando: finDiaMes(ini.getFullYear(), ini.getMonth() + k, dia), valor: v > 0 ? v : vp, rec: 0 }); }
+  let solto = 0; p.pagamentos.forEach(y => { const m = String(y.nota || '').match(/^Parcela (\d+)/), x = m && out[+m[1] - 1]; if (x) x.rec += finNum(y.valor); else solto += finNum(y.valor); });
+  out.forEach(x => { if (x.rec > x.valor) { solto += x.rec - x.valor; x.rec = x.valor; } });
+  out.forEach(x => { const f = Math.min(solto, x.valor - x.rec); x.rec += f; solto -= f; });
+  out.forEach(x => { x.estado = x.rec >= x.valor - 0.005 ? 'recebido' : x.rec > 0.005 ? 'parcial' : x.quando < hoje ? 'atrasado' : 'receber'; });
+  return out;
+}
 // vencimentos de uma conta no mês pela regra de repetição (#468, 25/11/2026): nada vira linha nova no json, o app calcula. Dia 31 em mês curto cai no último dia; anual de 29/02 cai em 28/02 fora do bissexto
 function finVenc(f, ano, mes0) {
   const r = f.repete || 'mensal', ini = finData(f.inicio), fim = new Date(ano, mes0 + 1, 0);
@@ -4891,7 +4902,7 @@ function finAplicaLanc(d, l) {   // o LANCAMENTOS.md antigo (o que ela lançou a
 // (cópia final em contas/backup-antes-de-unificar-24-11-2026/). Cada conta: pagar/receber/divida (com total e histórico), fixa/entrada (todo mês), anual.
 function finMonta(o) {
   const tem = v => v !== undefined && v !== null && v !== '', ok = c => c.tipo && !c.apagado, pessoas = [], fixas = [], anuais = [];
-  (o.contas || []).filter(c => ok(c) && /^(pagar|receber|divida)$/.test(c.tipo)).forEach(c => { const t = finNum(c.total) || finNum(c.valor); pessoas.push({ id: c.id, nome: c.nome, pessoa: c.pessoa || '', inicio: c.inicio || '', lado: c.tipo === 'receber' ? 'receber' : 'pagar', total: t, pago: 0, falta: t, dia: finNum(c.dia) || null, lembrar: c.lembrar_em || '', vp: finNum(c.valor) || null, como: c.nota || '', pagamentos: [], origem: 'app', divida: c.tipo === 'divida', parcelas: finNum(c.parcelas) || null }); });
+  (o.contas || []).filter(c => ok(c) && /^(pagar|receber|divida)$/.test(c.tipo)).forEach(c => { const t = finNum(c.total) || finNum(c.valor); pessoas.push({ id: c.id, nome: c.nome, pessoa: c.pessoa || '', inicio: c.inicio || '', lado: c.tipo === 'receber' ? 'receber' : 'pagar', total: t, pago: 0, falta: t, dia: finNum(c.dia) || (finData(c.inicio) ? finData(c.inicio).getDate() : null), lembrar: c.lembrar_em || '', vp: finNum(c.valor) || (finNum(c.parcelas) && t ? Math.round(t / finNum(c.parcelas) * 100) / 100 : null), como: c.nota || '', pagamentos: [], origem: 'app', divida: c.tipo === 'divida', parcelas: finNum(c.parcelas) || null }); });
   (o.contas || []).filter(c => ok(c) && /^(fixa|entrada)$/.test(c.tipo)).forEach(c => fixas.push({ id: c.id, nome: c.nome, tipo: c.tipo, dia: finNum(c.dia) || null, valor: finNum(c.valor), metade: c.metade === true || c.metade === 'sim', nota: c.nota || '', de: c.ultima || '', pagos: [], lembrar: c.lembrar_em || '', repete: c.repete || '', a_cada: finNum(c.a_cada) || 0, inicio: c.inicio || '', adiada: c.adiada && typeof c.adiada === 'object' ? c.adiada : {} }));
   (o.contas || []).filter(c => ok(c) && c.tipo === 'anual').forEach(c => anuais.push({ id: c.id, nome: c.nome, mes: c.mes || '', nota: c.nota || '' }));
   const alvo = {}; pessoas.forEach(p => { alvo[p.id] = p; }); fixas.forEach(f => { alvo[f.id] = f; });
@@ -5007,7 +5018,7 @@ function abreFinancas(m) {
     };
     const FIN_ABAS = ['Básico', 'Quando', 'Pagamento'], FIN_PES_T = ['pagar', 'receber', 'divida'], fixaT = v => v.tipo === 'fixa' || v.tipo === 'entrada', regraData = v => fixaT(v) && ['semanal', 'anual', 'dias'].includes(v.repete);
     const FIN_LAY = { nome: { aba: 'Básico' }, tipo: { aba: 'Básico' }, categoria: { aba: 'Básico', meia: true, se: v => v.tipo !== 'receber' && v.tipo !== 'entrada' }, valor: { aba: 'Básico', meia: true }, pessoa: { aba: 'Básico', se: v => FIN_PES_T.includes(v.tipo) }, nota: { aba: 'Básico' },
-      repete: { aba: 'Quando', meia: true, se: fixaT }, a_cada: { aba: 'Quando', meia: true, se: v => fixaT(v) && v.repete === 'dias', precisa: true }, inicio: { aba: 'Quando', meia: true, se: regraData, precisa: true }, dia: { aba: 'Quando', meia: true, se: v => !regraData(v) }, lembrar_em: { aba: 'Quando', meia: true },
+      repete: { aba: 'Quando', meia: true, se: fixaT }, a_cada: { aba: 'Quando', meia: true, se: v => fixaT(v) && v.repete === 'dias', precisa: true }, inicio: { aba: 'Quando', meia: true, se: v => regraData(v) || FIN_PES_T.includes(v.tipo), precisa: true }, dia: { aba: 'Quando', meia: true, se: v => !regraData(v) }, lembrar_em: { aba: 'Quando', meia: true },
       forma_padrao: { aba: 'Pagamento', meia: true }, metade: { aba: 'Pagamento', meia: true, se: v => v.tipo === 'fixa' }, total: { aba: 'Pagamento', meia: true, se: v => FIN_PES_T.includes(v.tipo) }, parcelas: { aba: 'Pagamento', meia: true, se: v => FIN_PES_T.includes(v.tipo) } };
     const campos = () => ((Ec.base.campos && Ec.base.campos.contas) || FIN_CAMPOS.contas).map(f => ({ ...f, ...(FIN_LAY[f.nome] || { aba: 'Básico' }) })).sort((x, y) => FIN_ABAS.indexOf(x.aba) - FIN_ABAS.indexOf(y.aba));
     const formConta = (titulo, v, aoSalvar, aoApagar) => edFormulario({ titulo, campos: campos(), v, aoSalvar, aoApagar, rodape: true });
@@ -5019,19 +5030,30 @@ function abreFinancas(m) {
     const apagaConta = async ent => { await Ec.apaga(ent.id, true); repinta(); edFaixaDesfazer('Conta apagada', async () => { await Ec.apaga(ent.id, false); repinta(); }); };
     const editaConta = ent => { const s = Ec.itens.find(y => y.id === ent.id) || {}; const v = copiaDe(ent); if (ent.mes != null && s.tipo === 'anual') v.mes = s.mes; edFormulario({ titulo: 'Editar', rodape: s.tipo !== 'anual', campos: s.tipo === 'anual' ? [{ nome: 'nome', rotulo: 'Nome', tipo: 'texto', obrigatorio: true }, { nome: 'mes', rotulo: 'Mês que vence', tipo: 'texto' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto_longo' }] : campos(), v, aoSalvar: async nv => { await Ec.edita(ent.id, nv); repinta(); }, aoApagar: () => apagaConta(ent) }); };
     const NOVO = [['fixa', 'Conta do mês', 'Luz, internet, aluguel: vence todo mês'], ['pagar', 'Devo a alguém', 'Empréstimo ou compra que eu pago aos poucos'], ['receber', 'Alguém me deve', 'Dinheiro que vão me devolver'], ['entrada', 'Entrada do mês', 'Salário ou outro dinheiro que entra todo mês']];
-    const novaConta = () => {
+    const novaConta = (so, tit) => {
       const cp = elD('div', 'fu-novo');
-      NOVO.forEach(([tipo, t, s]) => { const b = elD('button', 'fu-op'); b.type = 'button'; b.append(elD('b', '', t), elD('small', '', s)); b.onclick = () => { fecha(); formConta(t, { tipo }, async v => { if (await Ec.lanca(v, 'Conta nova pelo app')) { repinta(); showNote('Guardado: ' + v.nome); } }); }; cp.append(b); });
-      const fecha = pop('O que você quer lançar?', cp);
+      NOVO.filter(x => !Array.isArray(so) || so.includes(x[0])).forEach(([tipo, t, s]) => { const b = elD('button', 'fu-op'); b.type = 'button'; b.append(elD('b', '', t), elD('small', '', s)); b.onclick = () => { fecha(); formConta(t, { tipo }, async v => { if (await Ec.lanca(v, 'Conta nova pelo app')) { repinta(); showNote('Guardado: ' + v.nome); } }); }; cp.append(b); });
+      const fecha = pop(tit || 'O que você quer lançar?', cp);
     };
     const editaPagto = y => edFormulario({ titulo: 'Editar pagamento', campos: (Ep.base.campos && Ep.base.campos.pagamentos) || FIN_CAMPOS.pagamentos, v: { valor_feito: y.valor, forma: y.forma, feito: y.quando, nota: y.nota }, aoSalvar: async nv => { await Ep.edita(y.appId, nv); repinta(); }, aoApagar: async () => { await Ep.apaga(y.appId, true); repinta(); edFaixaDesfazer('Pagamento apagado', async () => { await Ep.apaga(y.appId, false); repinta(); }); } });
     const detalhe = (ent, it) => {
       const eP = !!ent.pagamentos, cp = elD('div', 'fin-det'), lado = eP ? ent.lado : (ent.tipo === 'entrada' ? 'receber' : 'pagar'), hs = (eP ? ent.pagamentos : ent.pagos || []).slice().reverse();
       if (eP) { const pct = ent.total ? Math.min(100, Math.round(ent.pago / ent.total * 100)) : 0, r = elD('div', 'fu-detres'); r.append(elD('b', '', ent.falta > 0 ? 'Falta ' + reaisFin(ent.falta) : 'Quitado'), elD('small', '', (lado === 'pagar' ? 'Pago ' : 'Recebido ') + reaisFin(ent.pago) + ' de ' + reaisFin(ent.total))); const bar = elD('div', 'fu-barra'), i = elD('i'); i.style.width = pct + '%'; bar.append(i); r.append(bar); cp.append(r); }
+      const PS = eP && lado === 'receber' ? finParcelas(ent, hoje) : [];
+      if (PS.length) {
+        const pl = elD('div', 'fin-parc'); cp.append(elD('p', 'fin-rot', 'Parcelas · ' + PS.filter(x => x.estado === 'recebido').length + ' de ' + PS.length + ' recebidas'), pl);
+        PS.forEach(x => {
+          const l = elD('div', 'fin-parl est-' + x.estado), ck = elD('button', 'fu-ck' + (x.estado === 'recebido' ? ' on' : '')), m = elD('div', 'fin-parm'), d = elD('div', 'fin-pard'), [sc, st] = { recebido: ['pago', 'Recebida'], parcial: ['perto', 'Parcial'], atrasado: ['atrasada', 'Atrasada'], receber: ['vencer', 'A receber'] }[x.estado];
+          ck.type = 'button'; ck.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg>'; ck.setAttribute('aria-label', 'Marcar a ' + x.n + 'ª parcela recebida'); ck.disabled = x.estado === 'recebido';
+          ck.onclick = async () => { fecha(); const g = await Ep.lanca({ conta: ent.id, mes: finChave(x.quando), feito: edAgora(), valor_feito: Math.round((x.valor - x.rec) * 100) / 100, forma: '', nota: 'Parcela ' + x.n + ' de ' + x.de }, 'Parcela marcada pelo app'); if (g) { repinta(); edFaixaDesfazer('Recebida: ' + x.n + 'ª parcela de ' + ent.nome, async () => { await Ep.apaga(g.id || (Ep.itens[Ep.itens.length - 1] || {}).id, true); repinta(); }); } };
+          m.append(elD('strong', '', x.n + 'ª parcela'), elD('small', '', dataBr(x.quando) + (x.estado === 'parcial' ? ' · recebido ' + reaisFin(x.rec) : '')));
+          d.append(elD('b', '', reaisFin(x.valor)), elD('span', 'fn-selo s-' + sc, st)); l.append(ck, m, d); pl.append(l);
+        });
+      }
       else { const ini = finData(ent.inicio), desde = ini ? ', desde ' + dataBr(ini).slice(0, 5) : ''; cp.append(elD('p', 'p-nota', (ent.repete === 'semanal' ? 'Toda semana' + desde : ent.repete === 'dias' ? 'A cada ' + (Math.round(finNum(ent.a_cada)) || 1) + ' dias' + desde : ent.dia ? 'Vence todo dia ' + ent.dia : 'Sem dia de vencimento') + ' · ' + reaisFin(finParte(ent)) + (ent.metade ? ' (sua metade de ' + reaisFin(ent.valor) + ')' : ''))); }
       const obs = eP ? ent.como : ent.nota; if (obs) cp.append(elD('p', 'fu-obs', obs)); if (it && (it.para || it.de)) cp.append(elD('p', 'fin-lembra', it.para ? 'Adiada pra ' + dataBr(it.para).slice(0, 5) : 'Era dia ' + dataBr(it.de).slice(0, 5) + ', passou pra ' + dataBr(it.quando).slice(0, 5)));
       if (ent.lembrar && finData(ent.lembrar) && (!eP || ent.falta > 0)) cp.append(elD('p', 'fin-lembra', 'Lembrete no dia ' + edDataBr(finIso(ent.lembrar)).slice(0, 5)));
-      const ul = elD('div', 'fin-hist'); hs.forEach(y => { const l = elD('div'); l.append(elD('span', '', y.quando ? edQuando(y.quando) : y.data), elD('b', '', y.valor !== '' ? reaisFin(y.valor) : '—'), elD('small', '', [y.forma, y.nota].filter(Boolean).join(' · '))); if (y.appId) l.append(edMini('note', 'Editar pagamento', () => { fecha(); editaPagto(y); })); ul.append(l); });
+      if (PS.length) cp.append(elD('p', 'fin-rot', 'Histórico')); const ul = elD('div', 'fin-hist'); hs.forEach(y => { const l = elD('div'); l.append(elD('span', '', y.quando ? edQuando(y.quando) : y.data), elD('b', '', y.valor !== '' ? reaisFin(y.valor) : '—'), elD('small', '', [y.forma, y.nota].filter(Boolean).join(' · '))); if (y.appId) l.append(edMini('note', 'Editar pagamento', () => { fecha(); editaPagto(y); })); ul.append(l); });
       if (!hs.length) ul.append(elD('p', 'p-nota', 'Nenhum pagamento ainda.')); cp.append(ul);
       const bts = elD('div', 'ed-acoes fin-bts'), mk = (t, cl, fn, onde) => { const b = elD('button', cl, t); b.type = 'button'; b.onclick = () => { fecha(); fn(); }; (onde || bts).append(b); };
       if (eP) mk(lado === 'pagar' ? 'Registrar pagamento' : 'Registrar recebimento', 'pp-op rec', () => pagaPessoa(ent)); else if (it) mk(it.pago ? 'Desmarcar' : (lado === 'receber' ? 'Marcar recebido' : 'Marcar pago'), 'pp-op rec', () => it.pago ? marcaRapido(it) : marcarComValor(it));
@@ -5058,18 +5080,18 @@ function abreFinancas(m) {
     };
     // ícone do tipo: pela categoria quando a conta tiver (fase 2b), pelo nome de reserva (Sigma 25/11 10:23)
     const FN_ICO = [['luz', /energia|\bluz\b|cemig|netz|enel|eletric/i, '#F5A524', '<path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"/>'], ['internet', /internet|wi-?fi|fibra|avan[cç]ar/i, '#2F80ED', '<path d="M3 9.5a13 13 0 0118 0M6 13a8.5 8.5 0 0112 0M9 16.4a4 4 0 016 0"/><circle cx="12" cy="19.5" r="1"/>'], ['agua', /[aá]gua|copasa|sabesp|saneamento/i, '#2D9CDB', '<path d="M12 3.5c3.5 4.4 6 7.7 6 10.8a6 6 0 01-12 0c0-3.1 2.5-6.4 6-10.8z"/>'], ['casa', /aluguel|condom[ií]nio|\bcasa\b|lavoura|pedreiro|piscina|obra/i, '#0E7C5A', '<path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/>'], ['streaming', /netflix|spotify|disney|prime|youtube|hbo|\bmax\b|canais|\btv\b|streaming/i, '#E5484D', '<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 20h8"/>'], ['cartao', /cart[aã]o|fatura|nubank|ps5|placa/i, '#7B61FF', '<rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10.5h18M7 15.5h4"/>'], ['carro', /carro|moto|\bgol\b|siena|ipva|gasolina|combust/i, '#F2994A', '<path d="M5 16V12l2-5h10l2 5v4M3.5 16h17v3h-17z"/><circle cx="7.5" cy="16" r="1.4"/><circle cx="16.5" cy="16" r="1.4"/>'], ['celular', /celular|telefone|\bplano\b/i, '#56CCF2', '<rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M11 17.5h2"/>'], ['lazer', /lazer|passeio|viagem/i, '#BB6BD9', '<circle cx="12" cy="12" r="8.5"/><path d="M9 10h.01M15 10h.01M8.5 14a4.5 4.5 0 007 0"/>']];
-    const FN_PES = ['pessoa', null, '#6B8A7C', '<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20a7.5 7.5 0 0115 0"/>'], FN_MOE = ['outra', null, '#6B8A7C', '<circle cx="12" cy="12" r="8.5"/><path d="M14.8 9.3c-.5-1-1.6-1.6-2.8-1.6-1.6 0-2.8.9-2.8 2.1 0 2.8 5.6 1.5 5.6 4.3 0 1.2-1.2 2.1-2.8 2.1-1.3 0-2.4-.6-2.9-1.7M12 6v1.7M12 16.3V18"/>'];
+    const FN_REC = ['receber', null, '#1D6FB8', '<rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10.5h18M15.5 14.5h2"/>'], FN_PES = ['pessoa', null, '#6B8A7C', '<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20a7.5 7.5 0 0115 0"/>'], FN_MOE = ['outra', null, '#6B8A7C', '<circle cx="12" cy="12" r="8.5"/><path d="M14.8 9.3c-.5-1-1.6-1.6-2.8-1.6-1.6 0-2.8.9-2.8 2.1 0 2.8 5.6 1.5 5.6 4.3 0 1.2-1.2 2.1-2.8 2.1-1.3 0-2.4-.6-2.9-1.7M12 6v1.7M12 16.3V18"/>'];
     const icoDe = (ent, pessoa) => { const cat = (Ec.itens.find(y => y.id === ent.id) || {}).categoria || '', n = (cat + ' ' + ent.nome); return FN_ICO.find(x => cat && x[0] === cat.toLowerCase()) || FN_ICO.find(x => x[1].test(n)) || (pessoa ? FN_PES : FN_MOE); };
     const icone2 = ic => { const s = elD('span', 'fn-ico'); s.style.setProperty('--ic', ic[2]); s.innerHTML = '<svg viewBox="0 0 24 24">' + ic[3] + '</svg>'; return s; };
     const dataBr = d => pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear();
-    const selo = it => { const dd = Math.round((it.quando - hoje) / 864e5); if (it.pago) return ['pago', it.lado === 'receber' ? 'Recebido' : 'Pago']; if (it.estado === 'adiada') return ['vencer', 'Adiada pra ' + dataBr(it.para).slice(0, 5)]; if (it.estado === 'atrasada' || it.estado === 'semreg') return ['atrasada', 'Atrasada']; if (dd <= 3) return ['perto', dd <= 0 ? 'Vence hoje' : dd === 1 ? 'Vence amanhã' : 'Vence em ' + dd + ' dias']; return ['vencer', 'A vencer']; };
+    const selo = it => { const dd = Math.round((it.quando - hoje) / 864e5); if (it.pago) return it.lado === 'receber' && it.tipo === 'p' && it.ent.vp && finNum(it.pago.valor) + 0.005 < it.ent.vp ? ['perto', 'Parcial'] : ['pago', it.lado === 'receber' ? 'Recebido' : 'Pago']; if (it.lado === 'receber') return it.estado === 'atrasada' ? ['atrasada', 'Atrasado'] : ['vencer', 'A receber']; if (it.estado === 'adiada') return ['vencer', 'Adiada pra ' + dataBr(it.para).slice(0, 5)]; if (it.estado === 'atrasada' || it.estado === 'semreg') return ['atrasada', 'Atrasada']; if (dd <= 3) return ['perto', dd <= 0 ? 'Vence hoje' : dd === 1 ? 'Vence amanhã' : 'Vence em ' + dd + ' dias']; return ['vencer', 'A vencer']; };
     const cartao = it => {
-      const l = elD('div', 'fn-cartao'), ck = elD('button', 'fu-ck' + (it.pago ? ' on' : '')), meio = elD('div', 'fn-cmeio'), dir = elD('div', 'fn-cdir'), [sc, st] = selo(it), ent = it.ent;
+      const l = elD('div', 'fn-cartao' + (it.lado === 'receber' ? ' rec' : '')), ck = elD('button', 'fu-ck' + (it.pago ? ' on' : '')), meio = elD('div', 'fn-cmeio'), dir = elD('div', 'fn-cdir'), [sc, st] = selo(it), ent = it.ent;
       ck.type = 'button'; ck.setAttribute('aria-label', it.pago ? 'Desmarcar' : it.lado === 'receber' ? 'Marcar recebido' : 'Marcar pago'); ck.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg>'; ck.onclick = e => { e.stopPropagation(); marcaRapido(it); };
       const parc = ent.parcelas && ent.vp ? ' · ' + Math.min(ent.parcelas, Math.round(ent.pago / ent.vp) + (it.pago ? 0 : 1)) + ' de ' + ent.parcelas : '';
-      meio.append(elD('strong', '', it.nome), elD('small', '', (it.de ? 'Era ' + dataBr(it.de).slice(0, 5) + ' · ' : '') + 'Venc: ' + dataBr(it.quando) + parc + (it.cat === 'fixa' && ent.metade ? ' · sua metade' : '')), ...(sc === 'atrasada' && it.lado !== 'receber' ? [elD('small', 'fn-dica', 'Já pagou? Toca no círculo')] : []));
-      dir.append(elD('b', '', reaisFin(it.pago && it.pago.valor !== '' ? it.pago.valor : it.valor)), elD('span', 'fn-selo s-' + sc, st));
-      l.append(ck, icone2(icoDe(ent, it.tipo === 'p')), meio, dir); l.onclick = () => detalhe(ent, it); return l;
+      meio.append(elD('strong', '', it.nome), elD('small', '', it.lado === 'receber' ? (it.pago ? finPagoTxt(it.pago, 'receber', true) : (it.quando < hoje ? 'Era pra dia ' : 'Dia ') + it.quando.getDate()) + (it.tipo === 'p' && ent.falta > 0 ? ' · falta ' + reaisFin(ent.falta) + ' no total' : '') + parc : (it.de ? 'Era ' + dataBr(it.de).slice(0, 5) + ' · ' : '') + 'Venc: ' + dataBr(it.quando) + parc + (it.cat === 'fixa' && ent.metade ? ' · sua metade' : '')), ...(sc === 'atrasada' && it.lado !== 'receber' ? [elD('small', 'fn-dica', 'Já pagou? Toca no círculo')] : []));
+      dir.append(elD('b', '', (it.lado === 'receber' ? '+ ' : '') + reaisFin(it.pago && it.pago.valor !== '' ? it.pago.valor : it.valor)), elD('span', 'fn-selo s-' + sc, st));
+      l.append(ck, icone2(it.lado === 'receber' && it.tipo === 'p' ? FN_REC : icoDe(ent, it.tipo === 'p')), meio, dir); l.onclick = () => detalhe(ent, it); return l;
     };
     const cartaoAnual = x => {
       const l = elD('button', 'fn-cartao anual'), meio = elD('div', 'fn-cmeio'), dir = elD('div', 'fn-cdir'); l.type = 'button';
@@ -5081,7 +5103,7 @@ function abreFinancas(m) {
       const b = elD('button', 'fu-pes'), pct = x.total ? Math.min(100, Math.round(x.pago / x.total * 100)) : 0, bar = elD('div', 'fu-barra'), i = elD('i'); b.type = 'button'; b.onclick = () => detalhe(x);
       i.style.width = pct + '%'; bar.append(i);
       const ult = x.pagamentos[x.pagamentos.length - 1], top = elD('div', 'fu-pest'); top.append(elD('strong', '', x.nome), elD('b', '', x.falta > 0 ? reaisFin(x.falta) : 'quitado'));
-      b.append(top, bar, elD('small', '', pct + '% ' + (lado === 'pagar' ? 'pago' : 'recebido') + (x.parcelas && x.vp ? ' · ' + x.parcelas + 'x de ' + reaisFin(x.vp) : x.vp ? ' · ' + reaisFin(x.vp) + ' por mês' : '') + (ult ? ' · último ' + String(ult.quando || ult.data).slice(0, 5) : '') + (!x.total ? ' · sem total' : '')));
+      b.append(top, bar, elD('small', '', (lado === 'receber' && x.total ? 'Recebido ' + reaisFin(x.pago) + ' de ' + reaisFin(x.total) : pct + '% ' + (lado === 'pagar' ? 'pago' : 'recebido')) + (x.parcelas && x.vp ? ' · ' + x.parcelas + 'x de ' + reaisFin(x.vp) : x.vp ? ' · ' + reaisFin(x.vp) + ' por mês' : '') + (ult ? ' · último ' + String(ult.quando || ult.data).slice(0, 5) : '') + (!x.total ? ' · sem total' : '')));
       return b;
     };
     const doMes = M => {
@@ -5136,9 +5158,14 @@ function abreFinancas(m) {
       pag.contas.append(lista, add);
       requestAnimationFrame(() => { const on = abas.querySelector('.on'); if (on) abas.scrollLeft = Math.max(0, abas.scrollLeft + on.getBoundingClientRect().left - abas.getBoundingClientRect().left - 16); });
       // ---- Receber (fase 3): o que entra no mês e quem te deve
-      const lr = I.aRec.map(linha); if (!lr.length) lr.push(elD('p', 'fu-vazio', 'Nada pra receber este mês.'));
-      pag.receber.append(secao('Pra receber no mês', I.aRec.length ? '+ ' + reaisFin(I.resumo.aReceber) : null, null, lr));
+      const rec = I.its.filter(x => x.lado === 'receber'), recP = rec.filter(x => x.tipo === 'p').sort((x, y) => !!x.pago - !!y.pago || x.quando - y.quando), recF = rec.filter(x => x.tipo === 'f'), rh = elD('div', 'fu-heroi fn-rec-heroi');
+      rh.append(elD('span', '', I.aRec.length ? 'Pra receber no mês' : 'Tudo recebido este mês'), elD('b', '', '+ ' + reaisFin(I.resumo.aReceber)), elD('small', '', 'Já entrou ' + reaisFin(I.resumo.entrou) + ' este mês'));
+      const lr = elD('div', 'fn-contas'); recP.forEach(it => lr.append(cartao(it))); if (!recP.length) lr.append(elD('p', 'fu-vazio', 'Ninguém te paga este mês.'));
+      pag.receber.append(rh, lr);
       const s2 = secao('Te devem', reaisFin(sr), null, devem.length ? porPessoa(devem, 'receber') : [elD('p', 'fu-vazio', 'Ninguém te deve.')]); s2.classList.add('fu-sec-devem'); pag.receber.append(s2);
+      const oe = elD('div', 'fn-contas'); recF.forEach(it => oe.append(cartao(it))); if (!recF.length) oe.append(elD('p', 'fu-vazio', 'Nenhuma outra entrada neste mês.'));
+      const addR = elD('button', 'fn-add rec'); addR.type = 'button'; addR.append(elD('i', '', '+'), elD('span', '', 'Adicionar recebimento')); addR.onclick = () => novaConta(['receber', 'entrada'], 'O que vai entrar?');
+      pag.receber.append(secao('Outras entradas', recF.length ? '+ ' + reaisFin(recF.reduce((n, x) => n + finNum(x.pago && x.pago.valor !== '' ? x.pago.valor : x.valor), 0)) : null, null, [oe]), addR);
       // ---- Metas (fase 4): as dívidas por credor
       const s1 = secao('Você deve', reaisFin(sd), null, devo.length ? porPessoa(devo, 'pagar') : [elD('p', 'fu-vazio', 'Você não deve nada.')]); s1.classList.add('fu-sec-devo'); pag.metas.append(s1);
       // ---- Mais (fase 5): lançar e as outras contas (sem dia, anuais de outros meses)
