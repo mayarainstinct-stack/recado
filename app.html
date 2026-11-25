@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.597">
+<meta name="app-versao" content="2026-11-25.598">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.597"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.598"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -5009,8 +5009,8 @@ function abreFinancas(m) {
     const linha = it => {
       const l = elD('div', 'fu-lin est-' + it.estado + ' lado-' + it.lado), ck = elD('button', 'fu-ck' + (it.pago ? ' on' : '')), meio = elD('div', 'fu-meio'), dd = Math.round((it.quando - hoje) / 864e5);
       ck.type = 'button'; ck.setAttribute('aria-label', it.pago ? 'Desmarcar' : it.lado === 'receber' ? 'Marcar recebido' : 'Marcar pago'); ck.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg>'; ck.onclick = e => { e.stopPropagation(); marcaRapido(it); };
-      if (it.estado === 'atrasada' && it.tipo === 'f' && !(it.ent.pagos || []).length) { it.estado = 'semreg'; l.className = 'fu-lin est-semreg lado-' + it.lado; }
-      const quando = it.pago ? finPagoTxt(it.pago, it.lado) : it.estado === 'atrasada' ? (it.lado === 'receber' ? 'era pra ' : 'venceu ') + 'dia ' + it.quando.getDate() : it.estado === 'semreg' ? 'dia ' + it.quando.getDate() + ' · já pagou? toca no círculo' : it.estado === 'hoje' ? 'vence hoje' : dd === 1 ? 'vence amanhã' : 'dia ' + it.quando.getDate() + ' · ' + SEM[it.quando.getDay()];
+      const semReg = it.estado === 'atrasada' && it.tipo === 'f' && !(it.ent.pagos || []).length;
+      const quando = it.pago ? finPagoTxt(it.pago, it.lado) : it.estado === 'atrasada' ? (it.lado === 'receber' ? 'era pra ' : 'venceu ') + 'dia ' + it.quando.getDate() + (semReg ? ' · já pagou? toca no círculo' : '') : it.estado === 'hoje' ? 'vence hoje' : dd === 1 ? 'vence amanhã' : 'dia ' + it.quando.getDate() + ' · ' + SEM[it.quando.getDay()];
       const ent = it.ent, parc = ent.parcelas && ent.vp ? ' · ' + Math.min(ent.parcelas, Math.round(ent.pago / ent.vp) + (it.pago ? 0 : 1)) + ' de ' + ent.parcelas : '';
       meio.append(elD('strong', '', it.nome), elD('small', '', quando + (it.cat === 'fixa' && ent.metade ? ' · sua metade' : '') + parc + (!it.pago && it.tipo === 'p' && ent.falta > it.valor ? ' · falta ' + reaisFin(ent.falta) + ' no total' : '')));
       l.append(ck, meio, elD('div', 'fu-val', (it.lado === 'receber' ? '+ ' : '') + reaisFin(it.pago && it.pago.valor !== '' ? it.pago.valor : it.valor)));
