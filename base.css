@@ -3963,6 +3963,7 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .t-musica .tm-tarefa.feita .tm-cx{background:var(--tm-ama)}
 .t-musica .tm-tarefa.feita .tm-cx::after{content:'';position:absolute;left:8px;top:3px;width:7px;height:13px;border:solid #120C00;border-width:0 3px 3px 0;transform:rotate(45deg)}
 .t-musica .tm-nova-tarefa{display:flex;gap:8px;padding:8px 0 12px;border-top:1px solid rgba(255,255,255,.07)}
-.t-musica .tm-nova-tarefa input{flex:1;min-width:0;min-height:44px;margin:0}
+.t-musica .tm-nova-tarefa input{flex:1;min-width:0;min-height:44px;margin:0;box-sizing:border-box;font:inherit;font-size:16px;padding:9px 11px;border-radius:12px;border:1px solid #3A3A3A;background:#1E1E1E;color:#F6F2EE}
+.t-musica .tm-nova-tarefa input::placeholder{color:rgba(246,242,238,.5)}
 .t-musica .tm-nova-tarefa .tm-gp-bt{flex:none;min-height:44px;font-size:14px}
 .t-musica .tm-grav-pl{flex:none;width:40px !important;height:40px !important;margin:0;padding:0;border:0;border-radius:50% !important;background:var(--tm-ama);color:#120C00;font-size:14px;box-shadow:none}

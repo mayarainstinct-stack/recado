@@ -1,4 +1,4 @@
-// v613 #449 JWA 2c-2: formulario da musica em 2 abas (genero, instrumentos, letra, obs, serie), series com tarefas de caixinha, anexos na musica
+// v614 #449 serie: campo Nova tarefa escuro como o do formulario. v613 #449 JWA 2c-2: formulario da musica em 2 abas (genero, instrumentos, letra, obs, serie), series com tarefas de caixinha, anexos na musica
 // v605 #467 fase 3 Receber: herói azul, cartões do mês, parcelas automáticas no detalhe (Hermes 25/11)
 // v604 #468 detalhe da semanal e a cada N dias mostra a regra (Hermes 25/11)
 // v603 #468 detalhe da conta no tema claro, botões de 44 px, Apagar com confirmação (Hermes 25/11)
