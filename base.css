@@ -4016,6 +4016,12 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .t-musica .tm-cat i{font-style:normal;font-size:11px;font-weight:800;color:var(--tm-mudo)}
 .t-musica .tm-cat.on{background:var(--tm-cor);border-color:var(--tm-cor);color:#fff}.t-musica .tm-cat.on i{color:#fff}
 .t-musica .tm-ap-onde{display:block;margin-top:2px;color:var(--tm-ama);font-size:12px;font-weight:700}
+.t-musica .tm-ap-timb{width:auto;min-width:0;height:44px;min-height:44px;margin:6px 0 0;padding:0 14px;border-radius:999px;border:1px solid var(--tm-linha);background:transparent;color:var(--tm-texto);font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.t-musica .tm-timbre summary>div{flex:1;min-width:0}
+.t-musica .tm-timbre summary b,.t-musica .tm-timbre summary small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t-musica .tm-timb-aj{margin:0 0 10px;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.t-musica .tm-timb-aj li{padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.05);font-size:14px;overflow-wrap:anywhere}
+.t-musica .tm-timb-filtro{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px;font-size:13px;color:var(--tm-mudo)}
 .t-musica .tm-det-bl{padding:8px 0;border-top:1px solid rgba(255,255,255,.07)}
 .t-musica .tm-det-bl small{display:block;font-size:12px;color:var(--tm-mudo)}
 .t-musica .tm-det-bl p{margin:4px 0 0;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
