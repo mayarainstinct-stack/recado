@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.610">
+<meta name="app-versao" content="2026-11-25.611">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.610"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.611"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3899,10 +3899,11 @@ function abreMusica(m) {
       anda.filter(x => x.prioridade === 'alta').forEach(x => poe(x.id, { tipo: 'musica', x, tit: x.nome, sub: 'Prioridade alta · ' + (x.falta ? 'Falta: ' + x.falta : ET[(x.etapa || 1) - 1]) }));
       if (paradas[0]) poe(paradas[0].id, { tipo: 'musica', x: paradas[0], tit: paradas[0].nome, sub: 'Parada há ' + dias(paradas[0]) + ' dias' + (paradas[0].falta ? ' · Falta: ' + paradas[0].falta : '') });
       cuid.filter(e => e.falta <= 7).forEach(e => poe('c-' + e.x.id + e.rot, { tipo: 'manut', tit: e.rot + ' · ' + e.x.nome, sub: e.falta < 0 ? 'Atrasado ' + pl(-e.falta, 'dia', 'dias') : e.falta === 0 ? 'É pra hoje' : 'Em ' + pl(e.falta, 'dia', 'dias') }));
-      if (P.semana < P.meta) poe('meta', { tipo: 'pratica', tit: 'Tocar esta semana', sub: (P.meta - P.semana === 1 ? 'Falta 1 vez' : 'Faltam ' + (P.meta - P.semana) + ' vezes') + ' pra meta de ' + P.meta });
       const quando = x => P.daQ(x.atualizado || x.criado), ult = d.itens.filter(x => !x.apagado && quando(x)).sort((a, b) => quando(b) - quando(a))[0], grav = mus.filter(x => x.audio && P.daQ(x.criado)).sort((a, b) => P.daQ(b.criado) - P.daQ(a.criado))[0];
       const ideias = vivos('ideia'), recentes = ideias.filter(x => P.daQ(x.criado)).sort((a, b) => P.daQ(b.criado) - P.daQ(a.criado)).concat(ideias.filter(x => !P.daQ(x.criado)).reverse()).slice(0, 3);
-      return { mus, anda, fin, paradas, sug, P, cuid, ult, grav, recentes, ideias, equip: vivos('setup').filter(x => !x.bloqueado) };
+      const ord = (a, b) => (prazo(a) ?? 1e9) - (prazo(b) ?? 1e9) || (b.prioridade === 'alta') - (a.prioridade === 'alta') || (P.daQ(b.atualizado || b.criado) || 0) - (P.daQ(a.atualizado || a.criado) || 0), px = anda.filter(x => !ja.has(x.id)).sort(ord)[0];
+      const prox = px ? { tipo: 'musica', x: px, tit: px.nome, sub: px.falta ? 'Falta: ' + px.falta : ET[(px.etapa || 1) - 1] } : null;   // Próxima tarefa nunca repete o Hoje no estúdio; a meta fica só no bloco do número (Sigma 11:51)
+      return { mus, anda, fin, paradas, sug, prox, P, cuid, ult, grav, recentes, ideias, equip: vivos('setup').filter(x => !x.bloqueado) };
     };
     const vaiSug = s => { if (s.tipo === 'musica') form('musica', s.x); else if (s.tipo === 'manut') { cuSub = 'cuidados'; store.set('mus-cuidar', 'cuidados'); if (aba === 'manut') pinta(); else trocaAba('manut'); } else trocaAba('pratica'); };   // cada sugestão abre o item dela
     const SETA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
@@ -3942,8 +3943,8 @@ function abreMusica(m) {
     const abas = elD('div', 'tm-abas'); abas.setAttribute('role', 'tablist'); const corpo = elD('div', 'tm-painel'); c.append(resumo, abas, corpo);
     const trocaAba = id => { if (id === aba) return; rolagem[aba] = pCorpo.scrollTop; const dir = ABA_ORD.indexOf(id) > ABA_ORD.indexOf(aba) ? 1 : -1; aba = id; store.set('mus-aba', id); pinta(); vemDoLado(corpo, dir); requestAnimationFrame(() => { pCorpo.scrollTop = rolagem[id] || 0; }); };   // toque na aba também entra deslizando do lado dela (o dedo pro lado já troca pelo gesto comum do app) e cada aba volta na rolagem onde estava
     const pinta = () => {
-      const mus = vivos('musica'), naIdeia = mus.filter(x => (x.etapa || 1) === 1).length;
-      rtx.replaceChildren(elD('b', '', mus.length + (mus.length === 1 ? ' música em andamento' : ' músicas em andamento')), elD('span', '', !mus.length ? 'toque no + pra começar' : naIdeia === mus.length ? 'todas ainda na etapa de ideia' : naIdeia + ' ainda na ideia'));
+      const mus = vivos('musica'), porEt = ET.map((t, k) => [t, mus.filter(x => Math.min(NE, Math.max(1, x.etapa || 1)) === k + 1).length]).filter(([, n]) => n);   // conta pela etapa de verdade de cada música, a mesma da faixa (Sigma 11:51)
+      rtx.replaceChildren(elD('b', '', mus.length + (mus.length === 1 ? ' música em andamento' : ' músicas em andamento')), elD('span', '', !mus.length ? 'Toque no + pra começar' : porEt.map(([t, n], k) => (k ? n : n + (n === 1 ? ' está em ' : ' estão em ')) + (k ? ' em ' : '') + t).join(', ')));
       abas.replaceChildren(...ABA_ORD.map(id => { const b = elD('button', 'tm-aba'); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(aba === id)); b.innerHTML = ICO_ABA[id]; b.append(elD('span', '', ROT_ABA[id])); b.onclick = () => trocaAba(id); return b; }));
       const ABAS_M = [['painel', 'Painel'], ['musica', 'Músicas'], ['pratica', 'Tocar'], ['manut', 'Cuidar'], ['setup', 'Setup'], ['ideia', 'Ideias']], raiz = corpo, PC = document.body.classList.contains('web') && matchMedia('(min-width: 1280px)').matches;   // no PC as abas viram colunas, o mesmo conteúdo de cada uma lado a lado (Sigma #240)
       raiz.replaceChildren(); raiz.classList.toggle('tm-colunas', PC);
@@ -3951,7 +3952,7 @@ function abreMusica(m) {
       (PC ? ABAS_M : ABAS_M.filter(([id]) => id === aba)).forEach(([aba, rot]) => { const corpo = PC ? elD('section', 'tm-col') : raiz; if (PC) { corpo.append(elD('h2', 'tm-col-tit', rot)); colunas[GRUPO[aba]].append(corpo); }
       if (aba === 'musica') {
         const R = resumoEstudio(), bl = elD('div', 'tm-blocos'), bloco = (num, rot, fn, tx) => { const b = elD(fn ? 'button' : 'div', 'tm-bloco' + (tx ? ' tx' : '')); if (fn) { b.type = 'button'; b.onclick = fn; } b.append(elD('b', '', num), elD('small', '', rot)); bl.append(b); };   // 2b: no máximo 4 blocos em cima (Sigma 07:24); o resto mora na aba Painel
-        bloco(String(R.anda.length), 'Em andamento'); bloco(String(R.paradas.length), 'Paradas há 14+ dias'); bloco(R.sug[0] ? R.sug[0].tit : 'Nada pendente', 'Próxima tarefa', R.sug[0] ? () => vaiSug(R.sug[0]) : null, true); bloco(R.P.semana + ' de ' + R.P.meta, 'Meta da semana', () => trocaAba('pratica')); corpo.append(bl);
+        bloco(String(R.anda.length), 'Em andamento'); bloco(String(R.paradas.length), 'Paradas há 14+ dias'); bloco(R.prox ? R.prox.tit : 'Nada pendente', 'Próxima tarefa', R.prox ? () => vaiSug(R.prox) : null, true); bloco(R.P.semana + ' de ' + R.P.meta, 'Meta da semana', () => trocaAba('pratica')); corpo.append(bl);
         const he = elD('section', 'tm-hoje-est'); he.append(elD('h3', '', 'Hoje no estúdio'));   // sugere só o que ela cadastrou: prazo, prioridade alta, parada, cuidado vencendo, meta da semana (texto da May, item 9)
         if (!R.sug.length) he.append(elD('p', 'tm-hoje-ok', 'Tudo em dia.'));
         R.sug.forEach(s => { const b = elD('button', 'tm-sug'), tx = elD('div'); b.type = 'button'; tx.append(elD('b', '', s.tit), elD('small', '', s.sub)); b.append(tx); b.insertAdjacentHTML('beforeend', SETA); b.onclick = () => vaiSug(s); he.append(b); });
@@ -3980,7 +3981,7 @@ function abreMusica(m) {
         const R = resumoEstudio(), grade = elD('div', 'tm-blocos'), num = (n, rot) => { const b = elD('div', 'tm-bloco'); b.append(elD('b', '', String(n)), elD('small', '', rot)); grade.append(b); };
         num(R.anda.length, 'Em andamento'); num(R.fin.length, R.fin.length === 1 ? 'Finalizada' : 'Finalizadas'); num(R.equip.length, 'Equipamentos'); num(R.ideias.length, 'Ideias'); corpo.append(grade);
         const linha = (rot, val, sub, fn) => { const b = elD(fn ? 'button' : 'div', 'tm-pn-lin'), tx = elD('div'); if (fn) { b.type = 'button'; b.onclick = fn; } tx.append(elD('small', '', rot), elD('b', '', val)); if (sub) tx.append(elD('span', '', sub)); b.append(tx); if (fn) b.insertAdjacentHTML('beforeend', SETA); corpo.append(b); };
-        linha('Próxima tarefa', R.sug[0] ? R.sug[0].tit : 'Nada pendente', R.sug[0] ? R.sug[0].sub : '', R.sug[0] ? () => vaiSug(R.sug[0]) : null);
+        const p1 = R.sug[0] || R.prox; linha('Próxima tarefa', p1 ? p1.tit : 'Nada pendente', p1 ? p1.sub : '', p1 ? () => vaiSug(p1) : null);
         linha('Meta da semana', R.P.semana + ' de ' + R.P.meta + ' vezes', R.P.semana >= R.P.meta ? 'Meta batida' : R.P.meta - R.P.semana === 1 ? 'Falta 1 vez' : 'Faltam ' + (R.P.meta - R.P.semana) + ' vezes', () => trocaAba('pratica'));
         const pm = R.cuid[0]; linha('Próxima manutenção', pm ? pm.rot + ' · ' + pm.x.nome : 'Nenhum cuidado com data', pm ? (pm.falta < 0 ? 'Atrasada ' + (-pm.falta) + (pm.falta === -1 ? ' dia' : ' dias') : pm.falta === 0 ? 'É pra hoje' : 'Em ' + pm.falta + (pm.falta === 1 ? ' dia' : ' dias')) : '', () => { cuSub = 'cuidados'; store.set('mus-cuidar', 'cuidados'); trocaAba('manut'); });
         linha('Última gravação', R.grav ? R.grav.nome : 'Nenhuma ainda', R.grav ? R.grav.criado : '', R.grav ? () => trocaAba('musica') : null);
