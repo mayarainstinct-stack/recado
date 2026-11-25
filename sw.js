@@ -1,3 +1,4 @@
+// v584 (25/11/2026): #449 vizinhas levemente viradas pro centro (15 e 25 graus), cabeca do baixo mais fina, cartao do bloqueado c/ 1 linha, campo Ja tenho no lapis do setup.
 // v583 (25/11/2026): #449 fileira na ordem do quarto (campo ordem), palco 300 px c/ a selecionada em 85%, baixo azul bloqueado em silhueta, vao -8, guitarra deitada c/ corpo a esquerda.
 // v582 (25/11/2026): #454 entrega c: História com estado vazio grande e ADICIONAR ANOTAÇÃO; diário (texto, data, editar, apagar com confirmação = apagado com data + desfazer) no edicoes-jogos.json; Editar vira formulário de celular (capa, nome, plataforma, emulador, progresso, status, última vez, onde parei, informações) com SALVAR ALTERAÇÕES e cor do console; letra dos cards no tamanho do modelo; chip só PS1.
 // v581 (25/11/2026): mapa do iPhone (May 08:47): links de mapa abrem o Mapas da Apple; mapinha embutido não abre o Google.

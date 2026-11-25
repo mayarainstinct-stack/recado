@@ -3668,7 +3668,7 @@ body .painel.tema-planilha .p-nota { color: #605E5C; font-size: 12px; padding: 8
 .t-musica .tv-palco.ped-case .tv-ped::before { left: -5px; } .t-musica .tv-palco.ped-case .tv-ped::after { right: -5px; }
 .t-musica .tv-cartao.ped-case { border-radius: 10px; border: 1px solid #45484B; background: linear-gradient(#1A1A1A, #111); }
 .t-musica .tv-cartao.ped-case .tv-c-rot { align-self: flex-start; padding: 1px 8px; border-radius: 4px; background: #FFD60A; color: #120C00; }
-.t-musica .tv-c-jan { position: absolute; inset: 10px 12px 0; overflow: hidden; border-radius: 6px; } .t-musica .tv-c-in { position: absolute; inset: 0; }
+.t-musica .tv-c-jan { position: absolute; inset: 10px 12px 0; overflow: hidden; border-radius: 6px; } .t-musica .tv-c-in { position: absolute; inset: 0; } .t-musica .tv-cartao { transition: height .3s cubic-bezier(.2,.9,.25,1); } .t-musica .tv-cartao.bloq { height: 112px; } .t-musica .tv-c-bloq { margin: 6px 0 0; font-size: 14px; line-height: 1.35; color: var(--tm-texto); }
 .t-musica .tv-serv .tc-s { flex-direction: row; flex-wrap: wrap; align-items: baseline; column-gap: 5px; } .t-musica .tv-serv .tc-s-top, .t-musica .tv-serv .tc-s-nome, .t-musica .tv-serv .tc-fiz { flex: 0 0 100%; } .t-musica .tv-serv .tc-bar { display: none; } .t-musica .tv-serv .tc-s-num { font-size: 18px; } .t-musica .tv-serv .tc-s-sub { min-width: 0; flex: 1; } .t-musica .tv-serv .tc-fiz { padding: 4px 0; }
 .t-musica .tv-ct { flex-direction: column; justify-content: center; align-items: flex-start; line-height: 1.05; } .t-musica .tv-ct small { font-size: 9.5px; font-weight: 700; color: #BDB5AF; letter-spacing: .02em; } .t-musica .tv-ct b { font-size: 12.5px; }
 .t-musica .tv-pausa { flex-direction: row; align-items: center; }

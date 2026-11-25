@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.583">
+<meta name="app-versao" content="2026-11-25.584">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.583"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.584"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3867,7 +3867,7 @@ function abreMusica(m) {
     };
     const grava = async (fn, msg) => { const antes = JSON.parse(JSON.stringify(d.itens)); fn(d.itens); pinta(); if (await gravaJson(m.arq, dd => { dd.itens = dd.itens || []; fn(dd.itens); }, msg, null)) return true; d.itens.splice(0, d.itens.length, ...antes); pinta(); showNote('Não guardou: voltou como estava. Confere a internet.', true); return false; };
     const CAMPOS = { musica: [{ nome: 'nome', rotulo: 'Música', tipo: 'texto', obrigatorio: true }, { nome: 'texto', rotulo: 'Sobre', tipo: 'texto_longo' }, { nome: 'falta', rotulo: 'O que falta', tipo: 'texto' }, { nome: 'etapa', rotulo: 'Etapa', tipo: 'escolha', opcoes: ET.map((t, k) => [String(k + 1), t]), padrao: '1' }],
-      setup: [{ nome: 'nome', rotulo: 'Aparelho ou pessoa', tipo: 'texto', obrigatorio: true }, { nome: 'grupo', rotulo: 'Grupo (Som, Instrumentos...)', tipo: 'texto', obrigatorio: true }, { nome: 'texto', rotulo: 'Detalhe', tipo: 'texto_longo' }, { nome: 'foto', rotulo: 'Foto do aparelho', tipo: 'foto' }, { nome: 'tipo', rotulo: 'Ícone', tipo: 'escolha', opcoes: [['amp', 'Amplificador'], ['pedal', 'Pedaleira'], ['teclas', 'Teclado'], ['mic', 'Microfone'], ['interface', 'Interface'], ['guitarra', 'Guitarra'], ['gente', 'Pessoa']], padrao: 'interface' }],
+      setup: [{ nome: 'nome', rotulo: 'Aparelho ou pessoa', tipo: 'texto', obrigatorio: true }, { nome: 'grupo', rotulo: 'Grupo (Som, Instrumentos...)', tipo: 'texto', obrigatorio: true }, { nome: 'texto', rotulo: 'Detalhe', tipo: 'texto_longo' }, { nome: 'foto', rotulo: 'Foto do aparelho', tipo: 'foto' }, { nome: 'tipo', rotulo: 'Ícone', tipo: 'escolha', opcoes: [['amp', 'Amplificador'], ['pedal', 'Pedaleira'], ['teclas', 'Teclado'], ['mic', 'Microfone'], ['interface', 'Interface'], ['guitarra', 'Guitarra'], ['gente', 'Pessoa']], padrao: 'interface' }, { nome: 'bloqueado', rotulo: 'Já tenho?', tipo: 'escolha', opcoes: [['', 'Já tenho'], ['1', 'Ainda não (silhueta ???)']], padrao: '' }],
       ideia: [{ nome: 'nome', rotulo: 'Ideia', tipo: 'texto', obrigatorio: true }, { nome: 'grupo', rotulo: 'Grupo (Cards, Reels...)', tipo: 'texto', obrigatorio: true }, { nome: 'texto', rotulo: 'Detalhe', tipo: 'texto_longo' }] };
     const NOME_SEC = { musica: 'Música', setup: 'Aparelho', ideia: 'Ideia' };
     const form = (sec, it) => edFormulario({ titulo: (it ? 'Editar' : 'Novo') + ' · ' + NOME_SEC[sec], campos: CAMPOS[sec], v: it ? Object.assign({}, it, { etapa: String(it.etapa || 1) }) : {},
@@ -4016,21 +4016,21 @@ function abreMusica(m) {
           bV.onclick = async () => { const antes = G.vel, k = (VEL.findIndex(v => v[0] === G.vel) + 1) % VEL.length; G.vel = VEL[k][0]; pintaCtrl(); if (!(await gravaTopo(o => { o.giro = Object.assign({}, G); }, 'Música: balanço da vitrine ' + VEL[k][1].toLowerCase() + ' pelo app', o => { G.vel = antes; o.giro = Object.assign({}, G); }))) pintaCtrl(); };
           bPed.onclick = async () => { const antes = d.pedestal, k = PEDS[(PEDS.findIndex(p => p[0] === ped) + 1) % PEDS.length][0]; d.pedestal = k; mostra('vitrine'); if (!(await gravaJson(m.arq, dd => { dd.pedestal = k; }, 'Música: pedestal da vitrine virou ' + k + ' pelo app', null))) { d.pedestal = antes; mostra('vitrine'); showNote('Não guardou: voltou como estava. Confere a internet.', true); } };
           pintaCtrl(); miolo.append(palco, ctrl, cartao);
-          const N = vit.length, S = 60, mod = i => ((i % N) + N) % N, lift = vit.map((x, i) => i === sel ? 70 : 0), ang = vit.map(() => 0), zoom = r => .8 + .2 * Math.max(0, Math.min(1, 2 - 2 * Math.abs(r)));   // #449 (May 25/11 07:57 e 08:24): fileira juntinha; o da frente fica de frente, grande e aceso, só balança; os outros mais escuros
+          const VIRA = 1, N = vit.length, S = 60, mod = i => ((i % N) + N) % N, lift = vit.map((x, i) => i === sel ? 70 : 0), ang = vit.map(() => 0), zoom = r => .8 + .2 * Math.max(0, Math.min(1, 2 - 2 * Math.abs(r))), incl = r => { const a = Math.abs(r); return Math.sign(r) * (a <= 1 ? 15 * a : Math.min(25, 15 + 10 * (a - 1))); };   // May 25/11 09:0x: vizinhas levemente viradas pro centro, impressão de giro (Sigma: 15 e 25 graus)   // #449 (May 25/11 07:57 e 08:24): fileira juntinha; o da frente fica de frente, grande e aceso, só balança; os outros mais escuros
           let p = sel, alvo = sel, pausaAte = 0, ultimo = performance.now(), fase = 0, quadro = 0, arrastou = false, mostrado = -1, dedo = false;
           const solta2 = () => { if (dedo) { dedo = false; pausaAte = performance.now() + 6000; } };
           cartao.addEventListener('pointerdown', () => { dedo = true; pausaAte = performance.now() + 6000; }); ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => cartao.addEventListener(ev, solta2));
           const pintaCartao = () => { if (mostrado === sel) return; const ia = mostrado; mostrado = sel; const x = vit[sel]; store.set('mus-vit', x.id); pintaFixo(); const jan = cartao.querySelector('.tv-c-jan') || cartao.appendChild(elD('div', 'tv-c-jan')), velhos = [...jan.querySelectorAll('.tv-c-in')], velho = velhos.pop(), novo = elD('div', 'tv-c-in'), tp = elD('div', 'tv-c-topo'), tt = elD('div'); tt.append(elD('small', 'tv-c-rot', ped === 'case' ? 'Turnê JWA · ' + String(sel + 1).padStart(2, '0') : ped === 'palco' ? 'Setlist · ' + String(sel + 1).padStart(2, '0') : String(sel + 1).padStart(2, '0') + ' de ' + String(N).padStart(2, '0')), elD('b', 'tv-c-nome', x.nome));
             const acoes = elD('div', 'tv-c-acoes'); if (inst.includes(x)) acoes.append(edMini('plus', 'Novo cuidado em ' + x.nome, () => novoCuidado(x))); const ed = lapis('setup', x); ed.classList.remove('tm-ed'); acoes.append(ed); tp.append(tt, acoes); novo.append(tp);
-            const fi = !x.bloqueado && ficha(x, inst.includes(x) ? 'curta' : 'curta solta'); if (fi) novo.append(fi); else if (x.bloqueado) novo.append(elD('small', 'tv-c-rot', 'Bloqueado')); if (inst.includes(x)) novo.append(quadros(x, true));
+            cartao.classList.toggle('bloq', !!x.bloqueado); const fi = !x.bloqueado && ficha(x, inst.includes(x) ? 'curta' : 'curta solta'); if (fi) novo.append(fi); else if (x.bloqueado) novo.append(elD('small', 'tv-c-rot', 'Bloqueado'), elD('p', 'tv-c-bloq', 'Ainda não é seu. Quando chegar, toca no lápis e marca Já tenho.')); if (inst.includes(x)) novo.append(quadros(x, true));
             velhos.forEach(v => v.remove()); jan.append(novo); if (!velho) return; if (reduz || ia < 0 || !novo.animate) { velho.remove(); return; }
             velho.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(115%)' }], { duration: 240, easing: 'cubic-bezier(.5,0,.75,0)', fill: 'forwards' }).onfinish = () => velho.remove();
             novo.animate([{ transform: 'translateY(115%)' }, { transform: 'translateY(0)' }], { duration: 300, delay: 160, easing: 'cubic-bezier(.2,.9,.25,1)', fill: 'backwards' }); };
           const arruma = c => { const xs = []; xs[mod(c)] = 0; [1, -1].forEach(lado => { let x = 0, wa = itens[mod(c)].w; for (let k = 1; k <= (lado > 0 ? Math.floor(N / 2) : Math.ceil(N / 2) - 1); k++) { const j = mod(c + lado * k), wj = itens[j].w * .8; x += lado * ((wa + wj) / 2 - 8); xs[j] = x; wa = wj; } }); return xs; };   // fileira encostada: cada um ocupa a largura do próprio desenho
           const pos = agora => { const fr = mod(Math.round(p)), f = Math.floor(p), t = p - f, XA = arruma(f), XB = arruma(f + 1);
             itens.forEach((it, i) => { let rel = i - p; rel -= Math.round(rel / N) * N; const frente = i === fr, gira = ang[i], z = zoom(rel), a = Math.abs(rel), k = Math.min(1, a), x = (Math.abs(XA[i] - XB[i]) > 260 ? (t < .5 ? XA[i] : XB[i]) : XA[i] + (XB[i] - XA[i]) * t).toFixed(1);
-              if (modo3d) it.style.transform = 'translateX(' + x + 'px) translateY(' + lift[i].toFixed(1) + 'px) rotateY(' + (gira - Math.max(-1.5, Math.min(1.5, rel)) * 10).toFixed(2) + 'deg) scale(' + z.toFixed(3) + ')';
-              else { it.style.transform = 'translateX(' + x + 'px) translateY(' + lift[i].toFixed(1) + 'px) scale(' + (z * Math.cos(gira * Math.PI / 180)).toFixed(3) + ',' + z.toFixed(3) + ')'; it.style.zIndex = String(10 - Math.round(a)); }
+              if (modo3d) it.style.transform = 'translateX(' + x + 'px) translateY(' + lift[i].toFixed(1) + 'px) rotateY(' + (gira + VIRA * incl(rel)).toFixed(2) + 'deg) scale(' + z.toFixed(3) + ')';
+              else { it.style.transform = 'translateX(' + x + 'px) translateY(' + lift[i].toFixed(1) + 'px) scale(' + (z * Math.cos(gira * Math.PI / 180) * Math.cos(incl(rel) * Math.PI / 180)).toFixed(3) + ',' + z.toFixed(3) + ')'; it.style.zIndex = String(10 - Math.round(a)); }
               it.firstChild.style.filter = k < .01 ? '' : 'brightness(' + (1 - .65 * k).toFixed(2) + ') contrast(' + (1 - .3 * k).toFixed(2) + ') saturate(' + (1 - .4 * k).toFixed(2) + ')';
               it.classList.toggle('frente', frente); });
             if (fr !== sel) { sel = fr; pintaCartao(); } };
