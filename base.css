@@ -2474,7 +2474,7 @@ button.vs-num { color: inherit; padding: 12px !important; display: block; min-wi
 .t-musica .tp-graf-diz { margin: 0; padding: 10px 12px; border-radius: 12px; background: #1C1917; color: #F5F0EC; font-size: 14px; font-weight: 700; }
 @media (prefers-reduced-motion: reduce) { .t-musica .tp-agulha { transition: none; } }
 .tm-pr-card textarea, .tm-pr-card input { width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid #3A3533; background: #0B0A0A; color: #F5F0EC; font: inherit; }
-.tm-pr-card .pp-op.rec { background: #F0283A !important; border-color: #F0283A !important; color: #FFFFFF !important; } .tm-pr-card .pp-op.depois { background: transparent !important; border-color: #FFD60A !important; color: #FFD60A !important; } .tm-pr-card .pp-x { background: #1C1917 !important; border-color: #F0283A !important; color: #FFFFFF !important; }
+.tm-pr-card .pp-op.rec { background: #F0283A !important; border-color: #F0283A !important; color: #FFFFFF !important; } .tm-pr-card .pp-op.desl, .tm-pr-card .pp-op:disabled { background: transparent !important; border-color: #4A4744 !important; color: #8C8782 !important; cursor: default; } .tm-pr-card .pp-op.depois { background: transparent !important; border-color: #FFD60A !important; color: #FFD60A !important; } .tm-pr-card .pp-x { background: #1C1917 !important; border-color: #F0283A !important; color: #FFFFFF !important; }
 @keyframes aba-vem-dir { from { transform: translateX(56px); } to { transform: none; } } @keyframes aba-vem-esq { from { transform: translateX(-56px); } to { transform: none; } } .aba-vem-dir { animation: aba-vem-dir .24s cubic-bezier(.2,.8,.2,1); } .aba-vem-esq { animation: aba-vem-esq .24s cubic-bezier(.2,.8,.2,1); }
 .rv-med .rv-med-galho { font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--quem, rgba(255,255,255,.85)); opacity: .9; }   /* galho do robô embaixo do nome da insígnia (May 14/11 00:20) */
 .rv-tr-feitos, .rv-tr-bloco .rv-tr-feitos { list-style: none; padding: 2px 20px 16px; } .rv-tr-feitos li + li { margin-top: 8px; }   /* feitos do troféu sem marcador na frente (May 14/11 00:20) */
@@ -4056,10 +4056,11 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .ed-ft { position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: rgba(127,127,127,.18); }
 .ed-ft img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .ed-ft-capa { position: absolute; top: 6px; left: 6px; padding: 2px 8px; border-radius: 8px; background: #FFD60A; color: #120C00; font-size: 11px; font-weight: 900; }
-.ed-ft-bts { position: absolute; left: 4px; right: 4px; bottom: 4px; display: flex; justify-content: space-between; gap: 4px; }
-.ed-ft-bt { width: 30px; height: 30px; padding: 0; border-radius: 10px; border: 0; background: rgba(0,0,0,.72); color: #fff; font: inherit; font-size: 16px; font-weight: 900; line-height: 1; cursor: pointer; }
+.ed-ft-bts { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; gap: 4px; }
+.ed-ft-bt { width: 44px; height: 44px; padding: 7px; box-sizing: border-box; background-clip: content-box; display: grid; place-items: center; border-radius: 14px; border: 0; background-color: rgba(0,0,0,.72); color: #fff; font: inherit; font-size: 16px; font-weight: 900; line-height: 1; cursor: pointer; }
 .ed-ft-bt:disabled { visibility: hidden; }
-.ed-ft-x { position: absolute; top: 4px; right: 4px; }
+.ed-ft-x { position: absolute; top: 0; right: 0; }
+.ed-card [aria-invalid="true"] { border-color: var(--err) !important; box-shadow: 0 0 0 1px var(--err); }
 .ed-fotos-vazio { grid-column: 1 / -1; padding: 16px 8px; text-align: center; font-size: 13px; opacity: .7; }
 .ed-fotos-volta { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 10px; border-radius: 10px; background: rgba(127,127,127,.18); font-size: 13px; }
 .ed-fotos-volta[hidden], .ed-fotos-diz[hidden] { display: none; }

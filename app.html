@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.630">
+<meta name="app-versao" content="2026-11-25.631">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.630"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.631"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3645,6 +3645,7 @@ function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar, rodape, apag
   const nomesAba = [...new Set(campos.filter(c => c.aba).map(c => c.aba))], secs = {}, lbs = {}, abaBt = {};   // abas no formulário (#468): campo com "aba"; "se" esconde o campo que não vale pro que foi escolhido
   const vaiAba = n => nomesAba.forEach(k => { secs[k].hidden = k !== n; abaBt[k].classList.toggle('on', k === n); abaBt[k].setAttribute('aria-selected', k === n ? 'true' : 'false'); });
   if (nomesAba.length > 1) { const bar = elD('div', 'ed-abas'); bar.setAttribute('role', 'tablist'); nomesAba.forEach(k => { const b = elD('button', 'ed-aba', k); b.type = 'button'; b.setAttribute('role', 'tab'); b.onclick = () => vaiAba(k); abaBt[k] = b; bar.append(b); secs[k] = elD('div', 'ed-sec'); }); form.append(bar, ...nomesAba.map(k => secs[k])); card.classList.add('ed-com-abas'); }
+  const marcaErro = c => { if (c.aba && secs[c.aba]) vaiAba(c.aba); const e = els[c.nome]; if (!e || !e.setAttribute) return; e.setAttribute('aria-invalid', 'true'); e.addEventListener('input', () => e.removeAttribute('aria-invalid'), { once: true }); (lbs[c.nome] || e).scrollIntoView({ block: 'center' }); };   // erro leva pra aba do campo e marca ele (Sigma 4a, 25/11)
   const valores = () => { const o = { ...v }; Object.keys(els).forEach(k => { if (els[k].type !== 'file' && !els[k].lista) o[k] = els[k].value; }); return o; };
   const ve = () => campos.forEach(c => { if (c.se && lbs[c.nome]) lbs[c.nome].hidden = !c.se(valores()); });
   campos.filter(c => c.nome !== 'id' && c.tipo !== 'oculto').forEach(c => {
@@ -3682,9 +3683,9 @@ function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar, rodape, apag
   if (pe) { pe.append(erro, ops); form.append(pe); card.classList.add('ed-com-pe'); } else form.append(erro, ops);
   form.onsubmit = async e => {
     e.preventDefault(); const out = {}, fotosDepois = [];
-    for (const c of campos) { if (!lbs[c.nome] || lbs[c.nome].hidden || !c.precisa || String(els[c.nome].value).trim()) continue; if (c.aba && secs[c.aba]) vaiAba(c.aba); erro.textContent = 'Falta preencher ' + edRotulo(c) + '.'; erro.hidden = false; return; }
+    for (const c of campos) { if (!lbs[c.nome] || lbs[c.nome].hidden || !c.precisa || String(els[c.nome].value).trim()) continue; marcaErro(c); erro.textContent = 'Falta preencher ' + edRotulo(c) + '.'; erro.hidden = false; return; }
     for (const c of campos) { if (!els[c.nome]) continue; if (c.tipo === 'chips') { out[c.nome] = els[c.nome].lista(); continue; } if (c.tipo === 'fotos') { fotosDepois.push(c); continue; } if (c.tipo === 'foto') { const f = els[c.nome].files && els[c.nome].files[0]; if (!f && c.obrigatorio && !els[c.nome].dataset.atual) { erro.textContent = 'Falta escolher a foto.'; erro.hidden = false; return; } out[c.nome] = els[c.nome].dataset.atual || ''; if (f) { try { ok.disabled = true; ok.textContent = 'Subindo a foto…'; out[c.nome] = await edSobeFoto(f); } catch (er) { ok.disabled = false; ok.textContent = 'Guardar'; erro.textContent = 'A foto não subiu. Confere a internet e tenta de novo.'; erro.hidden = false; return; } } continue; } let val = els[c.nome].value.trim(); if (c.tipo === 'numero' || c.tipo === 'valor') { const n = +val.replace(/\./g, '').replace(',', '.'); val = val === '' ? '' : (isNaN(n) ? val : n); } if (c.obrigatorio && val === '') { erro.textContent = 'Falta preencher: ' + edRotulo(c); erro.hidden = false; return; } out[c.nome] = val; }
-    for (const c of campos) if (c.valida && out[c.nome] && !VALIDA[c.valida](String(out[c.nome]).trim())) { if (c.aba && secs[c.aba]) vaiAba(c.aba); erro.textContent = c.erro || ('Confere o campo ' + edRotulo(c) + '.'); erro.hidden = false; return; }   // campo com valida (data DD/MM/AAAA de verdade, número); "padrao" é o valor inicial, nunca regra (Sigma #151 rodada 2)
+    for (const c of campos) if (c.valida && out[c.nome] && !VALIDA[c.valida](String(out[c.nome]).trim())) { marcaErro(c); erro.textContent = c.erro || ('Confere o campo ' + edRotulo(c) + '.'); erro.hidden = false; return; }   // campo com valida (data DD/MM/AAAA de verdade, número); "padrao" é o valor inicial, nunca regra (Sigma #151 rodada 2)
     for (const c of fotosDepois) { const l = els[c.nome].lista(), nov = l.filter(f => f.rd); try { ok.disabled = true; for (let k = 0; k < nov.length; k++) { ok.textContent = 'Subindo foto ' + (k + 1) + ' de ' + nov.length + '…'; nov[k].arq = await edSobeFoto(nov[k].file, nov[k].rd); delete nov[k].rd; } } catch (er) { ok.disabled = false; ok.textContent = 'Guardar'; erro.textContent = 'Uma foto não subiu. Confere a internet e tenta de novo (as que subiram ficam).'; erro.hidden = false; return; } ok.textContent = 'Guardar'; const arqs = l.map(f => f.arq); if (c.capa) { out[c.capa] = arqs[0] || ''; out[c.nome] = arqs.slice(1); } else out[c.nome] = arqs; }   // as fotos sobem só depois de tudo validado (4a)
     ok.disabled = true; await aoSalvar(out); fecha();
   };
@@ -4242,7 +4243,7 @@ function abreMusica(m) {
         const PRONTOS = [['Revisão elétrica', 365], ['Ajustes', 90]];   // 4a (#449, Sigma 13:54): as 2 categorias do texto dela viram opção pronta; intervalo é sugestão editável e a última começa vazia
         const novoCuidado = x => { const ov = elD('div', 'fixa-pop tm-pr-pop'), card = elD('div', 'pp-card tm-pr-card'), xb = elD('button', 'pp-x'), bts = elD('div', 'tv-fiz-ops'); xb.type = 'button'; xb.innerHTML = icone('close'); xb.setAttribute('aria-label', 'Fechar'); xb.onclick = () => ov.remove(); ov.onclick = e => { if (e.target === ov) ov.remove(); };
           const tem = nm => servicos(x).some(sv => String(sv[1]).toLowerCase() === nm.toLowerCase());
-          PRONTOS.forEach(([nm, dias]) => { const ja = tem(nm), b = elD('button', 'pp-op' + (ja ? ' depois' : ' rec'), ja ? nm + ' (já tem)' : nm + ' · a cada ' + dias + ' dias'); b.type = 'button'; b.disabled = ja; b.onclick = () => { ov.remove(); formCuidado(x, nm, dias); }; bts.append(b); });
+          PRONTOS.forEach(([nm, dias]) => { const ja = tem(nm), b = elD('button', 'pp-op' + (ja ? ' desl' : ' rec'), ja ? nm + ' (já tem)' : nm + ' · a cada ' + dias + ' dias'); b.type = 'button'; b.disabled = ja; b.onclick = () => { ov.remove(); formCuidado(x, nm, dias); }; bts.append(b); });
           const ou = elD('button', 'pp-op', 'Outro cuidado'); ou.type = 'button'; ou.onclick = () => { ov.remove(); formCuidado(x, '', 90); }; bts.append(ou);
           card.append(xb, elD('b', 'tm-pr-tit', 'Que cuidado?'), elD('small', 'tm-pr-rot', x.nome), bts); ov.append(card); document.body.append(ov); };
         const formCuidado = (x, nm, dias) => edFormulario({ titulo: 'Novo cuidado · ' + x.nome, campos: [{ nome: 'nome', rotulo: 'Nome do cuidado (ex.: Revisão elétrica)', tipo: 'texto', obrigatorio: true }, CAMPO_DATA, Object.assign({}, CAMPO_CADA, { padrao: String(dias) }), CAMPO_OBS], v: { nome: nm, cada_dias: String(dias) },

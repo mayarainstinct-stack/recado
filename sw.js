@@ -1,4 +1,4 @@
-// v630 #449 4a aparelho em 3 abas, varias fotos com capa, cuidados prontos
+// v631 #449 4a ajustes: ja tem cinza, setas com toque 44, erro marca o campo na aba
 // v629 #449 1b Fiz hoje sai descendo com o painel Luz aberto e volta ao fechar
 // v628 #449 1b luz do pedestal: cor e forca
 // v627 #449 3c linha do toque: N sessoes de meta
