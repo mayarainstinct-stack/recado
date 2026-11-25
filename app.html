@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.616">
+<meta name="app-versao" content="2026-11-25.617">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.616"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.617"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3864,19 +3864,24 @@ function abreMusica(m) {
     let aba = store.get('mus-aba') || 'musica', cuSub = store.get('mus-cuidar') || 'vitrine';
     const NE = ET.length, ABA_ORD = ['painel', 'musica', 'pratica', 'manut', 'setup', 'ideia'], ROT_ABA = { painel: 'Painel', musica: 'Músicas', pratica: 'Tocar', manut: 'Cuidar', setup: 'Setup', ideia: 'Ideias' }, ICO_ABA = { painel: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15a8 8 0 0 1 16 0"/><path d="M12 15l4-5"/><path d="M4 19h16"/></svg>', musica: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>', pratica: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l4 18H5z"/><path d="M12 16l5-9"/><path d="M8 16h8"/></svg>', manut: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/></svg>', setup: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="12" r="3"/><path d="M15 9h3M15 12h3M15 15h3"/></svg>', ideia: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>' }, rolagem = {};   // 2a do JWA (25/11): ícone por aba, deslizar troca de seção e cada aba guarda a rolagem
     const confirmaApagar = (nome, fn) => { const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card'), ops = elD('div', 'pp-ops'), sim = elD('button', 'pp-op rec', 'Apagar'), nao = elD('button', 'pp-op', 'Agora não'); sim.type = nao.type = 'button'; ops.style.marginTop = '16px'; const fecha = () => ov.remove(); nao.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; sim.onclick = () => { fecha(); fn(); }; ops.append(nao, sim); card.append(elD('div', 'pp-perg', 'Apagar ' + nome + '?'), elD('p', 'p-nota', 'Some da tela e fica guardado; dá pra desfazer logo depois.'), ops); ov.append(card); document.body.append(ov); };   // excluir pede confirmação ANTES (texto da May, item 13)
-    const formPratica = (x, inst, equip) => {
+    const PRATICOU = [['musica', 'Música'], ['exercicio', 'Exercício'], ['tecnica', 'Técnica'], ['improviso', 'Improviso']], COMO = [['ruim', 'Ruim'], ['ok', 'Ok'], ['boa', 'Boa'], ['otima', 'Ótima']];
+    const formPratica = (x, inst, equip, dur, aoGuardar) => {   // fase 3a: as 5 perguntas do fim da sessão (instrumento, o que praticou, quanto durou, como foi, obs); dur vem do cronômetro
       const ov = elD('div', 'fixa-pop tm-pr-pop'), card = elD('div', 'pp-card tm-pr-card'), xb = elD('button', 'pp-x'); xb.type = 'button'; xb.innerHTML = icone('close'); xb.setAttribute('aria-label', 'Fechar');
       let qual = x ? x.instrumento : (store.get('mus-pr-inst') || (inst[0] || {}).id), usei = new Set(x ? x.usei || [] : JSON.parse(store.get('mus-pr-usei') || '[]'));
+      let pr = new Set(x ? x.praticou || [] : []), como = x ? x.como || '' : '';
       const linhaI = elD('div', 'tm-pr-chips'), linhaE = elD('div', 'tm-pr-chips'), ta = elD('textarea'), q = elD('input'); ta.rows = 3; ta.placeholder = 'O que tocou, como foi (opcional)'; ta.value = x ? x.nota || '' : ''; q.type = 'text'; q.value = x ? x.quando : edAgora(); q.setAttribute('aria-label', 'Quando');
+      const linhaP = elD('div', 'tm-pr-chips'), linhaC = elD('div', 'tm-pr-chips'), pt = elD('input'), du = elD('input'); pt.type = du.type = 'text'; pt.placeholder = 'Qual música, exercício ou técnica (opcional)'; pt.value = x ? x.praticou_txt || '' : ''; du.inputMode = 'numeric'; du.placeholder = 'Minutos (opcional)'; du.value = dur != null ? String(dur) : x && x.dur_min ? String(x.dur_min) : ''; du.setAttribute('aria-label', 'Quanto tempo durou, em minutos');
       const pinta = () => { linhaI.replaceChildren(...inst.map(i => { const b = elD('button', 'tm-pr-chip' + (i.id === qual ? ' on' : ''), i.nome); b.type = 'button'; b.onclick = () => { qual = i.id; pinta(); }; return b; }));
-        linhaE.replaceChildren(...equip.map(e => { const b = elD('button', 'tm-pr-chip' + (usei.has(e.id) ? ' on' : ''), e.nome); b.type = 'button'; b.onclick = () => { usei.has(e.id) ? usei.delete(e.id) : usei.add(e.id); pinta(); }; return b; })); };
+        linhaE.replaceChildren(...equip.map(e => { const b = elD('button', 'tm-pr-chip' + (usei.has(e.id) ? ' on' : ''), e.nome); b.type = 'button'; b.onclick = () => { usei.has(e.id) ? usei.delete(e.id) : usei.add(e.id); pinta(); }; return b; }));
+        linhaP.replaceChildren(...PRATICOU.map(([k, t]) => { const b = elD('button', 'tm-pr-chip' + (pr.has(k) ? ' on' : ''), t); b.type = 'button'; b.onclick = () => { pr.has(k) ? pr.delete(k) : pr.add(k); pinta(); }; return b; }));
+        linhaC.replaceChildren(...COMO.map(([k, t]) => { const b = elD('button', 'tm-pr-chip' + (como === k ? ' on' : ''), t); b.type = 'button'; b.onclick = () => { como = como === k ? '' : k; pinta(); }; return b; })); };
       pinta();
       const ok = elD('button', 'pp-op rec', 'Guardar'); ok.type = 'button';
-      ok.onclick = async () => { if (!qual) return; const v = { instrumento: qual, usei: [...usei], nota: ta.value.trim(), quando: q.value.trim() || edAgora() }; try { store.set('mus-pr-inst', qual); store.set('mus-pr-usei', JSON.stringify(v.usei)); } catch (e) {} ov.remove();
-        await grava(l => { if (x) { const r = l.find(y => y.id === x.id); if (r) Object.assign(r, v, { atualizado: edAgora() }); } else l.push(Object.assign({ id: 'pratica-' + Date.now().toString(36), secao: 'pratica', criado: edAgora() }, v)); }, x ? 'Música: prática editada pelo app' : 'Música: toquei hoje (pelo app)'); };
+      ok.onclick = async () => { if (!qual) return; const v = { instrumento: qual, usei: [...usei], nota: ta.value.trim(), quando: q.value.trim() || edAgora(), praticou: [...pr], praticou_txt: pt.value.trim(), como, dur_min: parseInt(du.value, 10) > 0 ? parseInt(du.value, 10) : 0 }, vaz = Object.keys(v).filter(k => ['praticou', 'praticou_txt', 'como', 'dur_min'].includes(k) && (Array.isArray(v[k]) ? !v[k].length : !v[k])); vaz.forEach(k => delete v[k]); try { store.set('mus-pr-inst', qual); store.set('mus-pr-usei', JSON.stringify(v.usei)); } catch (e) {} ov.remove();
+        if (aoGuardar) aoGuardar(true); const foi = await grava(l => { if (x) { const r = l.find(y => y.id === x.id); if (r) { vaz.forEach(k => delete r[k]); Object.assign(r, v, { atualizado: edAgora() }); } } else l.push(Object.assign({ id: 'pratica-' + Date.now().toString(36), secao: 'pratica', criado: edAgora() }, v)); }, x ? 'Música: prática editada pelo app' : dur != null ? 'Música: sessão do cronômetro (pelo app)' : 'Música: toquei hoje (pelo app)'); if (!foi && aoGuardar) aoGuardar(false); };
       const bts = elD('div', 'lem-bts'); bts.append(ok);
       if (x) { const ap = elD('button', 'pp-op depois', 'Apagar'); ap.type = 'button'; ap.onclick = () => confirmaApagar('esta prática', async () => { ov.remove(); const qd = edAgora(); if (await grava(l => { const r = l.find(y => y.id === x.id); if (r) r.apagado = qd; }, 'Música: prática apagada pelo app (fica guardada)')) edFaixaDesfazer('Prática apagada', () => grava(l => { const r = l.find(y => y.id === x.id); if (r) delete r.apagado; }, 'Música: prática de volta')); }); bts.append(ap); }
-      card.append(xb, elD('b', 'tm-pr-tit', x ? 'Editar a prática' : 'Toquei hoje'), elD('small', 'tm-pr-rot', 'Instrumento'), linhaI, elD('small', 'tm-pr-rot', 'O que usei'), linhaE, elD('small', 'tm-pr-rot', 'Quando'), q, elD('small', 'tm-pr-rot', 'Anotação'), ta, bts);
+      card.append(xb, elD('b', 'tm-pr-tit', x ? 'Editar a prática' : dur != null ? 'Sessão de ' + dur + ' min' : 'Toquei hoje'), elD('small', 'tm-pr-rot', 'Instrumento'), linhaI, elD('small', 'tm-pr-rot', 'O que praticou'), linhaP, pt, elD('small', 'tm-pr-rot', 'Quanto tempo durou'), du, elD('small', 'tm-pr-rot', 'Como foi'), linhaC, elD('small', 'tm-pr-rot', 'O que usei'), linhaE, elD('small', 'tm-pr-rot', 'Quando'), q, elD('small', 'tm-pr-rot', 'Anotação'), ta, bts);
       xb.onclick = () => ov.remove(); ov.append(card); document.body.append(ov);
     };
     const baseCuidar = () => {   // a conta do Cuidar num lugar só: a aba Cuidar e o Hoje no estúdio usam a mesma (2b, Sigma 07:24)
@@ -3890,8 +3895,8 @@ function abreMusica(m) {
     const praticaSemana = () => {   // a meta da semana do Tocar, a mesma no Tocar e no painel
           const daQ = t => { const m = String(t || '').match(/^(\d\d)\/(\d\d)\/(\d{4})(?: (\d\d):(\d\d))?/); return m ? new Date(+m[3], m[2] - 1, +m[1], +(m[4] || 0), +(m[5] || 0)) : null; };
           const seg = new Date(); seg.setHours(0, 0, 0, 0); seg.setDate(seg.getDate() - ((seg.getDay() + 6) % 7));
-          const vezes = vivos('pratica').map(x => Object.assign({ _d: daQ(x.quando) }, x)).filter(x => x._d).sort((a, b) => b._d - a._d), semana = vezes.filter(x => x._d >= seg).length, meta = +(d.meta_pratica || 2);
-      return { daQ, seg, vezes, semana, meta };
+          const vezes = vivos('pratica').map(x => Object.assign({ _d: daQ(x.quando) }, x)).filter(x => x._d).sort((a, b) => b._d - a._d), semana = vezes.filter(x => x._d >= seg).length, M = d.meta_tocar || {}, meta = +(M.sessoes || d.meta_pratica || 2), hj = new Date(); hj.setHours(0, 0, 0, 0); const minHoje = vezes.filter(x => x._d >= hj).reduce((t, x) => t + (+x.dur_min || 0), 0);
+      return { daQ, seg, vezes, semana, meta, M, minHoje };
     };
     const resumoEstudio = () => {   // painel e Hoje no estúdio (2b): só o que ela cadastrou, nada inventado
       const mus = vivos('musica'), anda = mus.filter(x => (x.etapa || 1) < NE), fin = mus.filter(x => (x.etapa || 1) >= NE), P = praticaSemana(), agora = new Date(), dias = x => { const q = P.daQ(x.atualizado || x.criado); return q ? Math.floor((agora - q) / 864e5) : 0; };
@@ -4083,19 +4088,44 @@ function abreMusica(m) {
         const nomeDe = x => x.nome || (x.secao === 'pratica' ? 'Tocou ' + ((d.itens.find(y => y.id === x.instrumento) || {}).nome || 'um instrumento') : x.secao === 'manut' ? 'Cuidado de ' + ((d.itens.find(y => y.id === x.instrumento) || {}).nome || 'instrumento') : 'Registro');
         linha('Última atividade', R.ult ? nomeDe(R.ult) : 'Nada ainda', R.ult ? R.ult.atualizado || R.ult.criado : '');
         const ir = elD('section', 'tm-pn-ideias'); ir.append(elD('small', '', 'Ideias recentes')); if (!R.recentes.length) ir.append(elD('b', '', 'Nenhuma ideia ainda')); R.recentes.forEach(x => { const b = elD('button', 'tm-sug'), tx = elD('div'); b.type = 'button'; tx.append(elD('b', '', x.nome), elD('small', '', x.grupo || 'Ideia')); b.append(tx); b.insertAdjacentHTML('beforeend', SETA); b.onclick = () => trocaAba('ideia'); ir.append(b); }); corpo.append(ir);
-      } else if (aba === 'pratica') {   // tocar 2x por semana e anotar (May 13/11 18:53): instrumento, o que usou e uma nota; conta a semana de segunda a domingo
+      } else if (aba === 'pratica') {   // tocar 2x por semana e anotar (May 13/11 18:53): instrumento, o que usou e uma nota; conta a semana de segunda a domingo. Fase 3a (25/11): sub-abas Cronômetro e Histórico, meta configurável, cronômetro pelo relógio
         const inst = vivos('setup').filter(x => !x.bloqueado && (x.tipo === 'guitarra' || /viol[aã]o|baixo|guitarra|telecaster/i.test(x.nome))), equip = vivos('setup').filter(x => ['amp', 'pedal', 'interface', 'mic', 'teclas'].includes(x.tipo));
-        const { daQ, seg, vezes, semana, meta } = praticaSemana();
-        const topo = elD('section', 'tm-pr-topo'), pts = elD('div', 'tm-pr-pts');
-        for (let i = 0; i < Math.max(meta, semana); i++) pts.append(elD('i', i < semana ? 'on' : ''));
-        topo.append(elD('b', 'tm-pr-num', semana + ' de ' + meta), elD('span', '', semana >= meta ? 'meta da semana batida' : 'vezes nesta semana (segunda a domingo)'), pts);
-        const bt = elD('button', 'tm-pr-bt', 'Toquei hoje'); bt.type = 'button'; bt.onclick = () => formPratica(null, inst, equip); topo.append(bt); corpo.append(topo);
-        if (!vezes.length) corpo.append(elD('div', 'tm-vazio', 'Quando tocar, toca em "Toquei hoje" e escolhe o instrumento e o que usou.'));
+        const { vezes, semana, meta, M, minHoje } = praticaSemana();
+        const SUBS = [['crono', 'Cronômetro'], ['hist', 'Histórico']], subs = elD('div', 'tv-subs tp-subs'), miolo = elD('div', 'tv-miolo'), reduz = matchMedia('(prefers-reduced-motion: reduce)').matches; subs.setAttribute('role', 'tablist'); let tpSub = store.get('mus-tocar') || 'crono';
+        const editaMeta = () => edFormulario({ titulo: 'Meta do Tocar', campos: [{ nome: 'sessoes', rotulo: 'Sessões por semana', tipo: 'numero', valida: 'numero', obrigatorio: true, meia: true }, { nome: 'minutos', rotulo: 'Minutos por dia', tipo: 'numero', meia: true }, { nome: 'instrumento', rotulo: 'Instrumento pra estudar', tipo: 'escolha', opcoes: [['', 'Nenhum']].concat(inst.map(i => [i.id, i.nome])) }, { nome: 'musica', rotulo: 'Música pra aprender', tipo: 'escolha', opcoes: [['', 'Nenhuma da lista']].concat(vivos('musica').map(x => [x.id, x.nome || 'Sem nome'])) }, { nome: 'musica_txt', rotulo: 'Ou escreve o nome dela', tipo: 'texto' }, { nome: 'habilidade', rotulo: 'Habilidade pra desenvolver', tipo: 'texto' }],
+          v: { sessoes: String(meta), minutos: M.minutos ? String(M.minutos) : '', instrumento: M.instrumento || '', musica: M.musica || '', musica_txt: M.musica_txt || '', habilidade: M.habilidade || '' },
+          aoSalvar: async f => { const nv = { sessoes: Math.max(1, parseInt(f.sessoes, 10) || meta) }, mi = parseInt(f.minutos, 10); if (mi > 0) nv.minutos = mi; ['instrumento', 'musica', 'musica_txt', 'habilidade'].forEach(k => { const t = String(f[k] || '').trim(); if (t) nv[k] = t; }); const antes = d.meta_tocar; d.meta_tocar = nv; pinta(); if (!(await gravaJson(m.arq, dd => { dd.meta_tocar = nv; }, 'Música: meta do Tocar pelo app', null))) { d.meta_tocar = antes; pinta(); showNote('Não guardou: voltou como estava. Confere a internet.', true); } } });
+        const crono = () => {   // conta pelo relógio (início e pausas guardados no aparelho): fechar o app ou bloquear a tela não perde a sessão
+          const topo = elD('section', 'tm-pr-topo tp-topo'), pts = elD('div', 'tm-pr-pts'), falta = meta - semana;
+          for (let i = 0; i < Math.max(meta, semana); i++) pts.append(elD('i', i < semana ? 'on' : ''));
+          topo.append(elD('b', 'tm-pr-num', semana + ' de ' + meta), elD('span', '', falta <= 0 ? 'Meta da semana batida' : (falta === 1 ? 'Falta 1 sessão' : 'Faltam ' + falta + ' sessões') + ' nesta semana'), pts);
+          if (M.minutos) topo.append(elD('span', 'tp-min' + (minHoje >= M.minutos ? ' ok' : ''), 'Hoje: ' + minHoje + ' de ' + M.minutos + ' min'));
+          const alvo = [(inst.find(i => i.id === M.instrumento) || {}).nome, (vivos('musica').find(x => x.id === M.musica) || {}).nome || M.musica_txt, M.habilidade].filter(Boolean); if (alvo.length) { const al = elD('div', 'tp-alvo'); alvo.forEach(t => al.append(elD('span', '', t))); topo.append(al); }
+          const em = edMini('note', 'Editar a meta', editaMeta); em.classList.add('tp-meta-ed'); topo.append(em); miolo.append(topo);
+          const C = () => { try { return JSON.parse(store.get('mus-crono') || 'null'); } catch (e) { return null; } }, poe = v => store.set('mus-crono', v ? JSON.stringify(v) : ''), total = v => v ? v.acum + (v.desde ? Date.now() - v.desde : 0) : 0;
+          const fmt = ms => { const t = Math.floor(ms / 1000), h = Math.floor(t / 3600), mi = Math.floor(t % 3600 / 60), se = t % 60, p = n => String(n).padStart(2, '0'); return (h ? h + ':' + p(mi) : p(mi)) + ':' + p(se); };
+          const cr = elD('section', 'tp-crono'), est = elD('span', 'tp-est'), vis = elD('div', 'tp-tempo'), bts = elD('div', 'tp-bts'), bt = (rot, cls, fn) => { const b = elD('button', 'tp-bt ' + cls, rot); b.type = 'button'; b.onclick = fn; return b; };
+          const fim = () => { const v = C(); if (!v) return; const parado = { acum: total(v), desde: null }; poe(parado); desenha(); formPratica(null, inst, equip, Math.max(1, Math.round(parado.acum / 6e4)), ok => { poe(ok ? null : parado); if (!ok) desenha(); }); };
+          const desenha = () => { const v = C(); vis.textContent = fmt(total(v)); cr.classList.toggle('rodando', !!(v && v.desde)); cr.classList.toggle('pausado', !!(v && !v.desde)); est.textContent = !v ? 'Pronto pra começar' : v.desde ? 'Tocando' : 'Pausado';
+            bts.replaceChildren(...(!v ? [bt('Iniciar', 'rec', () => { poe({ acum: 0, desde: Date.now() }); desenha(); })] : v.desde ? [bt('Pausar', 'sec', () => { poe({ acum: total(C()), desde: null }); desenha(); }), bt('Finalizar', 'fim', fim)] : [bt('Continuar', 'rec', () => { poe({ acum: C().acum, desde: Date.now() }); desenha(); }), bt('Finalizar', 'fim', fim), bt('Zerar', 'zera', () => confirmaApagar('esta sessão do cronômetro', () => { poe(null); desenha(); }))])); };
+          const tique = setInterval(() => { if (!vis.isConnected) return clearInterval(tique); const v = C(); if (v && v.desde) vis.textContent = fmt(total(v)); }, 500);
+          cr.append(est, vis, bts); desenha(); miolo.append(cr);
+          const tq = bt('Toquei hoje, sem cronômetro', 'sec tp-tq', () => formPratica(null, inst, equip)); miolo.append(tq);
+        };
+        const hist = () => {
+          if (!vezes.length) { miolo.append(elD('div', 'tm-vazio', 'Quando tocar, usa o Cronômetro ou o "Toquei hoje" e a sessão aparece aqui.')); return; }
         vezes.forEach(x => { const a = elD('article', 'tm-aparelho tm-pr'), sl = elD('div', 'tm-slot'), tx = elD('div'), ins = inst.find(i => i.id === x.instrumento); sl.innerHTML = '<svg viewBox="0 0 40 40" aria-hidden="true">' + MUS_ICONES.guitarra + '</svg>';
           tx.append(elD('h3', '', ins ? ins.nome : (x.instrumento_nome || 'Instrumento')), elD('small', 'tm-pr-q', x.quando));
+          const dc = [x.dur_min ? x.dur_min + ' min' : '', (COMO.find(c => c[0] === x.como) || [])[1] || ''].filter(Boolean); if (dc.length) tx.append(elD('p', 'tp-dc', dc.join(' · ')));
+          const pq = (x.praticou || []).map(k => (PRATICOU.find(p => p[0] === k) || [])[1]).filter(Boolean).concat(x.praticou_txt ? [x.praticou_txt] : []); if (pq.length) tx.append(elD('p', '', 'Praticou: ' + pq.join(', ')));
           const us = (x.usei || []).map(id => (equip.find(e => e.id === id) || {}).nome).filter(Boolean); if (us.length) tx.append(elD('p', '', 'Usei: ' + us.join(', ')));
           if (x.nota) tx.append(elD('p', 'tm-pr-nota', x.nota));
-          const ed = edMini('note', 'Editar', () => formPratica(x, inst, equip)); ed.classList.add('tm-ed'); a.append(sl, tx, ed); corpo.append(a); });
+          const ed = edMini('note', 'Editar', () => formPratica(x, inst, equip)); ed.classList.add('tm-ed'); a.append(sl, tx, ed); miolo.append(a); });
+        };
+        const mostra = (id, dir) => { const ant = SUBS.findIndex(s => s[0] === tpSub), nov = SUBS.findIndex(s => s[0] === id); tpSub = id; store.set('mus-tocar', id); subs.replaceChildren(...SUBS.map(([k, rot]) => { const b = elD('button', 'tv-sub', rot); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(k === tpSub)); b.onclick = () => { if (k !== tpSub) mostra(k, 1); }; return b; }));
+          miolo.replaceChildren(); if (id === 'hist') hist(); else crono();
+          if (dir && !reduz && miolo.animate) miolo.animate([{ transform: 'translateX(' + (nov > ant ? 60 : -60) + 'px)' }, { transform: 'translateX(0)' }], { duration: 260, easing: 'cubic-bezier(.2,.9,.25,1)' }); };
+        corpo.append(subs, miolo); mostra(SUBS.some(s => s[0] === tpSub) ? tpSub : 'crono');
       } else if (aba === 'manut') {   // manutenção dos instrumentos (May 13/11 12:36, layout 13:00): cada um com o desenho dele e 3 cuidados em quadros (cordas, regulagem, limpeza) com quantos dias faltam; datas começam vazias (nada inventado), intervalo é sugestão editável. Estúdio JWA fase 1 (25/11): abas Vitrine, Cuidados e Histórico, cuidado personalizado, giro com pausa e velocidade
         const { SERV, inst, hoje, daData, br, achaReg, servicos, estado } = baseCuidar();
         const CAMPO_DATA = { nome: 'ultima', rotulo: 'Última vez (DD/MM/AAAA)', tipo: 'texto', valida: 'data', erro: 'Data no formato DD/MM/AAAA, e que exista.' }, CAMPO_CADA = { nome: 'cada_dias', rotulo: 'Fazer a cada quantos dias', tipo: 'numero', valida: 'numero' }, CAMPO_OBS = { nome: 'obs', rotulo: 'Observação', tipo: 'texto_longo' };
