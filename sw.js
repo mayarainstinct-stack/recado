@@ -1,3 +1,4 @@
+// v606 Apagar recebimento
 // v605 #467 fase 3 Receber: herói azul, cartões do mês, parcelas automáticas no detalhe (Hermes 25/11)
 // v604 #468 detalhe da semanal e a cada N dias mostra a regra (Hermes 25/11)
 // v603 #468 detalhe da conta no tema claro, botões de 44 px, Apagar com confirmação (Hermes 25/11)
