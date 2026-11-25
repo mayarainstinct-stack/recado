@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.623">
+<meta name="app-versao" content="2026-11-25.624">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.623"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.624"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -5394,10 +5394,10 @@ function abreFinancas(m) {
     };
     const confirmaMeta = mt => { const cp = elD('div', 'fin-conf'), bt = elD('div', 'fin-bts'), sim = elD('button', 'pp-op fin-apaga', 'Apagar'), nao = elD('button', 'pp-op', 'Cancelar'); sim.type = nao.type = 'button'; cp.append(elD('p', 'p-nota', 'Some da lista com o que foi guardado nela; dá pra desfazer logo depois.'), bt); bt.append(nao, sim); const fecha = pop('Apagar ' + mt.nome + '?', cp); nao.onclick = fecha; sim.onclick = () => { fecha(); apagaMeta(mt); }; };
     const MESN = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'], mesNome = ch => { const m = String(ch || '').match(/^(\d{4})-(\d\d)/); return m ? maiusc(MESN[+m[2] - 1]) + ' de ' + m[1] : 'Sem mês'; };
-    const movs = () => {   // Histórico de movimentações (#467 5a): mesma regra do resumo do mês (mês da conta, só o que já aconteceu), pra soma bater com o Início, o Receber e as Metas
-      const out = [], ag = hoje.getTime() + 864e5, vivas = {}; Em.itens.filter(m => !m.apagado).forEach(m => { vivas[m.id] = m.nome; });
-      S.pessoas.forEach(p => p.pagamentos.forEach(y => { if (finTs(y) < ag) out.push({ k: p.lado === 'receber' ? 'ent' : 'sai', nome: p.nome, y, chave: y.chave, v: finNum(y.valor), ts: finTs(y) }); }));
-      S.fixas.forEach(f => f.pagos.forEach(y => { if (finTs(y) < ag) out.push({ k: f.tipo === 'entrada' ? 'ent' : 'sai', nome: f.nome, y, chave: y.chave, v: finNum(y.valor), ts: finTs(y) }); }));
+    const movs = () => {   // Histórico de movimentações (#467 5a): o que aconteceu, no mês da DATA do pagamento (Sigma 13:02), só o que já aconteceu
+      const mesPg = y => { const d = finData(y.quando || y.data); return d ? finChave(d) : y.chave; }, out = [], ag = hoje.getTime() + 864e5, vivas = {}; Em.itens.filter(m => !m.apagado).forEach(m => { vivas[m.id] = m.nome; });
+      S.pessoas.forEach(p => p.pagamentos.forEach(y => { if (finTs(y) < ag) out.push({ k: p.lado === 'receber' ? 'ent' : 'sai', nome: p.nome, y, chave: mesPg(y), v: finNum(y.valor), ts: finTs(y) }); }));
+      S.fixas.forEach(f => f.pagos.forEach(y => { if (finTs(y) < ag) out.push({ k: f.tipo === 'entrada' ? 'ent' : 'sai', nome: f.nome, y, chave: mesPg(y), v: finNum(y.valor), ts: finTs(y) }); }));
       Ea.itens.filter(a => !a.apagado && vivas[a.meta]).forEach(a => { const d = finData(a.quando); out.push({ k: 'meta', nome: vivas[a.meta], y: { quando: a.quando, data: '', forma: '', nota: a.nota || '' }, chave: d ? finChave(d) : '', v: finNum(a.valor), ts: d ? d.getTime() : 0 }); });
       return out.sort((a, b) => (b.chave || '').localeCompare(a.chave || '') || b.ts - a.ts);
     };
