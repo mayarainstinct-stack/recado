@@ -1,3 +1,4 @@
+// v601 #468 cadastro em abas, repeticao, adiar, duplicar
 // v600 (25/11/2026): #450 detalhe fase A (foto no topo, linhas, estado, manutencoes, Editar, 4 numeros) + Comparar c/ cor do codigo e fonte normal + religa vermelho.
 // v599 (25/11/2026): #469 Diagnostico aberto pela Maquinas fica no tema de la (sem modo-trab), ate o ultimo nivel.
 // v598 #467 Inicio vencida sem pagamento em vermelho

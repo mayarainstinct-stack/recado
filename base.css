@@ -3826,3 +3826,14 @@ body .painel.tema-maq.tema-maq .p-corpo button.pcd-religa:not(.dg-card):not(.pcd
 body .painel.tema-maq.tema-maq .dg-tela .pcd-val-bar { background: linear-gradient(90deg, var(--ec, var(--rc)) var(--w), rgba(255,255,255,.08) var(--w)) !important; }   /* barra na cor do código fixo da própria medida (verde, amarelo, vermelho), não toda verde (Sigma 10:52) */
 body .painel.tema-maq.tema-maq .dg-tela :is(.pcd-num div, .pcd-val, .rel-kpi b, .rel-prog b, .pcd-dias-num b) { font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif !important; }
 body .painel.tema-maq.tema-maq .dg-tela .pcd-val { border-left-color: var(--ec, transparent) !important; }
+/* #468 (25/11/2026): formulário em abas com nome inteiro e Guardar preso no rodapé, como o Editar do jogo */
+.ed-card.ed-com-pe { max-height: calc(100dvh - 32px); overflow-y: auto; overscroll-behavior: contain; padding-bottom: 0; }
+.ed-abas { display: flex; gap: 8px; margin: 0 0 14px; padding: 2px 0 4px; overflow-x: auto; scrollbar-width: none; flex: 1 1 100%; }
+.ed-aba { flex: none; width: auto; height: auto; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--quem) 35%, transparent); background: transparent; color: inherit; font: inherit; font-size: 15px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.ed-aba.on { background: var(--quem); border-color: var(--quem); color: #FFFFFF; }
+.ed-sec { display: flex; flex-wrap: wrap; align-items: flex-start; column-gap: 10px; flex: 1 1 100%; min-width: 0; }
+.ed-sec > * { flex: 1 1 100%; min-width: 0; } .ed-sec > .ed-campo.meia { flex: 1 1 calc(50% - 5px); } .ed-sec > [hidden], .ed-sec[hidden] { display: none; }
+.ed-pe { position: sticky; bottom: 0; z-index: 2; flex: 1 1 100%; margin: 6px -16px 0; padding: 16px 16px calc(env(safe-area-inset-bottom) + 16px); }
+.ed-pe .ed-erro { margin: 0 2px 10px; }
+.fin-det .ed-acoes { flex-wrap: wrap; justify-content: center; row-gap: 14px; column-gap: 20px; } .fin-det .ed-acoes .pp-op { flex: 1 1 100%; order: -1; } .fin-det .ed-acoes .ed-link { width: auto; height: auto; min-height: 44px; padding: 0 4px; white-space: nowrap; }
+.fu-lin:has(> .fn-ico) { grid-template-columns: 40px 44px minmax(0, 1fr) auto; }

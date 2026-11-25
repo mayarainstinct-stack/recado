@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.600">
+<meta name="app-versao" content="2026-11-25.601">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.600"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.601"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3634,14 +3634,19 @@ function edPedeValor(titulo, sugestao) {
 async function edSobeFoto(file) { const rd = await reduzir(file), nome = comTirada(nomeArq('recados-fotos', new Date(), 0, rd.ext || 'jpg'), await horaTirada(file)); await apiOk(apiDe(nome), { method: 'PUT', body: JSON.stringify({ message: 'foto pelo app', content: rd.b64 }) }); return nome; }
 // formulário pelos campos: v = valores atuais (editar) ou {} (lançar); aoSalvar(valores); aoApagar opcional
 const VALIDA = { data: t => { const m = t.match(/^(\d{2})\/(\d{2})\/(\d{4})$/); if (!m) return false; const d = new Date(+m[3], +m[2] - 1, +m[1]); return d.getFullYear() === +m[3] && d.getMonth() === +m[2] - 1 && d.getDate() === +m[1] && +m[3] > 1900 && +m[3] < 2100; }, numero: t => /^-?\d+([.,]\d+)?$/.test(t) };
-function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar }) {
+function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar, rodape }) {
   const ov = elD('div', 'fixa-pop ed-pop'), card = elD('div', 'pp-card ed-card'), x = elD('button', 'pp-x'), form = elD('form', 'ed-form'), els = {};
   x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); };
   { const tl = document.querySelector('#p-corpo .tela'), cor = (tl && getComputedStyle(tl).getPropertyValue('--vs-c').trim()) || getComputedStyle(painel).getPropertyValue('--c').trim(); if (cor) card.style.setProperty('--quem', cor); if (painel.classList.contains('tema-musica')) ov.classList.add('escuro'); else if (painel.classList.contains('tema-claro') || painel.classList.contains('tema-saude') || painel.classList.contains('tema-planos') || document.querySelector('#p-corpo .vs-tela, #p-corpo .gr-saude')) { ov.classList.add('claro'); const f = (tl && getComputedStyle(tl).getPropertyValue('--vs-f').trim()) || (painel.classList.contains('tema-planos') ? '#FBF3E2' : ''); if (f) card.style.setProperty('--fundo-claro', f); } }   // tela filha herda a mãe (Sigma #396): o formulário vem na cor da tela que abriu, e escuro na Música
   { const pj = document.querySelector('#p-corpo .pjm-tela.pjm-painel'); if (pj) { ov.classList.remove('escuro', 'claro'); ov.classList.add('pjm-pop'); ['--pj-f', '--pj-t', '--pj-d', '--pj-sd'].forEach(n => card.style.setProperty(n, pj.style.getPropertyValue(n))); card.style.setProperty('--quem', pj.style.getPropertyValue('--pj-d')); } }   // #457: no E-controle e na S.L. o formulário herda as cores do projeto (destaque já cai pro texto se não contrastar)
   card.append(x, elD('div', 'pp-perg', titulo));
+  const nomesAba = [...new Set(campos.filter(c => c.aba).map(c => c.aba))], secs = {}, lbs = {}, abaBt = {};   // abas no formulário (#468): campo com "aba"; "se" esconde o campo que não vale pro que foi escolhido
+  const vaiAba = n => nomesAba.forEach(k => { secs[k].hidden = k !== n; abaBt[k].classList.toggle('on', k === n); abaBt[k].setAttribute('aria-selected', k === n ? 'true' : 'false'); });
+  if (nomesAba.length > 1) { const bar = elD('div', 'ed-abas'); bar.setAttribute('role', 'tablist'); nomesAba.forEach(k => { const b = elD('button', 'ed-aba', k); b.type = 'button'; b.setAttribute('role', 'tab'); b.onclick = () => vaiAba(k); abaBt[k] = b; bar.append(b); secs[k] = elD('div', 'ed-sec'); }); form.append(bar, ...nomesAba.map(k => secs[k])); card.classList.add('ed-com-abas'); }
+  const valores = () => { const o = { ...v }; Object.keys(els).forEach(k => { if (els[k].type !== 'file') o[k] = els[k].value; }); return o; };
+  const ve = () => campos.forEach(c => { if (c.se && lbs[c.nome]) lbs[c.nome].hidden = !c.se(valores()); });
   campos.filter(c => c.nome !== 'id' && c.tipo !== 'oculto').forEach(c => {
-    const lb = elD('label', 'ed-campo' + (c.meia ? ' meia' : '')); lb.append(elD('span', '', edRotulo(c) + (c.obrigatorio ? ' *' : '')));
+    const lb = elD('label', 'ed-campo' + (c.meia ? ' meia' : '')); lb.append(elD('span', '', edRotulo(c) + (c.obrigatorio ? ' *' : ''))); lbs[c.nome] = lb;
     let el;
     if (c.tipo === 'texto_longo') { el = elD('textarea'); el.rows = 3; }
     else if (c.tipo === 'escolha') { el = elD('select'); (c.opcoes || []).forEach(o => { const [val, tx] = Array.isArray(o) ? o : [o, o]; const op = elD('option', '', maiusc(tx)); op.value = val; el.append(op); }); }
@@ -3649,19 +3654,22 @@ function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar }) {
     else { el = elD('input'); el.type = c.tipo === 'data' ? 'date' : c.tipo === 'url_imagem' ? 'url' : 'text'; if (c.tipo === 'numero' || c.tipo === 'valor') el.inputMode = 'decimal'; }
     if (c.tipo !== 'foto') el.value = v[c.nome] != null ? v[c.nome] : (c.padrao != null ? c.padrao : ''); els[c.nome] = el; lb.append(el);
     if (c.tipo === 'url_imagem') { const im = elD('img', 'ed-previa'); im.alt = ''; im.hidden = true; const mostra = () => { im.hidden = !/^https?:/i.test(el.value); if (!im.hidden) im.src = el.value; }; im.onerror = () => { im.hidden = true; }; el.addEventListener('change', mostra); mostra(); lb.append(im); }
-    form.append(lb);
+    (secs[c.aba] || form).append(lb);
   });
-  const erro = elD('p', 'ed-erro'); erro.hidden = true; const ops = elD('div', 'ed-acoes');
+  if (nomesAba.length > 1) { vaiAba(nomesAba[0]); ve(); form.addEventListener('change', ve); }
+  const erro = elD('p', 'ed-erro'); erro.hidden = true; const ops = elD('div', 'ed-acoes'), pe = rodape ? elD('div', 'ed-pe') : null;
   const ok = elD('button', 'pp-op rec', 'Guardar'); ok.type = 'submit'; ops.append(ok);
   if (aoApagar) { const ap = elD('button', 'ed-link', 'Apagar'); ap.type = 'button'; ap.onclick = () => { fecha(); aoApagar(); }; ops.append(ap); }
-  form.append(erro, ops);
+  if (pe) { pe.append(erro, ops); form.append(pe); card.classList.add('ed-com-pe'); } else form.append(erro, ops);
   form.onsubmit = async e => {
     e.preventDefault(); const out = {};
+    for (const c of campos) { if (!lbs[c.nome] || lbs[c.nome].hidden || !c.precisa || String(els[c.nome].value).trim()) continue; if (c.aba && secs[c.aba]) vaiAba(c.aba); erro.textContent = 'Falta preencher ' + edRotulo(c) + '.'; erro.hidden = false; return; }
     for (const c of campos) { if (!els[c.nome]) continue; if (c.tipo === 'foto') { const f = els[c.nome].files && els[c.nome].files[0]; if (!f && c.obrigatorio && !els[c.nome].dataset.atual) { erro.textContent = 'Falta escolher a foto.'; erro.hidden = false; return; } out[c.nome] = els[c.nome].dataset.atual || ''; if (f) { try { ok.disabled = true; ok.textContent = 'Subindo a foto…'; out[c.nome] = await edSobeFoto(f); } catch (er) { ok.disabled = false; ok.textContent = 'Guardar'; erro.textContent = 'A foto não subiu. Confere a internet e tenta de novo.'; erro.hidden = false; return; } } continue; } let val = els[c.nome].value.trim(); if (c.tipo === 'numero' || c.tipo === 'valor') { const n = +val.replace(/\./g, '').replace(',', '.'); val = val === '' ? '' : (isNaN(n) ? val : n); } if (c.obrigatorio && val === '') { erro.textContent = 'Falta preencher: ' + edRotulo(c); erro.hidden = false; return; } out[c.nome] = val; }
     for (const c of campos) if (c.valida && out[c.nome] && !VALIDA[c.valida](String(out[c.nome]).trim())) { erro.textContent = c.erro || ('Confere o campo ' + edRotulo(c) + '.'); erro.hidden = false; return; }   // campo com valida (data DD/MM/AAAA de verdade, número); "padrao" é o valor inicial, nunca regra (Sigma #151 rodada 2)
     ok.disabled = true; await aoSalvar(out); fecha();
   };
   card.append(form); ov.append(card); document.body.append(ov);
+  if (pe) pe.style.background = 'linear-gradient(180deg, transparent, ' + getComputedStyle(card).backgroundColor + ' 22px)';   // o rodapé some por cima dos campos com a cor do próprio cartão
 }
 const edMini = (ic, rot, fn) => { const b = elD('button', 'ed-mini'); b.type = 'button'; b.innerHTML = icone(ic); b.setAttribute('aria-label', rot); b.onclick = e => { e.stopPropagation(); fn(); }; return b; };
 // tela de lista genérica (tipo "lista" no menu): Planos e as próximas. Toque no círculo = feito; lápis pequeno = editar; apagar fica dentro do editar
@@ -4853,6 +4861,22 @@ function finData(s) { s = String(s || ''); let m = s.match(/^(\d{4})-(\d\d)-(\d\
 const finIso = s => { const d = finData(s); return d ? d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) : ''; };
 const finChaveDe = s => { const d = finData(s); return d ? finChave(d) : ''; };
 const finDiaMes = (ano, mes0, dia) => new Date(ano, mes0, Math.min(+dia, new Date(ano, mes0 + 1, 0).getDate()));
+const finIsoD = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+// vencimentos de uma conta no mês pela regra de repetição (#468, 25/11/2026): nada vira linha nova no json, o app calcula. Dia 31 em mês curto cai no último dia; anual de 29/02 cai em 28/02 fora do bissexto
+function finVenc(f, ano, mes0) {
+  const r = f.repete || 'mensal', ini = finData(f.inicio), fim = new Date(ano, mes0 + 1, 0);
+  if (ini && ini > fim) return [];
+  if (r === 'anual') return ini && ini.getMonth() === mes0 ? [finDiaMes(ano, mes0, ini.getDate())] : [];
+  if (r === 'semanal' || r === 'dias') {
+    const passo = r === 'semanal' ? 7 : Math.max(1, Math.round(finNum(f.a_cada)) || 1), comeco = new Date(ano, mes0, 1), out = [];
+    if (!ini) return [];
+    let k = Math.max(0, Math.ceil((Date.UTC(ano, mes0, 1) - Date.UTC(ini.getFullYear(), ini.getMonth(), ini.getDate())) / 864e5 / passo));
+    for (let d = new Date(ini.getFullYear(), ini.getMonth(), ini.getDate() + k * passo); d <= fim; d = new Date(ini.getFullYear(), ini.getMonth(), ini.getDate() + ++k * passo)) if (d >= comeco) out.push(d);
+    return out;
+  }
+  const dia = finNum(f.dia) || (ini ? ini.getDate() : 0); if (!dia) return [];
+  const d = finDiaMes(ano, mes0, dia); return ini && d < ini ? [] : [d];
+}
 const finTs = y => { const d = finData(y.data); const h = String(y.quando || '').match(/(\d\d):(\d\d)$/); return (d ? d.getTime() : 0) + (h ? (+h[1] * 60 + +h[2]) * 6e4 : 0); };
 const finFuturo = y => { const m = String(y.data || '').match(/^(\d\d)\/(\d\d)\/(\d{4})/); return !y.quando && !!m && new Date(+m[3], m[2] - 1, +m[1]) > new Date(); };   // data na frente de hoje = combinado, ainda não pago (Sigma 13/11: 'Vô · dia 20' dizia 'Pago em 20/11' no dia 13)
 const finPagoTxt = (y, lado, semValor) => (finFuturo(y) ? (lado === 'receber' ? 'Vai receber em ' : 'Vai pagar em ') : lado === 'receber' ? 'Recebido em ' : 'Pago em ') + (y.quando ? edQuando(y.quando) : String(y.data).slice(0, 5)) + (!semValor && y.valor !== '' && y.valor != null ? ' · ' + reaisFin(y.valor) : '') + (y.forma ? ' · ' + y.forma : '');
@@ -4868,11 +4892,11 @@ function finAplicaLanc(d, l) {   // o LANCAMENTOS.md antigo (o que ela lançou a
 function finMonta(o) {
   const tem = v => v !== undefined && v !== null && v !== '', ok = c => c.tipo && !c.apagado, pessoas = [], fixas = [], anuais = [];
   (o.contas || []).filter(c => ok(c) && /^(pagar|receber|divida)$/.test(c.tipo)).forEach(c => { const t = finNum(c.total) || finNum(c.valor); pessoas.push({ id: c.id, nome: c.nome, pessoa: c.pessoa || '', inicio: c.inicio || '', lado: c.tipo === 'receber' ? 'receber' : 'pagar', total: t, pago: 0, falta: t, dia: finNum(c.dia) || null, lembrar: c.lembrar_em || '', vp: finNum(c.valor) || null, como: c.nota || '', pagamentos: [], origem: 'app', divida: c.tipo === 'divida', parcelas: finNum(c.parcelas) || null }); });
-  (o.contas || []).filter(c => ok(c) && /^(fixa|entrada)$/.test(c.tipo)).forEach(c => fixas.push({ id: c.id, nome: c.nome, tipo: c.tipo, dia: finNum(c.dia) || null, valor: finNum(c.valor), metade: c.metade === true || c.metade === 'sim', nota: c.nota || '', de: c.ultima || '', pagos: [], lembrar: c.lembrar_em || '' }));
+  (o.contas || []).filter(c => ok(c) && /^(fixa|entrada)$/.test(c.tipo)).forEach(c => fixas.push({ id: c.id, nome: c.nome, tipo: c.tipo, dia: finNum(c.dia) || null, valor: finNum(c.valor), metade: c.metade === true || c.metade === 'sim', nota: c.nota || '', de: c.ultima || '', pagos: [], lembrar: c.lembrar_em || '', repete: c.repete || '', a_cada: finNum(c.a_cada) || 0, inicio: c.inicio || '', adiada: c.adiada && typeof c.adiada === 'object' ? c.adiada : {} }));
   (o.contas || []).filter(c => ok(c) && c.tipo === 'anual').forEach(c => anuais.push({ id: c.id, nome: c.nome, mes: c.mes || '', nota: c.nota || '' }));
   const alvo = {}; pessoas.forEach(p => { alvo[p.id] = p; }); fixas.forEach(f => { alvo[f.id] = f; });
   (o.pagos || []).filter(g => !g.apagado && g.feito).forEach(g => {
-    const a = alvo[g.conta]; if (!a) return; const v = tem(g.valor_feito) ? finNum(g.valor_feito) : '', y = { data: String(g.feito).slice(0, 10), quando: g.feito, valor: v, forma: g.forma || '', nota: g.nota || '', appId: g.id, chave: g.mes || finChaveDe(g.feito) };
+    const a = alvo[g.conta]; if (!a) return; const v = tem(g.valor_feito) ? finNum(g.valor_feito) : '', y = { data: String(g.feito).slice(0, 10), quando: g.feito, valor: v, forma: g.forma || '', nota: g.nota || '', appId: g.id, chave: g.mes || finChaveDe(g.feito), venc: g.data || '' };
     if (a.pagos) a.pagos.push(y); else { a.pagamentos.push(y); a.pago += v || 0; a.falta = Math.max(0, a.falta - (v || 0)); }
   });
   const fecha = ls => ls.filter(x => !x.apagado);
@@ -4886,13 +4910,17 @@ function finLista(S, M, hoje) {
   const chave = finChave(M), atual = chave === finChave(hoje), passado = chave < finChave(hoje), its = [];
   const estadoDe = (pago, q) => pago ? 'paga' : q < hoje ? 'atrasada' : q.getTime() === hoje.getTime() ? 'hoje' : 'vencer';
   S.fixas.forEach(f => {
-    if (!f.dia) return; const pago = f.pagos.filter(y => y.chave === chave).slice(-1)[0] || null; if (passado && !pago) return;
-    const q = finDiaMes(M.getFullYear(), M.getMonth(), f.dia), ent = f.tipo === 'entrada';
-    its.push({ id: f.id, ent: f, tipo: 'f', cat: f.tipo, lado: ent ? 'receber' : 'pagar', nome: f.nome, quando: q, valor: finParte(f), pago, estado: estadoDe(pago, q), sub: pago ? finPagoTxt(pago, ent ? 'receber' : 'pagar', true) : (f.metade ? 'tua metade ' + reaisFin(f.valor / 2) + ' · ' : '') + (f.de ? 'última: ' + f.de : '') + (f.nota ? (f.de ? ' · ' : '') + f.nota : ''), hist: f.pagos.length > (pago ? 1 : 0) ? 'Antes: ' + f.pagos.filter(y => y !== pago).slice(-3).map(y => String(y.data).slice(0, 5)).join(', ') : '' });
+    const multi = f.repete === 'semanal' || f.repete === 'dias', ent = f.tipo === 'entrada', ocs = [];
+    finVenc(f, M.getFullYear(), M.getMonth()).forEach(o => { const iso = finIsoD(o), nv = finData(f.adiada[iso]); ocs.push({ o, iso, q: nv && finChave(nv) !== chave ? o : (nv || o), para: nv && finChave(nv) !== chave ? nv : null }); });
+    Object.keys(f.adiada).forEach(iso => { const nv = finData(f.adiada[iso]), o = finData(iso); if (nv && o && finChave(nv) === chave && finChave(o) !== chave) ocs.push({ o, iso, q: nv, para: null, de: o }); });
+    ocs.forEach(({ o, iso, q, para, de }) => {
+    const pago = f.pagos.filter(y => y.venc ? y.venc === iso : !multi && !de && y.chave === finChave(o)).slice(-1)[0] || null; if (passado && !pago && !para) return;
+    its.push({ id: f.id, ent: f, tipo: 'f', cat: f.tipo, lado: ent ? 'receber' : 'pagar', nome: f.nome, quando: q, venc: iso, para, de, valor: finParte(f), pago, estado: para && !pago ? 'adiada' : estadoDe(pago, q), sub: pago ? finPagoTxt(pago, ent ? 'receber' : 'pagar', true) : (f.metade ? 'tua metade ' + reaisFin(f.valor / 2) + ' · ' : '') + (f.de ? 'última: ' + f.de : '') + (f.nota ? (f.de ? ' · ' : '') + f.nota : ''), hist: f.pagos.length > (pago ? 1 : 0) ? 'Antes: ' + f.pagos.filter(y => y !== pago).slice(-3).map(y => String(y.data).slice(0, 5)).join(', ') : '' });
+    });
   });
   S.pessoas.forEach(p => {
     const pagoM = p.pagamentos.filter(y => y.chave === chave).slice(-1)[0] || null, ult = p.pagamentos[p.pagamentos.length - 1], lq = p.lembrar ? finData(p.lembrar) : null; let q, pago = null;
-    if (p.inicio && chave < p.inicio && !pagoM) return;   // dívida que só começa depois (PS5: 1ª parcela em 12/2026)
+    if (p.inicio && chave < String(p.inicio).slice(0, 7) && !pagoM) return;   // dívida que só começa depois (PS5: 1ª parcela em 12/2026)
     if (p.dia) { if (p.falta <= 0 && !pagoM) return; if (passado && !pagoM) return; q = finDiaMes(M.getFullYear(), M.getMonth(), p.dia); pago = pagoM; }
     else if (p.falta > 0) { if (!(lq ? (finChave(lq) === chave || (atual && finChave(lq) < chave)) : atual)) return; q = lq || hoje; }
     else { if (!pagoM) return; q = lq || finData(pagoM.data); pago = pagoM; }
@@ -4901,15 +4929,15 @@ function finLista(S, M, hoje) {
   });
   its.sort((a, b) => a.quando - b.quando || a.nome.localeCompare(b.nome));
   const agora = hoje.getTime() + 864e5, ja = y => finTs(y) < agora, doMes = (ls, f) => ls.reduce((n, p) => n + p.pagamentos.filter(y => y.chave === chave && ja(y)).reduce((s, y) => s + finNum(y.valor), 0), 0) + f.reduce((n, x) => n + x.pagos.filter(y => y.chave === chave && ja(y)).reduce((s, y) => s + finNum(y.valor), 0), 0);   // entrou e saiu só contam o que já aconteceu (pagamento com data futura na planilha não entra)
-  const resumo = { entrou: doMes(S.pessoas.filter(p => p.lado === 'receber'), S.fixas.filter(f => f.tipo === 'entrada')), saiu: doMes(S.pessoas.filter(p => p.lado === 'pagar'), S.fixas.filter(f => f.tipo === 'fixa')), aPagar: its.filter(x => x.lado === 'pagar' && !x.pago).reduce((n, x) => n + x.valor, 0), aReceber: its.filter(x => x.lado === 'receber' && !x.pago).reduce((n, x) => n + x.valor, 0) };
+  const resumo = { entrou: doMes(S.pessoas.filter(p => p.lado === 'receber'), S.fixas.filter(f => f.tipo === 'entrada')), saiu: doMes(S.pessoas.filter(p => p.lado === 'pagar'), S.fixas.filter(f => f.tipo === 'fixa')), aPagar: its.filter(x => x.lado === 'pagar' && !x.pago && x.estado !== 'adiada').reduce((n, x) => n + x.valor, 0), aReceber: its.filter(x => x.lado === 'receber' && !x.pago).reduce((n, x) => n + x.valor, 0) };
   return { its, resumo };
 }
 // pergunta o valor (já preenchido, dá pra mudar) e a forma (opcional) ao marcar pago
-function finPedePago(titulo, sugestao, lado) {
+function finPedePago(titulo, sugestao, lado, forma) {
   return new Promise(ok => {
     const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card ed-card'), x = elD('button', 'pp-x'), inp = elD('input'), sel = elD('select'), bt = elD('button', 'pp-op rec', lado === 'receber' ? 'Marcar recebido' : 'Marcar pago');
     x.type = 'button'; x.innerHTML = icone('close'); inp.type = 'text'; inp.inputMode = 'decimal'; inp.placeholder = 'Valor'; inp.value = sugestao != null && sugestao !== '' ? String(Math.round(sugestao * 100) / 100).replace('.', ',') : ''; bt.type = 'button';
-    FIN_FORMAS.forEach(([v, t]) => { const o = elD('option', '', t); o.value = v; sel.append(o); });
+    FIN_FORMAS.forEach(([v, t]) => { const o = elD('option', '', t); o.value = v; sel.append(o); }); if (forma) sel.value = forma;
     const fecha = v => { ov.remove(); ok(v); }; x.onclick = () => fecha(null); ov.onclick = e => { if (e.target === ov) fecha(null); };
     bt.onclick = () => { const s = inp.value.trim().replace(/\./g, '').replace(',', '.'); fecha({ valor: s === '' || isNaN(+s) ? '' : +s, forma: sel.value }); };
     const l1 = elD('label', 'ed-campo'), l2 = elD('label', 'ed-campo'); l1.append(elD('span', '', 'Valor (R$)'), inp); l2.append(elD('span', '', 'Forma (opcional)'), sel);
@@ -4966,24 +4994,33 @@ function abreFinancas(m) {
     // ---- ações (tudo grava no contas/financas.json com dia e hora)
     const marcaRapido = async it => {   // 1 toque no círculo: paga com o valor da conta; dá pra desfazer
       if (it.pago) { const id = it.pago.appId; if (!(await Ep.apaga(id, true))) return; repinta(); edFaixaDesfazer('Desmarcado', async () => { await Ep.apaga(id, false); repinta(); }); return; }
-      const g = await Ep.lanca({ conta: it.id, mes: it.mes || finChave(mesAt), feito: edAgora(), valor_feito: it.valor, forma: '' }, 'Pagamento marcado pelo app');
+      const g = await Ep.lanca({ conta: it.id, mes: it.mes || finChave(mesAt), ...(it.venc ? { data: it.venc } : {}), feito: edAgora(), valor_feito: it.valor, forma: (Ec.itens.find(y => y.id === it.id) || {}).forma_padrao || '' }, 'Pagamento marcado pelo app');
       if (g) { repinta(); edFaixaDesfazer((it.lado === 'receber' ? 'Recebido: ' : 'Pago: ') + it.nome + ' · ' + reaisFin(it.valor), async () => { await Ep.apaga(g.id || (Ep.itens[Ep.itens.length - 1] || {}).id, true); repinta(); }); }
     };
     const marcarComValor = async it => {
-      const r = await finPedePago(it.nome, it.valor, it.lado); if (!r) return;
-      if (await Ep.lanca({ conta: it.id, mes: it.mes || finChave(mesAt), feito: edAgora(), valor_feito: r.valor, forma: r.forma }, 'Pagamento marcado pelo app')) { repinta(); showNote((it.lado === 'receber' ? 'Recebido: ' : 'Pago: ') + it.nome); }
+      const r = await finPedePago(it.nome, it.valor, it.lado, (Ec.itens.find(y => y.id === it.id) || {}).forma_padrao); if (!r) return;
+      if (await Ep.lanca({ conta: it.id, mes: it.mes || finChave(mesAt), ...(it.venc ? { data: it.venc } : {}), feito: edAgora(), valor_feito: r.valor, forma: r.forma }, 'Pagamento marcado pelo app')) { repinta(); showNote((it.lado === 'receber' ? 'Recebido: ' : 'Pago: ') + it.nome); }
     };
     const pagaPessoa = async p => {
       const r = await finPedePago(p.nome, p.falta > 0 ? Math.min(p.vp || (p.pagamentos[p.pagamentos.length - 1] || {}).valor || p.falta, p.falta) : '', p.lado); if (!r) return;
       if (await Ep.lanca({ conta: p.id, mes: finChave(new Date()), feito: edAgora(), valor_feito: r.valor, forma: r.forma }, 'Pagamento lançado pelo app')) { repinta(); showNote('Lançado: ' + p.nome); }
     };
-    const campos = () => (Ec.base.campos && Ec.base.campos.contas) || FIN_CAMPOS.contas;
+    const FIN_ABAS = ['Básico', 'Quando', 'Pagamento'], FIN_PES_T = ['pagar', 'receber', 'divida'], fixaT = v => v.tipo === 'fixa' || v.tipo === 'entrada', regraData = v => fixaT(v) && ['semanal', 'anual', 'dias'].includes(v.repete);
+    const FIN_LAY = { nome: { aba: 'Básico' }, tipo: { aba: 'Básico' }, categoria: { aba: 'Básico', meia: true, se: v => v.tipo !== 'receber' && v.tipo !== 'entrada' }, valor: { aba: 'Básico', meia: true }, pessoa: { aba: 'Básico', se: v => FIN_PES_T.includes(v.tipo) }, nota: { aba: 'Básico' },
+      repete: { aba: 'Quando', meia: true, se: fixaT }, a_cada: { aba: 'Quando', meia: true, se: v => fixaT(v) && v.repete === 'dias', precisa: true }, inicio: { aba: 'Quando', meia: true, se: regraData, precisa: true }, dia: { aba: 'Quando', meia: true, se: v => !regraData(v) }, lembrar_em: { aba: 'Quando', meia: true },
+      forma_padrao: { aba: 'Pagamento', meia: true }, metade: { aba: 'Pagamento', meia: true, se: v => v.tipo === 'fixa' }, total: { aba: 'Pagamento', meia: true, se: v => FIN_PES_T.includes(v.tipo) }, parcelas: { aba: 'Pagamento', meia: true, se: v => FIN_PES_T.includes(v.tipo) } };
+    const campos = () => ((Ec.base.campos && Ec.base.campos.contas) || FIN_CAMPOS.contas).map(f => ({ ...f, ...(FIN_LAY[f.nome] || { aba: 'Básico' }) })).sort((x, y) => FIN_ABAS.indexOf(x.aba) - FIN_ABAS.indexOf(y.aba));
+    const formConta = (titulo, v, aoSalvar, aoApagar) => edFormulario({ titulo, campos: campos(), v, aoSalvar, aoApagar, rodape: true });
+    const copiaDe = ent => { const s = Ec.itens.find(y => y.id === ent.id) || {}, v = {}; campos().forEach(f => { v[f.nome] = s[f.nome] != null ? (f.tipo === 'data' ? finIso(s[f.nome]) : s[f.nome]) : ''; }); return v; };
+    const duplica = ent => { const v = copiaDe(ent); v.nome = v.nome + ' (cópia)'; formConta('Duplicar conta', v, async nv => { if (await Ec.lanca(nv, 'Conta duplicada pelo app')) { repinta(); showNote('Guardado: ' + nv.nome); } }); };
+    const adia = (ent, it) => { const o = finData(it.venc), sug = finDiaMes(o.getFullYear(), o.getMonth() + 1, o.getDate()); edFormulario({ titulo: 'Passar pra outro mês', campos: [{ nome: 'novo', rotulo: 'Novo vencimento', tipo: 'data', obrigatorio: true }], v: { novo: finIsoD(sug) }, aoSalvar: async nv => { const s = Ec.itens.find(y => y.id === ent.id) || {}, antes = { ...(s.adiada || {}) }, novo = finIso(nv.novo); if (!novo) return; await Ec.edita(ent.id, { adiada: { ...antes, [it.venc]: novo } }); repinta(); edFaixaDesfazer('Adiada pra ' + edDataBr(novo).slice(0, 5), async () => { await Ec.edita(ent.id, { adiada: antes }); repinta(); }); } }); };
+    const desfazAdia = async (ent, it) => { const s = Ec.itens.find(y => y.id === ent.id) || {}, antes = { ...(s.adiada || {}) }, agora = { ...antes }; delete agora[it.venc]; await Ec.edita(ent.id, { adiada: agora }); repinta(); edFaixaDesfazer('Voltou pro dia ' + edDataBr(it.venc).slice(0, 5), async () => { await Ec.edita(ent.id, { adiada: antes }); repinta(); }); };
     const apagaConta = async ent => { await Ec.apaga(ent.id, true); repinta(); edFaixaDesfazer('Conta apagada', async () => { await Ec.apaga(ent.id, false); repinta(); }); };
-    const editaConta = ent => { const s = Ec.itens.find(y => y.id === ent.id) || {}; const v = {}; campos().forEach(f => { v[f.nome] = s[f.nome] != null ? (f.tipo === 'data' ? finIso(s[f.nome]) : s[f.nome]) : ''; }); if (ent.mes != null && s.tipo === 'anual') v.mes = s.mes; edFormulario({ titulo: 'Editar', campos: s.tipo === 'anual' ? [{ nome: 'nome', rotulo: 'Nome', tipo: 'texto', obrigatorio: true }, { nome: 'mes', rotulo: 'Mês que vence', tipo: 'texto' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto_longo' }] : campos(), v, aoSalvar: async nv => { await Ec.edita(ent.id, nv); repinta(); }, aoApagar: () => apagaConta(ent) }); };
+    const editaConta = ent => { const s = Ec.itens.find(y => y.id === ent.id) || {}; const v = copiaDe(ent); if (ent.mes != null && s.tipo === 'anual') v.mes = s.mes; edFormulario({ titulo: 'Editar', rodape: s.tipo !== 'anual', campos: s.tipo === 'anual' ? [{ nome: 'nome', rotulo: 'Nome', tipo: 'texto', obrigatorio: true }, { nome: 'mes', rotulo: 'Mês que vence', tipo: 'texto' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto_longo' }] : campos(), v, aoSalvar: async nv => { await Ec.edita(ent.id, nv); repinta(); }, aoApagar: () => apagaConta(ent) }); };
     const NOVO = [['fixa', 'Conta do mês', 'Luz, internet, aluguel: vence todo mês'], ['pagar', 'Devo a alguém', 'Empréstimo ou compra que eu pago aos poucos'], ['receber', 'Alguém me deve', 'Dinheiro que vão me devolver'], ['entrada', 'Entrada do mês', 'Salário ou outro dinheiro que entra todo mês']];
     const novaConta = () => {
       const cp = elD('div', 'fu-novo');
-      NOVO.forEach(([tipo, t, s]) => { const b = elD('button', 'fu-op'); b.type = 'button'; b.append(elD('b', '', t), elD('small', '', s)); b.onclick = () => { fecha(); edFormulario({ titulo: t, campos: campos(), v: { tipo }, aoSalvar: async v => { if (await Ec.lanca(v, 'Conta nova pelo app')) { repinta(); showNote('Guardado: ' + v.nome); } } }); }; cp.append(b); });
+      NOVO.forEach(([tipo, t, s]) => { const b = elD('button', 'fu-op'); b.type = 'button'; b.append(elD('b', '', t), elD('small', '', s)); b.onclick = () => { fecha(); formConta(t, { tipo }, async v => { if (await Ec.lanca(v, 'Conta nova pelo app')) { repinta(); showNote('Guardado: ' + v.nome); } }); }; cp.append(b); });
       const fecha = pop('O que você quer lançar?', cp);
     };
     const editaPagto = y => edFormulario({ titulo: 'Editar pagamento', campos: (Ep.base.campos && Ep.base.campos.pagamentos) || FIN_CAMPOS.pagamentos, v: { valor_feito: y.valor, forma: y.forma, feito: y.quando, nota: y.nota }, aoSalvar: async nv => { await Ep.edita(y.appId, nv); repinta(); }, aoApagar: async () => { await Ep.apaga(y.appId, true); repinta(); edFaixaDesfazer('Pagamento apagado', async () => { await Ep.apaga(y.appId, false); repinta(); }); } });
@@ -4991,13 +5028,14 @@ function abreFinancas(m) {
       const eP = !!ent.pagamentos, cp = elD('div', 'fin-det'), lado = eP ? ent.lado : (ent.tipo === 'entrada' ? 'receber' : 'pagar'), hs = (eP ? ent.pagamentos : ent.pagos || []).slice().reverse();
       if (eP) { const pct = ent.total ? Math.min(100, Math.round(ent.pago / ent.total * 100)) : 0, r = elD('div', 'fu-detres'); r.append(elD('b', '', ent.falta > 0 ? 'Falta ' + reaisFin(ent.falta) : 'Quitado'), elD('small', '', (lado === 'pagar' ? 'Pago ' : 'Recebido ') + reaisFin(ent.pago) + ' de ' + reaisFin(ent.total))); const bar = elD('div', 'fu-barra'), i = elD('i'); i.style.width = pct + '%'; bar.append(i); r.append(bar); cp.append(r); }
       else cp.append(elD('p', 'p-nota', (ent.dia ? 'Vence todo dia ' + ent.dia : 'Sem dia de vencimento') + ' · ' + reaisFin(finParte(ent)) + (ent.metade ? ' (sua metade de ' + reaisFin(ent.valor) + ')' : '')));
-      const obs = eP ? ent.como : ent.nota; if (obs) cp.append(elD('p', 'fu-obs', obs));
+      const obs = eP ? ent.como : ent.nota; if (obs) cp.append(elD('p', 'fu-obs', obs)); if (it && (it.para || it.de)) cp.append(elD('p', 'fin-lembra', it.para ? 'Adiada pra ' + dataBr(it.para).slice(0, 5) : 'Era dia ' + dataBr(it.de).slice(0, 5) + ', passou pra ' + dataBr(it.quando).slice(0, 5)));
       if (ent.lembrar && finData(ent.lembrar) && (!eP || ent.falta > 0)) cp.append(elD('p', 'fin-lembra', 'Lembrete no dia ' + edDataBr(finIso(ent.lembrar)).slice(0, 5)));
       const ul = elD('div', 'fin-hist'); hs.forEach(y => { const l = elD('div'); l.append(elD('span', '', y.quando ? edQuando(y.quando) : y.data), elD('b', '', y.valor !== '' ? reaisFin(y.valor) : '—'), elD('small', '', [y.forma, y.nota].filter(Boolean).join(' · '))); if (y.appId) l.append(edMini('note', 'Editar pagamento', () => { fecha(); editaPagto(y); })); ul.append(l); });
       if (!hs.length) ul.append(elD('p', 'p-nota', 'Nenhum pagamento ainda.')); cp.append(ul);
       const bts = elD('div', 'ed-acoes'), mk = (t, cl, fn) => { const b = elD('button', cl, t); b.type = 'button'; b.onclick = () => { fecha(); fn(); }; bts.append(b); };
       if (eP) mk(lado === 'pagar' ? 'Registrar pagamento' : 'Registrar recebimento', 'pp-op rec', () => pagaPessoa(ent)); else if (it) mk(it.pago ? 'Desmarcar' : (lado === 'receber' ? 'Marcar recebido' : 'Marcar pago'), 'pp-op rec', () => it.pago ? marcaRapido(it) : marcarComValor(it));
-      mk('Editar', 'ed-link', () => editaConta(ent)); mk('Apagar', 'ed-link', () => apagaConta(ent)); cp.append(bts);
+      if (it && it.tipo === 'f' && it.venc) { if (it.estado === 'adiada' || it.de) mk('Desfazer adiamento', 'ed-link', () => desfazAdia(ent, it)); else if (!it.pago) mk('Passar pra outro mês', 'ed-link', () => adia(ent, it)); }
+      mk('Editar', 'ed-link', () => editaConta(ent)); mk('Duplicar', 'ed-link', () => duplica(ent)); mk('Apagar', 'ed-link', () => apagaConta(ent)); cp.append(bts);
       const fecha = pop(ent.nome, cp);
     };
     // ---- peças
@@ -5011,10 +5049,10 @@ function abreFinancas(m) {
       const l = elD('div', 'fu-lin est-' + it.estado + ' lado-' + it.lado), ck = elD('button', 'fu-ck' + (it.pago ? ' on' : '')), meio = elD('div', 'fu-meio'), dd = Math.round((it.quando - hoje) / 864e5);
       ck.type = 'button'; ck.setAttribute('aria-label', it.pago ? 'Desmarcar' : it.lado === 'receber' ? 'Marcar recebido' : 'Marcar pago'); ck.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg>'; ck.onclick = e => { e.stopPropagation(); marcaRapido(it); };
       const semReg = it.estado === 'atrasada' && it.tipo === 'f' && !(it.ent.pagos || []).length;
-      const quando = it.pago ? finPagoTxt(it.pago, it.lado) : it.estado === 'atrasada' ? (it.lado === 'receber' ? 'era pra ' : 'venceu ') + 'dia ' + it.quando.getDate() + (semReg ? ' · já pagou? toca no círculo' : '') : it.estado === 'hoje' ? 'vence hoje' : dd === 1 ? 'vence amanhã' : 'dia ' + it.quando.getDate() + ' · ' + SEM[it.quando.getDay()];
+      const quando = it.pago ? finPagoTxt(it.pago, it.lado) : it.estado === 'adiada' ? 'adiada pra ' + dataBr(it.para).slice(0, 5) : it.estado === 'atrasada' ? (it.lado === 'receber' ? 'era pra ' : 'venceu ') + 'dia ' + it.quando.getDate() + (semReg ? ' · já pagou? toca no círculo' : '') : it.estado === 'hoje' ? 'vence hoje' : dd === 1 ? 'vence amanhã' : 'dia ' + it.quando.getDate() + ' · ' + SEM[it.quando.getDay()];
       const ent = it.ent, parc = ent.parcelas && ent.vp ? ' · ' + Math.min(ent.parcelas, Math.round(ent.pago / ent.vp) + (it.pago ? 0 : 1)) + ' de ' + ent.parcelas : '';
       meio.append(elD('strong', '', it.nome), elD('small', '', quando + (it.cat === 'fixa' && ent.metade ? ' · sua metade' : '') + parc + (!it.pago && it.tipo === 'p' && ent.falta > it.valor ? ' · falta ' + reaisFin(ent.falta) + ' no total' : '')));
-      l.append(ck, meio, elD('div', 'fu-val', (it.lado === 'receber' ? '+ ' : '') + reaisFin(it.pago && it.pago.valor !== '' ? it.pago.valor : it.valor)));
+      l.append(ck, icone2(icoDe(it.ent, it.tipo === 'p')), meio, elD('div', 'fu-val', (it.lado === 'receber' ? '+ ' : '') + reaisFin(it.pago && it.pago.valor !== '' ? it.pago.valor : it.valor)));
       l.onclick = () => detalhe(ent, it); return l;
     };
     // ícone do tipo: pela categoria quando a conta tiver (fase 2b), pelo nome de reserva (Sigma 25/11 10:23)
@@ -5023,12 +5061,12 @@ function abreFinancas(m) {
     const icoDe = (ent, pessoa) => { const cat = (Ec.itens.find(y => y.id === ent.id) || {}).categoria || '', n = (cat + ' ' + ent.nome); return FN_ICO.find(x => cat && x[0] === cat.toLowerCase()) || FN_ICO.find(x => x[1].test(n)) || (pessoa ? FN_PES : FN_MOE); };
     const icone2 = ic => { const s = elD('span', 'fn-ico'); s.style.setProperty('--ic', ic[2]); s.innerHTML = '<svg viewBox="0 0 24 24">' + ic[3] + '</svg>'; return s; };
     const dataBr = d => pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear();
-    const selo = it => { const dd = Math.round((it.quando - hoje) / 864e5); if (it.pago) return ['pago', it.lado === 'receber' ? 'Recebido' : 'Pago']; if (it.estado === 'atrasada' || it.estado === 'semreg') return ['atrasada', 'Atrasada']; if (dd <= 3) return ['perto', dd <= 0 ? 'Vence hoje' : dd === 1 ? 'Vence amanhã' : 'Vence em ' + dd + ' dias']; return ['vencer', 'A vencer']; };
+    const selo = it => { const dd = Math.round((it.quando - hoje) / 864e5); if (it.pago) return ['pago', it.lado === 'receber' ? 'Recebido' : 'Pago']; if (it.estado === 'adiada') return ['vencer', 'Adiada pra ' + dataBr(it.para).slice(0, 5)]; if (it.estado === 'atrasada' || it.estado === 'semreg') return ['atrasada', 'Atrasada']; if (dd <= 3) return ['perto', dd <= 0 ? 'Vence hoje' : dd === 1 ? 'Vence amanhã' : 'Vence em ' + dd + ' dias']; return ['vencer', 'A vencer']; };
     const cartao = it => {
       const l = elD('div', 'fn-cartao'), ck = elD('button', 'fu-ck' + (it.pago ? ' on' : '')), meio = elD('div', 'fn-cmeio'), dir = elD('div', 'fn-cdir'), [sc, st] = selo(it), ent = it.ent;
       ck.type = 'button'; ck.setAttribute('aria-label', it.pago ? 'Desmarcar' : it.lado === 'receber' ? 'Marcar recebido' : 'Marcar pago'); ck.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg>'; ck.onclick = e => { e.stopPropagation(); marcaRapido(it); };
       const parc = ent.parcelas && ent.vp ? ' · ' + Math.min(ent.parcelas, Math.round(ent.pago / ent.vp) + (it.pago ? 0 : 1)) + ' de ' + ent.parcelas : '';
-      meio.append(elD('strong', '', it.nome), elD('small', '', 'Venc: ' + dataBr(it.quando) + parc + (it.cat === 'fixa' && ent.metade ? ' · sua metade' : '')), ...(sc === 'atrasada' && it.lado !== 'receber' ? [elD('small', 'fn-dica', 'Já pagou? Toca no círculo')] : []));
+      meio.append(elD('strong', '', it.nome), elD('small', '', (it.de ? 'Era ' + dataBr(it.de).slice(0, 5) + ' · ' : '') + 'Venc: ' + dataBr(it.quando) + parc + (it.cat === 'fixa' && ent.metade ? ' · sua metade' : '')), ...(sc === 'atrasada' && it.lado !== 'receber' ? [elD('small', 'fn-dica', 'Já pagou? Toca no círculo')] : []));
       dir.append(elD('b', '', reaisFin(it.pago && it.pago.valor !== '' ? it.pago.valor : it.valor)), elD('span', 'fn-selo s-' + sc, st));
       l.append(ck, icone2(icoDe(ent, it.tipo === 'p')), meio, dir); l.onclick = () => detalhe(ent, it); return l;
     };
@@ -5046,9 +5084,9 @@ function abreFinancas(m) {
       return b;
     };
     const doMes = M => {
-      const { its, resumo } = finLista(S, M, hoje), pagar = its.filter(x => x.lado === 'pagar'), aPagar = pagar.filter(x => !x.pago), pagas = its.filter(x => x.pago), aRec = its.filter(x => x.lado === 'receber' && !x.pago), ordem = { atrasada: 0, hoje: 1, vencer: 2, semreg: 3 };
+      const { its, resumo } = finLista(S, M, hoje), pagar = its.filter(x => x.lado === 'pagar'), aPagar = pagar.filter(x => !x.pago && x.estado !== 'adiada'), pagas = its.filter(x => x.pago), aRec = its.filter(x => x.lado === 'receber' && !x.pago), ordem = { atrasada: 0, hoje: 1, vencer: 2, semreg: 3 };
       its.forEach(x => { x.mes = finChave(M); }); aPagar.sort((a, b) => ordem[a.estado] - ordem[b.estado] || a.quando - b.quando);
-      const totMes = pagar.reduce((n, x) => n + finNum(x.pago && x.pago.valor !== '' ? x.pago.valor : x.valor), 0), jaPago = pagar.filter(x => x.pago).reduce((n, x) => n + finNum(x.pago.valor), 0);
+      const totMes = pagar.filter(x => x.pago || x.estado !== 'adiada').reduce((n, x) => n + finNum(x.pago && x.pago.valor !== '' ? x.pago.valor : x.valor), 0), jaPago = pagar.filter(x => x.pago).reduce((n, x) => n + finNum(x.pago.valor), 0);
       return { its, resumo, pagar, aPagar, pagas, aRec, totMes, jaPago, pct: totMes ? Math.round(jaPago / totMes * 100) : 100 };
     };
     const entraDia = () => { const ents = S.fixas.filter(f => f.tipo === 'entrada' && f.dia); if (!ents.length) return null; const prox = ents.map(f => { let d = finDiaMes(hoje.getFullYear(), hoje.getMonth(), f.dia); if (d <= hoje) d = finDiaMes(hoje.getFullYear(), hoje.getMonth() + 1, f.dia); return [d, f]; }).sort((a, b) => a[0] - b[0])[0]; return { ents, renda: ents.reduce((n, f) => n + f.valor, 0), quando: prox[0], nome: prox[1].nome, dias: Math.max(1, Math.round((prox[0] - hoje) / 864e5)) }; };
@@ -5085,7 +5123,7 @@ function abreFinancas(m) {
       let tx = null; navM.addEventListener('touchstart', e => { tx = e.touches[0].clientX; e.stopPropagation(); }, { passive: true }); navM.addEventListener('touchend', e => { if (tx == null) return; const dx = e.changedTouches[0].clientX - tx; tx = null; if (Math.abs(dx) > 40) mv(dx < 0 ? 1 : -1); }, { passive: true });
       navM.append(seta(-1, '‹', 'Mês anterior'), tit, seta(1, '›', 'Próximo mês')); pag.contas.append(navM);
       const despesas = A.pagar.slice().sort((x, y) => x.quando - y.quando || x.nome.localeCompare(y.nome)), anuais = S.anuais.filter(x => (x.mes || '').toLowerCase().startsWith(MES[mesAt.getMonth()].slice(0, 3)));
-      const FILTROS = [['todas', 'Todas', x => true], ['pagas', 'Pagas', x => !!x.pago], ['pendentes', 'Pendentes', x => !x.pago], ['vencer', 'A vencer', x => !x.pago && (x.estado === 'vencer' || x.estado === 'hoje')], ['atrasadas', 'Atrasadas', x => !x.pago && (x.estado === 'atrasada' || x.estado === 'semreg')], ['recorrentes', 'Recorrentes', x => x.tipo === 'f']];
+      const FILTROS = [['todas', 'Todas', x => true], ['pagas', 'Pagas', x => !!x.pago], ['pendentes', 'Pendentes', x => !x.pago && x.estado !== 'adiada'], ['vencer', 'A vencer', x => !x.pago && (x.estado === 'vencer' || x.estado === 'hoje')], ['atrasadas', 'Atrasadas', x => !x.pago && (x.estado === 'atrasada' || x.estado === 'semreg')], ['recorrentes', 'Recorrentes', x => x.tipo === 'f']];
       const abas = elD('div', 'fn-filtros'); abas.setAttribute('role', 'tablist');
       FILTROS.forEach(([k, t]) => { const b = elD('button', 'fn-filtro' + (filtro === k ? ' on' : ''), t); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', filtro === k ? 'true' : 'false'); b.onclick = () => { filtro = k; pinta(); }; abas.append(b); });
       pag.contas.append(abas);
