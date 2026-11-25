@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.573">
+<meta name="app-versao" content="2026-11-25.574">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.573"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.574"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -4000,10 +4000,11 @@ function abreMusica(m) {
         const vitrine = () => {
           const vit = vivos('setup').filter(x => x.png); if (!vit.length) { miolo.append(elD('div', 'tm-vazio', 'Nenhum instrumento com foto ainda.')); return; }
           let sel = vit.findIndex(x => x.id === store.get('mus-vit')); if (sel < 0) sel = Math.max(0, vit.findIndex(x => inst.includes(x)));
-          const PEDS = [['vitrine', 'Vitrine'], ['palco', 'Palco'], ['vinil', 'Vinil'], ['case', 'Case']], ped = PEDS.some(p => p[0] === d.pedestal) ? d.pedestal : 'vitrine', VEL = [['lenta', 'Devagar', .05], ['media', 'Médio', .1], ['rapida', 'Rápido', .18]], G = Object.assign({ vel: 'lenta', pausado: false }, d.giro || {});
+          const PEDS = [['vitrine', 'Vitrine'], ['palco', 'Palco'], ['vinil', 'Vinil'], ['case', 'Case']], ped = PEDS.some(p => p[0] === d.pedestal) ? d.pedestal : 'vitrine', VEL = [['lenta', 'Devagar', .05, 40], ['media', 'Médio', .1, 75], ['rapida', 'Rápido', .18, 120]], G = Object.assign({ vel: 'lenta', pausado: false }, d.giro || {});
           const tem3d = window.CSS && CSS.supports && (CSS.supports('transform-style', 'preserve-3d') || CSS.supports('-webkit-transform-style', 'preserve-3d')), modo3d = tem3d && !reduz && store.get('mus-vit-2d') !== '1';
           const palco = elD('div', 'tv-palco ped-' + ped + (modo3d ? ' tv-3d' : ' tv-2d')), luz = elD('i', 'tv-luz'), base = elD('i', 'tv-ped'), cena = elD('div', 'tv-cena'), anel = elD('div', 'tv-anel'), cartao = elD('div', 'tv-cartao ped-' + ped);
-          const itens = vit.map((x, i) => { const it = elD('button', 'tv-item'), im = elD('img'); it.type = 'button'; it.setAttribute('aria-label', x.nome); im.alt = ''; im.decoding = 'async'; im.draggable = false; fotoUrl(x.png).then(u => { im.src = u; }).catch(() => {}); it.append(im); it.onclick = () => { if (arrastou) return; vai(i); }; anel.append(it); return it; });
+          const verso = (im, vs) => { try { const cv = document.createElement('canvas'), w = cv.width = im.naturalWidth, h = cv.height = im.naturalHeight, g = cv.getContext('2d'); g.drawImage(im, 0, 0); g.globalCompositeOperation = 'source-atop'; g.fillStyle = 'rgba(10,10,14,.78)'; g.fillRect(0, 0, w, h); cv.toBlob(b => { if (b) vs.src = URL.createObjectURL(b); }); } catch (e) { vs.src = im.src; } };   // #449 "gire o vetor" (May 25/11): as costas são o mesmo desenho escurecido; girado ele já sai espelhado
+          const itens = vit.map((x, i) => { const it = elD('button', 'tv-item'), im = elD('img'), vs = elD('img', 'tv-vs'); it.type = 'button'; it.setAttribute('aria-label', x.nome); im.alt = vs.alt = ''; im.decoding = vs.decoding = 'async'; im.draggable = vs.draggable = false; vs.hidden = true; it.vs = vs; im.onload = () => verso(im, vs); fotoUrl(x.png).then(u => { im.src = u; }).catch(() => {}); it.append(im, vs); it.onclick = () => { if (arrastou) return; vai(i); }; anel.append(it); return it; });
           const ant = elD('button', 'tv-seta tv-ant', '‹'), prx = elD('button', 'tv-seta tv-prx', '›'); ant.type = prx.type = 'button'; ant.setAttribute('aria-label', 'Anterior'); prx.setAttribute('aria-label', 'Próximo'); ant.onclick = () => vai(sel - 1); prx.onclick = () => vai(sel + 1);
           cena.append(anel); palco.append(luz, base, cena, ant, prx);
           const ctrl = elD('div', 'tv-ctrl'), bP = elD('button', 'tv-ct tv-pausa'), bV = elD('button', 'tv-ct tv-vel'), b2 = elD('button', 'tv-ct tv-2dbt'), bPed = elD('button', 'tv-ct tv-pedbt'); bP.type = bV.type = b2.type = bPed.type = 'button';
@@ -4016,7 +4017,7 @@ function abreMusica(m) {
           bV.onclick = async () => { const antes = G.vel, k = (VEL.findIndex(v => v[0] === G.vel) + 1) % VEL.length; G.vel = VEL[k][0]; pintaCtrl(); if (!(await gravaTopo(o => { o.giro = Object.assign({}, G); }, 'Música: giro da vitrine ' + VEL[k][1].toLowerCase() + ' pelo app', o => { G.vel = antes; o.giro = Object.assign({}, G); }))) pintaCtrl(); };
           bPed.onclick = async () => { const antes = d.pedestal, k = PEDS[(PEDS.findIndex(p => p[0] === ped) + 1) % PEDS.length][0]; d.pedestal = k; mostra('vitrine'); if (!(await gravaJson(m.arq, dd => { dd.pedestal = k; }, 'Música: pedestal da vitrine virou ' + k + ' pelo app', null))) { d.pedestal = antes; mostra('vitrine'); showNote('Não guardou: voltou como estava. Confere a internet.', true); } };
           pintaCtrl(); miolo.append(palco, ctrl, cartao);
-          const N = vit.length, passo = 360 / N, R = Math.max(140, Math.min(230, 26 * N)), mod = i => ((i % N) + N) % N, lift = vit.map((x, i) => i === sel ? 70 : 18);
+          const N = vit.length, passo = 360 / N, R = Math.max(140, Math.min(230, 26 * N)), mod = i => ((i % N) + N) % N, lift = vit.map((x, i) => i === sel ? 70 : 18), ang = vit.map(() => 0);
           let p = sel, alvo = sel, pausaAte = 0, ultimo = performance.now(), t0 = ultimo, quadro = 0, arrastou = false, mostrado = -1, dedo = false;
           const solta2 = () => { if (dedo) { dedo = false; pausaAte = performance.now() + 6000; } };
           cartao.addEventListener('pointerdown', () => { dedo = true; pausaAte = performance.now() + 6000; }); ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => cartao.addEventListener(ev, solta2));
@@ -4027,9 +4028,9 @@ function abreMusica(m) {
             velho.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(115%)' }], { duration: 240, easing: 'cubic-bezier(.5,0,.75,0)', fill: 'forwards' }).onfinish = () => velho.remove();
             novo.animate([{ transform: 'translateY(115%)' }, { transform: 'translateY(0)' }], { duration: 300, delay: 160, easing: 'cubic-bezier(.2,.9,.25,1)', fill: 'backwards' }); };
           const pos = agora => { const fr = mod(Math.round(p));
-            itens.forEach((it, i) => { let rel = i - p; rel -= Math.round(rel / N) * N; const frente = i === fr, gira = reduz ? 0 : Math.sin((agora - t0) / 1100 + i * 1.3) * (frente ? 12 : 20);
+            itens.forEach((it, i) => { let rel = i - p; rel -= Math.round(rel / N) * N; const frente = i === fr, gira = ang[i], atras = Math.cos(gira * Math.PI / 180) < 0 && !!it.vs.src; if (it.vs.hidden === atras) { it.vs.hidden = !atras; it.firstChild.hidden = atras; }
               if (modo3d) it.style.transform = 'rotateY(' + (i * passo).toFixed(2) + 'deg) translateZ(' + R + 'px) rotateY(' + (-(i * passo) + p * passo + gira).toFixed(2) + 'deg) translateY(' + lift[i].toFixed(1) + 'px)';
-              else { const a = Math.abs(rel), off = a > 2.4 ? Math.sign(rel) * 3.4 : rel; it.style.transform = 'translateX(' + (off * 118).toFixed(1) + 'px) translateY(' + lift[i].toFixed(1) + 'px) scale(' + (1 - Math.min(1, a) * .4).toFixed(3) + ')'; it.style.zIndex = String(10 - Math.round(a)); }
+              else { const a = Math.abs(rel), off = a > 2.4 ? Math.sign(rel) * 3.4 : rel, sc = 1 - Math.min(1, a) * .4; it.style.transform = 'translateX(' + (off * 118).toFixed(1) + 'px) translateY(' + lift[i].toFixed(1) + 'px) scale(' + (sc * Math.cos(gira * Math.PI / 180)).toFixed(3) + ',' + sc.toFixed(3) + ')'; it.style.zIndex = String(10 - Math.round(a)); }
               it.classList.toggle('frente', frente); });
             if (modo3d) anel.style.transform = 'translateZ(' + (-R) + 'px) rotateY(' + (-p * passo).toFixed(2) + 'deg)';
             if (fr !== sel) { sel = fr; pintaCartao(); } };
@@ -4037,6 +4038,7 @@ function abreMusica(m) {
             const dt = Math.min(.1, (agora - ultimo) / 1000); ultimo = agora; if (dedo || agora < seguraAte || document.querySelector('.fixa-pop')) pausaAte = Math.max(pausaAte, agora + 6000);
             if (x0 == null) { if (!G.pausado && agora > pausaAte && Math.abs(alvo - p) < .02) { p += (VEL.find(v => v[0] === G.vel) || VEL[0])[2] * dt; alvo = p; } else { p += (alvo - p) * .14; if (Math.abs(alvo - p) < .002) p = alvo; } }
             const fr = mod(Math.round(p)); lift.forEach((l, i) => { lift[i] = l + ((i === fr ? 0 : 18) - l) * .1; });
+            const spd = (VEL.find(v => v[0] === G.vel) || VEL[0])[3]; ang.forEach((g, i) => { if (i === fr && !G.pausado && !dedo && x0 == null) { ang[i] = (g + spd * dt) % 360; return; } const s = Math.sin((agora - t0) / 1100 + i * 1.3) * (i === fr ? 12 : 20), alvoG = s + 360 * Math.round((g - s) / 360); ang[i] = g + (alvoG - g) * .08; });   // o da frente gira inteiro; pausado ou com o dedo, volta pra frente balançando
             pos(agora); quadro = requestAnimationFrame(anda); };
           const volta = () => { ultimo = performance.now(); if (!quadro && palco.isConnected) quadro = requestAnimationFrame(anda); };
           const vai = i => { let dif = mod(i) - mod(Math.round(p)); if (dif > N / 2) dif -= N; if (dif < -N / 2) dif += N; alvo = Math.round(p) + dif; pausaAte = performance.now() + 6000; if (reduz) { p = alvo; lift.forEach((l, k) => { lift[k] = k === mod(alvo) ? 0 : 18; }); pos(performance.now()); } };
