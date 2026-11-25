@@ -4182,4 +4182,5 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .t-musica .tm-fav { color: #BDB5AF; } .t-musica .tm-fav.on { color: #FFD60A; } .t-musica .tm-fav.on svg { fill: currentColor; }
 .t-musica .tm-favs-dica { display: block; color: var(--tm-mudo); font-size: 13px; margin-top: 2px; }
 .tm-busca-card .tm-cat-fav svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; } .tm-busca-card .tm-cat-fav.on svg { fill: currentColor; }
+.tm-busca-card .tm-cat.tm-cat-fav { margin-right: 6px; } .tm-busca-card .tm-cat.tm-cat-fav.on { background: rgba(255,214,10,.12); border-color: #FFD60A; box-shadow: inset 0 0 0 1px #FFD60A; color: #F5F0EC; } .tm-busca-card .tm-cat.tm-cat-fav.on svg { color: #FFD60A; } .tm-busca-card .tm-cat.tm-cat-fav.on i { color: #FFD60A; }
 .t-musica .tm-faixa-topo > div:last-child { flex: 1; min-width: 0; }
