@@ -1,4 +1,4 @@
-// v643 #449 6c chips de tipo da pesquisa c/ largura propria
+// v644 #480 Dropbox no menu no lugar da Carteirinha (envio em partes, PKCE)
 // v637 #449 5c series: episodios e etapas c/ ordem, proxima no cartao, ideias da serie, series na aba Ideias
 // v636 #449 5b audio na ideia: gravar ou anexar, ouvir e apagar
 // v632 #449 4b categorias do Setup com filtro, onde fica e estado

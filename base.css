@@ -4147,3 +4147,31 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .tm-busca-card .tm-cat i { font-style: normal; font-size: 11px; font-weight: 800; color: #BDB5AF; }
 .tm-busca-card .tm-cat.on { background: #F0283A; border-color: #F0283A; color: #fff; } .tm-busca-card .tm-cat.on i { color: #fff; }
 .tm-busca-card .tm-cats .tm-cat { width: auto; min-width: 0; max-width: none; height: 44px; min-height: 44px; aspect-ratio: auto; padding: 0 14px; margin: 0; flex: 0 0 auto; }
+.dbx { display: grid; gap: 14px; padding: 16px 16px calc(24px + env(safe-area-inset-bottom)); }
+.dbx-aviso { display: grid; gap: 6px; padding: 16px; border-radius: 16px; border: 1px solid var(--line); background: var(--paper); }
+.dbx-aviso b { font-size: 16px; } .dbx-aviso p { margin: 0; opacity: .8; line-height: 1.4; }
+.dbx-aviso.erro { border-color: #E5484D; }
+.dbx-bt { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 48px; padding: 10px 16px; border-radius: 14px; border: 1px solid var(--line); background: var(--paper); color: var(--fg); font: inherit; font-weight: 700; cursor: pointer; box-sizing: border-box; }
+.dbx-bt.rec { background: var(--c, #0061FF); border-color: var(--c, #0061FF); color: #fff; }
+.dbx-bt svg, .dbx-it svg, .dbx-volta svg { flex: none; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.dbx-cola { display: grid; gap: 10px; } .dbx-cola p { margin: 0; opacity: .8; }
+.dbx-cola input { min-height: 48px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--paper); color: var(--fg); font: inherit; font-size: 16px; box-sizing: border-box; width: 100%; }
+.dbx-espaco { display: grid; gap: 6px; padding: 14px 16px; border-radius: 16px; border: 1px solid var(--line); background: var(--paper); }
+.dbx-espaco small { opacity: .7; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.dbx-barra { height: 10px; border-radius: 999px; background: color-mix(in srgb, var(--fg) 12%, transparent); overflow: hidden; }
+.dbx-barra i { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--c, #0061FF); transition: width .4s ease; }
+.dbx-espaco.quase .dbx-barra i { background: #E5484D; }
+.dbx-envio { display: grid; gap: 8px; min-width: 0; }
+.dbx-envio.erro .dbx-barra i { background: #E5484D; }
+.dbx-env-nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dbx-envio small { opacity: .8; }
+.dbx-ops { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.dbx-cam { display: grid; gap: 8px; } .dbx-cam h3 { margin: 4px 2px 0; font-size: 18px; }
+.dbx-volta { display: inline-flex; align-items: center; gap: 6px; width: auto; justify-self: start; min-height: 44px; padding: 0 14px 0 8px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--fg); font: inherit; font-weight: 600; cursor: pointer; }
+.dbx-lista { display: grid; gap: 8px; }
+.dbx-it { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--paper); color: var(--fg); font: inherit; text-align: left; cursor: pointer; box-sizing: border-box; }
+.dbx-it > div { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.dbx-it b, .dbx-it small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .dbx-it small { opacity: .7; font-size: 13px; }
+.dbx-it .sta { width: 18px; height: 18px; opacity: .6; }
+.dbx-vazio { margin: 8px 2px; opacity: .7; }
+.dbx-sair { justify-self: center; width: auto; min-height: 44px; margin-top: 8px; padding: 0 18px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--fg); font: inherit; opacity: .85; cursor: pointer; }

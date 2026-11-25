@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.643">
+<meta name="app-versao" content="2026-11-25.644">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.643"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.644"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -99,6 +99,7 @@
 <script>
 // ---- Icones da interface (May, 05/11/2026: "interface so com SVG, emoji so na mensagem"). Traco, 24x24, herdam a cor do texto.
 const ICONES_SVG = {
+  dropbox: '<path d="M3 8l9-4 9 4-9 4z"/><path d="M3 8v8l9 4 9-4V8"/><path d="M12 12v8"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   msg: '<path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.3A8 8 0 1 1 21 12z"/>',
@@ -2827,7 +2828,7 @@ const irGeral = document.getElementById('ir-geral'), irTrab = document.getElemen
 const painel = document.getElementById('painel'), pCorpo = document.getElementById('p-corpo'), pTit = document.getElementById('p-tit'), pExtra = document.getElementById('p-extra');
 let pilha = [], catalogo = null;
 const reais = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
-const COR_ASSUNTO = [[/carteirinha/i, '#16A34A'], [/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#62B02A'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/^marca/i, '#B3261E'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/m[uú]sica/i, '#8B5CF6'], [/^artes/i, '#EC008C'], [/^planos/i, '#06B6D4'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#B3261E'], [/ateli/i, '#B3261E'], [/^listas/i, '#F59E0B'], [/ideia|tarefa/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia|contas/i, '#F59E0B']];
+const COR_ASSUNTO = [[/dropbox/i, '#0061FF'], [/carteirinha/i, '#16A34A'], [/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#62B02A'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/^marca/i, '#B3261E'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/m[uú]sica/i, '#8B5CF6'], [/^artes/i, '#EC008C'], [/^planos/i, '#06B6D4'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#B3261E'], [/ateli/i, '#B3261E'], [/^listas/i, '#F59E0B'], [/ideia|tarefa/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia|contas/i, '#F59E0B']];
 // Arrumar o Menu arrastando (May, 07/11/2026 12:03: "dar pra eu clicar e arrastar, aí eu mesma organizava"): segura o azulejo até ele levantar,
 // arrasta pro lugar do outro e solta; a ordem fica guardada neste aparelho
 function arrumaArrastando(grade, op) {   // op: { sel, chave, aviso } pra usar em outra grade (pastas da Saúde, May 10/11/2026: "como se fossem pastas mesmo")
@@ -2876,9 +2877,10 @@ const ICONES_MENU = [
 function iconeMenu(nome) { const a = ICONES_MENU.find(([re]) => re.test(nome)); return a ? '<svg class="im" viewBox="0 0 48 48" aria-hidden="true">' + a[1] + '</svg>' : ''; }
 // Menu: cada botão com a cara da tela de dentro (May, 07/11/2026 15:08 e 15:16: "cara de botão, mas cada botão tem que ser o CSS separado;
 // o que eles têm de igual é largura e altura, o resto cada um pega do seu interior"). Classe bt-<assunto>; a Agenda mostra o dia de hoje
-const BOTAO_DE = [[/carteirinha/i, 'carteirinha'], [/projetinho/i, 'projetinhos'], [/jogo/i, 'jogos'], [/m[aá]quina|console/i, 'maquinas'], [/pend[eê]ncia|finan[cç]/i, 'pendencias'], [/garag/i, 'garagem'], [/sa[uú]de|cirurgia/i, 'saude'], [/treino|academia/i, 'treino'], [/casa/i, 'casa'],
+const BOTAO_DE = [[/dropbox/i, 'dropbox'], [/carteirinha/i, 'carteirinha'], [/projetinho/i, 'projetinhos'], [/jogo/i, 'jogos'], [/m[aá]quina|console/i, 'maquinas'], [/pend[eê]ncia|finan[cç]/i, 'pendencias'], [/garag/i, 'garagem'], [/sa[uú]de|cirurgia/i, 'saude'], [/treino|academia/i, 'treino'], [/casa/i, 'casa'],
   [/obra|piscina/i, 'obra'], [/m[ií]dia|imagen|v[ií]deo|anima/i, 'midia'], [/lista/i, 'listas'], [/ideia|tarefa/i, 'ideias'], [/conta|comida/i, 'contas'], [/agenda/i, 'agenda'], [/m[uú]sica/i, 'musica'], [/^artes/i, 'artes'], [/^planos/i, 'planos']];
 const ICONE_LIMPO = {
+  dropbox: '<path d="M3 8l9-4 9 4-9 4z"/><path d="M3 8v8l9 4 9-4V8"/><path d="M12 12v8"/>',
   carteirinha: '<rect x="2.5" y="5.5" width="19" height="13" rx="2.2"/><path d="M2.5 9.5h19"/><circle cx="7.5" cy="14" r="1.6"/><path d="M11 13h7M11 15.5h5"/>',   // #437: cartão do plano (atalho que abre a carteirinha direto)
   projetinhos: '<path d="M3 7.5a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 10.2l1 2 2.2.3-1.6 1.5.4 2.2-2-1.1-2 1.1.4-2.2-1.6-1.5 2.2-.3z" fill="#F6C21C" stroke="#F6C21C"/>',   // Projetinhos: pasta com estrela (May 16/11 13:3x)
   musica: '<path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>', artes: '<path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-.9 2-1.8 0-1.4-1.2-1.6-1.2-2.8 0-.9.7-1.4 1.6-1.4H17a4 4 0 0 0 4-4C21 6.8 17 3 12 3z"/><circle cx="7.5" cy="11" r=".9"/><circle cx="10" cy="7.2" r=".9"/><circle cx="14.5" cy="7.2" r=".9"/>', planos: '<path d="M5 21V4"/><path d="M5 4h12l-2.5 4L17 12H5"/>',   // desenho de linha limpo, traço igual em todos (May 15:33: "tá parecendo uma criança desenhando, tem que ser mais profissional")
@@ -5737,6 +5739,7 @@ function abreItemMenu(m) {
   if (m.donos && m.donos.length) donosTela = m.donos;   // dono da tela (e o item de dentro herda do grupo se não tiver o seu)
   painel.style.setProperty('--c', (COR_ASSUNTO.find(([re]) => re.test(m.nome)) || [])[1] || 'var(--accent)');   // a tela fica na cor do assunto, igual o azulejo dela
   if (m.tipo === 'geral-antiga') return abreGeralAntiga(m);
+  if (m.tipo === 'dropbox') return abreDropbox(m);   // #480
   if (m.tipo === 'carteirinha') return abreCarteirinha(m.arq);   // #437: atalho, abre direto o cartão em tela cheia
   if (m.tipo === 'pagina') { location.href = m.arq + (m.arq.includes('?') ? '&' : '?') + 'v=' + encodeURIComponent(VERSAO); return; }   // ?v= da versão: o iPhone não reaproveita a página velha do cache (May 20:23, Parede de 05/11 aparecendo)   // página própria do app (ex.: jogos.html), volta pelo botão dela
   if (m.tipo === 'catalogo') return abreCatalogo();
@@ -7324,6 +7327,142 @@ function popupRosa(titulo) {
 const CARTEIRINHAS = {};
 const carregaCarteirinha = arq => CARTEIRINHAS[arq] || (CARTEIRINHAS[arq] = lerArquivo(arq).then(t => JSON.parse(t)).catch(e => { delete CARTEIRINHAS[arq]; throw e; }));
 function guardaCarteirinha(arq) { carregaCarteirinha(arq).then(c => { [c.frente || c.imagem, c.verso].filter(Boolean).forEach(f => fotoUrl(f, true).catch(() => {})); }).catch(() => {}); }   // já guarda a foto no aparelho (abre sem internet)
+// #480 (May 25/11 16:05 e 16:15): Dropbox no Menu, no lugar da Carteirinha (que fica só em Saúde > Consultas). Ela só envia; o Orfeu move do Dropbox pro disco do PC1 (Lyra 16:13).
+// Login OAuth c/ PKCE, sem app secret; a chave fica só neste aparelho e "Sair do Dropbox" revoga e apaga (Sigma 16:07). Envio em partes de 8 MB, continua de onde parou.
+const DBX_KEY = '', DBX_VOLTA = 'https://mayarainstinct-stack.github.io/recado/app.html', DBX_RAIZ = '/Compartilhados', DBX_PARTE = 8 * 1024 * 1024, DBX_API = 'https://api.dropboxapi.com/', DBX_CONT = 'https://content.dropboxapi.com/2/';
+const dbxB64 = b => btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const dbxTok = () => { try { return JSON.parse(store.get('dbx-tok') || 'null'); } catch (e) { return null; } };
+const dbxSolo = () => navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;   // app instalado no iPhone: a volta do login cairia no Safari, então ela cola o código
+const dbxTam = n => n >= 1e9 ? (n / 1e9).toFixed(1).replace('.', ',') + ' GB' : n >= 1e6 ? Math.round(n / 1e6) + ' MB' : Math.max(1, Math.round(n / 1e3)) + ' KB';
+const dbxGuarda = j => { const t = dbxTok() || {}; store.set('dbx-tok', JSON.stringify({ a: j.access_token, r: j.refresh_token || t.r, ate: Date.now() + (j.expires_in || 14400) * 1000 - 60000 })); };
+async function dbxEntra(colar) {
+  const v = dbxB64(crypto.getRandomValues(new Uint8Array(48))), ch = dbxB64(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v))); store.set('dbx-ver', v);
+  const q = new URLSearchParams({ client_id: DBX_KEY, response_type: 'code', code_challenge: ch, code_challenge_method: 'S256', token_access_type: 'offline' }); if (!colar) { q.set('redirect_uri', DBX_VOLTA); q.set('state', 'dbx'); }
+  const u = 'https://www.dropbox.com/oauth2/authorize?' + q; if (colar) window.open(u, '_blank'); else location.href = u;
+}
+async function dbxTroca(code, comVolta) {
+  const f = new URLSearchParams({ code: code.trim(), grant_type: 'authorization_code', client_id: DBX_KEY, code_verifier: store.get('dbx-ver') }); if (comVolta) f.set('redirect_uri', DBX_VOLTA);
+  const r = await fetch(DBX_API + 'oauth2/token', { method: 'POST', body: f }); if (!r.ok) throw new Error('token'); dbxGuarda(await r.json()); store.set('dbx-ver', '');
+}
+async function dbxRenova() {
+  const t = dbxTok(); if (!t || !t.r) throw new Error('sem login');
+  const r = await fetch(DBX_API + 'oauth2/token', { method: 'POST', body: new URLSearchParams({ grant_type: 'refresh_token', refresh_token: t.r, client_id: DBX_KEY }) });
+  if (!r.ok) { if (r.status === 400 || r.status === 401) store.set('dbx-tok', ''); throw new Error(r.status === 400 || r.status === 401 ? 'sem login' : 'renovar'); }
+  dbxGuarda(await r.json()); return dbxTok().a;
+}
+async function dbxApi(rota, corpo, conteudo, arg) {
+  for (let k = 0; ; k++) {
+    const t = dbxTok(); if (!t) throw new Error('sem login'); const a = t.ate > Date.now() ? t.a : await dbxRenova(), h = { Authorization: 'Bearer ' + a }; let body;
+    if (conteudo) { h['Content-Type'] = 'application/octet-stream'; h['Dropbox-API-Arg'] = JSON.stringify(arg).replace(/[\u007f-￿]/g, c => '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0')); body = corpo; }   // header só aceita ASCII: "Vídeos" vai como í
+    else if (corpo !== undefined) { h['Content-Type'] = 'application/json'; body = JSON.stringify(corpo); }
+    const r = await fetch((conteudo ? DBX_CONT : DBX_API + '2/') + rota, { method: 'POST', headers: h, body });
+    if (r.status === 401 && !k) { await dbxRenova(); continue; }
+    const tx = await r.text(); let j = null; try { j = tx ? JSON.parse(tx) : null; } catch (e) {}
+    if (!r.ok) { const e = new Error((j && j.error_summary) || 'HTTP ' + r.status); e.j = j; e.st = r.status; throw e; }
+    return j;
+  }
+}
+function dbxVolta() {   // voltou do login do Dropbox (?code=...&state=dbx): troca pela chave, limpa a URL e abre a tela
+  const q = new URLSearchParams(location.search); if (q.get('state') !== 'dbx') return false; const code = q.get('code');
+  ['code', 'state', 'error', 'error_description'].forEach(k => q.delete(k)); history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : ''));
+  if (code) Promise.all([dbxTroca(code, true), new Promise(r => setTimeout(r, 1500))]).then(() => { if (painel.hidden && !abreMenu.hidden) abreMenu.click(); setTimeout(() => abreDropbox({ nome: 'Dropbox' }), 350); }).catch(() => showNote('Não entrou no Dropbox. Tenta de novo.', true)); return true;   // espera o app abrir a conversa e abre o Menu > Dropbox por cima
+}
+let dbxEnvio = null, dbxUi = { envio() {}, pinta() {}, feito() {} };
+function abreDropbox(m) {
+  tela(m.nome || 'Dropbox', async c => {
+    c.classList.add('t-dbx'); painel.style.setProperty('--c', m.cor || '#0061FF'); cabecalho({ icone: 'dropbox', sub: 'Caixa de entrada · o Orfeu leva pro PC1' }); const raiz = elD('div', 'dbx'); c.append(raiz); let pasta = store.get('dbx-pasta') || DBX_RAIZ, esp = null;
+    const bt = (cls, tx, fn) => { const b = elD('button', cls, tx); b.type = 'button'; b.onclick = fn; return b; };
+    const ICO = { pasta: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>', arq: '<path d="M7 3h7l5 5v13H7zM14 3v5h5"/>', video: '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/>', foto: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 8"/>', sobe: '<path d="M12 16V4M7 9l5-5 5 5M5 20h14"/>' };
+    const svg = k => '<svg viewBox="0 0 24 24" aria-hidden="true">' + ICO[k] + '</svg>';
+    const nomeDe = p => p ? p.split('/').pop() : 'Dropbox';
+    const pinta = async () => {
+      raiz.replaceChildren();
+      if (!DBX_KEY) { const a = elD('div', 'dbx-aviso'); a.append(elD('b', '', 'Falta a chave do app do Dropbox'), elD('p', '', 'O Orfeu já pediu na Geral: são 5 passos no site do Dropbox e você manda só o "App key".')); raiz.append(a); return; }
+      if (!dbxTok()) {
+        const a = elD('div', 'dbx-aviso'); a.append(elD('b', '', 'Entra 1 vez na sua conta do Dropbox'), elD('p', '', 'A chave fica só neste aparelho. Senha nunca passa pelo app.')); raiz.append(a);
+        const solo = dbxSolo(); raiz.append(bt('dbx-bt rec', 'Entrar no Dropbox', () => dbxEntra(solo).then(() => { if (solo) pinta2(); })));
+        const pinta2 = () => { if (raiz.querySelector('.dbx-cola')) return; const w = elD('div', 'dbx-cola'), cx = elD('input'); cx.placeholder = 'Cola aqui o código que o Dropbox mostrou'; cx.autocomplete = 'off'; cx.setAttribute('aria-label', 'Código do Dropbox');
+          w.append(elD('p', '', 'Depois de entrar, o Dropbox mostra um código. Copia e cola aqui:'), cx, bt('dbx-bt', 'Pronto', async () => { if (!cx.value.trim()) return; try { await dbxTroca(cx.value, false); pinta(); } catch (e) { showNote('Código não aceito. Entra de novo e cola o código novo.', true); } })); raiz.append(w); cx.focus(); };
+        if (solo && store.get('dbx-ver')) pinta2(); return;
+      }
+      const topo = elD('div', 'dbx-espaco'), barra = elD('div', 'dbx-barra'), cheio = elD('i'); barra.append(cheio); topo.append(elD('small', '', 'Espaço do Dropbox'), elD('b', '', '…'), barra); raiz.append(topo);
+      const env = elD('section', 'dbx-envio'); raiz.append(env);
+      const cam = elD('div', 'dbx-cam'); raiz.append(cam);
+      const lista = elD('div', 'dbx-lista'); lista.append(skCarga()); raiz.append(lista);
+      const sai = bt('dbx-sair', 'Sair do Dropbox', () => { const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card'), ops = elD('div', 'pp-ops'), nao = bt('pp-op', 'Agora não', () => ov.remove()), sim = bt('pp-op rec', 'Sair', async () => { ov.remove(); try { await dbxApi('auth/token/revoke'); } catch (e) {} store.set('dbx-tok', ''); store.set('dbx-pasta', ''); dbxEnvio = null; pinta(); }); ops.style.marginTop = '16px'; ops.append(nao, sim); card.append(elD('div', 'pp-perg', 'Sair do Dropbox?'), elD('p', 'p-nota', 'A chave sai deste aparelho. Os arquivos continuam no Dropbox.'), ops); ov.append(card); ov.onclick = e => { if (e.target === ov) ov.remove(); }; document.body.append(ov); });
+      raiz.append(sai);
+      const pintaEspaco = () => { if (!esp) return; const usa = esp.used, tot = (esp.allocation && esp.allocation.allocated) || 0, pc = tot ? Math.min(100, usa / tot * 100) : 0; topo.querySelector('b').textContent = dbxTam(usa) + ' de ' + (tot ? dbxTam(tot) : '?') + (tot ? ' · sobram ' + dbxTam(Math.max(0, tot - usa)) : ''); cheio.style.width = pc.toFixed(1) + '%'; topo.classList.toggle('quase', pc >= 90); };
+      const pintaEnvio = () => {
+        env.replaceChildren(); const e = dbxEnvio;
+        const ip = elD('input'); ip.type = 'file'; ip.hidden = true; ip.onchange = () => { const f = ip.files[0]; ip.value = ''; if (f) comeca(f); };
+        const sb = bt('dbx-bt rec', '', () => ip.click()); sb.innerHTML = svg('sobe'); sb.append(elD('span', '', 'Enviar arquivo pra ' + nomeDe(pasta)));
+        if (!e) { env.append(sb, ip); return; }
+        const pc = e.f.size ? Math.floor(e.off / e.f.size * 100) : 100, br = elD('div', 'dbx-barra'), ch = elD('i'); ch.style.width = pc + '%'; br.append(ch);
+        env.append(elD('b', 'dbx-env-nome sem-maiusc', e.f.name), elD('small', '', (e.erro ? e.erro : e.indo ? 'Enviando pra ' + nomeDe(e.pasta) : 'Parado') + ' · ' + dbxTam(e.off) + ' de ' + dbxTam(e.f.size) + ' (' + pc + '%)'), br);
+        if (e.erro) { const ops = elD('div', 'dbx-ops'); ops.append(bt('dbx-bt', 'Cancelar', () => { dbxEnvio = null; pintaEnvio(); }), bt('dbx-bt rec', 'Tentar de novo', sobe)); env.append(ops); }
+        env.classList.toggle('erro', !!e.erro);
+      };
+      const comeca = f => {
+        if (dbxEnvio && dbxEnvio.indo) { showNote('Espera terminar o envio que está indo.', true); return; }
+        const livre = esp && esp.allocation && esp.allocation.allocated ? esp.allocation.allocated - esp.used : Infinity;
+        if (f.size > livre) { env.replaceChildren(); const a = elD('div', 'dbx-aviso erro'); a.append(elD('b', '', 'Não cabe no Dropbox'), elD('p', '', '"' + f.name + '" tem ' + dbxTam(f.size) + ' e sobram ' + dbxTam(Math.max(0, livre)) + '. Faltam ' + dbxTam(f.size - livre) + '. O Orfeu move o que já chegou pro PC1 e libera espaço.')); env.append(a, bt('dbx-bt', 'Ok', pintaEnvio)); return; }
+        dbxEnvio = { f, pasta, sid: null, off: 0, erro: '', indo: false }; sobe();
+      };
+      const fim = async (e, parte) => { await dbxApi('files/upload_session/finish', parte, true, { cursor: { session_id: e.sid, offset: e.off }, commit: { path: e.pasta.replace(/\/$/, '') + '/' + e.f.name, mode: 'add', autorename: true } }); e.off = e.f.size; return true; };
+      const passo = async e => {
+        const ate = Math.min(e.f.size, e.off + DBX_PARTE), parte = e.f.slice(e.off, ate), ult = ate >= e.f.size;
+        if (!e.sid) { const r = await dbxApi('files/upload_session/start', parte, true, { close: ult }); e.sid = r.session_id; e.off = ate; return ult ? fim(e, new Blob([])) : false; }
+        if (!ult) { await dbxApi('files/upload_session/append_v2', parte, true, { cursor: { session_id: e.sid, offset: e.off }, close: false }); e.off = ate; return false; }
+        return fim(e, parte);
+      };
+      const sobe = async () => {
+        const e = dbxEnvio; if (!e || e.indo) return; e.indo = true; e.erro = ''; dbxUi.envio();
+        try {
+          for (let pronto = false; !pronto;) {
+            for (let k = 0; ; k++) {
+              try { pronto = await passo(e); break; } catch (x) {
+                const er = x.j && x.j.error, co = er && (er.correct_offset != null ? er.correct_offset : er.lookup_failed && er.lookup_failed.correct_offset);
+                if (typeof co === 'number' && co !== e.off && k < 3) { e.off = co; continue; }   // o Dropbox já tinha recebido até ali: continua do número dele
+                if (/not_found/.test(x.message)) { e.sid = null; e.off = 0; }   // sessão venceu: começa de novo, o arquivo segue no celular
+                if (x.message === 'sem login' || k >= 2) throw x;
+                await new Promise(r => setTimeout(r, 1500 * (k + 1)));
+              }
+            }
+            if (dbxEnvio !== e) return; dbxUi.envio();
+          }
+          dbxEnvio = null; showNote('Enviado: ' + e.f.name); dbxUi.feito(e);
+        } catch (x) { if (dbxEnvio === e) e.erro = x.message === 'sem login' ? 'Saiu do Dropbox, entra de novo' : 'Não subiu, tentar de novo'; if (x.message === 'sem login') { dbxUi.pinta(); return; } }
+        finally { e.indo = false; if (dbxEnvio === e) dbxUi.envio(); }
+      };
+      const carrega = async () => {
+        cam.replaceChildren(); if (pasta) { const pai = pasta.slice(0, pasta.lastIndexOf('/')), v = bt('dbx-volta', '', () => { pasta = pai; store.set('dbx-pasta', pai || '/'); pintaEnvio(); carrega(); }); v.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>'; v.append(elD('span', '', 'Voltar pra ' + nomeDe(pai))); cam.append(v); }
+        cam.append(elD('h3', '', nomeDe(pasta)));
+        lista.replaceChildren(skCarga());
+        try {
+          let r = await dbxApi('files/list_folder', { path: pasta, limit: 2000 }), ent = r.entries; while (r.has_more) { r = await dbxApi('files/list_folder/continue', { cursor: r.cursor }); ent = ent.concat(r.entries); }
+          const pastas = ent.filter(x => x['.tag'] === 'folder').sort((a, b) => (b.name === 'Videos brutos') - (a.name === 'Videos brutos') || a.name.localeCompare(b.name, 'pt')), arqs = ent.filter(x => x['.tag'] === 'file').sort((a, b) => String(b.server_modified).localeCompare(String(a.server_modified)));
+          lista.replaceChildren(); if (!pastas.length && !arqs.length) lista.append(elD('p', 'dbx-vazio', 'Pasta vazia.'));
+          pastas.concat(arqs).forEach(x => {
+            const dir = x['.tag'] === 'folder', b = elD('button', 'dbx-it'), tx = elD('div'), tipo = dir ? 'pasta' : /\.(mp4|mov|m4v|avi|mkv|webm)$/i.test(x.name) ? 'video' : /\.(jpe?g|png|heic|gif|webp)$/i.test(x.name) ? 'foto' : 'arq'; b.type = 'button';
+            b.innerHTML = svg(tipo); tx.append(elD('b', 'sem-maiusc', x.name), elD('small', '', dir ? 'Pasta · toca pra abrir' : dbxTam(x.size) + ' · ' + new Date(x.server_modified).toLocaleDateString('pt-BR'))); b.append(tx);
+            if (dir) { b.insertAdjacentHTML('beforeend', '<svg class="sta" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>'); b.onclick = () => { pasta = x.path_display; store.set('dbx-pasta', pasta); pintaEnvio(); carrega(); }; }
+            else b.onclick = async () => { const w = window.open('', '_blank'); try { const r2 = await dbxApi('files/get_temporary_link', { path: x.path_lower }); if (w) w.location = r2.link; else location.href = r2.link; } catch (e) { if (w) w.close(); showNote('Não abriu. Confere a internet.', true); } };   // a janela abre já no toque, senão o iPhone bloqueia
+            lista.append(b);
+          });
+        } catch (e) {
+          if (e.message === 'sem login') { pinta(); return; }
+          if (/not_found/.test(e.message) && pasta) { pasta = pasta === DBX_RAIZ ? '' : DBX_RAIZ; store.set('dbx-pasta', pasta || '/'); pintaEnvio(); return carrega(); }
+          lista.replaceChildren(elD('p', 'dbx-vazio', 'Não abriu. Confere a internet.'), bt('dbx-bt', 'Tentar de novo', carrega));
+        }
+      };
+      dbxUi = { envio: pintaEnvio, pinta, feito: async e => { try { esp = await dbxApi('users/get_space_usage'); } catch (x) {} pintaEspaco(); pintaEnvio(); if (e.pasta === pasta) carrega(); } };   // o envio segue em segundo plano e sempre pinta na tela que está aberta (o app redesenha a tela no meio)
+      if (pasta === '/') pasta = ''; pintaEnvio(); carrega();
+      try { esp = await dbxApi('users/get_space_usage'); pintaEspaco(); } catch (e) { if (e.message === 'sem login') return pinta(); topo.querySelector('b').textContent = 'Não deu pra ver o espaço'; }
+      if (dbxEnvio && !dbxEnvio.indo && !dbxEnvio.erro) sobe();
+    };
+    pinta();
+  });
+}
 async function abreCarteirinha(arq) {   // May 11/11: abre direto o CARTÃO DA FRENTE, tela cheia, sem mais nenhum dado; ela vira o celular e entrega. #437 (May 24/11 11:16): o mesmo visor é o atalho da tela inicial e da Saúde
   const ov = document.createElement('div'); ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', 'Carteirinha Unimed');
   ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#fff;display:grid;place-items:center;overflow:hidden;touch-action:none';
@@ -8506,6 +8645,7 @@ async function guardaSaude() {
 }
 function start() {
   chaveVencida = false; aplicaLargura(); grupoTrabEm = 0;   // chave nova: tenta o grupo do Trabalho de novo na hora
+  dbxVolta();   // #480: voltou do login do Dropbox (troca o código e abre a tela por cima)
   const veioDoPush = trataHashPush(); setTimeout(() => trataHashLembrete(), 400);   // veio da notificação: abre a conversa dela já respondendo
   cfgCarrega();
   const semRede = navigator.onLine === false;
