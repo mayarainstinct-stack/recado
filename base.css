@@ -3795,3 +3795,4 @@ body .ed-pop.pjm-pop .ed-card :is(input, select, textarea):focus { outline: 2px 
 .fn-selo.s-vencer { background: #EEF1F0; color: #5B6B64; }
 .fn .fn-add { width: 100%; height: 52px; margin-top: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; border: 2px solid #0E7C5A; border-radius: 16px; background: #FFFFFF; color: #0E7C5A; font: inherit; font-size: 16px; font-weight: 700; box-shadow: none; }
 .fn-add i { font-style: normal; font-size: 22px; line-height: 1; }
+.fn-cmeio small.fn-dica { color: #B42318; font-weight: 600; }

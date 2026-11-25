@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.596">
+<meta name="app-versao" content="2026-11-25.597">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.596"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.597"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -5022,12 +5022,12 @@ function abreFinancas(m) {
     const icoDe = (ent, pessoa) => { const cat = (Ec.itens.find(y => y.id === ent.id) || {}).categoria || '', n = (cat + ' ' + ent.nome); return FN_ICO.find(x => cat && x[0] === cat.toLowerCase()) || FN_ICO.find(x => x[1].test(n)) || (pessoa ? FN_PES : FN_MOE); };
     const icone2 = ic => { const s = elD('span', 'fn-ico'); s.style.setProperty('--ic', ic[2]); s.innerHTML = '<svg viewBox="0 0 24 24">' + ic[3] + '</svg>'; return s; };
     const dataBr = d => pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear();
-    const selo = it => { const dd = Math.round((it.quando - hoje) / 864e5); if (it.pago) return ['pago', it.lado === 'receber' ? 'Recebido' : 'Pago']; if (it.estado === 'semreg' || (it.tipo === 'f' && it.estado === 'atrasada' && !(it.ent.pagos || []).length)) return ['vencer', 'Sem registro']; if (it.estado === 'atrasada') return ['atrasada', 'Atrasada']; if (dd <= 3) return ['perto', dd <= 0 ? 'Vence hoje' : dd === 1 ? 'Vence amanhã' : 'Vence em ' + dd + ' dias']; return ['vencer', 'A vencer']; };
+    const selo = it => { const dd = Math.round((it.quando - hoje) / 864e5); if (it.pago) return ['pago', it.lado === 'receber' ? 'Recebido' : 'Pago']; if (it.estado === 'atrasada' || it.estado === 'semreg') return ['atrasada', 'Atrasada']; if (dd <= 3) return ['perto', dd <= 0 ? 'Vence hoje' : dd === 1 ? 'Vence amanhã' : 'Vence em ' + dd + ' dias']; return ['vencer', 'A vencer']; };
     const cartao = it => {
       const l = elD('div', 'fn-cartao'), ck = elD('button', 'fu-ck' + (it.pago ? ' on' : '')), meio = elD('div', 'fn-cmeio'), dir = elD('div', 'fn-cdir'), [sc, st] = selo(it), ent = it.ent;
       ck.type = 'button'; ck.setAttribute('aria-label', it.pago ? 'Desmarcar' : it.lado === 'receber' ? 'Marcar recebido' : 'Marcar pago'); ck.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg>'; ck.onclick = e => { e.stopPropagation(); marcaRapido(it); };
       const parc = ent.parcelas && ent.vp ? ' · ' + Math.min(ent.parcelas, Math.round(ent.pago / ent.vp) + (it.pago ? 0 : 1)) + ' de ' + ent.parcelas : '';
-      meio.append(elD('strong', '', it.nome), elD('small', '', 'Venc: ' + dataBr(it.quando) + parc + (it.cat === 'fixa' && ent.metade ? ' · sua metade' : '')));
+      meio.append(elD('strong', '', it.nome), elD('small', '', 'Venc: ' + dataBr(it.quando) + parc + (it.cat === 'fixa' && ent.metade ? ' · sua metade' : '')), ...(sc === 'atrasada' && it.lado !== 'receber' ? [elD('small', 'fn-dica', 'Já pagou? Toca no círculo')] : []));
       dir.append(elD('b', '', reaisFin(it.pago && it.pago.valor !== '' ? it.pago.valor : it.valor)), elD('span', 'fn-selo s-' + sc, st));
       l.append(ck, icone2(icoDe(ent, it.tipo === 'p')), meio, dir); l.onclick = () => detalhe(ent, it); return l;
     };
@@ -5084,7 +5084,7 @@ function abreFinancas(m) {
       let tx = null; navM.addEventListener('touchstart', e => { tx = e.touches[0].clientX; e.stopPropagation(); }, { passive: true }); navM.addEventListener('touchend', e => { if (tx == null) return; const dx = e.changedTouches[0].clientX - tx; tx = null; if (Math.abs(dx) > 40) mv(dx < 0 ? 1 : -1); }, { passive: true });
       navM.append(seta(-1, '‹', 'Mês anterior'), tit, seta(1, '›', 'Próximo mês')); pag.contas.append(navM);
       const despesas = A.pagar.slice().sort((x, y) => x.quando - y.quando || x.nome.localeCompare(y.nome)), anuais = S.anuais.filter(x => (x.mes || '').toLowerCase().startsWith(MES[mesAt.getMonth()].slice(0, 3)));
-      const FILTROS = [['todas', 'Todas', x => true], ['pagas', 'Pagas', x => !!x.pago], ['pendentes', 'Pendentes', x => !x.pago], ['vencer', 'A vencer', x => !x.pago && (x.estado === 'vencer' || x.estado === 'hoje')], ['atrasadas', 'Atrasadas', x => !x.pago && x.estado === 'atrasada' && !(x.tipo === 'f' && !(x.ent.pagos || []).length)], ['recorrentes', 'Recorrentes', x => x.tipo === 'f']];
+      const FILTROS = [['todas', 'Todas', x => true], ['pagas', 'Pagas', x => !!x.pago], ['pendentes', 'Pendentes', x => !x.pago], ['vencer', 'A vencer', x => !x.pago && (x.estado === 'vencer' || x.estado === 'hoje')], ['atrasadas', 'Atrasadas', x => !x.pago && (x.estado === 'atrasada' || x.estado === 'semreg')], ['recorrentes', 'Recorrentes', x => x.tipo === 'f']];
       const abas = elD('div', 'fn-filtros'); abas.setAttribute('role', 'tablist');
       FILTROS.forEach(([k, t]) => { const b = elD('button', 'fn-filtro' + (filtro === k ? ' on' : ''), t); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', filtro === k ? 'true' : 'false'); b.onclick = () => { filtro = k; pinta(); }; abas.append(b); });
       pag.contas.append(abas);
