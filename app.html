@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.649">
+<meta name="app-versao" content="2026-11-25.650">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.649"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.650"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2306,7 +2306,8 @@ function trataHashPush() {
   history.replaceState(null, '', location.pathname + location.search);
   pushEm = Date.now(); store.set('push-conv', conv + '|' + pushEm);
   abreRespondendo(conv, h.get('foto') || '');
-  if (h.get('abrir') === 'reavaliacao') setTimeout(abreReavaliacao, 900);   // push "Avaliação da semana feita" abre direto a avaliação, na semana mais nova; deslizar mostra as anteriores (May 19/11/2026)
+  if (h.get('abrir') === 'reavaliacao') setTimeout(abreReavaliacao, 900);
+  if (h.get('abrir') === 'musica') setTimeout(() => lerArquivo('menu/menu.json').then(x => JSON.parse(x).itens.find(i => i.tipo === 'musica')).then(m => { if (m) { menu.hidden = true; painel.hidden = false; pilha = []; abreItemMenu(m); } }).catch(() => {}), 900);   // fase 7 (#449): push do estúdio abre direto a tela Música   // push "Avaliação da semana feita" abre direto a avaliação, na semana mais nova; deslizar mostra as anteriores (May 19/11/2026)
   return true;
 }
 window.addEventListener('hashchange', () => { if (token && !chaveVencida) trataHashPush(); });
@@ -4159,7 +4160,23 @@ function abreMusica(m) {
       xb.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); };
       card.append(xb, cx, res); ov.append(card); document.body.append(ov); cabe(); if (vv) { vv.addEventListener('resize', cabe); vv.addEventListener('scroll', cabe); } mostra(); cx.focus(); };
     const lupa = elD('button', 'tm-lupa'); lupa.type = 'button'; lupa.setAttribute('aria-label', 'Procurar no estúdio'); lupa.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>'; lupa.onclick = abreBusca;
-    const resumo = elD('div', 'tm-resumo'), rtx = elD('div'); resumo.innerHTML = MUS_MARCA; resumo.append(rtx, lupa);
+    const NT = [['pratica', 'Hora de praticar', 'Lembra no horário escolhido, se ainda não tocou no dia.', { on: false, hora: '19:00', dias: [1, 2, 3, 4, 5] }], ['meta', 'Meta da semana', 'Domingo às 18h, se faltar sessão pra bater a meta.', { on: false }], ['manutencao', 'Manutenção chegando', 'Cordas, regulagem e limpeza perto de vencer.', { on: false, antes: 3 }], ['tarefa', 'Tarefa pendente', 'Música com prazo hoje ou já passado.', { on: false }], ['parado', 'Música parada', 'Música sem mexer há muitos dias.', { on: false, dias: 14 }], ['data', 'Data importante', 'Qualquer item com data chegando.', { on: false, antes: 1 }]];   // fase 7 (#449): todas desligadas de início, o PC1 manda só o que ela ligar (Sigma 17:06)
+    const abreNotif = () => {
+      const ov = elD('div', 'fixa-pop tm-pr-pop tm-busca-pop tm-nt-pop'), card = elD('div', 'pp-card tm-pr-card tm-busca-card tm-nt-card'), xb = elD('button', 'pp-x'), lista = elD('div', 'tm-nt-lista'), N = () => d.notificacoes || {};
+      xb.type = 'button'; xb.innerHTML = icone('close'); xb.setAttribute('aria-label', 'Fechar'); const fecha = () => ov.remove(); xb.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); };
+      const salva = async (k, v) => { const antes = JSON.parse(JSON.stringify(N())); d.notificacoes = Object.assign({}, N(), { [k]: v }); desenha(); if (await gravaJson(m.arq, dd => { dd.notificacoes = Object.assign({}, dd.notificacoes || {}, { [k]: v }); }, 'Estúdio: notificação ' + k, null)) return; d.notificacoes = antes; desenha(); showNote('Não guardou: voltou como estava. Confere a internet.', true); };
+      const chips = (ops, atual, fn) => { const f = elD('div', 'tm-cats tm-nt-ops'); ops.forEach(([v, t]) => { const b = elD('button', 'tm-cat' + (v === atual ? ' on' : '')); b.type = 'button'; b.setAttribute('aria-pressed', String(v === atual)); b.textContent = t; b.onclick = () => fn(v); f.append(b); }); return f; };
+      const desenha = () => { lista.replaceChildren(); NT.forEach(([k, tit, frase, pad]) => {
+        const v = Object.assign({}, pad, N()[k] || {}), it = elD('section', 'tm-nt' + (v.on ? ' on' : '')), lin = elD('div', 'tm-nt-lin'), tx = elD('div'), ch = elD('button', 'cf-chave' + (v.on ? ' on' : ''));
+        ch.type = 'button'; ch.setAttribute('role', 'switch'); ch.setAttribute('aria-checked', String(!!v.on)); ch.setAttribute('aria-label', tit); ch.onclick = () => salva(k, Object.assign({}, v, { on: !v.on }));
+        tx.append(elD('b', '', tit), elD('small', '', frase)); lin.append(tx, ch); it.append(lin);
+        if (v.on && k === 'pratica') { const h = elD('input', 'tm-nt-hora'); h.type = 'time'; h.value = v.hora; h.setAttribute('aria-label', 'Horário'); h.onchange = () => { if (/^\d\d:\d\d$/.test(h.value)) salva(k, Object.assign({}, v, { hora: h.value })); }; const ds = elD('div', 'tm-cats tm-nt-ops tm-nt-dias'); ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].forEach((t, i) => { const on = v.dias.includes(i), b = elD('button', 'tm-cat' + (on ? ' on' : '')); b.type = 'button'; b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'][i]); b.textContent = t; b.onclick = () => salva(k, Object.assign({}, v, { dias: on ? v.dias.filter(x => x !== i) : v.dias.concat(i).sort() })); ds.append(b); }); it.append(elD('span', 'tm-nt-rot', 'Horário'), h, elD('span', 'tm-nt-rot', 'Dias'), ds); }
+        if (v.on && (k === 'manutencao' || k === 'data')) it.append(elD('span', 'tm-nt-rot', 'Avisar antes'), chips((k === 'data' ? [0, 1, 3] : [1, 3, 7]).map(n => [n, n ? n + (n === 1 ? ' dia' : ' dias') : 'No dia']), v.antes, n => salva(k, Object.assign({}, v, { antes: n }))));
+        if (v.on && k === 'parado') it.append(elD('span', 'tm-nt-rot', 'Parada há'), chips([7, 14, 30].map(n => [n, n + ' dias']), v.dias, n => salva(k, Object.assign({}, v, { dias: n }))));
+        lista.append(it); }); };
+      card.append(xb, elD('h3', 'tm-nt-tit', 'Notificações'), elD('p', 'tm-nt-dica', 'Todas começam desligadas. Só chega o que você ligar, nunca entre 23h e 7h.'), lista); ov.append(card); document.body.append(ov); desenha(); };
+    const sino = elD('button', 'tm-lupa tm-sino'); sino.type = 'button'; sino.setAttribute('aria-label', 'Notificações do estúdio'); sino.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' + ICONES_SVG.bell + '</svg>'; sino.onclick = abreNotif;
+    const resumo = elD('div', 'tm-resumo'), rtx = elD('div'); resumo.innerHTML = MUS_MARCA; const btsR = elD('div', 'tm-resumo-bts'); btsR.append(sino, lupa); resumo.append(rtx, btsR);
     const abas = elD('div', 'tm-abas'); abas.setAttribute('role', 'tablist'); const corpo = elD('div', 'tm-painel'); c.append(resumo, abas, corpo);
     const trocaAba = id => { if (id === aba) return; rolagem[aba] = pCorpo.scrollTop; const dir = ABA_ORD.indexOf(id) > ABA_ORD.indexOf(aba) ? 1 : -1; aba = id; store.set('mus-aba', id); pinta(); vemDoLado(corpo, dir); requestAnimationFrame(() => { pCorpo.scrollTop = rolagem[id] || 0; }); };   // toque na aba também entra deslizando do lado dela (o dedo pro lado já troca pelo gesto comum do app) e cada aba volta na rolagem onde estava
     const pinta = () => {

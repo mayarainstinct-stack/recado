@@ -1,4 +1,4 @@
-// v649 #449 so favoritos na pesquisa c/ contorno amarelo (filtro por cima do tipo)
+// v650 #449 fase 7 notificacoes do estudio (sino, 6 chaves desligadas, push abre a Musica)
 // v637 #449 5c series: episodios e etapas c/ ordem, proxima no cartao, ideias da serie, series na aba Ideias
 // v636 #449 5b audio na ideia: gravar ou anexar, ouvir e apagar
 // v632 #449 4b categorias do Setup com filtro, onde fica e estado

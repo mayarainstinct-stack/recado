@@ -4184,3 +4184,12 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .tm-busca-card .tm-cat-fav svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; } .tm-busca-card .tm-cat-fav.on svg { fill: currentColor; }
 .tm-busca-card .tm-cat.tm-cat-fav { margin-right: 6px; } .tm-busca-card .tm-cat.tm-cat-fav.on { background: rgba(255,214,10,.12); border-color: #FFD60A; box-shadow: inset 0 0 0 1px #FFD60A; color: #F5F0EC; } .tm-busca-card .tm-cat.tm-cat-fav.on svg { color: #FFD60A; } .tm-busca-card .tm-cat.tm-cat-fav.on i { color: #FFD60A; }
 .t-musica .tm-faixa-topo > div:last-child { flex: 1; min-width: 0; }
+.t-musica .tm-resumo-bts { flex: none; display: flex; flex-direction: column; gap: 8px; margin-left: auto; }
+.tm-nt-card { display: flex; flex-direction: column; gap: 12px; } .tm-nt-tit { margin: 4px 56px 0 2px; font-size: 20px; color: #F5F0EC; } .tm-nt-dica { margin: 0 2px; color: #BDB5AF; font-size: 13px; line-height: 1.4; }
+.tm-nt-lista { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 2px 2px 12px; }
+.tm-nt { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: 14px; border: 1px solid #3A3533; background: #1E1B1A; } .tm-nt.on { border-color: #F0283A; }
+.tm-nt-lin { display: flex; align-items: center; gap: 12px; } .tm-nt-lin > div { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; } .tm-nt-lin b { color: #F5F0EC; font-size: 15px; } .tm-nt-lin small { color: #BDB5AF; font-size: 13px; line-height: 1.35; } .tm-nt-lin .cf-chave { flex: none; }
+.tm-nt-rot { color: #BDB5AF; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; margin-top: 4px; }
+.tm-nt-hora { height: 44px; padding: 0 12px; border-radius: 12px; border: 1px solid #3A3533; background: #0B0A0A; color: #F5F0EC; font: inherit; font-size: 16px; width: 120px; color-scheme: dark; }
+.tm-busca-card .tm-nt-ops { display: flex; flex-wrap: wrap; gap: 6px; overflow: visible; } .tm-busca-card .tm-nt-ops .tm-cat { padding: 0 12px; min-width: 44px; justify-content: center; }
+.tm-busca-card .tm-nt-ops.tm-nt-dias { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; } .tm-busca-card .tm-nt-dias .tm-cat { min-width: 0; width: 100%; padding: 0; }
