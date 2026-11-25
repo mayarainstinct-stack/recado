@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.625">
+<meta name="app-versao" content="2026-11-25.626">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.625"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.626"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -4188,6 +4188,21 @@ function abreMusica(m) {
         };
         const hist = () => {
           if (!vezes.length) { miolo.append(elD('div', 'tm-vazio', 'Quando tocar, usa o Cronômetro ou o "Toquei hoje" e a sessão aparece aqui.')); return; }
+          const hm = m => m >= 60 ? Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + (m % 60) + ' min' : '') : m + ' min', s0 = new Date(); s0.setHours(0, 0, 0, 0); s0.setDate(s0.getDate() - ((s0.getDay() + 6) % 7));   // 3c (JWA): resumo, 8 semanas em barras e semanas com meta batida; sessão sem duração conta na sessão, nunca no tempo
+          const SEM = Array.from({ length: 8 }, (_, k) => { const ini = new Date(s0); ini.setDate(ini.getDate() - 7 * (7 - k)); const fim = new Date(ini); fim.setDate(fim.getDate() + 7); const l = vezes.filter(x => x._d >= ini && x._d < fim); return { ini, n: l.length, min: l.reduce((t, x) => t + (+x.dur_min || 0), 0), ok: l.length >= meta, atual: k === 7 }; });
+          const totMin = vezes.reduce((t, x) => t + (+x.dur_min || 0), 0), semDur = vezes.filter(x => !(+x.dur_min > 0)).length, res = elD('section', 'tp-res'), tiles = elD('div', 'tp-tiles');
+          [[String(vezes.length), vezes.length === 1 ? 'Sessão' : 'Sessões'], [hm(totMin), 'Tempo total'], [SEM.filter(w => w.ok).length + ' de 8', 'Semanas com meta']].forEach(([v, r]) => { const t = elD('div', 'tp-tile'); t.append(elD('b', '', v), elD('small', '', r)); tiles.append(t); });
+          res.append(tiles); if (semDur) res.append(elD('small', 'tp-res-obs', semDur + (semDur === 1 ? ' sessão sem tempo anotado, fica fora do total' : ' sessões sem tempo anotado, ficam fora do total')));
+          const graf = elD('div', 'tp-graf'), diz = elD('p', 'tp-graf-diz'), maxM = Math.max(1, ...SEM.map(w => w.min)), dd = d => String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0');
+          graf.setAttribute('role', 'list'); graf.setAttribute('aria-label', 'Minutos tocados nas últimas 8 semanas');
+          const conta = w => (w.atual ? 'Esta semana' : 'Semana de ' + dd(w.ini)) + ': ' + w.n + (w.n === 1 ? ' sessão' : ' sessões') + ' · ' + hm(w.min) + (w.ok ? ' · Meta batida' : ' · Meta: ' + meta + (meta === 1 ? ' sessão' : ' sessões'));
+          const cols = SEM.map(w => { const c = elD('button', 'tp-col' + (w.ok ? ' ok' : '') + (w.atual ? ' atual' : '')), tr = elD('span', 'tp-trilho'), br = elD('i'); c.type = 'button'; c.setAttribute('role', 'listitem'); c.setAttribute('aria-label', conta(w));
+            br.style.height = (w.min ? Math.max(4, w.min / maxM * 100) : 0) + '%'; tr.append(br); c.append(elD('small', 'tp-col-v', w.min ? String(w.min) : ''), tr, elD('small', 'tp-col-d', dd(w.ini)), elD('span', 'tp-col-ok', w.ok ? '✓' : ''));
+            c.onclick = () => { cols.forEach(o => o.classList.toggle('sel', o === c)); diz.textContent = conta(w); }; return c; });
+          cols[7].classList.add('sel'); diz.textContent = conta(SEM[7]); graf.append(...cols);
+          res.append(elD('b', 'tp-graf-tit', 'Minutos por semana'), graf, elD('small', 'tp-graf-leg', '✓ = meta da semana batida · toca na barra pra ver'), diz); miolo.append(res);
+          if (!reduz) cols.forEach((c, k) => { const i = c.querySelector('i'); if (i.animate) i.animate([{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], { duration: 420, delay: k * 40, easing: 'cubic-bezier(.2,.9,.25,1)', fill: 'backwards' }); });
+          miolo.append(elD('b', 'tp-grupo', 'Sessões'));
         vezes.forEach(x => { const a = elD('article', 'tm-aparelho tm-pr'), sl = elD('div', 'tm-slot'), tx = elD('div'), ins = inst.find(i => i.id === x.instrumento); sl.innerHTML = '<svg viewBox="0 0 40 40" aria-hidden="true">' + MUS_ICONES.guitarra + '</svg>';
           tx.append(elD('h3', '', ins ? ins.nome : (x.instrumento_nome || 'Instrumento')), elD('small', 'tm-pr-q', x.quando));
           const dc = [x.dur_min ? x.dur_min + ' min' : '', (COMO.find(c => c[0] === x.como) || [])[1] || ''].filter(Boolean); if (dc.length) tx.append(elD('p', 'tp-dc', dc.join(' · ')));
