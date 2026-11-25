@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.606">
+<meta name="app-versao" content="2026-11-25.607">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.606"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.607"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3613,10 +3613,10 @@ function edEscolhe(titulo, ops) {
   });
 }
 // faixa "Item apagado · Desfazer" por 8 segundos
-function edFaixaDesfazer(txt, desfaz) {
+function edFaixaDesfazer(txt, desfaz, ms = 8000) {
   document.querySelector('.ed-faixa')?.remove();
   const f = elD('div', 'ed-faixa'), t = elD('span', '', txt), b = elD('button', '', 'Desfazer'); b.type = 'button';
-  const fim = setTimeout(() => f.remove(), 8000); b.onclick = () => { clearTimeout(fim); f.remove(); desfaz(); };
+  const fim = setTimeout(() => f.remove(), ms); b.onclick = () => { clearTimeout(fim); f.remove(); desfaz(); };
   f.append(t, b); document.body.append(f);
 }
 // valor opcional ao marcar feito/pago (vem preenchido com o valor do item)
@@ -3859,6 +3859,8 @@ function abreMusica(m) {
     p.remove();
     const ET = d.etapas || ['Ideia', 'Rascunho', 'Gravar', 'Mixar', 'Finalizar'], vivos = sec => d.itens.filter(i => i.secao === sec && !i.apagado);
     let aba = store.get('mus-aba') || 'musica', cuSub = store.get('mus-cuidar') || 'vitrine';
+    const NE = ET.length, ABA_ORD = ['musica', 'pratica', 'manut', 'setup', 'ideia'], ROT_ABA = { musica: 'Músicas', pratica: 'Tocar', manut: 'Cuidar', setup: 'Setup', ideia: 'Ideias' }, ICO_ABA = { musica: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>', pratica: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l4 18H5z"/><path d="M12 16l5-9"/><path d="M8 16h8"/></svg>', manut: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/></svg>', setup: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="12" r="3"/><path d="M15 9h3M15 12h3M15 15h3"/></svg>', ideia: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>' }, rolagem = {};   // 2a do JWA (25/11): ícone por aba, deslizar troca de seção e cada aba guarda a rolagem
+    const confirmaApagar = (nome, fn) => { const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card'), ops = elD('div', 'pp-ops'), sim = elD('button', 'pp-op rec', 'Apagar'), nao = elD('button', 'pp-op', 'Agora não'); sim.type = nao.type = 'button'; ops.style.marginTop = '16px'; const fecha = () => ov.remove(); nao.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; sim.onclick = () => { fecha(); fn(); }; ops.append(nao, sim); card.append(elD('div', 'pp-perg', 'Apagar ' + nome + '?'), elD('p', 'p-nota', 'Some da tela e fica guardado; dá pra desfazer logo depois.'), ops); ov.append(card); document.body.append(ov); };   // excluir pede confirmação ANTES (texto da May, item 13)
     const formPratica = (x, inst, equip) => {
       const ov = elD('div', 'fixa-pop tm-pr-pop'), card = elD('div', 'pp-card tm-pr-card'), xb = elD('button', 'pp-x'); xb.type = 'button'; xb.innerHTML = icone('close'); xb.setAttribute('aria-label', 'Fechar');
       let qual = x ? x.instrumento : (store.get('mus-pr-inst') || (inst[0] || {}).id), usei = new Set(x ? x.usei || [] : JSON.parse(store.get('mus-pr-usei') || '[]'));
@@ -3870,18 +3872,18 @@ function abreMusica(m) {
       ok.onclick = async () => { if (!qual) return; const v = { instrumento: qual, usei: [...usei], nota: ta.value.trim(), quando: q.value.trim() || edAgora() }; try { store.set('mus-pr-inst', qual); store.set('mus-pr-usei', JSON.stringify(v.usei)); } catch (e) {} ov.remove();
         await grava(l => { if (x) { const r = l.find(y => y.id === x.id); if (r) Object.assign(r, v, { atualizado: edAgora() }); } else l.push(Object.assign({ id: 'pratica-' + Date.now().toString(36), secao: 'pratica', criado: edAgora() }, v)); }, x ? 'Música: prática editada pelo app' : 'Música: toquei hoje (pelo app)'); };
       const bts = elD('div', 'lem-bts'); bts.append(ok);
-      if (x) { const ap = elD('button', 'pp-op depois', 'Apagar'); ap.type = 'button'; ap.onclick = async () => { ov.remove(); const qd = edAgora(); if (await grava(l => { const r = l.find(y => y.id === x.id); if (r) r.apagado = qd; }, 'Música: prática apagada pelo app (fica guardada)')) edFaixaDesfazer('Prática apagada', () => grava(l => { const r = l.find(y => y.id === x.id); if (r) delete r.apagado; }, 'Música: prática de volta')); }; bts.append(ap); }
+      if (x) { const ap = elD('button', 'pp-op depois', 'Apagar'); ap.type = 'button'; ap.onclick = () => confirmaApagar('esta prática', async () => { ov.remove(); const qd = edAgora(); if (await grava(l => { const r = l.find(y => y.id === x.id); if (r) r.apagado = qd; }, 'Música: prática apagada pelo app (fica guardada)')) edFaixaDesfazer('Prática apagada', () => grava(l => { const r = l.find(y => y.id === x.id); if (r) delete r.apagado; }, 'Música: prática de volta')); }); bts.append(ap); }
       card.append(xb, elD('b', 'tm-pr-tit', x ? 'Editar a prática' : 'Toquei hoje'), elD('small', 'tm-pr-rot', 'Instrumento'), linhaI, elD('small', 'tm-pr-rot', 'O que usei'), linhaE, elD('small', 'tm-pr-rot', 'Quando'), q, elD('small', 'tm-pr-rot', 'Anotação'), ta, bts);
       xb.onclick = () => ov.remove(); ov.append(card); document.body.append(ov);
     };
     const grava = async (fn, msg) => { const antes = JSON.parse(JSON.stringify(d.itens)); fn(d.itens); pinta(); if (await gravaJson(m.arq, dd => { dd.itens = dd.itens || []; fn(dd.itens); }, msg, null)) return true; d.itens.splice(0, d.itens.length, ...antes); pinta(); showNote('Não guardou: voltou como estava. Confere a internet.', true); return false; };
-    const CAMPOS = { musica: [{ nome: 'nome', rotulo: 'Música', tipo: 'texto', obrigatorio: true }, { nome: 'texto', rotulo: 'Sobre', tipo: 'texto_longo' }, { nome: 'falta', rotulo: 'O que falta', tipo: 'texto' }, { nome: 'etapa', rotulo: 'Etapa', tipo: 'escolha', opcoes: ET.map((t, k) => [String(k + 1), t]), padrao: '1' }],
+    const CAMPOS = { musica: [{ nome: 'nome', rotulo: 'Música', tipo: 'texto', obrigatorio: true }, { nome: 'texto', rotulo: 'Sobre', tipo: 'texto_longo' }, { nome: 'falta', rotulo: 'O que falta', tipo: 'texto' }, { nome: 'etapa', rotulo: 'Etapa', tipo: 'escolha', opcoes: ET.map((t, k) => [String(k + 1), t]), padrao: '1' }, { nome: 'prioridade', rotulo: 'Prioridade', tipo: 'escolha', opcoes: [['', 'Sem prioridade'], ['alta', 'Alta'], ['media', 'Média'], ['baixa', 'Baixa']], padrao: '' }, { nome: 'data', rotulo: 'Prazo', tipo: 'data' }],
       setup: [{ nome: 'nome', rotulo: 'Aparelho ou pessoa', tipo: 'texto', obrigatorio: true }, { nome: 'grupo', rotulo: 'Grupo (Som, Instrumentos...)', tipo: 'texto', obrigatorio: true }, { nome: 'texto', rotulo: 'Detalhe', tipo: 'texto_longo' }, { nome: 'foto', rotulo: 'Foto do aparelho', tipo: 'foto' }, { nome: 'tipo', rotulo: 'Ícone', tipo: 'escolha', opcoes: [['amp', 'Amplificador'], ['pedal', 'Pedaleira'], ['teclas', 'Teclado'], ['mic', 'Microfone'], ['interface', 'Interface'], ['guitarra', 'Guitarra'], ['gente', 'Pessoa']], padrao: 'interface' }, { nome: 'bloqueado', rotulo: 'Já tenho?', tipo: 'escolha', opcoes: [['', 'Já tenho'], ['1', 'Ainda não (silhueta ???)']], padrao: '' }],
       ideia: [{ nome: 'nome', rotulo: 'Ideia', tipo: 'texto', obrigatorio: true }, { nome: 'grupo', rotulo: 'Grupo (Cards, Reels...)', tipo: 'texto', obrigatorio: true }, { nome: 'texto', rotulo: 'Detalhe', tipo: 'texto_longo' }] };
     const NOME_SEC = { musica: 'Música', setup: 'Aparelho', ideia: 'Ideia' };
     const form = (sec, it) => edFormulario({ titulo: (it ? 'Editar' : 'Novo') + ' · ' + NOME_SEC[sec], campos: CAMPOS[sec], v: it ? Object.assign({}, it, { etapa: String(it.etapa || 1) }) : {},
-      aoSalvar: async f => { const v = Object.assign({}, f); if (v.etapa) v.etapa = +v.etapa; if (it) await grava(l => { const x = l.find(y => y.id === it.id); if (x) Object.assign(x, v, { atualizado: edAgora() }); }, 'Música: item editado pelo app'); else await grava(l => l.push(Object.assign({ id: edNovoId(v.nome), secao: sec }, v, { criado: edAgora() })), 'Música: item novo pelo app'); },
-      aoApagar: it ? async () => { const q = edAgora(); if (await grava(l => { const x = l.find(y => y.id === it.id); if (x) x.apagado = q; }, 'Música: item apagado pelo app (fica guardado)')) edFaixaDesfazer('Apagado', () => grava(l => { const x = l.find(y => y.id === it.id); if (x) delete x.apagado; }, 'Apagado desfeito pelo app')); } : null });
+      aoSalvar: async f => { const v = Object.assign({}, f); if (v.etapa) v.etapa = +v.etapa; if (it) await grava(l => { const x = l.find(y => y.id === it.id); if (x) { if (sec === 'musica' && v.etapa && v.etapa !== (x.etapa || 1)) (x.historico = x.historico || []).push({ etapa: v.etapa, quando: edAgora() }); Object.assign(x, v, { atualizado: edAgora() }); } }, 'Música: item editado pelo app'); else await grava(l => l.push(Object.assign({ id: edNovoId(v.nome), secao: sec }, v, { criado: edAgora() }, sec === 'musica' ? { historico: [{ etapa: v.etapa || 1, quando: edAgora() }] } : {})), 'Música: item novo pelo app'); },   // mudar a etapa pelo formulário também grava no histórico
+      aoApagar: it ? () => confirmaApagar('"' + it.nome + '"', async () => { const q = edAgora(); if (await grava(l => { const x = l.find(y => y.id === it.id); if (x) x.apagado = q; }, 'Música: item apagado pelo app (fica guardado)')) edFaixaDesfazer('Apagado', () => grava(l => { const x = l.find(y => y.id === it.id); if (x) delete x.apagado; }, 'Apagado desfeito pelo app')); }) : null });
     const agrupa = l => { const g = new Map(); l.forEach(i => { const k = i.grupo || ''; if (!g.has(k)) g.set(k, []); g.get(k).push(i); }); return [...g]; };
     const lapis = (sec, x) => { const b = edMini('note', 'Editar ' + x.nome, () => form(sec, x)); b.classList.add('tm-ed'); return b; };
     // Gravar ideia na hora (útil de verdade, May 12/11 22:10): grava, sobe o áudio pra musica/audios/ e já cria a música na etapa Ideia; falhou = avisa e não cria nada
@@ -3908,31 +3910,37 @@ function abreMusica(m) {
     };
     const resumo = elD('div', 'tm-resumo'), rtx = elD('div'); resumo.innerHTML = MUS_MARCA; resumo.append(rtx);
     const abas = elD('div', 'tm-abas'); abas.setAttribute('role', 'tablist'); const corpo = elD('div', 'tm-painel'); c.append(resumo, abas, corpo);
+    const trocaAba = id => { if (id === aba) return; rolagem[aba] = pCorpo.scrollTop; const dir = ABA_ORD.indexOf(id) > ABA_ORD.indexOf(aba) ? 1 : -1; aba = id; store.set('mus-aba', id); pinta(); vemDoLado(corpo, dir); requestAnimationFrame(() => { pCorpo.scrollTop = rolagem[id] || 0; }); };   // toque na aba também entra deslizando do lado dela (o dedo pro lado já troca pelo gesto comum do app) e cada aba volta na rolagem onde estava
     const pinta = () => {
       const mus = vivos('musica'), naIdeia = mus.filter(x => (x.etapa || 1) === 1).length;
       rtx.replaceChildren(elD('b', '', mus.length + (mus.length === 1 ? ' música em andamento' : ' músicas em andamento')), elD('span', '', !mus.length ? 'toque no + pra começar' : naIdeia === mus.length ? 'todas ainda na etapa de ideia' : naIdeia + ' ainda na ideia'));
-      abas.replaceChildren(...[['musica', 'Músicas'], ['pratica', 'Tocar'], ['manut', 'Cuidar'], ['setup', 'Setup'], ['ideia', 'Ideias']].map(([id, rot]) => { const b = elD('button', 'tm-aba', rot); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(aba === id)); b.onclick = () => { aba = id; store.set('mus-aba', id); pinta(); }; return b; }));
+      abas.replaceChildren(...ABA_ORD.map(id => { const b = elD('button', 'tm-aba'); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(aba === id)); b.innerHTML = ICO_ABA[id]; b.append(elD('span', '', ROT_ABA[id])); b.onclick = () => trocaAba(id); return b; }));
       const ABAS_M = [['musica', 'Músicas'], ['pratica', 'Tocar'], ['manut', 'Cuidar'], ['setup', 'Setup'], ['ideia', 'Ideias']], raiz = corpo, PC = document.body.classList.contains('web') && matchMedia('(min-width: 1280px)').matches;   // no PC as abas viram colunas, o mesmo conteúdo de cada uma lado a lado (Sigma #240)
       raiz.replaceChildren(); raiz.classList.toggle('tm-colunas', PC);
       const GRUPO = { musica: 0, pratica: 1, manut: 1, setup: 2, ideia: 0 }, colunas = PC ? [0, 1, 2].map(() => { const s = elD('div', 'tm-coluna'); raiz.append(s); return s; }) : null;   // no PC: Músicas e Ideias | Tocar e Cuidar | Setup, cada coluna rolando sozinha (Sigma 15/11 11:55 e 14:18)
       (PC ? ABAS_M : ABAS_M.filter(([id]) => id === aba)).forEach(([aba, rot]) => { const corpo = PC ? elD('section', 'tm-col') : raiz; if (PC) { corpo.append(elD('h2', 'tm-col-tit', rot)); colunas[GRUPO[aba]].append(corpo); }
       if (aba === 'musica') {
         corpo.append(gravador());
-        const quando = x => { const m = String(x.atualizado || x.criado || '').match(/^(\d\d)\/(\d\d)\/(\d{4})/); return m ? m[3] + m[2] + m[1] : '0'; }, parada = vivos('musica').filter(x => (x.etapa || 1) < 5).sort((a, b) => quando(a).localeCompare(quando(b)))[0];
-        if (parada) { const h = elD('div', 'tm-hoje'); h.append(elD('small', '', 'Hoje, 15 minutos'), elD('b', '', parada.nome), elD('span', '', parada.falta ? 'Falta: ' + parada.falta : 'Próximo passo: ' + ET[Math.min(4, (parada.etapa || 1))])); corpo.append(h); }   // ideia da Lyra 13/11: puxa a música mais parada e o que falta, pra ela pegar 15 min
+        const quando = x => { const m = String(x.atualizado || x.criado || '').match(/^(\d\d)\/(\d\d)\/(\d{4})/); return m ? m[3] + m[2] + m[1] : '0'; }, parada = vivos('musica').filter(x => (x.etapa || 1) < NE).sort((a, b) => quando(a).localeCompare(quando(b)))[0];
+        if (parada) { const h = elD('div', 'tm-hoje'); h.append(elD('small', '', 'Hoje, 15 minutos'), elD('b', '', parada.nome), elD('span', '', parada.falta ? 'Falta: ' + parada.falta : 'Próximo passo: ' + ET[Math.min(NE - 1, (parada.etapa || 1))])); corpo.append(h); }   // ideia da Lyra 13/11: puxa a música mais parada e o que falta, pra ela pegar 15 min
         const l = vivos('musica'); if (!l.length) corpo.append(elD('div', 'tm-vazio', 'Nenhuma música ainda.'));
         l.forEach((x, n) => {
-          const e = Math.min(5, Math.max(1, x.etapa || 1)), a = elD('article', 'tm-faixa'), topo = elD('div', 'tm-faixa-topo'), tx = elD('div');
+          const e = Math.min(NE, Math.max(1, x.etapa || 1)), a = elD('article', 'tm-faixa'), topo = elD('div', 'tm-faixa-topo'), tx = elD('div');
           tx.append(lapis('musica', x), elD('h3', '', x.nome)); if (x.texto) tx.append(elD('p', '', x.texto)); topo.append(elD('div', 'tm-num', String(n + 1).padStart(2, '0')), tx); a.append(topo);
           if (x.audio) { const ou = elD('button', 'tm-ouvir', '▶ Ouvir a ideia' + (x.dur ? ' · ' + Math.floor(x.dur / 60) + ':' + pad(x.dur % 60) : '')); ou.type = 'button'; ou.onclick = async () => { if (tocando) { tocando.pause(); tocando = null; ou.textContent = '▶ Ouvir a ideia'; return; } ou.textContent = 'Abrindo…'; try { const u = await fotoUrl(x.audio, true); tocando = new Audio(u); tocando.onended = () => { tocando = null; ou.textContent = '▶ Ouvir a ideia'; }; await tocando.play(); ou.textContent = '■ Parar'; } catch (e) { tocando = null; ou.textContent = '▶ Ouvir a ideia'; showNote('Não tocou: confere a internet.', true); } }; a.append(ou); }
           const fd = elD('div', 'tm-onda' + (x.audio ? '' : ' muda')); fd.setAttribute('role', 'button'); fd.setAttribute('aria-label', 'Subir a etapa de ' + x.nome);   // #321 (análise externa 14/11): a forma de onda do próprio áudio da ideia no lugar da barra; sem áudio = linha reta, nada inventado
-          const barras = []; for (let k = 0; k < MUS_BARRAS; k++) { const r = elD('i', (k + 1) / MUS_BARRAS <= e / 5 + 1e-9 ? (e === 5 ? 'on pico' : 'on') : ''); barras.push(r); fd.append(r); }
+          const barras = []; for (let k = 0; k < MUS_BARRAS; k++) { const r = elD('i', (k + 1) / MUS_BARRAS <= e / NE + 1e-9 ? (e === NE ? 'on pico' : 'on') : ''); barras.push(r); fd.append(r); }
           if (x.audio) ondaDe(x.audio).then(pk => { if (pk) barras.forEach((r, k) => { r.style.height = Math.max(8, Math.round(pk[k] * 100)) + '%'; }); });
-          const bt = elD('b', 'tm-botao'); bt.style.left = (e * 20) + '%'; fd.append(bt);
+          const bt = elD('b', 'tm-botao'); bt.style.left = (e / NE * 100) + '%'; fd.append(bt);
           if (!x.audio) fd.append(elD('small', 'tm-onda-sem', 'Sem áudio ainda'));
-          fd.onclick = () => { const nova = e >= 5 ? 1 : e + 1; grava(ll => { const y = ll.find(z => z.id === x.id); if (y) { y.etapa = nova; y.atualizado = edAgora(); } }, 'Música: etapa de ' + x.nome + ' foi pra ' + ET[nova - 1] + ' pelo app'); };   // tocar no fader sobe uma etapa (depois de Finalizar volta pra Ideia)
-          const et = elD('div', 'tm-etapas'); ET.forEach((t, k) => et.append(elD('span', k + 1 === e ? 'atual' : '', t))); a.append(fd, et);
+          fd.onclick = async () => { const nova = e >= NE ? 1 : e + 1, q = edAgora(); if (await grava(ll => { const y = ll.find(z => z.id === x.id); if (y) { y.etapa = nova; y.atualizado = q; (y.historico = y.historico || []).push({ etapa: nova, quando: q }); } }, 'Música: etapa de ' + x.nome + ' foi pra ' + ET[nova - 1] + ' pelo app')) edFaixaDesfazer('Etapa: ' + ET[nova - 1], () => grava(ll => { const y = ll.find(z => z.id === x.id); if (y) { y.etapa = e; const h = (y.historico || []).filter(z => z.quando === q && z.etapa === nova && !z.apagado).pop(); if (h) h.apagado = edAgora(); } }, 'Música: etapa de ' + x.nome + ' voltou pra ' + ET[e - 1] + ' (desfeito)'), 3000); };   // tocar no fader sobe uma etapa e grava no histórico; 3 s pra desfazer (Sigma 07:24); depois de Finalizada volta pra Ideia
+          const et = elD('div', 'tm-etapas'); et.setAttribute('aria-label', 'Etapa ' + e + ' de ' + NE + ': ' + ET[e - 1]); ET.forEach((t, k) => { const s = elD('span', k + 1 === e ? 'atual' : k + 1 < e ? 'foi' : '', k + 1 === e ? e + '/' + NE + ' · ' + t : ''); s.title = t; et.append(s); }); a.append(fd, et);   // 8 etapas em 390 px: só a atual com nome, as outras são ponto
           if (x.falta) { const f = elD('p', 'tm-falta'); f.append(elD('small', '', 'O que falta'), document.createTextNode(x.falta)); a.append(f); }
+          if (x.prioridade || x.data) { const ch = elD('div', 'tm-chips'); if (x.prioridade) ch.append(elD('span', 'tm-chip pri-' + x.prioridade, 'Prioridade ' + ({ alta: 'alta', media: 'média', baixa: 'baixa' }[x.prioridade] || x.prioridade))); if (x.data) ch.append(elD('span', 'tm-chip', 'Prazo ' + edDataBr(x.data))); a.append(ch); }
+          const hs = (x.historico || []).filter(z => !z.apagado); if (hs.length) { const hb = elD('button', 'tm-hist-bt'), hl = elD('ol', 'tm-hist'); hb.type = 'button'; hb.append(elD('b', '', 'Histórico de etapas (' + hs.length + ')'), elD('span', '', 'Toca pra ver')); hl.hidden = true; hb.onclick = () => { hl.hidden = !hl.hidden; hb.lastChild.textContent = hl.hidden ? 'Toca pra ver' : 'Toca pra fechar'; };
+            hs.slice().reverse().forEach(z => { const li = elD('li'), xb = elD('button', 'tm-hist-x'), igual = w => w.quando === z.quando && w.etapa === z.etapa, dela = ll => ((ll.find(y => y.id === x.id) || {}).historico || []); xb.type = 'button'; xb.innerHTML = icone('close'); xb.setAttribute('aria-label', 'Apagar esta linha do histórico');
+              xb.onclick = () => confirmaApagar('esta linha do histórico', async () => { const qd = edAgora(); if (await grava(ll => { const w = dela(ll).find(w => igual(w) && !w.apagado); if (w) w.apagado = qd; }, 'Música: linha do histórico apagada pelo app (fica guardada)')) edFaixaDesfazer('Linha apagada', () => grava(ll => { const w = dela(ll).find(w => igual(w) && w.apagado === qd); if (w) delete w.apagado; }, 'Música: linha do histórico de volta')); });
+              li.append(elD('b', '', ET[(z.etapa || 1) - 1] || 'Etapa ' + z.etapa), elD('small', '', z.quando), xb); hl.append(li); }); a.append(hb, hl); }   // histórico das mudanças de etapa (texto da May, item 4); linha errada = apagado c/ desfazer
           corpo.append(a);
         });
       } else if (aba === 'pratica') {   // tocar 2x por semana e anotar (May 13/11 18:53): instrumento, o que usou e uma nota; conta a semana de segunda a domingo
