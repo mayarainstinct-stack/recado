@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.627">
+<meta name="app-versao" content="2026-11-25.628">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.627"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.628"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -4285,7 +4285,26 @@ function abreMusica(m) {
           bP.onclick = async () => { const antes = !!G.pausado; G.pausado = !antes; pausaAte = 0; pintaCtrl(); if (!(await gravaTopo(o => { o.giro = Object.assign({}, G); }, 'Música: balanço da vitrine ' + (G.pausado ? 'pausado' : 'ligado') + ' pelo app', o => { G.pausado = antes; o.giro = Object.assign({}, G); }))) pintaCtrl(); };
           bV.onclick = async () => { const antes = G.vel, k = (VEL.findIndex(v => v[0] === G.vel) + 1) % VEL.length; G.vel = VEL[k][0]; pintaCtrl(); if (!(await gravaTopo(o => { o.giro = Object.assign({}, G); }, 'Música: balanço da vitrine ' + VEL[k][1].toLowerCase() + ' pelo app', o => { G.vel = antes; o.giro = Object.assign({}, G); }))) pintaCtrl(); };
           bPed.onclick = async () => { const antes = d.pedestal, k = PEDS[(PEDS.findIndex(p => p[0] === ped) + 1) % PEDS.length][0]; d.pedestal = k; mostra('vitrine'); if (!(await gravaJson(m.arq, dd => { dd.pedestal = k; }, 'Música: pedestal da vitrine virou ' + k + ' pelo app', null))) { d.pedestal = antes; mostra('vitrine'); showNote('Não guardou: voltou como estava. Confere a internet.', true); } };
-          pintaCtrl(); miolo.append(palco, ctrl, cartao);
+          const LUZ_C = [['vermelho', 'Vermelho', '240,40,58'], ['amarelo', 'Amarelo', '255,214,10'], ['branco', 'Branco quente', '255,236,200'], ['azul', 'Azul', '64,156,255'], ['verde', 'Verde', '52,209,122']], LUZ_F = [['apagada', 'Apagada', 0], ['fraca', 'Fraca', .45], ['media', 'Média', 1], ['forte', 'Forte', 1.6]];   // #449 1b (Sigma 13:37): luz do pedestal, cor c/ nome no toque e contorno na escolhida; sem "luz" no JSON fica a luz de cada pedestal
+          let L = d.luz && LUZ_C.some(c => c[0] === d.luz.cor) && LUZ_F.some(f => f[0] === d.luz.forca) ? Object.assign({}, d.luz) : null;
+          const bLuz = elD('button', 'tv-ct tv-luzbt'), luzP = elD('div', 'tv-luzp'), luzDiz = elD('small', 'tv-luz-diz'), linC = elD('div', 'tv-luz-lin'), linF = elD('div', 'tv-luz-lin'), bVolta = elD('button', 'tv-luz-volta', 'Voltar à luz do pedestal'); bLuz.type = bVolta.type = 'button'; luzP.hidden = true; luzP.id = 'tv-luzp'; bLuz.setAttribute('aria-controls', 'tv-luzp');
+          const corPad = () => ped === 'palco' ? 'amarelo' : ped === 'case' ? 'branco' : 'vermelho';
+          const bCor = LUZ_C.map(c => { const b = elD('button', 'tv-luz-cor'); b.type = 'button'; b.style.setProperty('--c', c[2]); b.setAttribute('aria-label', c[1]); b.onclick = () => escolheLuz({ cor: c[0], forca: L ? L.forca : 'media' }, c[1]); return b; });
+          const bFor = LUZ_F.map(f => { const b = elD('button', 'tm-pr-chip tv-luz-f', f[1]); b.type = 'button'; b.onclick = () => escolheLuz({ cor: L ? L.cor : corPad(), forca: f[0] }, f[1]); return b; });
+          const contaLuz = () => { if (!L) return 'Luz do pedestal, como veio'; const c = LUZ_C.find(x => x[0] === L.cor), f = LUZ_F.find(x => x[0] === L.forca); return 'Cor: ' + c[1] + ' · Força: ' + f[1]; };
+          const pintaLuz = () => { const c = L && LUZ_C.find(x => x[0] === L.cor), f = L && LUZ_F.find(x => x[0] === L.forca), dot = elD('i', 'tv-luz-dot');
+            palco.classList.toggle('luz-on', !!L); if (L) { palco.style.setProperty('--luz-c', c[2]); palco.style.setProperty('--luz-a', String(f[2])); dot.style.background = f[2] ? 'rgb(' + c[2] + ')' : 'transparent'; } else { palco.style.removeProperty('--luz-c'); palco.style.removeProperty('--luz-a'); }
+            bLuz.replaceChildren(elD('small', '', 'Luz'), dot); bLuz.setAttribute('aria-label', 'Luz: ' + (L ? c[1] + ', ' + f[1] : 'do pedestal')); bLuz.setAttribute('aria-expanded', String(!luzP.hidden));
+            bCor.forEach((b, i) => { const on = !!L && LUZ_C[i][0] === L.cor; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', String(on)); });
+            bFor.forEach((b, i) => { const on = !!L && LUZ_F[i][0] === L.forca; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }); bVolta.hidden = !L; };
+          const escolheLuz = async (novo, nome) => { const antes = L, dAntes = d.luz; L = novo; if (novo) d.luz = Object.assign({}, novo); else delete d.luz; pintaLuz(); luzDiz.textContent = contaLuz();
+            if (!(await gravaJson(m.arq, dd => { if (novo) dd.luz = Object.assign({}, novo); else delete dd.luz; }, 'Música: luz da vitrine ' + (novo ? novo.cor + ' ' + novo.forca : 'do pedestal') + ' pelo app', null))) { L = antes; if (dAntes) d.luz = dAntes; else delete d.luz; pintaLuz(); luzDiz.textContent = contaLuz(); showNote('Não guardou: voltou como estava. Confere a internet.', true); } };
+          bVolta.onclick = () => escolheLuz(null, '');
+          linC.append(elD('b', '', 'Cor'), ...bCor); linF.append(elD('b', '', 'Força'), ...bFor); luzDiz.setAttribute('aria-live', 'polite'); luzDiz.textContent = contaLuz(); luzP.append(linC, linF, luzDiz, bVolta);
+          bLuz.onclick = () => { if (luzP.hidden) { luzP.hidden = false; pintaLuz(); if (!reduz && luzP.animate) luzP.animate([{ clipPath: 'inset(0 0 100% 0)', transform: 'translateY(-8px)' }, { clipPath: 'inset(0 0 0 0)', transform: 'none' }], { duration: 240, easing: 'cubic-bezier(.2,.9,.25,1)' }); return; }
+            const fecha = () => { luzP.hidden = true; pintaLuz(); }; if (reduz || !luzP.animate) return fecha(); luzP.animate([{ clipPath: 'inset(0 0 0 0)', transform: 'none' }, { clipPath: 'inset(0 0 100% 0)', transform: 'translateY(-8px)' }], { duration: 200, easing: 'cubic-bezier(.4,0,.8,.4)' }).onfinish = fecha; };
+          pintaLuz(); ctrl.append(bLuz);
+          pintaCtrl(); miolo.append(palco, ctrl, luzP, cartao);
           const VIRA = 1, N = vit.length, S = 60, mod = i => ((i % N) + N) % N, lift = vit.map((x, i) => i === sel ? 70 : 0), ang = vit.map(() => 0), zoom = r => .8 + .2 * Math.max(0, Math.min(1, 2 - 2 * Math.abs(r))), incl = r => { const a = Math.abs(r); return Math.sign(r) * (a <= 1 ? 15 * a : Math.min(25, 15 + 10 * (a - 1))); };   // May 25/11 09:0x: vizinhas levemente viradas pro centro, impressão de giro (Sigma: 15 e 25 graus)   // #449 (May 25/11 07:57 e 08:24): fileira juntinha; o da frente fica de frente, grande e aceso, só balança; os outros mais escuros
           let p = sel, alvo = sel, pausaAte = 0, ultimo = performance.now(), fase = 0, quadro = 0, arrastou = false, mostrado = -1, dedo = false;
           const solta2 = () => { if (dedo) { dedo = false; pausaAte = performance.now() + 6000; } };
