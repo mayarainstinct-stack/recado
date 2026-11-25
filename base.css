@@ -2994,6 +2994,8 @@ body .painel.tema-cupom .fin-res3 .neg b { color: #A4262C; }   /* Sobra negativa
 .pjm-tela .pjm-hero .pjm-logo { max-height: 150px; width: auto; max-width: 100%; object-fit: contain; }
 .pjm-tela .pjm-h-sandro { padding: 10px; }
 .pjm-tela .pjm-h-sandro .pjm-logo { max-height: 160px; border-radius: 10px; }
+.pjm-tela .pjm-h-sandro { margin-top: -16px; padding-top: 0; }
+.pjm-tela .pjm-h-sandro .pjm-logo { border-radius: 0 0 10px 10px; }
 .pjm-res .pjm-botoes { margin-bottom: 20px; }
 .pjm-abas.muitas { gap: 4px; }
 .pjm-abas.muitas .pjm-aba { padding: 7px 8px; font-size: .86rem; }
