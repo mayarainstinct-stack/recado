@@ -4179,3 +4179,7 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .dbx-pe .dbx-bt { width: auto; max-width: 100%; pointer-events: auto; padding: 10px 20px; border-radius: 999px; box-shadow: 0 10px 28px rgba(0,0,0,.45); }
 .dbx-pe .dbx-bt span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dbx { grid-template-columns: minmax(0, 1fr); }
+.t-musica .tm-fav { color: #BDB5AF; } .t-musica .tm-fav.on { color: #FFD60A; } .t-musica .tm-fav.on svg { fill: currentColor; }
+.t-musica .tm-favs-dica { display: block; color: var(--tm-mudo); font-size: 13px; margin-top: 2px; }
+.tm-busca-card .tm-cat-fav svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; } .tm-busca-card .tm-cat-fav.on svg { fill: currentColor; }
+.t-musica .tm-faixa-topo > div:last-child { flex: 1; min-width: 0; }
