@@ -1,3 +1,22 @@
+// v573 (25/11/2026): #437 volta do Sigma: carteirinha em tela cheia com X embaixo à direita e 2 bolinhas dizendo que tem verso.
+// v572 (25/11/2026): #445 volta do Sigma: tesoura da foto menor (32 px, toque de 40 px) no canto de baixo, sem encostar no X do cartão.
+// v571 (25/11/2026): #458 E-controle e S.L.: foco dos campos c/ contorno no destaque, placeholder na cor do rótulo, placar a 12 px.
+// v570 (25/11/2026): #457 formulário do E-controle e da S.L. nas cores do projeto (S.L. azul c/ botão amarelo e texto escuro; E-controle verde c/ destaque branco).
+// v569 (25/11/2026): Projetinhos fase 2 (#456): no E-controle e na S.L., pedido com Estado, Prioridade, Prazo e Quem (2 por linha), feitoEm automático, placar de 5 com Atrasadas; Próxima ação, Anotação rápida e aba Diário em menu/projetos/<id>.json com Apagados/Restaurar.
+// v568 (25/11/2026): Projetinhos fase 1: Como está agora do E-controle e da S.L. com Ler tudo / Mostrar menos (abre deslizando a altura, com teto pra o Resumo não rolar).
+// v567 (25/11/2026): Projetinhos fase 1 (volta do Sigma): placar do E-controle e da S.L. só com Pendentes e Feitas (Andamento, Aguardando e Atrasadas voltam na fase 2).
+// v566 (25/11/2026): Projetinhos fase 1: apagar pedido, contato e texto guarda em apagados[] com a posição (desfazer volta no mesmo lugar) em todos os projetos; no E-controle e na S.L., Apagados (N) com Restaurar, aba Sobre e Resumo sem rolar com placar e botões em 1 linha.
+// v565 (25/11/2026): Estúdio JWA fase 1: nome no Fiz hoje fixo alinhado à esquerda nas 2 linhas.
+// v564 (25/11/2026): Estúdio JWA fase 1: nome longo no Fiz hoje fixo quebra em 2 linhas; mais de 3 cuidados na Vitrine mostram pontinhos e +N no lugar do quadro cortado.
+// v563 (25/11/2026): Estúdio JWA fase 1 (3ª volta do Sigma): Fiz hoje fixo só na Vitrine (e pausa o giro), Cuidados com o recorte de cada instrumento, quadros da Vitrine sem texto cortado e sem os Fiz hoje de dentro, troca do cartão recortada numa janela.
+// v562 (25/11/2026): Estúdio JWA fase 1 (2ª volta do Sigma): giro para com o dedo no cartão ou formulário aberto, cartão de altura fixa que troca deslizando, folga em cima do instrumento, Fiz hoje fixo embaixo à direita, botões do giro com o estado.
+// v561 (25/11/2026): Estúdio JWA fase 1 (volta do Sigma): giro do anel com pausar e 3 velocidades gravados no musica.json, cuidado personalizado (lança, edita, apaga com desfazer), tipo, descrição e fotos do instrumento no cartão, Vinil e Case com 1 acento e contraste 4,5:1.
+// v560 (25/11/2026): Estúdio JWA fase 1: a aba Cuidar da Música ganha Vitrine (anel de instrumentos com 4 pedestais, plano B em 2D), Cuidados e Histórico; alerta de cuidado chegando (7 dias).
+// v559 (25/11/2026): vários vídeos de uma vez na conversa: fila um por vez, cartão parado com nome e estado, recusado fica vermelho até tirar (#445). Falta teste no iPhone.
+// v558 (24/11/2026): Carteirinha vira atalho na tela inicial e na Saúde, abre direto o cartão em tela cheia (#437).
+// v557 (24/11/2026): chamada de longe diz "em alguns minutos" (a sequência espera 3 a 8 min), Sigma #442.
+// v556 (24/11/2026): chamada de longe (3 toques no cartão) também pro Sigma e o Hermes no PC1; o pedido leva o nome do robô (#442).
+// v555 (24/11/2026): foto em tela cheia ganha o botão 100% (cada pixel da imagem num pixel da tela, rola com o dedo; Ajustar volta), #440. Volta o Ver cores do 3D (v553) e o cache do modelo por sha (v554), que o espelho das 13:45 tinha tirado.
 // v553 (24/11/2026): Jogando A2 sai do menu e vira o projeto do canal todo em Projetinhos; botão de projeto abre tela do app (controles e animações, vídeos, marca).
 // v552 (24/11/2026): Mídia virou Jogando A2 (controles, animações, vídeos e marca); ícones com a cara da marca no Jogando A2 e nos Jogos.
 // v551 (24/11/2026): Financeiro numa tela só (fonte única contas/financas.json, sem planilha), com cara de app no celular; ícone de carteira; barra de cima com o ícone do Menu em todas as telas.

@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-24.553">
+<meta name="app-versao" content="2026-11-25.573">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-23.550"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.573"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -162,6 +162,7 @@ const ICONES_SVG = {
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5"/>',
   money: '<circle cx="12" cy="12" r="9"/><path d="M14.5 9.5C14 8.5 13.2 8 12 8c-1.5 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1 2-2.5 2c-1.2 0-2-.5-2.5-1.500M12 6v2M12 16v2"/>',
   doc: '<path d="M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6"/>',
+  carteirinha: '<rect x="2.5" y="5.5" width="19" height="13" rx="2.2"/><path d="M2.5 9.5h19"/><circle cx="7.5" cy="14" r="1.6"/><path d="M11 13h7M11 15.5h5"/>',
   link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
   game: '<path d="M6 11h4M8 9v4M15 12h.01M18 10h.01"/><path d="M17.3 5H6.7a4 4 0 0 0-3.96 3.43L2 14.5A3 3 0 0 0 7 16.9L9 15h6l2 1.9a3 3 0 0 0 5-2.4l-.74-6.07A4 4 0 0 0 17.3 5z"/>',
   moon: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.500z"/>',
@@ -942,11 +943,13 @@ const modelosDe = t => [...String(t || '').matchAll(RE_MODELO)].map(m => m[1]);
 const TRES = 'https://cdn.jsdelivr.net/npm/three@0.160.0';
 let tresP = null;
 const carregaTres = () => tresP || (tresP = Promise.all([import(TRES + '/+esm'), import(TRES + '/examples/jsm/controls/OrbitControls.js/+esm'), import(TRES + '/examples/jsm/loaders/STLLoader.js/+esm')]).then(([T, oc, sl]) => ({ T, OrbitControls: oc.OrbitControls, STLLoader: sl.STLLoader })).catch(e => { tresP = null; throw e; }));
-const modeloBuf = {};
+const modeloBuf = {}, shaModelo = {};
+// Versão do modelo (v554, May 24/11 12:58 "ainda está a versão antiga"): o STL refeito tem o mesmo nome, então o aparelho guarda por caminho + sha do GitHub; sem rede abre o último guardado
+const shaDe = path => shaModelo[path] || (shaModelo[path] = api(apiDe(path), { tempo: 20000 }).then(r => r.ok ? r.json() : null).then(j => (j && j.sha) || null).catch(() => null).then(sh => { if (!sh) delete shaModelo[path]; return sh; }));
 function baixaModelo(path) {
-  return modeloBuf[path] || (modeloBuf[path] = fotoDoCache(path).then(buf => buf || api(apiDe(path), { ...RAW, cache: 'default', tempo: 120000 })
+  return modeloBuf[path] || (modeloBuf[path] = shaDe(path).then(sha => fotoDoCache(sha ? path + '@' + sha : path).then(buf => buf || api(apiDe(path), { ...RAW, cache: sha ? 'no-cache' : 'default', tempo: 120000 })
     .then(r => { if (!r.ok) { const e = new Error('modelo ' + r.status); e.status = r.status; throw e; } return r.arrayBuffer(); })
-    .then(b => { guardaFoto(path, b); return b; })).catch(e => { delete modeloBuf[path]; throw e; }));
+    .then(b => { if (sha) guardaFoto(path + '@' + sha, b); guardaFoto(path, b); return b; }))).catch(e => { delete modeloBuf[path]; throw e; }));
 }
 const miniKey = p => 'mini3d2:' + p;
 async function geometriasDe(L, buf, path) {   // STL ou 3MF -> geometrias sem índice, já em pé (Z do fatiador vira Y)
@@ -965,7 +968,8 @@ let miniR = null, miniRodando = false;
 const miniFila = [], miniEspera = new Map();
 const miniObs = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; miniObs.unobserve(e.target); const x = miniEspera.get(e.target); miniEspera.delete(e.target); if (x) pedeMini(x[0], x[1]); }), { rootMargin: '200px 0px' }) : null;
 function miniDe(el, path, aplica) {
-  const u = store.get(miniKey(path)); if (u) { aplica(u); return; }
+  const u = store.get(miniKey(path));
+  if (u) { aplica(u); shaDe(path).then(sh => { if (sh && store.get(miniKey(path) + ':sha') !== sh) { store.set(miniKey(path), ''); pedeMini(path, aplica); } }); return; }
   if (!miniObs) return; miniEspera.set(el, [path, aplica]); miniObs.observe(el);
 }
 function pedeMini(path, aplica) { const ja = miniFila.find(x => x[0] === path); if (ja) ja[1].push(aplica); else miniFila.push([path, [aplica]]); proxMini(); }
@@ -990,7 +994,7 @@ async function geraMini(path) {
   miniR.render(cena, camera);
   const u = miniR.domElement.toDataURL('image/png');
   malhas.forEach(g => g.dispose()); mat.dispose();
-  store.set(miniKey(path), u); return u;
+  store.set(miniKey(path), u); shaDe(path).then(sh => store.set(miniKey(path) + ':sha', sh || '')); return u;
 }
 function cartaoModelo(path) {
   const b = document.createElement('button'); b.type = 'button'; b.className = 'm3d-cartao';
@@ -1006,14 +1010,17 @@ async function abreModelo(path) {
   const z = elD('div', 'm3d'), palco = elD('div', 'm3d-palco'), barra = elD('div', 'm3d-barra'), nome = elD('span', 'm3d-nome', path.split('/').pop());
   const cam = document.createElement('button'); cam.type = 'button'; cam.className = 'm3d-bt'; cam.textContent = 'Camadas'; cam.setAttribute('aria-pressed', 'false'); cam.disabled = true;
   const cen = document.createElement('button'); cen.type = 'button'; cen.className = 'm3d-bt'; cen.textContent = 'Centralizar'; cen.disabled = true;
+  const cor = document.createElement('button'); cor.type = 'button'; cor.className = 'm3d-bt'; cor.textContent = 'Ver cores'; cor.setAttribute('aria-pressed', 'false'); cor.hidden = true;
   const x = document.createElement('button'); x.type = 'button'; x.className = 'm3d-x'; x.innerHTML = icone('close'); x.setAttribute('aria-label', 'Fechar');
   const st = elD('div', 'm3d-st', 'Carregando o modelo…');
-  barra.append(nome, cam, cen, x); z.append(palco, barra, st); document.body.append(z);
+  barra.append(nome, cam, cor, cen, x); z.append(palco, barra, st); document.body.append(z);
   let vivo = true, limpa = () => {};
   const fecha = () => { if (!vivo) return; vivo = false; document.removeEventListener('keydown', esc); limpa(); z.classList.add('saindo'); setTimeout(() => z.remove(), 220); };
   const esc = e => { if (e.key === 'Escape') fecha(); };
   document.addEventListener('keydown', esc); x.onclick = e => { e.stopPropagation(); fecha(); };
   try {
+    const arqNome = path.split('/').pop(), pasta = path.slice(0, path.length - arqNome.length);
+    const coresP = api(apiDe(pasta + 'cores.json'), { ...RAW, cache: 'no-cache', tempo: 20000 }).then(r => r.ok ? r.json() : null).then(j => j && j[arqNome]).catch(() => null);   // Ver cores (v553, May 24/11): cores.json na pasta do modelo diz a cor do filamento de cada peça
     const [L, buf] = await Promise.all([carregaTres(), baixaModelo(path)]);
     if (!vivo) return;
     const { T, OrbitControls } = L;
@@ -1065,9 +1072,41 @@ async function abreModelo(path) {
     };
     roda();
     const ro = new ResizeObserver(ajusta); ro.observe(palco);
-    limpa = () => { cancelAnimationFrame(quadro); ro.disconnect(); ctl.dispose(); malhas.forEach(g => g.dispose()); mat.dispose(); matCam.dispose(); r.dispose(); r.forceContextLoss && r.forceContextLoss(); };
+    let grupoCor = null, matsCor = [];
+    limpa = () => { cancelAnimationFrame(quadro); ro.disconnect(); ctl.dispose(); malhas.forEach(g => g.dispose()); mat.dispose(); matCam.dispose(); matsCor.forEach(m => m.dispose()); if (grupoCor) grupoCor.children.forEach(m => m.geometry.dispose()); r.dispose(); r.forceContextLoss && r.forceContextLoss(); };
     st.remove(); cam.disabled = false; cen.disabled = false;
-    cam.onclick = e => { e.stopPropagation(); const on = cam.getAttribute('aria-pressed') !== 'true'; grupo.children.forEach(m => { m.material = on ? matCam : mat; }); cam.setAttribute('aria-pressed', on); };
+    const modo = m => {
+      cam.setAttribute('aria-pressed', m === 'camadas'); cor.setAttribute('aria-pressed', m === 'cores');
+      const separado = m === 'cores' && grupoCor && grupoCor !== grupo;
+      grupo.visible = !separado; if (grupoCor && grupoCor !== grupo) grupoCor.visible = separado;
+      grupo.children.forEach(o => { o.material = m === 'camadas' ? matCam : m === 'cores' && grupoCor === grupo ? matsCor[0] : mat; });
+    };
+    cam.onclick = e => { e.stopPropagation(); modo(cam.getAttribute('aria-pressed') !== 'true' ? 'camadas' : ''); };
+    const cores = await coresP;
+    if (vivo && cores && (cores.cor || (cores.pecas || []).length)) {
+      cor.hidden = false;
+      cor.onclick = async e => {
+        e.stopPropagation();
+        if (cor.getAttribute('aria-pressed') === 'true') { modo(''); return; }
+        if (!grupoCor) {
+          if (cores.cor) { matsCor = [new T.MeshStandardMaterial({ color: cores.cor, roughness: 0.45, metalness: 0, side: T.DoubleSide })]; grupoCor = grupo; }
+          else {
+            cor.disabled = true; cor.textContent = 'Carregando…';
+            try {
+              const g2 = new T.Group();
+              for (const pc of cores.pecas) {
+                const gs = await geometriasDe(L, await baixaModelo(pasta + pc.arq), pc.arq), m2 = new T.MeshStandardMaterial({ color: pc.cor, roughness: 0.45, metalness: 0, side: T.DoubleSide });
+                matsCor.push(m2); gs.forEach(g => g2.add(new T.Mesh(g, m2)));
+              }
+              if (!vivo) return;
+              g2.position.copy(grupo.position); g2.visible = false; cena.add(g2); grupoCor = g2;
+            } catch (err) { cor.textContent = 'Ver cores'; cor.disabled = false; return; }
+            cor.textContent = 'Ver cores'; cor.disabled = false;
+          }
+        }
+        modo('cores');
+      };
+    }
     cen.onclick = e => { e.stopPropagation(); enquadra(); };
   } catch (e) {
     if (!vivo) return;
@@ -1430,12 +1469,13 @@ async function enviar(p, el) {
         }
         // 1) fotos (uma linha "📷 caminho" por foto; o texto vai junto da primeira); a que já subiu não sobe de novo
         for (let k = 0; k < p.fotos.length; k++) {
-          const ft = p.fotos[k]; if (ft.nome || !ft.b64) continue;
+          const ft = p.fotos[k]; if (ft.nome || !(ft.b64 || ft.arq)) continue;
           const doc = ft.rot !== undefined, vid = !!ft.video;   // zip/pdf (📎): vai pra recados-arquivos/, vídeo inteiro pra recados-videos/ (#221), sem reduzir; tempo cresce com o tamanho (4G fraco)
           infoPend(el, p.fotos.length > 1 ? (doc ? 'arquivo ' : vid ? 'vídeo ' : 'foto ') + (k + 1) + '/' + p.fotos.length : doc ? 'subindo arquivo' : vid ? 'subindo vídeo' : 'subindo foto');
+          if (!ft.b64) ft.b64 = await b64DeBlob(ft.arq);   // #445: vídeo vira base64 só aqui, um por vez (vários juntos na memória derrubavam o iPhone)
           const nome = comTirada(nomeArq(doc ? 'recados-arquivos' : vid ? 'recados-videos' : 'recados-fotos', new Date(), k + 1, ft.ext || 'jpg'), !doc && !vid && ft.tirada);
           await apiOk(apiDe(nome), { method: 'PUT', body: JSON.stringify({ message: doc ? 'arquivo do iPhone' : vid ? 'vídeo do iPhone' : 'foto do iPhone', content: ft.b64 }), ...(doc || vid ? { tempo: 90000 + Math.round(ft.b64.length / 25) } : {}) });
-          ft.nome = nome; delete ft.b64; guardaPendente(p);   // caminho da foto que subiu já fica no aparelho
+          ft.nome = nome; delete ft.b64; delete ft.arq; guardaPendente(p);   // caminho da foto que subiu já fica no aparelho
         }
         p.fotos = p.fotos.filter(x => x.nome);
         infoPend(el, horaDe(p.em));
@@ -1808,7 +1848,9 @@ document.addEventListener('paste', e => {
 });
 document.getElementById('foto').onclick = () => { if (!sending) arquivo.click(); };
 // Fotos ficam numa bandeja em cima da caixa (igual WhatsApp): dá pra pôr várias, escrever o texto e só vai ao tocar em Enviar.
-let anexos = [];   // { b64, url }
+let anexos = [];   // { b64, url }; vídeo: { arq, url, video, nome, tam }, com espera (preparando) ou recusa (não coube) não vai no envio (#445)
+const b64DeBlob = b => new Promise((ok, erro) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1] || ''); fr.onerror = erro; fr.readAsDataURL(b); });
+const anexoPronto = a => !a.espera && !a.recusa;
 const bandeja = document.getElementById('anexos');
 const TESOURA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/></svg>';
 function abreCorte(blob) {   // #325: corte em tela cheia, moldura arrastável pelos cantos e pelo meio, formatos e girar; devolve um Blob JPEG ou null
@@ -1849,12 +1891,21 @@ function desenhaBandeja() {
   bandeja.replaceChildren();
   anexos.forEach((a, i) => {
     const d = document.createElement('div'); d.className = 'anexo';
-    let im; if (a.video) { im = document.createElement('video'); im.muted = true; im.playsInline = true; im.setAttribute('playsinline', ''); im.preload = 'metadata'; im.src = a.url + '#t=0.3'; d.classList.add('vid'); }
+    let im; if (a.video && (a.espera || a.recusa)) { d.classList.add('doc', 'vid-parado'); if (a.recusa) d.classList.add('recusa'); im = document.createElement('div'); const est = elD('span', '', a.recusa || a.espera); a.elEstado = est; im.append(elD('b', '', a.nome), est); }
+    else if (a.video) { im = document.createElement('video'); im.muted = true; im.playsInline = true; im.setAttribute('playsinline', ''); im.preload = 'metadata'; im.src = a.url + '#t=0.3'; d.classList.add('vid'); }
     else if (a.rot !== undefined) { d.classList.add('doc'); im = document.createElement('div'); im.innerHTML = icone('doc'); const [nm, tm] = a.rot.split(' · '); im.append(elD('b', '', nm || 'Arquivo'), elD('span', '', tm || '')); }
     else { im = document.createElement('img'); im.src = a.url; im.alt = 'Foto ' + (i + 1); }
     const x = document.createElement('button'); x.type = 'button'; x.innerHTML = icone('close'); x.setAttribute('aria-label', a.rot !== undefined ? 'Tirar este arquivo' : 'Tirar esta foto');
-    x.onclick = () => { if (a.url) URL.revokeObjectURL(a.url); anexos.splice(i, 1); desenhaBandeja(); };
+    x.onclick = () => {   // tirar: o cartão desce pra fora da bandeja e os do lado andam pro lugar dele, nada some do nada (Sigma #445)
+      if (a.tirado) return; a.tirado = true;
+      const fim = () => { if (a.url) URL.revokeObjectURL(a.url); const k = anexos.indexOf(a); if (k >= 0) anexos.splice(k, 1); desenhaBandeja(); };
+      if (!d.animate) return fim();
+      const w = d.offsetWidth; d.style.pointerEvents = 'none';
+      d.animate([{ transform: 'none' }, { transform: 'translateY(115%)' }], { duration: 200, easing: 'cubic-bezier(.5,0,.8,.4)', fill: 'forwards' }).onfinish = () => {
+        d.animate([{ width: w + 'px', marginRight: '0px' }, { width: '0px', marginRight: '-8px' }], { duration: 180, easing: 'ease-in-out', fill: 'forwards' }).onfinish = fim; };
+    };
     d.append(im, x);
+    if (a.video && !a.espera && !a.recusa && a.tam) d.append(elD('small', 'anexo-tam', tamanhoLegivel(a.tam) + (a.reduzido ? ' · 720p' : '')));
     if (!a.video && a.rot === undefined) { const c = document.createElement('button'); c.type = 'button'; c.className = 'anexo-corta'; c.setAttribute('aria-label', 'Cortar esta foto'); c.innerHTML = TESOURA;   // #325 (May 14/11 08:29): cortar antes de enviar
       c.onclick = async () => { const fonte = a.orig || await (await fetch(a.url)).blob(), novo = await abreCorte(fonte); if (!novo) return; try { const rd = await reduzir(novo); URL.revokeObjectURL(a.url); Object.assign(a, { b64: rd.b64, ext: rd.ext, url: URL.createObjectURL(novo), orig: novo }); desenhaBandeja(); } catch (e) { showNote('Não foi possível cortar essa foto.', true); } };
       d.append(c); }
@@ -1914,8 +1965,15 @@ async function quadrosDoVideo(file, maxQ = 20) {
     return out;
   } finally { URL.revokeObjectURL(url); }
 }
-arquivo.addEventListener('change', async () => {
+let filaArq = Promise.resolve();   // #445 (May 24/11 21:53): vários vídeos de uma vez; escolheu de novo no meio = entra na fila, nunca dois diminuindo juntos
+const ehVideo = f => /^video\//.test(f.type) || /\.(mov|mp4|m4v|webm)$/i.test(f.name || '');
+arquivo.addEventListener('change', () => {
   const files = [...arquivo.files]; arquivo.value = ''; if (!files.length || sending) return;
+  const cartoes = new Map(files.filter(f => ehVideo(f) && !ehDocEnvio(f)).map(f => [f, { video: true, nome: (f.name || 'vídeo').replace(/[\[\]\r\n]/g, ' ').trim(), tam: f.size, espera: 'Na fila' }]));
+  cartoes.forEach(c => anexos.push(c)); if (cartoes.size) desenhaBandeja();
+  filaArq = filaArq.then(() => trataArquivos(files, cartoes)).catch(() => {});
+});
+async function trataArquivos(files, cartoes) {
   for (const f of files) {
     if (ehDocEnvio(f)) {   // zip/pdf pela conversa (May, 12/11/2026 18:15): sobe inteiro em recados-arquivos/
       if (f.size > LIMITE_ARQ) { showNote(f.name + ' tem ' + tamanhoLegivel(f.size) + '; o limite é ' + tamanhoLegivel(LIMITE_ARQ) + '. Divide em partes menores e manda de novo.', true); continue; }
@@ -1924,23 +1982,24 @@ arquivo.addEventListener('change', async () => {
       catch (e) { showNote('Não foi possível abrir ' + f.name + '.', true); }
       continue;
     }
-    if (/^video\//.test(f.type) || /\.(mov|mp4|m4v|webm)$/i.test(f.name || '')) {   // vídeo sobe INTEIRO em recados-videos/ (Sigma #221, May 13/11 13:07: "tinha q aceitar inteiro e tirar quadro depois"); os quadros vêm depois, de extra
+    if (cartoes.has(f)) {   // vídeo sobe INTEIRO em recados-videos/ (Sigma #221, May 13/11 13:07); cada um tem o seu cartão parado na bandeja com o estado (#445), recusado fica até ela tirar
+      const c = cartoes.get(f), marca = s => { c.espera = s; if (c.elEstado) c.elEstado.textContent = s; };
+      if (c.tirado) continue;
       let vid = f;
-      if (f.size > LIMITE_ARQ) { showNote('O vídeo tem ' + tamanhoLegivel(f.size) + '; diminuindo pra caber (deixa o app aberto)…'); try { vid = await encolheVideo(f, pc => showNote('Diminuindo o vídeo… ' + pc + '%')); } catch (e) { vid = null; } }
-      if (!vid || vid.size > LIMITE_ARQ) { showNote('Não foi possível deixar o vídeo abaixo de ' + tamanhoLegivel(LIMITE_ARQ) + '. Corta em partes menores no iPhone e manda de novo.', true); continue; }
-      showNote('Preparando o vídeo…');
-      try { const b64 = await new Promise((ok, erro) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1] || ''); fr.onerror = erro; fr.readAsDataURL(vid); }); const ext = /quicktime/i.test(vid.type) || /\.mov$/i.test(vid.name || '') ? 'mov' : /webm/i.test(vid.type) ? 'webm' : 'mp4'; anexos.push({ b64, ext, url: URL.createObjectURL(vid), video: true, tam: vid.size }); desenhaBandeja(); }
-      catch (e) { showNote('Não foi possível abrir o vídeo.', true); continue; }
-      showNote('Vídeo pronto. Tirando os quadros de extra…');
+      if (f.size > LIMITE_ARQ) { marca('Diminuindo pra 720p, 2 Mbps…'); showNote('Diminuindo o vídeo pra 720p, 2 Mbps: fica mais leve e um pouco pior. Deixa o app aberto.'); try { vid = await encolheVideo(f, pc => marca('Diminuindo pra 720p, 2 Mbps · ' + pc + '%')); c.reduzido = true; } catch (e) { vid = null; } }
+      if (c.tirado) continue;
+      if (!vid || vid.size > LIMITE_ARQ) { c.espera = ''; c.recusa = 'Não foi: ' + tamanhoLegivel(f.size) + ' (máx. 50 MB)'; showNote(''); desenhaBandeja(); continue; }
+      const ext = /quicktime/i.test(vid.type) || /\.mov$/i.test(vid.name || f.name || '') ? 'mov' : /webm/i.test(vid.type) ? 'webm' : 'mp4';
+      Object.assign(c, { espera: '', arq: vid, ext, url: URL.createObjectURL(vid), tam: vid.size }); showNote(''); desenhaBandeja();
       let qs = []; try { qs = await quadrosDoVideo(f, 8); } catch (e) {}
       for (const q of qs) { try { const rd = await reduzir(q); anexos.push({ b64: rd.b64, ext: rd.ext, url: URL.createObjectURL(q), tirada: await horaTirada(q) }); } catch (e) {} }
-      showNote('Vídeo inteiro' + (qs.length ? ' + ' + qs.length + ' quadro' + (qs.length > 1 ? 's' : '') : '') + ' prontos pra enviar'); continue;
+      if (qs.length) desenhaBandeja(); continue;
     }
     try { const rd = await reduzir(f); anexos.push({ b64: rd.b64, ext: rd.ext, url: URL.createObjectURL(f), tirada: await horaTirada(f), orig: f }); }
     catch (e) { showNote('Uma das fotos não abriu.', true); }
   }
   desenhaBandeja(); box.focus();
-});
+}
 
 let carregandoAntigas = false;
 // ---- Áudio: grava no iPhone, sobe pro repo, o notebook transcreve sozinho e escreve embaixo
@@ -2411,7 +2470,7 @@ const overlay = document.getElementById('overlay');
 const overlayTxt = document.getElementById('overlay-txt');
 function syncBtn() {
   const vazio = !box.value.trim();
-  const temFoto = typeof anexos !== 'undefined' && anexos.length > 0;
+  const temFoto = typeof anexos !== 'undefined' && anexos.some(anexoPronto);
   sendBtn.disabled = sending || (vazio && !gravador && !temFoto);
   if (typeof micBtn !== 'undefined') { micBtn.hidden = !vazio || !!gravador || temFoto; sendBtn.hidden = vazio && !gravador && !temFoto; }
 }
@@ -2479,8 +2538,8 @@ box.addEventListener('input', () => { box.style.height = 'auto'; box.style.heigh
 form.addEventListener('submit', async e => {
   e.preventDefault();
   if (gravador) { gravador.stop(); return; }
-  const text = box.value.trim(); if ((!text && !anexos.length) || sending) return;
-  const fotos = anexos.slice();
+  const text = box.value.trim(); if ((!text && !anexos.some(anexoPronto)) || sending) return;
+  const fotos = anexos.filter(anexoPronto);
   // Igual WhatsApp: o balão aparece na hora com o relogiozinho; vira ✓ quando o GitHub confirma, "não foi" se falhar.
   // A mensagem (texto, citação e fotos) vai com o pendente: a caixa e a bandeja já ficam livres pra próxima.
   const { p, el } = novoPendente(text, fotos, FILE);
@@ -2766,7 +2825,7 @@ const irGeral = document.getElementById('ir-geral'), irTrab = document.getElemen
 const painel = document.getElementById('painel'), pCorpo = document.getElementById('p-corpo'), pTit = document.getElementById('p-tit'), pExtra = document.getElementById('p-extra');
 let pilha = [], catalogo = null;
 const reais = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
-const COR_ASSUNTO = [[/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#62B02A'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/^marca/i, '#B3261E'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/m[uú]sica/i, '#8B5CF6'], [/^artes/i, '#EC008C'], [/^planos/i, '#06B6D4'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#B3261E'], [/ateli/i, '#B3261E'], [/^listas/i, '#F59E0B'], [/ideia|tarefa/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia|contas/i, '#F59E0B']];
+const COR_ASSUNTO = [[/carteirinha/i, '#16A34A'], [/jogo/i, '#6FCF00'], [/cat[aá]logo|compra/i, '#F59E0B'], [/treino|academia/i, '#62B02A'], [/cirurgia|sa[uú]de|m[eé]dic/i, '#EC4899'], [/viage/i, '#3B82F6'], [/^marca/i, '#B3261E'], [/imagen|foto/i, '#A855F7'], [/anima/i, '#FFCB05'], [/agenda/i, '#14B8A6'], [/m[uú]sica/i, '#8B5CF6'], [/^artes/i, '#EC008C'], [/^planos/i, '#06B6D4'], [/comida|[aá]gua/i, '#F97316'], [/diagn/i, '#8B5CF6'], [/m[ií]dia/i, '#B3261E'], [/ateli/i, '#B3261E'], [/^listas/i, '#F59E0B'], [/ideia|tarefa/i, '#FACC15'], [/sa[uú]de/i, '#EC4899'], [/^obra/i, '#F97316'], [/^casa/i, '#14B8A6'], [/m[aá]quina|console/i, '#4F46E5'], [/pend[eê]ncia|contas/i, '#F59E0B']];
 // Arrumar o Menu arrastando (May, 07/11/2026 12:03: "dar pra eu clicar e arrastar, aí eu mesma organizava"): segura o azulejo até ele levantar,
 // arrasta pro lugar do outro e solta; a ordem fica guardada neste aparelho
 function arrumaArrastando(grade, op) {   // op: { sel, chave, aviso } pra usar em outra grade (pastas da Saúde, May 10/11/2026: "como se fossem pastas mesmo")
@@ -2815,9 +2874,10 @@ const ICONES_MENU = [
 function iconeMenu(nome) { const a = ICONES_MENU.find(([re]) => re.test(nome)); return a ? '<svg class="im" viewBox="0 0 48 48" aria-hidden="true">' + a[1] + '</svg>' : ''; }
 // Menu: cada botão com a cara da tela de dentro (May, 07/11/2026 15:08 e 15:16: "cara de botão, mas cada botão tem que ser o CSS separado;
 // o que eles têm de igual é largura e altura, o resto cada um pega do seu interior"). Classe bt-<assunto>; a Agenda mostra o dia de hoje
-const BOTAO_DE = [[/projetinho/i, 'projetinhos'], [/jogo/i, 'jogos'], [/m[aá]quina|console/i, 'maquinas'], [/pend[eê]ncia|finan[cç]/i, 'pendencias'], [/garag/i, 'garagem'], [/sa[uú]de|cirurgia/i, 'saude'], [/treino|academia/i, 'treino'], [/casa/i, 'casa'],
+const BOTAO_DE = [[/carteirinha/i, 'carteirinha'], [/projetinho/i, 'projetinhos'], [/jogo/i, 'jogos'], [/m[aá]quina|console/i, 'maquinas'], [/pend[eê]ncia|finan[cç]/i, 'pendencias'], [/garag/i, 'garagem'], [/sa[uú]de|cirurgia/i, 'saude'], [/treino|academia/i, 'treino'], [/casa/i, 'casa'],
   [/obra|piscina/i, 'obra'], [/m[ií]dia|imagen|v[ií]deo|anima/i, 'midia'], [/lista/i, 'listas'], [/ideia|tarefa/i, 'ideias'], [/conta|comida/i, 'contas'], [/agenda/i, 'agenda'], [/m[uú]sica/i, 'musica'], [/^artes/i, 'artes'], [/^planos/i, 'planos']];
 const ICONE_LIMPO = {
+  carteirinha: '<rect x="2.5" y="5.5" width="19" height="13" rx="2.2"/><path d="M2.5 9.5h19"/><circle cx="7.5" cy="14" r="1.6"/><path d="M11 13h7M11 15.5h5"/>',   // #437: cartão do plano (atalho que abre a carteirinha direto)
   projetinhos: '<path d="M3 7.5a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 10.2l1 2 2.2.3-1.6 1.5.4 2.2-2-1.1-2 1.1.4-2.2-1.6-1.5 2.2-.3z" fill="#F6C21C" stroke="#F6C21C"/>',   // Projetinhos: pasta com estrela (May 16/11 13:3x)
   musica: '<path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>', artes: '<path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-.9 2-1.8 0-1.4-1.2-1.6-1.2-2.8 0-.9.7-1.4 1.6-1.4H17a4 4 0 0 0 4-4C21 6.8 17 3 12 3z"/><circle cx="7.5" cy="11" r=".9"/><circle cx="10" cy="7.2" r=".9"/><circle cx="14.5" cy="7.2" r=".9"/>', planos: '<path d="M5 21V4"/><path d="M5 4h12l-2.5 4L17 12H5"/>',   // desenho de linha limpo, traço igual em todos (May 15:33: "tá parecendo uma criança desenhando, tem que ser mais profissional")
   midia: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9.2l5 2.8-5 2.8z"/>', listas: '<path d="M10 6.5h10M10 12h10M10 17.5h10"/><path d="M4 6.5l1.3 1.3L7.6 5.5M4 12l1.3 1.3L7.6 11M4 17.5l1.3 1.3 2.3-2.3"/>',
@@ -3080,15 +3140,15 @@ function horaBrasilia() {
   const o = {}; new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date()).forEach(x => { o[x.type] = x.value; });
   return { texto: o.day + '/' + o.month + '/' + o.year + ' ' + o.hour + ':' + o.minute, id: o.year + o.month + o.day + o.hour + o.minute + pad(new Date().getSeconds()) };
 }
-async function pedeReligar(pc) {
+async function pedeReligar(pc, robo) {
   const h = horaBrasilia(), letras = 'abcdefghijklmnopqrstuvwxyz'; let suf = ''; for (let i = 0; i < 4; i++) suf += letras[Math.floor(Math.random() * 26)];
-  const id = h.id + suf, arq = 'casa/pcs/remoto/comando-' + pc + '.txt', corpo = { message: 'Reiniciar robo pelo app', content: b64encode(id + '|religar-robo|' + h.texto + '\n') };
+  const id = h.id + suf, arq = 'casa/pcs/remoto/comando-' + pc + '.txt', corpo = { message: 'Reiniciar robo pelo app', content: b64encode(id + '|religar-robo|' + h.texto + (ROBOS_VIGIA.includes(robo) ? '|' + robo : '') + '\n') };
   try { const r = await api(apiDe(arq)); if (r.ok) corpo.sha = (await r.json()).sha; else if (r.status !== 404) return null; } catch (e) { return null; }
   try { const w = await api(apiDe(arq), { method: 'PUT', body: JSON.stringify(corpo) }); if (!w.ok) return null; } catch (e) { return null; }
   store.set('religar-id-' + pc, id); return id;
 }
 // Chamar o robô igual o MSN (May 18/11/2026 15:02 e 20:05): cada toque na foto do cartão chacoalha, ele cresce e fica vermelho de bravo; parou de tocar com 3 ou mais, manda o religar-robo do PC dele (o vigia começa cutucando e só sobe se ele não responder)
-const PC_ROBO = { orfeu: 'PC1', nyx: 'PC2', lyra: 'PC5' };
+const PC_ROBO = { orfeu: 'PC1', sigma: 'PC1', hermes: 'PC1', nyx: 'PC2', lyra: 'PC5' }, ROBOS_VIGIA = ['Orfeu', 'Nyx', 'Vega', 'Hermes', 'Sigma', 'Lyra'];   // mesma lista do $robosOk do vigia-comando.ps1; Sigma e Hermes moram no PC1 (May 24/11 09:54, #442)
 function chamaRobo(av, k, nome) {
   const pc = PC_ROBO[k], n = Math.min(+(av.dataset.n || 0) + 1, 6); av.dataset.n = n; av.style.setProperty('--n', n);
   av.classList.add('chamou', 'brava'); av.classList.remove('chama'); void av.offsetWidth; av.classList.add('chama'); if (navigator.vibrate) navigator.vibrate(60 + n * 20);
@@ -3097,8 +3157,8 @@ function chamaRobo(av, k, nome) {
   clearTimeout(av._t); av._t = setTimeout(async () => {
     const tot = +av.dataset.n; av.dataset.n = 0; av.style.setProperty('--n', 0); av.classList.remove('chama', 'brava');
     if (!pc || tot < 3) { if (pc) msg.textContent = ''; return; }
-    const id = await pedeReligar(pc);
-    msg.textContent = id ? 'Chamei! Em até 1 minuto ' + nome + ' responde; se não, ele é reiniciado.' : 'Não deu pra chamar. Veja a internet e tente de novo.'; msg.classList.toggle('err', !id);
+    const id = await pedeReligar(pc, k.charAt(0).toUpperCase() + k.slice(1));
+    msg.textContent = id ? 'Chamei! Em alguns minutos ' + nome + ' responde; se não, ele é reiniciado.' : 'Não deu pra chamar. Veja a internet e tente de novo.'; msg.classList.toggle('err', !id);
   }, 1400);
 }
 function botaoReligar(p, d) {
@@ -3119,7 +3179,7 @@ function botaoReligar(p, d) {
   const religa = async () => {
     b.disabled = true; msg.classList.remove('err'); msg.textContent = 'Enviando o pedido...';
     const id = await pedeReligar(p.pc);
-    if (id) msg.textContent = 'Pedido enviado. Em até 1 minuto o ' + robo + ' volta.'; else { msg.textContent = 'Não deu para enviar o pedido. Veja a internet e tente de novo.'; msg.classList.add('err'); }
+    if (id) msg.textContent = 'Pedido enviado. Em alguns minutos o ' + robo + ' volta.'; else { msg.textContent = 'Não deu para enviar o pedido. Veja a internet e tente de novo.'; msg.classList.add('err'); }
     setTimeout(() => { b.disabled = false; }, 15000);
   };
 }
@@ -3577,9 +3637,10 @@ function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar }) {
   const ov = elD('div', 'fixa-pop ed-pop'), card = elD('div', 'pp-card ed-card'), x = elD('button', 'pp-x'), form = elD('form', 'ed-form'), els = {};
   x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); };
   { const tl = document.querySelector('#p-corpo .tela'), cor = (tl && getComputedStyle(tl).getPropertyValue('--vs-c').trim()) || getComputedStyle(painel).getPropertyValue('--c').trim(); if (cor) card.style.setProperty('--quem', cor); if (painel.classList.contains('tema-musica')) ov.classList.add('escuro'); else if (painel.classList.contains('tema-claro') || painel.classList.contains('tema-saude') || painel.classList.contains('tema-planos') || document.querySelector('#p-corpo .vs-tela, #p-corpo .gr-saude')) { ov.classList.add('claro'); const f = (tl && getComputedStyle(tl).getPropertyValue('--vs-f').trim()) || (painel.classList.contains('tema-planos') ? '#FBF3E2' : ''); if (f) card.style.setProperty('--fundo-claro', f); } }   // tela filha herda a mãe (Sigma #396): o formulário vem na cor da tela que abriu, e escuro na Música
+  { const pj = document.querySelector('#p-corpo .pjm-tela.pjm-painel'); if (pj) { ov.classList.remove('escuro', 'claro'); ov.classList.add('pjm-pop'); ['--pj-f', '--pj-t', '--pj-d', '--pj-sd'].forEach(n => card.style.setProperty(n, pj.style.getPropertyValue(n))); card.style.setProperty('--quem', pj.style.getPropertyValue('--pj-d')); } }   // #457: no E-controle e na S.L. o formulário herda as cores do projeto (destaque já cai pro texto se não contrastar)
   card.append(x, elD('div', 'pp-perg', titulo));
   campos.filter(c => c.nome !== 'id' && c.tipo !== 'oculto').forEach(c => {
-    const lb = elD('label', 'ed-campo'); lb.append(elD('span', '', edRotulo(c) + (c.obrigatorio ? ' *' : '')));
+    const lb = elD('label', 'ed-campo' + (c.meia ? ' meia' : '')); lb.append(elD('span', '', edRotulo(c) + (c.obrigatorio ? ' *' : '')));
     let el;
     if (c.tipo === 'texto_longo') { el = elD('textarea'); el.rows = 3; }
     else if (c.tipo === 'escolha') { el = elD('select'); (c.opcoes || []).forEach(o => { const [val, tx] = Array.isArray(o) ? o : [o, o]; const op = elD('option', '', maiusc(tx)); op.value = val; el.append(op); }); }
@@ -3788,7 +3849,7 @@ function abreMusica(m) {
     try { d = JSON.parse(await lerArquivo(m.arq)); } catch (e) { p.textContent = 'Não abriu. Confere a internet.'; return; }
     p.remove();
     const ET = d.etapas || ['Ideia', 'Rascunho', 'Gravar', 'Mixar', 'Finalizar'], vivos = sec => d.itens.filter(i => i.secao === sec && !i.apagado);
-    let aba = store.get('mus-aba') || 'musica';
+    let aba = store.get('mus-aba') || 'musica', cuSub = store.get('mus-cuidar') || 'vitrine';
     const formPratica = (x, inst, equip) => {
       const ov = elD('div', 'fixa-pop tm-pr-pop'), card = elD('div', 'pp-card tm-pr-card'), xb = elD('button', 'pp-x'); xb.type = 'button'; xb.innerHTML = icone('close'); xb.setAttribute('aria-label', 'Fechar');
       let qual = x ? x.instrumento : (store.get('mus-pr-inst') || (inst[0] || {}).id), usei = new Set(x ? x.usei || [] : JSON.parse(store.get('mus-pr-usei') || '[]'));
@@ -3880,28 +3941,112 @@ function abreMusica(m) {
           const us = (x.usei || []).map(id => (equip.find(e => e.id === id) || {}).nome).filter(Boolean); if (us.length) tx.append(elD('p', '', 'Usei: ' + us.join(', ')));
           if (x.nota) tx.append(elD('p', 'tm-pr-nota', x.nota));
           const ed = edMini('note', 'Editar', () => formPratica(x, inst, equip)); ed.classList.add('tm-ed'); a.append(sl, tx, ed); corpo.append(a); });
-      } else if (aba === 'manut') {   // manutenção dos instrumentos (May 13/11 12:36, layout 13:00): cada um com o desenho dele e 3 cuidados em quadros (cordas, regulagem, limpeza) com quantos dias faltam; datas começam vazias (nada inventado), intervalo é sugestão editável
+      } else if (aba === 'manut') {   // manutenção dos instrumentos (May 13/11 12:36, layout 13:00): cada um com o desenho dele e 3 cuidados em quadros (cordas, regulagem, limpeza) com quantos dias faltam; datas começam vazias (nada inventado), intervalo é sugestão editável. Estúdio JWA fase 1 (25/11): abas Vitrine, Cuidados e Histórico, cuidado personalizado, giro com pausa e velocidade
         const SERV = [['cordas', 'Cordas', 60], ['regulagem', 'Regulagem', 180], ['limpeza', 'Limpeza', 30]], inst = vivos('setup').filter(x => x.tipo === 'guitarra' || /viol[aã]o|baixo|guitarra|telecaster/i.test(x.nome)), hoje = new Date(); hoje.setHours(0, 0, 0, 0);
         const daData = t => { const m = String(t || '').match(/^(\d\d)\/(\d\d)\/(\d{4})/); return m ? new Date(+m[3], m[2] - 1, +m[1]) : null; }, br = d => String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
         const achaReg = (l, x, sv) => l.find(y => y.secao === 'manut' && y.instrumento === x.id && y.servico === sv && !y.apagado);
+        const servicos = x => SERV.concat(d.itens.filter(y => y.secao === 'manut' && y.instrumento === x.id && /^pers-/.test(y.servico || '') && !y.apagado).map(y => [y.servico, y.nome || 'Cuidado', +y.cada_dias || 30, y]));
         const estado = (x, sv, dias) => { const reg = achaReg(d.itens, x, sv) || null, cada = reg && reg.cada_dias ? +reg.cada_dias : dias, ult = reg ? daData(reg.ultima) : null, falta = ult ? Math.round((ult.getTime() + cada * 864e5 - hoje) / 864e5) : null; return { reg, cada, ult, falta }; };
-        if (!inst.length) corpo.append(elD('div', 'tm-vazio', 'Nenhum instrumento no Setup ainda.'));
-        else { const todos = inst.flatMap(x => SERV.map(([sv, rot, dias]) => Object.assign({ x, rot }, estado(x, sv, dias)))), atras = todos.filter(e => e.falta != null && e.falta < 0), prox = todos.filter(e => e.falta != null && e.falta >= 0).sort((a, b) => a.falta - b.falta)[0];
-          const res = elD('div', 'tc-resumo' + (atras.length ? ' atras' : ''));
-          res.append(elD('b', '', atras.length ? (atras.length === 1 ? '1 cuidado atrasado' : atras.length + ' cuidados atrasados') : prox ? 'Tudo em dia' : 'Nenhum cuidado marcado ainda'), elD('span', '', atras.length ? atras.slice(0, 2).map(e => e.rot + ' da ' + e.x.nome).join(' · ') : prox ? 'próximo: ' + prox.rot + ' da ' + prox.x.nome + (prox.falta ? ' em ' + prox.falta + (prox.falta === 1 ? ' dia' : ' dias') : ' hoje') : 'Quando fizer um cuidado, toca em Fiz hoje embaixo dele.'));
-          corpo.append(res); }
-        inst.forEach((x, ix) => { const a = elD('article', 'tc-card'), arte = elD('div', 'tc-arte'), nm = elD('div', 'tc-nome'), sv3 = elD('div', 'tc-serv'); arte.innerHTML = musGuitarra(x, ix + '-' + (musGuitarra.n = (musGuitarra.n || 0) + 1)); nm.append(elD('h3', '', x.nome)); if (x.texto) nm.append(elD('small', '', x.texto));
-          SERV.forEach(([sv, rot, dias]) => { const { reg, cada, ult, falta } = estado(x, sv, dias), at = falta != null && falta < 0, fezHoje = ult && ult.getTime() === hoje.getTime();
-            const q = elD('div', 'tc-s' + (at ? ' atras' : ult ? '' : ' sem')), top = elD('div', 'tc-s-top'), ic = elD('span', 'tc-s-ic'); ic.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' + MUS_CUIDADOS[sv] + '</svg>';
-            const ed = edMini('note', 'Editar ' + rot + ' de ' + x.nome, () => edFormulario({ titulo: rot + ' · ' + x.nome, campos: [{ nome: 'ultima', rotulo: 'Última vez (DD/MM/AAAA)', tipo: 'texto', valida: 'data', erro: 'Data no formato DD/MM/AAAA, e que exista.' }, { nome: 'cada_dias', rotulo: 'Fazer a cada quantos dias', tipo: 'numero', valida: 'numero' }], v: { ultima: reg ? reg.ultima || '' : '', cada_dias: String(cada) }, aoSalvar: async f => { await grava(l => { const r = achaReg(l, x, sv); const v = { ultima: (f.ultima || '').trim(), cada_dias: +String(f.cada_dias).replace(',', '.') || cada }; if (r) Object.assign(r, v, { atualizado: edAgora() }); else l.push(Object.assign({ id: 'manut-' + x.id + '-' + sv, secao: 'manut', instrumento: x.id, servico: sv, criado: edAgora() }, v)); }, 'Música: ' + rot + ' de ' + x.nome + ' editada pelo app'); } }));
+        const CAMPO_DATA = { nome: 'ultima', rotulo: 'Última vez (DD/MM/AAAA)', tipo: 'texto', valida: 'data', erro: 'Data no formato DD/MM/AAAA, e que exista.' }, CAMPO_CADA = { nome: 'cada_dias', rotulo: 'Fazer a cada quantos dias', tipo: 'numero', valida: 'numero' }, CAMPO_OBS = { nome: 'obs', rotulo: 'Observação', tipo: 'texto_longo' };
+        const editaCuidado = (x, sv, rot, reg, cada, pers) => edFormulario({ titulo: rot + ' · ' + x.nome, campos: (pers ? [{ nome: 'nome', rotulo: 'Nome do cuidado', tipo: 'texto', obrigatorio: true }] : []).concat([CAMPO_DATA, CAMPO_CADA, CAMPO_OBS]), v: { nome: rot, ultima: reg ? reg.ultima || '' : '', cada_dias: String(cada), obs: reg ? reg.obs || '' : '' },
+          aoSalvar: async f => { await grava(l => { const r = achaReg(l, x, sv); const v = { ultima: (f.ultima || '').trim(), cada_dias: +String(f.cada_dias).replace(',', '.') || cada, obs: (f.obs || '').trim() }; if (pers) v.nome = (f.nome || '').trim() || rot; if (!v.obs) delete v.obs; if (r) { if (!v.obs) delete r.obs; Object.assign(r, v, { atualizado: edAgora() }); } else l.push(Object.assign({ id: 'manut-' + x.id + '-' + sv, secao: 'manut', instrumento: x.id, servico: sv, criado: edAgora() }, v)); }, 'Música: ' + rot + ' de ' + x.nome + ' editada pelo app'); },
+          aoApagar: pers ? async () => { const qd = edAgora(); if (await grava(l => { const r = achaReg(l, x, sv); if (r) r.apagado = qd; }, 'Música: cuidado ' + rot + ' de ' + x.nome + ' apagado pelo app (fica guardado)')) edFaixaDesfazer('Cuidado apagado', () => grava(l => { const r = l.find(y => y.secao === 'manut' && y.instrumento === x.id && y.servico === sv && y.apagado === qd); if (r) delete r.apagado; }, 'Música: cuidado ' + rot + ' de volta')); } : null });
+        const novoCuidado = x => edFormulario({ titulo: 'Novo cuidado · ' + x.nome, campos: [{ nome: 'nome', rotulo: 'Nome do cuidado (ex.: Revisão elétrica)', tipo: 'texto', obrigatorio: true }, CAMPO_DATA, Object.assign({}, CAMPO_CADA, { padrao: '90' }), CAMPO_OBS], v: { cada_dias: '90' },
+          aoSalvar: async f => { const sv = 'pers-' + Date.now().toString(36), v = { id: 'manut-' + x.id + '-' + sv, secao: 'manut', instrumento: x.id, servico: sv, nome: (f.nome || '').trim(), ultima: (f.ultima || '').trim(), cada_dias: +String(f.cada_dias || '').replace(',', '.') || 90, criado: edAgora() }; if ((f.obs || '').trim()) v.obs = f.obs.trim(); await grava(l => l.push(v), 'Música: cuidado novo (' + v.nome + ') de ' + x.nome + ' pelo app'); } });
+        const quadros = (x, vit) => { const sv3 = elD('div', 'tc-serv' + (vit ? ' tv-serv' : '')), lista = servicos(x); if (vit && lista.length > 3) sv3.classList.add('muitos');
+          lista.forEach(([sv, rot, dias, pers]) => { const { reg, cada, ult, falta } = estado(x, sv, dias), at = falta != null && falta < 0, perto = falta != null && falta >= 0 && falta <= 7, fezHoje = ult && ult.getTime() === hoje.getTime();
+            const q = elD('div', 'tc-s' + (at ? ' atras' : perto ? ' perto' : ult ? ' em-dia' : ' sem') + (pers ? ' pers' : '')), top = elD('div', 'tc-s-top'), ic = elD('span', 'tc-s-ic'); ic.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' + (MUS_CUIDADOS[sv] || MUS_CUIDADOS.regulagem) + '</svg>';
+            const ed = edMini('note', 'Editar ' + rot + ' de ' + x.nome, () => editaCuidado(x, sv, rot, reg, cada, !!pers));
             top.append(ic, ed); q.append(top, elD('b', 'tc-s-nome', rot));
             const num = elD('div', 'tc-s-num'); if (!ult) num.textContent = '—'; else if (falta === 0) num.textContent = 'Hoje'; else { num.textContent = String(Math.abs(falta)); num.append(elD('small', '', Math.abs(falta) === 1 ? 'dia' : 'dias')); }
             const bar = elD('div', 'tc-bar'), enche = elD('i'); enche.style.width = (ult ? Math.min(100, Math.max(4, (1 - falta / cada) * 100)) : 0) + '%'; bar.append(enche);
-            q.append(num, elD('small', 'tc-s-sub', !ult ? 'a cada ' + cada + ' dias' : at ? 'atrasada' : falta === 0 ? 'é pra hoje' : 'pra próxima'), bar, elD('small', 'tc-s-ult', ult ? 'última ' + br(ult).slice(0, 5) : 'sem data'));
+            q.append(num, elD('small', 'tc-s-sub', !ult ? 'A cada ' + cada + ' dias' : at ? 'Atrasada' : falta === 0 ? 'É pra hoje' : perto ? 'Chegando' : 'Em dia'), bar, elD('small', 'tc-s-ult', ult ? 'Última ' + br(ult).slice(0, 5) : 'Sem data'));
             const fiz = elD('button', 'tc-fiz' + (fezHoje ? ' feito' : ''), fezHoje ? 'Feito hoje' : 'Fiz hoje'); fiz.type = 'button'; fiz.disabled = !!fezHoje;
             fiz.onclick = () => grava(l => { const r = achaReg(l, x, sv); const qd = br(new Date()); if (r) { r.ultima = qd; r.atualizado = edAgora(); } else l.push({ id: 'manut-' + x.id + '-' + sv, secao: 'manut', instrumento: x.id, servico: sv, ultima: qd, cada_dias: cada, criado: edAgora() }); }, 'Música: ' + rot + ' de ' + x.nome + ' feita hoje pelo app');
-            q.append(fiz); sv3.append(q); });
-          a.append(arte, nm, sv3); corpo.append(a); });
+            q.append(fiz); sv3.append(q); }); if (!(vit && lista.length > 3)) return sv3; const w = elD('div', 'tv-serv-w'), pts = elD('div', 'tv-pontos'), pags = Math.ceil(lista.length / 3); pts.setAttribute('aria-label', 'Arraste pro lado: ' + lista.length + ' cuidados'); for (let k = 0; k < pags; k++) pts.append(elD('i', k ? '' : 'on')); pts.append(elD('small', '', '+' + (lista.length - 3) + ' →')); sv3.addEventListener('scroll', () => { const k = Math.round(sv3.scrollLeft / Math.max(1, sv3.clientWidth)); pts.querySelectorAll('i').forEach((b, j) => b.classList.toggle('on', j === k)); }, { passive: true }); w.append(sv3, pts); return w; };
+        const TIPO_ROT = { amp: 'Amplificador', pedal: 'Pedaleira', teclas: 'Teclado', mic: 'Microfone', interface: 'Interface de áudio', guitarra: 'Guitarra ou violão' };
+        const ficha = (x, cls) => { const f = elD('div', 'tv-ficha ' + (cls || '')), tp = [TIPO_ROT[x.tipo] || '', x.marca || '', x.modelo || ''].filter(Boolean).join(' · ');
+          if (/curta/.test(cls || '')) { if (tp || x.texto) { const pp = elD('p', 'tv-f-tx'); if (tp) pp.append(elD('b', 'tv-f-tipo', tp + (x.texto ? ' · ' : ''))); if (x.texto) pp.append(document.createTextNode(x.texto)); f.append(pp); } } else { if (tp) f.append(elD('small', 'tv-f-tipo', tp)); if (x.texto) f.append(elD('p', 'tv-f-tx', x.texto)); }
+          const fotos = [x.foto].concat(x.fotos || []).filter(Boolean); if (fotos.length) { const g = elD('div', 'tv-f-fotos'); fotos.forEach(fp => { const im = elD('img'); im.alt = x.nome; fotoUrl(fp).then(u => { im.src = u; im.onclick = () => abreZoom(u, fp, fotos); }).catch(() => im.remove()); g.append(im); }); f.append(g); }
+          return f.childNodes.length ? f : null; };
+        let seguraAte = 0; const fixo = elD('button', 'tv-fixo'), alvoFiz = () => inst.find(x => x.id === store.get('mus-vit')) || inst[0]; fixo.type = 'button'; fixo.addEventListener('pointerdown', () => { seguraAte = performance.now() + 6000; });
+        const pintaFixo = () => { const x = alvoFiz(), mostra = !!x && cuSub === 'vitrine' && inst.some(i => i.id === store.get('mus-vit')); fixo.hidden = !mostra; if (!x) return; fixo.replaceChildren(elD('b', '', '✓ Fiz hoje'), elD('small', '', x.nome)); fixo.setAttribute('aria-label', 'Fiz hoje um cuidado na ' + x.nome); };
+        fixo.onclick = () => { const x = alvoFiz(); if (!x) return; const ov = elD('div', 'fixa-pop tm-pr-pop'), card = elD('div', 'pp-card tm-pr-card'), xb = elD('button', 'pp-x'), bts = elD('div', 'tv-fiz-ops'); xb.type = 'button'; xb.innerHTML = icone('close'); xb.setAttribute('aria-label', 'Fechar'); xb.onclick = () => ov.remove(); ov.onclick = e => { if (e.target === ov) ov.remove(); };
+          servicos(x).forEach(([sv, rot, dias]) => { const { cada, ult } = estado(x, sv, dias), feito = ult && ult.getTime() === hoje.getTime(), b = elD('button', 'pp-op' + (feito ? ' depois' : ' rec'), feito ? rot + ' (feito hoje)' : rot); b.type = 'button'; b.disabled = !!feito; b.onclick = () => { ov.remove(); grava(l => { const r = achaReg(l, x, sv); const qd = br(new Date()); if (r) { r.ultima = qd; r.atualizado = edAgora(); } else l.push({ id: 'manut-' + x.id + '-' + sv, secao: 'manut', instrumento: x.id, servico: sv, ultima: qd, cada_dias: cada, criado: edAgora() }); }, 'Música: ' + rot + ' de ' + x.nome + ' feita hoje pelo app'); }; bts.append(b); });
+          card.append(xb, elD('b', 'tm-pr-tit', 'O que você fez hoje?'), elD('small', 'tm-pr-rot', x.nome), bts); ov.append(card); document.body.append(ov); };
+        const SUBS = [['vitrine', 'Vitrine'], ['cuidados', 'Cuidados'], ['historico', 'Histórico']], subs = elD('div', 'tv-subs'), miolo = elD('div', 'tv-miolo'); subs.setAttribute('role', 'tablist');
+        const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const mostra = (id, dir) => { const ant = SUBS.findIndex(s => s[0] === cuSub), nov = SUBS.findIndex(s => s[0] === id); cuSub = id; store.set('mus-cuidar', id); subs.replaceChildren(...SUBS.map(([k, rot]) => { const b = elD('button', 'tv-sub', rot); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(k === cuSub)); b.onclick = () => { if (k !== cuSub) mostra(k, 1); }; return b; }));
+          miolo.replaceChildren(); if (id === 'vitrine') vitrine(); else if (id === 'cuidados') cuidados(); else historico(); pintaFixo();
+          if (dir && !reduz && miolo.animate) miolo.animate([{ transform: 'translateX(' + (nov > ant ? 60 : -60) + 'px)' }, { transform: 'translateX(0)' }], { duration: 260, easing: 'cubic-bezier(.2,.9,.25,1)' }); };
+        const cuidados = () => {
+          if (!inst.length) { miolo.append(elD('div', 'tm-vazio', 'Nenhum instrumento no Setup ainda.')); return; }
+          const todos = inst.flatMap(x => servicos(x).map(([sv, rot, dias]) => Object.assign({ x, rot }, estado(x, sv, dias)))), atras = todos.filter(e => e.falta != null && e.falta < 0), perto = todos.filter(e => e.falta != null && e.falta >= 0 && e.falta <= 7), prox = todos.filter(e => e.falta != null && e.falta >= 0).sort((a, b) => a.falta - b.falta)[0];
+          const res = elD('div', 'tc-resumo' + (atras.length ? ' atras' : perto.length ? ' perto' : ''));
+          res.append(elD('b', '', atras.length ? (atras.length === 1 ? '1 cuidado atrasado' : atras.length + ' cuidados atrasados') : perto.length ? (perto.length === 1 ? '1 cuidado nos próximos 7 dias' : perto.length + ' cuidados nos próximos 7 dias') : prox ? 'Tudo em dia' : 'Nenhum cuidado marcado ainda'), elD('span', '', atras.length ? atras.slice(0, 2).map(e => e.rot + ' da ' + e.x.nome).join(' · ') : prox ? 'Próximo: ' + prox.rot + ' da ' + prox.x.nome + (prox.falta ? ' em ' + prox.falta + (prox.falta === 1 ? ' dia' : ' dias') : ' hoje') : 'Quando fizer um cuidado, toca em Fiz hoje embaixo dele.'));
+          miolo.append(res);
+          inst.forEach((x, ix) => { const a = elD('article', 'tc-card'), arte = elD('div', 'tc-arte'), nm = elD('div', 'tc-nome'); arte.innerHTML = musGuitarra(x, ix + '-' + (musGuitarra.n = (musGuitarra.n || 0) + 1)); if (x.png) { const im = elD('img', 'tc-recorte'); im.alt = x.nome; fotoUrl(x.png).then(u => { im.onload = () => { im.classList.toggle('deitada', im.naturalHeight > im.naturalWidth); arte.replaceChildren(im); }; im.src = u; }).catch(() => {}); } nm.append(lapis('setup', x), elD('h3', '', x.nome)); const fi = ficha(x); if (fi) nm.append(fi);
+            const mais = elD('button', 'tc-mais', '+ Cuidado'); mais.type = 'button'; mais.onclick = () => novoCuidado(x); a.append(arte, nm, quadros(x), mais); miolo.append(a); });
+        };
+        const historico = () => {
+          const regs = d.itens.filter(y => y.secao === 'manut' && !y.apagado && daData(y.ultima)).sort((a, b) => daData(b.ultima) - daData(a.ultima)), rot = Object.fromEntries(SERV.map(s => [s[0], s[1]]));
+          if (!regs.length) { miolo.append(elD('div', 'tm-vazio', 'Nenhum cuidado feito ainda. Quando tocar em Fiz hoje, ele aparece aqui com o dia.')); return; }
+          const pa = elD('div', 'tm-pauta tv-hist'), ul = elD('ul');
+          regs.forEach(y => { const x = d.itens.find(z => z.id === y.instrumento) || { id: y.instrumento, nome: y.instrumento_nome || 'Instrumento' }, li = elD('li'), tx = elD('div'), pers = /^pers-/.test(y.servico || ''), r = pers ? y.nome || 'Cuidado' : rot[y.servico] || maiusc(y.servico || 'Cuidado'), cada = +(y.cada_dias || (SERV.find(s => s[0] === y.servico) || [0, 0, 30])[2]);
+            const ed = edMini('note', 'Editar ' + r + ' de ' + x.nome, () => editaCuidado(x, y.servico, r, y, cada, pers)); ed.classList.add('tm-ed');
+            tx.append(ed, elD('b', '', r + ' · ' + x.nome), elD('small', '', 'Feito em ' + y.ultima + ' · a cada ' + cada + ' dias')); if (y.obs) tx.append(elD('small', '', y.obs)); li.append(tx); ul.append(li); });
+          pa.append(ul); miolo.append(pa);
+        };
+        const vitrine = () => {
+          const vit = vivos('setup').filter(x => x.png); if (!vit.length) { miolo.append(elD('div', 'tm-vazio', 'Nenhum instrumento com foto ainda.')); return; }
+          let sel = vit.findIndex(x => x.id === store.get('mus-vit')); if (sel < 0) sel = Math.max(0, vit.findIndex(x => inst.includes(x)));
+          const PEDS = [['vitrine', 'Vitrine'], ['palco', 'Palco'], ['vinil', 'Vinil'], ['case', 'Case']], ped = PEDS.some(p => p[0] === d.pedestal) ? d.pedestal : 'vitrine', VEL = [['lenta', 'Devagar', .05], ['media', 'Médio', .1], ['rapida', 'Rápido', .18]], G = Object.assign({ vel: 'lenta', pausado: false }, d.giro || {});
+          const tem3d = window.CSS && CSS.supports && (CSS.supports('transform-style', 'preserve-3d') || CSS.supports('-webkit-transform-style', 'preserve-3d')), modo3d = tem3d && !reduz && store.get('mus-vit-2d') !== '1';
+          const palco = elD('div', 'tv-palco ped-' + ped + (modo3d ? ' tv-3d' : ' tv-2d')), luz = elD('i', 'tv-luz'), base = elD('i', 'tv-ped'), cena = elD('div', 'tv-cena'), anel = elD('div', 'tv-anel'), cartao = elD('div', 'tv-cartao ped-' + ped);
+          const itens = vit.map((x, i) => { const it = elD('button', 'tv-item'), im = elD('img'); it.type = 'button'; it.setAttribute('aria-label', x.nome); im.alt = ''; im.decoding = 'async'; im.draggable = false; fotoUrl(x.png).then(u => { im.src = u; }).catch(() => {}); it.append(im); it.onclick = () => { if (arrastou) return; vai(i); }; anel.append(it); return it; });
+          const ant = elD('button', 'tv-seta tv-ant', '‹'), prx = elD('button', 'tv-seta tv-prx', '›'); ant.type = prx.type = 'button'; ant.setAttribute('aria-label', 'Anterior'); prx.setAttribute('aria-label', 'Próximo'); ant.onclick = () => vai(sel - 1); prx.onclick = () => vai(sel + 1);
+          cena.append(anel); palco.append(luz, base, cena, ant, prx);
+          const ctrl = elD('div', 'tv-ctrl'), bP = elD('button', 'tv-ct tv-pausa'), bV = elD('button', 'tv-ct tv-vel'), b2 = elD('button', 'tv-ct tv-2dbt'), bPed = elD('button', 'tv-ct tv-pedbt'); bP.type = bV.type = b2.type = bPed.type = 'button';
+          const rotulo = (b, r, v) => { b.replaceChildren(elD('small', '', r), elD('b', '', v)); b.setAttribute('aria-label', r + ': ' + v); };
+          const pintaCtrl = () => { bP.textContent = G.pausado ? '▶ Girar' : '❚❚ Pausar'; bP.setAttribute('aria-pressed', String(!!G.pausado)); rotulo(bV, 'Velocidade', (VEL.find(v => v[0] === G.vel) || VEL[0])[1]); rotulo(b2, 'Modo', modo3d ? '3D' : '2D'); rotulo(bPed, 'Pedestal', (PEDS.find(p => p[0] === ped) || PEDS[0])[1]); };
+          b2.onclick = () => { store.set('mus-vit-2d', modo3d ? '1' : ''); mostra('vitrine'); };
+          if (reduz) ctrl.append(elD('small', 'tv-ct-nota', 'Giro parado: o celular pede menos movimento'), bPed); else { if (!tem3d) b2.hidden = true; ctrl.append(bP, bV, b2, bPed); }
+          const gravaTopo = async (muda, msg, volta) => { muda(d); if (!(await gravaJson(m.arq, dd => muda(dd), msg, null))) { volta(d); showNote('Não guardou: voltou como estava. Confere a internet.', true); return false; } return true; };
+          bP.onclick = async () => { const antes = !!G.pausado; G.pausado = !antes; pausaAte = 0; pintaCtrl(); if (!(await gravaTopo(o => { o.giro = Object.assign({}, G); }, 'Música: giro da vitrine ' + (G.pausado ? 'pausado' : 'ligado') + ' pelo app', o => { G.pausado = antes; o.giro = Object.assign({}, G); }))) pintaCtrl(); };
+          bV.onclick = async () => { const antes = G.vel, k = (VEL.findIndex(v => v[0] === G.vel) + 1) % VEL.length; G.vel = VEL[k][0]; pintaCtrl(); if (!(await gravaTopo(o => { o.giro = Object.assign({}, G); }, 'Música: giro da vitrine ' + VEL[k][1].toLowerCase() + ' pelo app', o => { G.vel = antes; o.giro = Object.assign({}, G); }))) pintaCtrl(); };
+          bPed.onclick = async () => { const antes = d.pedestal, k = PEDS[(PEDS.findIndex(p => p[0] === ped) + 1) % PEDS.length][0]; d.pedestal = k; mostra('vitrine'); if (!(await gravaJson(m.arq, dd => { dd.pedestal = k; }, 'Música: pedestal da vitrine virou ' + k + ' pelo app', null))) { d.pedestal = antes; mostra('vitrine'); showNote('Não guardou: voltou como estava. Confere a internet.', true); } };
+          pintaCtrl(); miolo.append(palco, ctrl, cartao);
+          const N = vit.length, passo = 360 / N, R = Math.max(140, Math.min(230, 26 * N)), mod = i => ((i % N) + N) % N, lift = vit.map((x, i) => i === sel ? 70 : 18);
+          let p = sel, alvo = sel, pausaAte = 0, ultimo = performance.now(), t0 = ultimo, quadro = 0, arrastou = false, mostrado = -1, dedo = false;
+          const solta2 = () => { if (dedo) { dedo = false; pausaAte = performance.now() + 6000; } };
+          cartao.addEventListener('pointerdown', () => { dedo = true; pausaAte = performance.now() + 6000; }); ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => cartao.addEventListener(ev, solta2));
+          const pintaCartao = () => { if (mostrado === sel) return; const ia = mostrado; mostrado = sel; const x = vit[sel]; store.set('mus-vit', x.id); pintaFixo(); const jan = cartao.querySelector('.tv-c-jan') || cartao.appendChild(elD('div', 'tv-c-jan')), velho = jan.querySelector('.tv-c-in'), novo = elD('div', 'tv-c-in'), tp = elD('div', 'tv-c-topo'), tt = elD('div'); tt.append(elD('small', 'tv-c-rot', ped === 'case' ? 'Turnê JWA · ' + String(sel + 1).padStart(2, '0') : ped === 'palco' ? 'Setlist · ' + String(sel + 1).padStart(2, '0') : String(sel + 1).padStart(2, '0') + ' de ' + String(N).padStart(2, '0')), elD('b', 'tv-c-nome', x.nome));
+            const acoes = elD('div', 'tv-c-acoes'); if (inst.includes(x)) acoes.append(edMini('plus', 'Novo cuidado em ' + x.nome, () => novoCuidado(x))); const ed = lapis('setup', x); ed.classList.remove('tm-ed'); acoes.append(ed); tp.append(tt, acoes); novo.append(tp);
+            const fi = ficha(x, inst.includes(x) ? 'curta' : 'curta solta'); if (fi) novo.append(fi); if (inst.includes(x)) novo.append(quadros(x, true));
+            jan.append(novo); if (!velho) return; if (reduz || ia < 0 || !novo.animate) { velho.remove(); return; }
+            velho.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(115%)' }], { duration: 240, easing: 'cubic-bezier(.5,0,.75,0)', fill: 'forwards' }).onfinish = () => velho.remove();
+            novo.animate([{ transform: 'translateY(115%)' }, { transform: 'translateY(0)' }], { duration: 300, delay: 160, easing: 'cubic-bezier(.2,.9,.25,1)', fill: 'backwards' }); };
+          const pos = agora => { const fr = mod(Math.round(p));
+            itens.forEach((it, i) => { let rel = i - p; rel -= Math.round(rel / N) * N; const frente = i === fr, gira = reduz ? 0 : Math.sin((agora - t0) / 1100 + i * 1.3) * (frente ? 12 : 20);
+              if (modo3d) it.style.transform = 'rotateY(' + (i * passo).toFixed(2) + 'deg) translateZ(' + R + 'px) rotateY(' + (-(i * passo) + p * passo + gira).toFixed(2) + 'deg) translateY(' + lift[i].toFixed(1) + 'px)';
+              else { const a = Math.abs(rel), off = a > 2.4 ? Math.sign(rel) * 3.4 : rel; it.style.transform = 'translateX(' + (off * 118).toFixed(1) + 'px) translateY(' + lift[i].toFixed(1) + 'px) scale(' + (1 - Math.min(1, a) * .4).toFixed(3) + ')'; it.style.zIndex = String(10 - Math.round(a)); }
+              it.classList.toggle('frente', frente); });
+            if (modo3d) anel.style.transform = 'translateZ(' + (-R) + 'px) rotateY(' + (-p * passo).toFixed(2) + 'deg)';
+            if (fr !== sel) { sel = fr; pintaCartao(); } };
+          const anda = agora => { quadro = 0; if (!palco.isConnected) return; if (document.hidden) { document.addEventListener('visibilitychange', volta, { once: true }); return; }
+            const dt = Math.min(.1, (agora - ultimo) / 1000); ultimo = agora; if (dedo || agora < seguraAte || document.querySelector('.fixa-pop')) pausaAte = Math.max(pausaAte, agora + 6000);
+            if (x0 == null) { if (!G.pausado && agora > pausaAte && Math.abs(alvo - p) < .02) { p += (VEL.find(v => v[0] === G.vel) || VEL[0])[2] * dt; alvo = p; } else { p += (alvo - p) * .14; if (Math.abs(alvo - p) < .002) p = alvo; } }
+            const fr = mod(Math.round(p)); lift.forEach((l, i) => { lift[i] = l + ((i === fr ? 0 : 18) - l) * .1; });
+            pos(agora); quadro = requestAnimationFrame(anda); };
+          const volta = () => { ultimo = performance.now(); if (!quadro && palco.isConnected) quadro = requestAnimationFrame(anda); };
+          const vai = i => { let dif = mod(i) - mod(Math.round(p)); if (dif > N / 2) dif -= N; if (dif < -N / 2) dif += N; alvo = Math.round(p) + dif; pausaAte = performance.now() + 6000; if (reduz) { p = alvo; lift.forEach((l, k) => { lift[k] = k === mod(alvo) ? 0 : 18; }); pos(performance.now()); } };
+          let x0 = null, y0 = 0, p0 = 0; palco.addEventListener('pointerdown', e => { x0 = e.clientX; y0 = e.clientY; p0 = p; arrastou = false; });
+          palco.addEventListener('pointermove', e => { if (x0 == null) return; const dx = e.clientX - x0; if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(e.clientY - y0)) arrastou = true; if (arrastou && !reduz) { p = p0 - dx / 110; alvo = p; } });
+          const solta = e => { if (x0 == null) return; const dx = e.clientX - x0; x0 = null; if (arrastou) { if (reduz) vai(Math.round(p0) + (dx < -40 ? 1 : dx > 40 ? -1 : 0)); else { p = p0 - dx / 110; vai(Math.round(p - Math.sign(dx) * .3)); } setTimeout(() => { arrastou = false; }, 0); } };
+          palco.addEventListener('pointerup', solta); palco.addEventListener('pointercancel', () => { if (x0 != null) { x0 = null; vai(Math.round(p)); } arrastou = false; });
+          pintaCartao(); if (reduz) lift[sel] = 0; pos(performance.now()); if (!reduz) quadro = requestAnimationFrame(anda);
+        };
+        corpo.append(subs, miolo, fixo); mostra(SUBS.some(s => s[0] === cuSub) ? cuSub : 'vitrine');
       } else if (aba === 'setup') {
         agrupa(vivos('setup')).forEach(([g, l]) => { corpo.append(elD('div', 'tm-grupo', g || 'Outros')); l.forEach(x => { const a = elD('article', 'tm-aparelho'), sl = elD('div', 'tm-slot'), tx = elD('div'); sl.innerHTML = '<svg viewBox="0 0 40 40" aria-hidden="true">' + (MUS_ICONES[x.tipo] || MUS_ICONES.interface) + '</svg>'; if (x.foto) { const fi = elD('img'); fi.alt = x.nome; fi.loading = 'lazy'; fotoUrl(x.foto).then(u => { fi.src = u; sl.replaceChildren(fi); sl.classList.add('tem-foto'); sl.onclick = () => abreZoom(u, x.foto, [x.foto]); }).catch(() => {}); } tx.append(lapis('setup', x), elD('h3', '', x.nome)); if (x.texto) tx.append(elD('p', '', x.texto)); a.append(sl, tx); corpo.append(a); }); });
         const ant = elD('button', 'tm-mais', 'Anotações do inventário (14/08)'); ant.type = 'button'; ant.onclick = () => abreItemMenu({ tipo: 'saudelista', cartoes: true, icone: 'headphones', nome: 'Anotações do setup', arq: 'categorias/musica/meu-setup.json' }); corpo.append(ant);   // as notas e perguntas antigas do inventário continuam a um toque
@@ -4953,6 +5098,7 @@ function abreItemMenu(m) {
   if (m.donos && m.donos.length) donosTela = m.donos;   // dono da tela (e o item de dentro herda do grupo se não tiver o seu)
   painel.style.setProperty('--c', (COR_ASSUNTO.find(([re]) => re.test(m.nome)) || [])[1] || 'var(--accent)');   // a tela fica na cor do assunto, igual o azulejo dela
   if (m.tipo === 'geral-antiga') return abreGeralAntiga(m);
+  if (m.tipo === 'carteirinha') return abreCarteirinha(m.arq);   // #437: atalho, abre direto o cartão em tela cheia
   if (m.tipo === 'pagina') { location.href = m.arq + (m.arq.includes('?') ? '&' : '?') + 'v=' + encodeURIComponent(VERSAO); return; }   // ?v= da versão: o iPhone não reaproveita a página velha do cache (May 20:23, Parede de 05/11 aparecendo)   // página própria do app (ex.: jogos.html), volta pelo botão dela
   if (m.tipo === 'catalogo') return abreCatalogo();
   if (m.tipo === 'garagem' && window.abreGaragem) return abreGaragem(m);   // a Garagem, a oficina dos 3 veículos (vaga do Menu, May 08/11 14:41)
@@ -6536,26 +6682,36 @@ function popupRosa(titulo) {
   document.addEventListener('keydown', esc); x.onclick = fecha; pop.addEventListener('click', e => { if (e.target === pop) fecha(); });
   return { corpo, fecha, aoFechar: f => { aoFechar = f; } };
 }
+const CARTEIRINHAS = {};
+const carregaCarteirinha = arq => CARTEIRINHAS[arq] || (CARTEIRINHAS[arq] = lerArquivo(arq).then(t => JSON.parse(t)).catch(e => { delete CARTEIRINHAS[arq]; throw e; }));
+function guardaCarteirinha(arq) { carregaCarteirinha(arq).then(c => { [c.frente || c.imagem, c.verso].filter(Boolean).forEach(f => fotoUrl(f, true).catch(() => {})); }).catch(() => {}); }   // já guarda a foto no aparelho (abre sem internet)
+async function abreCarteirinha(arq) {   // May 11/11: abre direto o CARTÃO DA FRENTE, tela cheia, sem mais nenhum dado; ela vira o celular e entrega. #437 (May 24/11 11:16): o mesmo visor é o atalho da tela inicial e da Saúde
+  const ov = document.createElement('div'); ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', 'Carteirinha Unimed');
+  ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#fff;display:grid;place-items:center;overflow:hidden;touch-action:none';
+  const im = document.createElement('img'); im.alt = 'Carteirinha Unimed (frente)';
+  const ajusta = () => { const W = innerWidth, H = innerHeight, retrato = H > W; im.style.cssText = retrato ? 'position:absolute;left:50%;top:50%;width:' + Math.min(H - 40, (W - 24) * 1.5) + 'px;height:auto;transform:translate(-50%,-50%) rotate(90deg);image-rendering:auto' : 'max-width:96vw;max-height:92vh'; };
+  ajusta(); addEventListener('resize', ajusta);
+  const sai = () => { removeEventListener('resize', ajusta); ov.remove(); };
+  ov.onclick = sai;   // só o cartão na tela: tocar fecha, deslizar vira
+  const x = document.createElement('button'); x.type = 'button'; x.className = 'cart-x'; x.setAttribute('aria-label', 'Fechar carteirinha'); x.innerHTML = icone('close');   // Sigma #437: saída à vista, embaixo à direita (mão direita)
+  const pontos = elD('div', 'cart-pontos'); pontos.hidden = true; pontos.setAttribute('aria-hidden', 'true'); pontos.append(elD('i', 'on'), elD('i', ''));   // 2 bolinhas: tem verso, deslizar vira
+  const marca = () => [...pontos.children].forEach((b, k) => b.classList.toggle('on', k === i));
+  ov.append(im, pontos, x); document.body.append(ov);
+  const aviso = tx => { const p = elD('p', 'p-nota', tx); p.style.cssText = 'padding:24px;text-align:center'; im.replaceWith(p); };
+  let lados = [], i = 0, x0 = null, y0 = null;   // deslizar vira o cartão (frente <-> verso): ele gira no eixo e mostra o outro lado
+  const vira = () => { if (lados.length < 2 || !im.animate) { if (lados.length > 1) { i = 1 - i; im.src = lados[i]; marca(); } return; } const base = getComputedStyle(im).transform, gira = base === 'none' ? '' : base + ' '; im.animate([{ transform: gira + 'scaleY(1)' }, { transform: gira + 'scaleY(0)' }], { duration: 160, easing: 'ease-in' }).onfinish = () => { i = 1 - i; im.src = lados[i]; marca(); im.alt = 'Carteirinha Unimed (' + (i ? 'verso' : 'frente') + ')'; im.animate([{ transform: gira + 'scaleY(0)' }, { transform: gira + 'scaleY(1)' }], { duration: 160, easing: 'ease-out' }); }; };
+  ov.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+  ov.addEventListener('touchend', e => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null; if (Math.max(Math.abs(dx), Math.abs(dy)) > 40) vira(); });
+  ov.vira = vira;
+  let c; try { c = await carregaCarteirinha(arq); } catch (e) { return aviso('Não abriu. Confere a internet.'); }
+  const frente = c.frente || c.imagem; if (!frente) return aviso('Sem foto da carteirinha.');
+  try { lados = [await fotoUrl(frente, true)]; im.src = lados[0]; } catch (e) { return aviso('Sem foto da carteirinha.'); }
+  if (c.verso) { pontos.hidden = false; fotoUrl(c.verso, true).then(u => lados.push(u)).catch(() => { pontos.hidden = true; }); }
+}
 function blocoCarteirinha(b, tit, tx) {
   const w = elD('section', 'vs-bloco'); tit(b, w); const g = elD('div', 'vs-pass'), k = elD('button', 'vs-pass-btn'); k.type = 'button';
   k.append(elD('b', '', 'Abrir carteirinha')); g.append(k); w.append(g);
-  let d = null; const carrega = () => d || (d = lerArquivo(b.arq).then(t => JSON.parse(t)).catch(e => { d = null; throw e; }));
-  carrega().then(c => { [c.frente || c.imagem, c.verso].filter(Boolean).forEach(f => fotoUrl(f, true).catch(() => {})); }).catch(() => {});   // já guarda a foto no aparelho (abre sem internet)
-  k.onclick = async () => {   // May 11/11: abre direto o CARTÃO DA FRENTE, tela cheia, sem mais nenhum dado; ela vira o celular e entrega
-    const ov = document.createElement('div'); ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', 'Carteirinha Unimed');
-    ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#fff;display:grid;place-items:center;overflow:hidden;touch-action:none';
-    const im = document.createElement('img'); im.alt = 'Carteirinha Unimed (frente)';
-    const ajusta = () => { const W = innerWidth, H = innerHeight, retrato = H > W; im.style.cssText = retrato ? 'position:absolute;left:50%;top:50%;width:' + Math.min(H - 40, (W - 24) * 1.5) + 'px;height:auto;transform:translate(-50%,-50%) rotate(90deg);image-rendering:auto' : 'max-width:96vw;max-height:92vh'; };
-    ajusta(); addEventListener('resize', ajusta);
-    const sai = () => { removeEventListener('resize', ajusta); ov.remove(); };
-    ov.onclick = sai;   // só o cartão na tela: tocar fecha, deslizar vira
-    ov.append(im); document.body.append(ov);
-    let lados = [], i = 0, x0 = null, y0 = null;   // deslizar vira o cartão (frente <-> verso)
-    const vira = () => { if (lados.length < 2) return; i = 1 - i; im.style.transition = 'opacity .18s'; im.style.opacity = '0'; setTimeout(() => { im.src = lados[i]; im.style.opacity = '1'; }, 180); };
-    ov.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
-    ov.addEventListener('touchend', e => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null; if (Math.max(Math.abs(dx), Math.abs(dy)) > 40) vira(); });
-    try { const c = await carrega(); lados = [await fotoUrl(c.frente || c.imagem, true)]; im.src = lados[0]; if (c.verso) fotoUrl(c.verso, true).then(u => lados.push(u)).catch(() => {}); } catch (e) { im.replaceWith(elD('p', 'p-nota', 'Não abriu. Confere a internet.')); }
-  };
+  guardaCarteirinha(b.arq); k.onclick = () => abreCarteirinha(b.arq);
   return w;
 }
 // Mapa dentro do app: Leaflet 1.9.4 (cdnjs) + OpenStreetMap, pino no endereço (e na rodoviária, se vier origem). Sem internet: aviso e o botão de abrir no app de mapas.
@@ -7022,6 +7178,8 @@ function pjmHero(p, k) {
 function abreProjetosMay(m) {
   let D = null;
   const salva = async (muda, msg) => { const d = await gravaJson(m.arq, muda, msg, { projetos: [] }); if (d) { D = d; return true; } showNote('Não salvou: confere a internet.', true); return false; };
+  const X = {}, arqX = id => 'menu/projetos/' + id + '.json';   // Projetinhos fase 2 (25/11/2026): Próxima ação, Diário e os apagados deles moram no arquivo do projeto de painel; sem o arquivo = vazio, a 1ª gravação cria
+  const salvaX = async (id, muda, msg) => { const d = await gravaJson(arqX(id), muda, msg, { proxima: null, diario: [], apagados: [] }); if (d) { X[id] = d; return true; } showNote('Não salvou: confere a internet.', true); return false; };
   const doForm = p => { const b = p.botoes || [], site = b.find(x => /acessar/i.test(x.rotulo || '')), doc = b.find(x => /documenta/i.test(x.rotulo || '')); return { nome: p.nome, pra: p.pra, oque: p.oque, status: p.status, link: site ? site.link : '', doc: doc ? doc.link : '', fundo: (p.cores || {}).fundo || '', destaque: (p.cores || {}).destaque || '' }; };
   const praProjeto = (p, v) => {
     Object.assign(p, { nome: v.nome.trim(), pra: v.pra || '', oque: v.oque || '', status: v.status || '' });
@@ -7035,8 +7193,10 @@ function abreProjetosMay(m) {
   const detalhe = id => tela((x => x.curto || x.nome || 'Projeto')(D.projetos.find(x => x.id === id) || {}), c => {   // curto: nome que cabe no topo (Sigma 11:28)
     const pinta = () => {
       const p = D.projetos.find(x => x.id === id); c.replaceChildren(); if (!p) { c.append(elD('p', 'p-nota', 'Este projeto foi apagado.')); return; }
+      if (p.painel && !X[id]) { X[id] = { diario: [] }; lerArquivo(arqX(id)).then(t => { X[id] = JSON.parse(t); if (!c.contains(document.activeElement)) pinta(); }).catch(() => {}); }
+      const px = X[id] || {}, hoje = new Date(new Date().toDateString()), diaDe = s => { const m = String(s || '').match(/^(\d{4})-(\d\d)-(\d\d)/); return m ? new Date(+m[1], m[2] - 1, +m[3]) : null; }, atras = x => { const d = diaDe(x.prazo); return !x.feito && !!d && d < hoje; }, estDe = x => x.estado || 'Pendente';
       painel.classList.remove('tema-claro', 'tema-cupom', 'tema-planilha', 'tema-folhinha', 'tema-rosa', 'tema-saude', 'tema-planos', 'tema-musica');   // o projeto tem a identidade dele: aberto pela Agenda (clara) não herda o claro, senão o texto branco some (Sigma #395)
-      const k = pjmCores(p); pjmCarregaFontes(); c.className = c.className.replace(/\bpjm-t-\S+/g, '').trim(); c.classList.add('pjm-tela', 'pjm-t-' + ((p.tema || {}).estilo || 'padrao')); c.style.backgroundColor = k.fundo; c.style.color = k.texto; c.append(pjmHero(p, k));
+      const k = pjmCores(p); pjmCarregaFontes(); c.className = c.className.replace(/\bpjm-t-\S+/g, '').trim(); c.classList.add('pjm-tela', 'pjm-t-' + ((p.tema || {}).estilo || 'padrao')); c.style.backgroundColor = k.fundo; c.style.color = k.texto; [['--pj-f', k.fundo], ['--pj-t', k.texto], ['--pj-d', k.destaque], ['--pj-sd', k.sobreDestaque]].forEach(([n, v]) => c.style.setProperty(n, v)); c.append(pjmHero(p, k));
       const topo = elD('div', 'pjm-topo'); topo.style.background = k.fundo; topo.style.color = k.texto; topo.style.borderBottomColor = k.destaque;
       const ic = elD('span', 'pjm-ic'); ic.innerHTML = icone(p.icone || 'doc'); ic.style.color = k.destaque;
       const ttl = elD('div'); ttl.append(elD('b', '', p.nome), elD('small', '', p.pra || ''));
@@ -7050,14 +7210,42 @@ function abreProjetosMay(m) {
       if ((p.notas || []).length) ABAS.push(['notas', p.notasTitulo || 'Onde mudar']);
       if (p.contatos) ABAS.splice(2, 0, ['contatos', 'Contatos']);
       if ((p.versoes || []).length) ABAS.push(['versoes', 'Versões']);
+      if (p.painel) ABAS.push(['diario', 'Diário'], ['sobre', 'Sobre']);
       if ((p.imagens || []).length) ABAS.push(['imagens', 'Imagens']);   // projeto sem site também mostra o que tem: logo, panfleto, banners (May 17/11 21:02)
       const chave = 'pjm-aba:' + id; let aba = 'resumo'; try { aba = localStorage.getItem(chave) || 'resumo'; } catch (e) {}
       if (!ABAS.some(a => a[0] === aba)) aba = 'resumo';
-      c.classList.toggle('pjm-res', aba === 'resumo');   // trocar de aba não mexe no cartão de cima (Sigma 18/11 07:39)   // fora do Resumo o topo da marca encolhe, pra aba caber sem rolar
+      c.classList.toggle('pjm-res', aba === 'resumo'); c.classList.toggle('pjm-painel', !!p.painel);   // trocar de aba não mexe no cartão de cima (Sigma 18/11 07:39)   // fora do Resumo o topo da marca encolhe, pra aba caber sem rolar
       const barra = elD('div', 'pjm-abas' + (ABAS.length > 5 ? ' grade' : ABAS.length > 4 ? ' muitas' : '')); barra.setAttribute('role', 'tablist'); const corpo = elD('div', 'pjm-corpo-aba');
       ABAS.forEach(([k2, rot]) => { const b = elD('button', 'pjm-aba' + (k2 === aba ? ' on' : ''), rot); b.type = 'button'; b.setAttribute('role', 'tab'); if (k2 === aba) { b.style.background = k.abaOn; b.style.color = '#FFFFFF'; } b.onclick = () => { try { localStorage.setItem(chave, k2); } catch (e) {} pinta(); }; barra.append(b); });
       c.append(barra, corpo);
-      const bloco = (rot, txt) => { if (!txt) return; const b = elD('section', 'pjm-bloco'); b.append(elD('small', 'pjm-rot', rot), elD('p', '', txt)); corpo.append(b); };
+      const bloco = (rot, txt) => { if (!txt) return; const b = elD('section', 'pjm-bloco'); b.append(elD('small', 'pjm-rot', rot), elD('p', '', txt)); corpo.append(b); return b; };
+      // Nada se apaga (Projetinhos fase 1, 25/11/2026): pedido, contato e texto vão pra apagados[] com a posição; desfazer e Restaurar devolvem no mesmo lugar
+      const RESTAURAVEL = ['pedidos', 'contatos', 'textos', 'diario'], restauraveis = (q, de) => ((q || {}).apagados || []).filter(a => a.item && a.item.id && (de ? a.de === de : RESTAURAVEL.includes(a.de)));
+      const todosApagados = de => restauraveis(D.projetos.find(x => x.id === id), de).concat(p.painel ? restauraveis(X[id], de).map(a => Object.assign({ doArq: true }, a)) : []).sort((a, b) => (a.apagado || '').replace(/(\d\d)\/(\d\d)\/(\d{4})/, '$3$2$1') < (b.apagado || '').replace(/(\d\d)\/(\d\d)\/(\d{4})/, '$3$2$1') ? 1 : -1);
+      const devolve = (q, a) => { const ap = (q && q.apagados) || [], i = ap.findIndex(z => z.de === a.de && z.apagado === a.apagado && z.item && z.item.id === a.item.id); if (i < 0) return; const [z] = ap.splice(i, 1), l = q[z.de] = q[z.de] || []; if (!l.some(y => y.id === z.item.id)) l.splice(z.pos == null ? l.length : Math.max(0, z.pos), 0, z.item); if (!ap.length) delete q.apagados; };
+      const restaura = async a => a.doArq ? salvaX(id, d => devolve(d, a), 'Apagado desfeito pelo app em ' + p.nome) : salva(d => devolve(d.projetos.find(x => x.id === id), a), 'Apagado desfeito pelo app em ' + p.nome);
+      const apagaGuarda = async (campo, it, rot) => { const qd = edAgora(); let ent = null; if (!(await salva(d => { const q = d.projetos.find(x => x.id === id), l = (q && q[campo]) || [], pos = l.findIndex(z => z.id === it.id); if (pos < 0) return; const [y] = l.splice(pos, 1); ent = { de: campo, pos, apagado: qd, porque: 'Apagado pelo app', item: y }; (q.apagados = q.apagados || []).push(ent); }, rot + ' apagado em ' + p.nome + ' (fica guardado)'))) return; pinta(); if (ent) edFaixaDesfazer(rot + ' apagado', async () => { if (await restaura(ent)) pinta(); }); };
+      const apagaX = async (campo, it, rot) => { const qd = edAgora(); let ent = null; if (!(await salvaX(id, d => { const l = d[campo] || [], pos = l.findIndex(z => z.id === it.id); if (pos < 0) return; const [y] = l.splice(pos, 1), a = { de: campo, pos, apagado: qd, porque: 'Apagado pelo app', item: y }; (d.apagados = d.apagados || []).push(a); ent = Object.assign({ doArq: true }, a); }, rot + ' apagado em ' + p.nome + ' (fica guardado)'))) return; pinta(); if (ent) edFaixaDesfazer(rot + ' apagado', async () => { if (await restaura(ent)) pinta(); }); };
+      const verApagados = de => {
+        const l = todosApagados(de); if (!l.length) return;
+        const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card pjm-ap-card'), x = elD('button', 'pp-x'); x.type = 'button'; x.innerHTML = icone('close');
+        card.style.background = k.fundo; card.style.color = k.texto; card.style.borderColor = k.destaque; card.style.setProperty('--quem', k.destaque);
+        const fecha = () => { ov.classList.add('saindo'); setTimeout(() => ov.remove(), 180); }; x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); };
+        const ul = elD('ul', 'pjm-ap-lista');
+        l.forEach(a => { const li = elD('li'), tx = elD('div', 'pjm-ap-tx'), r = elD('button', 'pjm-copia', 'Restaurar'); tx.append(elD('b', '', a.item.texto || a.item.nome || a.item.titulo || ''), elD('small', '', [a.apagado, a.porque].filter(Boolean).join(' · '))); r.type = 'button'; r.style.background = k.destaque; r.style.color = k.sobreDestaque; r.onclick = async () => { r.disabled = true; if (await restaura(a)) { fecha(); pinta(); } else r.disabled = false; }; li.append(tx, r); ul.append(li); });
+        card.append(x, elD('div', 'pp-perg', 'Apagados'), ul); ov.append(card); document.body.append(ov);
+      };
+      const linkApagados = de => { if (!p.painel) return; const n = todosApagados(de).length; if (!n) return; const b = elD('button', 'pjm-ap-link', 'Apagados (' + n + ')'); b.type = 'button'; b.style.color = k.destaque; b.onclick = () => verApagados(de); corpo.append(b); };
+      const botao = (x, bt) => {
+        const pinta2 = el => { if (bt.children.length) { el.classList.add('sec'); el.style.borderColor = k.destaque; } else { el.style.background = k.destaque; el.style.color = k.sobreDestaque; } bt.append(el); };   // só o 1º botão cheio, os outros contornados (Sigma 12:42)
+        if (x.whats) { const a = elD('a', 'pjm-bt', x.rotulo); a.href = 'https://wa.me/' + x.whats; a.target = '_blank'; a.rel = 'noopener'; pinta2(a); return; }
+        if (x.compartilhar) { const b = elD('button', 'pjm-bt', x.rotulo); b.type = 'button'; b.onclick = async () => { try { if (navigator.share) await navigator.share({ url: x.compartilhar, title: p.nome }); else { await navigator.clipboard.writeText(x.compartilhar); showNote('Link copiado.'); } } catch (e) {} }; pinta2(b); return; }
+        if (x.arquivo) { const b = elD('button', 'pjm-bt', x.rotulo); b.type = 'button'; b.onclick = async () => { const t0 = b.textContent; b.textContent = 'Baixando...'; b.disabled = true; try { const r = await api(apiDe(x.arquivo), { ...RAW, tempo: 120000 }); if (!r.ok) throw 0; const u = URL.createObjectURL(await r.blob()), a = elD('a'); a.href = u; a.download = x.arquivo.split('/').pop(); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 60000); } catch (e) { showNote('Não baixou: confere a internet.', true); } b.textContent = t0; b.disabled = false; }; pinta2(b); return; }
+        if (x.abrir) { const a = elD('button', 'pjm-bt', x.rotulo); a.type = 'button'; a.onclick = () => abreItemMenu({ nome: x.rotulo, tipo: x.tipo || 'imagens', arq: x.abrir, estilo: x.estilo || '' }); pinta2(a); }   // botão que abre uma tela do app por dentro do projeto (Jogando A2: controles, animações, vídeos e marca; May 24/11/2026)
+        else if (x.link) { const a = elD('a', 'pjm-bt', x.rotulo); a.href = x.link; a.target = '_blank'; a.rel = 'noopener'; pinta2(a); }
+        else { const s = elD('span', 'pjm-bt off'); s.append(elD('b', '', x.rotulo), elD('small', '', x.motivo || 'Ainda sem link')); bt.append(s); }
+      };
+      const noResumo = x => !p.painel || /acessar|baixar|whats/i.test(x.rotulo || '');   // painel (E-controle e S.L.): o Resumo fica só com o principal e o WhatsApp, o resto mora no Sobre
       const lista = (campo, rotNovo, vazio) => {   // pedidos de alteração (era "O que falta"): campo sempre aberto, grava na hora
         const itens = p[campo] || [], fz = elD('section', 'pjm-bloco');
         const form = elD('form', 'pjm-novo'), inp = elD('textarea'), ok = elD('button', 'pjm-copia', 'Guardar'); inp.rows = 2; inp.placeholder = rotNovo; ok.type = 'submit'; ok.style.background = k.destaque; ok.style.color = k.sobreDestaque;
@@ -7066,30 +7254,59 @@ function abreProjetosMay(m) {
         const ul = elD('ul', 'pjm-falta');
         itens.slice().sort((a, b) => (a.feito ? 1 : 0) - (b.feito ? 1 : 0)).forEach(it => {
           const li = elD('li', it.feito ? 'feito' : ''), mk = elD('button', 'pjm-mk'); mk.type = 'button'; mk.setAttribute('aria-label', it.feito ? 'Desmarcar' : 'Marcar como feito'); mk.innerHTML = it.feito ? icone('check') : ''; mk.style.borderColor = k.destaque; if (it.feito) { mk.style.background = k.destaque; mk.style.color = k.sobreDestaque; }
-          mk.onclick = async () => { mk.disabled = true; if (await salva(d => { const q = d.projetos.find(x => x.id === id), y = q && (q[campo] || []).find(z => z.id === it.id); if (y) y.feito = !y.feito; }, (it.feito ? 'Desmarcado' : 'Feito') + ' em ' + p.nome)) pinta(); else mk.disabled = false; };
+          mk.onclick = async () => { mk.disabled = true; if (await salva(d => { const q = d.projetos.find(x => x.id === id), y = q && (q[campo] || []).find(z => z.id === it.id); if (y) { y.feito = !y.feito; if (p.painel) { if (y.feito) y.feitoEm = edAgora(); else delete y.feitoEm; } } }, (it.feito ? 'Desmarcado' : 'Feito') + ' em ' + p.nome)) pinta(); else mk.disabled = false; };
           const tx = elD('span', 'pjm-tx'); tx.append(document.createTextNode(it.texto)); if (it.quando) tx.append(elD('small', 'pjm-quando', ' ' + String(it.quando).slice(0, 10)));
-          li.append(mk, tx, edMini('pen', 'Editar', () => edFormulario({ titulo: 'Editar pedido', campos: [{ nome: 'texto', rotulo: 'Pedido', obrigatorio: true, tipo: 'texto_longo' }], v: { texto: it.texto }, aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id), y = q && (q[campo] || []).find(z => z.id === it.id); if (y) y.texto = v.texto.trim(); }, 'Pedido editado em ' + p.nome)) pinta(); }, aoApagar: async () => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) q[campo] = (q[campo] || []).filter(z => z.id !== it.id); }, 'Pedido apagado em ' + p.nome)) pinta(); } })));
+          if (p.painel) { const mt = [it.feito ? (it.feitoEm ? 'Feito em ' + it.feitoEm : '') : estDe(it) !== 'Pendente' ? estDe(it) : '', atras(it) ? 'Atrasado' : '', !it.feito && it.prioridade === 'Alta' ? 'Prioridade alta' : '', it.prazo ? 'Prazo ' + edDataBr(it.prazo) : '', it.quem ? 'Quem: ' + it.quem : ''].filter(Boolean); if (mt.length) { const sm = elD('small', 'pjm-meta', mt.join(' · ')); if (atras(it) || (!it.feito && it.prioridade === 'Alta')) sm.classList.add('forte'); tx.append(sm); } }
+          const camposPed = [{ nome: 'texto', rotulo: 'Pedido', obrigatorio: true, tipo: 'texto_longo' }].concat(p.painel ? [{ nome: 'estado', rotulo: 'Estado', tipo: 'escolha', opcoes: ['Pendente', 'Em andamento', 'Aguardando'], meia: true }, { nome: 'prioridade', rotulo: 'Prioridade', tipo: 'escolha', opcoes: ['Normal', 'Alta'], meia: true }, { nome: 'prazo', rotulo: 'Prazo', tipo: 'data', meia: true }, { nome: 'quem', rotulo: 'Quem pediu', tipo: 'texto', meia: true }] : []);
+          const poe = (y, k2, val, padrao) => { val = String(val || '').trim(); if (val && val !== padrao) y[k2] = val; else delete y[k2]; };
+          li.append(mk, tx, edMini('pen', 'Editar', () => edFormulario({ titulo: 'Editar pedido', campos: camposPed, v: { texto: it.texto, estado: estDe(it), prioridade: it.prioridade || 'Normal', prazo: it.prazo || '', quem: it.quem || '' }, aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id), y = q && (q[campo] || []).find(z => z.id === it.id); if (y) { y.texto = v.texto.trim(); if (p.painel) { poe(y, 'estado', v.estado, 'Pendente'); poe(y, 'prioridade', v.prioridade, 'Normal'); poe(y, 'prazo', v.prazo); poe(y, 'quem', v.quem); } } }, 'Pedido editado em ' + p.nome)) pinta(); }, aoApagar: () => apagaGuarda(campo, it, 'Pedido') })));
           ul.append(li);
         });
         if (!ul.children.length) fz.append(elD('p', 'pjm-vazio', vazio)); else fz.append(ul);
         corpo.append(fz);
       };
+      const anota = () => {   // Anotação rápida: vira Nota no Diário; com o teclado aberto o resto do Resumo recolhe deslizando pra cima
+        const f = elD('form', 'pjm-novo pjm-novo-linha pjm-anota'), inp = elD('input'), ok = elD('button', 'pjm-copia', 'Guardar'); inp.type = 'text'; inp.placeholder = 'Anotação rápida'; inp.setAttribute('aria-label', 'Anotação rápida'); inp.enterKeyHint = 'done'; ok.type = 'submit'; ok.style.background = k.destaque; ok.style.color = k.sobreDestaque;
+        inp.onfocus = () => c.classList.add('pjm-anotando'); inp.onblur = () => setTimeout(() => { if (document.activeElement !== inp) c.classList.remove('pjm-anotando'); }, 150);
+        f.onsubmit = async e => { e.preventDefault(); const t = inp.value.trim(); if (!t) return; ok.disabled = true; if (await salvaX(id, d => { (d.diario = d.diario || []).unshift({ id: id + '-d' + Date.now().toString(36), quando: edAgora(), tipo: 'Nota', texto: t }); }, 'Anotação rápida em ' + p.nome)) { c.classList.remove('pjm-anotando'); showNote('Anotado no Diário.'); pinta(); } else ok.disabled = false; };
+        f.append(inp, ok); return f;
+      };
       if (aba === 'resumo') {
         if (p.data) { const dd = Math.ceil((new Date(p.data + 'T00:00:00') - new Date(new Date().toDateString())) / 864e5); if (dd >= 0) { const cd = elD('div', 'pjm-conta'); cd.append(elD('b', '', dd === 0 ? 'É hoje!' : String(dd)), elD('small', '', dd === 0 ? '' : (dd === 1 ? 'dia para o evento' : 'dias para o evento'))); cd.style.color = k.destaque; corpo.append(cd); } }
-        bloco('O que é', p.oque); bloco('Como está agora', p.status);
-        const bt = elD('div', 'pjm-botoes');
-        (p.botoes || []).forEach(x => {
-          const pinta2 = el => { if (bt.children.length) { el.classList.add('sec'); el.style.borderColor = k.destaque; } else { el.style.background = k.destaque; el.style.color = k.sobreDestaque; } bt.append(el); };   // só o 1º botão cheio, os outros contornados (Sigma 12:42)
-          if (x.whats) { const a = elD('a', 'pjm-bt', x.rotulo); a.href = 'https://wa.me/' + x.whats; a.target = '_blank'; a.rel = 'noopener'; pinta2(a); return; }
-          if (x.compartilhar) { const b = elD('button', 'pjm-bt', x.rotulo); b.type = 'button'; b.onclick = async () => { try { if (navigator.share) await navigator.share({ url: x.compartilhar, title: p.nome }); else { await navigator.clipboard.writeText(x.compartilhar); showNote('Link copiado.'); } } catch (e) {} }; pinta2(b); return; }
-          if (x.arquivo) { const b = elD('button', 'pjm-bt', x.rotulo); b.type = 'button'; b.onclick = async () => { const t0 = b.textContent; b.textContent = 'Baixando...'; b.disabled = true; try { const r = await api(apiDe(x.arquivo), { ...RAW, tempo: 120000 }); if (!r.ok) throw 0; const u = URL.createObjectURL(await r.blob()), a = elD('a'); a.href = u; a.download = x.arquivo.split('/').pop(); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 60000); } catch (e) { showNote('Não baixou: confere a internet.', true); } b.textContent = t0; b.disabled = false; }; pinta2(b); return; }
-          if (x.abrir) { const a = elD('button', 'pjm-bt', x.rotulo); a.type = 'button'; a.onclick = () => abreItemMenu({ nome: x.rotulo, tipo: x.tipo || 'imagens', arq: x.abrir, estilo: x.estilo || '' }); pinta2(a); }   // botão que abre uma tela do app por dentro do projeto (Jogando A2: controles, animações, vídeos e marca; May 24/11/2026)
-          else if (x.link) { const a = elD('a', 'pjm-bt', x.rotulo); a.href = x.link; a.target = '_blank'; a.rel = 'noopener'; pinta2(a); }
-          else { const s = elD('span', 'pjm-bt off'); s.append(elD('b', '', x.rotulo), elD('small', '', x.motivo || 'Ainda sem link')); bt.append(s); }
-        });
+        if (p.painel) {   // Resumo sem rolar (Projetinhos fase 1, 25/11/2026): placar gerado dos pedidos; O que é e os outros botões vão pro Sobre
+          const ps = p.pedidos || [], pl = elD('div', 'pjm-placar cinco');
+          [['Pendentes', ps.filter(x => !x.feito && estDe(x) === 'Pendente').length], ['Andamento', ps.filter(x => !x.feito && estDe(x) === 'Em andamento').length], ['Aguardando', ps.filter(x => !x.feito && estDe(x) === 'Aguardando').length], ['Atrasadas', ps.filter(atras).length], ['Feitas', ps.filter(x => x.feito).length]].forEach(([r, n]) => { const d = elD('div'); d.append(elD('b', '', String(n)), elD('small', '', r)); pl.append(d); });
+          corpo.append(pl);
+          const pr = elD('div', 'pjm-prox'), prt = elD('div', 'pjm-prox-tx'); prt.append(elD('small', 'pjm-rot', 'Próxima ação'), elD('span', (px.proxima || {}).texto ? '' : 'vazio', (px.proxima || {}).texto || 'Toca no lápis pra definir'));
+          pr.append(prt, edMini('pen', 'Editar a próxima ação', () => edFormulario({ titulo: 'Próxima ação', campos: [{ nome: 'texto', rotulo: 'Próxima ação', tipo: 'texto' }], v: { texto: (px.proxima || {}).texto || '' }, aoSalvar: async v => { const t = String(v.texto || '').trim(); if (await salvaX(id, d => { d.proxima = t ? { texto: t, quando: edAgora() } : null; }, 'Próxima ação em ' + p.nome)) pinta(); } }))); corpo.append(pr, anota());
+          const cm = bloco('Como está agora', p.status); if (cm) cm.classList.add('pjm-tres');
+          if (cm) {   // Ler tudo: abre o texto inteiro deslizando a altura, com teto pra o Resumo não rolar; rola por dentro (padrão da colecao_slim do Máquinas, Sigma 25/11)
+            const tx = cm.querySelector('p'), lt = elD('button', 'pjm-ler', 'Ler tudo'); lt.type = 'button'; lt.style.color = k.destaque; lt.setAttribute('aria-expanded', 'false'); cm.classList.add('fechado'); cm.append(lt);
+            requestAnimationFrame(() => { if (tx.scrollHeight <= tx.clientHeight + 1) { lt.hidden = true; cm.classList.remove('fechado'); } });
+            lt.onclick = () => { const abre = cm.classList.contains('fechado'), pc = document.getElementById('p-corpo'), bx = corpo.querySelector('.pjm-botoes'); let teto = tx.clientHeight; if (abre && bx) teto += Math.max(0, bx.getBoundingClientRect().top - cm.getBoundingClientRect().bottom - 16) + Math.max(0, pc.clientHeight - pc.scrollHeight); cm.classList.toggle('fechado', !abre); cm.classList.toggle('aberto', abre); tx.style.maxHeight = abre ? Math.min(tx.scrollHeight, teto, Math.round(innerHeight * .42)) + 'px' : ''; if (!abre) tx.scrollTop = 0; lt.textContent = abre ? 'Mostrar menos' : 'Ler tudo'; lt.setAttribute('aria-expanded', String(abre)); };
+          }
+        } else { bloco('O que é', p.oque); bloco('Como está agora', p.status); }
+        const bt = elD('div', 'pjm-botoes' + (p.painel && (p.botoes || []).filter(noResumo).length > 1 ? ' tres' : ''));
+        (p.botoes || []).filter(noResumo).forEach(x => botao(x, bt));
         { const be = elD('button', 'pjm-bt sec', 'Editar'); be.type = 'button'; be.style.borderColor = k.destaque; be.onclick = lp.onclick; bt.append(be); corpo.append(bt); }   // principal embaixo à direita, Editar à esquerda
       }
-      if (aba === 'pedidos') lista('pedidos', p.pedidosDica || 'O que pediram para mudar? Escreve aqui e toca em Guardar', 'Nada aberto.');
+      if (aba === 'sobre') {   // painel: o que saiu do Resumo (O que é, Como está agora inteiro e os links)
+        bloco('O que é', p.oque); bloco('Como está agora', p.status);
+        const bt = elD('div', 'pjm-botoes'); (p.botoes || []).filter(x => !noResumo(x)).forEach(x => botao(x, bt)); if (bt.children.length) corpo.append(bt);
+        linkApagados(null);
+      }
+      if (aba === 'diario') {   // Nota, Decisão, Problema e Ideia; apagar guarda em apagados[] do arquivo do projeto
+        corpo.append(anota());
+        const CAMPOS_DIA = [{ nome: 'tipo', rotulo: 'Tipo', tipo: 'escolha', opcoes: ['Nota', 'Decisão', 'Problema', 'Ideia'] }, { nome: 'texto', rotulo: 'O que foi', obrigatorio: true, tipo: 'texto_longo' }, { nome: 'solucao', rotulo: 'Solução', tipo: 'texto_longo' }];
+        const ul = elD('ul', 'pjm-falta pjm-diario');
+        (px.diario || []).forEach(it => {
+          const li = elD('li'), tx = elD('div', 'pjm-tx'), cab = elD('small', 'pjm-dcab'), tp = elD('b', 'pjm-tipo', it.tipo || 'Nota'); tp.style.background = k.abaOn; tp.style.color = '#FFFFFF'; cab.append(tp, elD('span', 'pjm-quando', it.quando || '')); tx.append(cab, elD('p', '', it.texto)); if (it.solucao) tx.append(elD('p', 'pjm-sol', 'Solução: ' + it.solucao));
+          li.append(tx, edMini('pen', 'Editar', () => edFormulario({ titulo: 'Editar registro', campos: CAMPOS_DIA, v: { tipo: it.tipo || 'Nota', texto: it.texto, solucao: it.solucao || '' }, aoSalvar: async v => { if (await salvaX(id, d => { const y = (d.diario || []).find(z => z.id === it.id); if (y) { y.tipo = v.tipo || 'Nota'; y.texto = v.texto.trim(); const so = String(v.solucao || '').trim(); if (so) y.solucao = so; else delete y.solucao; } }, 'Diário editado em ' + p.nome)) pinta(); }, aoApagar: () => apagaX('diario', it, 'Registro') }))); ul.append(li);
+        });
+        if (!ul.children.length) corpo.append(elD('p', 'pjm-vazio', 'Nada anotado ainda.')); else corpo.append(ul);
+        linkApagados('diario');
+      }
+      if (aba === 'pedidos') { lista('pedidos', p.pedidosDica || 'O que pediram para mudar? Escreve aqui e toca em Guardar', 'Nada aberto.'); linkApagados('pedidos'); }
       if (aba === 'vendas') {   // Promoter: contador de ingressos e faixa do prêmio
         const vd = p.vendas || {}, n = +vd.vendidos || 0, fx = (vd.faixas || []).slice().sort((a, b) => a[0] - b[0]);
         const ganhou = fx.filter(f => n >= f[0]).pop(), prox = fx.find(f => n < f[0]);
@@ -7112,10 +7329,11 @@ function abreProjetosMay(m) {
         const ul = elD('ul', 'pjm-falta');
         cs.forEach(ct => { const li = elD('li'), st = elD('button', 'pjm-cst', ct.status || 'Chamar'); st.type = 'button'; if ((ct.status || 'Chamar') === 'Comprou') { st.style.background = k.destaque; st.style.color = k.sobreDestaque; }
           st.onclick = async () => { const prox = ST[(ST.indexOf(ct.status || 'Chamar') + 1) % ST.length]; st.disabled = true; if (await salva(d => { const q = d.projetos.find(x => x.id === id), y = q && (q.contatos || []).find(z => z.id === ct.id); if (y) y.status = prox; }, 'Contato ' + ct.nome + ': ' + prox)) pinta(); else st.disabled = false; };
-          li.append(elD('span', 'pjm-tx', ct.nome), st, edMini('pen', 'Editar', () => edFormulario({ titulo: 'Editar contato', campos: [{ nome: 'nome', rotulo: 'Nome', obrigatorio: true }], v: { nome: ct.nome }, aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id), y = q && (q.contatos || []).find(z => z.id === ct.id); if (y) y.nome = v.nome.trim(); }, 'Contato editado')) pinta(); }, aoApagar: async () => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) q.contatos = (q.contatos || []).filter(z => z.id !== ct.id); }, 'Contato apagado')) pinta(); } })));
+          li.append(elD('span', 'pjm-tx', ct.nome), st, edMini('pen', 'Editar', () => edFormulario({ titulo: 'Editar contato', campos: [{ nome: 'nome', rotulo: 'Nome', obrigatorio: true }], v: { nome: ct.nome }, aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id), y = q && (q.contatos || []).find(z => z.id === ct.id); if (y) y.nome = v.nome.trim(); }, 'Contato editado')) pinta(); }, aoApagar: () => apagaGuarda('contatos', ct, 'Contato') })));
           ul.append(li); });
         if (!ul.children.length) fz.append(elD('p', 'pjm-vazio', 'Ninguém na lista ainda. Escreve um nome e toca em Guardar.')); else fz.append(ul);
         corpo.append(fz);
+        linkApagados('contatos');
       }
       if (aba === 'versoes') (p.versoes || []).forEach(vv => bloco(vv.versao + (vv.data ? ' · ' + vv.data : ''), vv.oque));
       if (aba === 'imagens') { const g = elD('section', 'pjm-imgs'), arqs = p.imagens.map(x => typeof x === 'string' ? x : x.arq); p.imagens.forEach(x => { const q = typeof x === 'string' ? { arq: x } : x, f = elD('figure', 'pjm-img'), im = elD('img'); im.alt = q.legenda || ''; im.loading = 'lazy'; fotoUrl(q.arq).then(u => { im.src = u; f.onclick = () => abreZoom(u, q.arq, arqs); }).catch(() => {}); f.append(im); if (q.legenda) f.append(elD('figcaption', '', q.legenda)); g.append(f); }); corpo.append(g); }
@@ -7128,10 +7346,11 @@ function abreProjetosMay(m) {
           const cd = elD('div', 'pjm-texto'), topo2 = elD('div', 'pjm-cab'); topo2.append(elD('b', '', t.titulo));
           const cp = elD('button', 'pjm-copia', 'Copiar'); cp.type = 'button'; cp.style.background = k.destaque; cp.style.color = k.sobreDestaque;
           cp.onclick = async () => { try { await navigator.clipboard.writeText(t.texto); cp.textContent = 'Copiado'; setTimeout(() => { cp.textContent = 'Copiar'; }, 1500); } catch (e) { showNote('Não copiou: segura o texto e copia na mão.', true); } };
-          topo2.append(cp, edMini('pen', 'Editar texto', () => edFormulario({ titulo: 'Editar texto', campos: CT, v: { titulo: t.titulo, texto: t.texto }, aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id), y = q && (q.textos || []).find(z => z.id === t.id); if (y) { y.titulo = v.titulo.trim(); y.texto = v.texto.trim(); } }, 'Texto editado em ' + p.nome)) pinta(); }, aoApagar: async () => { if (await salva(d => { const q = d.projetos.find(x => x.id === id); if (q) q.textos = (q.textos || []).filter(z => z.id !== t.id); }, 'Texto apagado em ' + p.nome)) pinta(); } })));
+          topo2.append(cp, edMini('pen', 'Editar texto', () => edFormulario({ titulo: 'Editar texto', campos: CT, v: { titulo: t.titulo, texto: t.texto }, aoSalvar: async v => { if (await salva(d => { const q = d.projetos.find(x => x.id === id), y = q && (q.textos || []).find(z => z.id === t.id); if (y) { y.titulo = v.titulo.trim(); y.texto = v.texto.trim(); } }, 'Texto editado em ' + p.nome)) pinta(); }, aoApagar: () => apagaGuarda('textos', t, 'Texto') })));
           cd.append(topo2, elD('p', '', t.texto)); tz.append(cd);
         });
         corpo.append(tz);
+        linkApagados('textos');
       }
     };
     pinta();
@@ -7429,8 +7648,19 @@ function abreZoom(src, path, listaFotos) {   // listaFotos: as fotos do álbum (
   const x = document.createElement('button'); x.type = 'button'; x.className = 'zx'; x.innerHTML = icone('close'); x.setAttribute('aria-label', 'Fechar');
   const cont = document.createElement('div'); cont.className = 'zcont'; cont.style.visibility = 'hidden';
   const salvar = document.createElement('button'); salvar.type = 'button'; salvar.className = 'zsalvar'; salvar.textContent = 'Salvar';
+  const real = document.createElement('button'); real.type = 'button'; real.className = 'zsalvar zreal'; real.textContent = '100%'; real.hidden = true;
   const palco = document.createElement('div'); palco.className = 'zpalco'; palco.append(im);
-  const barra = document.createElement('div'); barra.className = 'zbarra'; barra.append(cont, salvar, x); barra.onclick = e => e.stopPropagation();
+  const barra = document.createElement('div'); barra.className = 'zbarra'; barra.append(cont, real, salvar, x); barra.onclick = e => e.stopPropagation();
+  // Qualidade real (v555, May 16:15 "o zoom fica borrado"): o pinça do iPhone amplia a foto já desenhada no tamanho da tela; no 100% cada pixel da imagem vira um pixel da tela e ela rola com o dedo
+  const ehReal = () => z.classList.contains('real');
+  const poeReal = on => {
+    z.classList.toggle('real', on); real.textContent = on ? 'Ajustar' : '100%'; real.setAttribute('aria-pressed', on);
+    im.style.width = on ? im.naturalWidth / (devicePixelRatio || 1) + 'px' : '';
+    if (on) requestAnimationFrame(() => { palco.scrollLeft = (palco.scrollWidth - palco.clientWidth) / 2; palco.scrollTop = (palco.scrollHeight - palco.clientHeight) / 2; });
+  };
+  const confereReal = () => { if (ehReal()) poeReal(false); real.hidden = !(im.naturalWidth / (devicePixelRatio || 1) > im.offsetWidth * 1.25); };
+  im.addEventListener('load', () => requestAnimationFrame(confereReal));
+  real.onclick = e => { e.stopPropagation(); poeReal(!ehReal()); };
   z.append(palco, barra); document.body.append(z);
   const tq = toqueZoom.t > Date.now() - 1500 ? toqueZoom : { x: innerWidth / 2, y: innerHeight / 2 };   // de onde ela tocou
   if (z.animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -7459,11 +7689,11 @@ function abreZoom(src, path, listaFotos) {   // listaFotos: as fotos do álbum (
   };
   x.onclick = e => { e.stopPropagation(); fecha(); };
   const fecha = () => { document.removeEventListener('keydown', esc); if (z.classList.contains('saindo')) return; z.classList.add('saindo'); setTimeout(() => z.remove(), 260); };   // a foto desce e encolhe antes de sair (#110), nunca some do nada
-  const esc = e => { if (e.key === 'Escape') fecha(); else if (e.key === 'ArrowLeft') vai(-1); else if (e.key === 'ArrowRight') vai(1); };
+  const esc = e => { if (e.key === 'Escape') { if (ehReal()) poeReal(false); else fecha(); } else if (ehReal()) return; else if (e.key === 'ArrowLeft') vai(-1); else if (e.key === 'ArrowRight') vai(1); };
   let t0 = null;
   let horiz = null;   // a foto anda junto com o dedo pro lado e só troca quando solta (May, 07/11/2026 15:29: "a foto mexe junto com meu dedo")
   const temFoto = dir => i >= 0 && i + dir >= 0 && i + dir < lista.length, semMovZ = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  z.addEventListener('touchstart', e => { t0 = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null; horiz = null; }, { passive: true });
+  z.addEventListener('touchstart', e => { t0 = e.touches.length === 1 && !ehReal() ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null; horiz = null; }, { passive: true });
   z.addEventListener('touchmove', e => {
     if (!t0 || semMovZ) return; const dx = e.touches[0].clientX - t0.x, dy = e.touches[0].clientY - t0.y;
     if (horiz === null) { if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return; horiz = lista.length > 1 && Math.abs(dx) > Math.abs(dy) * 1.2; }
@@ -7481,8 +7711,8 @@ function abreZoom(src, path, listaFotos) {   // listaFotos: as fotos do álbum (
     }
     if (Math.abs(dy) > 12) { z.dataset.sw = '1'; setTimeout(() => { delete z.dataset.sw; }, 400); }   // puxar pra baixo: quem fecha é o fechaPuxando, seguindo o dedo
   });
-  z.onclick = () => { if (!z.dataset.sw) fecha(); };
-  fechaPuxando(z, fecha, () => palco, () => im);
+  z.onclick = () => { if (!z.dataset.sw && !ehReal()) fecha(); };
+  fechaPuxando(z, fecha, () => ehReal() ? { scrollTop: 1 } : palco, () => im);
   document.addEventListener('keydown', esc);
 }
 // Nova conversa: popup da própria página com nome e foto do grupo
@@ -7670,7 +7900,7 @@ function nadaPendente() {
   const ativo = document.activeElement;
   return !sending && !gravador && !anexos.length && !respondendo && !(ativo && ativo.matches('textarea, input')) && painel.hidden
     && !document.querySelector('.msg.pendente:not(.falhou), .pop, .zoom') && ![...document.querySelectorAll('audio')].some(a => !a.paused)
-    && !Object.values(pendentes).some(x => x.p.fotos.some(f => f.b64) || (x.p.audio && !x.p.audio.subiu && !x.p.audio.guardou));   // "não foi" sobrevive ao reload; foto que não subiu (base64 só na memória) e áudio fora do IndexedDB, não
+    && !Object.values(pendentes).some(x => x.p.fotos.some(f => f.b64 || f.arq) || (x.p.audio && !x.p.audio.subiu && !x.p.audio.guardou));   // "não foi" sobrevive ao reload; foto que não subiu (base64 só na memória) e áudio fora do IndexedDB, não
 }
 let saiuEm = 0;
 function voltouPraPagina(longe) {
