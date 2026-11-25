@@ -1,3 +1,4 @@
+// v595: #467 fase 2 Contas no modelo (abas, cartao com icone e selo)
 // v594 (25/11/2026): #450 fase 2: titulo grande e cartao de PC com a foto real em cima (capa no maquinas.json), nome, modelo e estado.
 // v593 (25/11/2026): #450 popup Acessorios com 1a letra maiuscula (Sigma 10:16).
 // v592 (25/11/2026): #467 Financas fase 1: barra de baixo c/ 5 abas (Inicio, Contas, Receber, Metas, Mais), deslizar de lado, Inicio no modelo dela.

@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.594">
+<meta name="app-versao" content="2026-11-25.595">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.594"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.595"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -4959,6 +4959,7 @@ function abreFinancas(m) {
     tri.addEventListener('touchstart', e => { if (abaAt > 0) e.stopPropagation(); }, { passive: true });   // da 2ª aba em diante, puxar da borda volta uma aba, não fecha a tela
     nav.setAttribute('aria-label', 'Finanças'); fn.append(tri, nav); c.append(fn); marcaAba(0);
     const abertos = { pagas: false, devo: false, devem: false, outras: false };
+    let filtro = 'todas';
     const pop = (titulo, corpo) => { const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card fin-card'), x = elD('button', 'pp-x'); x.type = 'button'; x.innerHTML = icone('close'); const fecha = () => ov.remove(); x.onclick = fecha; ov.onclick = e => { if (e.target === ov) fecha(); }; card.append(x, elD('div', 'pp-perg', titulo), corpo); ov.append(card); document.body.append(ov); fechaPuxando(ov, fecha, () => card, () => card); return fecha; };
     const repinta = () => { monta(); pinta(); };
     // ---- ações (tudo grava no contas/financas.json com dia e hora)
@@ -5015,6 +5016,27 @@ function abreFinancas(m) {
       l.append(ck, meio, elD('div', 'fu-val', (it.lado === 'receber' ? '+ ' : '') + reaisFin(it.pago && it.pago.valor !== '' ? it.pago.valor : it.valor)));
       l.onclick = () => detalhe(ent, it); return l;
     };
+    // ícone do tipo: pela categoria quando a conta tiver (fase 2b), pelo nome de reserva (Sigma 25/11 10:23)
+    const FN_ICO = [['luz', /energia|\bluz\b|cemig|netz|enel|eletric/i, '#F5A524', '<path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"/>'], ['internet', /internet|wi-?fi|fibra|avan[cç]ar/i, '#2F80ED', '<path d="M3 9.5a13 13 0 0118 0M6 13a8.5 8.5 0 0112 0M9 16.4a4 4 0 016 0"/><circle cx="12" cy="19.5" r="1"/>'], ['agua', /[aá]gua|copasa|sabesp|saneamento/i, '#2D9CDB', '<path d="M12 3.5c3.5 4.4 6 7.7 6 10.8a6 6 0 01-12 0c0-3.1 2.5-6.4 6-10.8z"/>'], ['casa', /aluguel|condom[ií]nio|\bcasa\b|lavoura|pedreiro|piscina|obra/i, '#0E7C5A', '<path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/>'], ['streaming', /netflix|spotify|disney|prime|youtube|hbo|\bmax\b|canais|\btv\b|streaming/i, '#E5484D', '<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 20h8"/>'], ['cartao', /cart[aã]o|fatura|nubank|ps5|placa/i, '#7B61FF', '<rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10.5h18M7 15.5h4"/>'], ['carro', /carro|moto|\bgol\b|siena|ipva|gasolina|combust/i, '#F2994A', '<path d="M5 16V12l2-5h10l2 5v4M3.5 16h17v3h-17z"/><circle cx="7.5" cy="16" r="1.4"/><circle cx="16.5" cy="16" r="1.4"/>'], ['celular', /celular|telefone|\bplano\b/i, '#56CCF2', '<rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M11 17.5h2"/>'], ['lazer', /lazer|passeio|viagem/i, '#BB6BD9', '<circle cx="12" cy="12" r="8.5"/><path d="M9 10h.01M15 10h.01M8.5 14a4.5 4.5 0 007 0"/>']];
+    const FN_PES = ['pessoa', null, '#6B8A7C', '<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20a7.5 7.5 0 0115 0"/>'], FN_MOE = ['outra', null, '#6B8A7C', '<circle cx="12" cy="12" r="8.5"/><path d="M14.8 9.3c-.5-1-1.6-1.6-2.8-1.6-1.6 0-2.8.9-2.8 2.1 0 2.8 5.6 1.5 5.6 4.3 0 1.2-1.2 2.1-2.8 2.1-1.3 0-2.4-.6-2.9-1.7M12 6v1.7M12 16.3V18"/>'];
+    const icoDe = (ent, pessoa) => { const cat = (Ec.itens.find(y => y.id === ent.id) || {}).categoria || '', n = (cat + ' ' + ent.nome); return FN_ICO.find(x => cat && x[0] === cat.toLowerCase()) || FN_ICO.find(x => x[1].test(n)) || (pessoa ? FN_PES : FN_MOE); };
+    const icone2 = ic => { const s = elD('span', 'fn-ico'); s.style.setProperty('--ic', ic[2]); s.innerHTML = '<svg viewBox="0 0 24 24">' + ic[3] + '</svg>'; return s; };
+    const dataBr = d => pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear();
+    const selo = it => { const dd = Math.round((it.quando - hoje) / 864e5); if (it.pago) return ['pago', it.lado === 'receber' ? 'Recebido' : 'Pago']; if (it.estado === 'semreg' || (it.tipo === 'f' && it.estado === 'atrasada' && !(it.ent.pagos || []).length)) return ['vencer', 'Sem registro']; if (it.estado === 'atrasada') return ['atrasada', 'Atrasada']; if (dd <= 3) return ['perto', dd <= 0 ? 'Vence hoje' : dd === 1 ? 'Vence amanhã' : 'Vence em ' + dd + ' dias']; return ['vencer', 'A vencer']; };
+    const cartao = it => {
+      const l = elD('div', 'fn-cartao'), ck = elD('button', 'fu-ck' + (it.pago ? ' on' : '')), meio = elD('div', 'fn-cmeio'), dir = elD('div', 'fn-cdir'), [sc, st] = selo(it), ent = it.ent;
+      ck.type = 'button'; ck.setAttribute('aria-label', it.pago ? 'Desmarcar' : it.lado === 'receber' ? 'Marcar recebido' : 'Marcar pago'); ck.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg>'; ck.onclick = e => { e.stopPropagation(); marcaRapido(it); };
+      const parc = ent.parcelas && ent.vp ? ' · ' + Math.min(ent.parcelas, Math.round(ent.pago / ent.vp) + (it.pago ? 0 : 1)) + ' de ' + ent.parcelas : '';
+      meio.append(elD('strong', '', it.nome), elD('small', '', 'Venc: ' + dataBr(it.quando) + parc + (it.cat === 'fixa' && ent.metade ? ' · sua metade' : '')));
+      dir.append(elD('b', '', reaisFin(it.pago && it.pago.valor !== '' ? it.pago.valor : it.valor)), elD('span', 'fn-selo s-' + sc, st));
+      l.append(ck, icone2(icoDe(ent, it.tipo === 'p')), meio, dir); l.onclick = () => detalhe(ent, it); return l;
+    };
+    const cartaoAnual = x => {
+      const l = elD('button', 'fn-cartao anual'), meio = elD('div', 'fn-cmeio'), dir = elD('div', 'fn-cdir'); l.type = 'button';
+      meio.append(elD('strong', '', x.nome), elD('small', '', (x.mes ? 'Vence em ' + x.mes : 'Uma vez por ano') + (x.nota ? ' · ' + x.nota : '')));
+      dir.append(elD('span', 'fn-selo s-vencer', 'Anual'));
+      l.append(elD('i', 'fn-ckv'), icone2(icoDe(x, false)), meio, dir); l.onclick = () => editaConta(x); return l;
+    };
     const pessoa = (x, lado) => {
       const b = elD('button', 'fu-pes'), pct = x.total ? Math.min(100, Math.round(x.pago / x.total * 100)) : 0, bar = elD('div', 'fu-barra'), i = elD('i'); b.type = 'button'; b.onclick = () => detalhe(x);
       i.style.width = pct + '%'; bar.append(i);
@@ -5056,15 +5078,23 @@ function abreFinancas(m) {
       const prox = I.aPagar.slice(0, 3).map(linha); if (!prox.length) prox.push(elD('p', 'fu-vazio', 'Nada pra pagar este mês.'));
       const todas = elD('button', 'fn-todas', 'Ver todas as contas'); todas.type = 'button'; todas.append(elD('i', '', '→')); todas.onclick = () => vaiAba(1, true);
       ini.append(secao('Suas contas', null, null, prox), todas);
-      // ---- Contas (fase 2 refaz no modelo): o mês por seta, falta pagar, pagas
-      const navM = elD('div', 'fu-mes'), mv = (n, t, rot) => { const b = elD('button', '', t); b.type = 'button'; b.setAttribute('aria-label', rot); b.onclick = () => { mesAt = new Date(mesAt.getFullYear(), mesAt.getMonth() + n, 1); pinta(); }; return b; };
+      // ---- Contas (#467 fase 2, modelo da May 24/11/2026): mês por seta ou gesto só na faixa do mês, abas Todas/Pagas/Pendentes/A vencer/Atrasadas/Recorrentes, cartão com ícone do tipo e selo
+      const navM = elD('div', 'fu-mes fn-mes'), mv = n => { mesAt = new Date(mesAt.getFullYear(), mesAt.getMonth() + n, 1); pinta(); }, seta = (n, t, rot) => { const b = elD('button', '', t); b.type = 'button'; b.setAttribute('aria-label', rot); b.onclick = () => mv(n); return b; };
       const tit = elD('button', 'fu-mest', MES[mesAt.getMonth()].replace(/^./, x => x.toUpperCase()) + (mesAt.getFullYear() !== hoje.getFullYear() ? ' de ' + mesAt.getFullYear() : '')); tit.type = 'button'; tit.title = 'Voltar pro mês de hoje'; tit.onclick = () => { mesAt = new Date(hoje.getFullYear(), hoje.getMonth(), 1); pinta(); };
-      const mais = elD('button', 'fu-mais'); mais.type = 'button'; mais.setAttribute('aria-label', 'Lançar'); mais.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>'; mais.onclick = novaConta;
-      navM.append(mv(-1, '‹', 'Mês anterior'), tit, mv(1, '›', 'Próximo mês'), mais); pag.contas.append(navM);
-      const lp = A.aPagar.map(linha); if (!lp.length) lp.push(elD('p', 'fu-vazio', 'Nada pra pagar neste mês.'));
-      pag.contas.append(secao('Falta pagar', reaisFin(A.resumo.aPagar), null, lp));
-      const anuais = S.anuais.filter(a => (a.mes || '').toLowerCase().startsWith(MES[mesAt.getMonth()].slice(0, 3))); if (anuais.length) pag.contas.append(secao('Vence uma vez por ano', null, null, anuais.map(a => { const l = elD('button', 'fu-mini'); l.type = 'button'; l.append(elD('strong', '', a.nome), elD('small', '', a.nota || '')); l.onclick = () => editaConta(a); return l; })));
-      if (A.pagas.length) pag.contas.append(secao('Pagas e recebidas (' + A.pagas.length + ')', reaisFin(A.jaPago), 'pagas', A.pagas.map(linha)));
+      let tx = null; navM.addEventListener('touchstart', e => { tx = e.touches[0].clientX; e.stopPropagation(); }, { passive: true }); navM.addEventListener('touchend', e => { if (tx == null) return; const dx = e.changedTouches[0].clientX - tx; tx = null; if (Math.abs(dx) > 40) mv(dx < 0 ? 1 : -1); }, { passive: true });
+      navM.append(seta(-1, '‹', 'Mês anterior'), tit, seta(1, '›', 'Próximo mês')); pag.contas.append(navM);
+      const despesas = A.pagar.slice().sort((x, y) => x.quando - y.quando || x.nome.localeCompare(y.nome)), anuais = S.anuais.filter(x => (x.mes || '').toLowerCase().startsWith(MES[mesAt.getMonth()].slice(0, 3)));
+      const FILTROS = [['todas', 'Todas', x => true], ['pagas', 'Pagas', x => !!x.pago], ['pendentes', 'Pendentes', x => !x.pago], ['vencer', 'A vencer', x => !x.pago && (x.estado === 'vencer' || x.estado === 'hoje')], ['atrasadas', 'Atrasadas', x => !x.pago && x.estado === 'atrasada' && !(x.tipo === 'f' && !(x.ent.pagos || []).length)], ['recorrentes', 'Recorrentes', x => x.tipo === 'f']];
+      const abas = elD('div', 'fn-filtros'); abas.setAttribute('role', 'tablist');
+      FILTROS.forEach(([k, t]) => { const b = elD('button', 'fn-filtro' + (filtro === k ? ' on' : ''), t); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', filtro === k ? 'true' : 'false'); b.onclick = () => { filtro = k; pinta(); }; abas.append(b); });
+      pag.contas.append(abas);
+      const lista = elD('div', 'fn-contas'), fl = FILTROS.find(x => x[0] === filtro)[2], vis = despesas.filter(fl);
+      vis.forEach(it => lista.append(cartao(it)));
+      if (filtro === 'todas' || filtro === 'recorrentes') (filtro === 'recorrentes' ? S.anuais : anuais).forEach(x => lista.append(cartaoAnual(x)));
+      if (!lista.children.length) lista.append(elD('p', 'fu-vazio', filtro === 'pagas' ? 'Nenhuma conta paga neste mês.' : filtro === 'atrasadas' ? 'Nenhuma conta atrasada.' : 'Nenhuma conta aqui neste mês.'));
+      const add = elD('button', 'fn-add'); add.type = 'button'; add.append(elD('i', '', '+'), elD('span', '', 'Adicionar conta')); add.onclick = novaConta;
+      pag.contas.append(lista, add);
+      requestAnimationFrame(() => { const on = abas.querySelector('.on'); if (on) abas.scrollLeft = Math.max(0, abas.scrollLeft + on.getBoundingClientRect().left - abas.getBoundingClientRect().left - 16); });
       // ---- Receber (fase 3): o que entra no mês e quem te deve
       const lr = I.aRec.map(linha); if (!lr.length) lr.push(elD('p', 'fu-vazio', 'Nada pra receber este mês.'));
       pag.receber.append(secao('Pra receber no mês', I.aRec.length ? '+ ' + reaisFin(I.resumo.aReceber) : null, null, lr));

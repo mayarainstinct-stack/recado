@@ -3770,3 +3770,28 @@ body .ed-pop.pjm-pop .ed-card :is(input, select, textarea):focus { outline: 2px 
 .fn .fn-todas { width: 100%; height: 50px; display: flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 14px; background: #0E7C5A; color: #FFFFFF; font: inherit; font-size: 16px; font-weight: 700; box-shadow: 0 6px 16px rgba(14,124,90,.25); }
 .fn .fn-todas i { font-style: normal; font-size: 18px; }
 @media (prefers-reduced-motion: reduce) { .fn-trilho { scroll-behavior: auto; } .fn-bt { transition: none; } }
+/* #467 fase 2 (25/11/2026): aba Contas no modelo dela, cartão por conta com ícone do tipo e selo */
+.fn .fn-mes { grid-template-columns: 44px 1fr 44px; touch-action: pan-y; padding: 4px 0; }
+.fn .fn-mes > button { height: 44px; }
+.fn-filtros { display: flex; gap: 8px; margin: -10px -16px 0; padding: 6px 16px 10px; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; }
+.fn-filtros::-webkit-scrollbar { display: none; }
+.fn .fn-filtros .fn-filtro { flex: none; width: auto; height: 40px; padding: 0 18px; border: 1px solid #DCEBE4; border-radius: 999px; background: #FFFFFF; color: #3F5F52; font: inherit; font-size: 15px; font-weight: 600; box-shadow: none; white-space: nowrap; }
+.fn .fn-filtros .fn-filtro.on { background: #0E7C5A; border-color: #0E7C5A; color: #FFFFFF; }
+.fn-contas { display: flex; flex-direction: column; gap: 10px; }
+.fn .fn-cartao { width: 100%; height: auto; display: grid; grid-template-columns: 32px 44px 1fr auto; align-items: center; gap: 10px; padding: 14px 14px 14px 12px; border: 1px solid #E3EFE9; border-radius: 18px; background: #FFFFFF; color: var(--fg); font: inherit; text-align: left; box-shadow: 0 4px 14px rgba(14,124,90,.07); cursor: pointer; }
+.fn .fn-cartao .fu-ck { margin: 0; }
+.fn-ckv { width: 32px; }
+.fn-ico { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; background: color-mix(in srgb, var(--ic) 14%, #FFFFFF); color: var(--ic); }
+.fn-ico svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.fn-cmeio { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.fn-cmeio strong { font-size: 16px; font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
+.fn-cmeio small { font-size: 13px; color: var(--muted); }
+.fn-cdir { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.fn-cdir b { font-size: 16px; font-weight: 800; white-space: nowrap; }
+.fn-selo { padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.fn-selo.s-pago { background: #DDF5E8; color: #0B6A4D; }
+.fn-selo.s-atrasada { background: #FDE2E2; color: #B42318; }
+.fn-selo.s-perto { background: #FFF1C7; color: #8A5A00; }
+.fn-selo.s-vencer { background: #EEF1F0; color: #5B6B64; }
+.fn .fn-add { width: 100%; height: 52px; margin-top: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; border: 2px solid #0E7C5A; border-radius: 16px; background: #FFFFFF; color: #0E7C5A; font: inherit; font-size: 16px; font-weight: 700; box-shadow: none; }
+.fn-add i { font-style: normal; font-size: 22px; line-height: 1; }
