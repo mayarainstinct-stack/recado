@@ -1,3 +1,4 @@
+// v589 (25/11/2026): #450 fase 1 Maquinas: cartao Coleção atual (3 numeros, Jogados e Em andamento, alerta de inativas) c/ a foto do setup atras; colecao_slim_lista vira a fonte.
 / v588: Hermes #454 edicao: Salvar preso no rodape, Plataforma e Emulador viram seletor, seta de voltar
 // v587 (25/11/2026): #462 popup da colecao Slim vira lista (1 linha por console, PS5 c/ chegada em destaque, No PC); ? c/ contraste e 44 px.
 // v586 (25/11/2026): #462 Maquinas: texto da colecao Slim sai do topo e abre no ? de Consoles, popup do tema de Maquinas.
