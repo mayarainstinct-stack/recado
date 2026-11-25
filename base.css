@@ -4107,3 +4107,8 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .t-musica .tm-ideia .tm-virar{margin:14px auto 6px;min-height:44px}
 .t-musica .tm-viraram{margin-top:14px}
 .t-musica .tm-viraram .tm-sr-ide:disabled{opacity:.6}
+.t-musica .mi{display:inline-block;flex:none;width:1em;height:1em;vertical-align:-.14em;fill:currentColor;stroke:none}
+.t-musica .mi .mi-tr{fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.t-musica .tm-grav-pl .mi{width:16px;height:16px;vertical-align:middle}
+.t-musica .tm-ap-mus{display:flex;flex-direction:column;gap:6px;margin:8px 0 0}
+.t-musica .tm-ap-mus .tm-sr-ide{margin:0}
