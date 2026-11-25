@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.632">
+<meta name="app-versao" content="2026-11-25.633">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.632"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.633"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3678,9 +3678,10 @@ function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar, rodape, apag
   if (nomesAba.length > 1) { vaiAba(nomesAba[0]); ve(); form.addEventListener('change', ve); }
   const erro = elD('p', 'ed-erro'); erro.hidden = true; const ops = elD('div', 'ed-acoes'), pe = rodape ? elD('div', 'ed-pe') : null;
   const ok = elD('button', 'pp-op rec', 'Guardar'); ok.type = 'submit'; ops.append(ok);
-  if (aoApagar && !apagarForte) { const ap = elD('button', 'ed-link', 'Apagar'); ap.type = 'button'; ap.onclick = () => { fecha(); aoApagar(); }; ops.append(ap); }
-  if (aoApagar && apagarForte) { const sep = elD('div', 'ed-apagar-forte'), ap = elD('button', 'pp-op', apagarForte); ap.type = 'button'; ap.onclick = () => { fecha(); aoApagar(); }; sep.append(ap); form.append(sep); }
-  if (pe) { pe.append(erro, ops); form.append(pe); card.classList.add('ed-com-pe'); } else form.append(erro, ops);
+  const forte = aoApagar ? (apagarForte || (painel.classList.contains('tema-musica') ? '' : 'Apagar')) : '';   // #471: Apagar separado e vermelho em todo formulário; a Música tem o dela (Orfeu v608)
+  if (aoApagar && !forte) { const ap = elD('button', 'ed-link', 'Apagar'); ap.type = 'button'; ap.onclick = () => { fecha(); aoApagar(); }; ops.append(ap); }
+  if (forte) { const sep = elD('div', 'ed-apagar-forte'), ap = elD('button', 'pp-op', forte); ap.type = 'button'; ap.onclick = () => { fecha(); aoApagar(); }; sep.append(ap); var sepF = sep; }
+  if (pe) { if (forte) form.append(sepF); pe.append(erro, ops); form.append(pe); card.classList.add('ed-com-pe'); } else { form.append(erro, ops); if (forte) form.append(sepF); }   // sem rodapé fixo o Apagar vem embaixo do Guardar, como na Música
   form.onsubmit = async e => {
     e.preventDefault(); const out = {}, fotosDepois = [];
     for (const c of campos) { if (!lbs[c.nome] || lbs[c.nome].hidden || !c.precisa || String(els[c.nome].value).trim()) continue; marcaErro(c); erro.textContent = 'Falta preencher ' + edRotulo(c) + '.'; erro.hidden = false; return; }
