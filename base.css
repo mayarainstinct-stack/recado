@@ -3936,4 +3936,33 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .t-musica .tm-grav>div{flex:1;min-width:0}
 .t-musica .tm-grav b{display:block;font-size:14px;overflow-wrap:anywhere}
 .t-musica .tm-grav small{display:block;margin-top:2px;font-size:12px;color:var(--tm-mudo)}
+.ed-campo .ed-chips{display:flex !important;flex-wrap:wrap;gap:8px;width:100%;margin-top:6px}
+.ed-campo .ed-chip{display:inline-flex !important;align-items:center;flex:0 0 auto !important;width:auto !important;height:auto !important;min-height:40px;margin:0 !important;padding:6px 14px !important;border:1px solid currentColor !important;border-radius:999px !important;background:transparent !important;color:inherit !important;font:inherit;font-size:14px;font-weight:700;opacity:.8;box-shadow:none !important}
+.ed-campo .ed-chip.on{opacity:1;background:var(--quem,#F0283A) !important;color:#fff !important;border-color:var(--quem,#F0283A) !important}
+.t-musica .tm-chip.mudo{color:var(--tm-mudo);font-weight:600}
+.t-musica .tm-det-bl{padding:8px 0;border-top:1px solid rgba(255,255,255,.07)}
+.t-musica .tm-det-bl small{display:block;font-size:12px;color:var(--tm-mudo)}
+.t-musica .tm-det-bl p{margin:4px 0 0;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.t-musica .tm-anx-add{display:block;width:100%;margin:8px 0 12px;font-size:14px;min-height:44px}
+.t-musica .tm-anx-ic{font-size:11px !important;font-weight:800}
+.t-musica .tm-series{margin:18px 0 10px}
+.t-musica .tm-series h3{margin:0 0 10px}
+.t-musica .tm-serie{margin:0 0 10px;background:var(--tm-painel)}
+.t-musica .tm-serie summary{gap:10px;padding:8px 0}
+.t-musica .tm-serie summary>div{flex:1;min-width:0}
+.t-musica .tm-serie summary b{display:block;font-size:15px;overflow-wrap:anywhere}
+.t-musica .tm-serie summary small{display:block;margin-top:2px;font-size:12px;font-weight:600;color:var(--tm-mudo)}
+.t-musica .tm-serie summary .tm-ed{position:static;flex:none}
+.t-musica .tm-serie-tx{margin:0 0 8px;font-size:14px;color:var(--tm-texto)}
+.t-musica .tm-tarefa{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,.07)}
+.t-musica .tm-tarefa>div{flex:1;min-width:0}
+.t-musica .tm-tarefa b{display:block;font-size:14px;overflow-wrap:anywhere}
+.t-musica .tm-tarefa small{display:block;margin-top:2px;font-size:12px;color:var(--tm-mudo)}
+.t-musica .tm-tarefa.feita b{text-decoration:line-through;color:var(--tm-mudo)}
+.t-musica .tm-cx{flex:none;width:28px !important;height:28px !important;margin:0;padding:0;border:2px solid var(--tm-ama);border-radius:8px !important;background:transparent;box-shadow:none;position:relative}
+.t-musica .tm-tarefa.feita .tm-cx{background:var(--tm-ama)}
+.t-musica .tm-tarefa.feita .tm-cx::after{content:'';position:absolute;left:8px;top:3px;width:7px;height:13px;border:solid #120C00;border-width:0 3px 3px 0;transform:rotate(45deg)}
+.t-musica .tm-nova-tarefa{display:flex;gap:8px;padding:8px 0 12px;border-top:1px solid rgba(255,255,255,.07)}
+.t-musica .tm-nova-tarefa input{flex:1;min-width:0;min-height:44px;margin:0}
+.t-musica .tm-nova-tarefa .tm-gp-bt{flex:none;min-height:44px;font-size:14px}
 .t-musica .tm-grav-pl{flex:none;width:40px !important;height:40px !important;margin:0;padding:0;border:0;border-radius:50% !important;background:var(--tm-ama);color:#120C00;font-size:14px;box-shadow:none}
