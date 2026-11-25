@@ -1,4 +1,4 @@
-// v641 #449 6b pesquisa global do estudio (lupa, sem acento, termo em negrito)
+// v642 #449 6c filtros do estudio (status, instrumento, quando, serie; tipo na pesquisa)
 // v637 #449 5c series: episodios e etapas c/ ordem, proxima no cartao, ideias da serie, series na aba Ideias
 // v636 #449 5b audio na ideia: gravar ou anexar, ouvir e apagar
 // v632 #449 4b categorias do Setup com filtro, onde fica e estado

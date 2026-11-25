@@ -4131,3 +4131,18 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .tm-busca-it > svg { flex: none; width: 18px; height: 18px; fill: none; stroke: #8C8782; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .tm-busca-dica { margin: 4px 2px; color: #B8B0AA; font-size: 14px; }
 .tm-busca-card { --quem: #F0283A; }
+.t-musica .tm-filtro { display: flex; align-items: center; gap: 10px; margin-top: 14px; margin-bottom: 8px; min-width: 0; }
+.t-musica .tm-filtro .tm-filtrar, .t-musica .tm-filtro .tm-limpar { flex: none; width: auto; min-width: 0; height: 44px; white-space: nowrap; box-sizing: border-box; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--tm-linha); background: transparent; color: var(--tm-texto); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+.t-musica .tm-filtrar[aria-expanded="true"] { border-color: var(--tm-cor); }
+.t-musica .tm-filtrar svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.t-musica .tm-f-conta { flex: 1; min-width: 0; color: var(--tm-mudo); font-size: 13px; text-align: right; }
+.t-musica .tm-f-painel { display: grid; gap: 10px; margin-bottom: 14px; padding: 12px 16px 4px; border-radius: 16px; border: 1px solid var(--tm-linha); background: var(--tm-painel); overflow: hidden; }
+.t-musica .tm-f-linha { display: grid; gap: 2px; min-width: 0; }
+.t-musica .tm-f-linha > small { color: var(--tm-mudo); font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.t-musica .tm-f-painel .tm-cats { margin: 0 -16px; }
+.t-musica .tm-f-linha + .tm-cats, .t-musica .tm-cats + .tm-f-linha { margin-top: 4px; }
+.tm-busca-card .tm-cats { display: flex; gap: 8px; margin: 0 -2px; padding: 2px; overflow-x: auto; scrollbar-width: none; flex: none; }
+.tm-busca-card .tm-cats::-webkit-scrollbar { display: none; }
+.tm-busca-card .tm-cat { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid #3A3533; background: transparent; color: #F5F0EC; font: inherit; font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; }
+.tm-busca-card .tm-cat i { font-style: normal; font-size: 11px; font-weight: 800; color: #BDB5AF; }
+.tm-busca-card .tm-cat.on { background: #F0283A; border-color: #F0283A; color: #fff; } .tm-busca-card .tm-cat.on i { color: #fff; }
