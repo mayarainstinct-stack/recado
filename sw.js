@@ -1,3 +1,4 @@
+// v618 #467 fase 4b metas
 // v617 #449 fase 3a: Tocar com sub-abas Cronometro e Historico, meta configuravel, cronometro pelo relogio, 5 perguntas no fim
 // v616 #467 nota do historico 1 vez
 // v615 #467 fase 4a dividas

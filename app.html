@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.617">
+<meta name="app-versao" content="2026-11-25.618">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.617"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.618"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3654,7 +3654,7 @@ function edFormulario({ titulo, campos, v = {}, aoSalvar, aoApagar, rodape }) {
     else if (c.tipo === 'escolha') { el = elD('select'); (c.opcoes || []).forEach(o => { const [val, tx] = Array.isArray(o) ? o : [o, o]; const op = elD('option', '', maiusc(tx)); op.value = val; el.append(op); }); }
     else if (c.tipo === 'chips') { const sel = new Set(Array.isArray(v[c.nome]) ? v[c.nome] : []); el = elD('div', 'ed-chips'); (c.opcoes || []).forEach(([val, tx]) => { const b = elD('button', 'ed-chip' + (sel.has(val) ? ' on' : ''), tx); b.type = 'button'; b.setAttribute('aria-pressed', String(sel.has(val))); b.onclick = () => { sel.has(val) ? sel.delete(val) : sel.add(val); b.classList.toggle('on', sel.has(val)); b.setAttribute('aria-pressed', String(sel.has(val))); }; el.append(b); }); Object.defineProperty(el, 'value', { get: () => [...sel].join(', '), set() {} }); el.lista = () => [...sel]; }   // várias escolhas por toque (instrumentos da música, 2c-2)
     else if (c.tipo === 'foto') { el = elD('input'); el.type = 'file'; el.accept = 'image/*'; el.dataset.atual = v[c.nome] || ''; const im = elD('img', 'ed-previa'); im.alt = ''; im.hidden = true; if (v[c.nome]) fotoUrl(v[c.nome]).then(u => { im.src = u; im.hidden = false; }).catch(() => {}); const fb = elD('button', 'ed-foto-bt', v[c.nome] ? 'Trocar foto' : 'Escolher foto'); fb.type = 'button'; fb.onclick = () => el.click(); el.classList.add('ed-foto-arq'); el.addEventListener('change', () => { const f = el.files && el.files[0]; if (f) { im.src = URL.createObjectURL(f); im.hidden = false; fb.textContent = 'Trocar foto'; } }); lb.append(im, fb); }
-    else { el = elD('input'); el.type = c.tipo === 'data' ? 'date' : c.tipo === 'url_imagem' ? 'url' : 'text'; if (c.tipo === 'numero' || c.tipo === 'valor') el.inputMode = 'decimal'; }
+    else { el = elD('input'); el.type = c.tipo === 'data' ? 'date' : c.tipo === 'mes' ? 'month' : c.tipo === 'url_imagem' ? 'url' : 'text'; if (c.tipo === 'numero' || c.tipo === 'valor') el.inputMode = 'decimal'; }
     if (c.tipo !== 'foto') el.value = v[c.nome] != null ? v[c.nome] : (c.padrao != null ? c.padrao : ''); els[c.nome] = el; lb.append(el);
     if (c.tipo === 'url_imagem') { const im = elD('img', 'ed-previa'); im.alt = ''; im.hidden = true; const mostra = () => { im.hidden = !/^https?:/i.test(el.value); if (!im.hidden) im.src = el.value; }; im.onerror = () => { im.hidden = true; }; el.addEventListener('change', mostra); mostra(); lb.append(im); }
     (secs[c.aba] || form).append(lb);
@@ -5024,7 +5024,9 @@ const FIN_ARQ = 'contas/financas.json';
 const FIN_FORMAS = [['', 'Não informar'], ['Pix', 'Pix'], ['Cartão', 'Cartão'], ['Dinheiro', 'Dinheiro'], ['Boleto', 'Boleto'], ['Transferência', 'Transferência']];
 const FIN_CAMPOS = {   // só vale se o financas.json estiver sem "campos"
   contas: [{ nome: 'nome', rotulo: 'Nome', tipo: 'texto', obrigatorio: true }, { nome: 'tipo', rotulo: 'O que é', tipo: 'escolha', opcoes: [['pagar', 'A pagar (avulsa)'], ['receber', 'A receber (alguém me deve)'], ['fixa', 'Conta fixa do mês'], ['divida', 'Dívida'], ['entrada', 'Entrada do mês (salário etc.)']] }, { nome: 'valor', rotulo: 'Valor (R$)', tipo: 'valor' }, { nome: 'total', rotulo: 'Total da dívida (R$, se for parcelada)', tipo: 'valor' }, { nome: 'dia', rotulo: 'Dia do mês que vence (1 a 31)', tipo: 'numero' }, { nome: 'lembrar_em', rotulo: 'Lembrar em', tipo: 'data' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto' }],
-  pagamentos: [{ nome: 'conta', tipo: 'oculto' }, { nome: 'mes', tipo: 'oculto' }, { nome: 'valor_feito', rotulo: 'Valor pago (R$)', tipo: 'valor' }, { nome: 'forma', rotulo: 'Forma', tipo: 'escolha', opcoes: FIN_FORMAS }, { nome: 'feito', rotulo: 'Dia e hora (DD/MM/AAAA HH:MM)', tipo: 'texto' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto' }]
+  pagamentos: [{ nome: 'conta', tipo: 'oculto' }, { nome: 'mes', tipo: 'oculto' }, { nome: 'valor_feito', rotulo: 'Valor pago (R$)', tipo: 'valor' }, { nome: 'forma', rotulo: 'Forma', tipo: 'escolha', opcoes: FIN_FORMAS }, { nome: 'feito', rotulo: 'Dia e hora (DD/MM/AAAA HH:MM)', tipo: 'texto' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto' }],
+  metas: [{ nome: 'nome', rotulo: 'Nome da meta', tipo: 'texto', obrigatorio: true }, { nome: 'alvo', rotulo: 'Quanto quer juntar (R$)', tipo: 'valor', obrigatorio: true }, { nome: 'prazo', rotulo: 'Até quando (mês)', tipo: 'mes' }, { nome: 'icone', rotulo: 'Ícone', tipo: 'escolha', opcoes: [['outra', 'Alvo'], ['carro', 'Carro'], ['casa', 'Casa'], ['computador', 'Computador'], ['viagem', 'Viagem'], ['reserva', 'Reserva']] }],
+  aportes: [{ nome: 'meta', tipo: 'oculto' }, { nome: 'valor', rotulo: 'Quanto guardou (R$)', tipo: 'valor', obrigatorio: true }, { nome: 'quando', rotulo: 'Dia e hora (DD/MM/AAAA HH:MM)', tipo: 'texto' }, { nome: 'nota', rotulo: 'Nota', tipo: 'texto' }]
 };
 const FIN_MOLDE = { sobre: 'Finanças da May: contas que ela lança e pagamentos que ela marca pelo app. Veja o contas/financas.json do Inst pro formato completo.', contas: [], pagamentos: [] };
 const finSlug = t => String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -5074,7 +5076,7 @@ function finAplicaLanc(d, l) {   // o LANCAMENTOS.md antigo (o que ela lançou a
 // (cópia final em contas/backup-antes-de-unificar-24-11-2026/). Cada conta: pagar/receber/divida (com total e histórico), fixa/entrada (todo mês), anual.
 function finMonta(o) {
   const tem = v => v !== undefined && v !== null && v !== '', ok = c => c.tipo && !c.apagado, pessoas = [], fixas = [], anuais = [];
-  (o.contas || []).filter(c => ok(c) && /^(pagar|receber|divida)$/.test(c.tipo)).forEach(c => { const t = finNum(c.total) || finNum(c.valor); pessoas.push({ id: c.id, nome: c.nome, pessoa: c.pessoa || '', inicio: c.inicio || '', lado: c.tipo === 'receber' ? 'receber' : 'pagar', total: t, pago: 0, falta: t, dia: finNum(c.dia) || (finData(c.inicio) ? finData(c.inicio).getDate() : null), lembrar: c.lembrar_em || '', vp: finNum(c.valor) || (finNum(c.parcelas) && t ? Math.round(t / finNum(c.parcelas) * 100) / 100 : null), como: c.nota || '', pagamentos: [], origem: 'app', divida: c.tipo === 'divida', parcelas: finNum(c.parcelas) || null }); });
+  (o.contas || []).filter(c => ok(c) && /^(pagar|receber|divida)$/.test(c.tipo)).forEach(c => { const t = finNum(c.total) || finNum(c.valor); pessoas.push({ id: c.id, nome: c.nome, pessoa: c.pessoa || '', inicio: c.inicio || '', lado: c.tipo === 'receber' ? 'receber' : 'pagar', total: t, pago: 0, falta: t, dia: finNum(c.dia) || (finData(c.inicio) ? finData(c.inicio).getDate() : null), lembrar: c.lembrar_em || '', grupo: c.grupo || '', vp: finNum(c.valor) || (finNum(c.parcelas) && t ? Math.round(t / finNum(c.parcelas) * 100) / 100 : null), como: c.nota || '', pagamentos: [], origem: 'app', divida: c.tipo === 'divida', parcelas: finNum(c.parcelas) || null }); });
   (o.contas || []).filter(c => ok(c) && /^(fixa|entrada)$/.test(c.tipo)).forEach(c => fixas.push({ id: c.id, nome: c.nome, tipo: c.tipo, dia: finNum(c.dia) || null, valor: finNum(c.valor), metade: c.metade === true || c.metade === 'sim', nota: c.nota || '', de: c.ultima || '', pagos: [], lembrar: c.lembrar_em || '', repete: c.repete || '', a_cada: finNum(c.a_cada) || 0, inicio: c.inicio || '', adiada: c.adiada && typeof c.adiada === 'object' ? c.adiada : {} }));
   (o.contas || []).filter(c => ok(c) && c.tipo === 'anual').forEach(c => anuais.push({ id: c.id, nome: c.nome, mes: c.mes || '', nota: c.nota || '' }));
   const alvo = {}; pessoas.forEach(p => { alvo[p.id] = p; }); fixas.forEach(f => { alvo[f.id] = f; });
@@ -5149,12 +5151,12 @@ function abreFinancas(m) {
   tela(m.nome, async c => {
     painel.style.setProperty('--c', '#0E7C5A'); painel.classList.add('tema-claro'); c.classList.add('fu-tela');
     const nota = skCarga(); c.append(nota);
-    let Ec, Ep;
+    let Ec, Ep, Em, Ea;
     try {
       try { await lerArquivo(FIN_ARQ); } catch (e) { if (!e || e.status !== 404) throw e; if (!(await gravaJson(FIN_ARQ, () => {}, 'Finanças criada pelo app', FIN_MOLDE))) throw e; }
-      [Ec, Ep] = await Promise.all([edAbre({ arq: FIN_ARQ, lista: 'contas', edicoes: FIN_ARQ, campos: FIN_CAMPOS.contas }), edAbre({ arq: FIN_ARQ, lista: 'pagamentos', campos: FIN_CAMPOS.pagamentos })]);
+      [Ec, Ep, Em, Ea] = await Promise.all([edAbre({ arq: FIN_ARQ, lista: 'contas', edicoes: FIN_ARQ, campos: FIN_CAMPOS.contas }), edAbre({ arq: FIN_ARQ, lista: 'pagamentos', campos: FIN_CAMPOS.pagamentos }), edAbre({ arq: FIN_ARQ, lista: 'metas', campos: FIN_CAMPOS.metas }), edAbre({ arq: FIN_ARQ, lista: 'aportes', campos: FIN_CAMPOS.aportes })]);   // metas e aportes (#467 4b): o guardado é sempre a soma dos aportes, nunca salvo na meta (Orfeu 25/11)
     } catch (e) { nota.textContent = 'Não foi possível abrir as contas. Confere a internet.'; return; }
-    Ec.aoMudar = Ep.aoMudar = () => repinta();
+    Ec.aoMudar = Ep.aoMudar = Em.aoMudar = Ea.aoMudar = () => repinta();
     nota.remove();
     cabecalho({ icone: 'money', sub: 'tudo num lugar só' });
     const hoje = new Date(); hoje.setHours(0, 0, 0, 0); let mesAt = new Date(hoje.getFullYear(), hoje.getMonth(), 1), S;
@@ -5189,7 +5191,7 @@ function abreFinancas(m) {
       if (await Ep.lanca({ conta: p.id, mes: finChave(new Date()), feito: edAgora(), valor_feito: r.valor, forma: r.forma }, 'Pagamento lançado pelo app')) { repinta(); showNote('Lançado: ' + p.nome); }
     };
     const FIN_ABAS = ['Básico', 'Quando', 'Pagamento'], FIN_PES_T = ['pagar', 'receber', 'divida'], fixaT = v => v.tipo === 'fixa' || v.tipo === 'entrada', regraData = v => fixaT(v) && ['semanal', 'anual', 'dias'].includes(v.repete);
-    const FIN_LAY = { nome: { aba: 'Básico' }, tipo: { aba: 'Básico' }, categoria: { aba: 'Básico', meia: true, se: v => v.tipo !== 'receber' && v.tipo !== 'entrada' }, valor: { aba: 'Básico', meia: true }, pessoa: { aba: 'Básico', se: v => FIN_PES_T.includes(v.tipo) }, nota: { aba: 'Básico' },
+    const FIN_LAY = { nome: { aba: 'Básico' }, tipo: { aba: 'Básico' }, categoria: { aba: 'Básico', meia: true, se: v => v.tipo !== 'receber' && v.tipo !== 'entrada' }, valor: { aba: 'Básico', meia: true }, pessoa: { aba: 'Básico', se: v => FIN_PES_T.includes(v.tipo) }, grupo: { aba: 'Básico', se: v => v.tipo === 'pagar' || v.tipo === 'divida' }, nota: { aba: 'Básico' },
       repete: { aba: 'Quando', meia: true, se: fixaT }, a_cada: { aba: 'Quando', meia: true, se: v => fixaT(v) && v.repete === 'dias', precisa: true }, inicio: { aba: 'Quando', meia: true, se: v => regraData(v) || FIN_PES_T.includes(v.tipo), precisa: true }, dia: { aba: 'Quando', meia: true, se: v => !regraData(v) }, lembrar_em: { aba: 'Quando', meia: true },
       forma_padrao: { aba: 'Pagamento', meia: true }, metade: { aba: 'Pagamento', meia: true, se: v => v.tipo === 'fixa' }, total: { aba: 'Pagamento', meia: true, se: v => FIN_PES_T.includes(v.tipo) }, parcelas: { aba: 'Pagamento', meia: true, se: v => FIN_PES_T.includes(v.tipo) } };
     const campos = () => ((Ec.base.campos && Ec.base.campos.contas) || FIN_CAMPOS.contas).map(f => ({ ...f, ...(FIN_LAY[f.nome] || { aba: 'Básico' }) })).sort((x, y) => FIN_ABAS.indexOf(x.aba) - FIN_ABAS.indexOf(y.aba));
@@ -5287,6 +5289,36 @@ function abreFinancas(m) {
       if (x.falta <= 0) dir.append(elD('span', 'fn-selo s-pago', 'QUITADO')); else dir.append(elD('b', '', pct + '%'), elD('small', '', 'falta ' + reaisFin(x.falta)));
       l.append(icone2(icoDe(x, true)), meio, dir); l.onclick = () => detalhe(x); return l;
     };
+    const FN_META = { carro: ['carro', null, '#2F80ED', '<path d="M4 15.5l1.6-5.2A2 2 0 017.5 9h9a2 2 0 011.9 1.3l1.6 5.2v3.5H4z"/><circle cx="8" cy="15.5" r="1.3"/><circle cx="16" cy="15.5" r="1.3"/>'], casa: ['casa', null, '#0E7C5A', '<path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/>'], computador: ['computador', null, '#6C5CE7', '<rect x="3" y="4.5" width="18" height="12" rx="2"/><path d="M8 20h8M12 16.5V20"/>'], viagem: ['viagem', null, '#F2994A', '<path d="M10.5 13.5L3 11l1.5-1.5 8 .8 4.3-4.3a1.8 1.8 0 012.5 2.5l-4.3 4.3.8 8L14.3 22l-2.5-7.5"/>'], reserva: ['reserva', null, '#0E9F6E', '<ellipse cx="12" cy="7" rx="7" ry="2.8"/><path d="M5 7v5c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8V7M5 12v5c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-5"/>'], outra: ['outra', null, '#0E7C5A', '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/>'] };
+    const metasJuntas = () => Em.itens.filter(x => !x.apagado).map(x => { const ap = Ea.itens.filter(a => !a.apagado && a.meta === x.id), alvo = finNum(x.alvo), g = Math.round(ap.reduce((n, a) => n + finNum(a.valor), 0) * 100) / 100; return { ...x, alvo, ap, guardado: g, falta: Math.max(0, Math.round((alvo - g) * 100) / 100), pct: alvo ? Math.min(100, Math.round(g / alvo * 100)) : 0 }; });
+    const metaMes = mt => { if (mt.falta <= 0) return 'Meta batida'; const m = String(mt.prazo || '').match(/^(\d{4})-(\d\d)/); if (!m) return 'Sem prazo'; const n = (+m[1] - hoje.getFullYear()) * 12 + (+m[2] - 1 - hoje.getMonth()) + 1; return n > 0 ? reaisFin(Math.ceil(mt.falta / n * 100) / 100) + ' por mês até ' + m[2] + '/' + m[1] : 'Prazo passou (' + m[2] + '/' + m[1] + ')'; };
+    const cartaoMeta = mt => {   // meta no formato da 4ª tela do modelo: ícone, guardado de quanto, barra, %; batida = check verde
+      const l = elD('button', 'fn-cartao fn-div fn-meta'), meio = elD('div', 'fn-cmeio'), dir = elD('div', 'fn-cdir'), bar = elD('div', 'fu-barra'), i = elD('i'); l.type = 'button';
+      i.style.width = mt.pct + '%'; bar.append(i); meio.append(elD('strong', '', mt.nome), elD('small', '', reaisFin(mt.guardado) + ' de ' + reaisFin(mt.alvo)), bar, elD('small', 'fn-met-mes', metaMes(mt)));
+      if (mt.falta <= 0) { const ok = elD('span', 'fn-met-ok'); ok.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg>'; dir.append(ok, elD('b', '', '100%')); } else dir.append(elD('b', '', mt.pct + '%'), elD('i', 'fn-met-seta', '›'));
+      l.append(icone2(FN_META[mt.icone] || FN_META.outra), meio, dir); l.onclick = () => detalheMeta(mt); return l;
+    };
+    const camposMeta = () => (Em.campos && Em.campos.length ? Em.campos : FIN_CAMPOS.metas), camposAporte = () => (Ea.campos && Ea.campos.length ? Ea.campos : FIN_CAMPOS.aportes);
+    const novaMeta = () => edFormulario({ titulo: 'Nova meta', campos: [...camposMeta(), { nome: 'ja', rotulo: 'Já tenho guardado (R$, se tiver)', tipo: 'valor' }, { nome: 'ja_quando', rotulo: 'Guardado em (DD/MM/AAAA, se souber)', tipo: 'texto' }], v: { icone: 'outra' }, aoSalvar: async nv => {
+      const it = await Em.lanca({ nome: String(nv.nome || '').trim(), alvo: finNum(nv.alvo), prazo: nv.prazo || '', icone: nv.icone || 'outra' }, 'Meta nova pelo app'); if (!it) return;
+      if (finNum(nv.ja)) await Ea.lanca({ meta: it.id, valor: finNum(nv.ja), quando: String(nv.ja_quando || '').trim(), nota: 'Já guardado antes' }, 'Valor já guardado na meta nova');
+      repinta(); showNote('Meta criada: ' + it.nome); } });
+    const editaMeta = mt => edFormulario({ titulo: 'Editar meta', campos: camposMeta(), v: { nome: mt.nome, alvo: mt.alvo, prazo: mt.prazo || '', icone: mt.icone || 'outra' }, aoSalvar: async nv => { await Em.edita(mt.id, { nome: String(nv.nome || '').trim(), alvo: finNum(nv.alvo), prazo: nv.prazo || '', icone: nv.icone || 'outra' }); repinta(); }, aoApagar: () => apagaMeta(mt) });
+    const apagaMeta = async mt => { await Em.apaga(mt.id, true); repinta(); edFaixaDesfazer('Meta apagada', async () => { await Em.apaga(mt.id, false); repinta(); }); };
+    const guardaMeta = mt => edFormulario({ titulo: 'Guardar em ' + mt.nome, campos: camposAporte(), v: { quando: edAgora() }, aoSalvar: async nv => { const v = finNum(nv.valor); if (!v) { showNote('Põe quanto guardou.', true); return; } await Ea.lanca({ meta: mt.id, valor: v, quando: String(nv.quando || '').trim(), nota: nv.nota || '' }, 'Dinheiro guardado na meta pelo app'); repinta(); showNote('Guardado: ' + reaisFin(v)); } });
+    const editaAporte = a => edFormulario({ titulo: 'Editar', campos: camposAporte(), v: { valor: a.valor, quando: a.quando || '', nota: a.nota || '' }, aoSalvar: async nv => { await Ea.edita(a.id, { valor: finNum(nv.valor), quando: String(nv.quando || '').trim(), nota: nv.nota || '' }); repinta(); }, aoApagar: async () => { await Ea.apaga(a.id, true); repinta(); edFaixaDesfazer('Apagado', async () => { await Ea.apaga(a.id, false); repinta(); }); } });
+    const detalheMeta = mt => {
+      const cp = elD('div', 'fin-det'), r = elD('div', 'fu-detres'), bar = elD('div', 'fu-barra'), i = elD('i'), inf = elD('div', 'fin-info'), li = (k, v) => { const d = elD('div'); d.append(elD('span', '', k), elD('b', '', v)); inf.append(d); }, pz = String(mt.prazo || '').match(/^(\d{4})-(\d\d)/);
+      i.style.width = mt.pct + '%'; bar.append(i); r.append(elD('b', '', mt.falta > 0 ? 'Falta ' + reaisFin(mt.falta) : 'Meta batida'), elD('small', '', 'Guardado ' + reaisFin(mt.guardado) + ' de ' + reaisFin(mt.alvo)), bar); cp.append(r);
+      li('Valor desejado', reaisFin(mt.alvo)); li('Já guardado', reaisFin(mt.guardado) + ' · ' + mt.pct + '%'); li('Falta', mt.falta > 0 ? reaisFin(mt.falta) : 'Nada'); li('Prazo', pz ? pz[2] + '/' + pz[1] : 'Sem prazo'); li('Guardar por mês', metaMes(mt)); cp.append(inf);
+      const ts = a => { const d = finData(a.quando); return d ? d.getTime() : 0; }, ul = elD('div', 'fin-hist'); cp.append(elD('p', 'fin-rot', 'Histórico'));
+      mt.ap.slice().sort((a, b) => ts(b) - ts(a)).forEach(a => { const l = elD('div'); l.append(elD('span', '', a.quando ? edQuando(a.quando) : 'Sem data'), elD('b', '', reaisFin(finNum(a.valor))), elD('small', '', a.nota || ''), edMini('note', 'Editar', () => { fecha(); editaAporte(a); })); ul.append(l); });
+      if (!mt.ap.length) ul.append(elD('p', 'p-nota', 'Nada guardado ainda.')); cp.append(ul);
+      const bts = elD('div', 'ed-acoes fin-bts'), ap = elD('div', 'fin-apagar'), mk = (tx, cl, fn, onde) => { const b = elD('button', cl, tx); b.type = 'button'; b.onclick = () => { fecha(); fn(); }; (onde || bts).append(b); };
+      mk('Guardar dinheiro', 'pp-op rec', () => guardaMeta(mt)); mk('Editar meta', 'pp-op larga', () => editaMeta(mt)); mk('Apagar meta', 'pp-op fin-apaga', () => confirmaMeta(mt), ap); cp.append(bts, ap);
+      const fecha = pop(mt.nome, cp);
+    };
+    const confirmaMeta = mt => { const cp = elD('div', 'fin-conf'), bt = elD('div', 'fin-bts'), sim = elD('button', 'pp-op fin-apaga', 'Apagar'), nao = elD('button', 'pp-op', 'Cancelar'); sim.type = nao.type = 'button'; cp.append(elD('p', 'p-nota', 'Some da lista com o que foi guardado nela; dá pra desfazer logo depois.'), bt); bt.append(nao, sim); const fecha = pop('Apagar ' + mt.nome + '?', cp); nao.onclick = fecha; sim.onclick = () => { fecha(); apagaMeta(mt); }; };
     const proxDiv = x => {   // próximo vencimento da dívida: o dia dela neste mês, ou no mês seguinte se já passou ou já pagou; nunca antes do início
       if (x.falta <= 0) return 'Quitada'; if (!x.dia) return x.lembrar && finData(x.lembrar) ? 'Sem dia certo · lembrete ' + dataBr(finData(x.lembrar)).slice(0, 5) : 'Sem dia certo';
       const m = String(x.inicio || '').match(/^(\d{4})-(\d\d)/), ini = m ? new Date(+m[1], m[2] - 1, 1) : null; let d = finDiaMes(hoje.getFullYear(), hoje.getMonth(), x.dia);
@@ -5356,10 +5388,16 @@ function abreFinancas(m) {
       // ---- Metas (fase 4): as dívidas por credor
       const dTot = devo.reduce((n, x) => n + x.total, 0), dPago = devo.reduce((n, x) => n + x.pago, 0), dPct = dTot ? Math.min(100, Math.round(dPago / dTot * 100)) : 100, mh = elD('div', 'fu-heroi fn-met-heroi'), mb = elD('div', 'fu-barra grande'), mi = elD('i');
       mi.style.width = dPct + '%'; mb.append(mi); mh.append(elD('span', '', sd > 0 ? 'Você deve' : 'Tudo quitado'), elD('b', '', reaisFin(sd)), elD('small', '', 'Pago ' + reaisFin(dPago) + ' de ' + reaisFin(dTot)), mb, elD('small', 'fu-pago', dPct + '% quitado'));
-      const gr = {}, lm = elD('div', 'fn-contas'); ordF(devo).forEach(x => { const k = x.pessoa || x.nome.split(' · ')[0]; (gr[k] = gr[k] || []).push(x); });
+      const gr = {}, lm = elD('div', 'fn-contas'); ordF(devo).forEach(x => { const k = x.grupo || x.pessoa || x.nome.split(' · ')[0]; (gr[k] = gr[k] || []).push(x); });
       Object.entries(gr).forEach(([k, ls]) => { if (ls.length > 1) { const h = elD('div', 'fn-met-grupo'); h.append(elD('strong', '', k), elD('small', '', ls.length + ' dívidas · falta ' + reaisFin(ls.reduce((n, y) => n + y.falta, 0)))); lm.append(h); } ls.forEach(x => lm.append(cartaoDiv(x))); });
       if (!devo.length) lm.append(elD('p', 'fu-vazio', 'Você não deve nada.'));
-      pag.metas.append(mh, secao('Suas dívidas', devo.length + (devo.length === 1 ? ' dívida' : ' dívidas'), null, [lm]));
+      const MT = metasJuntas(), lmt = elD('div', 'fn-contas'), nova = elD('button', 'fn-met-nova'); nova.type = 'button'; nova.append(elD('i', '', '+'), elD('span', '', 'Nova meta')); nova.onclick = novaMeta;
+      MT.forEach(mt => lmt.append(cartaoMeta(mt))); if (!MT.length) lmt.append(elD('p', 'fu-vazio', 'Nenhuma meta ainda. Toca em Nova meta pra juntar pra um carro, uma viagem ou a reserva.'));
+      const sMt = secao('Suas metas', null, null, [lmt]); sMt.querySelector('.fu-sech').append(nova); const sDv = secao('Suas dívidas', devo.length + (devo.length === 1 ? ' dívida' : ' dívidas'), null, [lm]);
+      if (MT.length) { const gT = MT.reduce((n, x) => n + x.guardado, 0), aT = MT.reduce((n, x) => n + x.alvo, 0), pT = aT ? Math.min(100, Math.round(gT / aT * 100)) : 0, hm = elD('div', 'fu-heroi fn-met-heroi fn-met-topo'), hb = elD('div', 'fu-barra grande'), hi = elD('i'), alv = elD('span', 'fn-met-alvo');
+        hi.style.width = pT + '%'; hb.append(hi); alv.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="2"/></svg>';
+        hm.append(alv, elD('span', '', 'Minhas metas'), elD('b', '', reaisFin(gT)), elD('small', '', 'de ' + reaisFin(aT)), hb, elD('small', 'fu-pago', pT + '%')); pag.metas.append(hm, sMt, mh, sDv); }
+      else pag.metas.append(mh, sMt, sDv);
       // ---- Mais (fase 5): lançar e as outras contas (sem dia, anuais de outros meses)
       const lan = elD('button', 'fn-todas', 'Lançar conta, entrada ou dívida'); lan.type = 'button'; lan.append(elD('i', '', '+')); lan.onclick = novaConta; pag.mais.append(lan);
       const outras = [...S.fixas.filter(f => !f.dia).map(f => [f.nome, reaisFin(finParte(f)) + (f.nota ? ' · ' + f.nota : ''), f]), ...S.anuais.filter(a => !anuais.includes(a)).map(a => [a.nome, (a.mes ? 'vence em ' + a.mes : '') + (a.nota ? (a.mes ? ' · ' : '') + a.nota : ''), a])];
