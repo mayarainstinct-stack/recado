@@ -1,3 +1,4 @@
+// v575 (25/11/2026): #454 ficha de jogo nova, entrega a: voltar e fechar no cabeçalho, barra de progresso na cor do console, linha JOGAR + favorito + menu, botão do JOGAR com texto pelo maior contraste, sem botão flutuante.
 // v574 (25/11/2026): #449 "gire o vetor": o instrumento da frente da Vitrine gira inteiro no eixo (costas = desenho escurecido), pausar e velocidade valem pro giro; 2D gira por scaleX.
 // v573 (25/11/2026): #437 volta do Sigma: carteirinha em tela cheia com X embaixo à direita e 2 bolinhas dizendo que tem verso.
 // v572 (25/11/2026): #445 volta do Sigma: tesoura da foto menor (32 px, toque de 40 px) no canto de baixo, sem encostar no X do cartão.
