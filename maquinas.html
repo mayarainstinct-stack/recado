@@ -262,7 +262,7 @@ function popMaq(titulo,corpo,cores){   // popup do tema de Máquinas: fundo pret
 const sobreColecao=cores=>popMaq("Coleção Slim",corpoSlim(),cores)   // o texto da coleção Slim mora no ? de Consoles (#462, May 25/11 07:27: "tá feia")
 function acessorios(){   // atalho Acessórios: o que cada máquina já tem no maquinas.json, agrupado por máquina (#450, modelo da May)
   const c=el("div","sobre-corpo"),ms=D.maquinas.filter(x=>(x.acessorios||[]).length)
-  ms.forEach(x=>{c.append(el("h4","",x.nome));const u=el("ul");x.acessorios.forEach(a=>{const li=el("li");li.append(el("span","",a));u.append(li)});c.append(u)})
+  ms.forEach(x=>{c.append(el("h4","",x.nome));const u=el("ul");x.acessorios.forEach(a=>{const li=el("li");li.append(el("span","",a.charAt(0).toLocaleUpperCase("pt-BR")+a.slice(1)));u.append(li)});c.append(u)})
   popMaq("Acessórios",c,ms.map(cor))}
 function monta(i){
   atual=i;const ms=D.maquinas,m=ms[i],k=m.ativo===false?"#8B8F98":cor(m);document.body.classList.toggle("maq-inativa",m.ativo===false);   // parada fica toda cinza por dentro também: fundo, selo, abas e voltar (May 19:36, Sigma 20:31)
