@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.644">
+<meta name="app-versao" content="2026-11-25.645">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.644"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.645"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -7390,13 +7390,13 @@ function abreDropbox(m) {
       const cam = elD('div', 'dbx-cam'); raiz.append(cam);
       const lista = elD('div', 'dbx-lista'); lista.append(skCarga()); raiz.append(lista);
       const sai = bt('dbx-sair', 'Sair do Dropbox', () => { const ov = elD('div', 'fixa-pop'), card = elD('div', 'pp-card'), ops = elD('div', 'pp-ops'), nao = bt('pp-op', 'Agora não', () => ov.remove()), sim = bt('pp-op rec', 'Sair', async () => { ov.remove(); try { await dbxApi('auth/token/revoke'); } catch (e) {} store.set('dbx-tok', ''); store.set('dbx-pasta', ''); dbxEnvio = null; pinta(); }); ops.style.marginTop = '16px'; ops.append(nao, sim); card.append(elD('div', 'pp-perg', 'Sair do Dropbox?'), elD('p', 'p-nota', 'A chave sai deste aparelho. Os arquivos continuam no Dropbox.'), ops); ov.append(card); ov.onclick = e => { if (e.target === ov) ov.remove(); }; document.body.append(ov); });
-      raiz.append(sai);
+      const pe = elD('div', 'dbx-pe'); raiz.append(sai, pe);   // botão principal embaixo à direita, na mão direita (regra dela, Sigma 16:31)
       const pintaEspaco = () => { if (!esp) return; const usa = esp.used, tot = (esp.allocation && esp.allocation.allocated) || 0, pc = tot ? Math.min(100, usa / tot * 100) : 0; topo.querySelector('b').textContent = dbxTam(usa) + ' de ' + (tot ? dbxTam(tot) : '?') + (tot ? ' · sobram ' + dbxTam(Math.max(0, tot - usa)) : ''); cheio.style.width = pc.toFixed(1) + '%'; topo.classList.toggle('quase', pc >= 90); };
       const pintaEnvio = () => {
-        env.replaceChildren(); const e = dbxEnvio;
+        env.replaceChildren(); pe.replaceChildren(); const e = dbxEnvio;
         const ip = elD('input'); ip.type = 'file'; ip.hidden = true; ip.onchange = () => { const f = ip.files[0]; ip.value = ''; if (f) comeca(f); };
-        const sb = bt('dbx-bt rec', '', () => ip.click()); sb.innerHTML = svg('sobe'); sb.append(elD('span', '', 'Enviar arquivo pra ' + nomeDe(pasta)));
-        if (!e) { env.append(sb, ip); return; }
+        const sb = bt('dbx-bt rec', '', () => ip.click()); sb.innerHTML = svg('sobe'); sb.append(elD('span', '', 'Enviar arquivo')); sb.setAttribute('aria-label', 'Enviar arquivo pra ' + nomeDe(pasta));
+        pe.append(sb, ip); env.hidden = !e; if (!e) return;
         const pc = e.f.size ? Math.floor(e.off / e.f.size * 100) : 100, br = elD('div', 'dbx-barra'), ch = elD('i'); ch.style.width = pc + '%'; br.append(ch);
         env.append(elD('b', 'dbx-env-nome sem-maiusc', e.f.name), elD('small', '', (e.erro ? e.erro : e.indo ? 'Enviando pra ' + nomeDe(e.pasta) : 'Parado') + ' · ' + dbxTam(e.off) + ' de ' + dbxTam(e.f.size) + ' (' + pc + '%)'), br);
         if (e.erro) { const ops = elD('div', 'dbx-ops'); ops.append(bt('dbx-bt', 'Cancelar', () => { dbxEnvio = null; pintaEnvio(); }), bt('dbx-bt rec', 'Tentar de novo', sobe)); env.append(ops); }
@@ -7405,7 +7405,7 @@ function abreDropbox(m) {
       const comeca = f => {
         if (dbxEnvio && dbxEnvio.indo) { showNote('Espera terminar o envio que está indo.', true); return; }
         const livre = esp && esp.allocation && esp.allocation.allocated ? esp.allocation.allocated - esp.used : Infinity;
-        if (f.size > livre) { env.replaceChildren(); const a = elD('div', 'dbx-aviso erro'); a.append(elD('b', '', 'Não cabe no Dropbox'), elD('p', '', '"' + f.name + '" tem ' + dbxTam(f.size) + ' e sobram ' + dbxTam(Math.max(0, livre)) + '. Faltam ' + dbxTam(f.size - livre) + '. O Orfeu move o que já chegou pro PC1 e libera espaço.')); env.append(a, bt('dbx-bt', 'Ok', pintaEnvio)); return; }
+        if (f.size > livre) { env.replaceChildren(); env.hidden = false; const a = elD('div', 'dbx-aviso erro'); a.append(elD('b', '', 'Não cabe no Dropbox'), elD('p', '', '"' + f.name + '" tem ' + dbxTam(f.size) + ' e sobram ' + dbxTam(Math.max(0, livre)) + '. Faltam ' + dbxTam(f.size - livre) + '. O Orfeu move o que já chegou pro PC1 e libera espaço.')); env.append(a, bt('dbx-bt', 'Ok', pintaEnvio)); return; }
         dbxEnvio = { f, pasta, sid: null, off: 0, erro: '', indo: false }; sobe();
       };
       const fim = async (e, parte) => { await dbxApi('files/upload_session/finish', parte, true, { cursor: { session_id: e.sid, offset: e.off }, commit: { path: e.pasta.replace(/\/$/, '') + '/' + e.f.name, mode: 'add', autorename: true } }); e.off = e.f.size; return true; };

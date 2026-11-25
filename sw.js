@@ -1,4 +1,4 @@
-// v644 #480 Dropbox no menu no lugar da Carteirinha (envio em partes, PKCE)
+// v645 #480 Dropbox: Enviar arquivo embaixo a direita
 // v637 #449 5c series: episodios e etapas c/ ordem, proxima no cartao, ideias da serie, series na aba Ideias
 // v636 #449 5b audio na ideia: gravar ou anexar, ouvir e apagar
 // v632 #449 4b categorias do Setup com filtro, onde fica e estado
