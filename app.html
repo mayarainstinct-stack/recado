@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.614">
+<meta name="app-versao" content="2026-11-25.615">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.614"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.615"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -5180,7 +5180,10 @@ function abreFinancas(m) {
     const editaPagto = y => edFormulario({ titulo: 'Editar pagamento', campos: (Ep.base.campos && Ep.base.campos.pagamentos) || FIN_CAMPOS.pagamentos, v: { valor_feito: y.valor, forma: y.forma, feito: y.quando, nota: y.nota }, aoSalvar: async nv => { await Ep.edita(y.appId, nv); repinta(); }, aoApagar: async () => { await Ep.apaga(y.appId, true); repinta(); edFaixaDesfazer('Pagamento apagado', async () => { await Ep.apaga(y.appId, false); repinta(); }); } });
     const detalhe = (ent, it) => {
       const eP = !!ent.pagamentos, cp = elD('div', 'fin-det'), lado = eP ? ent.lado : (ent.tipo === 'entrada' ? 'receber' : 'pagar'), hs = (eP ? ent.pagamentos : ent.pagos || []).slice().reverse();
-      if (eP) { const pct = ent.total ? Math.min(100, Math.round(ent.pago / ent.total * 100)) : 0, r = elD('div', 'fu-detres'); r.append(elD('b', '', ent.falta > 0 ? 'Falta ' + reaisFin(ent.falta) : 'Quitado'), elD('small', '', (lado === 'pagar' ? 'Pago ' : 'Recebido ') + reaisFin(ent.pago) + ' de ' + reaisFin(ent.total))); const bar = elD('div', 'fu-barra'), i = elD('i'); i.style.width = pct + '%'; bar.append(i); r.append(bar); cp.append(r); }
+      if (eP) { const pct = ent.total ? Math.min(100, Math.round(ent.pago / ent.total * 100)) : 0, r = elD('div', 'fu-detres'); r.append(elD('b', '', ent.falta > 0 ? 'Falta ' + reaisFin(ent.falta) : 'Quitado'), elD('small', '', (lado === 'pagar' ? 'Pago ' : 'Recebido ') + reaisFin(ent.pago) + ' de ' + reaisFin(ent.total))); const bar = elD('div', 'fu-barra'), i = elD('i'); i.style.width = pct + '%'; bar.append(i); r.append(bar); cp.append(r);
+        if (lado === 'pagar') { const ult = ent.pagamentos[ent.pagamentos.length - 1], inf = elD('div', 'fin-info'), li = (k, v) => { const d = elD('div'); d.append(elD('span', '', k), elD('b', '', v)); inf.append(d); };
+          li('Valor original', reaisFin(ent.total)); li('Já pago', reaisFin(ent.pago) + ' · ' + pct + '%'); li('Saldo', ent.falta > 0 ? reaisFin(ent.falta) : 'QUITADO'); li('Parcela', ent.vp ? (ent.parcelas ? ent.parcelas + 'x de ' : '') + reaisFin(ent.vp) : 'Não anotada');
+          li('Frequência', ent.dia ? 'Todo mês, dia ' + ent.dia : 'Sem dia certo'); li('Último pagamento', ult ? (ult.quando ? edQuando(ult.quando) : ult.data) + (ult.valor !== '' ? ' · ' + reaisFin(ult.valor) : '') : 'Nenhum ainda'); li('Próximo vencimento', proxDiv(ent)); cp.append(inf); } }
       const PS = eP && lado === 'receber' ? finParcelas(ent, hoje) : [];
       if (PS.length) {
         const pl = elD('div', 'fin-parc'); cp.append(elD('p', 'fin-rot', 'Parcelas · ' + PS.filter(x => x.estado === 'recebido').length + ' de ' + PS.length + ' recebidas'), pl);
@@ -5192,7 +5195,7 @@ function abreFinancas(m) {
           d.append(elD('b', '', reaisFin(x.valor)), elD('span', 'fn-selo s-' + sc, st)); l.append(ck, m, d); pl.append(l);
         });
       }
-      else { const ini = finData(ent.inicio), desde = ini ? ', desde ' + dataBr(ini).slice(0, 5) : ''; cp.append(elD('p', 'p-nota', (ent.repete === 'semanal' ? 'Toda semana' + desde : ent.repete === 'dias' ? 'A cada ' + (Math.round(finNum(ent.a_cada)) || 1) + ' dias' + desde : ent.dia ? 'Vence todo dia ' + ent.dia : 'Sem dia de vencimento') + ' · ' + reaisFin(finParte(ent)) + (ent.metade ? ' (sua metade de ' + reaisFin(ent.valor) + ')' : ''))); }
+      else if (!(eP && lado === 'pagar')) { const ini = finData(ent.inicio), desde = ini ? ', desde ' + dataBr(ini).slice(0, 5) : ''; cp.append(elD('p', 'p-nota', (ent.repete === 'semanal' ? 'Toda semana' + desde : ent.repete === 'dias' ? 'A cada ' + (Math.round(finNum(ent.a_cada)) || 1) + ' dias' + desde : ent.dia ? 'Vence todo dia ' + ent.dia : 'Sem dia de vencimento') + (eP ? (ent.vp ? ' · ' + reaisFin(ent.vp) : '') : ' · ' + reaisFin(finParte(ent))) + (ent.metade ? ' (sua metade de ' + reaisFin(ent.valor) + ')' : ''))); }
       const obs = eP ? ent.como : ent.nota; if (obs) cp.append(elD('p', 'fu-obs', obs)); if (it && (it.para || it.de)) cp.append(elD('p', 'fin-lembra', it.para ? 'Adiada pra ' + dataBr(it.para).slice(0, 5) : 'Era dia ' + dataBr(it.de).slice(0, 5) + ', passou pra ' + dataBr(it.quando).slice(0, 5)));
       if (ent.lembrar && finData(ent.lembrar) && (!eP || ent.falta > 0)) cp.append(elD('p', 'fin-lembra', 'Lembrete no dia ' + edDataBr(finIso(ent.lembrar)).slice(0, 5)));
       if (PS.length) cp.append(elD('p', 'fin-rot', 'Histórico')); const ul = elD('div', 'fin-hist'); hs.forEach(y => { const l = elD('div'); l.append(elD('span', '', y.quando ? edQuando(y.quando) : y.data), elD('b', '', y.valor !== '' ? reaisFin(y.valor) : '—'), elD('small', '', [y.forma, y.nota].filter(Boolean).join(' · '))); if (y.appId) l.append(edMini('note', 'Editar pagamento', () => { fecha(); editaPagto(y); })); ul.append(l); });
@@ -5247,6 +5250,18 @@ function abreFinancas(m) {
       const ult = x.pagamentos[x.pagamentos.length - 1], top = elD('div', 'fu-pest'); top.append(elD('strong', '', x.nome), elD('b', '', x.falta > 0 ? reaisFin(x.falta) : 'quitado'));
       b.append(top, bar, elD('small', '', (lado === 'receber' && x.total ? 'Recebido ' + reaisFin(x.pago) + ' de ' + reaisFin(x.total) : pct + '% ' + (lado === 'pagar' ? 'pago' : 'recebido')) + (x.parcelas && x.vp ? ' · ' + x.parcelas + 'x de ' + reaisFin(x.vp) : x.vp ? ' · ' + reaisFin(x.vp) + ' por mês' : '') + (ult ? ' · último ' + String(ult.quando || ult.data).slice(0, 5) : '') + (!x.total ? ' · sem total' : '')));
       return b;
+    };
+    const cartaoDiv = x => {   // dívida no formato da 4ª tela do modelo (#467 fase 4a): ícone, quanto já foi de quanto, barra e %; quitada = QUITADO
+      const l = elD('button', 'fn-cartao fn-div'), meio = elD('div', 'fn-cmeio'), dir = elD('div', 'fn-cdir'), pct = x.total ? Math.min(100, Math.round(x.pago / x.total * 100)) : 0, bar = elD('div', 'fu-barra'), i = elD('i'); l.type = 'button';
+      i.style.width = pct + '%'; bar.append(i); meio.append(elD('strong', '', x.nome), elD('small', '', reaisFin(x.pago) + ' de ' + reaisFin(x.total)), bar);
+      if (x.falta <= 0) dir.append(elD('span', 'fn-selo s-pago', 'QUITADO')); else dir.append(elD('b', '', pct + '%'), elD('small', '', 'falta ' + reaisFin(x.falta)));
+      l.append(icone2(icoDe(x, true)), meio, dir); l.onclick = () => detalhe(x); return l;
+    };
+    const proxDiv = x => {   // próximo vencimento da dívida: o dia dela neste mês, ou no mês seguinte se já passou ou já pagou; nunca antes do início
+      if (x.falta <= 0) return 'Quitada'; if (!x.dia) return x.lembrar && finData(x.lembrar) ? 'Sem dia certo · lembrete ' + dataBr(finData(x.lembrar)).slice(0, 5) : 'Sem dia certo';
+      const m = String(x.inicio || '').match(/^(\d{4})-(\d\d)/), ini = m ? new Date(+m[1], m[2] - 1, 1) : null; let d = finDiaMes(hoje.getFullYear(), hoje.getMonth(), x.dia);
+      if (d < new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate()) || x.pagamentos.some(y => y.chave === finChave(hoje))) d = finDiaMes(hoje.getFullYear(), hoje.getMonth() + 1, x.dia);
+      if (ini && d < ini) d = finDiaMes(ini.getFullYear(), ini.getMonth(), x.dia); return dataBr(d);
     };
     const doMes = M => {
       const { its, resumo } = finLista(S, M, hoje), pagar = its.filter(x => x.lado === 'pagar'), aPagar = pagar.filter(x => !x.pago && x.estado !== 'adiada'), pagas = its.filter(x => x.pago), aRec = its.filter(x => x.lado === 'receber' && !x.pago), ordem = { atrasada: 0, hoje: 1, vencer: 2, semreg: 3 };
@@ -5309,7 +5324,12 @@ function abreFinancas(m) {
       const addR = elD('button', 'fn-add rec'); addR.type = 'button'; addR.append(elD('i', '', '+'), elD('span', '', 'Adicionar recebimento')); addR.onclick = () => novaConta(['receber', 'entrada'], 'O que vai entrar?');
       pag.receber.append(secao('Outras entradas', recF.length ? '+ ' + reaisFin(recF.reduce((n, x) => n + finNum(x.pago && x.pago.valor !== '' ? x.pago.valor : x.valor), 0)) : null, null, [oe]), addR);
       // ---- Metas (fase 4): as dívidas por credor
-      const s1 = secao('Você deve', reaisFin(sd), null, devo.length ? porPessoa(devo, 'pagar') : [elD('p', 'fu-vazio', 'Você não deve nada.')]); s1.classList.add('fu-sec-devo'); pag.metas.append(s1);
+      const dTot = devo.reduce((n, x) => n + x.total, 0), dPago = devo.reduce((n, x) => n + x.pago, 0), dPct = dTot ? Math.min(100, Math.round(dPago / dTot * 100)) : 100, mh = elD('div', 'fu-heroi fn-met-heroi'), mb = elD('div', 'fu-barra grande'), mi = elD('i');
+      mi.style.width = dPct + '%'; mb.append(mi); mh.append(elD('span', '', sd > 0 ? 'Você deve' : 'Tudo quitado'), elD('b', '', reaisFin(sd)), elD('small', '', 'Pago ' + reaisFin(dPago) + ' de ' + reaisFin(dTot)), mb, elD('small', 'fu-pago', dPct + '% quitado'));
+      const gr = {}, lm = elD('div', 'fn-contas'); ordF(devo).forEach(x => { const k = x.pessoa || x.nome.split(' · ')[0]; (gr[k] = gr[k] || []).push(x); });
+      Object.entries(gr).forEach(([k, ls]) => { if (ls.length > 1) { const h = elD('div', 'fn-met-grupo'); h.append(elD('strong', '', k), elD('small', '', ls.length + ' dívidas · falta ' + reaisFin(ls.reduce((n, y) => n + y.falta, 0)))); lm.append(h); } ls.forEach(x => lm.append(cartaoDiv(x))); });
+      if (!devo.length) lm.append(elD('p', 'fu-vazio', 'Você não deve nada.'));
+      pag.metas.append(mh, secao('Suas dívidas', devo.length + (devo.length === 1 ? ' dívida' : ' dívidas'), null, [lm]));
       // ---- Mais (fase 5): lançar e as outras contas (sem dia, anuais de outros meses)
       const lan = elD('button', 'fn-todas', 'Lançar conta, entrada ou dívida'); lan.type = 'button'; lan.append(elD('i', '', '+')); lan.onclick = novaConta; pag.mais.append(lan);
       const outras = [...S.fixas.filter(f => !f.dia).map(f => [f.nome, reaisFin(finParte(f)) + (f.nota ? ' · ' + f.nota : ''), f]), ...S.anuais.filter(a => !anuais.includes(a)).map(a => [a.nome, (a.mes ? 'vence em ' + a.mes : '') + (a.nota ? (a.mes ? ' · ' : '') + a.nota : ''), a])];
