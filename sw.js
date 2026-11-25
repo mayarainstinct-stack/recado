@@ -1,3 +1,4 @@
+// v586 (25/11/2026): #462 Maquinas: texto da colecao Slim sai do topo e abre no ? de Consoles, popup do tema de Maquinas.
 // v585 (25/11/2026): S.L. foto do Sandro encostada na barra de cima, sem margem em cima (lados iguais).
 // v584 (25/11/2026): #449 vizinhas levemente viradas pro centro (15 e 25 graus), cabeca do baixo mais fina, cartao do bloqueado c/ 1 linha, campo Ja tenho no lapis do setup.
 // v583 (25/11/2026): #449 fileira na ordem do quarto (campo ordem), palco 300 px c/ a selecionada em 85%, baixo azul bloqueado em silhueta, vao -8, guitarra deitada c/ corpo a esquerda.
