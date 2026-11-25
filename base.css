@@ -1793,6 +1793,12 @@ body.modo-trab .painel .p-hero .logo { display: block; width: 72px; height: 72px
 .ag-ed { position: absolute; top: 6px; right: 6px; display: flex; align-items: center; gap: 2px; } .ag.tem-ed { position: relative; padding-right: 76px; } .ag.tem-ed .li-ck { --c: var(--tc, #0D9488); width: 26px; height: 26px; } .ag.feito .li-ck { background: var(--tc, #0D9488); border-color: var(--tc, #0D9488); } .ag.feito .li-ck svg { opacity: 1; } .ag.feito .cx > div:not(.tp):not(.ag-fotos) { text-decoration: line-through; opacity: .6; } .ag .li-feito { display: block; font-size: 12px; font-weight: 700; color: var(--tc, #0D9488); margin-top: 3px; } .ficha .ag-ed { display: none; }
 .ed-faixa { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 1100; display: flex; align-items: center; gap: 14px; padding: 10px 10px 10px 16px; border-radius: 999px; background: #1F2937; color: #fff; font-size: 14px; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,.35); white-space: nowrap; }
 .ed-faixa button { background: none; border: 0; color: #FACC15; font: inherit; font-weight: 800; padding: 6px 10px; cursor: pointer; }
+/* Faixa do Desfazer: largura pelo conteúdo até a tela - 32 px; com left 50% ela só tinha meia tela e o Desfazer vazava pra fora (#448, May 24/11 23:08: "o desfazer tá muito estranho"); sobe de baixo, não surge */
+.ed-faixa { width: max-content; max-width: calc(100vw - 32px); box-sizing: border-box; animation: edFaixaSobe .28s cubic-bezier(.2,.8,.2,1); }
+.ed-faixa > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.ed-faixa button { flex: none; width: auto; height: auto; min-height: 44px; border-radius: 999px; }   /* o button global (linha 321) é redondo de 46 px: o Desfazer não cabia */
+@keyframes edFaixaSobe { from { transform: translate(-50%, calc(100% + 24px)); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .ed-faixa { animation: none; } }
 .ck-item .ed-mini { align-self: center; margin-left: auto; } .ck-item { cursor: pointer; }
 .li-lista { display: grid; gap: 10px; padding: 4px 0 24px; }
 .li-card { display: flex; align-items: center; gap: 12px; padding: 12px 8px 12px 12px; border-radius: 16px; background: var(--paper); border: 1px solid var(--line); border-left: 4px solid var(--c); }
