@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.622">
+<meta name="app-versao" content="2026-11-25.623">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.622"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.623"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -4165,7 +4165,7 @@ function abreMusica(m) {
           const estado = () => { lig.textContent = ouvido ? 'Parar o afinador' : 'Ligar o afinador'; lig.className = 'tp-bt ' + (ouvido ? 'fim' : 'rec'); w.classList.toggle('ouvindo', !!ouvido); if (!ouvido) { nota.textContent = '–'; hz.textContent = 'Toca uma corda'; diz.textContent = ''; ag.style.transform = 'rotate(0deg)'; w.classList.remove('afinada', 'fora'); } };
           lig.type = 'button'; lig.onclick = async () => { if (ouvido) { paraOuvido(); estado(); return; } msg.hidden = true;
             if (!navigator.mediaDevices) { msg.textContent = 'Este navegador não abre o microfone. Abre pelo ícone da tela de início.'; msg.hidden = false; return; }
-            let st; try { st = await pegaMic(); } catch (e) { soltaMicStream(); msg.textContent = e && e.name === 'NotAllowedError' ? 'Microfone bloqueado. Libera em Ajustes → Apps → Safari → Microfone (Permitir).' : 'O microfone não abriu (' + ((e && e.name) || 'erro') + ').'; msg.hidden = false; return; }
+            let st; try { st = await pegaMic(); } catch (e) { soltaMicStream(); msg.textContent = e && e.name === 'NotAllowedError' ? 'Microfone bloqueado. Libera em Ajustes → Apps → Safari → Microfone (Permitir).' : 'O microfone não abriu (' + ((e && e.name) || 'erro') + ').'; msg.hidden = false; hz.textContent = 'Sem microfone'; msg.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
             const ac = new (window.AudioContext || window.webkitAudioContext)(), an = ac.createAnalyser(); an.fftSize = 2048; ac.createMediaStreamSource(st).connect(an); if (ac.resume) ac.resume(); const buf = new Float32Array(an.fftSize), ult = [];
             ouvido = { ac, timer: setInterval(() => { if (!w.isConnected) return paraOuvido(); an.getFloatTimeDomainData(buf); const f = alturaDe(buf, ac.sampleRate); if (f > 60 && f < 1400) { ult.push(f); if (ult.length > 5) ult.shift(); mostra([...ult].sort((a, b) => a - b)[ult.length >> 1]); } else if (f < 0) ult.length = 0; }, 90) }; estado(); };
           w.append(nota, hz, mostr, diz, elD('small', 'tm-pr-rot', 'Corda'), cds, lig, msg); pintaC(); estado(); miolo.append(w);
