@@ -1,3 +1,4 @@
+// v658 #484 Estudio de Reels: secao Legenda (Copiar, Editar, Aprovar) em cada projeto
 // v657 #483 popup: video em pe ocupa a altura livre do cartao (Sigma 20:25)
 // v656 #483 player no formato do video: Geral, Estudio de Reels e popup (vertical em pe, horizontal deitado, sem tarja)
 // v655 Estudio de Reels: botao Baixar em cada trilha (compartilha o arquivo no iPhone pra salvar ou mandar pro Suno)

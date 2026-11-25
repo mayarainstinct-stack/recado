@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.657">
+<meta name="app-versao" content="2026-11-25.658">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.657"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.658"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -7541,7 +7541,8 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
     const RL_ARQ = 'reels/reels.json', RM_ARQ = 'reels/reels-may.json'; let RL = null, RM = null, rlTocando = null;   // reels.json = do Hermes (fonte única); reels-may.json = a decisão dela, o app junta por cima
     const rlChave = (p, t) => p.id + '/' + (t ? t.id : 'video') + '@' + ((t || p.video || {}).versao || 1);   // versão nova = chave nova: volta pra "Pra ver"
     const rlDec = (p, t) => ((RM && RM.decisoes) || {})[rlChave(p, t)] || null;
-    const rlItens = p => (p.video ? [[p, null]] : []).concat((p.trilhas || []).map(t => [p, t]));
+    const rlLeg = p => ({ ...p.legenda, id: 'legenda', nome: 'Legenda' }), rlLegTx = p => (((RM && RM.legendas) || {})[p.id] || {}).texto || p.legenda.texto;   // #484: a edição dela fica no reels-may.json e vale por cima
+    const rlItens = p => (p.video ? [[p, null]] : []).concat((p.trilhas || []).map(t => [p, t]), p.legenda ? [[p, rlLeg(p)]] : []);
     const dn = s => String(s || '').split(' ')[0].split('/').reverse().join('');
     const rlPara = () => { if (rlTocando) { rlTocando.pause(); rlTocando = null; } document.querySelectorAll('.rl-play.on').forEach(x => { x.classList.remove('on'); x.innerHTML = svg('play'); }); };
     const rlMonta = () => {
@@ -7569,7 +7570,7 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
       rlMonta();
     };
     const rlGrava = async (p, t, novo, repinta, desfazendo) => {
-      const k = rlChave(p, t), ant = rlDec(p, t), ver = (t || p.video).versao || 1, nome = (t ? 'trilha "' + t.nome + '"' : 'vídeo') + ' de ' + p.titulo + ' (versão ' + ver + ')', dono = t ? (t.dono || 'Orfeu') : (p.video.dono || 'Hermes');
+      const k = rlChave(p, t), ant = rlDec(p, t), ver = (t || p.video).versao || 1, nome = (t ? (t.id === 'legenda' ? 'legenda' : 'trilha "' + t.nome + '"') : 'vídeo') + ' de ' + p.titulo + ' (versão ' + ver + ')', dono = t ? (t.dono || 'Orfeu') : (p.video.dono || 'Hermes');
       const nv = await gravaJson(RM_ARQ, dd => { dd.decisoes = dd.decisoes || {}; if (novo) dd.decisoes[k] = novo; else delete dd.decisoes[k]; }, 'Reels: ' + (desfazendo ? 'desfez ' : novo.status === 'aprovado' ? 'aprovou ' : 'pediu ajuste em ') + k + ' pelo app', { decisoes: {} });
       if (!nv) { showNote('Não guardou. Confere a internet.', true); return; }
       RM = nv; repinta(); rlMonta();
@@ -7582,9 +7583,20 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
       const sim = bt('pp-op rec', 'Mandar', () => { const n = ta.value.trim().replace(/\s+/g, ' '); if (!n) { ta.focus(); return; } ov.remove(); rlGrava(p, t, { status: 'ajuste', quando: edAgora(), nota: n }, repinta); });
       ops.style.marginTop = '16px'; ops.append(bt('pp-op', 'Agora não', () => ov.remove()), sim); card.append(elD('div', 'pp-perg', 'O que ajustar?'), ta, ops); ov.append(card); ov.onclick = e => { if (e.target === ov) ov.remove(); }; document.body.append(ov); ta.focus();
     };
+    const rlCopia = s => { const velho = () => { try { const ta = elD('textarea'); ta.value = s; ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px'; document.body.append(ta); ta.focus(); ta.select(); document.execCommand('copy'); ta.remove(); } catch (e) { showNote('Não copiou. Segura o dedo no texto pra selecionar.', true); } }; try { navigator.clipboard.writeText(s).catch(velho); } catch (e) { velho(); } showNote('Copiada'); };   // Safari do iPhone: writeText direto no toque, sem await antes
+    const rlEdita = (p, repinta) => {
+      const ov = elD('div', 'fixa-pop rl-pop'), card = elD('div', 'pp-card'), ops = elD('div', 'pp-ops'), ta = elD('textarea', 'rl-ta rl-ta-leg'); ov.style.setProperty('--c', '#E1306C'); ta.value = rlLegTx(p); ta.setAttribute('aria-label', 'Legenda');
+      const sim = bt('pp-op rec', 'Salvar', async () => {
+        const n = ta.value.trim(); if (!n) { ta.focus(); return; } ov.remove(); if (n === rlLegTx(p)) return;
+        const nv = await gravaJson(RM_ARQ, dd => { dd.legendas = dd.legendas || {}; dd.legendas[p.id] = { texto: n, quando: edAgora(), versao: p.legenda.versao || 1 }; }, 'Reels: editou a legenda de ' + p.id + ' pelo app', { decisoes: {} });
+        if (!nv) { showNote('Não guardou. Confere a internet.', true); return; }
+        RM = nv; repinta(); gravaLinha(GERAL.arq, '- [' + stamp(new Date()) + '] @' + (p.legenda.dono || 'Orfeu') + ' Legenda editada no Estúdio de Reels (' + p.titulo + '): ' + n.replace(/\s+/g, ' '));
+      });
+      ops.style.marginTop = '16px'; ops.append(bt('pp-op', 'Agora não', () => ov.remove()), sim); card.append(elD('div', 'pp-perg', 'Editar a legenda'), ta, ops); ov.append(card); ov.onclick = e => { if (e.target === ov) ov.remove(); }; document.body.append(ov); ta.focus();
+    };
     const rlLinha = (p, t, repinta) => {
-      const L = elD('section', 'rl-lin'), top = elD('div', 'rl-lin-top'), tx = elD('div'), d = rlDec(p, t), ver = (t || p.video).versao;
-      if (t) {
+      const L = elD('section', 'rl-lin'), top = elD('div', 'rl-lin-top'), tx = elD('div'), d = rlDec(p, t), ver = (t || p.video).versao, lg = t && t.id === 'legenda', ed = lg && ((RM && RM.legendas) || {})[p.id];
+      if (t && !lg) {
         const pl = bt('rl-play', '', async () => {
           const era = rlTocando && rlTocando.dono === pl; rlPara(); if (era) return;
           const au = new Audio(); au.dono = pl; rlTocando = au; pl.classList.add('on'); pl.innerHTML = svg('pausa'); au.onended = () => { if (rlTocando === au) rlPara(); };
@@ -7592,11 +7604,13 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
         });
         pl.innerHTML = svg('play'); pl.setAttribute('aria-label', 'Ouvir ' + t.nome); top.append(pl);
       }
-      tx.append(elD('b', '', t ? t.nome : 'Vídeo final'), elD('small', '', [ver ? 'Versão ' + ver : '', t && t.obs].filter(Boolean).join(' · '))); top.append(tx);
+      tx.append(elD('b', '', t ? t.nome : 'Vídeo final'), elD('small', '', [ver ? 'Versão ' + ver : '', t && t.obs, ed ? 'Editada por você' : ''].filter(Boolean).join(' · '))); top.append(tx);
       top.append(elD('span', 'rl-chip ' + (d ? d.status : 'novo'), d ? (d.status === 'aprovado' ? 'Aprovado ' : 'Ajuste ') + d.quando.slice(0, 5) : 'Pra ver')); L.append(top);
+      if (lg) L.append(elD('p', 'rl-leg', rlLegTx(p)));
       if (d && d.status === 'ajuste' && d.nota) L.append(elD('p', 'rl-pedido', '"' + d.nota + '"'));
       const ok = d && d.status === 'aprovado', ops = elD('div', 'rl-ops');
-      if (t) { const bx = bt('rl-bt rl-bx', 'Baixar', async () => { const t0 = bx.textContent; bx.textContent = 'Baixando...'; bx.disabled = true; try { const r = await api(apiDe(t.audio), { ...RAW, tempo: 120000 }); if (!r.ok) throw 0; const nome = t.audio.split('/').pop(), f = new File([await r.blob()], nome, { type: 'audio/mp4' }); if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], title: t.nome }); } catch (e) {} } else baixaArquivo(f, nome); } catch (e) { showNote('Não baixou: confere a internet.', true); } bx.textContent = t0; bx.disabled = false; }); bx.setAttribute('aria-label', 'Baixar ' + t.nome); ops.append(bx); }   // May 25/11 18:28: baixar a trilha no iPhone pra passar no Suno
+      if (lg) ops.append(bt('rl-bt', 'Copiar', () => rlCopia(rlLegTx(p))), bt('rl-bt', 'Editar', () => rlEdita(p, repinta)));
+      if (t && !lg) { const bx = bt('rl-bt rl-bx', 'Baixar', async () => { const t0 = bx.textContent; bx.textContent = 'Baixando...'; bx.disabled = true; try { const r = await api(apiDe(t.audio), { ...RAW, tempo: 120000 }); if (!r.ok) throw 0; const nome = t.audio.split('/').pop(), f = new File([await r.blob()], nome, { type: 'audio/mp4' }); if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], title: t.nome }); } catch (e) {} } else baixaArquivo(f, nome); } catch (e) { showNote('Não baixou: confere a internet.', true); } bx.textContent = t0; bx.disabled = false; }); bx.setAttribute('aria-label', 'Baixar ' + t.nome); ops.append(bx); }   // May 25/11 18:28: baixar a trilha no iPhone pra passar no Suno
       ops.append(bt('rl-bt' + (d && d.status === 'ajuste' ? ' on' : ''), 'Pedir ajuste', () => rlAjuste(p, t, repinta)), bt('rl-bt rec' + (ok ? ' on' : ''), ok ? 'Aprovado' : 'Aprovar', () => { if (!ok) rlGrava(p, t, { status: 'aprovado', quando: edAgora(), nota: '' }, repinta); }));
       L.append(ops); return L;
     };
@@ -7610,7 +7624,7 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
         const v = elD('video'), car = elD('small', 'rl-carga', 'Carregando o vídeo...'); v.playsInline = true; v.setAttribute('playsinline', ''); v.controls = true; v.preload = 'metadata'; v.onplay = rlPara; midia.append(car, v);
         (p.video.link ? Promise.resolve(p.video.link) : fotoUrl(p.video.arquivo, true)).then(u => { v.src = u; car.remove(); }).catch(() => { car.textContent = 'Não abriu o vídeo. Confere a internet.'; });
       } else { const s = elD('div', 'rl-sem'); s.innerHTML = svg('nota'); s.append(elD('b', '', 'O vídeo ainda não saiu'), elD('small', '', 'As trilhas já estão aqui embaixo pra ouvir.')); midia.append(s); }
-      const pintaInfo = () => { info.replaceChildren(); if (p.video) info.append(rlLinha(p, null, pintaInfo)); if ((p.trilhas || []).length) { info.append(elD('h4', 'rl-sec', 'Trilhas')); p.trilhas.forEach(t => info.append(rlLinha(p, t, pintaInfo))); } if (p.nota) info.append(elD('p', 'rl-nota', p.nota)); };
+      const pintaInfo = () => { info.replaceChildren(); if (p.video) info.append(rlLinha(p, null, pintaInfo)); if ((p.trilhas || []).length) { info.append(elD('h4', 'rl-sec', 'Trilhas')); p.trilhas.forEach(t => info.append(rlLinha(p, t, pintaInfo))); } if (p.legenda) info.append(elD('h4', 'rl-sec', 'Legenda'), rlLinha(p, rlLeg(p), pintaInfo)); if (p.nota) info.append(elD('p', 'rl-nota', p.nota)); };
       pintaInfo(); ov.append(topo, midia, info); document.body.append(ov);
     };
     const rlAbas = () => {

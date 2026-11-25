@@ -4244,4 +4244,6 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .rl-bx { grid-column: 1 / -1; }
 .rl-bt.rec { background: var(--c); border-color: var(--c); } .rl-bt.rec.on { background: #16A34A; border-color: #16A34A; } .rl-bt.on:not(.rec) { border-color: #F59E0B; color: #F59E0B; }
 .rl-nota { margin: 0; line-height: 1.4; opacity: .8; }
+.rl-leg { margin: 0; padding: 12px 14px; border-radius: 12px; background: rgba(255,255,255,.06); line-height: 1.45; white-space: pre-line; overflow-wrap: anywhere; user-select: text; -webkit-user-select: text; }
+.rl-ta-leg { min-height: 180px; }
 .rl-ta { display: block; width: 100%; min-height: 96px; margin-top: 12px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--paper); color: var(--fg); font: inherit; font-size: 16px; resize: none; box-sizing: border-box; }
