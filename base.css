@@ -4010,6 +4010,11 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .ed-campo .ed-chip{display:inline-flex !important;align-items:center;flex:0 0 auto !important;width:auto !important;height:auto !important;min-height:40px;margin:0 !important;padding:6px 14px !important;border:1px solid currentColor !important;border-radius:999px !important;background:transparent !important;color:inherit !important;font:inherit;font-size:14px;font-weight:700;opacity:.8;box-shadow:none !important}
 .ed-campo .ed-chip.on{opacity:1;background:var(--quem,#F0283A) !important;color:#fff !important;border-color:var(--quem,#F0283A) !important}
 .t-musica .tm-chip.mudo{color:var(--tm-mudo);font-weight:600}
+.t-musica .tm-cats{display:flex;gap:8px;margin:4px -16px 12px;padding:4px 16px;overflow-x:auto;scrollbar-width:none;scroll-padding:0 16px}.t-musica .tm-cats::-webkit-scrollbar{display:none}
+.t-musica .tm-cat{flex:0 0 auto;width:auto;min-width:0;display:inline-flex;align-items:center;gap:6px;height:44px;min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--tm-linha);background:transparent;color:var(--tm-texto);font:inherit;font-size:13px;font-weight:700;white-space:nowrap;cursor:pointer;box-shadow:none}
+.t-musica .tm-cat i{font-style:normal;font-size:11px;font-weight:800;color:var(--tm-mudo)}
+.t-musica .tm-cat.on{background:var(--tm-cor);border-color:var(--tm-cor);color:#fff}.t-musica .tm-cat.on i{color:#fff}
+.t-musica .tm-ap-onde{display:block;margin-top:2px;color:var(--tm-ama);font-size:12px;font-weight:700}
 .t-musica .tm-det-bl{padding:8px 0;border-top:1px solid rgba(255,255,255,.07)}
 .t-musica .tm-det-bl small{display:block;font-size:12px;color:var(--tm-mudo)}
 .t-musica .tm-det-bl p{margin:4px 0 0;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
