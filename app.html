@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.653">
+<meta name="app-versao" content="2026-11-25.654">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.653"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.654"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2043,6 +2043,9 @@ let pararAoIniciar = false;
 let micStream = null, micSolta = null;
 const sessaoAudio = t => { try { if (navigator.audioSession) navigator.audioSession.type = t; } catch (e) {} };   // 'ambient' respeita o volume zero mas NÃO grava no iOS: pra gravar vira 'play-and-record' e volta pra 'ambient' ao soltar o microfone
 function soltaMicStream() { clearTimeout(micSolta); if (micStream) micStream.getTracks().forEach(t => t.stop()); micStream = null; sessaoAudio('ambient'); }
+const midiaTocando = new Set(), midiaVolta = () => { midiaTocando.forEach(x => { if (x.paused || x.ended) midiaTocando.delete(x); }); if (!midiaTocando.size && !micStream) sessaoAudio('ambient'); };   // Hermes 25/11 17:57: 'ambient' segue a chave de silencioso e o vídeo tocava mudo; vídeo e áudio que ela manda tocar vão em 'playback' e voltam pra 'ambient' quando param
+const midiaMarca = x => { if (x.muted || micStream || midiaTocando.has(x)) return; midiaTocando.add(x); sessaoAudio('playback'); x.addEventListener('pause', midiaVolta); x.addEventListener('ended', midiaVolta); };
+{ const tocaOrig = HTMLMediaElement.prototype.play; HTMLMediaElement.prototype.play = function () { midiaMarca(this); const r = tocaOrig.apply(this, arguments); if (r && r.catch) r.catch(midiaVolta); return r; }; document.addEventListener('play', e => { if (e.target instanceof HTMLMediaElement) midiaMarca(e.target); }, true); }   // play() do código e o play dos controles do próprio vídeo
 async function pegaMic() {
   clearTimeout(micSolta);
   if (micStream && micStream.getAudioTracks().some(t => t.readyState === 'live')) return micStream;
