@@ -1,4 +1,4 @@
-// v684 #510 seria-bom do Sigma: pilula da versao mais enxuta, mais respiro ate o Novo
+// v685 Estudio de criacao: + Novo projeto centralizado, 32 px dos dois lados
 // v682 #495 VOLTA do Sigma: 1 bloco por frase (bolinha, tomada, tempo); sem o microfone do player no Estudio
 // v681 #495 Estudio, aba Narracoes: narracao final no topo, texto pintado pela cor da tomada de onde veio cada frase
 // v680 #436 Geral: resposta com data propria vai pela hora dela; trava abaixo do pai so pra resposta sem data

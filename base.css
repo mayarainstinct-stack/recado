@@ -4249,7 +4249,7 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .rl-v > * { grid-area: 1 / 1; } .rl-v > .rl-vtampa { z-index: 1; }
 .rl-sem { display: grid; justify-items: center; gap: 8px; padding: 16px; text-align: center; } .rl-sem svg { width: 44px; height: 44px; color: var(--c); } .rl-sem small { opacity: .7; }
 /* #492 (May 25/11 23:59): projeto novo sem vídeo */
-.rl-novo { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 4px 16px 14px; width: calc(100% - 32px); } .rl-novo svg { width: 20px; height: 20px; flex: none; }
+.rl-bt.rl-novo { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 4px 0 14px; width: auto; } .rl-novo svg { width: 20px; height: 20px; flex: none; }
 .rl-ta.rl-nome-in { width: 100%; min-height: 48px; height: 48px; box-sizing: border-box; } .rl-novo-msg { display: block; min-height: 18px; margin-top: 6px; color: #F87171; font-size: 13px; }
 .rl-ver-info .rl-apaga { justify-self: center; width: auto; height: 44px; min-height: 44px; flex: none; white-space: nowrap; box-shadow: none; margin-top: 6px; padding: 0 16px; border: 1px solid rgba(255,255,255,.16); border-radius: 999px; background: rgba(255,255,255,.06); color: rgba(255,255,255,.6); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; } .rl-ver-info .rl-apaga.confirma { border-color: #F87171; color: #F87171; background: rgba(248,113,113,.12); }
 .rl-nar-semv { display: grid; place-items: center; gap: 12px; padding: 40px 24px; border-radius: 16px; border: 1px dashed rgba(255,255,255,.2); color: rgba(255,255,255,.7); text-align: center; } .rl-nar-semv svg { width: 56px; height: 56px; color: var(--c); }
