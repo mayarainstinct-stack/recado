@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-26.677">
+<meta name="app-versao" content="2026-11-26.678">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -7458,12 +7458,12 @@ async function dbxApi(rota, corpo, conteudo, arg) {
 function dbxVolta() {   // voltou do login do Dropbox (?code=...&state=dbx): troca pela chave, limpa a URL e abre a tela
   const q = new URLSearchParams(location.search); if (q.get('state') !== 'dbx') return false; const code = q.get('code');
   ['code', 'state', 'error', 'error_description'].forEach(k => q.delete(k)); history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : ''));
-  if (code) Promise.all([dbxTroca(code, true), new Promise(r => setTimeout(r, 1500))]).then(() => { if (painel.hidden && !abreMenu.hidden) abreMenu.click(); setTimeout(() => { store.set('rl-aba', 'enviar'); abreDropbox({ nome: 'Estúdio de Reels' }); }, 350); }).catch(() => showNote('Não entrou no Dropbox. Tenta de novo.', true)); return true;   // espera o app abrir a conversa e abre o Menu > Dropbox por cima
+  if (code) Promise.all([dbxTroca(code, true), new Promise(r => setTimeout(r, 1500))]).then(() => { if (painel.hidden && !abreMenu.hidden) abreMenu.click(); setTimeout(() => { store.set('rl-aba', 'enviar'); abreDropbox({}); }, 350); }).catch(() => showNote('Não entrou no Dropbox. Tenta de novo.', true)); return true;   // espera o app abrir a conversa e abre o Menu > Dropbox por cima
 }
 let dbxEnvio = null, dbxUi = { envio() {}, pinta() {}, feito() {} };
 function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio de Reels, cara de perfil do Instagram; ela vê e aprova o vídeo final e as trilhas de cada projeto; aba Enviar = o envio do Dropbox (#480)
   tela(m.nome || 'Estúdio de criação', async c => {
-    c.classList.add('t-dbx', 't-reels'); painel.style.setProperty('--c', '#E1306C'); cabecalho({ icone: 'dropbox', sub: m.sub || 'Manda o bruto, vê e aprova o vídeo pronto' }); const abas = elD('div', 'rl-abas'), grade = elD('div', 'rl'), raiz = elD('div', 'dbx'); abas.setAttribute('role', 'tablist'); c.append(abas, grade, raiz); let pasta = store.get('dbx-pasta') || DBX_RAIZ, esp = null, dbxFoi = false;
+    c.classList.add('t-dbx', 't-reels'); painel.style.setProperty('--c', '#E1306C'); cabecalho({ icone: 'dropbox', sub: m.sub || 'Manda o bruto e aprova o vídeo' }); const abas = elD('div', 'rl-abas'), grade = elD('div', 'rl'), raiz = elD('div', 'dbx'); abas.setAttribute('role', 'tablist'); c.append(abas, grade, raiz); let pasta = store.get('dbx-pasta') || DBX_RAIZ, esp = null, dbxFoi = false;
     const bt = (cls, tx, fn) => { const b = elD('button', cls, tx); b.type = 'button'; b.onclick = fn; return b; };
     const ICO = { pasta: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>', arq: '<path d="M7 3h7l5 5v13H7zM14 3v5h5"/>', video: '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/>', foto: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 8"/>', sobe: '<path d="M12 16V4M7 9l5-5 5 5M5 20h14"/>', story: '<circle cx="12" cy="12" r="8.5" stroke-dasharray="4.2 2.4"/><circle cx="12" cy="12" r="3.5"/>', recurso: '<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 12.5l9 5 9-5"/><path d="M3 16.5l9 5 9-5"/>', grade: '<rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/>', play: '<path d="M8 5.2v13.6L19 12z"/>', pausa: '<path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/>', nota: '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>', ok: '<path d="M5 12.5l4.5 4.5L19 7.5"/>', ajuste: '<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>' };
     const svg = k => '<svg viewBox="0 0 24 24" aria-hidden="true">' + ICO[k] + '</svg>';
@@ -7579,7 +7579,7 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
         const nv = await gravaJson(RM_ARQ, dd => { dd.projetos = dd.projetos || []; if (!dd.projetos.some(x => x.id === id)) dd.projetos.push({ id, titulo: nome, data: hoje, criado: edAgora(), ...(RL_TIPO[rlAbaAt()] !== 'reel' ? { tipo: RL_TIPO[rlAbaAt()] } : {}) }); }, 'Reels: projeto novo ' + id + ' pelo app', { decisoes: {} });
         if (!nv) { sim.disabled = false; sim.textContent = 'Criar'; showNote('Não guardou. Confere a internet.', true); return; }
         RM = nv; ov.remove(); rlMonta();
-        gravaLinha(GERAL.arq, '- [' + stamp(new Date()) + '] @Hermes Projeto novo no Estúdio de Reels: "' + nome + '" (id ' + id + '), ainda sem vídeo. Quando tiver o vídeo, cria no reels.json com esse MESMO id que o app junta os dois.');
+        gravaLinha(GERAL.arq, '- [' + stamp(new Date()) + '] @Hermes Projeto novo no Estúdio de criação: "' + nome + '" (id ' + id + '), ainda sem vídeo. Quando tiver o vídeo, cria no reels.json com esse MESMO id que o app junta os dois.');
         const pn = rlProjetos().find(x => x.id === id); if (pn) rlAbre(pn);
       });
       inp.onkeydown = e => { if (e.key === 'Enter') sim.click(); }; inp.oninput = () => { msg.textContent = ''; };
@@ -7616,7 +7616,7 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
       const nv = await gravaJson(RM_ARQ, dd => { dd.decisoes = dd.decisoes || {}; if (novo) dd.decisoes[k] = novo; else delete dd.decisoes[k]; }, 'Reels: ' + (desfazendo ? 'desfez ' : novo.status === 'aprovado' ? 'aprovou ' : 'pediu ajuste em ') + k + ' pelo app', { decisoes: {} });
       if (!nv) { showNote('Não guardou. Confere a internet.', true); return; }
       RM = nv; repinta(); rlMonta();
-      const lin = desfazendo ? ' Desfeito no Estúdio de Reels: ' + nome + ' (vale o de antes, ignora a linha anterior).' : novo.status === 'aprovado' ? ' Aprovado no Estúdio de Reels: ' + nome + '.' : ' Ajuste pedido no Estúdio de Reels, ' + nome + ': ' + novo.nota;
+      const lin = desfazendo ? ' Desfeito no Estúdio de criação: ' + nome + ' (vale o de antes, ignora a linha anterior).' : novo.status === 'aprovado' ? ' Aprovado no Estúdio de criação: ' + nome + '.' : ' Ajuste pedido no Estúdio de criação, ' + nome + ': ' + novo.nota;
       gravaLinha(GERAL.arq, '- [' + stamp(new Date()) + '] @' + dono + lin);
       if (!desfazendo) edFaixaDesfazer(novo.status === 'aprovado' ? 'Aprovado' : 'Ajuste pedido', () => rlGrava(p, t, ant, repinta, true));
     };
@@ -7632,7 +7632,7 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
         const n = ta.value.trim(); if (!n) { ta.focus(); return; } ov.remove(); if (n === rlLegTx(p)) return;
         const nv = await gravaJson(RM_ARQ, dd => { dd.legendas = dd.legendas || {}; dd.legendas[p.id] = { texto: n, quando: edAgora(), versao: p.legenda.versao || 1 }; }, 'Reels: editou a legenda de ' + p.id + ' pelo app', { decisoes: {} });
         if (!nv) { showNote('Não guardou. Confere a internet.', true); return; }
-        RM = nv; repinta(); gravaLinha(GERAL.arq, '- [' + stamp(new Date()) + '] @' + (p.legenda.dono || 'Orfeu') + ' Legenda editada no Estúdio de Reels (' + p.titulo + '): ' + n.replace(/\s+/g, ' '));
+        RM = nv; repinta(); gravaLinha(GERAL.arq, '- [' + stamp(new Date()) + '] @' + (p.legenda.dono || 'Orfeu') + ' Legenda editada no Estúdio de criação (' + p.titulo + '): ' + n.replace(/\s+/g, ' '));
       });
       ops.style.marginTop = '16px'; ops.append(bt('pp-op', 'Agora não', () => ov.remove()), sim); card.append(elD('div', 'pp-perg', 'Editar a legenda'), ta, ops); ov.append(card); ov.onclick = e => { if (e.target === ov) ov.remove(); }; document.body.append(ov); ta.focus();
     };
@@ -7735,7 +7735,7 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
         const nv = await gravaJson(RM_ARQ, dd => { dd.narracoes = dd.narracoes || {}; const l = dd.narracoes[p.id] = dd.narracoes[p.id] || []; feitas.forEach((tm, i) => l.push({ arquivo: tm.nome, quando: edAgora(), video: ver, inicio: 0, duracao: Math.round(tm.dur * 10) / 10, tomada: i + 1, de: feitas.length, grupo })); }, 'Reels: narração de ' + p.id + ' pelo app', { decisoes: {} });
         if (nv) RM = nv;
         const ds = feitas.map((tm, i) => 'tomada ' + (i + 1) + ' = ' + tm.dur.toFixed(1).replace('.', ',') + ' s').join(', ');
-        await gravaLinha(GERAL.arq, '- [' + stamp(new Date()) + '] @Hermes Narração do Estúdio de Reels: ' + p.titulo + ', ' + (feitas.length === 1 ? '1 tomada' : feitas.length + ' tomadas inteiras') + ' (' + (ver ? 'vídeo versão ' + ver + ', todas começam no 0 s do vídeo' : 'ainda sem vídeo, gravada só a voz') + '; ' + ds + '). Os áudios são os 🎤 de cima, na ordem. Escolhe as melhores partes, corta as pausas e encaixa.');
+        await gravaLinha(GERAL.arq, '- [' + stamp(new Date()) + '] @Hermes Narração do Estúdio de criação: ' + p.titulo + ', ' + (feitas.length === 1 ? '1 tomada' : feitas.length + ' tomadas inteiras') + ' (' + (ver ? 'vídeo versão ' + ver + ', todas começam no 0 s do vídeo' : 'ainda sem vídeo, gravada só a voz') + '; ' + ds + '). Os áudios são os 🎤 de cima, na ordem. Escolhe as melhores partes, corta as pausas e encaixa.');
         avisoCurto('Mandado pro Hermes'); fecha(); repinta();
       };
       baixo.append(est, tomadasEl, fone, ops); ov.append(topo, midia, baixo); document.body.append(ov);

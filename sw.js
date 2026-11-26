@@ -1,3 +1,4 @@
+// v678 #498 seria-bom: linhas da Geral e volta do Dropbox dizem Estudio de criacao
 // v677 #498 Estudio: abas Reels, Stories e Recursos (tipo no reels.json), grade com respiro
 // v676 #498 Estudio de criacao (nome vem do menu.json)
 // v675 #492 cartao do projeto sem video: rotulo cabe (sem icone)
