@@ -1,3 +1,4 @@
+// v661 #482 Estudio de Reels: video na esquerda e thumbnail na direita (toca pra salvar)
 // v660 #482 Estudio de Reels: so a trilha mais nova a mostra, as outras no Historico (N) fechado
 // v659 #482 Estudio de Reels: em cima sem rolar o video, Salvar video em HD e a legenda c/ Copiar
 // v658 #484 Estudio de Reels: secao Legenda (Copiar, Editar, Aprovar) em cada projeto
