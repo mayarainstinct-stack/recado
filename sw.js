@@ -1,3 +1,4 @@
+// v686 Estudio de criacao: icone de claqueta no lugar da caixa do Dropbox (May 26/11)
 // v685 Estudio de criacao: + Novo projeto centralizado, 32 px dos dois lados
 // v682 #495 VOLTA do Sigma: 1 bloco por frase (bolinha, tomada, tempo); sem o microfone do player no Estudio
 // v681 #495 Estudio, aba Narracoes: narracao final no topo, texto pintado pela cor da tomada de onde veio cada frase

@@ -99,7 +99,7 @@
 <script>
 // ---- Icones da interface (May, 05/11/2026: "interface so com SVG, emoji so na mensagem"). Traco, 24x24, herdam a cor do texto.
 const ICONES_SVG = {
-  dropbox: '<path d="M3 8l9-4 9 4-9 4z"/><path d="M3 8v8l9 4 9-4V8"/><path d="M12 12v8"/>',
+  dropbox: '<rect x="3" y="9.5" width="18" height="11" rx="2"/><path d="M3.4 9.5l-.6-3.2 16.5-3 .6 3.2z"/><path d="M7.5 5.4l2.2 3.4M12.4 4.5l2.2 3.4"/><path d="M10.5 12.6v5l4.2-2.5z"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   msg: '<path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.3A8 8 0 1 1 21 12z"/>',
@@ -2901,7 +2901,7 @@ function iconeMenu(nome) { const a = ICONES_MENU.find(([re]) => re.test(nome)); 
 const BOTAO_DE = [[/dropbox/i, 'dropbox'], [/carteirinha/i, 'carteirinha'], [/projetinho/i, 'projetinhos'], [/jogo/i, 'jogos'], [/m[aá]quina|console/i, 'maquinas'], [/pend[eê]ncia|finan[cç]/i, 'pendencias'], [/garag/i, 'garagem'], [/sa[uú]de|cirurgia/i, 'saude'], [/treino|academia/i, 'treino'], [/casa/i, 'casa'],
   [/obra|piscina/i, 'obra'], [/m[ií]dia|imagen|v[ií]deo|anima/i, 'midia'], [/lista/i, 'listas'], [/ideia|tarefa/i, 'ideias'], [/conta|comida/i, 'contas'], [/agenda/i, 'agenda'], [/m[uú]sica/i, 'musica'], [/^artes/i, 'artes'], [/^planos/i, 'planos']];
 const ICONE_LIMPO = {
-  dropbox: '<path d="M3 8l9-4 9 4-9 4z"/><path d="M3 8v8l9 4 9-4V8"/><path d="M12 12v8"/>',
+  dropbox: '<rect x="3" y="9.5" width="18" height="11" rx="2"/><path d="M3.4 9.5l-.6-3.2 16.5-3 .6 3.2z"/><path d="M7.5 5.4l2.2 3.4M12.4 4.5l2.2 3.4"/><path d="M10.5 12.6v5l4.2-2.5z"/>',
   carteirinha: '<rect x="2.5" y="5.5" width="19" height="13" rx="2.2"/><path d="M2.5 9.5h19"/><circle cx="7.5" cy="14" r="1.6"/><path d="M11 13h7M11 15.5h5"/>',   // #437: cartão do plano (atalho que abre a carteirinha direto)
   projetinhos: '<path d="M3 7.5a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 10.2l1 2 2.2.3-1.6 1.5.4 2.2-2-1.1-2 1.1.4-2.2-1.6-1.5 2.2-.3z" fill="#F6C21C" stroke="#F6C21C"/>',   // Projetinhos: pasta com estrela (May 16/11 13:3x)
   musica: '<path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>', artes: '<path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-.9 2-1.8 0-1.4-1.2-1.6-1.2-2.8 0-.9.7-1.4 1.6-1.4H17a4 4 0 0 0 4-4C21 6.8 17 3 12 3z"/><circle cx="7.5" cy="11" r=".9"/><circle cx="10" cy="7.2" r=".9"/><circle cx="14.5" cy="7.2" r=".9"/>', planos: '<path d="M5 21V4"/><path d="M5 4h12l-2.5 4L17 12H5"/>',   // desenho de linha limpo, traço igual em todos (May 15:33: "tá parecendo uma criança desenhando, tem que ser mais profissional")
