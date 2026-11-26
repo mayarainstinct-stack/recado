@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.672">
+<meta name="app-versao" content="2026-11-26.677">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1115,7 +1115,18 @@ async function abreModelo(path) {
     st.classList.add('erro');
   }
 }
+let renderAdiado = null, renderArq = null;
 function render(items, manterPosicao) {
+  // May 26/11 00:02 (#491): no iPhone, tirar o vídeo da página e pôr de volta pausa e sai da tela cheia; vídeo tocando ou em tela cheia = o redesenho ESPERA
+  // (a mensagem nova aparece quando ela pausa, termina ou sai da tela cheia); o vídeo nunca é mexido enquanto ela assiste
+  const vendo = [...feed.querySelectorAll('.video-caixa video')].find(v => (!v.paused && !v.ended) || v.webkitDisplayingFullscreen || document.fullscreenElement === v || (document.pictureInPictureElement === v));
+  if (vendo && FILE === renderArq) {   // trocou de conversa: desenha na hora
+    renderAdiado = items;
+    if (!vendo._adia) { vendo._adia = true; const solta = () => { if ((!vendo.paused && !vendo.ended) || vendo.webkitDisplayingFullscreen || document.fullscreenElement === vendo) return; ['pause', 'ended', 'webkitendfullscreen', 'fullscreenchange'].forEach(ev => vendo.removeEventListener(ev, solta)); document.removeEventListener('fullscreenchange', solta); vendo._adia = false; if (renderAdiado) { const it = renderAdiado; renderAdiado = null; render(it, true); } };
+      ['pause', 'ended', 'webkitendfullscreen'].forEach(ev => vendo.addEventListener(ev, solta)); document.addEventListener('fullscreenchange', solta); }
+    return;
+  }
+  renderAdiado = null; renderArq = FILE;
   renderizando = true; setTimeout(() => { renderizando = false; }, 100);
   // áudio tocando (ou baixando depois do toque) passa inteiro pro balão novo: tirar e pôr de volta na mesma tarefa não pausa.
   // Vale pra todo redesenho (poll, excluir, envio, antigas), não só o do poll.
@@ -7451,10 +7462,10 @@ function dbxVolta() {   // voltou do login do Dropbox (?code=...&state=dbx): tro
 }
 let dbxEnvio = null, dbxUi = { envio() {}, pinta() {}, feito() {} };
 function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio de Reels, cara de perfil do Instagram; ela vê e aprova o vídeo final e as trilhas de cada projeto; aba Enviar = o envio do Dropbox (#480)
-  tela(m.nome || 'Estúdio de Reels', async c => {
+  tela(m.nome || 'Estúdio de criação', async c => {
     c.classList.add('t-dbx', 't-reels'); painel.style.setProperty('--c', '#E1306C'); cabecalho({ icone: 'dropbox', sub: m.sub || 'Manda o bruto, vê e aprova o vídeo pronto' }); const abas = elD('div', 'rl-abas'), grade = elD('div', 'rl'), raiz = elD('div', 'dbx'); abas.setAttribute('role', 'tablist'); c.append(abas, grade, raiz); let pasta = store.get('dbx-pasta') || DBX_RAIZ, esp = null, dbxFoi = false;
     const bt = (cls, tx, fn) => { const b = elD('button', cls, tx); b.type = 'button'; b.onclick = fn; return b; };
-    const ICO = { pasta: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>', arq: '<path d="M7 3h7l5 5v13H7zM14 3v5h5"/>', video: '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/>', foto: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 8"/>', sobe: '<path d="M12 16V4M7 9l5-5 5 5M5 20h14"/>', grade: '<rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/>', play: '<path d="M8 5.2v13.6L19 12z"/>', pausa: '<path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/>', nota: '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>', ok: '<path d="M5 12.5l4.5 4.5L19 7.5"/>', ajuste: '<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>' };
+    const ICO = { pasta: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>', arq: '<path d="M7 3h7l5 5v13H7zM14 3v5h5"/>', video: '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/>', foto: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 8"/>', sobe: '<path d="M12 16V4M7 9l5-5 5 5M5 20h14"/>', story: '<circle cx="12" cy="12" r="8.5" stroke-dasharray="4.2 2.4"/><circle cx="12" cy="12" r="3.5"/>', recurso: '<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 12.5l9 5 9-5"/><path d="M3 16.5l9 5 9-5"/>', grade: '<rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/>', play: '<path d="M8 5.2v13.6L19 12z"/>', pausa: '<path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/>', nota: '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>', ok: '<path d="M5 12.5l4.5 4.5L19 7.5"/>', ajuste: '<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>' };
     const svg = k => '<svg viewBox="0 0 24 24" aria-hidden="true">' + ICO[k] + '</svg>';
     const nomeDe = p => p ? p.split('/').pop() : 'Dropbox';
     const pinta = async () => {
@@ -7546,24 +7557,50 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
     const rlChave = (p, t) => p.id + '/' + (t ? t.id : 'video') + '@' + ((t || p.video || {}).versao || 1);   // versão nova = chave nova: volta pra "Pra ver"
     const rlDec = (p, t) => ((RM && RM.decisoes) || {})[rlChave(p, t)] || null;
     const rlLeg = p => ({ ...p.legenda, id: 'legenda', nome: 'Legenda' }), rlLegTx = p => (((RM && RM.legendas) || {})[p.id] || {}).texto || p.legenda.texto;   // #484: a edição dela fica no reels-may.json e vale por cima
-    const rlItens = p => (p.video ? [[p, null]] : []).concat((p.trilhas || []).map(t => [p, t]), p.legenda ? [[p, rlLeg(p)]] : []);
+    const rlItens = p => (p.video ? [[p, null]] : []).concat((p.trilhas || []).map(t => [p, t]), p.legenda && !p._dela ? [[p, rlLeg(p)]] : []);
     const dn = s => String(s || '').split(' ')[0].split('/').reverse().join('');
     const rlVideos = window.rlVideos || (window.rlVideos = {});
     const rlPara = () => { if (rlTocando) { rlTocando.pause(); rlTocando = null; } document.querySelectorAll('.rl-play.on').forEach(x => { x.classList.remove('on'); x.innerHTML = svg('play'); }); };
+    const rlProjetos = () => {   // #492: os do reels.json (Hermes/Orfeu) + os que ela cria no app (reels-may.json); mesmo id = vale o do reels.json, nada duplica
+      const base = (RL && RL.projetos) || [], ids = new Set(base.map(x => x.id)), leg = (RM && RM.legendas) || {};
+      return base.map(x => x.legenda || !leg[x.id] ? x : { ...x, legenda: { texto: leg[x.id].texto, versao: 1, dono: (x.video && x.video.dono) || 'Hermes' } }).concat(((RM && RM.projetos) || []).filter(x => !ids.has(x.id)).map(x => ({ ...x, _dela: true, legenda: leg[x.id] ? { texto: leg[x.id].texto, versao: 1, dono: 'Hermes' } : null })));
+    };
+    const rlNovo = () => {   // #492: só o nome; vazio ou repetido não cria (Sigma 00:06)
+      const ov = elD('div', 'fixa-pop rl-pop'), card = elD('div', 'pp-card'), ops = elD('div', 'pp-ops'), inp = elD('input', 'rl-ta rl-nome-in'), msg = elD('small', 'rl-novo-msg');
+      ov.style.setProperty('--c', '#E1306C'); inp.type = 'text'; inp.maxLength = 60; inp.placeholder = 'Ex.: Zelda no Switch 2'; inp.setAttribute('aria-label', 'Nome do projeto');
+      const chave = t => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      const sim = bt('pp-op rec', 'Criar', async () => {
+        const n = inp.value.trim().replace(/\s+/g, ' '); if (!n) { msg.textContent = 'Escreve o nome do projeto.'; inp.focus(); return; }
+        const nome = n.charAt(0).toLocaleUpperCase('pt-BR') + n.slice(1), todos = rlProjetos();
+        if (todos.some(x => !x.apagado && chave(x.titulo) === chave(nome))) { msg.textContent = 'Já tem um projeto com esse nome.'; inp.focus(); return; }
+        let id = chave(nome) || 'projeto', k = 2; while (todos.some(x => x.id === id)) id = (chave(nome) || 'projeto') + '-' + k++;
+        sim.disabled = true; sim.textContent = 'Criando...';
+        const d = new Date(), hoje = pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear();
+        const nv = await gravaJson(RM_ARQ, dd => { dd.projetos = dd.projetos || []; if (!dd.projetos.some(x => x.id === id)) dd.projetos.push({ id, titulo: nome, data: hoje, criado: edAgora(), ...(RL_TIPO[rlAbaAt()] !== 'reel' ? { tipo: RL_TIPO[rlAbaAt()] } : {}) }); }, 'Reels: projeto novo ' + id + ' pelo app', { decisoes: {} });
+        if (!nv) { sim.disabled = false; sim.textContent = 'Criar'; showNote('Não guardou. Confere a internet.', true); return; }
+        RM = nv; ov.remove(); rlMonta();
+        gravaLinha(GERAL.arq, '- [' + stamp(new Date()) + '] @Hermes Projeto novo no Estúdio de Reels: "' + nome + '" (id ' + id + '), ainda sem vídeo. Quando tiver o vídeo, cria no reels.json com esse MESMO id que o app junta os dois.');
+        const pn = rlProjetos().find(x => x.id === id); if (pn) rlAbre(pn);
+      });
+      inp.onkeydown = e => { if (e.key === 'Enter') sim.click(); }; inp.oninput = () => { msg.textContent = ''; };
+      ops.style.marginTop = '16px'; ops.append(bt('pp-op', 'Agora não', () => ov.remove()), sim); card.append(elD('div', 'pp-perg', 'Projeto novo'), inp, msg, ops); ov.append(card); ov.onclick = e => { if (e.target === ov) ov.remove(); }; document.body.append(ov); inp.focus();
+    };
+    const RL_TIPO = { reels: 'reel', stories: 'story', recursos: 'recurso' }, RL_TX = { reels: ['Reels', 'Vídeo final e trilhas de cada projeto. Toca pra ver e aprovar.', 'Nenhum Reel ainda. Toca em Novo projeto pra começar a narração e a legenda antes do vídeo.'], stories: ['Stories', 'Story pronto pra postar e repostar. Toca pra ver e aprovar.', 'Nenhum story ainda.'], recursos: ['Recursos', 'Vinheta, logo e loop pra usar dentro dos vídeos.', 'Nenhum recurso ainda.'] };   // #498 (May 01:35-01:36): abas Reels, Stories e Recursos; o "tipo" do projeto no reels.json diz a aba (sem tipo = reel)
+    const rlAbaAt = () => { const a = store.get('rl-aba'); return a === 'prontos' ? 'reels' : RL_TIPO[a] || a === 'enviar' ? a : 'reels'; };
     const rlMonta = () => {
-      const P = (RL.projetos || []).filter(p => !p.apagado).sort((a, b) => dn(b.data).localeCompare(dn(a.data))), tudo = P.flatMap(rlItens);
+      const ab = rlAbaAt(), tp = RL_TIPO[ab] || 'reel', P = rlProjetos().filter(p => !p.apagado && (p.tipo || 'reel') === tp).sort((a, b) => dn(b.data).localeCompare(dn(a.data))), tudo = P.flatMap(rlItens);
       const per = elD('div', 'rl-perfil'), av = elD('div', 'rl-av'), im = elD('img'), st = elD('div', 'rl-nums'); im.alt = ''; av.append(im); fotoUrl('recados-fotos/avatar-may-192.png').then(u => { im.src = u; }).catch(() => {});
       const num = (n, t) => { const d = elD('div'); d.append(elD('b', '', String(n)), elD('small', '', t)); st.append(d); };
       num(P.length, P.length === 1 ? 'Projeto' : 'Projetos'); num(tudo.filter(([p, t]) => (rlDec(p, t) || {}).status === 'aprovado').length, 'Aprovados'); num(tudo.filter(([p, t]) => !rlDec(p, t)).length, 'Pra ver');
-      const nm = elD('div', 'rl-nome'); nm.append(elD('b', '', 'Estúdio de Reels'), elD('small', '', 'Vídeo final e trilhas de cada projeto. Toca pra ver e aprovar.')); per.append(av, st); grade.replaceChildren(per, nm);
-      if (!P.length) { grade.append(elD('p', 'dbx-vazio', 'Nenhum vídeo pronto ainda. O Hermes publica a versão final aqui.')); return; }
+      const nm = elD('div', 'rl-nome'); nm.append(elD('b', '', m.nome || 'Estúdio de criação'), elD('small', '', RL_TX[ab][1])); per.append(av, st); const novoBt = bt('rl-bt rl-novo', '', rlNovo); novoBt.innerHTML = icone('plus'); novoBt.append(elD('span', '', 'Novo projeto')); grade.replaceChildren(per, nm, novoBt);
+      if (!P.length) { grade.append(elD('p', 'dbx-vazio', RL_TX[ab][2])); return; }
       const g = elD('div', 'rl-grade'); grade.append(g);
       P.forEach(p => {
         const ds = rlItens(p).map(([q, t]) => rlDec(q, t)), sl = !ds.length ? '' : ds.some(d => d && d.status === 'ajuste') ? 'ajuste' : ds.every(d => d && d.status === 'aprovado') ? 'aprovado' : 'novo', nT = (p.trilhas || []).length;
         const b = bt('rl-cel', '', () => rlAbre(p)), cap = elD('div', 'rl-cap'), pe = elD('div', 'rl-cel-pe');
         b.setAttribute('aria-label', p.titulo + (sl === 'aprovado' ? ', aprovado' : sl === 'ajuste' ? ', ajuste pedido' : sl === 'novo' ? ', pra ver' : ''));
         if (p.capa) { const ci = elD('img'); ci.alt = ''; fotoUrl(p.capa).then(u => { ci.src = u; }).catch(() => {}); cap.append(ci); } else cap.append(elD('b', 'rl-cap-tit', p.titulo));
-        pe.innerHTML = svg(p.video ? 'play' : 'nota'); pe.append(elD('span', '', p.capa ? p.titulo : p.video ? 'Vídeo' : nT + (nT === 1 ? ' trilha' : ' trilhas'))); b.append(cap, pe);
+        pe.innerHTML = !p.video && !nT && !p.capa ? '' : svg(p.video ? 'play' : 'nota'); pe.append(elD('span', '', p.capa ? p.titulo : p.video ? 'Vídeo' : !nT ? 'Sem vídeo' : nT + (nT === 1 ? ' trilha' : ' trilhas'))); b.append(cap, pe);   // #492: projeto sem vídeo e sem trilha vai sem ícone, pro "Sem vídeo" caber no cartão
         if (sl) { const s = elD('span', 'rl-selo ' + sl); if (sl === 'novo') s.textContent = 'Novo'; else s.innerHTML = svg(sl === 'aprovado' ? 'ok' : 'ajuste'); b.append(s); }
         g.append(b);
       });
@@ -7644,7 +7681,7 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
       const ov = elD('div', 'rl-ver rl-nar'), topo = elD('div', 'rl-ver-topo'), tt = elD('div'), xb = elD('button', 'pp-x rl-x'), midia = elD('div', 'rl-ver-midia'), cx = elD('div', 'rl-nar-v'), v = elD('video'), conta = elD('b', 'rl-nar-conta'), baixo = elD('div', 'rl-nar-baixo'), est = elD('p', 'rl-nar-est', 'Baixando o vídeo...'), fone = elD('label', 'rl-nar-fone'), ck = elD('input'), ops = elD('div', 'rl-nar-ops');
       ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', 'Narração de ' + p.titulo); ov.style.setProperty('--c', '#E1306C'); xb.type = 'button'; xb.innerHTML = icone('close'); xb.setAttribute('aria-label', 'Fechar');
       tt.append(elD('b', '', 'Narração'), elD('small', '', p.titulo)); topo.append(tt, xb);
-      v.playsInline = true; v.setAttribute('playsinline', ''); v.muted = true; v.preload = 'auto'; cx.append(v, conta); midia.append(cx);
+      v.playsInline = true; v.setAttribute('playsinline', ''); v.muted = true; v.preload = 'auto'; if (p.video) cx.append(v, conta); else { const mi = elD('div', 'rl-nar-semv'); mi.innerHTML = icone('mic'); mi.append(elD('small', '', 'Ainda sem vídeo: grava só a tua voz')); cx.append(mi, conta); } midia.append(cx);   // #492
       ck.type = 'checkbox'; fone.append(ck, elD('span', '', 'Ouvir o vídeo (só com fone)'));
       ck.onchange = () => { v.muted = !ck.checked; if (ck.checked) showNote('Só com fone: sem fone a música do vídeo vaza na tua narração.'); };   // Sigma 22:28: padrão mudo
       let rec = null, t0 = 0, relogio = null, ouvindo = null, cancela = false, vivo = true; const tomadas = [], MAX = 3;   // May 22:47: grava inteira até 3 vezes, regravar não apaga a anterior
@@ -7656,8 +7693,8 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
       const ouvirBt = (tm, k) => { const ou = bt('rl-bt rl-nar-ouvir', 'Ouvir ' + k, () => { const era = ouvindo && ouvindo._bt === ou; paraOuvir(); tomadasEl.querySelectorAll('.rl-nar-ouvir').forEach((b, i) => { b.textContent = 'Ouvir ' + (i + 1); }); if (era) return; ouvindo = new Audio(URL.createObjectURL(tm.blob)); ouvindo._bt = ou; ouvindo.onended = () => { paraOuvir(); ou.textContent = 'Ouvir ' + k; }; v.muted = true; v.currentTime = 0; v.play().catch(() => {}); ouvindo.play().catch(() => {}); ou.textContent = 'Parar ' + k; }); return ou; };
       const tomadasEl = elD('div', 'rl-nar-tomadas');
       const pinta = fase => {
-        ops.replaceChildren(); tomadasEl.replaceChildren(); fone.hidden = fase === 'gravando'; const n = tomadas.length;
-        if (fase === 'pronto') { est.textContent = 'O vídeo roda do começo e o microfone grava junto. Grava inteira; dá pra gravar até 3 vezes.'; const g = bt('rl-bt rec rl-nar-grava', '', grava); g.innerHTML = icone('mic'); g.append(elD('span', '', 'Gravar tomada 1')); ops.append(g); }
+        ops.replaceChildren(); tomadasEl.replaceChildren(); fone.hidden = fase === 'gravando' || !p.video; const n = tomadas.length;
+        if (fase === 'pronto') { est.textContent = p.video ? 'O vídeo roda do começo e o microfone grava junto. Grava inteira; dá pra gravar até 3 vezes.' : 'Grava a narração inteira, até 3 vezes. O Hermes encaixa quando o vídeo sair.'; const g = bt('rl-bt rec rl-nar-grava', '', grava); g.innerHTML = icone('mic'); g.append(elD('span', '', 'Gravar tomada 1')); ops.append(g); }
         if (fase === 'gravando') { const pr = bt('rl-bt rec rl-nar-grava', '', () => rec && rec.stop()); pr.innerHTML = '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></svg>'; pr.append(elD('span', '', 'Parar')); ops.append(pr); }
         if (fase === 'depois') {
           est.textContent = n < MAX ? 'Tomada ' + n + ' de ' + MAX + ' gravada. Grava outra inteira ou manda as que tem.' : 'As ' + MAX + ' tomadas gravadas. Ouve e manda.';
@@ -7681,12 +7718,12 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
         rec.onstop = () => { const r = rec; rec = null; clearInterval(relogio); v.pause(); soltaMicStream(); const dur = (Date.now() - t0) / 1000; if (cancela || !vivo) return; const bl = new Blob(pd, { type: r.mimeType || tipo || 'audio/mp4' }); if (bl.size < 1500) { showNote('Gravação curta demais.', true); pinta(tomadas.length ? 'depois' : 'pronto'); return; } tomadas.push({ blob: bl, dur }); pinta('depois'); };
         v.currentTime = 0; v.onended = () => { if (rec) rec.stop(); };
         rec.start(); t0 = Date.now(); v.play().catch(() => {});
-        relogio = setInterval(() => { est.textContent = 'Tomada ' + (tomadas.length + 1) + ' de ' + MAX + ' · gravando ' + tempo((Date.now() - t0) / 1000) + ' de ' + tempo(v.duration || 0); }, 250);
+        relogio = setInterval(() => { est.textContent = 'Tomada ' + (tomadas.length + 1) + ' de ' + MAX + ' · gravando ' + tempo((Date.now() - t0) / 1000) + (p.video ? ' de ' + tempo(v.duration || 0) : ''); }, 250);
         pinta('gravando');
       };
       const manda = async b => {   // mesma fila do 🎤 da Geral: cada tomada fica no aparelho até subir (não perde se a internet cair); as N vão juntas pro Hermes
         b.disabled = true; b.textContent = 'Mandando...';
-        const ver = p.video.versao || 1, grupo = Date.now().toString(36), feitas = [];
+        const ver = p.video ? p.video.versao || 1 : 0, grupo = Date.now().toString(36), feitas = [];
         for (const [i, tm] of tomadas.entries()) {
           if (tm.nome) { feitas.push(tm); continue; }   // já subiu numa tentativa anterior
           const ext = /webm/.test(tm.blob.type) ? 'webm' : 'm4a', nome = nomeArq('recados-audios', new Date(), i + 1, ext), id = grupo + '-' + (i + 1) + Math.random().toString(36).slice(2, 5);
@@ -7698,15 +7735,15 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
         const nv = await gravaJson(RM_ARQ, dd => { dd.narracoes = dd.narracoes || {}; const l = dd.narracoes[p.id] = dd.narracoes[p.id] || []; feitas.forEach((tm, i) => l.push({ arquivo: tm.nome, quando: edAgora(), video: ver, inicio: 0, duracao: Math.round(tm.dur * 10) / 10, tomada: i + 1, de: feitas.length, grupo })); }, 'Reels: narração de ' + p.id + ' pelo app', { decisoes: {} });
         if (nv) RM = nv;
         const ds = feitas.map((tm, i) => 'tomada ' + (i + 1) + ' = ' + tm.dur.toFixed(1).replace('.', ',') + ' s').join(', ');
-        await gravaLinha(GERAL.arq, '- [' + stamp(new Date()) + '] @Hermes Narração do Estúdio de Reels: ' + p.titulo + ', ' + (feitas.length === 1 ? '1 tomada' : feitas.length + ' tomadas inteiras') + ' (vídeo versão ' + ver + ', todas começam no 0 s do vídeo; ' + ds + '). Os áudios são os 🎤 de cima, na ordem. Escolhe as melhores partes, corta as pausas e encaixa.');
+        await gravaLinha(GERAL.arq, '- [' + stamp(new Date()) + '] @Hermes Narração do Estúdio de Reels: ' + p.titulo + ', ' + (feitas.length === 1 ? '1 tomada' : feitas.length + ' tomadas inteiras') + ' (' + (ver ? 'vídeo versão ' + ver + ', todas começam no 0 s do vídeo' : 'ainda sem vídeo, gravada só a voz') + '; ' + ds + '). Os áudios são os 🎤 de cima, na ordem. Escolhe as melhores partes, corta as pausas e encaixa.');
         avisoCurto('Mandado pro Hermes'); fecha(); repinta();
       };
       baixo.append(est, tomadasEl, fone, ops); ov.append(topo, midia, baixo); document.body.append(ov);
-      rlUrlVideo(p, (n, tot) => { est.textContent = 'Baixando o vídeo ' + Math.round(n / 1e6) + (tot ? ' de ' + Math.round(tot / 1e6) : '') + ' MB'; }).then(u => { if (!vivo) return; v.src = u; pinta('pronto'); }).catch(() => { est.textContent = 'Não baixou o vídeo. Confere a internet e abre de novo.'; });
+      if (!p.video) pinta('pronto'); else rlUrlVideo(p, (n, tot) => { est.textContent = 'Baixando o vídeo ' + Math.round(n / 1e6) + (tot ? ' de ' + Math.round(tot / 1e6) : '') + ' MB'; }).then(u => { if (!vivo) return; v.src = u; pinta('pronto'); }).catch(() => { est.textContent = 'Não baixou o vídeo. Confere a internet e abre de novo.'; });
     };
     const rlNarracoes = p => {   // #487: o que ela já gravou, do mais novo pro mais velho
       const nar = ((RM && RM.narracoes) || {})[p.id] || []; if (!nar.length) return [];
-      const L = elD('div', 'rl-nar-lista'); nar.slice().reverse().forEach(n => { const it = elD('div', 'rl-lin'); it.append(elD('small', 'rl-nar-quando', (n.tomada ? 'Tomada ' + n.tomada + (n.de ? ' de ' + n.de : '') + ' · ' : '') + n.quando + ' · ' + String(n.duracao).replace('.', ',') + ' s · vídeo versão ' + n.video), playerAudio(n.arquivo)); L.append(it); });
+      const L = elD('div', 'rl-nar-lista'); nar.slice().reverse().forEach(n => { const it = elD('div', 'rl-lin'); it.append(elD('small', 'rl-nar-quando', (n.tomada ? 'Tomada ' + n.tomada + (n.de ? ' de ' + n.de : '') + ' · ' : '') + n.quando + ' · ' + String(n.duracao).replace('.', ',') + ' s · ' + (n.video ? 'vídeo versão ' + n.video : 'sem vídeo')), playerAudio(n.arquivo)); L.append(it); });
       return [elD('h4', 'rl-sec', 'Narrações (' + nar.length + ')'), L];
     };
     const rlAbre = p => {
@@ -7725,30 +7762,37 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
           try { toca(await rlUrlVideo(p, (n, tot) => { if (tot) { bar.style.width = (n / tot * 100).toFixed(1) + '%'; st.textContent = 'Baixando ' + Math.round(n / 1e6) + ' de ' + Math.round(tot / 1e6) + ' MB'; } else st.textContent = 'Baixando ' + Math.round(n / 1e6) + ' MB'; })); }
           catch (e) { tp.disabled = false; tp.classList.remove('baixando'); bar.style.width = '0'; st.textContent = 'Não baixou. Toca pra tentar de novo.'; }
         };
-      } else { const s = elD('div', 'rl-sem'); s.innerHTML = svg('nota'); s.append(elD('b', '', 'O vídeo ainda não saiu'), elD('small', '', 'As trilhas já estão aqui embaixo pra ouvir.')); midia.append(s); }
+      } else { const s = elD('div', 'rl-sem'); s.innerHTML = svg('nota'); s.append(elD('b', '', 'O vídeo ainda não saiu'), elD('small', '', (p.trilhas || []).length ? 'As trilhas já estão aqui embaixo pra ouvir.' : 'Grava a narração e escreve a legenda enquanto isso.')); midia.append(s); }
       if (p.video && p.capa) { const tb = bt('rl-thumb', '', async () => { try { const r = await api(apiDe(p.capa), { ...RAW, tempo: 120000 }); if (!r.ok) throw 0; const nome = p.capa.split('/').pop(), f = new File([await r.blob()], nome, { type: 'image/jpeg' }); if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], title: p.titulo }); } catch (e) {} } else baixaArquivo(f, nome); } catch (e) { showNote('Não baixou: confere a internet.', true); } }), ti = elD('img'), ic = elD('span');
         ti.alt = ''; ic.innerHTML = icone('download'); tb.setAttribute('aria-label', 'Salvar a thumbnail de ' + p.titulo); fotoUrl(p.capa).then(u => { ti.src = u; }).catch(() => {}); tb.append(ti, ic); midia.classList.add('dupla'); midia.append(tb); }   // May 21:18: vídeo na esquerda e thumbnail na direita; toca na thumb pra salvar
       const hd = () => { const b = bt('rl-bt rec rl-hd', '', async () => { const t0 = b.innerHTML; b.textContent = 'Baixando o vídeo...'; b.disabled = true; const nome = (p.video.arquivo || p.id + '.mp4').split('/').pop().split('?')[0];
         try { const r = p.video.link ? await fetch(p.video.link.replace(/([?&])dl=0/, '$1raw=1')) : rlVideos[p.video.arquivo] ? await fetch(rlVideos[p.video.arquivo]) : await api(apiDe(p.video.arquivo), { ...RAW, tempo: 600000 }); if (!r.ok) throw 0; const f = new File([await r.blob()], nome, { type: 'video/mp4' }); if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], title: p.titulo }); } catch (e) {} } else baixaArquivo(f, nome); }
         catch (e) { if (p.video.link) open(p.video.link, '_blank'); else showNote('Não baixou: confere a internet.', true); } b.innerHTML = t0; b.disabled = false; });
         b.innerHTML = icone('download'); b.append(elD('span', '', 'Salvar vídeo em HD')); b.setAttribute('aria-label', 'Salvar vídeo em HD de ' + p.titulo); return b; };   // May 21:02: o arquivo ORIGINAL do render, sem recomprimir; no iPhone abre o compartilhar com "Salvar vídeo"
-      let aba = p.video ? 'video' : p.legenda ? 'legenda' : 'trilha', abaAnt = 0; const abasV = elD('div', 'rl-ver-abas'), baixo = elD('div', 'rl-ver-baixo'); abasV.setAttribute('role', 'tablist'); baixo.append(abasV, info);   // #490 May 23:38: tela em abas; Sigma 23:48: abre sempre no Vídeo, Copiar no topo da Legenda, trilha para ao trocar
-      const pintaInfo = () => { const tem = [['video', 'Vídeo', !!p.video || !!p.nota], ['legenda', 'Legenda', !!p.legenda], ['trilha', 'Trilha', !!(p.trilhas || []).length], ['narracoes', 'Narrações', !!rlNarracoes(p).length]].filter(x => x[2]), ks = tem.map(x => x[0]); if (!ks.includes(aba)) aba = ks[0];
+      let aba = 'video', abaAnt = 0; const abasV = elD('div', 'rl-ver-abas'), baixo = elD('div', 'rl-ver-baixo'); abasV.setAttribute('role', 'tablist'); baixo.append(abasV, info);   // #490 May 23:38: tela em abas; Sigma 23:48: abre sempre no Vídeo, Copiar no topo da Legenda, trilha para ao trocar
+      const pintaInfo = () => { const tem = [['video', 'Vídeo', true], ['legenda', 'Legenda', !!p.legenda && !!rlLegTx(p)], ['trilha', 'Trilha', !!(p.trilhas || []).length], ['narracoes', 'Narrações', !!rlNarracoes(p).length]].filter(x => x[2]), ks = tem.map(x => x[0]); if (!ks.includes(aba)) aba = ks[0];
         abasV.replaceChildren(); abasV.hidden = ks.length < 2; tem.forEach(([k, t]) => { const b = bt('rl-aba' + (k === aba ? ' on' : ''), t, () => { if (k === aba) return; rlPara(); abaAnt = ks.indexOf(aba); aba = k; pintaInfo(); info.scrollTop = 0; }); b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(k === aba)); abasV.append(b); });
         info.replaceChildren(); info.dataset.dir = ks.indexOf(aba) < abaAnt ? 'esq' : 'dir';
-        if (aba === 'video') { if (p.video) { const nb = bt('rl-bt rl-nar-bt', '', () => rlNarra(p, pintaInfo)); nb.innerHTML = icone('mic'); nb.append(elD('span', '', 'Gravar narração')); info.append(hd(), nb, rlLinha(p, null, pintaInfo)); } if (p.nota) info.append(elD('p', 'rl-nota', p.nota)); }
-        if (aba === 'legenda') { const cb = bt('rl-bt rec rl-hd', '', () => rlCopia(rlLegTx(p))), card = rlLinha(p, rlLeg(p), pintaInfo); cb.innerHTML = icone('clipboard'); cb.append(elD('span', '', 'Copiar legenda')); [...card.querySelectorAll('.rl-bt')].filter(b => b.textContent === 'Copiar').forEach(b => b.remove()); info.append(cb, card); }
+        if (aba === 'video') { const nb = bt('rl-bt rl-nar-bt', '', () => rlNarra(p, pintaInfo)); nb.innerHTML = icone('mic'); nb.append(elD('span', '', 'Gravar narração'));
+          if (p.video) info.append(hd(), nb, rlLinha(p, null, pintaInfo)); else info.append(nb);   // #492: sem vídeo também grava (só a voz)
+          if (!p.legenda || !rlLegTx(p)) { const eb = bt('rl-bt rl-nar-bt', '', () => { if (!p.legenda) p.legenda = { texto: '', versao: 1, dono: 'Hermes' }; rlEdita(p, pintaInfo); }); eb.innerHTML = icone('pen'); eb.append(elD('span', '', 'Escrever legenda')); info.append(eb); }
+          if (p.nota) info.append(elD('p', 'rl-nota', p.nota));
+          if (p._dela) { const ap = bt('rl-apaga', 'Apagar projeto', async () => { if (!ap.dataset.conf) { ap.dataset.conf = '1'; ap.textContent = 'Toca de novo pra apagar'; ap.classList.add('confirma'); return; }   // nada se apaga: marca apagado c/ data e tem desfazer (Sigma 00:06)
+            const marca = desf => gravaJson(RM_ARQ, dd => { const x = (dd.projetos || []).find(y => y.id === p.id); if (x) { if (desf) delete x.apagado; else x.apagado = edAgora(); } }, 'Reels: ' + (desf ? 'desfez apagar ' : 'apagou ') + p.id + ' pelo app', { decisoes: {} });
+            const nv = await marca(false); if (!nv) { showNote('Não apagou. Confere a internet.', true); return; } RM = nv; fecha(); rlMonta();
+            edFaixaDesfazer('Projeto apagado', async () => { const n2 = await marca(true); if (n2) { RM = n2; rlMonta(); } }); }); info.append(ap); } }
+        if (aba === 'legenda') { const cb = bt('rl-bt rec rl-hd', '', () => rlCopia(rlLegTx(p))), card = rlLinha(p, rlLeg(p), pintaInfo); cb.innerHTML = icone('clipboard'); cb.append(elD('span', '', 'Copiar legenda')); [...card.querySelectorAll('.rl-bt')].filter(b => b.textContent === 'Copiar' || (p._dela && /^(Pedir ajuste|Aprovar|Aprovado)$/.test(b.textContent))).forEach(b => b.remove()); info.append(cb, card); }
         if (aba === 'narracoes') info.append(...rlNarracoes(p).slice(1));
         if (aba === 'trilha') { const tr = p.trilhas.map((t, i) => [t, i]).sort((x, y) => ((x[0].versao || 0) - (y[0].versao || 0)) || (x[1] - y[1])).map(x => x[0]), ul = tr.pop(); info.append(rlLinha(p, ul, pintaInfo));
         if (tr.length) { const hb = bt('rl-hist', '', () => { const ab = hl.hidden; hl.hidden = !ab; hb.classList.toggle('on', ab); hb.setAttribute('aria-expanded', String(ab)); }), hl = elD('div', 'rl-hist-lista'); hb.setAttribute('aria-expanded', 'false'); hb.append(elD('span', '', 'Histórico (' + tr.length + ')')); hb.insertAdjacentHTML('beforeend', icone('chev')); hl.hidden = true; tr.reverse().forEach(t => hl.append(rlLinha(p, t, pintaInfo))); info.append(hb, hl); } } };
       pintaInfo(); ov.append(topo, midia, baixo); document.body.append(ov);
     };
     const rlAbas = () => {
-      const ab = store.get('rl-aba') === 'enviar' ? 'enviar' : 'prontos'; abas.replaceChildren();
-      [['prontos', 'Prontos', 'grade'], ['enviar', 'Enviar bruto', 'sobe']].forEach(([k, t, ic]) => { const b = bt('rl-aba' + (k === ab ? ' on' : ''), '', () => { store.set('rl-aba', k); rlAbas(); }); b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(k === ab)); b.innerHTML = svg(ic); b.append(elD('span', '', t)); abas.append(b); });
-      grade.hidden = ab !== 'prontos'; raiz.hidden = ab !== 'enviar'; if (ab !== 'prontos') rlPara();
-      if (ab === 'enviar' && !dbxFoi) { dbxFoi = true; pinta(); }
-      if (ab === 'prontos' && !RL) rlPinta();
+      const ab = rlAbaAt(), gr = ab !== 'enviar'; abas.replaceChildren();
+      [['reels', 'Reels', 'video'], ['stories', 'Stories', 'story'], ['recursos', 'Recursos', 'recurso'], ['enviar', 'Enviar', 'sobe']].forEach(([k, t, ic]) => { const b = bt('rl-aba' + (k === ab ? ' on' : ''), '', () => { if (k === ab) return; store.set('rl-aba', k); rlAbas(); }); b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(k === ab)); b.innerHTML = svg(ic); b.append(elD('span', '', t)); abas.append(b); });
+      grade.hidden = !gr; raiz.hidden = gr; rlPara();
+      if (!gr && !dbxFoi) { dbxFoi = true; pinta(); }
+      if (gr) RL ? rlMonta() : rlPinta();
     };
     rlAbas();
   });

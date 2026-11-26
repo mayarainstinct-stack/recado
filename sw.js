@@ -1,3 +1,8 @@
+// v677 #498 Estudio: abas Reels, Stories e Recursos (tipo no reels.json), grade com respiro
+// v676 #498 Estudio de criacao (nome vem do menu.json)
+// v675 #492 cartao do projeto sem video: rotulo cabe (sem icone)
+// v674 #492 Estudio de Reels: projeto novo pelo app, narracao e legenda antes do video
+// v673 #491 iPhone: com video tocando ou em tela cheia a Geral espera pra redesenhar (nao mexe no video)
 // v672 #490 projeto do Estudio de Reels em abas (Video, Legenda, Trilha, Narracoes)
 // v671 video da Geral nao fecha quando chega mensagem (mesmo elemento volta no redesenho, igual ao audio)
 // v670 #488 Estudio de Reels: sons linha por linha, linha do tempo tocando, selo c/ hora

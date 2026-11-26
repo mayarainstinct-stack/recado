@@ -4196,7 +4196,8 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .tm-dd-pend { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #3A3533; } .tm-dd-pend b { color: #F5F0EC; font-size: 15px; } .tm-dd-pend small, .tm-dd-carga { color: #BDB5AF; font-size: 13px; }
 .tm-dd-vers { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; } .tm-dd-vers:empty { display: none; } .tm-dd-vers .tm-sug small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* #482 Estúdio de Reels (25/11/2026): perfil do Instagram, grade de capas 9:16, tela cheia c/ Aprovar / Pedir ajuste */
-.t-reels .rl-abas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 14px 16px 0; }
+.t-reels .rl-abas { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding: 14px 16px 0; }
+.t-reels .rl-abas .rl-aba { flex-direction: column; gap: 2px; min-height: 56px; padding: 8px 4px; border-radius: 16px; font-size: 13px; }
 .rl-aba { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 44px; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--fg); font: inherit; font-weight: 700; cursor: pointer; }
 .rl-aba.on { background: var(--c); border-color: var(--c); color: #fff; }
 .rl-aba svg, .rl-cel-pe svg, .rl-selo svg, .rl-play svg, .rl-sem svg { flex: none; width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -4208,7 +4209,7 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .rl-nums { flex: 1; min-width: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; text-align: center; }
 .rl-nums b { display: block; font-size: 20px; } .rl-nums small { font-size: 12.5px; opacity: .75; }
 .rl-nome { display: grid; gap: 2px; } .rl-nome b { font-size: 16px; } .rl-nome small { opacity: .75; line-height: 1.35; }
-.rl-grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+.rl-grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 .rl-cel { position: relative; display: block; width: 100%; height: auto; aspect-ratio: 9 / 16; padding: 0; border: 0; border-radius: 8px; overflow: hidden; background: linear-gradient(160deg, #4a1838, #160b1d); color: #fff; font: inherit; cursor: pointer; }
 .rl-cap { position: absolute; inset: 0; display: grid; place-items: center; padding: 12px 10px 34px; }
 .rl-cap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
@@ -4246,6 +4247,11 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .rl-vtampa.sai { transform: scale(.94); }
 .rl-v > * { grid-area: 1 / 1; } .rl-v > .rl-vtampa { z-index: 1; }
 .rl-sem { display: grid; justify-items: center; gap: 8px; padding: 16px; text-align: center; } .rl-sem svg { width: 44px; height: 44px; color: var(--c); } .rl-sem small { opacity: .7; }
+/* #492 (May 25/11 23:59): projeto novo sem vídeo */
+.rl-novo { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 4px 16px 14px; width: calc(100% - 32px); } .rl-novo svg { width: 20px; height: 20px; flex: none; }
+.rl-ta.rl-nome-in { width: 100%; min-height: 48px; height: 48px; box-sizing: border-box; } .rl-novo-msg { display: block; min-height: 18px; margin-top: 6px; color: #F87171; font-size: 13px; }
+.rl-ver-info .rl-apaga { justify-self: center; width: auto; height: 44px; min-height: 44px; flex: none; white-space: nowrap; box-shadow: none; margin-top: 6px; padding: 0 16px; border: 1px solid rgba(255,255,255,.16); border-radius: 999px; background: rgba(255,255,255,.06); color: rgba(255,255,255,.6); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; } .rl-ver-info .rl-apaga.confirma { border-color: #F87171; color: #F87171; background: rgba(248,113,113,.12); }
+.rl-nar-semv { display: grid; place-items: center; gap: 12px; padding: 40px 24px; border-radius: 16px; border: 1px dashed rgba(255,255,255,.2); color: rgba(255,255,255,.7); text-align: center; } .rl-nar-semv svg { width: 56px; height: 56px; color: var(--c); }
 /* #487 (May 25/11 22:26): narração gravada c/ o vídeo passando */
 .rl-nar { z-index: 910; }
 .rl-nar-v { position: relative; display: grid; place-items: center; min-height: 0; max-width: 100%; max-height: 100%; }
