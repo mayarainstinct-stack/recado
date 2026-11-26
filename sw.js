@@ -1,3 +1,4 @@
+// v666 #487 narracao: ate 3 tomadas inteiras (nenhuma apagada), manda 1 a 3 juntas pro Hermes
 // v665 #487 Estudio de Reels: gravar narracao c/ o video passando (mudo; ouvir so c/ fone), vai pro Hermes pela fila do audio
 // v664 #482 Estudio de Reels: video guardado no aparelho; app nao recarrega com o Estudio aberto
 // v660 #482 Estudio de Reels: so a trilha mais nova a mostra, as outras no Historico (N) fechado
