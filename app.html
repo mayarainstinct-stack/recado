@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-26.687">
+<meta name="app-versao" content="2026-11-26.688">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-26.687"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-26.688"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -7605,7 +7605,7 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
         if (p.capa) { const ci = elD('img'); ci.alt = ''; fotoUrl(p.capa).then(u => { ci.src = u; }).catch(() => {}); cap.append(ci); } else cap.append(elD('b', 'rl-cap-tit', p.titulo));
         pe.innerHTML = !p.video && !nT && !p.capa ? '' : svg(p.video ? 'play' : 'nota'); pe.append(elD('span', '', p.capa ? p.titulo : p.video ? 'Vídeo' : !nT ? 'Sem vídeo' : nT + (nT === 1 ? ' trilha' : ' trilhas'))); b.append(cap, pe);   // #492: projeto sem vídeo e sem trilha vai sem ícone, pro "Sem vídeo" caber no cartão
         if (p.video && p.video.versao) { const q = rlQuando(p.video.quando), v = elD('span', 'rl-versao', 'v' + p.video.versao); b.setAttribute('aria-label', b.getAttribute('aria-label') + ', versão ' + p.video.versao + (!q ? '' : q.includes(':') ? ', de hoje às ' + q : ', de ' + q)); b.append(v);
-          if (q) b.append(elD('span', 'rl-versao rl-versao-q', q)); }   // #520: a hora/dia numa 2ª pílula embaixo do "v16" (numa linha só, "v16 · 12:24" encostava no lápis na capa de 102 px)   // #510 (May 26/11 12:06): versão do vídeo na capa, sem abrir; canto de cima esquerdo, longe do Novo e do lápis (Sigma 12:09)
+          if (q) b.append(elD('span', 'rl-versao rl-versao-q', q)); }   // #520: a hora/dia numa 2ª pílula no lado direito, embaixo do lápis (May 20:41); numa linha só com o v16 encostava no lápis na capa de 102 px   // #510 (May 26/11 12:06): versão do vídeo na capa, sem abrir; canto de cima esquerdo, longe do Novo e do lápis (Sigma 12:09)
         if (sl) { const s = elD('span', 'rl-selo ' + sl); if (sl === 'novo') s.textContent = 'Novo'; else s.innerHTML = svg(sl === 'aprovado' ? 'ok' : 'ajuste'); b.append(s); }
         g.append(b);
       });

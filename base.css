@@ -4220,7 +4220,7 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .rl-selo.aprovado { background: #16A34A; } .rl-selo.ajuste { background: #F59E0B; color: #1A1200; } .rl-selo.novo { background: var(--c); }
 .rl-selo svg { width: 15px; height: 15px; stroke-width: 2.6; }
 .rl-versao { position: absolute; top: 6px; left: 6px; display: grid; place-items: center; height: 26px; padding: 0 5px; border-radius: 999px; background: rgba(0,0,0,.75); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: 0; box-sizing: border-box; pointer-events: none; }
-.rl-versao-q { top: 38px; font-weight: 700; }   /* #520: hora (versão de hoje) ou dia, embaixo do v16 */
+.rl-versao-q { top: 40px; left: auto; right: 6px; font-weight: 700; }   /* #520 (May 20:41): hora (versão de hoje) ou dia no lado direito, 8 px embaixo do lápis */
 .rl-ver { position: fixed; inset: 0; z-index: 900; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; height: 100dvh; padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom); box-sizing: border-box; background: #000; color: #fff; animation: rl-sobe .3s cubic-bezier(.2,.8,.2,1); }
 .rl-ver.sai { animation: rl-desce .26s cubic-bezier(.5,0,.8,.4) forwards; }
 @keyframes rl-sobe { from { transform: translateY(100%); } to { transform: none; } }
