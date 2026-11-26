@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.664">
+<meta name="app-versao" content="2026-11-25.665">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.664"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.665"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -7616,6 +7616,77 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
       ops.append(bt('rl-bt' + (d && d.status === 'ajuste' ? ' on' : ''), 'Pedir ajuste', () => rlAjuste(p, t, repinta)), bt('rl-bt rec' + (ok ? ' on' : ''), ok ? 'Aprovado' : 'Aprovar', () => { if (!ok) rlGrava(p, t, { status: 'aprovado', quando: edAgora(), nota: '' }, repinta); }));
       L.append(ops); return L;
     };
+    const rlUrlVideo = async (p, prog) => {   // #487: o play e a narração baixam pelo mesmo caminho (link, sessão, cache do aparelho ou API c/ progresso)
+      if (p.video.link) return p.video.link.replace(/([?&])dl=0/, '$1raw=1');
+      if (rlVideos[p.video.arquivo]) return rlVideos[p.video.arquivo];
+      const chV = '/_video/' + encodeURI(p.video.arquivo) + '@' + (p.video.versao || 1);   // May 21:52: o app recarregou e baixou tudo de novo; agora o vídeo fica guardado no aparelho
+      try { const c = 'caches' in window && await caches.open(CACHE_FOTOS), g = c && await c.match(chV); if (g) { const u = URL.createObjectURL(await g.blob()); rlVideos[p.video.arquivo] = u; return u; } } catch (e) {}
+      const r = await api(apiDe(p.video.arquivo), { ...RAW, cache: 'default', tempo: 900000 }); if (!r.ok) throw 0; const tot = +r.headers.get('content-length') || 0, rd = r.body && r.body.getReader(), pd = []; let n = 0;
+      if (rd) for (;;) { const { done, value } = await rd.read(); if (done) break; pd.push(value); n += value.length; if (prog) prog(n, tot); }
+      const bl = rd ? new Blob(pd, { type: 'video/mp4' }) : await r.blob(), u = URL.createObjectURL(bl); rlVideos[p.video.arquivo] = u; if ('caches' in window) caches.open(CACHE_FOTOS).then(c => c.put(chV, new Response(bl, { headers: { 'content-type': 'video/mp4' } }))).catch(() => {});
+      return u;
+    };
+    const rlNarra = (p, repinta) => {   // #487 (May 25/11 22:26): ela grava a narração c/ o vídeo passando; vai pro Hermes cortar e organizar
+      const ov = elD('div', 'rl-ver rl-nar'), topo = elD('div', 'rl-ver-topo'), tt = elD('div'), xb = elD('button', 'pp-x rl-x'), midia = elD('div', 'rl-ver-midia'), cx = elD('div', 'rl-nar-v'), v = elD('video'), conta = elD('b', 'rl-nar-conta'), baixo = elD('div', 'rl-nar-baixo'), est = elD('p', 'rl-nar-est', 'Baixando o vídeo...'), fone = elD('label', 'rl-nar-fone'), ck = elD('input'), ops = elD('div', 'rl-nar-ops');
+      ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', 'Narração de ' + p.titulo); ov.style.setProperty('--c', '#E1306C'); xb.type = 'button'; xb.innerHTML = icone('close'); xb.setAttribute('aria-label', 'Fechar');
+      tt.append(elD('b', '', 'Narração'), elD('small', '', p.titulo)); topo.append(tt, xb);
+      v.playsInline = true; v.setAttribute('playsinline', ''); v.muted = true; v.preload = 'auto'; cx.append(v, conta); midia.append(cx);
+      ck.type = 'checkbox'; fone.append(ck, elD('span', '', 'Ouvir o vídeo (só com fone)'));
+      ck.onchange = () => { v.muted = !ck.checked; if (ck.checked) showNote('Só com fone: sem fone a música do vídeo vaza na tua narração.'); };   // Sigma 22:28: padrão mudo
+      let rec = null, blob = null, dur = 0, t0 = 0, relogio = null, ouvindo = null, cancela = false, vivo = true;
+      const tempo = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+      const paraOuvir = () => { if (ouvindo) { ouvindo.pause(); URL.revokeObjectURL(ouvindo.src); ouvindo = null; } v.pause(); };
+      const fecha = () => { vivo = false; if (rec) { cancela = true; rec.stop(); } paraOuvir(); clearInterval(relogio); removeEventListener('keydown', esc, true); ov.classList.add('sai'); setTimeout(() => ov.remove(), 260); };
+      const esc = e => { if (e.key === 'Escape') { e.stopImmediatePropagation(); fecha(); } };
+      addEventListener('keydown', esc, true); xb.onclick = fecha;
+      const pinta = fase => {
+        ops.replaceChildren(); fone.hidden = fase !== 'pronto';
+        if (fase === 'pronto') { est.textContent = 'O vídeo roda do começo e o microfone grava junto. Para quando quiser.'; const g = bt('rl-bt rec rl-nar-grava', '', grava); g.innerHTML = icone('mic'); g.append(elD('span', '', 'Gravar narração')); ops.append(g); }
+        if (fase === 'gravando') { const pr = bt('rl-bt rec rl-nar-grava', '', () => rec && rec.stop()); pr.innerHTML = '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></svg>'; pr.append(elD('span', '', 'Parar')); ops.append(pr); }
+        if (fase === 'depois') {
+          est.textContent = 'Gravou ' + tempo(dur) + '. Ouve junto c/ o vídeo antes de mandar.';
+          const ou = bt('rl-bt', 'Ouvir', () => { if (ouvindo) { paraOuvir(); ou.textContent = 'Ouvir'; return; } ouvindo = new Audio(URL.createObjectURL(blob)); ouvindo.onended = () => { paraOuvir(); ou.textContent = 'Ouvir'; }; v.muted = true; v.currentTime = 0; v.play().catch(() => {}); ouvindo.play().catch(() => {}); ou.textContent = 'Parar'; });
+          const re = bt('rl-bt', 'Regravar', () => { paraOuvir(); blob = null; pinta('pronto'); });
+          const md = bt('rl-bt rec', 'Mandar pro Hermes', () => manda(md));
+          ops.append(ou, re, md);
+        }
+      };
+      const grava = async () => {
+        if (rec) return;
+        if (!navigator.mediaDevices || !window.MediaRecorder) { showNote('Este navegador não grava áudio. Abre pelo ícone da tela de início.', true); return; }
+        v.muted = !ck.checked; v.play().then(() => { v.pause(); v.currentTime = 0; }).catch(() => {});   // libera o play no toque (o iPhone barra play c/ som depois da contagem)
+        let st; try { st = await pegaMic(); } catch (e) { soltaMicStream(); showNote(e && e.name === 'NotAllowedError' ? 'Sem acesso ao microfone. Libera em Ajustes → Apps → Safari → Microfone.' : 'Microfone não abriu.', true); return; }
+        ops.replaceChildren(); fone.hidden = true;
+        for (const n of [3, 2, 1]) { if (!vivo) return; conta.textContent = n; est.textContent = 'Começa em ' + n + '...'; await new Promise(r => setTimeout(r, 1000)); }
+        conta.textContent = ''; if (!vivo) { soltaMicStream(); return; }
+        const tipo = tipoAudio(), pd = []; cancela = false;
+        rec = new MediaRecorder(st, tipo ? { mimeType: tipo } : undefined);
+        rec.ondataavailable = e => { if (e.data.size) pd.push(e.data); };
+        rec.onstop = () => { const r = rec; rec = null; clearInterval(relogio); v.pause(); soltaMicStream(); dur = (Date.now() - t0) / 1000; if (cancela || !vivo) return; blob = new Blob(pd, { type: r.mimeType || tipo || 'audio/mp4' }); if (blob.size < 1500) { showNote('Gravação curta demais.', true); pinta('pronto'); return; } pinta('depois'); };
+        v.currentTime = 0; v.onended = () => { if (rec) rec.stop(); };
+        rec.start(); t0 = Date.now(); v.play().catch(() => {});
+        relogio = setInterval(() => { est.textContent = 'Gravando ' + tempo((Date.now() - t0) / 1000) + ' de ' + tempo(v.duration || 0); }, 250);
+        pinta('gravando');
+      };
+      const manda = async b => {   // mesma fila do 🎤 da Geral: o áudio fica no aparelho até subir (não perde se a internet cair) e a linha cai na Geral
+        b.disabled = true; b.textContent = 'Mandando...';
+        const ext = /webm/.test(blob.type) ? 'webm' : 'm4a', nome = nomeArq('recados-audios', new Date(), 0, ext), id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6), ver = p.video.versao || 1, s = dur.toFixed(1).replace('.', ',');
+        const guardou = await guardaAudio(id, blob), r0 = respondendo; respondendo = null;   // não cita a mensagem que ela estava respondendo na Geral
+        const x = novoPendente('🎤 ' + nome, [], GERAL.arq, { id, audio: { nome, blob, guardou } }); respondendo = r0;
+        if (!await enviar(x.p, x.el)) { showNote('Não foi: ficou na Geral pra reenviar (toca nela).', true); b.disabled = false; b.textContent = 'Mandar pro Hermes'; return; }
+        const nv = await gravaJson(RM_ARQ, dd => { dd.narracoes = dd.narracoes || {}; (dd.narracoes[p.id] = dd.narracoes[p.id] || []).push({ arquivo: nome, quando: edAgora(), video: ver, inicio: 0, duracao: Math.round(dur * 10) / 10 }); }, 'Reels: narração de ' + p.id + ' pelo app', { decisoes: {} });
+        if (nv) RM = nv;
+        await gravaLinha(GERAL.arq, '- [' + stamp(new Date()) + '] @Hermes Narração gravada no Estúdio de Reels: ' + p.titulo + ' (vídeo versão ' + ver + ', começa no 0 s do vídeo, ' + s + ' s). O áudio é o 🎤 de cima.');
+        avisoCurto('Mandado pro Hermes'); fecha(); repinta();
+      };
+      baixo.append(est, fone, ops); ov.append(topo, midia, baixo); document.body.append(ov);
+      rlUrlVideo(p, (n, tot) => { est.textContent = 'Baixando o vídeo ' + Math.round(n / 1e6) + (tot ? ' de ' + Math.round(tot / 1e6) : '') + ' MB'; }).then(u => { if (!vivo) return; v.src = u; pinta('pronto'); }).catch(() => { est.textContent = 'Não baixou o vídeo. Confere a internet e abre de novo.'; });
+    };
+    const rlNarracoes = p => {   // #487: o que ela já gravou, do mais novo pro mais velho
+      const nar = ((RM && RM.narracoes) || {})[p.id] || []; if (!nar.length) return [];
+      const L = elD('div', 'rl-nar-lista'); nar.slice().reverse().forEach(n => { const it = elD('div', 'rl-lin'); it.append(elD('small', 'rl-nar-quando', n.quando + ' · ' + String(n.duracao).replace('.', ',') + ' s · vídeo versão ' + n.video), playerAudio(n.arquivo)); L.append(it); });
+      return [elD('h4', 'rl-sec', 'Narrações (' + nar.length + ')'), L];
+    };
     const rlAbre = p => {
       const ov = elD('div', 'rl-ver'), topo = elD('div', 'rl-ver-topo'), midia = elD('div', 'rl-ver-midia'), info = elD('div', 'rl-ver-info'), xb = elD('button', 'pp-x rl-x'), tt = elD('div');
       ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', p.titulo); ov.style.setProperty('--c', '#E1306C'); xb.type = 'button'; xb.innerHTML = icone('close'); xb.setAttribute('aria-label', 'Fechar');
@@ -7629,13 +7700,7 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
         const toca = u => { v.src = u; v.hidden = false; tp.classList.add('sai'); setTimeout(() => tp.remove(), 220); v.play().catch(() => {}); };
         tp.onclick = async () => {   // Sigma 21:30: 44 MB pela API travava antes de começar; agora baixa só no toque, com barra, e guarda o link na sessão pra abrir na hora da 2ª vez
           if (tp.disabled) return; tp.disabled = true; tp.classList.add('baixando');
-          if (p.video.link) return toca(p.video.link.replace(/([?&])dl=0/, '$1raw=1'));
-          if (rlVideos[p.video.arquivo]) return toca(rlVideos[p.video.arquivo]);
-          const chV = '/_video/' + encodeURI(p.video.arquivo) + '@' + (p.video.versao || 1);   // May 21:52: o app recarregou e baixou tudo de novo; agora o vídeo fica guardado no aparelho
-          try { const c = 'caches' in window && await caches.open(CACHE_FOTOS), g = c && await c.match(chV); if (g) { const u = URL.createObjectURL(await g.blob()); rlVideos[p.video.arquivo] = u; return toca(u); } } catch (e) {}
-          try { const r = await api(apiDe(p.video.arquivo), { ...RAW, cache: 'default', tempo: 900000 }); if (!r.ok) throw 0; const tot = +r.headers.get('content-length') || 0, rd = r.body && r.body.getReader(), pd = []; let n = 0;
-            if (rd) for (;;) { const { done, value } = await rd.read(); if (done) break; pd.push(value); n += value.length; if (tot) { bar.style.width = (n / tot * 100).toFixed(1) + '%'; st.textContent = 'Baixando ' + Math.round(n / 1e6) + ' de ' + Math.round(tot / 1e6) + ' MB'; } else st.textContent = 'Baixando ' + Math.round(n / 1e6) + ' MB'; }
-            const bl = rd ? new Blob(pd, { type: 'video/mp4' }) : await r.blob(), u = URL.createObjectURL(bl); rlVideos[p.video.arquivo] = u; toca(u); if ('caches' in window) caches.open(CACHE_FOTOS).then(c => c.put(chV, new Response(bl, { headers: { 'content-type': 'video/mp4' } }))).catch(() => {}); }
+          try { toca(await rlUrlVideo(p, (n, tot) => { if (tot) { bar.style.width = (n / tot * 100).toFixed(1) + '%'; st.textContent = 'Baixando ' + Math.round(n / 1e6) + ' de ' + Math.round(tot / 1e6) + ' MB'; } else st.textContent = 'Baixando ' + Math.round(n / 1e6) + ' MB'; })); }
           catch (e) { tp.disabled = false; tp.classList.remove('baixando'); bar.style.width = '0'; st.textContent = 'Não baixou. Toca pra tentar de novo.'; }
         };
       } else { const s = elD('div', 'rl-sem'); s.innerHTML = svg('nota'); s.append(elD('b', '', 'O vídeo ainda não saiu'), elD('small', '', 'As trilhas já estão aqui embaixo pra ouvir.')); midia.append(s); }
@@ -7645,8 +7710,8 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
         try { const r = p.video.link ? await fetch(p.video.link.replace(/([?&])dl=0/, '$1raw=1')) : rlVideos[p.video.arquivo] ? await fetch(rlVideos[p.video.arquivo]) : await api(apiDe(p.video.arquivo), { ...RAW, tempo: 600000 }); if (!r.ok) throw 0; const f = new File([await r.blob()], nome, { type: 'video/mp4' }); if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], title: p.titulo }); } catch (e) {} } else baixaArquivo(f, nome); }
         catch (e) { if (p.video.link) open(p.video.link, '_blank'); else showNote('Não baixou: confere a internet.', true); } b.innerHTML = t0; b.disabled = false; });
         b.innerHTML = icone('download'); b.append(elD('span', '', 'Salvar vídeo em HD')); b.setAttribute('aria-label', 'Salvar vídeo em HD de ' + p.titulo); return b; };   // May 21:02: o arquivo ORIGINAL do render, sem recomprimir; no iPhone abre o compartilhar com "Salvar vídeo"
-      const pintaInfo = () => { info.replaceChildren(); if (p.video) info.append(hd()); if (p.legenda) info.append(rlLinha(p, rlLeg(p), pintaInfo)); if (p.video) info.append(rlLinha(p, null, pintaInfo)); if ((p.trilhas || []).length) { const tr = p.trilhas.map((t, i) => [t, i]).sort((x, y) => ((x[0].versao || 0) - (y[0].versao || 0)) || (x[1] - y[1])).map(x => x[0]), ul = tr.pop(); info.append(elD('h4', 'rl-sec', 'Trilha'), rlLinha(p, ul, pintaInfo));
-        if (tr.length) { const hb = bt('rl-hist', '', () => { const ab = hl.hidden; hl.hidden = !ab; hb.classList.toggle('on', ab); hb.setAttribute('aria-expanded', String(ab)); }), hl = elD('div', 'rl-hist-lista'); hb.setAttribute('aria-expanded', 'false'); hb.append(elD('span', '', 'Histórico (' + tr.length + ')')); hb.insertAdjacentHTML('beforeend', icone('chev')); hl.hidden = true; tr.reverse().forEach(t => hl.append(rlLinha(p, t, pintaInfo))); info.append(hb, hl); } } if (p.nota) info.append(elD('p', 'rl-nota', p.nota)); };   // em cima sem rolar: vídeo, Salvar em HD e legenda c/ Copiar; trilhas e o resto descem
+      const pintaInfo = () => { info.replaceChildren(); if (p.video) { const nb = bt('rl-bt rl-nar-bt', '', () => rlNarra(p, pintaInfo)); nb.innerHTML = icone('mic'); nb.append(elD('span', '', 'Gravar narração')); info.append(hd(), nb); } if (p.legenda) info.append(rlLinha(p, rlLeg(p), pintaInfo)); if (p.video) info.append(rlLinha(p, null, pintaInfo)); if ((p.trilhas || []).length) { const tr = p.trilhas.map((t, i) => [t, i]).sort((x, y) => ((x[0].versao || 0) - (y[0].versao || 0)) || (x[1] - y[1])).map(x => x[0]), ul = tr.pop(); info.append(elD('h4', 'rl-sec', 'Trilha'), rlLinha(p, ul, pintaInfo));
+        if (tr.length) { const hb = bt('rl-hist', '', () => { const ab = hl.hidden; hl.hidden = !ab; hb.classList.toggle('on', ab); hb.setAttribute('aria-expanded', String(ab)); }), hl = elD('div', 'rl-hist-lista'); hb.setAttribute('aria-expanded', 'false'); hb.append(elD('span', '', 'Histórico (' + tr.length + ')')); hb.insertAdjacentHTML('beforeend', icone('chev')); hl.hidden = true; tr.reverse().forEach(t => hl.append(rlLinha(p, t, pintaInfo))); info.append(hb, hl); } } info.append(...rlNarracoes(p)); if (p.nota) info.append(elD('p', 'rl-nota', p.nota)); };   // em cima sem rolar: vídeo, Salvar em HD e legenda c/ Copiar; trilhas e o resto descem
       pintaInfo(); ov.append(topo, midia, info); document.body.append(ov);
     };
     const rlAbas = () => {

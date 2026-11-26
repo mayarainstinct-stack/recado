@@ -4246,6 +4246,16 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .rl-vtampa.sai { transform: scale(.94); }
 .rl-v > * { grid-area: 1 / 1; } .rl-v > .rl-vtampa { z-index: 1; }
 .rl-sem { display: grid; justify-items: center; gap: 8px; padding: 16px; text-align: center; } .rl-sem svg { width: 44px; height: 44px; color: var(--c); } .rl-sem small { opacity: .7; }
+/* #487 (May 25/11 22:26): narração gravada c/ o vídeo passando */
+.rl-nar { z-index: 910; }
+.rl-nar-v { position: relative; display: grid; place-items: center; min-height: 0; max-width: 100%; max-height: 100%; }
+.rl-nar-conta { position: absolute; inset: 0; display: grid; place-items: center; font: 800 96px/1 Syne, sans-serif; color: #fff; text-shadow: 0 4px 24px rgba(0,0,0,.6); pointer-events: none; } .rl-nar-conta:empty { display: none; }
+.rl-nar-baixo { display: grid; gap: 12px; padding: 14px 16px 16px; border-top: 1px solid rgba(255,255,255,.12); background: #0D0D0F; }
+.rl-nar-est { margin: 0; text-align: center; font-size: 15px; opacity: .85; }
+.rl-nar-fone { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 14px; } .rl-nar-fone[hidden] { display: none; } .rl-nar-fone input { width: 20px; height: 20px; margin: 0; accent-color: var(--c); }
+.rl-nar-ops { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; } .rl-nar-ops:empty { display: none; }
+.rl-nar-grava, .rl-nar-bt { display: flex; align-items: center; justify-content: center; gap: 8px; } .rl-nar-grava svg, .rl-nar-bt svg { width: 20px; height: 20px; flex: none; }
+.rl-nar-lista { display: grid; gap: 8px; } .rl-nar-quando { opacity: .7; }
 .rl-ver-info { display: grid; gap: 10px; max-height: 50dvh; overflow-y: auto; padding: 14px 16px 16px; border-top: 1px solid rgba(255,255,255,.12); background: #0D0D0F; }
 .rl-sec { margin: 6px 2px 0; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; opacity: .7; }
 .rl-lin { display: grid; gap: 10px; padding: 12px 14px; border-radius: 16px; border: 1px solid rgba(255,255,255,.14); background: #17171A; }

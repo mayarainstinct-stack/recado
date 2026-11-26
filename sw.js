@@ -1,3 +1,4 @@
+// v665 #487 Estudio de Reels: gravar narracao c/ o video passando (mudo; ouvir so c/ fone), vai pro Hermes pela fila do audio
 // v664 #482 Estudio de Reels: video guardado no aparelho; app nao recarrega com o Estudio aberto
 // v660 #482 Estudio de Reels: so a trilha mais nova a mostra, as outras no Historico (N) fechado
 // v659 #482 Estudio de Reels: em cima sem rolar o video, Salvar video em HD e a legenda c/ Copiar
