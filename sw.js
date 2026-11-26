@@ -1,3 +1,4 @@
+// v687 #520 Estudio de criacao: selo da versao na capa ganha a hora (versao de hoje) ou o dia (outro dia) numa 2a pilula (May 26/11 20:05)
 // v686 Estudio de criacao: icone de claqueta no lugar da caixa do Dropbox (May 26/11)
 // v685 Estudio de criacao: + Novo projeto centralizado, 32 px dos dois lados
 // v682 #495 VOLTA do Sigma: 1 bloco por frase (bolinha, tomada, tempo); sem o microfone do player no Estudio
