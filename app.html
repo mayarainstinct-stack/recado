@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.663">
+<meta name="app-versao" content="2026-11-25.664">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.663"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.664"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -7631,9 +7631,11 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
           if (tp.disabled) return; tp.disabled = true; tp.classList.add('baixando');
           if (p.video.link) return toca(p.video.link.replace(/([?&])dl=0/, '$1raw=1'));
           if (rlVideos[p.video.arquivo]) return toca(rlVideos[p.video.arquivo]);
+          const chV = '/_video/' + encodeURI(p.video.arquivo) + '@' + (p.video.versao || 1);   // May 21:52: o app recarregou e baixou tudo de novo; agora o vídeo fica guardado no aparelho
+          try { const c = 'caches' in window && await caches.open(CACHE_FOTOS), g = c && await c.match(chV); if (g) { const u = URL.createObjectURL(await g.blob()); rlVideos[p.video.arquivo] = u; return toca(u); } } catch (e) {}
           try { const r = await api(apiDe(p.video.arquivo), { ...RAW, cache: 'default', tempo: 900000 }); if (!r.ok) throw 0; const tot = +r.headers.get('content-length') || 0, rd = r.body && r.body.getReader(), pd = []; let n = 0;
             if (rd) for (;;) { const { done, value } = await rd.read(); if (done) break; pd.push(value); n += value.length; if (tot) { bar.style.width = (n / tot * 100).toFixed(1) + '%'; st.textContent = 'Baixando ' + Math.round(n / 1e6) + ' de ' + Math.round(tot / 1e6) + ' MB'; } else st.textContent = 'Baixando ' + Math.round(n / 1e6) + ' MB'; }
-            const u = URL.createObjectURL(rd ? new Blob(pd, { type: 'video/mp4' }) : await r.blob()); rlVideos[p.video.arquivo] = u; toca(u); }
+            const bl = rd ? new Blob(pd, { type: 'video/mp4' }) : await r.blob(), u = URL.createObjectURL(bl); rlVideos[p.video.arquivo] = u; toca(u); if ('caches' in window) caches.open(CACHE_FOTOS).then(c => c.put(chV, new Response(bl, { headers: { 'content-type': 'video/mp4' } }))).catch(() => {}); }
           catch (e) { tp.disabled = false; tp.classList.remove('baixando'); bar.style.width = '0'; st.textContent = 'Não baixou. Toca pra tentar de novo.'; }
         };
       } else { const s = elD('div', 'rl-sem'); s.innerHTML = svg('nota'); s.append(elD('b', '', 'O vídeo ainda não saiu'), elD('small', '', 'As trilhas já estão aqui embaixo pra ouvir.')); midia.append(s); }
@@ -8872,7 +8874,7 @@ async function versaoNova() {
 function nadaPendente() {
   const ativo = document.activeElement;
   return !sending && !gravador && !anexos.length && !respondendo && !(ativo && ativo.matches('textarea, input')) && painel.hidden
-    && !document.querySelector('.msg.pendente:not(.falhou), .pop, .zoom') && ![...document.querySelectorAll('audio')].some(a => !a.paused)
+    && !document.querySelector('.msg.pendente:not(.falhou), .pop, .zoom') && ![...document.querySelectorAll('audio, video')].some(a => !a.paused) && !document.querySelector('.rl-ver')
     && !Object.values(pendentes).some(x => x.p.fotos.some(f => f.b64 || f.arq) || (x.p.audio && !x.p.audio.subiu && !x.p.audio.guardou));   // "não foi" sobrevive ao reload; foto que não subiu (base64 só na memória) e áudio fora do IndexedDB, não
 }
 let saiuEm = 0;

@@ -1,4 +1,4 @@
-// v663 #482 Estudio de Reels: na esquerda o melhor quadro do video, nao a thumb
+// v664 #482 Estudio de Reels: video guardado no aparelho; app nao recarrega com o Estudio aberto
 // v660 #482 Estudio de Reels: so a trilha mais nova a mostra, as outras no Historico (N) fechado
 // v659 #482 Estudio de Reels: em cima sem rolar o video, Salvar video em HD e a legenda c/ Copiar
 // v658 #484 Estudio de Reels: secao Legenda (Copiar, Editar, Aprovar) em cada projeto
