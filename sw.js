@@ -1,3 +1,5 @@
+// v682 #495 VOLTA do Sigma: 1 bloco por frase (bolinha, tomada, tempo); sem o microfone do player no Estudio
+// v681 #495 Estudio, aba Narracoes: narracao final no topo, texto pintado pela cor da tomada de onde veio cada frase
 // v680 #436 Geral: resposta com data propria vai pela hora dela; trava abaixo do pai so pra resposta sem data
 // v679 #501 Salvar video em HD baixa a qualidade cheia do Dropbox (video.hd); player segue no arquivo leve
 // v678 #498 seria-bom: linhas da Geral e volta do Dropbox dizem Estudio de criacao

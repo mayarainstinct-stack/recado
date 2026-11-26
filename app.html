@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-26.680">
+<meta name="app-versao" content="2026-11-26.682">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.667"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-26.682"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -7741,10 +7741,19 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
       baixo.append(est, tomadasEl, fone, ops); ov.append(topo, midia, baixo); document.body.append(ov);
       if (!p.video) pinta('pronto'); else rlUrlVideo(p, (n, tot) => { est.textContent = 'Baixando o vídeo ' + Math.round(n / 1e6) + (tot ? ' de ' + Math.round(tot / 1e6) : '') + ' MB'; }).then(u => { if (!vivo) return; v.src = u; pinta('pronto'); }).catch(() => { est.textContent = 'Não baixou o vídeo. Confere a internet e abre de novo.'; });
     };
+    const RL_COR_TOMADA = ['#38BDF8', '#C084FC', '#F9A8D4'];   // #495: azul, lilás, rosa claro; nunca o verde de Aprovado nem o amarelo de Ajuste (Sigma 07:27); AA no fundo escuro
     const rlNarracoes = p => {   // #487: o que ela já gravou, do mais novo pro mais velho
-      const nar = ((RM && RM.narracoes) || {})[p.id] || []; if (!nar.length) return [];
-      const L = elD('div', 'rl-nar-lista'); nar.slice().reverse().forEach(n => { const it = elD('div', 'rl-lin'); it.append(elD('small', 'rl-nar-quando', (n.tomada ? 'Tomada ' + n.tomada + (n.de ? ' de ' + n.de : '') + ' · ' : '') + n.quando + ' · ' + String(n.duracao).replace('.', ',') + ' s · ' + (n.video ? 'vídeo versão ' + n.video : 'sem vídeo')), playerAudio(n.arquivo)); L.append(it); });
-      return [elD('h4', 'rl-sec', 'Narrações (' + nar.length + ')'), L];
+      const nar = ((RM && RM.narracoes) || {})[p.id] || [], fin = p.narracao && p.narracao.audio ? p.narracao : null; if (!nar.length && !fin) return [];
+      const ponto = k => { const e = elD('span', 'rl-nar-pt', 'Tomada ' + k); e.style.setProperty('--t', RL_COR_TOMADA[(k - 1) % RL_COR_TOMADA.length]); return e; };   // #495: bolinha da cor + "Tomada N" (Sigma 07:27)
+      const L = elD('div', 'rl-nar-lista'); nar.slice().reverse().forEach(n => { const it = elD('div', 'rl-lin'), q = elD('small', 'rl-nar-quando', (n.tomada && n.de ? 'de ' + n.de + ' · ' : '') + n.quando + ' · ' + String(n.duracao).replace('.', ',') + ' s · ' + (n.video ? 'vídeo versão ' + n.video : 'sem vídeo')); if (n.tomada) q.prepend(ponto(n.tomada), ' '); it.append(q, playerAudio(n.arquivo)); L.append(it); });
+      if (!fin) return [elD('h4', 'rl-sec', 'Narrações (' + nar.length + ')'), L];
+      // #495 (May 26/11 00:48): a versão final no topo; o texto pintado c/ a cor da tomada de onde veio cada trecho
+      // Sigma 07:39: nada de textão: 1 bloco por frase, um embaixo do outro, c/ a bolinha, a tomada e o tempo da frase
+      const c = elD('div', 'rl-lin rl-nar-final'), blocos = elD('div', 'rl-nar-blocos');
+      (fin.frases || []).forEach(f => { const e = elD('div', 'rl-nar-bloco'), topo = elD('small', 'rl-nar-bl-topo'); if (f.tomada) { e.style.setProperty('--t', RL_COR_TOMADA[(f.tomada - 1) % RL_COR_TOMADA.length]); topo.append(ponto(f.tomada)); }
+        if (typeof f.ini === 'number') topo.append(elD('span', 'rl-nar-bl-t', mmss(f.ini))); e.append(topo, elD('p', 'rl-nar-fr', f.texto)); blocos.append(e); });
+      c.append(elD('b', 'rl-nar-fin-t', 'Narração final · versão ' + (fin.versao || 1)), playerAudio(fin.audio));
+      return [elD('h4', 'rl-sec', 'Narrações'), c].concat(blocos.childElementCount ? [blocos] : [], nar.length ? [elD('h4', 'rl-sec rl-nar-sub', 'Tomadas que tu gravou (' + nar.length + ')'), L] : []);
     };
     const rlAbre = p => {
       const ov = elD('div', 'rl-ver'), topo = elD('div', 'rl-ver-topo'), midia = elD('div', 'rl-ver-midia'), info = elD('div', 'rl-ver-info'), xb = elD('button', 'pp-x rl-x'), tt = elD('div');
