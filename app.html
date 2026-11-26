@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.670">
+<meta name="app-versao" content="2026-11-25.672">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -1121,6 +1121,7 @@ function render(items, manterPosicao) {
   // Vale pra todo redesenho (poll, excluir, envio, antigas), não só o do poll.
   // pausado no meio também passa (05/11/2026, player novo): o poll não pode zerar onde ela parou
   const vivos = {}; feed.querySelectorAll('.player').forEach(p => { const a = p._au; if (a && (!a.paused || a._baixando || (a.currentTime > 0 && !a.ended))) vivos[p.dataset.audio] = p; });
+  const vidVivos = {}; feed.querySelectorAll('.video-caixa[data-video]').forEach(c => { const v = c.querySelector('video'); if (v && v.currentSrc && !v.ended && (!v.paused || v.currentTime > 0)) vidVivos[c.dataset.video] = c; });   // May 25/11 23:50: vídeo tocando (ou pausado no meio) não fecha quando chega mensagem; volta o mesmo elemento, igual ao áudio
   const firstNew = shown < 0 ? items.length : shown;
   if (vistoMarca === undefined && items.length) vistoMarca = lerVisto(FILE, items);
   const naoVistas = Math.max(0, items.length - primeiroNaoVisto(items, vistoMarca));
@@ -1228,13 +1229,15 @@ function render(items, manterPosicao) {
         } catch (err) { if (err && err.name !== 'AbortError') showNote('Não foi possível baixar as fotos.', true); }
       });
       alb.append(grade, bt); el.append(alb);
+    } else if (it.foto && /\.(mp4|mov|webm)$/i.test(it.foto) && vidVivos[it.foto + '@' + it.day + ' ' + it.time + (it.quem || it.from)]) {
+      const k = it.foto + '@' + it.day + ' ' + it.time + (it.quem || it.from); el.append(vidVivos[k]); delete vidVivos[k];
     } else if (it.foto && /\.(mp4|mov|webm)$/i.test(it.foto)) {   // vídeo da conversa sobe inteiro (Sigma #221, May 13/11 13:07): toca no balão, baixa só quando ela der play
       const v = document.createElement('video'); v.className = 'foto video'; v.controls = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'none';
       const tampa = elD('button', 'video-tampa'); tampa.type = 'button'; tampa.innerHTML = icone('video') + ' Ver o vídeo';
       tampa.onclick = e => { e.stopPropagation(); tampa.textContent = 'Carregando o vídeo…'; fotoUrl(it.foto, true).then(u => { v.src = u; tampa.remove(); v.play().catch(() => {}); }).catch(er => { tampa.textContent = er.status === 404 ? 'Vídeo apagado' : 'Não carregou o vídeo'; }); };
       const caixa = elD('div', 'video-caixa'), arK = 'video-ar:' + it.foto, arV = store.get(arK); if (arV) caixa.style.setProperty('--ar', arV);   // #483 (May 25/11 20:13): caixa no formato do vídeo; antes do play usa o formato já visto, senão em pé
       v.onloadedmetadata = () => { if (v.videoWidth && v.videoHeight) { const r = (v.videoWidth / v.videoHeight).toFixed(4); caixa.style.setProperty('--ar', r); store.set(arK, r); } };
-      caixa.append(v, tampa); el.append(caixa);
+      caixa.dataset.video = it.foto + '@' + it.day + ' ' + it.time + (it.quem || it.from); caixa.append(v, tampa); el.append(caixa);
     } else if (it.foto) {
       const img = document.createElement('img'); img.className = 'foto esq'; img.alt = 'Foto enviada'; img.loading = 'lazy'; img.decoding = 'async'; img.addEventListener('load', () => img.classList.remove('esq'), { once: true });
       img.addEventListener('click', e => { e.stopPropagation(); if (img.src) abreZoom(img.src, it.foto); });
@@ -7729,9 +7732,16 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
         try { const r = p.video.link ? await fetch(p.video.link.replace(/([?&])dl=0/, '$1raw=1')) : rlVideos[p.video.arquivo] ? await fetch(rlVideos[p.video.arquivo]) : await api(apiDe(p.video.arquivo), { ...RAW, tempo: 600000 }); if (!r.ok) throw 0; const f = new File([await r.blob()], nome, { type: 'video/mp4' }); if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], title: p.titulo }); } catch (e) {} } else baixaArquivo(f, nome); }
         catch (e) { if (p.video.link) open(p.video.link, '_blank'); else showNote('Não baixou: confere a internet.', true); } b.innerHTML = t0; b.disabled = false; });
         b.innerHTML = icone('download'); b.append(elD('span', '', 'Salvar vídeo em HD')); b.setAttribute('aria-label', 'Salvar vídeo em HD de ' + p.titulo); return b; };   // May 21:02: o arquivo ORIGINAL do render, sem recomprimir; no iPhone abre o compartilhar com "Salvar vídeo"
-      const pintaInfo = () => { info.replaceChildren(); if (p.video) { const nb = bt('rl-bt rl-nar-bt', '', () => rlNarra(p, pintaInfo)); nb.innerHTML = icone('mic'); nb.append(elD('span', '', 'Gravar narração')); info.append(hd(), nb); } if (p.legenda) info.append(rlLinha(p, rlLeg(p), pintaInfo)); if (p.video) info.append(rlLinha(p, null, pintaInfo)); if ((p.trilhas || []).length) { const tr = p.trilhas.map((t, i) => [t, i]).sort((x, y) => ((x[0].versao || 0) - (y[0].versao || 0)) || (x[1] - y[1])).map(x => x[0]), ul = tr.pop(); info.append(elD('h4', 'rl-sec', 'Trilha'), rlLinha(p, ul, pintaInfo));
-        if (tr.length) { const hb = bt('rl-hist', '', () => { const ab = hl.hidden; hl.hidden = !ab; hb.classList.toggle('on', ab); hb.setAttribute('aria-expanded', String(ab)); }), hl = elD('div', 'rl-hist-lista'); hb.setAttribute('aria-expanded', 'false'); hb.append(elD('span', '', 'Histórico (' + tr.length + ')')); hb.insertAdjacentHTML('beforeend', icone('chev')); hl.hidden = true; tr.reverse().forEach(t => hl.append(rlLinha(p, t, pintaInfo))); info.append(hb, hl); } } info.append(...rlNarracoes(p)); if (p.nota) info.append(elD('p', 'rl-nota', p.nota)); };   // em cima sem rolar: vídeo, Salvar em HD e legenda c/ Copiar; trilhas e o resto descem
-      pintaInfo(); ov.append(topo, midia, info); document.body.append(ov);
+      let aba = p.video ? 'video' : p.legenda ? 'legenda' : 'trilha', abaAnt = 0; const abasV = elD('div', 'rl-ver-abas'), baixo = elD('div', 'rl-ver-baixo'); abasV.setAttribute('role', 'tablist'); baixo.append(abasV, info);   // #490 May 23:38: tela em abas; Sigma 23:48: abre sempre no Vídeo, Copiar no topo da Legenda, trilha para ao trocar
+      const pintaInfo = () => { const tem = [['video', 'Vídeo', !!p.video || !!p.nota], ['legenda', 'Legenda', !!p.legenda], ['trilha', 'Trilha', !!(p.trilhas || []).length], ['narracoes', 'Narrações', !!rlNarracoes(p).length]].filter(x => x[2]), ks = tem.map(x => x[0]); if (!ks.includes(aba)) aba = ks[0];
+        abasV.replaceChildren(); abasV.hidden = ks.length < 2; tem.forEach(([k, t]) => { const b = bt('rl-aba' + (k === aba ? ' on' : ''), t, () => { if (k === aba) return; rlPara(); abaAnt = ks.indexOf(aba); aba = k; pintaInfo(); info.scrollTop = 0; }); b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(k === aba)); abasV.append(b); });
+        info.replaceChildren(); info.dataset.dir = ks.indexOf(aba) < abaAnt ? 'esq' : 'dir';
+        if (aba === 'video') { if (p.video) { const nb = bt('rl-bt rl-nar-bt', '', () => rlNarra(p, pintaInfo)); nb.innerHTML = icone('mic'); nb.append(elD('span', '', 'Gravar narração')); info.append(hd(), nb, rlLinha(p, null, pintaInfo)); } if (p.nota) info.append(elD('p', 'rl-nota', p.nota)); }
+        if (aba === 'legenda') { const cb = bt('rl-bt rec rl-hd', '', () => rlCopia(rlLegTx(p))), card = rlLinha(p, rlLeg(p), pintaInfo); cb.innerHTML = icone('clipboard'); cb.append(elD('span', '', 'Copiar legenda')); [...card.querySelectorAll('.rl-bt')].filter(b => b.textContent === 'Copiar').forEach(b => b.remove()); info.append(cb, card); }
+        if (aba === 'narracoes') info.append(...rlNarracoes(p).slice(1));
+        if (aba === 'trilha') { const tr = p.trilhas.map((t, i) => [t, i]).sort((x, y) => ((x[0].versao || 0) - (y[0].versao || 0)) || (x[1] - y[1])).map(x => x[0]), ul = tr.pop(); info.append(rlLinha(p, ul, pintaInfo));
+        if (tr.length) { const hb = bt('rl-hist', '', () => { const ab = hl.hidden; hl.hidden = !ab; hb.classList.toggle('on', ab); hb.setAttribute('aria-expanded', String(ab)); }), hl = elD('div', 'rl-hist-lista'); hb.setAttribute('aria-expanded', 'false'); hb.append(elD('span', '', 'Histórico (' + tr.length + ')')); hb.insertAdjacentHTML('beforeend', icone('chev')); hl.hidden = true; tr.reverse().forEach(t => hl.append(rlLinha(p, t, pintaInfo))); info.append(hb, hl); } } };
+      pintaInfo(); ov.append(topo, midia, baixo); document.body.append(ov);
     };
     const rlAbas = () => {
       const ab = store.get('rl-aba') === 'enviar' ? 'enviar' : 'prontos'; abas.replaceChildren();
