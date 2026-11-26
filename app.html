@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.661">
+<meta name="app-versao" content="2026-11-25.662">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.661"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.662"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -2612,7 +2612,8 @@ function chave(b64) { const p = '='.repeat((4 - b64.length % 4) % 4); const r = 
 const Som = (() => {
   let ctx = null;
   const ligado = () => store.get('som') !== 'off';
-  const abre = () => { if (!ligado()) return null; try { if (navigator.audioSession) try { navigator.audioSession.type = 'ambient'; } catch (e) {}   // respeita o silencioso e o volume do iPhone (May 09/11)
+  const abre = () => { if (!ligado() || midiaTocando.size || micStream) return null; try {   // vídeo ou áudio tocando: sem gota, trocar a sessão pra 'ambient' pausava o vídeo no iPhone (May 25/11 21:31)
+    if (navigator.audioSession) try { navigator.audioSession.type = 'ambient'; } catch (e) {}   // respeita o silencioso e o volume do iPhone (May 09/11)
     ctx = ctx || new (window.AudioContext || window.webkitAudioContext)(); if (ctx.state === 'suspended') ctx.resume(); } catch (e) { return null; } return ctx; };
   ['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, () => abre(), { once: true, passive: true }));   // o celular só libera o som depois do 1º toque
   const vari = () => 1 + (Math.random() - .5) * .06;
@@ -7544,6 +7545,7 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
     const rlLeg = p => ({ ...p.legenda, id: 'legenda', nome: 'Legenda' }), rlLegTx = p => (((RM && RM.legendas) || {})[p.id] || {}).texto || p.legenda.texto;   // #484: a edição dela fica no reels-may.json e vale por cima
     const rlItens = p => (p.video ? [[p, null]] : []).concat((p.trilhas || []).map(t => [p, t]), p.legenda ? [[p, rlLeg(p)]] : []);
     const dn = s => String(s || '').split(' ')[0].split('/').reverse().join('');
+    const rlVideos = window.rlVideos || (window.rlVideos = {});
     const rlPara = () => { if (rlTocando) { rlTocando.pause(); rlTocando = null; } document.querySelectorAll('.rl-play.on').forEach(x => { x.classList.remove('on'); x.innerHTML = svg('play'); }); };
     const rlMonta = () => {
       const P = (RL.projetos || []).filter(p => !p.apagado).sort((a, b) => dn(b.data).localeCompare(dn(a.data))), tudo = P.flatMap(rlItens);
@@ -7621,13 +7623,24 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
       const esc = e => { if (e.key === 'Escape' && !document.querySelector('.rl-pop')) { e.stopImmediatePropagation(); fecha(); } }, fecha = () => { rlPara(); ov.querySelectorAll('video').forEach(v => v.pause()); removeEventListener('keydown', esc, true); ov.classList.add('sai'); setTimeout(() => ov.remove(), 260); };   // Esc fecha só o vídeo, não a tela de trás
       addEventListener('keydown', esc, true); xb.onclick = fecha;
       if (p.video) {
-        const v = elD('video'), car = elD('small', 'rl-carga', 'Carregando o vídeo...'); v.playsInline = true; v.setAttribute('playsinline', ''); v.controls = true; v.preload = 'metadata'; v.onplay = rlPara; const cv = elD('div', 'rl-v'); cv.append(car, v); midia.append(cv);
-        (p.video.link ? Promise.resolve(p.video.link) : fotoUrl(p.video.arquivo, true)).then(u => { v.src = u; car.remove(); }).catch(() => { car.textContent = 'Não abriu o vídeo. Confere a internet.'; });
+        const v = elD('video'), cv = elD('div', 'rl-v'), tp = elD('button', 'rl-vtampa'), ti = elD('img'), pl = elD('span', 'rl-vplay'), bar = elD('i'), st = elD('small', '', 'Tocar o vídeo'); v.playsInline = true; v.setAttribute('playsinline', ''); v.controls = true; v.preload = 'none'; v.onplay = rlPara; v.hidden = true;
+        tp.type = 'button'; tp.setAttribute('aria-label', 'Tocar o vídeo de ' + p.titulo); ti.alt = ''; pl.innerHTML = svg('play'); const pg = elD('b', 'rl-vbarra'); pg.append(bar); tp.append(ti, pl, pg, st); cv.append(tp, v); midia.append(cv);
+        if (p.capa) fotoUrl(p.capa).then(u => { ti.src = u; v.poster = u; }).catch(() => {});
+        const toca = u => { v.src = u; v.hidden = false; tp.classList.add('sai'); setTimeout(() => tp.remove(), 220); v.play().catch(() => {}); };
+        tp.onclick = async () => {   // Sigma 21:30: 44 MB pela API travava antes de começar; agora baixa só no toque, com barra, e guarda o link na sessão pra abrir na hora da 2ª vez
+          if (tp.disabled) return; tp.disabled = true; tp.classList.add('baixando');
+          if (p.video.link) return toca(p.video.link.replace(/([?&])dl=0/, '$1raw=1'));
+          if (rlVideos[p.video.arquivo]) return toca(rlVideos[p.video.arquivo]);
+          try { const r = await api(apiDe(p.video.arquivo), { ...RAW, cache: 'default', tempo: 900000 }); if (!r.ok) throw 0; const tot = +r.headers.get('content-length') || 0, rd = r.body && r.body.getReader(), pd = []; let n = 0;
+            if (rd) for (;;) { const { done, value } = await rd.read(); if (done) break; pd.push(value); n += value.length; if (tot) { bar.style.width = (n / tot * 100).toFixed(1) + '%'; st.textContent = 'Baixando ' + Math.round(n / 1e6) + ' de ' + Math.round(tot / 1e6) + ' MB'; } else st.textContent = 'Baixando ' + Math.round(n / 1e6) + ' MB'; }
+            const u = URL.createObjectURL(rd ? new Blob(pd, { type: 'video/mp4' }) : await r.blob()); rlVideos[p.video.arquivo] = u; toca(u); }
+          catch (e) { tp.disabled = false; tp.classList.remove('baixando'); bar.style.width = '0'; st.textContent = 'Não baixou. Toca pra tentar de novo.'; }
+        };
       } else { const s = elD('div', 'rl-sem'); s.innerHTML = svg('nota'); s.append(elD('b', '', 'O vídeo ainda não saiu'), elD('small', '', 'As trilhas já estão aqui embaixo pra ouvir.')); midia.append(s); }
       if (p.video && p.capa) { const tb = bt('rl-thumb', '', async () => { try { const r = await api(apiDe(p.capa), { ...RAW, tempo: 120000 }); if (!r.ok) throw 0; const nome = p.capa.split('/').pop(), f = new File([await r.blob()], nome, { type: 'image/jpeg' }); if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], title: p.titulo }); } catch (e) {} } else baixaArquivo(f, nome); } catch (e) { showNote('Não baixou: confere a internet.', true); } }), ti = elD('img'), ic = elD('span');
         ti.alt = ''; ic.innerHTML = icone('download'); tb.setAttribute('aria-label', 'Salvar a thumbnail de ' + p.titulo); fotoUrl(p.capa).then(u => { ti.src = u; }).catch(() => {}); tb.append(ti, ic); midia.classList.add('dupla'); midia.append(tb); }   // May 21:18: vídeo na esquerda e thumbnail na direita; toca na thumb pra salvar
       const hd = () => { const b = bt('rl-bt rec rl-hd', '', async () => { const t0 = b.innerHTML; b.textContent = 'Baixando o vídeo...'; b.disabled = true; const nome = (p.video.arquivo || p.id + '.mp4').split('/').pop().split('?')[0];
-        try { const r = p.video.link ? await fetch(p.video.link.replace(/([?&])dl=0/, '$1raw=1')) : await api(apiDe(p.video.arquivo), { ...RAW, tempo: 600000 }); if (!r.ok) throw 0; const f = new File([await r.blob()], nome, { type: 'video/mp4' }); if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], title: p.titulo }); } catch (e) {} } else baixaArquivo(f, nome); }
+        try { const r = p.video.link ? await fetch(p.video.link.replace(/([?&])dl=0/, '$1raw=1')) : rlVideos[p.video.arquivo] ? await fetch(rlVideos[p.video.arquivo]) : await api(apiDe(p.video.arquivo), { ...RAW, tempo: 600000 }); if (!r.ok) throw 0; const f = new File([await r.blob()], nome, { type: 'video/mp4' }); if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], title: p.titulo }); } catch (e) {} } else baixaArquivo(f, nome); }
         catch (e) { if (p.video.link) open(p.video.link, '_blank'); else showNote('Não baixou: confere a internet.', true); } b.innerHTML = t0; b.disabled = false; });
         b.innerHTML = icone('download'); b.append(elD('span', '', 'Salvar vídeo em HD')); b.setAttribute('aria-label', 'Salvar vídeo em HD de ' + p.titulo); return b; };   // May 21:02: o arquivo ORIGINAL do render, sem recomprimir; no iPhone abre o compartilhar com "Salvar vídeo"
       const pintaInfo = () => { info.replaceChildren(); if (p.video) info.append(hd()); if (p.legenda) info.append(rlLinha(p, rlLeg(p), pintaInfo)); if (p.video) info.append(rlLinha(p, null, pintaInfo)); if ((p.trilhas || []).length) { const tr = p.trilhas.map((t, i) => [t, i]).sort((x, y) => ((x[0].versao || 0) - (y[0].versao || 0)) || (x[1] - y[1])).map(x => x[0]), ul = tr.pop(); info.append(elD('h4', 'rl-sec', 'Trilha'), rlLinha(p, ul, pintaInfo));
