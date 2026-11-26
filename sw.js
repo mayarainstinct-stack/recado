@@ -1,3 +1,4 @@
+// v689 #520 Estudio: hora/dia da versao no lugar do lapis (canto de cima direito); o selo desce pra baixo dela (May 26/11 20:48)
 // v688 #520 Estudio: hora/dia da versao no lado direito da capa, embaixo do lapis (May 26/11 20:41)
 // v687 #520 Estudio de criacao: selo da versao na capa ganha a hora (versao de hoje) ou o dia (outro dia) numa 2a pilula (May 26/11 20:05)
 // v686 Estudio de criacao: icone de claqueta no lugar da caixa do Dropbox (May 26/11)
