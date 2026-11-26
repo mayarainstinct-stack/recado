@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.659">
+<meta name="app-versao" content="2026-11-25.660">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.659"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.660"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -7628,7 +7628,8 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
         try { const r = p.video.link ? await fetch(p.video.link.replace(/([?&])dl=0/, '$1raw=1')) : await api(apiDe(p.video.arquivo), { ...RAW, tempo: 600000 }); if (!r.ok) throw 0; const f = new File([await r.blob()], nome, { type: 'video/mp4' }); if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], title: p.titulo }); } catch (e) {} } else baixaArquivo(f, nome); }
         catch (e) { if (p.video.link) open(p.video.link, '_blank'); else showNote('Não baixou: confere a internet.', true); } b.innerHTML = t0; b.disabled = false; });
         b.innerHTML = icone('download'); b.append(elD('span', '', 'Salvar vídeo em HD')); b.setAttribute('aria-label', 'Salvar vídeo em HD de ' + p.titulo); return b; };   // May 21:02: o arquivo ORIGINAL do render, sem recomprimir; no iPhone abre o compartilhar com "Salvar vídeo"
-      const pintaInfo = () => { info.replaceChildren(); if (p.video) info.append(hd()); if (p.legenda) info.append(rlLinha(p, rlLeg(p), pintaInfo)); if (p.video) info.append(rlLinha(p, null, pintaInfo)); if ((p.trilhas || []).length) { info.append(elD('h4', 'rl-sec', 'Trilhas')); p.trilhas.forEach(t => info.append(rlLinha(p, t, pintaInfo))); } if (p.nota) info.append(elD('p', 'rl-nota', p.nota)); };   // em cima sem rolar: vídeo, Salvar em HD e legenda c/ Copiar; trilhas e o resto descem
+      const pintaInfo = () => { info.replaceChildren(); if (p.video) info.append(hd()); if (p.legenda) info.append(rlLinha(p, rlLeg(p), pintaInfo)); if (p.video) info.append(rlLinha(p, null, pintaInfo)); if ((p.trilhas || []).length) { const tr = p.trilhas.map((t, i) => [t, i]).sort((x, y) => ((x[0].versao || 0) - (y[0].versao || 0)) || (x[1] - y[1])).map(x => x[0]), ul = tr.pop(); info.append(elD('h4', 'rl-sec', 'Trilha'), rlLinha(p, ul, pintaInfo));
+        if (tr.length) { const hb = bt('rl-hist', '', () => { const ab = hl.hidden; hl.hidden = !ab; hb.classList.toggle('on', ab); hb.setAttribute('aria-expanded', String(ab)); }), hl = elD('div', 'rl-hist-lista'); hb.setAttribute('aria-expanded', 'false'); hb.append(elD('span', '', 'Histórico (' + tr.length + ')')); hb.insertAdjacentHTML('beforeend', icone('chev')); hl.hidden = true; tr.reverse().forEach(t => hl.append(rlLinha(p, t, pintaInfo))); info.append(hb, hl); } } if (p.nota) info.append(elD('p', 'rl-nota', p.nota)); };   // em cima sem rolar: vídeo, Salvar em HD e legenda c/ Copiar; trilhas e o resto descem
       pintaInfo(); ov.append(topo, midia, info); document.body.append(ov);
     };
     const rlAbas = () => {

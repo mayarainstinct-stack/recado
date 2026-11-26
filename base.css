@@ -4247,5 +4247,8 @@ body:has(#painel.tema-musica:not([hidden])) .ed-card .ed-acoes .ed-link{order:2;
 .rl-leg { margin: 0; padding: 12px 14px; border-radius: 12px; background: rgba(255,255,255,.06); line-height: 1.45; white-space: pre-line; overflow-wrap: anywhere; user-select: text; -webkit-user-select: text; }
 .rl-leg.curta { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; padding-bottom: 0; border-bottom: 12px solid transparent; cursor: pointer; }
 .rl-hd { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; font-size: 16px; } .rl-hd svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.rl-hist { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 44px; padding: 8px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,.14); background: transparent; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+.rl-hist svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; transform: rotate(90deg); transition: transform .2s; } .rl-hist.on svg { transform: rotate(-90deg); }
+.rl-hist-lista { display: grid; gap: 10px; transform-origin: top; animation: rl-hist-abre .22s cubic-bezier(.2,.8,.2,1); } @keyframes rl-hist-abre { from { transform: translateY(-8px) scaleY(.96); } }
 .rl-ta-leg { min-height: 180px; }
 .rl-ta { display: block; width: 100%; min-height: 96px; margin-top: 12px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--paper); color: var(--fg); font: inherit; font-size: 16px; resize: none; box-sizing: border-box; }
