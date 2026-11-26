@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.666">
+<meta name="app-versao" content="2026-11-25.668">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-25.666"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-25.667"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -7647,7 +7647,8 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
         if (fase === 'gravando') { const pr = bt('rl-bt rec rl-nar-grava', '', () => rec && rec.stop()); pr.innerHTML = '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></svg>'; pr.append(elD('span', '', 'Parar')); ops.append(pr); }
         if (fase === 'depois') {
           est.textContent = n < MAX ? 'Tomada ' + n + ' de ' + MAX + ' gravada. Grava outra inteira ou manda as que tem.' : 'As ' + MAX + ' tomadas gravadas. Ouve e manda.';
-          tomadas.forEach((tm, i) => { const L = elD('div', 'rl-nar-tomada'); L.append(elD('span', '', 'Tomada ' + (i + 1) + ' · ' + tempo(tm.dur)), ouvirBt(tm, i + 1)); tomadasEl.append(L); });
+          tomadas.forEach((tm, i) => { const L = elD('div', 'rl-nar-tomada'), ds = bt('rl-nar-desc', 'Descartar', () => { if (!ds.dataset.conf) { ds.dataset.conf = '1'; ds.textContent = 'Toca de novo'; ds.classList.add('confirma'); return; } paraOuvir(); tomadas.splice(i, 1); pinta(tomadas.length ? 'depois' : 'pronto'); });   // May 22:50 (Sigma: discreto, c/ confirmação): tira só a tomada que ainda não foi mandada
+            ds.setAttribute('aria-label', 'Descartar a tomada ' + (i + 1)); L.append(elD('span', '', 'Tomada ' + (i + 1) + ' · ' + tempo(tm.dur)), ds, ouvirBt(tm, i + 1)); tomadasEl.append(L); });
           if (n < MAX) { const g = bt('rl-bt rl-nar-grava', '', grava); g.innerHTML = icone('mic'); g.append(elD('span', '', 'Gravar outra')); ops.append(g); }
           const md = bt('rl-bt rec', n === 1 ? 'Mandar pro Hermes' : 'Mandar as ' + n, () => manda(md)); ops.append(md);
         }

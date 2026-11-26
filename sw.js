@@ -1,3 +1,5 @@
+// v668 #450 insignias: icone + nome curto na colmeia, toque abre o texto e o campo Nome curto
+// v667 #487 narracao: Descartar discreto em cada tomada (2 toques)
 // v666 #487 narracao: ate 3 tomadas inteiras (nenhuma apagada), manda 1 a 3 juntas pro Hermes
 // v665 #487 Estudio de Reels: gravar narracao c/ o video passando (mudo; ouvir so c/ fone), vai pro Hermes pela fila do audio
 // v664 #482 Estudio de Reels: video guardado no aparelho; app nao recarrega com o Estudio aberto
