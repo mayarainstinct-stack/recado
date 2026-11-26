@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-25.669">
+<meta name="app-versao" content="2026-11-25.670">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -7598,17 +7598,28 @@ function abreDropbox(m) {   // #482 (May via Lyra 25/11 17:40-17:47): Estúdio d
     };
     const rlLinha = (p, t, repinta) => {
       const L = elD('section', 'rl-lin'), top = elD('div', 'rl-lin-top'), tx = elD('div'), d = rlDec(p, t), ver = (t || p.video).versao, lg = t && t.id === 'legenda', ed = lg && ((RM && RM.legendas) || {})[p.id];
+      const sons = t && !lg && Array.isArray(t.sons) ? t.sons : []; let tocaEm = null, mostra = null;
       if (t && !lg) {
-        const pl = bt('rl-play', '', async () => {
-          const era = rlTocando && rlTocando.dono === pl; rlPara(); if (era) return;
-          const au = new Audio(); au.dono = pl; rlTocando = au; pl.classList.add('on'); pl.innerHTML = svg('pausa'); au.onended = () => { if (rlTocando === au) rlPara(); };
-          try { au.src = await fotoUrl(t.audio, true); if (rlTocando === au) await au.play(); } catch (e) { if (rlTocando === au) rlPara(); showNote('Não tocou. Confere a internet.', true); }
-        });
+        tocaEm = async (s, quem) => {
+          const era = rlTocando && rlTocando.dono === pl && rlTocando.quem === quem; rlPara(); if (era) return;
+          const au = new Audio(); au.dono = pl; au.quem = quem; rlTocando = au; pl.classList.add('on'); pl.innerHTML = svg('pausa'); au.onended = () => { if (rlTocando === au) rlPara(); };
+          try { au.src = await fotoUrl(t.audio, true); if (rlTocando !== au) return; if (s) { au.muted = true; await au.play(); au.currentTime = Math.max(0, s - 0.5); au.muted = false; } else await au.play(); if (mostra) { const passo = () => { if (rlTocando !== au) { mostra(-1); return; } mostra(au.currentTime, au.duration); requestAnimationFrame(passo); }; passo(); } } catch (e) { if (rlTocando === au) rlPara(); showNote('Não tocou. Confere a internet.', true); }
+        };
+        const pl = bt('rl-play', '', () => tocaEm(0, 'tudo'));
         pl.innerHTML = svg('play'); pl.setAttribute('aria-label', 'Ouvir ' + t.nome); top.append(pl);
       }
-      tx.append(elD('b', '', t ? t.nome : 'Vídeo final'), elD('small', '', [ver ? 'Versão ' + ver : '', t && t.obs, ed ? 'Editada por você' : ''].filter(Boolean).join(' · '))); top.append(tx);
-      top.append(elD('span', 'rl-chip ' + (d ? d.status : 'novo'), d ? (d.status === 'aprovado' ? 'Aprovado ' : 'Ajuste ') + d.quando.slice(0, 5) : 'Pra ver')); L.append(top);
-      if (lg) { const lt = elD('p', 'rl-leg curta', rlLegTx(p)); lt.onclick = () => lt.classList.toggle('curta'); L.append(lt); }   // May 21:02: a legenda fica em cima sem rolar, 3 linhas; toca pra ver inteira
+      tx.append(elD('b', '', t ? t.nome : 'Vídeo final'), elD('small', '', [ver ? 'Versão ' + ver : '', !sons.length && t && t.obs, ed ? 'Editada por você' : ''].filter(Boolean).join(' · '))); top.append(tx);
+      top.append(elD('span', 'rl-chip ' + (d ? d.status : 'novo'), d ? (d.status === 'aprovado' ? 'Aprovado ' : 'Ajuste ') + d.quando.slice(-5) : 'Pra ver')); L.append(top);
+      if (lg) { const lt = elD('p', 'rl-leg curta', rlLegTx(p)); lt.onclick = () => lt.classList.toggle('curta'); L.append(lt); }
+      if (sons.length) {   // May 23:26/23:28: 1 linha por som, hora e título; toca na linha = ouve dali (Sigma 23:28); May 23:32: tocando, a linha do tempo anda e o som da vez acende
+        const D0 = t.dur || sons[sons.length - 1].t + 1, ls = elD('div', 'rl-sons'), tl = bt('rl-tl', '', null), barra = elD('span', 'rl-tl-fill'), cab = elD('span', 'rl-tl-cab'), hora = elD('span', 'rl-tl-tx', '0,0 / ' + D0.toFixed(1).replace('.', ',')), lis = [];
+        tl.setAttribute('aria-label', 'Linha do tempo da trilha'); tl.append(barra, cab);
+        sons.forEach(s => { const m = elD('span', 'rl-tl-m'); m.style.left = (100 * s.t / D0) + '%'; tl.append(m); });
+        tl.onclick = e => { const r = tl.getBoundingClientRect(); tocaEm(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * D0 + 0.5, 'tl' + Date.now()); };
+        mostra = (x, D) => { D = D > 0 && isFinite(D) ? D : D0; const p = x < 0 ? 0 : Math.min(100, 100 * x / D); barra.style.width = p + '%'; cab.style.left = p + '%'; tl.classList.toggle('on', x >= 0); hora.textContent = (x < 0 ? 0 : x).toFixed(1).replace('.', ',') + ' / ' + D.toFixed(1).replace('.', ','); let k = -1; if (x >= 0) sons.forEach((s, n) => { if (x >= s.t - 0.05) k = n; }); lis.forEach((li, n) => li.classList.toggle('on', n === k)); };
+        sons.forEach(s => { const li = bt('rl-som', '', () => tocaEm(s.t, s.t)); li.setAttribute('aria-label', 'Ouvir ' + s.som); li.append(elD('span', 'rl-som-t', String(s.t.toFixed(2)).replace('.', ',')), elD('span', '', s.som)); lis.push(li); ls.append(li); });
+        const cx = elD('div', 'rl-tl-cx'); cx.append(tl, hora); L.append(cx, ls);
+      }
       if (d && d.status === 'ajuste' && d.nota) L.append(elD('p', 'rl-pedido', '"' + d.nota + '"'));
       const ok = d && d.status === 'aprovado', ops = elD('div', 'rl-ops');
       if (lg) ops.append(bt('rl-bt', 'Copiar', () => rlCopia(rlLegTx(p))), bt('rl-bt', 'Editar', () => rlEdita(p, repinta)));

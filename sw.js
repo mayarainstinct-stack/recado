@@ -1,3 +1,4 @@
+// v670 #488 Estudio de Reels: sons linha por linha, linha do tempo tocando, selo c/ hora
 // v669 #487 Descartar da tomada como botao cinza pequeno (44 px), sem sublinhado
 // v668 #450 insignias: icone + nome curto na colmeia, toque abre o texto e o campo Nome curto
 // v667 #487 narracao: Descartar discreto em cada tomada (2 toques)
