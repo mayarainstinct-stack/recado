@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-26.690">
+<meta name="app-versao" content="2026-11-26.691">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-26.690"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-26.691"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3135,7 +3135,7 @@ abreMenu.onclick = () => {
   tela('Menu', c => {
     const h = document.createElement('div'); h.className = 'p-hero'; if (FILE === TRAB.arq) { h.className = 'p-hero nx-hero'; const cb = cabNx('Simplificação', 'Trabalho', 'O seu dia de trabalho, num lugar só.'); h.append(cb); } else h.innerHTML = '<div class="logo" aria-hidden="true" style="background-image:url(' + (FILE === TRAB.arq ? '' : FOTO_GERAL) + ');background-color:' + (FILE === TRAB.arq ? '#FFFFFF' : '#0E0F12') + '"></div><div><b>' + (FILE === TRAB.arq ? 'Trabalho' : nomeApp()) + '</b><span>' + (FILE === TRAB.arq ? 'Simplificação · o dia de trabalho' : 'Atalhos da casa') + '</span></div>'; const eng = elD('button', 'p-engrenagem'); eng.type = 'button'; eng.innerHTML = icone('gear'); eng.setAttribute('aria-label', 'Configurações'); eng.onclick = abreConfig; h.append(eng); c.append(h);   // engrenagem no canto de cima, à direita (May 09/11)
     if (FILE !== TRAB.arq) { const nomeG = h.querySelector('b'); if (nomeG) { nomeG.style.cursor = 'pointer'; nomeG.onclick = abreContas; } }   // tocar em "Geral" abre as Contas da viagem (May, 10/11/2026)   // logo do Simp no Menu do Trabalho (May 09/11)
-    const t = document.createElement('div'); t.className = 'p-sec'; t.textContent = 'Atalhos'; c.append(t);
+    // #522 (May 26/11 22:23): sem a palavra "Atalhos" em cima dos cartões
     // Os botões do Menu vêm de menu/menu.json (a Lyra acrescenta páginas sem mexer no app); sem ele, só o Catálogo.
     // grade de ícones em 3 colunas, o mais usado em cima (May, 06/11/2026: "lista muito grande")
     const lista = document.createElement('div'); lista.className = 'p-grade apps'; c.append(lista);
