@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-26.691">
+<meta name="app-versao" content="2026-11-26.692">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- fonte sem travar a abertura (05/11/2026): media=print baixa em segundo plano e vira "all" quando chega; sem ela fica a do sistema (--font-ui) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="base.css?v=2026-11-26.691"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
+<link rel="stylesheet" href="base.css?v=2026-11-26.692"><!-- trocar o ?v= junto com a app-versao toda vez que mexer no base.css -->
 </head>
 <body>
 <div class="app">
@@ -3142,8 +3142,10 @@ abreMenu.onclick = () => {
     let uso = {}; try { uso = JSON.parse(store.get('menu-uso') || '{}'); } catch (e) {}
     const conta = n => { uso[n] = (uso[n] || 0) + 1; try { store.set('menu-uso', JSON.stringify(uso)); } catch (e) {} };
     for (let k = 0; k < (FILE === TRAB.arq ? 6 : 15); k++) { const b = botaoGrade('', '\u00a0', '', () => {}); b.classList.add('sk-bt'); b.disabled = true; lista.append(b); }   // esqueleto do Menu: o mesmo número de azulejos no mesmo lugar, até o menu.json chegar
-    lerArquivo(FILE === TRAB.arq ? 'menu/menu-trabalho.json' : 'menu/menu.json').then(t => JSON.parse(t).itens).catch(() => [{ tipo: 'catalogo', icone: 'bag', nome: 'Catálogo', sub: 'piscina, piso, borda, churrasqueira…' }])
+    // #524 (Sigma 23:09): menu que não carrega cai no reserva; no Trabalho o reserva é vazio com aviso (nada da casa no Trabalho)
+    lerArquivo(FILE === TRAB.arq ? 'menu/menu-trabalho.json' : 'menu/menu.json').then(t => JSON.parse(t).itens).catch(() => FILE === TRAB.arq ? [] : [{ tipo: 'catalogo', icone: 'bag', nome: 'Catálogo', sub: 'piscina, piso, borda, churrasqueira…' }])
       .then(itens => {   // ordem: a que ela arrumou arrastando (fica neste aparelho); sem isso, a do menu.json (mão direita)
+        if (!itens.length) { lista.replaceChildren(elD('p', 'p-menu-falha', 'Não consegui ler o menu. Confere a internet e abre de novo.')); return; }
         let ordem = []; try { ordem = JSON.parse(store.get(FILE === TRAB.arq ? 'menu-ordem-trab' : 'menu-ordem') || '[]').map(n => n === 'Ideias' ? 'Tarefas' : n); } catch (e) {}   // Ideias virou Tarefas (May 16:16): a ordem que ela arrumou continua valendo
         lista.querySelectorAll('.sk-bt').forEach(x => x.remove());
         const pos = n => { const i = ordem.indexOf(n); return i < 0 ? 999 : i; };
