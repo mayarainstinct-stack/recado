@@ -1681,11 +1681,33 @@ async function semanaTrabalho() {   // Geral e Trabalho mostram o MESMO anel: é
   if (FILE === TRAB.arq) { const ok = lista.filter(Boolean); if (ok.length) { mostraSemana(ok); return; } }
   try { const r = await api('https://api.github.com/repos/' + REPO + '/contents/casa/online/online-lyra.json?ref=online', RAW); if (!r.ok) throw 0; if (FILE === TRAB.arq) mostraSemana([{ chave: 'lyra', ...JSON.parse(await r.text()) }]); } catch (e) { if (FILE === TRAB.arq) anelSemDado(); }
 }
+// Online pela HORA DA ÚLTIMA RESPOSTA do robô na Geral, não pelo heartbeat (May 27/11: o heartbeat mostra online robô que não responde); sem resposta no arquivo carregado, cai no heartbeat
+const RESP_GERAL = {}, RESP_ISO = new Set(), SEM_ACENTO = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();   // RESP_GERAL[chave] = ms da última resposta; RESP_ISO = os carimbos que vieram de resposta (janela de 15 min)
+function respostasGeral(md) {   // "  ↳ Hermes (hóspede, PC1) [27/11/2026 16:15]: texto" -> última data/hora por robô; ignora status automático
+  const novo = {};
+  String(md || '').split(/\r?\n/).forEach(l => {
+    const m = l.match(/^\s*(?:↳|->)\s*([^\s(\[:]+)[^\[\n]*?\[(\d\d)\/(\d\d)\/(\d{4}) (\d\d):(\d\d)\]:\s*(.*)$/);
+    if (!m || /^(entrou no PC|saiu do modo leve|trava em|trava solta)/i.test(m[7].trim())) return;
+    const k = SEM_ACENTO(m[1]), t = Date.parse(m[4] + '-' + m[3] + '-' + m[2] + 'T' + m[5] + ':' + m[6]);
+    if (isFinite(t) && !(novo[k] >= t)) novo[k] = t;
+  });
+  Object.keys(RESP_GERAL).forEach(k => delete RESP_GERAL[k]); Object.assign(RESP_GERAL, novo);
+  aplicaRespGeral();
+}
+function aplicaRespGeral() {   // troca ultimaAtualizacao pela última resposta (guarda o heartbeat em _hb pra poder voltar)
+  onlineGrupoLista = onlineGrupoLista.map(p => {
+    if (p.chave === 'may') return p;
+    const hb = '_hb' in p ? p._hb : p.ultimaAtualizacao, t = RESP_GERAL[SEM_ACENTO(p.chave)];
+    if (!t) return '_hb' in p ? { ...p, ultimaAtualizacao: hb } : p;
+    const iso = new Date(t).toISOString(); RESP_ISO.add(iso);
+    return { ...p, _hb: hb, ultimaAtualizacao: iso };
+  });
+}
 function fmtVisto(iso) {
   const t = Date.parse(iso || '');
   if (!isFinite(t)) return { texto: 'nunca visto', online: false };
   const min = (Date.now() - t) / 60000;
-  if (min > 5.5) {   // mesma janela do heartbeat global (checaOnline, 330000ms) — consistente com "Agente online agora"
+  if (min > (RESP_ISO.has(iso) ? 15 : 5.5)) {   // mesma janela do heartbeat global (checaOnline, 330000ms) — consistente com "Agente online agora"
     const h = min / 60;
     return { texto: 'offline · visto há ' + (h < 1 ? Math.round(min) + ' min' : (h < 24 ? Math.round(h) + ' h' : Math.round(h / 24) + ' d')), online: false };
   }
@@ -1749,6 +1771,7 @@ async function atualizaOnlineGrupo(forcar) {
     if (falha) { onlineBadge.textContent = statusFalha(falha); return; }
     onlineGrupoLista = lista.map(p => p.falhou ? (onlineGrupoLista.find(q => q.chave === p.chave && !q.falhou) || p) : p);   // leitura que falhou guarda o último sinal, não vira "nunca visto" (Sigma 16:11)   // sempre os participantes todos (mesmo quem nunca apareceu), pra lista nunca ficar vazia
     mostraSemana(lista);   // uma conta só pra casa e serviço: a Lyra entra também (May, 06/11/2026 19:21)
+    aplicaRespGeral();   // online pela última resposta na Geral (May 27/11)
     mostraFazendo(fazendoGrupo());
     const n = onlineGrupoLista.filter(p => p.chave !== 'may' && fmtVisto(p.ultimaAtualizacao).online).length;   // bots: ela não conta
     onlineBadge.textContent = n + (n === 1 ? ' bot online' : ' bots online');   // "bots online", sem o lugar dela (May, 06/11/2026 13:53)
@@ -1782,6 +1805,7 @@ async function carregar() {
     let md = ''; try { md = b64decode(f.content); } catch (e2) {}
     if (gravado && gravado.arq === arq && Date.now() < gravado.ate && md && !jaGravado(md, gravado.linhas)) return f;   // API ainda com a versão de antes do PUT
     if (md) ultimaLeitura = { arq, f };
+    if (md && arq === GERAL.arq) respostasGeral(md);   // online dos robôs pela última resposta na Geral (May 27/11)
     let items; try { if (!md) throw 0; items = parse(md, arq); } catch (e2) { items = lastItems; }   // md malformado não trava a conversa já carregada
     // _raw cobre nome, carimbo, foto, áudio, citação e opções da linha; _linha = posição (Excluir); day = dia herdado/virada
     const same = items.length === lastItems.length && items.every((it, i) => { const o = lastItems[i]; return it._raw === o._raw && it._linha === o._linha && it.text === o.text && it.day === o.day && it.lida === o.lida && it.transcricao === o.transcricao; });
