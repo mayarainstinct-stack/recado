@@ -1,3 +1,4 @@
+// v690 #520 Estudio: sem o lapis de ajuste na capa (May 26/11 20:54); hora/dia fica no canto de cima direito
 // v689 #520 Estudio: hora/dia da versao no lugar do lapis (canto de cima direito); o selo desce pra baixo dela (May 26/11 20:48)
 // v688 #520 Estudio: hora/dia da versao no lado direito da capa, embaixo do lapis (May 26/11 20:41)
 // v687 #520 Estudio de criacao: selo da versao na capa ganha a hora (versao de hoje) ou o dia (outro dia) numa 2a pilula (May 26/11 20:05)
