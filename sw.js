@@ -1,3 +1,4 @@
+// v694 #525 insignias: cada uma com icone so dela (41 novos do Lucide, ISC), estrela so em 4; saude/calendario/mapa ganharam desenho
 // v693 #524 aviso do Menu do Trabalho com altura pelo texto e margem da grade
 // v692 #524 Menu do Trabalho: sem menu lido, aviso em vez do Catalogo da casa
 // v691 #522 Menu (Geral e Trabalho): sem a palavra Atalhos em cima dos cartoes (May 26/11 22:23)
