@@ -1,3 +1,5 @@
+// v697 #530 Avaliacao da semana: so a semana na tela alinha as outras (as 2 se corrigiam e tremiam no scroll)
+// v696 #529 Jogos: progresso estimado mostra o numero dela (sem dezena); estimado 0 = sem numero (jogos.html pctN)
 // v695 #526 Estudio: video em partes mostra 1/2, 2/2 numa pilula embaixo do v5; capa do 1 com o titulo
 // v694 #525 insignias: cada uma com icone so dela (41 novos do Lucide, ISC), estrela so em 4; saude/calendario/mapa ganharam desenho
 // v693 #524 aviso do Menu do Trabalho com altura pelo texto e margem da grade

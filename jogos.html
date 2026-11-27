@@ -911,7 +911,7 @@ function capaAttr(u,grande){const l=grande?u:capaLeve(u);return !ehPriv(u)?srcAt
 // fundo da capa enquanto carrega (May 09/11/2026): no lugar do selo J2 (mais uma imagem por capa), so texto branco no degrade da cor do console; a capa entra por cima quando carrega
 function capaTxt(j){return`<div class="ini j2 txt"><b>${esc(j.titulo||"")}</b><small>${esc(curto(j.console)||"")}</small></div>`}
 function capaHtml(j,cls,grande){const u=capaUrl(j);return u?`<img class="inteira" loading="lazy" ${capaAttr(u,grande)} alt="" onerror="semCapa(this)">${capaTxt(j)}`:capaTxt(j)}
-function pctN(j){if(j.status=="zerado")return 100;return j.pct==null?null:j.estimado?Math.round(j.pct/10)*10:j.pct}
+function pctN(j){if(j.status=="zerado")return 100;return j.pct==null||(j.estimado&&j.pct==0)?null:j.pct}   // #529 (May 27/11): estimado mostra o número dela, sem dezena; estimado 0 = sem número
 function pctTxt(j){const n=pctN(j);return n==null?"":n+"%"}
 function barra(j){return j.pct==null?'<div class="barra"></div>':`<div class="barra"><i class="${j.pct>=100?"ouro":j.estimado?"est":""}" style="--p:${Math.max(0,Math.min(100,j.pct))/100};width:${Math.max(0,Math.min(100,j.pct))}%"></i></div>`}
 function ultimoDia(j){if(j.ultima_vez){const[d,m,a]=String(j.ultima_vez).split("/").map(Number);if(a)return a*10000+m*100+d}let best=0;(j.historico||[]).concat(j.relatos||[]).forEach(h=>{if(!h.dia)return;const[d,m,a]=h.dia.split("/").map(Number);const v=a*10000+m*100+d;if(v>best)best=v});return best}

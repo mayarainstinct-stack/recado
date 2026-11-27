@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0EA371" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2A20" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache">
-<meta name="app-versao" content="2026-11-27.695">
+<meta name="app-versao" content="2026-11-27.697">
 <meta name="app-novidade" content="Menu no computador ocupando a tela toda">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Recados</title>
@@ -8790,7 +8790,8 @@ async function abreReavaliacao() {
   const pags = [...trilho.children]; let alinhando = false;
   const ancora = pg => { const topo = pg.scrollTop; for (const c of pg.querySelectorAll('.rv-ct')) if (c.offsetTop + c.offsetHeight > topo + 40) return { k: c.dataset.k, d: c.offsetTop - topo }; return null; };
   const alinha = de => { const a = ancora(de); alinhando = true; pags.forEach(pg => { if (pg === de) return; if (!a || de.scrollTop < 20) { pg.scrollTop = de.scrollTop < 20 ? 0 : pg.scrollTop; return; } const c = pg.querySelector('.rv-ct[data-k="' + a.k + '"]'); if (c) pg.scrollTop = c.offsetTop - a.d; }); requestAnimationFrame(() => { alinhando = false; }); };
-  pags.forEach(pg => pg.addEventListener('scroll', () => { if (!alinhando) alinha(pg); }, { passive: true }));
+  // #530 (May 27/11 09:25, "travada e tremendo"): só a semana que está na tela comanda o alinhamento; o scroll das escondidas (que o próprio alinha mexe) não manda de volta, senão as 2 ficam se corrigindo
+  pags.forEach((pg, i) => pg.addEventListener('scroll', () => { if (!alinhando && i === Math.round(trilho.scrollLeft / trilho.clientWidth)) alinha(pg); }, { passive: true }));
   pontos.hidden = semanas.length < 2; const vaiPraNova = () => { pags[ult].scrollIntoView({ block: 'nearest', inline: 'start' }); trilho.scrollLeft = pags[ult].offsetLeft - pags[0].offsetLeft; mostra(ult); };
   let mexeu = false; trilho.addEventListener('touchstart', () => { mexeu = true; }, { passive: true }); trilho.addEventListener('wheel', () => { mexeu = true; }, { passive: true });
   requestAnimationFrame(vaiPraNova); setTimeout(() => { if (!mexeu) vaiPraNova(); }, 250);   // o 2º ajuste nunca briga com o dedo dela
